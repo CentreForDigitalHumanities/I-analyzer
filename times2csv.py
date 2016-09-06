@@ -61,18 +61,7 @@ def stream_csv():
         return "Invalid date"
 
 
-    available = [column.title for column in Column.columns()]
-    columns = []
-    for k,v in request.form.items():
-        if k.startswith("col:"):
-            colname = k[4:]
-            if colname in available:
-                columns.append(colname)
-            else:
-                return "Invalid column name: {}".format(colname)
-
-    if len(columns) < 1:
-        return "Not enough columns selected."
+    columns = filter(lambda x: ("col:" + x.title) in request.form, Column.columns())
 
     response = Response(stream_with_context(generate_csv(start, end, columns)), mimetype='text/csv')
     response.headers['Content-Disposition'] = \
@@ -105,9 +94,11 @@ def generate_csv(start, end, columns, regenerate = True):
     Generate specific columns from multiple CSV files, line-by-line.
     """
 
+    columns = list(columns)
+
     line = Line()
     writer = csv.writer(line)
-    writer.writerow(columns)
+    writer.writerow(column.title for column in columns)
     yield line.read()
 
     for date, xmlfile, csvfile in datafiles(start, end):
@@ -117,7 +108,7 @@ def generate_csv(start, end, columns, regenerate = True):
         with open(csvfile, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                writer.writerow(row.get(col) for col in columns)
+                writer.writerow(row.get(column.title) for column in columns)
                 yield line.read()
 
 
@@ -195,96 +186,62 @@ def flatten(text):
     return html.unescape(regex2.sub('\n', regex1.sub(' ', text)).strip())
 
 class Column(object):
-    tag = None
 
-    def __init__(self, title = None):
+    def __init__(self, tag = None, title = None, recursive = False, is_global = False):
         self.title = title or self.__class__.__name__
+        self.tag = tag
+        self.recursive = recursive
+        self.is_global = is_global
 
-    def fromsoup(self, issue, article):
-        raise NotImplementedError()
+
 
     @classmethod
-    def columns(cls):
-        for subclass in cls.__subclasses__():
-            subs = subclass.__subclasses__()
-            if not subs:
-                yield subclass()
-            else:
-                for sub in subclass.columns():
-                    yield sub
+    def columns(Column):
+        return [
+            Column(tag = "jn", title = "journal", is_global = True),
+            Column(tag = "is", title = "issue", is_global = True),
+            Column(tag = "da", title = "date", is_global = True),
+            Column(tag = "ip", title = "IP", is_global = True),
+            Column(tag = "pa", title = "page"),
+            Column(tag = "id", title = "id"),
+            Column(tag = "ct", title = "category"),
+            Column(tag = "ocr", title = "ocr-quality"),
+            Column(tag = "au", title = "author"),
+            Column(tag = "ti", title = "heading"),
+            Column(tag = "ta", title = "title"),
+            Column(tag = "pc", title = "PC"),
+            Column(tag = "sc", title = "SC"),
+            AttachmentColumn(title = "attachment"),
+            PreambleColumn(title = "preamble"),
+            ContentColumn(title = "content"),
+        ]
 
 
-class IssueColumn(Column):
     def fromsoup(self, issue, article):
-        if self.tag:
-            node = issue.find(self.tag, recursive = False)
-            if node:
-                return node.string
-        else:
+        """
+        Default implementation
+        """
+        if not self.tag:
             raise NotImplementedError()
 
-
-class ArticleColumn(Column):
-    def fromsoup(self, issue, article):
-        if self.tag:
-            node = article.find(self.tag, recursive = False)
-            if node:
-                return node.string
-        else:
-            raise NotImplementedError()
+        source = issue if self.is_global else article
+        node = source.find(self.tag, recursive = self.recursive)
+        if node:
+            return node.string
 
 
-class Journal(IssueColumn):
-    tag = "jn"
-
-class Issue(IssueColumn):
-    tag = "is"
-
-class Date(IssueColumn):
-    tag = "da"
-
-class IP(IssueColumn): #?
-    tag = "ip"
-
-class Page(ArticleColumn):
-    tag = "pa"
-
-class ID(ArticleColumn):
-    tag = "id"
-
-class Category(ArticleColumn):
-    tag = "ct"
-
-class OCRQuality(ArticleColumn):
-    tag = "ocr"
-
-class Author(ArticleColumn):
-    tag = "au"
-
-class Heading(ArticleColumn):
-    tag = "ti"
-
-class Title(ArticleColumn):
-    tag = "ta"
-
-class PC(ArticleColumn): #?
-    tag = "pc"
-
-class SC(ArticleColumn): #?
-    tag = "sc"
-
-class Attachment(ArticleColumn):
+class AttachmentColumn(Column):
     def fromsoup(self, issue, article):
         nodes = article.find_all("il") or ()
         return " + ".join(node.string for node in nodes)
 
-class Preamble(Column):
+class PreambleColumn(Column):
     def fromsoup(self, issue, article):
         node = article.find("text.preamble")
         if node:
             return flatten(node.get_text())
 
-class Content(Column):
+class ContentColumn(Column):
     def fromsoup(self, issue, article):
         node = article.find("text.cr")
         if node:
