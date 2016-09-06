@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Times</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+<script type="text/javascript"><!--
+
+$(function(){
+    $(".date").each(function(){
+        $(this).find(".picker").datepicker({
+            minDate: new Date(1950,1-1,1),
+            maxDate: new Date(1950,12-1,31),
+            changeMonth: true,
+            changeYear: false,
+            altField: $(this).find("input"),
+            dateFormat: "yy-mm-dd",
+            defaultDate: $(this).find("input").val()
+        });
+    });
+
+    $(".slider").each(function(){
+        var $slider = $(this).find(".picker"), $amount = $(this).find("input");
+        var update = function(){
+            $amount.val(
+                $slider.slider("values",0) + "—" + $slider.slider("values",1)
+            );
+        }
+        $slider.slider({
+            range: true,
+            min: 0,
+            max: 100,
+            values: [0,100],
+            slide: update
+        });
+        update();
+    });
+
+});
+
+//-->
+</script>
+</head>
+
+<body>
+<form method="post" action="{{ url_for('times2csv.stream_csv') }}">
+    <table>
+        <tbody>
+            <tr>
+                <td>Timespan</td>
+                <td class="date"><div class="picker"></div><input type="text" name="start" value="1950-01-01" hidden></td>
+                <td class="date"><div class="picker"></div><input type="text" name="end" value="1950-12-31" hidden></td>
+            </tr>
+            <tr>
+                <td>OCR quality</td>
+                <td class="slider"><input type="text" name="ocrquality" readonly style="border:0; color:#f6931f; font-weight:bold;"><div class="picker"></div></td>
+            </tr>
+
+            {%- for column in columns %}
+            <tr>
+                <td>
+                    <input type="checkbox" id="{{ column.title }}" name="col:{{ column.title }}" checked><label for="{{ column.title }}">{{ column.title }}</label>
+                </td>
+                <td colspan="2">
+                    &nbsp;
+                </td>
+            </tr>
+            {%- endfor %}
+            <tr>
+                <td colspan="3"><input type="submit" value="Download"></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+</body>
+</html>
