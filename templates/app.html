@@ -25,7 +25,7 @@ $(function(){
         var $slider = $(this).find(".picker"), $amount = $(this).find("input");
         var update = function(){
             $amount.val(
-                $slider.slider("values",0) + "—" + $slider.slider("values",1)
+                $slider.slider("values",0) + "-" + $slider.slider("values",1)
             );
         }
         $slider.slider({
@@ -53,19 +53,16 @@ $(function(){
                 <td class="date"><div class="picker"></div><input type="text" name="start" value="1950-01-01" hidden></td>
                 <td class="date"><div class="picker"></div><input type="text" name="end" value="1950-12-31" hidden></td>
             </tr>
-            <tr>
-                <td>OCR quality</td>
-                <td class="slider"><input type="text" name="ocrquality" readonly style="border:0; color:#f6931f; font-weight:bold;"><div class="picker"></div></td>
-            </tr>
-
-            {%- for column in columns %}
+              {%- for column in columns %}
             <tr>
                 <td>
                     <input type="checkbox" id="{{ column.title }}" name="col:{{ column.title }}" checked><label for="{{ column.title }}">{{ column.title }}</label>
                 </td>
-                <td colspan="2">
-                    &nbsp;
-                </td>
+                {%- if column.filter and column.filter.__class__.__name__ == "MinMaxFilter" %}
+                <td class="slider" colspan="2"><input type="text" name="filter:{{ column.title }}" readonly style="border:0"><div class="picker"></div></td>
+                {%- else %}
+                <td colspan="2">&nbsp;</td>
+                {%- endif %}
             </tr>
             {%- endfor %}
             <tr>

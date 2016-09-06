@@ -61,9 +61,10 @@ def stream_csv():
         return "Invalid date"
 
 
-    columns = filter(lambda x: ("col:" + x.title) in request.form, Column.columns())
+    columns = list(filter(lambda x: ("col:" + x.title) in request.form, Column.columns()))
+    constraints = list(column.filter.match(request.form.get("filter:"+column.title)) if column.filter else (lambda x: True) for column in columns)
 
-    response = Response(stream_with_context(generate_csv(start, end, columns)), mimetype='text/csv')
+    response = Response(stream_with_context(generate_csv(start, end, columns, constraints)), mimetype='text/csv')
     response.headers['Content-Disposition'] = \
         'attachment; filename=times-{start}-{end}.csv'.format(
             start = start.strftime("%Y%m%d"),
@@ -80,6 +81,7 @@ class Line(object):
     """
     Auxiliary. For streaming csv.
     """
+
     def __init__(self):
         self._line = None
     def write(self, line):
@@ -89,27 +91,28 @@ class Line(object):
 
 
 
-def generate_csv(start, end, columns, regenerate = True):
+def generate_csv(start, end, columns, constraints):
     """
     Generate specific columns from multiple CSV files, line-by-line.
     """
 
-    columns = list(columns)
-
     line = Line()
     writer = csv.writer(line)
     writer.writerow(column.title for column in columns)
+
     yield line.read()
 
     for date, xmlfile, csvfile in datafiles(start, end):
-        if regenerate or not os.path.isfile(csvfile):
+        if config.REGENERATE or not os.path.isfile(csvfile):
             xml2csv(xmlfile, csvfile)
 
         with open(csvfile, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                writer.writerow(row.get(column.title) for column in columns)
-                yield line.read()
+                values = [ row.get(column.title) for column in columns ]
+                if all(constraints[i](values[i]) for i in range(0, len(columns))):
+                    writer.writerow(values)
+                    yield line.read()
 
 
 
@@ -120,7 +123,7 @@ def datafiles(start, end):
     """
 
     date = start
-    delta = timedelta(days=1)
+    delta = timedelta(days = 1)
     while date <= end:
         infile = os.path.join(
             config.DATA_IN,
@@ -157,8 +160,6 @@ def xml2csv(xmlfile, csvfile):
     issue = soup.issue
     articles = issue.find_all("article", recursive = False) if issue else []
 
-    current_app.logger.info(str(len(articles)))
-
     # Create file
     if not os.path.isdir(os.path.dirname(csvfile)):
         os.makedirs(os.path.dirname(csvfile))
@@ -185,13 +186,43 @@ def flatten(text):
     global regex2
     return html.unescape(regex2.sub('\n', regex1.sub(' ', text)).strip())
 
+class Filter(object):
+    def match(self, constraint):
+        return lambda x: True
+
+class MinMaxFilter(Filter):
+
+    def match(self, constraint):
+
+        if not constraint:
+            return lambda x: True
+        try:
+            constraint_ = constraint.split("-")
+            minimum = float(constraint_[0])
+            maximum = float(constraint_[1])
+        except (ValueError, KeyError):
+            return lambda x: True
+
+        def check(value):
+            try:
+                return minimum <= float(value) <= maximum
+            except ValueError:
+                return False
+        return check
+
+class SubstringFilter(Filter):
+    pass
+
+
+
 class Column(object):
 
-    def __init__(self, tag = None, title = None, recursive = False, is_global = False):
+    def __init__(self, tag = None, title = None, recursive = False, is_global = False, filter = None):
         self.title = title or self.__class__.__name__
         self.tag = tag
         self.recursive = recursive
         self.is_global = is_global
+        self.filter = filter
 
 
 
@@ -205,7 +236,7 @@ class Column(object):
             Column(tag = "pa", title = "page"),
             Column(tag = "id", title = "id"),
             Column(tag = "ct", title = "category"),
-            Column(tag = "ocr", title = "ocr-quality"),
+            Column(tag = "ocr", title = "ocr-quality", filter=MinMaxFilter()),
             Column(tag = "au", title = "author"),
             Column(tag = "ti", title = "heading"),
             Column(tag = "ta", title = "title"),
