@@ -11,8 +11,8 @@
 $(function(){
     $(".date").each(function(){
         $(this).find(".picker").datepicker({
-            minDate: new Date(1950,1-1,1),
-            maxDate: new Date(1950,12-1,31),
+            minDate: new Date({{ config.MIN_DATE.strftime("%Y,%-m-1,%-d") }}),
+            maxDate: new Date({{ config.MAX_DATE.strftime("%Y,%-m-1,%-d") }}),
             changeMonth: true,
             changeYear: false,
             altField: $(this).find("input"),
@@ -50,13 +50,14 @@ $(function(){
         <tbody>
             <tr>
                 <td>Timespan</td>
-                <td class="date"><div class="picker"></div><input type="text" name="start" value="1950-01-01" hidden></td>
-                <td class="date"><div class="picker"></div><input type="text" name="end" value="1950-12-31" hidden></td>
+                <td class="date"><div class="picker"></div><input type="text" name="start" value="{{ config.MIN_DATE.strftime('%Y-%m-%d') }}" hidden></td>
+                <td class="date"><div class="picker"></div><input type="text" name="end" value="{{ config.MAX_DATE.strftime('%Y-%m-%d') }}" hidden></td>
             </tr>
-              {%- for column in columns %}
+
+            {%- for field in fields %}
             <tr>
                 <td>
-                    <input type="checkbox" id="{{ column.title }}" name="col:{{ column.title }}" checked><label for="{{ column.title }}">{{ column.title }}</label>
+                    <input type="checkbox" id="{{ field.name }}" name="field:{{ field.name }}" checked><label for="{{ field.name }}">{{ field.name }}</label>
                 </td>
                 {%- if column.filter and column.filter.__class__.__name__ == "MinMaxFilter" %}
                 <td class="slider" colspan="2"><input type="text" name="filter:{{ column.title }}" readonly style="border:0"><div class="picker"></div></td>

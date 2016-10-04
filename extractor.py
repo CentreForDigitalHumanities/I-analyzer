@@ -1,100 +1,60 @@
-'''
-Extraction of Times-data from XML files.
-'''
+import functools
+import re
+import html
 
-import os
-import os.path
-import logging; logger = logging.getLogger(__name__)
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-
-import config
-
-def filenames(directory=config.DATA, start=datetime.min, end=datetime.max):
+def extractor(method=None, **wkwargs):
     '''
-    Obtain an iterator of filenames for the datafiles relevant to the given
-    time period.
     '''
 
-    if start > end:
-        tmp = start
-        start = end
-        end = tmp
-    if start < config.MIN_DATE:
-        start = config.MIN_DATE
-    if end > config.MAX_DATE:
-        end = config.MAX_DATE
+    # Wrapper function called with optional arguments
+    if method is None:
+        return functools.partial(extractor, **wkwargs)
 
-    date = start
-    delta = timedelta(days = 1)
-    while date <= end:
+    @functools.wraps(method)
+    def decorator(path, toplevel=False, multiple=False, *nargs, **kwargs):
 
-        # Construct the path to the correct directory
-        xmldir = os.path.join(*([
-            directory,
-            'TDA_GDA'
-        ] + (
-            ['TDA_2010']
-                if date.year == 2010 else
-            ['TDA_GDA_1785-2009', date.strftime('%Y')]
-        )))
+        def sip(bowl, spoon):
+            soup = bowl if toplevel else spoon
+            if multiple:
+                source = soup.select(path)
+            else:
+                source = soup
+                for p in path.split('>'):
+                    source = source.find(p.strip(), recursive=False)
 
-        # Skip if not existing
-        if not os.path.isdir(xmldir):
-            logger.warning('Directory {} does not exist'.format(xmldir))
-            date = datetime(year = date.year+1, month = 1, day = 1)
-            continue
+            if source:
+                return method(source, multiple, *nargs, **kwargs)
+            else:
+                return None
 
-        # Construct the full path
-        xmlfile = os.path.join(
-            xmldir,
-            date.strftime('%Y%m%d'), 
-            date.strftime('0FFO-%Y-%m%d.xml') \
-                if date.year > 1985 else \
-            date.strftime('0FFO-%Y-%b%d').upper() + '.xml' 
-        )
+        return sip
 
-        # Catch or yield
-        if os.path.isfile(xmlfile):
-            yield (date, xmlfile)
-        else:
-            logger.warning('XML file {} does not exist'.format(xmlfile))
-
-        date += delta
+    return decorator
 
 
 
-def xml2dicts(xmlfile, fields):
-    '''
-    Generate document dictionaries from the given XML file. `fields` contains
-    the extractor objects.
-    '''
-
-    logger.info('Reading XML file {} ...'.format(xmlfile))
-
-    # Obtain soup from XML
-    with open(xmlfile, 'rb') as f:
-        data = f.read()
-    soup = BeautifulSoup(data, 'lxml-xml')
-
-    # Extract fields from soup
-    issue = soup.issue
-    if issue:
-        for article in issue.find_all('article', recursive=False):
-            yield {
-                field.name : field.from_soup(issue, article)
-                for field in fields
-            }
+@extractor
+def stringify(source, multiple):
+    if multiple:
+        return ', '.join(node.string for node in source)
+    else:
+        return source.string
 
 
 
-def dicts(fields, filenames):
-    '''
-    Generate document dictionaries from all relevant XML files. `fields`
-    contains the extractor objects.
-    '''
+@extractor
+def flatten(source, multiple):
+    regex1 = re.compile('(?<=\S)\n(?=\S)| +')
+    regex2 = re.compile('\n+')
 
-    return (document
-        for date, xmlfile in filenames
-            for document in xml2dicts(xmlfile, fields)
+    return html.unescape(
+        regex2.sub('\n',
+            regex1.sub(' ', source.get_text())
+        ).strip()
     )
+
+
+
+@extractor
+def const(value=None, *args):
+    return value
