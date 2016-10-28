@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -8,69 +8,212 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
 <script type="text/javascript"><!--
 
+var AUTOCOMPLETE = {{ autocomplete|tojson }};
+
 $(function(){
-    $(".date").each(function(){
-        $(this).find(".picker").datepicker({
-            minDate: new Date({{ config.MIN_DATE.strftime("%Y,%-m-1,%-d") }}),
-            maxDate: new Date({{ config.MAX_DATE.strftime("%Y,%-m-1,%-d") }}),
-            changeMonth: true,
-            changeYear: false,
-            altField: $(this).find("input"),
-            dateFormat: "yy-mm-dd",
-            defaultDate: $(this).find("input").val()
-        });
+    $(".tabs").each(function(){
+        $(this).tabs();
     });
 
-    $(".slider").each(function(){
-        var $slider = $(this).find(".picker"), $amount = $(this).find("input");
-        var update = function(){
-            $amount.val(
-                $slider.slider("values",0) + "-" + $slider.slider("values",1)
+    $(".daterange").each(function(){
+        
+        var $alt = $(this).find("input"),
+            $from = $(this).find(".from"),
+            $to = $(this).find(".to");
+            
+        var formatString = "yy-mm-dd",
+            current = $alt.val().split(":"),
+            start = $.datepicker.parseDate(formatString, current[0]),
+            end = $.datepicker.parseDate(formatString, current[1]),
+            lower = $.datepicker.parseDate(formatString, $alt.data("lower")),
+            upper = $.datepicker.parseDate(formatString, $alt.data("upper"));
+        
+        var format = function(date){
+            return (
+                date.getFullYear()
+                + "-" + (date.getMonth()+1)
+                + "-" + date.getDate()
             );
-        }
+        }, update = function(){
+            $alt.val(
+                format($from.datepicker("getDate"))
+                + ":" +
+                format($to.datepicker("getDate"))
+            );
+        };
+            
+        var base = {
+            autoSize: false,
+            dateFormat: formatString,
+            minDate: lower,
+            maxDate: upper,
+            changeMonth: true,
+            changeYear: true,
+            yearRange: lower.getFullYear() + ":" + upper.getFullYear()
+        };
+
+        $from.datepicker($.extend({defaultDate: start}, base)).change(update);
+        $to.datepicker($.extend({defaultDate: end}, base)).change(update);
+    });
+
+
+    $(".range").each(function(){
+        var $slider = $(this).find(".slider"), $alt = $(this).find("input");
+        var update = function(){
+            $alt.val(
+                $slider.slider("values", 0) + ":" + $slider.slider("values", 1)
+            );
+        };
+        
+        var current = $alt.val().split(":");
         $slider.slider({
             range: true,
-            min: 0,
-            max: 100,
-            values: [0,100],
-            slide: update
+            min: parseFloat($alt.data("lower")),
+            max: parseFloat($alt.data("upper")),
+            values: [parseFloat(current[0]), parseFloat(current[1])],
+            slide: update,
+            stop: update
         });
         update();
+    });
+
+
+    $("button").each(function(){
+        var $button = $(this);
+        $button.button({
+            icon: "ui-icon-arrowthick-1-s"
+        }).click(function(){
+            $button.parents('form:first').submit();
+        }).css({
+            width: '100%',
+            marginTop: '5px'
+        });
+        $button.find("input").hide();
+    });
+
+
+    function split(string) {
+        return string.split(/\s+/);
+    }
+    function extractLast(term) {
+        return split(term).pop();
+    }
+
+    $("#query").on( "keydown", function(event){
+        if(event.keyCode === $.ui.keyCode.TAB && $(this).autocomplete("instance").menu.active)
+            event.preventDefault();
+    }).autocomplete({
+        minLength: 0,
+        source: function(request, response){
+            response($.ui.autocomplete.filter(AUTOCOMPLETE, extractLast(request.term)));
+        },
+        focus: function(){
+            return false;
+        },
+        select: function(event, ui) {    
+            var terms = split(this.value);
+            terms.pop();
+            terms.push(ui.item.value);
+            if(!ui.item.value.slice(-1) == ":")
+                terms.push("");
+            this.value = terms.join(" ");
+            return false;
+        }
     });
 
 });
 
 //-->
 </script>
+<style>
+table {
+    border-collapse: true;
+    border: none;
+}
+td.lbl {
+    padding: 0 0.5em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+</style>
 </head>
 
 <body>
 <form method="post" action="{{ url_for('times2csv.stream_csv') }}">
-    <table>
-        <tbody>
-            <tr>
-                <td>Timespan</td>
-                <td class="date"><div class="picker"></div><input type="text" name="start" value="{{ config.MIN_DATE.strftime('%Y-%m-%d') }}" hidden></td>
-                <td class="date"><div class="picker"></div><input type="text" name="end" value="{{ config.MAX_DATE.strftime('%Y-%m-%d') }}" hidden></td>
-            </tr>
 
-            {%- for field in fields %}
+<div class="tabs">
+    <ul>
+        <li><a href="#tab-search">Search</a></li>
+        <li><a href="#tab-column">Columns</a></li>
+    </ul>
+    <div id="tab-search">
+
+        <table>
+        <tr>
+            <td>Query</td>
+            <td><input id="query" name="query" type="text"></td>
+        </tr>
+               
+        {%- for field in fields %}
+        {%- if field.sieve_class == 'DateSieve' %}
+        <tr>
+            <td>
+                Filter {{ field.name }}
+            </td>
+            <td>
+                <div class="daterange">
+                    <div class="from"></div>
+                    <div class="to"></div>
+                    <input type="text" hidden
+                        name="sieve:{{ field.name }}"
+                        value="{{ field.sieve.lower.strftime('%Y-%m-%d') }}:{{ field.sieve.upper.strftime('%Y-%m-%d') }}"
+                        data-lower="{{ field.sieve.lower.strftime('%Y-%m-%d') }}"
+                        data-upper="{{ field.sieve.upper.strftime('%Y-%m-%d') }}">
+                </div>
+            </td>
+        </tr>
+        {%- endif %}
+        {%- if field.sieve_class == 'RangeSieve' %}
+        <tr>
+            <td>
+                Filter {{ field.name }}
+            </td>
+            <td>
+            <div class="range">
+                <div class="slider"></div>
+                <input type="text" readonly style="border:0"
+                    name="sieve:{{ field.name }}"
+                    value="{{ field.sieve.lower }}:{{ field.sieve.upper }}"
+                    data-lower="{{ field.sieve.lower }}"
+                    data-upper="{{ field.sieve.upper }}">
+            </div>
+            </td>
+        </tr>
+        {%- endif %}
+        {%- endfor %}
+        </table>
+        
+        <!--<div class="date"><div class="picker"></div><input type="text" name="start" value="{{ config.MIN_DATE.strftime('%Y-%m-%d') }}" hidden></div>
+        <div class="date"><div class="picker"></div><input type="text" name="end" value="{{ config.MAX_DATE.strftime('%Y-%m-%d') }}" hidden></div>-->
+    </div>
+    <div id="tab-column">
+        <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
+
+        <table>
+        <tbody>
+        {%- set columns=2 %}
+        {%- for i in range(0, fields|length, columns) %}
             <tr>
-                <td>
-                    <input type="checkbox" id="{{ field.name }}" name="field:{{ field.name }}" checked><label for="{{ field.name }}">{{ field.name }}</label>
-                </td>
-                {%- if column.filter and column.filter.__class__.__name__ == "MinMaxFilter" %}
-                <td class="slider" colspan="2"><input type="text" name="filter:{{ column.title }}" readonly style="border:0"><div class="picker"></div></td>
-                {%- else %}
-                <td colspan="2">&nbsp;</td>
-                {%- endif %}
-            </tr>
+            {%- for field in fields[i:i+columns] %}
+                <td class="lbl"><input type="checkbox" name="field:{{ field.name }}" checked> {{ field.name }}</td>
+                <td>{{ field.description if field.description else "No description." }}</td>
             {%- endfor %}
-            <tr>
-                <td colspan="3"><input type="submit" value="Download"></td>
             </tr>
-        </tbody>
-    </table>
+        {%- endfor %}
+        </tbody></table>
+    </div>
+</div>
+<button>Download<input type="submit" value="Download"></button>
 </form>
 </body>
 </html>
