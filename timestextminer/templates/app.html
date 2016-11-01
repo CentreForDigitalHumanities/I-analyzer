@@ -139,7 +139,7 @@ td.lbl {
 </head>
 
 <body>
-<form method="post" action="{{ url_for('times2csv.stream_csv') }}">
+<form method="post" action="{{ url_for('blueprint.stream_csv') }}">
 
 <div class="tabs">
     <ul>
@@ -155,7 +155,7 @@ td.lbl {
         </tr>
                
         {%- for field in fields %}
-        {%- if field.sieve_class == 'DateSieve' %}
+        {%- if field.sieve_class == 'DateFilter' %}
         <tr>
             <td>
                 Filter {{ field.name }}
@@ -173,7 +173,7 @@ td.lbl {
             </td>
         </tr>
         {%- endif %}
-        {%- if field.sieve_class == 'RangeSieve' %}
+        {%- if field.sieve_class == 'RangeFilter' %}
         <tr>
             <td>
                 Filter {{ field.name }}
@@ -192,9 +192,6 @@ td.lbl {
         {%- endif %}
         {%- endfor %}
         </table>
-        
-        <!--<div class="date"><div class="picker"></div><input type="text" name="start" value="{{ config.MIN_DATE.strftime('%Y-%m-%d') }}" hidden></div>
-        <div class="date"><div class="picker"></div><input type="text" name="end" value="{{ config.MAX_DATE.strftime('%Y-%m-%d') }}" hidden></div>-->
     </div>
     <div id="tab-column">
         <p>Please select the columns that are to appear in your <code>csv</code> file.</p>

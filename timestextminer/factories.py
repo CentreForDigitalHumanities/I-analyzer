@@ -2,7 +2,7 @@
 For creation of Flask and ElasticSearch objects.
 '''
 
-import config
+from . import config
 from flask import Flask
 from pyelasticsearch import ElasticSearch
 

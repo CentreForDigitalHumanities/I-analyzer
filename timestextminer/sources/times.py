@@ -9,9 +9,10 @@ import os.path
 import bs4
 from datetime import datetime, timedelta
 
-import config
-import extractor
-from fields import Field, DateSieve, RangeSieve
+from .. import config
+from .. import extractor
+from .. import filters
+from .common import Field
 
 
 def until1985(date=None, **kw): # LTO_issue.dtd
@@ -21,13 +22,12 @@ def until1985(date=None, **kw): # LTO_issue.dtd
 def after1985(date=None, **kw): # GALENP.dtd
     return date and date.year >= 1986 
 
-
 fields = [
     Field(
         name='date',
         description='Associated date.',
         mapping={ 'type' : 'date' },
-        sieve=DateSieve(config.MIN_DATE, config.MAX_DATE, description='Filter dates.'),
+        sieve=filters.DateFilter(config.MIN_DATE, config.MAX_DATE, description='Filter dates.'),
         extractor=lambda bowl, spoon, date=None: date
     ),
     Field(indexed=False,
@@ -156,7 +156,7 @@ fields = [
         description='OCR confidence level.',
         mapping={ 'type' : 'double' },
         extractor=extractor.string(tag='ocr', transform=float),
-        sieve=RangeSieve(0, 100, description='Filter stuff.'),
+        sieve=filters.RangeFilter(0, 100, description='Filter stuff.'),
     ),
     Field(
         name='ocr-relevant',
@@ -249,9 +249,7 @@ fields = [
 #    ),
 ]
 
-
-
-def datafiles(start=datetime.min, end=datetime.max):
+def files(start=datetime.min, end=datetime.max):
     '''
     Obtain an iterator of dates and filenames corresponding to the data files
     that are relevant to the given period of time.
@@ -303,7 +301,7 @@ def datafiles(start=datetime.min, end=datetime.max):
 
         # Yield date and tag if the desired file is present
         if os.path.isfile(xmlfile):
-            yield (date, xmlfile)
+            yield (xmlfile, { 'date' : date })
         else:
             logger.warning('XML file {} does not exist'.format(xmlfile))
 
@@ -311,7 +309,7 @@ def datafiles(start=datetime.min, end=datetime.max):
 
 
 
-def xml2dicts(xmlfile, **meta):
+def _xml2dicts(xmlfile, **meta):
     '''
     Generate document dictionaries from the given XML file.
     '''
@@ -345,14 +343,12 @@ def xml2dicts(xmlfile, **meta):
 
 
 
-def documents(dates_and_files=None):
+def documents(datafiles):
     '''
     Generate document dictionaries from all relevant XML files.
     '''
 
-    dates_and_files = dates_and_files or datafiles()
-
     return (document
-        for date, xmlfile in dates_and_files
-            for document in xml2dicts(xmlfile, date=date)
+        for xmlfile, metadata in datafiles
+            for document in _xml2dicts(xmlfile, **metadata)
     )

@@ -1,4 +1,4 @@
-from os.path import expanduser, realpath, join, dirname
+from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta
 
 # Flask
@@ -15,7 +15,7 @@ ES_INDEX='times-test'
 ES_DOCTYPE='article'
 
 # Path to directory containing XML files (prior to indexing)
-DATA = realpath('data')
+DATA = realpath(join(dirname(__file__), '..', 'data-test'))
 
 # Date range of available data
 MIN_DATE = datetime(year=1785, month=1, day=1) 
