@@ -13,9 +13,9 @@ class DateFilter(Filter):
     def __init__(self, lower, upper, description=None):
         self.lower = lower
         self.upper = upper
+        self.description = description
 
-
-    def represent(self, value):
+    def represent(self, *nargs, **kwargs):
         '''
         Fill out this filter template and return it as a tuple that represents
         the ElasticSearch query language. May raise a SieveError.
@@ -23,7 +23,7 @@ class DateFilter(Filter):
         
         try:
             fmt = '%Y-%m-%d'
-            daterange = value.split(':')
+            daterange = nargs[0].split(':')
             lower = datetime.strptime(daterange[0], fmt)
             upper = datetime.strptime(daterange[1], fmt)
         except (ValueError, IndexError):
@@ -45,14 +45,15 @@ class DateFilter(Filter):
 
 class RangeFilter(Filter):
     
-    def __init__(self, lower, upper, description=None):
+    def __init__(self, fieldname, lower, upper, description=None):
+        self.fieldname = fieldname
         self.lower = lower
         self.upper = upper
+        self.description = description
 
-
-    def represent(self, value):
+    def represent(self, *nargs, **kwargs):
         try:
-            nrange = value.split(':')
+            nrange = nargs[0].split(':')
             lower = float(nrange[0])
             upper = float(nrange[1])
         except (ValueError, IndexError):
@@ -64,9 +65,32 @@ class RangeFilter(Filter):
         
         return 'must', {
             'range' : {
-                'ocr' : {
+                self.fieldname : {
                     'gte' : lower,
                     'lte' : upper
                 }
+            }
+        }
+
+
+
+class MultipleChoiceFilter(Filter):
+    
+    def __init__(self, fieldname, options, description=None):
+        self.fieldname = fieldname
+        self.options = options
+        self.description = description
+
+
+    def represent(self, *nargs, **kwargs):
+        
+        selected = [
+            category for category in kwargs.keys()
+            if category in self.options
+        ]
+        
+        return 'must', {
+            'terms' : {
+                self.fieldname : selected
             }
         }

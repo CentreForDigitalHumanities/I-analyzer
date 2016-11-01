@@ -23,8 +23,7 @@ def init():
             field for field in times.fields if not field.hidden
         ],
         autocomplete=(
-            ["OR", "AND"]
-          + [
+            [
                 field.name+":" for field in times.fields if not field.hidden
             ]
         )
@@ -51,14 +50,31 @@ def stream_csv():
         'must_not': [],
         'should': []
     }
-    for field in times.fields:
-        key = 'sieve:' + field.name
-        if field.sieve and key in request.form:
-            modality, sieve = field.sieve.represent(request.form.get(key))
-            sieves[modality].append(sieve)
+    for field in (f for f in times.fields if f.sieve):
+        prefix = 'sieve:' + field.name
+        
+        enabled = request.form.get(prefix+'?')
+        narg = request.form.get(prefix)
+        kwargs = {
+            k[(len(prefix)+1):] : v
+            for k,v in request.form.items() if k.startswith(prefix + ':')
+        }
+        
+        if enabled and (narg or kwargs):
+            sieve = field.sieve.represent(narg, **kwargs)
+            if sieve:
+                modality, dsl = sieve
+                sieves[modality].append(dsl)
+
+    sieves = { 'bool': sieves }
+
+    query = search.make_query(query_string=q, filter_=sieves)
+    
+
+    return jsonify(query)
 
     # Perform the search
-    result = search.execute(query_string=q, sieve={'bool' : sieves})
+    result = search.execute(query)
 
     # Stream response
     stream = stream_with_context(output.generate_csv(result, select=fields))

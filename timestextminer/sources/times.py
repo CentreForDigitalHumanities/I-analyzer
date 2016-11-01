@@ -27,7 +27,7 @@ fields = [
         name='date',
         description='Associated date.',
         mapping={ 'type' : 'date' },
-        sieve=filters.DateFilter(config.MIN_DATE, config.MAX_DATE, description='Filter dates.'),
+        sieve=filters.DateFilter(config.MIN_DATE, config.MAX_DATE, description='Accept only articles with a publication date in this range.'),
         extractor=lambda bowl, spoon, date=None: date
     ),
     Field(indexed=False,
@@ -156,7 +156,7 @@ fields = [
         description='OCR confidence level.',
         mapping={ 'type' : 'double' },
         extractor=extractor.string(tag='ocr', transform=float),
-        sieve=filters.RangeFilter(0, 100, description='Filter stuff.'),
+        sieve=filters.RangeFilter('ocr', 0, 100, description='Accept only articles for which the OCR confidence indicator is in this range.'),
     ),
     Field(
         name='ocr-relevant',
@@ -212,12 +212,13 @@ fields = [
     ),
     Field(
         name='category',
-        description='uses predefined list of article subject categories in specification',
+        description='Article subject categories.',
+        sieve=filters.MultipleChoiceFilter('category', description='Accept only articles in these categories.', options=['Classified Advertising','Display Advertising','Property','News','News In Brief','Index','Law','Politics and Parliament', 'Court and Social','Business and Finance','Shipping News','Stock Exchange Tables','Births','Business Appointments','Deaths','Marriages','Obituaries','Official Appointments and Notices','Editorials/Leaders','Feature Articles','Opinion','Letters to the Editor','Arts and Entertainment','Reviews','Sport','Weather']),
         extractor=extractor.string(tag='ct', multiple=True)
     ),
     Field(
         name='illustration',
-        options=['Cartoon', 'Map', 'Drawing-Painting', 'Photograph', 'Graph', 'Table', 'Chart', 'Engraving', 'Fine-Art-Reproduction', 'Illustration'],
+        sieve=filters.MultipleChoiceFilter('illustration', description='Accept only articles associated with these illustrations.', options=['Cartoon', 'Map', 'Drawing-Painting', 'Photograph', 'Graph', 'Table', 'Chart', 'Engraving', 'Fine-Art-Reproduction', 'Illustration']),
         extractor=[
             (until1985, extractor.string(tag='il', multiple=True)),
             (after1985, extractor.attr(tag='il', attr='type', multiple=True))

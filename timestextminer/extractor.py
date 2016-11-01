@@ -67,7 +67,7 @@ def string(source, meta, *n, **kw):
     if isinstance(source, bs4.element.Tag):
         return source.string
     else:
-        return ', '.join(node.string for node in source)
+        return [node.string for node in source]
 
 
 @extractor
@@ -75,7 +75,7 @@ def attr(source, attr=None, *n, **kw):
     if isinstance(source, bs4.element.Tag):
         return source.attrs.get(attr)
     else:
-        return ', '.join(node.attrs.get(attr) for node in source if node.attrs.get(attr) is not None)
+        return [node.attrs.get(attr) for node in source if node.attrs.get(attr) is not None]
 
 
 

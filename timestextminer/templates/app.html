@@ -11,6 +11,9 @@
 var AUTOCOMPLETE = {{ autocomplete|tojson }};
 
 $(function(){
+
+    $("#query").width("100%");
+    
     $(".tabs").each(function(){
         $(this).tabs();
     });
@@ -76,9 +79,9 @@ $(function(){
         });
         update();
     });
-
-
-    $("button").each(function(){
+    
+    
+    $("button#submit").each(function(){
         var $button = $(this);
         $button.button({
             icon: "ui-icon-arrowthick-1-s"
@@ -121,6 +124,21 @@ $(function(){
         }
     });
 
+    $(".mc input").each(function(){
+        $(this).checkboxradio({icon:false});
+    });
+    
+    
+    var $filters = $("#tab-search .lbl input[type=checkbox]"),
+        control_filter = function(){
+            var $this = $(this), checked = $this.prop("checked");
+            if(checked)
+                $this.closest("td").next().fadeTo('medium', 1);
+            else
+                $this.closest("td").next().fadeTo('medium', 0.3);
+        };
+    $filters.each(control_filter).click(control_filter);
+
 });
 
 //-->
@@ -130,10 +148,21 @@ table {
     border-collapse: true;
     border: none;
 }
+td {
+    vertical-align: top;
+}
 td.lbl {
-    padding: 0 0.5em;
+    padding: 0 1em;
+    font-size: 0.7em;
+}
+td.lbl span {
     font-weight: bold;
     white-space: nowrap;
+    display: block;
+    font-size:1.2em;
+}
+.slider {
+    margin: 1em 0;
 }
 .daterange div {
     display: inline-block;
@@ -156,16 +185,21 @@ td.lbl {
 
         <table>
         <tr>
-            <td>Query</td>
+            <td class="lbl"><span>Query</span></td>
             <td><input id="query" name="query" type="text"></td>
         </tr>
                
         {%- for field in fields %}
-        {%- if field.sieve_class == 'DateFilter' %}
+        {%- if field.sieve %}
         <tr>
-            <td>
-                Filter {{ field.name }}
+            <td class="lbl">
+                <span>
+                    <input name="sieve:{{ field.name }}?" id="sieve:{{ field.name }}?" type="checkbox" checked>
+                    <label for="sieve:{{ field.name }}?">Filter ({{ field.name }})</label>
+                </span>
+                {{ field.sieve.description }}
             </td>
+        {%- if field.sieve_class == 'DateFilter' %}
             <td>
                 <div class="daterange">
                     <div class="from"></div>
@@ -177,13 +211,8 @@ td.lbl {
                         data-upper="{{ field.sieve.upper.strftime('%Y-%m-%d') }}">
                 </div>
             </td>
-        </tr>
         {%- endif %}
         {%- if field.sieve_class == 'RangeFilter' %}
-        <tr>
-            <td>
-                Filter {{ field.name }}
-            </td>
             <td>
             <div class="range">
                 <div class="slider"></div>
@@ -194,6 +223,17 @@ td.lbl {
                     data-upper="{{ field.sieve.upper }}">
             </div>
             </td>
+        {%- endif %}
+        {%- if field.sieve_class == 'MultipleChoiceFilter' %}
+            <td>
+            <div class="mc">
+                {%- for option in field.sieve.options %}
+                <input type="checkbox" name="sieve:{{ field.name }}:{{ option }}" id="sieve:{{ field.name }}:{{ option }}" checked>
+                <label for="sieve:{{ field.name }}:{{ option }}">{{ option }}</label>
+                {%- endfor %}
+            </div>
+            </td>
+        {%- endif %}
         </tr>
         {%- endif %}
         {%- endfor %}
@@ -208,7 +248,7 @@ td.lbl {
         {%- for i in range(0, fields|length, columns) %}
             <tr>
             {%- for field in fields[i:i+columns] %}
-                <td class="lbl"><input type="checkbox" name="field:{{ field.name }}" checked> {{ field.name }}</td>
+                <td class="lbl"><span><input type="checkbox" name="field:{{ field.name }}" checked> {{ field.name }}</span></td>
                 <td>{{ field.description if field.description else "No description." }}</td>
             {%- endfor %}
             </tr>
@@ -216,7 +256,7 @@ td.lbl {
         </tbody></table>
     </div>
 </div>
-<button>Download<input type="submit" value="Download"></button>
+<button id="submit">Download<input type="submit" value="Download"></button>
 </form>
 </body>
 </html>

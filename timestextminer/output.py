@@ -1,4 +1,5 @@
 import csv
+from .sources.common import Field
 
 class Line(object):
     '''
@@ -12,12 +13,13 @@ class Line(object):
 
 def generate_csv(documents, select=None, include_score=True):
     '''
-    Generate a CSV file from the documents dictionary returned by
-    ElasticSearch, selecting only those fields referenced in the iterator.
+    Generate a CSV file from an iterator of document dictionaries; selecting
+    only those fields referenced in the `select` iterator.
     '''
 
     fields = list(
-        field if isinstance(field, str) else field.name for field in select
+        field.name if isinstance(field, Field) else
+        str(field) for field in select
     )
 
     if include_score:
@@ -29,5 +31,9 @@ def generate_csv(documents, select=None, include_score=True):
     yield line.read()
 
     for doc in documents:
-        writer.writerow(doc.get(field) for field in fields)
+        values = (doc.get(field) for field in fields)
+        writer.writerow(
+            ','.join(value) if isinstance(value, list) else str(value)
+            for value in values
+        )
         yield line.read()
