@@ -1,6 +1,10 @@
 '''
-Functions that allow for the extraction of data from an XML file as
-read by BeautifulSoup.
+An extractor function is a function that takes the top-level BeautifulSoup tag,
+the BeautifulSoup tag of the entry that is under scrutiny (… and possibly
+some additional data as keyword arguments) and extracts from it the desired
+data.
+
+This module contains functions that facilitate the creation of such functions.
 '''
 
 import functools

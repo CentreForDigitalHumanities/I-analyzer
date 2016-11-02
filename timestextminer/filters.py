@@ -15,10 +15,10 @@ class DateFilter(Filter):
         self.upper = upper
         self.description = description
 
-    def represent(self, *nargs, **kwargs):
+    def es(self, *nargs, **kwargs):
         '''
         Fill out this filter template and return it as a tuple that represents
-        the ElasticSearch query language. May raise a SieveError.
+        the ElasticSearch query language.
         '''
         
         try:
@@ -51,7 +51,7 @@ class RangeFilter(Filter):
         self.upper = upper
         self.description = description
 
-    def represent(self, *nargs, **kwargs):
+    def es(self, *nargs, **kwargs):
         try:
             nrange = nargs[0].split(':')
             lower = float(nrange[0])
@@ -82,7 +82,7 @@ class MultipleChoiceFilter(Filter):
         self.description = description
 
 
-    def represent(self, *nargs, **kwargs):
+    def es(self, *nargs, **kwargs):
         
         selected = [
             category for category in kwargs.keys()

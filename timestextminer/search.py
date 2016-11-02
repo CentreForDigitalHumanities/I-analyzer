@@ -1,5 +1,5 @@
 '''
-Module handles searching through the indices and processing of results into CSV.
+Module handles searching through the indices.
 '''
 
 from . import config
@@ -65,7 +65,7 @@ def execute(query):
     # Search operation
     result = client.search(
         index=config.ES_INDEX,
-        size=100,
+        size=1000,
         query=query,
         #query_params={
         #    'query_path' : 'hits.hits._source, hits.hits._score'

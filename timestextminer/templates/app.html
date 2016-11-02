@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Times</title>
+<title>{{ corpus.capitalize() }}</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
@@ -174,7 +174,7 @@ td.lbl span {
 </head>
 
 <body>
-<form method="post" action="{{ url_for('blueprint.stream_csv') }}">
+<form method="post" action="{{ url_for('blueprint.stream_csv', corpus=corpus) }}">
 
 <div class="tabs">
     <ul>
@@ -190,46 +190,46 @@ td.lbl span {
         </tr>
                
         {%- for field in fields %}
-        {%- if field.sieve %}
+        {%- if field.filter_ %}
         <tr>
             <td class="lbl">
                 <span>
-                    <input name="sieve:{{ field.name }}?" id="sieve:{{ field.name }}?" type="checkbox">
-                    <label for="sieve:{{ field.name }}?">Filter ({{ field.name }})</label>
+                    <input name="filter:{{ field.name }}?" id="filter:{{ field.name }}?" type="checkbox">
+                    <label for="filter:{{ field.name }}?">Filter ({{ field.name }})</label>
                 </span>
-                {{ field.sieve.description }}
+                {{ field.filter_.description }}
             </td>
-        {%- if field.sieve_class == 'DateFilter' %}
+        {%- if field.filterclass == 'DateFilter' %}
             <td>
                 <div class="daterange">
                     <div class="from"></div>
                     <div class="to"></div>
                     <input type="text" hidden
-                        name="sieve:{{ field.name }}"
-                        value="{{ field.sieve.lower.strftime('%Y-%m-%d') }}:{{ field.sieve.upper.strftime('%Y-%m-%d') }}"
-                        data-lower="{{ field.sieve.lower.strftime('%Y-%m-%d') }}"
-                        data-upper="{{ field.sieve.upper.strftime('%Y-%m-%d') }}">
+                        name="filter:{{ field.name }}"
+                        value="{{ field.filter_.lower.strftime('%Y-%m-%d') }}:{{ field.filter_.upper.strftime('%Y-%m-%d') }}"
+                        data-lower="{{ field.filter_.lower.strftime('%Y-%m-%d') }}"
+                        data-upper="{{ field.filter_.upper.strftime('%Y-%m-%d') }}">
                 </div>
             </td>
         {%- endif %}
-        {%- if field.sieve_class == 'RangeFilter' %}
+        {%- if field.filterclass == 'RangeFilter' %}
             <td>
             <div class="range">
                 <div class="slider"></div>
                 <input type="text" readonly style="border:0"
-                    name="sieve:{{ field.name }}"
-                    value="{{ field.sieve.lower }}:{{ field.sieve.upper }}"
-                    data-lower="{{ field.sieve.lower }}"
-                    data-upper="{{ field.sieve.upper }}">
+                    name="filter:{{ field.name }}"
+                    value="{{ field.filter_.lower }}:{{ field.filter_.upper }}"
+                    data-lower="{{ field.filter_.lower }}"
+                    data-upper="{{ field.filter_.upper }}">
             </div>
             </td>
         {%- endif %}
-        {%- if field.sieve_class == 'MultipleChoiceFilter' %}
+        {%- if field.filterclass == 'MultipleChoiceFilter' %}
             <td>
             <div class="mc">
-                {%- for option in field.sieve.options %}
-                <input type="checkbox" name="sieve:{{ field.name }}:{{ option }}" id="sieve:{{ field.name }}:{{ option }}" checked>
-                <label for="sieve:{{ field.name }}:{{ option }}" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
+                {%- for option in field.filter_.options %}
+                <input type="checkbox" name="filter:{{ field.name }}:{{ option }}" id="filter:{{ field.name }}:{{ option }}" checked>
+                <label for="filter:{{ field.name }}:{{ option }}" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
                 {%- endfor %}
             </div>
             </td>

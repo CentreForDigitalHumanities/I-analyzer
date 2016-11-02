@@ -1,5 +1,5 @@
 import csv
-from .sources.common import Field
+from .corpora.common import Field
 
 class Line(object):
     '''
