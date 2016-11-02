@@ -213,11 +213,13 @@ fields = [
     Field(
         name='category',
         description='Article subject categories.',
+        mapping={ 'type': 'string', 'index' : 'not_analyzed' },
         sieve=filters.MultipleChoiceFilter('category', description='Accept only articles in these categories.', options=['Classified Advertising','Display Advertising','Property','News','News In Brief','Index','Law','Politics and Parliament', 'Court and Social','Business and Finance','Shipping News','Stock Exchange Tables','Births','Business Appointments','Deaths','Marriages','Obituaries','Official Appointments and Notices','Editorials/Leaders','Feature Articles','Opinion','Letters to the Editor','Arts and Entertainment','Reviews','Sport','Weather']),
         extractor=extractor.string(tag='ct', multiple=True)
     ),
     Field(
         name='illustration',
+        mapping={ 'type': 'string', 'index' : 'not_analyzed' },
         sieve=filters.MultipleChoiceFilter('illustration', description='Accept only articles associated with these illustrations.', options=['Cartoon', 'Map', 'Drawing-Painting', 'Photograph', 'Graph', 'Table', 'Chart', 'Engraving', 'Fine-Art-Reproduction', 'Illustration']),
         extractor=[
             (until1985, extractor.string(tag='il', multiple=True)),

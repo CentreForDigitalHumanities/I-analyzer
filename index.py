@@ -58,8 +58,8 @@ if __name__ == '__main__':
     for s in sources:
         logging.basicConfig(level=logging.INFO)
         logging.info('Index: {}'.format(s['index']))
-        logging.info('Clearing old index...')
-        client.delete_all(index=s['index'], doc_type=s['doc_type'])
+        #logging.info('Clearing old index...')
+        #client.delete_all(index=s['index'], doc_type=s['doc_type'])
         logging.info('Started indexing...')
         index(client, index=s['index'], doc_type=s['doc_type'], module=s['module'], start=1785, end=datetime(1785,2,1))
         logging.info('Finished indexing.')

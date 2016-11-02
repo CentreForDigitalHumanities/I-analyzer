@@ -9,8 +9,7 @@ from datetime import datetime, timedelta
 
 client = factories.elasticsearch()
 
-
-def make_query(query_string=None, filter_=None):
+def make_query(query_string=None, filter_must=[], filter_should=[], filter_must_not=[]):
 
     # Construct query
     q = {
@@ -27,18 +26,29 @@ def make_query(query_string=None, filter_=None):
             }
         )
     }
-
-    if filter_: # Works differently in ES5.0
+    
+    # Note: filtering works differently in ES5.0
+    filters = {}
+    if filter_must:
+        filters['must'] = filter_must
+    if filter_must_not:
+        filters['must_not'] = filter_must_not
+    if filter_should:
+        filters['should'] = filter_should
+    
+    if filters:
         return {
             'query' : {
                 'filtered' : {
                     'query': q['query'],
-                    'filter': filter_
+                    'filter': {# filters['should'][0] 
+                        'bool': filters
+                    }
                 }
             }
         }
-    
-    return q
+    else:
+        return q
     
 def validate(query):
     raise NotImplementedError()

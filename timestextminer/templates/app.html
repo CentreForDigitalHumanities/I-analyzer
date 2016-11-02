@@ -137,7 +137,7 @@ $(function(){
             else
                 $this.closest("td").next().fadeTo('medium', 0.3);
         };
-    $filters.each(control_filter).click(control_filter);
+    $filters.each(control_filter).change(control_filter);
 
 });
 
@@ -194,7 +194,7 @@ td.lbl span {
         <tr>
             <td class="lbl">
                 <span>
-                    <input name="sieve:{{ field.name }}?" id="sieve:{{ field.name }}?" type="checkbox" checked>
+                    <input name="sieve:{{ field.name }}?" id="sieve:{{ field.name }}?" type="checkbox">
                     <label for="sieve:{{ field.name }}?">Filter ({{ field.name }})</label>
                 </span>
                 {{ field.sieve.description }}
@@ -229,7 +229,7 @@ td.lbl span {
             <div class="mc">
                 {%- for option in field.sieve.options %}
                 <input type="checkbox" name="sieve:{{ field.name }}:{{ option }}" id="sieve:{{ field.name }}:{{ option }}" checked>
-                <label for="sieve:{{ field.name }}:{{ option }}">{{ option }}</label>
+                <label for="sieve:{{ field.name }}:{{ option }}" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
                 {%- endfor %}
             </div>
             </td>

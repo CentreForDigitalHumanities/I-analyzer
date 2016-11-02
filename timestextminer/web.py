@@ -34,7 +34,7 @@ def init():
 @blueprint.route('/stream', methods=['POST'])
 def stream_csv():
 
-    q = request.form.get('query')
+    query_string = request.form.get('query')
 
     # Get activated fields
     fields = [
@@ -45,33 +45,41 @@ def stream_csv():
         raise RuntimeError('No recognised fields were selected.')
 
     # Get active filters
-    sieves = {
-        'must': [],
-        'must_not': [],
-        'should': []
-    }
+    filter_should = []
+    filter_must = []
+    filter_must_not = []
+
     for field in (f for f in times.fields if f.sieve):
         prefix = 'sieve:' + field.name
         
         enabled = request.form.get(prefix+'?')
         narg = request.form.get(prefix)
         kwargs = {
-            k[(len(prefix)+1):] : v
-            for k,v in request.form.items() if k.startswith(prefix + ':')
+            key[(len(prefix)+1):] : value
+            for key,value in request.form.items()
+            if key.startswith(prefix + ':')
         }
         
         if enabled and (narg or kwargs):
             sieve = field.sieve.represent(narg, **kwargs)
             if sieve:
                 modality, dsl = sieve
-                sieves[modality].append(dsl)
+                if modality == 'should':
+                    filters = filter_should
+                elif modality == 'must_not':
+                    filters = filter_must_not
+                else:
+                    filters = filter_must
+                filters.append(dsl)
 
-    sieves = { 'bool': sieves }
+    query = search.make_query(
+        query_string=query_string,
+        filter_should=filter_should,
+        filter_must=filter_must,
+        filter_must_not=filter_must_not
+    )
 
-    query = search.make_query(query_string=q, filter_=sieves)
-    
-
-    return jsonify(query)
+    #return jsonify(query)
 
     # Perform the search
     result = search.execute(query)

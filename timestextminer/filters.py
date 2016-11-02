@@ -89,8 +89,9 @@ class MultipleChoiceFilter(Filter):
             if category in self.options
         ]
         
-        return 'must', {
+        return 'should', {
             'terms' : {
-                self.fieldname : selected
+                self.fieldname : selected,
+                #'execution' : 'or'
             }
         }
