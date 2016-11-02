@@ -228,7 +228,7 @@ td.lbl span {
             <td>
             <div class="mc">
                 {%- for option in field.filter_.options %}
-                <input type="checkbox" name="filter:{{ field.name }}:{{ option }}" id="filter:{{ field.name }}:{{ option }}" checked>
+                <input type="checkbox" name="filter:{{ field.name }}:{{ option }}" id="filter:{{ field.name }}:{{ option }}">
                 <label for="filter:{{ field.name }}:{{ option }}" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
                 {%- endfor %}
             </div>
