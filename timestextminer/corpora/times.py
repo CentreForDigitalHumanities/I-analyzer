@@ -169,7 +169,7 @@ fields = [
         name='cover',
         description='Whether the article is on the cover page.',
         mapping=mapping.boolean,
-        #TODO filter
+        filter_=filters.BooleanFilter('cover', true='Cover page', false='Other', description='Accept only articles that are on the cover page. From 1985.'),
         extractor=[
             (after(1985), extract.attr(tag=['..','pageid'], attr='pageType', transform=lambda s:bool("Cover" in s if s else False)))
         ]

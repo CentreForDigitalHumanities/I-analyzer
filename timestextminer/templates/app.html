@@ -127,7 +127,10 @@ $(function(){
     $(".mc input").each(function(){
         $(this).checkboxradio({icon:false});
     });
-    
+
+    $(".select select").each(function(){
+        $(this).selectmenu();
+    });
     
     var $filters = $("#tab-search .lbl input[type=checkbox]"),
         control_filter = function(){
@@ -231,6 +234,16 @@ td.lbl span {
                 <input type="checkbox" name="filter:{{ field.name }}:{{ option }}" id="filter:{{ field.name }}:{{ option }}">
                 <label for="filter:{{ field.name }}:{{ option }}" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
                 {%- endfor %}
+            </div>
+            </td>
+        {%- endif %}
+        {%- if field.filterclass == 'BooleanFilter' %}
+            <td>
+            <div class="select">
+                <select name="filter:{{ field.name }}">
+                    <option value="1">{{ field.filter_.true }}</option>
+                    <option value="">{{ field.filter_.false }}</option>
+                </select>
             </div>
             </td>
         {%- endif %}

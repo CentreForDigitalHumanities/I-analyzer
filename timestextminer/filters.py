@@ -95,3 +95,25 @@ class MultipleChoiceFilter(Filter):
                 #'execution' : 'or'
             }
         }
+
+
+class BooleanFilter(Filter):
+    
+    def __init__(self, fieldname, true, false, description=None):
+        self.fieldname = fieldname
+        self.true = true
+        self.false = false
+        self.description = description
+
+
+    def es(self, *nargs, **kwargs):
+        try:
+            true = bool(nargs[0])
+        except IndexError:
+            raise RuntimeError('Number arguments not recognised.')
+        
+        return 'must', {
+            'term' : {
+                self.fieldname : true
+            }
+        }
