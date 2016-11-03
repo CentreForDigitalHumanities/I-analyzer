@@ -2,7 +2,6 @@
 Module handles searching through the indices.
 '''
 
-from . import config
 from . import factories
 
 from datetime import datetime, timedelta
@@ -50,11 +49,15 @@ def make_query(query_string=None, filter_must=[], filter_should=[], filter_must_
     else:
         return q
     
+
+
 def validate(query):
     raise NotImplementedError()
-    
+
+
+
 # See page 127 for scan and scroll
-def execute(query):
+def execute(query, corpus):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -64,16 +67,16 @@ def execute(query):
 
     # Search operation
     result = client.search(
-        index=config.ES_INDEX,
+        index=corpus.ES_INDEX,
         size=1000,
         query=query,
-        #query_params={
-        #    'query_path' : 'hits.hits._source, hits.hits._score'
-        #}
+        query_params={
+            'query_path' : 'hits.hits._source, hits.hits._score'
+        }
     )
 
     # Iterate through results
-    for doc_source in result.get('hits', {}).get('hits', {}):
+    for doc_source in result.get('hits', {}).get('hits', {}) or ():
         doc = doc_source.get('_source')
         score = doc_source.get('_score')
         doc['score'] = score if score is not None else 1

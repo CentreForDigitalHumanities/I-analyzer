@@ -6,6 +6,7 @@ from . import config
 from . import search
 from . import output
 from . import factories
+from .corpora import corpora
 
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
@@ -14,58 +15,55 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 
 blueprint = Blueprint('blueprint', __name__)
 
-from .corpora import times
-corpora = {
-    'times': times
-}
 
 @blueprint.route('/', methods=['GET'])
 def init():
     return front('times')
 
 
-@blueprint.route('/<corpus>', methods=['GET'])
-def front(corpus):
+@blueprint.route('/<corpusname>', methods=['GET'])
+def front(corpusname):
     
-    module = corpora.get(corpus)
-    if not module:
+    corpus = corpora.get(corpusname)
+    if not corpus:
         abort(404)
     
-    return render_template('app.html', config=config, corpus=corpus,
+    return render_template('app.html', corpus=corpusname,
         fields=[
-            field for field in module.fields if not field.hidden
+            field for field in corpus.fields if not field.hidden
         ],
         autocomplete=(
             [
-                field.name+":" for field in module.fields if not field.hidden
+                field.name+":" for field in corpus.fields if not field.hidden
             ]
         )
     )
 
 
-@blueprint.route('/<corpus>/stream', methods=['POST'])
-def stream_csv(corpus):
+@blueprint.route('/<corpusname>/stream', methods=['POST'])
+def stream_csv(corpusname):
 
-    module = corpora.get(corpus)
-    if not module:
+    corpus = corpora.get(corpusname)
+    if not corpus:
         abort(404)
 
     query_string = request.form.get('query')
 
-    # Get activated fields
+    # Collect names of fields that are activated.
     fields = [
-        field.name for field in module.fields
+        field.name for field in corpus.fields
         if ('field:' + field.name) in request.form
     ]
     if not fields:
         raise RuntimeError('No recognised fields were selected.')
 
-    # Get active filters
+    # Collect active filters from form data; each filter's arguments get
+    # prefixed by filter:<fieldname>
     filter_should = []
     filter_must = []
     filter_must_not = []
 
-    for field in (f for f in module.fields if f.filter_):
+    for field in (f for f in corpus.fields if f.filter_):
         prefix = 'filter:' + field.name
         
         enabled = request.form.get(prefix+'?')
@@ -88,6 +86,8 @@ def stream_csv(corpus):
                     filters = filter_must
                 filters.append(es)
 
+
+    # Create the search query based on collected data
     query = search.make_query(
         query_string=query_string,
         filter_should=filter_should,
@@ -98,13 +98,13 @@ def stream_csv(corpus):
     #return jsonify(query)
 
     # Perform the search
-    result = search.execute(query)
+    result = search.execute(query, corpus)
 
     # Stream response
     stream = stream_with_context(output.generate_csv(result, select=fields))
     response = Response(stream, mimetype='text/csv')
     response.headers['Content-Disposition'] = (
-        'attachment; filename={}.csv'.format(corpus)
+        'attachment; filename={}.csv'.format(corpus.ES_INDEX)
     )
     return response
 

@@ -10,56 +10,49 @@ from datetime import datetime
 
 from timestextminer import config
 from timestextminer import factories
-from timestextminer.sources import times
+from timestextminer.corpora import corpora
 
-def index(client, index, doc_type, module, start=None, end=None):
-    '''
-    module contains files(), fields and documents()
-    '''
-    
-    # Create index
+def index(client, corpus, start=None, end=None):
+
+    logging.info('Clearing old index...')
     try:
-        client.create_index(index)
+        client.delete_all(index=corpus.ES_INDEX, doc_type=corpus.ES_DOCTYPE)
+    except es.exceptions.ElasticHttpNotFoundError:
+        logging.info('Index did not exist yet.')
+    
+    logging.info('Creating new index...')
+    try:
+        client.create_index(corpus.ES_INDEX)
     except es.exceptions.IndexAlreadyExistsError:
-        logging.warning('Index "{}" already exists'.format(index))
-        pass
+        logging.warning('Index "{}" already exists'.format(corpus.ES_INDEX))
 
     # Create mapping
     client.put_mapping(mapping={
         'properties' : {
             field.name : field.mapping
-            for field in module.fields if field.mapping and field.indexed
+            for field in corpus.fields if field.mapping and field.indexed
         }
-    }, index=index, doc_type=doc_type)
+    }, index=corpus.ES_INDEX, doc_type=corpus.ES_DOCTYPE)
     
     # Index all documents
-    files = module.files(start or config.MIN_DATE, end or config.MAX_DATE)
-    docs = module.documents(files)
+    files = corpus.files(start or corpus.MIN_DATE, end or corpus.MAX_DATE)
+    docs = corpus.documents(files)
     for chunk in es.bulk_chunks(
             map(client.index_op, docs),
             docs_per_chunk=500,
             bytes_per_chunk=40000
         ):
-        client.bulk(chunk, index=index, doc_type=doc_type)
+        client.bulk(chunk, index=corpus.ES_INDEX, doc_type=corpus.ES_DOCTYPE)
 
     # Make sure the index is all updated
-    client.refresh(index=index)
+    client.refresh(index=corpus.ES_INDEX)
 
 
 if __name__ == '__main__':
    
     client = factories.elasticsearch()
-    sources = [{
-        'module': times,
-        'index': config.ES_INDEX,
-        'doc_type': config.ES_DOCTYPE
-    }]
-
-    for s in sources:
+    for name, corpus in corpora.items():
         logging.basicConfig(level=logging.INFO)
-        logging.info('Index: {}'.format(s['index']))
-        #logging.info('Clearing old index...')
-        #client.delete_all(index=s['index'], doc_type=s['doc_type'])
-        logging.info('Started indexing...')
-        index(client, index=s['index'], doc_type=s['doc_type'], module=s['module'], start=1785, end=datetime(1785,2,1))
-        logging.info('Finished indexing.')
+        logging.info('Started indexing `{}`...'.format(corpus.ES_INDEX))
+        index(client, corpus, start=1785, end=datetime(1785,2,1))
+        logging.info('Finished indexing `{}`.'.format(corpus.ES_INDEX))

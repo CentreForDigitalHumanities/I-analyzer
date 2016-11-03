@@ -2,7 +2,10 @@
 Functions and classes common to all corpora.
 '''
 
-from .. import extractor
+import bs4
+
+import logging; logger = logging.getLogger(__name__)
+from .. import extract
 
 
 class Field(object):
@@ -49,9 +52,9 @@ class Field(object):
             except (ValueError, TypeError): # If it wasn't a tuple, the entry
                 return entry # is supposedly an always-appropriate extractor
             else:
-                if is_appropriate is None or is_appropriate(**metadata):
+                if is_appropriate is None or is_appropriate(metadata):
                     return extractor
-        return extractor.const(None) # when no appropriate extractor is available
+        return extract.const(None)
 
 
     @property
@@ -79,7 +82,7 @@ def xml2dicts(fields, tag_top, tag_entry, xmlfile, metadata={}):
 
     # Extract fields from soup
     soup_bowl = soup.find(tag_top)
-    if toplevel:
+    if soup_bowl:
         for soup_spoon in soup_bowl.find_all(tag_entry):
             yield {
                 field.name :
