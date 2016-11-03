@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 from .corpora.common import Field
 
 class Line(object):
@@ -10,6 +11,15 @@ class Line(object):
     def write(self, line): self._line = line
     def read(self):        return self._line
 
+
+def _stringify(value):
+    if value is None:
+        return ''
+    if isinstance(value, list):
+        return ', '.join(value)
+    if isinstance(value, datetime):
+        return value.strftime('%Y-%m-%d')
+    return str(value)
 
 def generate_csv(documents, select=None, include_score=True):
     '''
@@ -33,7 +43,6 @@ def generate_csv(documents, select=None, include_score=True):
     for doc in documents:
         values = (doc.get(field) for field in fields)
         writer.writerow(
-            ','.join(value) if isinstance(value, list) else str(value)
-            for value in values
+            _stringify(value) for value in values
         )
         yield line.read()

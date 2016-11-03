@@ -2,6 +2,9 @@
 Present the data to the user through a web interface.
 '''
 
+import logging; logger = logging.getLogger(__name__)
+
+
 from . import config
 from . import search
 from . import output
@@ -94,6 +97,8 @@ def stream_csv(corpusname):
         filter_must=filter_must,
         filter_must_not=filter_must_not
     )
+    
+    logging.info('Requested search query ``'.format(query_string))
 
     #return jsonify(query)
 
