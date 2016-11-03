@@ -36,11 +36,18 @@ MAX_DATE = datetime(year=2010, month=12, day=31)
 # `fields` collects filters, extractor functions, etcetera that are relevant
 # to each data field. Specific to the current database.
 
+class mapping:
+    keyword = { 'type': 'string', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
+    date = { 'type' : 'date' }
+    boolean = { 'type' : 'boolean' }
+    float = { 'type' : 'float' }
+    int = { 'type' : 'integer' }
+
 fields = [
     Field(
         name='date',
-        description='Associated date.',
-        mapping={ 'type' : 'date' },
+        description='Publication date, programmatically generated.',
+        mapping=mapping.date,
         filter_=filters.DateFilter(MIN_DATE, MAX_DATE, description='Accept only articles with a publication date in this range.'),
         extractor=extract.meta('date')
     ),
@@ -80,8 +87,9 @@ fields = [
     ),
     Field(
         name='issue',
+        mapping=mapping.int,
         description='Source issue number.',
-        extractor=extract.string(tag='is', toplevel=True)
+        extractor=extract.string(tag='is', toplevel=True, transform=int)
     ),
     Field(
         name='volume',
@@ -92,12 +100,12 @@ fields = [
     ),
     Field(
         name='date-pub',
-        description='Publication date.',
+        description='Date of publication.',
         extractor=extract.string(tag='da', toplevel=True)
     ),
     Field(
         name='date-end',
-        description='Publication ending date. For issues that span more than 1 day.',
+        description='Ending date of publication. For issues that span more than 1 day.',
         extractor=[
             (after(1985), extract.string(tag='tdate', toplevel=True))
         ]
@@ -118,8 +126,9 @@ fields = [
     ),
     Field(
         name='page-count',
-        description='Page count; number of images present in the issue.',
-        extractor=extract.string(tag='ip', toplevel=True)
+        description='Page count: number of images present in the issue.',
+        mapping=mapping.int,
+        extractor=extract.string(tag='ip', toplevel=True, transform=int)
     ),
     Field(
         name='copyright',
@@ -132,22 +141,26 @@ fields = [
     ),
     Field(
         name='page-type',
-        description='On what supplement does the article occur?',
-        options=['Special','Supplement','Standard'],
+        description='Supplement in which article occurs.',
+        mapping=mapping.keyword,
+        filter_=filters.MultipleChoiceFilter('page-type',
+            description='Accept only articles that occur in the relevant supplement. Only after 1985.',
+            options=['Special','Supplement','Standard']
+        ),
         extractor=[
             (after(1985), extract.attr(tag=['..','pageid'], attr='isPartOf'))
         ]
     ),
     Field(
         name='supplement-title',
-        description='Supplement title',
+        description='Supplement title.',
         extractor=[
             (after(1985), extract.string(tag=['..','pageid','supptitle'], multiple=True))
         ]
     ),
     Field(
         name='supplement-subtitle',
-        description='Supplement subtitle',
+        description='Supplement subtitle.',
         extractor=[
             (after(1985), extract.string(tag=['..','pageid','suppsubtitle'], multiple=True))
         ]
@@ -155,7 +168,8 @@ fields = [
     Field(
         name='cover',
         description='Whether the article is on the cover page.',
-        options=[False,True],
+        mapping=mapping.boolean,
+        #TODO filter
         extractor=[
             (after(1985), extract.attr(tag=['..','pageid'], attr='pageType', transform=lambda s:bool("Cover" in s if s else False)))
         ]
@@ -168,25 +182,24 @@ fields = [
     Field(
         name='ocr',
         description='OCR confidence level.',
-        mapping={ 'type' : 'double' },
+        mapping=mapping.float,
         extractor=extract.string(tag='ocr', transform=float),
         filter_=filters.RangeFilter('ocr', 0, 100, description='Accept only articles for which the OCR confidence indicator is in this range.'),
     ),
     Field(
         name='ocr-relevant',
         description='Whether OCR confidence level is relevant.',
-        mapping={ 'type' : 'boolean' },
-        options=[False, True],
+        mapping=mapping.boolean,
         extractor=extract.attr(tag='ocr', attr='relevant', transform=lambda s:bool("yes" in s if s else False))
     ),
     Field(
         name='column',
-        description='Starting column: a string to label the column where article starts',
+        description='Starting column: a string to label the column where article starts.',
         extractor=extract.string(tag='sc')
     ),
     Field(
         name='page',
-        description='Page start: source page label (1, 2, 17A, ...)',
+        description='Start page label, from source (1, 2, 17A, ...).',
         extractor=[
             (until(1985), extract.string(tag='pa')),
             (after(1985), extract.string(tag=['..','pa']))
@@ -194,26 +207,30 @@ fields = [
     ),
     Field(
         name='pages',
-        description='Page count: total number of pages containing sections of the article',
-        extractor=extract.string(tag='pc')
+        mapping=mapping.int,
+        description='Page count: total number of pages containing sections of the article.',
+        extractor=extract.string(tag='pc', transform=int)
     ),
     Field(
         name='title',
+        description='Article title.',
         extractor=extract.string(tag='ti')
     ),
     Field(
         name='subtitle',
+        description='Article subtitle.',
         extractor=extract.string(tag='ta', multiple=True)
     ),
     Field(
         name='subheader',
-        description='Product dependent field',
+        description='Article subheader (product dependent field).',
         extractor=[
             (after(1985), extract.string(tag='subheader', multiple=True))
         ]
     ),
     Field(
         name='author',
+        description='Article author.',
         extractor=[
             (until(1985), extract.string(tag='au', multiple=True)),
             (after(1985), extract.string(tag='au_composed', multiple=True))
@@ -221,20 +238,65 @@ fields = [
     ),
     Field(
         name='source-paper',
-        description='Source paper',
+        description='Credited as source.',
         extractor=extract.string(tag='altSource', multiple=True)
     ),
     Field(
         name='category',
         description='Article subject categories.',
-        mapping={ 'type': 'string', 'index' : 'not_analyzed' },
-        filter_=filters.MultipleChoiceFilter('category', description='Accept only articles in these categories.', options=['Classified Advertising','Display Advertising','Property','News','News In Brief','Index','Law','Politics and Parliament', 'Court and Social','Business and Finance','Shipping News','Stock Exchange Tables','Births','Business Appointments','Deaths','Marriages','Obituaries','Official Appointments and Notices','Editorials/Leaders','Feature Articles','Opinion','Letters to the Editor','Arts and Entertainment','Reviews','Sport','Weather']),
-        extractor=extract.string(tag='ct', multiple=True)
+        mapping=mapping.keyword,
+        filter_=filters.MultipleChoiceFilter('category',
+            description='Accept only articles in these categories.',
+            options=[
+                'Classified Advertising',
+                'Display Advertising',
+                'Property',
+                'News',
+                'News in Brief',
+                'Index',
+                'Law',
+                'Politics and Parliament',
+                'Court and Social',
+                'Business and Finance',
+                'Shipping News',
+                'Stock Exchange Tables',
+                'Births',
+                'Business Appointments',
+                'Deaths',
+                'Marriages',
+                'Obituaries',
+                'Official Appointments and Notices',
+                'Editorials/Leaders',
+                'Feature Articles (aka Opinion)',
+                'Opinion',
+                'Letters to the Editor',
+                'Arts and Entertainment',
+                'Reviews',
+                'Sport',
+                'Weather'
+            ]
+        ),
+        extractor=extract.string(tag='ct', multiple=True),
     ),
     Field(
         name='illustration',
-        mapping={ 'type': 'string', 'index' : 'not_analyzed' },
-        filter_=filters.MultipleChoiceFilter('illustration', description='Accept only articles associated with these illustrations.', options=['Cartoon', 'Map', 'Drawing-Painting', 'Photograph', 'Graph', 'Table', 'Chart', 'Engraving', 'Fine-Art-Reproduction', 'Illustration']),
+        description='Tables and other illustrations associated with the article.',
+        mapping=mapping.keyword,
+        filter_=filters.MultipleChoiceFilter('illustration',
+            description='Accept only articles associated with these types of illustrations.', 
+            options=[
+                'Cartoon',
+                'Map',
+                'Drawing-Painting',
+                'Photograph',
+                'Graph',
+                'Table',
+                'Chart',
+                'Engraving',
+                'Fine-Art-Reproduction',
+                'Illustration'
+            ]
+        ),
         extractor=[
             (until(1985), extract.string(tag='il', multiple=True)),
             (after(1985), extract.attr(tag='il', attr='type', multiple=True))
@@ -242,14 +304,17 @@ fields = [
     ),
     Field(
         name='content-preamble',
+        description='Raw OCR\'ed text (preamble).',
         extractor=extract.flatten(tag=['text','text.preamble'])
     ),
     Field(
         name='content-heading',
+        description='Raw OCR\'ed text (header).',
         extractor=extract.flatten(tag=['text','text.title'])
     ),
     Field(
         name='content',
+        description='Raw OCR\'ed text (content).',
         extractor=extract.flatten(tag=['text','text.cr'], multiple=True)
     ),
 ]

@@ -12,6 +12,7 @@ class Line(object):
     def read(self):        return self._line
 
 
+
 def _stringify(value):
     if value is None:
         return ''
@@ -20,6 +21,8 @@ def _stringify(value):
     if isinstance(value, datetime):
         return value.strftime('%Y-%m-%d')
     return str(value)
+    
+    
 
 def generate_csv(documents, select=None, include_score=True):
     '''

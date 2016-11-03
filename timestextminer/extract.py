@@ -89,7 +89,13 @@ def create_extractor(method=None):
                 result = method(soup, metadata, **kwargs) if soup else None
 
             # Final transformation
-            return transform(result) if transform else result
+            try:
+                return transform(result) if transform else result
+            except ValueError:
+                if result == '':
+                    return None
+                else:
+                    logging.critical('Value could not be converted by the transformation function. Improper mapping?')
 
         # Obtain created extractor function
         return extract

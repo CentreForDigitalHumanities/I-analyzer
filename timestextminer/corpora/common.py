@@ -29,9 +29,9 @@ class Field(object):
         self.name = name
         self.description = description
         
-        self.filter_ = filter_ #...and query only those that don't have a filter?
+        self.filter_ = filter_
  
-        self.mapping = mapping
+        self.mapping = mapping # ES. Text search is only suggested for fields without a mapping.
  
         self.indexed = indexed
         self.hidden = not indexed or hidden

@@ -12,15 +12,15 @@ from timestextminer import config
 from timestextminer import factories
 from timestextminer.corpora import corpora
 
-def index(client, corpus, start=None, end=None):
+def index(client, corpus, start=None, end=None, clear=False):
 
-    logging.info('Clearing old index...')
-    try:
-        client.delete_all(index=corpus.ES_INDEX, doc_type=corpus.ES_DOCTYPE)
-    except es.exceptions.ElasticHttpNotFoundError:
-        logging.info('Index did not exist yet.')
+    if clear:
+        logging.info('Clearing old index...')
+        try:
+            client.delete_all(index=corpus.ES_INDEX, doc_type=corpus.ES_DOCTYPE)
+        except es.exceptions.ElasticHttpNotFoundError:
+            logging.info('Index did not exist yet.')
     
-    logging.info('Creating new index...')
     try:
         client.create_index(corpus.ES_INDEX)
     except es.exceptions.IndexAlreadyExistsError:
@@ -54,5 +54,6 @@ if __name__ == '__main__':
     for name, corpus in corpora.items():
         logging.basicConfig(level=logging.INFO)
         logging.info('Started indexing `{}`...'.format(corpus.ES_INDEX))
-        index(client, corpus, start=1785, end=datetime(1785,2,1))
+        index(client, corpus, start=1785, end=datetime(1785,2,1), clear=True)
+        index(client, corpus, start=datetime(2010,1,30), end=datetime(2010,1,30))
         logging.info('Finished indexing `{}`.'.format(corpus.ES_INDEX))

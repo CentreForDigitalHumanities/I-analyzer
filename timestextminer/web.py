@@ -37,7 +37,7 @@ def front(corpusname):
         ],
         autocomplete=(
             [
-                field.name+":" for field in corpus.fields if not field.hidden
+                field.name+":" for field in corpus.fields if not field.hidden and not field.mapping
             ]
         )
     )
