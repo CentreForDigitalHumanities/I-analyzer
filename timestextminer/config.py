@@ -1,5 +1,9 @@
+import logging
 from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta
+
+LOG='timestextminer.log'
+LOG_LEVEL=logging.DEBUG
 
 # Flask
 DEBUG = True

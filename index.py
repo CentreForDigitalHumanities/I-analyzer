@@ -52,7 +52,7 @@ if __name__ == '__main__':
    
     client = factories.elasticsearch()
     for name, corpus in corpora.items():
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(filename=config.LOG, level=config.LOG_LEVEL)
         logging.info('Started indexing `{}`...'.format(corpus.ES_INDEX))
         index(client, corpus, start=1785, end=datetime(1785,2,1), clear=True)
         index(client, corpus, start=datetime(2010,1,30), end=datetime(2010,1,30))
