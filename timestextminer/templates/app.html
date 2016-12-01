@@ -8,7 +8,81 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
 <script type="text/javascript"><!--
 
-var AUTOCOMPLETE = {{ autocomplete|tojson }};
+var AUTOCOMPLETE = {{ autocomplete|tojson }},
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+
+var queue = [];
+function dequeue(){
+    queue.shift();
+    if(queue.length > 0)
+        queue[0]();
+}
+
+/**
+ * Generic API call; pushes an asynchronous action to the queue.
+ */
+function api(kwargs){
+    var $dialog  = kwargs["dialog"],
+        endpoint = kwargs["endpoint"],
+        post     = kwargs["post"]        || null,
+        success  = kwargs["success"]     || $.noop,
+        before   = kwargs["before"]      || $.noop,
+        after    = kwargs["after"]       || $.noop,
+        title    = kwargs["title"]       || "Sending...",
+        descr    = kwargs["description"] || "Sending...";
+
+    if($dialog){
+        $modal.dialog("option", { width: 600, title: title, buttons: [] });
+        $modal.text(descr);
+        $modal.dialog("open");
+    }
+    before();
+    queue.push(function(){
+        $.post($SCRIPT_ROOT + endpoint, post, function(data){
+            if(data.success){
+                success(data);
+                after(null);
+            }
+            else {
+                var error = "The operation failed. "
+                          + (data.error || "There was no error message.");
+                if(dialog)
+                    dialog.text(error);
+                else
+                    alert(error);
+                after(error);
+            }
+        }, "json").fail(function(jqXHR, textStatus, errorThrown) {
+            var error = "Server request failed" + (errorThrown ? ", code: "
+                      + errorThrown+"." : ".");
+
+            if(dialog)
+                dialog.text(error);
+            else
+                alert(error);
+            after(error);
+            
+        }).always(function(){
+            if(!dialog) dequeue();
+        });
+    });
+    if(queue.length == 1)
+        queue[0]();
+}
+
+
+api.search = function(post){
+    api({
+        endpoint: "/search.json",
+        post: post,
+        dialog: $("search_dialog"),
+        success: function(data){
+            alert(data);
+        }
+    });
+}
+
 
 $(function(){
 
@@ -80,21 +154,16 @@ $(function(){
         update();
     });
     
-    
-    $("button#submit").each(function(){
-        var $button = $(this);
-        $button.button({
-            icon: "ui-icon-arrowthick-1-s"
-        }).click(function(){
-            $button.parents('form:first').submit();
-        }).css({
-            width: '100%',
-            marginTop: '5px'
-        });
-        $button.find("input").hide();
+    $(".mc input").each(function(){
+        $(this).checkboxradio({icon:false});
+    });
+
+    $(".select select").each(function(){
+        $(this).selectmenu();
     });
 
 
+    /* Autocomplete */
     function split(string) {
         return string.split(/\s+/);
     }
@@ -124,13 +193,7 @@ $(function(){
         }
     });
 
-    $(".mc input").each(function(){
-        $(this).checkboxradio({icon:false});
-    });
-
-    $(".select select").each(function(){
-        $(this).selectmenu();
-    });
+    /* Filter hiding */
     
     var $filters = $("#tab-search .lbl input[type=checkbox]"),
         control_filter = function(){
@@ -141,6 +204,63 @@ $(function(){
                 $this.closest("td").next().fadeTo('medium', 0.3);
         };
     $filters.each(control_filter).change(control_filter);
+
+
+    $("button#submit").each(function(){
+        var $button = $(this);
+        $button.button({
+            icon: "ui-icon-arrowthick-1-s"
+        }).click(function(){
+            $button.parents('form:first').submit();
+        }).css({
+            width: '100%',
+            marginTop: '5px'
+        });
+        
+    });
+
+    $("input#download_fallback").hide();
+
+    /* Search dialog */
+    var $search_dialog = $("#search-dialog");
+    $("#search").button({
+        icon: "ui-icon-search"
+    }).css({
+        width: '100%',
+        marginTop: '5px'
+    }).click(function(){
+        
+        $search_dialog.dialog("open");
+        
+        var data = $search_dialog.parents('form:first').serializeArray();
+        var post = {};
+        for(var i=0; i<data.length; i++)
+            post[data[i].name] = data[i].value;
+        
+        api.search(post);
+        
+    });
+    $search_dialog.dialog({
+        autoOpen: false,
+        close: function(event, ui) {
+            dequeue();
+        },
+        modal: true,
+        width: 600,
+        buttons: [{
+            text: "Download",
+            click: function() {
+                $search_dialog.parents('form:first').submit();
+                $search_dialog.dialog("close");
+            }
+        },
+        {
+            text: "Cancel",
+            click: function(){
+                $search_dialog.dialog("close");
+            }
+        }]
+    });
 
 });
 
@@ -269,7 +389,13 @@ td.lbl span {
         </tbody></table>
     </div>
 </div>
-<button id="submit">Download<input type="submit" value="Download"></button>
+
+<input type="submit" value="Download" id="download_fallback">
+
+<button id="search">Search</button>
+<div id="search-dialog" title="Search">
+</div>
+
 </form>
 </body>
 </html>

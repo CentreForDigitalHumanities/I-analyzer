@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 client = factories.elasticsearch()
 
-def make_query(query_string=None, filter_must=[], filter_should=[], filter_must_not=[]):
+def make_query(query_string=None, filter_must=[], filter_should=[], filter_must_not=[], **kwargs):
 
     # Construct query
     q = {
@@ -57,7 +57,7 @@ def validate(query):
 
 
 # See page 127 for scan and scroll
-def execute(query, corpus):
+def execute(query, corpus, size=10000):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -68,7 +68,7 @@ def execute(query, corpus):
     # Search operation
     result = client.search(
         index=corpus.ES_INDEX,
-        size=1000,
+        size=size,
         query=query,
         query_params={
             'query_path' : 'hits.hits._source, hits.hits._score'
@@ -81,5 +81,3 @@ def execute(query, corpus):
         score = doc_source.get('_score')
         doc['score'] = score if score is not None else 1
         yield doc
-
-    return result

@@ -10,6 +10,7 @@ import functools
 import re
 import html
 import bs4
+import logging
 
 _regex1 = re.compile('(?<=\S)\n(?=\S)| +')
 _regex2 = re.compile('\n+')

@@ -72,13 +72,14 @@ def xml2dicts(fields, tag_top, tag_entry, xmlfile, metadata={}):
     '''
 
     # Loading XML
-    logger.debug('Reading XML file {} ...'.format(xmlfile))
+    logger.info('Reading XML file {} ...'.format(xmlfile))
     with open(xmlfile, 'rb') as f:
         data = f.read()
         
     # Parsing XML
-    logger.debug('Parsing XML file {} ...'.format(xmlfile))
     soup = bs4.BeautifulSoup(data, 'lxml-xml')
+
+    logger.info('Loaded {} into memory ...'.format(xmlfile))
 
     # Extract fields from soup
     soup_bowl = soup.find(tag_top)

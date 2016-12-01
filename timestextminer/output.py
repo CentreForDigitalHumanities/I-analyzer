@@ -45,7 +45,27 @@ def generate_csv(documents, select=None, include_score=True):
 
     for doc in documents:
         values = (doc.get(field) for field in fields)
-        writer.writerow(
+        writer.writerow([
             _stringify(value) for value in values
-        )
+        ])
         yield line.read()
+
+
+
+def as_list(documents, select=None, include_score=True):
+
+    fields = list(
+        field.name if isinstance(field, Field) else
+        str(field) for field in select
+    )
+
+    if include_score:
+        fields.append('score')
+
+    result = [
+        [doc.get(field) for field in fields]
+    ]
+    for doc in documents:
+         result.append([_stringify(doc.get(field)) for field in fields])
+    
+    return result

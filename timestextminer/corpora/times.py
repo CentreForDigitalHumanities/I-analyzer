@@ -19,16 +19,11 @@ from .common import Field, until, after, xml2dicts
 
 # Corpus-specific config ######################################################
 
-# ElasticSearch index
-ES_INDEX='times-test'
-ES_DOCTYPE='article'
-
-# Path to directory containing XML files (prior to indexing)
-DATA = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', 'data-test'))
-
-# Date range of available data
-MIN_DATE = datetime(year=1785, month=1, day=1) 
-MAX_DATE = datetime(year=2010, month=12, day=31)
+DATA = config.TIMES_DATA
+ES_INDEX = config.TIMES_ES_INDEX
+ES_DOCTYPE = config.TIMES_ES_DOCTYPE
+MIN_DATE = config.TIMES_MIN_DATE
+MAX_DATE = config.TIMES_MAX_DATE
 
 
 # Data structure ##############################################################
@@ -37,7 +32,7 @@ MAX_DATE = datetime(year=2010, month=12, day=31)
 # to each data field. Specific to the current database.
 
 class mapping:
-    keyword = { 'type': 'string', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
+    keyword = { 'type' : 'keyword' } #{ 'type': 'string', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
     date = { 'type' : 'date' }
     boolean = { 'type' : 'boolean' }
     float = { 'type' : 'float' }

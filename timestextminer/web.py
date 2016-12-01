@@ -43,13 +43,11 @@ def front(corpusname):
     )
 
 
-@blueprint.route('/<corpusname>/stream', methods=['POST'])
-def stream_csv(corpusname):
-
-    corpus = corpora.get(corpusname)
-    if not corpus:
-        abort(404)
-
+def collect_params(corpus):
+    '''
+    Collect relevant parameters from POST request data.
+    '''
+    
     query_string = request.form.get('query')
 
     # Collect names of fields that are activated.
@@ -89,16 +87,31 @@ def stream_csv(corpusname):
                     filters = filter_must
                 filters.append(es)
 
+    return {
+        'filter_should' : filter_should,
+        'filter_must' : filter_must,
+        'filter_must_not' : filter_must_not,
+        'fields' : fields,
+        'query_string' : query_string
+    }
 
-    # Create the search query based on collected data
-    query = search.make_query(
-        query_string=query_string,
-        filter_should=filter_should,
-        filter_must=filter_must,
-        filter_must_not=filter_must_not
-    )
+
+
+@blueprint.route('/<corpusname>/stream', methods=['POST'])
+def stream_csv(corpusname):
+    '''
+    Stream all results of a search to a CSV file.
+    '''
+
+    corpus = corpora.get(corpusname)
+    if not corpus:
+        abort(404)
+
+    parameters = collect_params(corpus)
     
-    logging.info('Requested search query ``'.format(query_string))
+    query = search.make_query(**parameters)
+    
+    logging.info('Requested CSV for `{}`'.format(parameters['query_string']))
 
     #return jsonify(query)
 
@@ -106,13 +119,37 @@ def stream_csv(corpusname):
     result = search.execute(query, corpus)
 
     # Stream response
-    stream = stream_with_context(output.generate_csv(result, select=fields))
+    stream = stream_with_context(output.generate_csv(result, select=parameters['fields']))
     response = Response(stream, mimetype='text/csv')
     response.headers['Content-Disposition'] = (
-        'attachment; filename={}.csv'.format(corpus.ES_INDEX)
+        'attachment; filename={}-{}.csv'.format(
+            corpusname, datetime.now().strftime('%Y.%m.%d-%H:%M')
+        )
     )
     return response
 
 
 
+@blueprint.route('/<corpusname>/search.json', methods=['POST'])
+def get_json(corpusname):
+    '''
+    Return the first `n` results of a search as a JSON file that also includes
+    statistics about the search. To act as example search.
+    '''
+
+    corpus = corpora.get(corpusname)
+    if not corpus:
+        abort(404)
+
+    parameters = collect_params(corpus)
+    query = search.make_query(**data)
+    
+    logging.info('Requested example JSON for `{}`'.format(query_string))
+
+    # Perform the search
+    result = search.execute(query, corpus, size=10)
+
+    return jsonify({
+        'table': output.as_list(result, select=fields)
+    })
 
