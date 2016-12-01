@@ -4,15 +4,14 @@ For creation of Flask and ElasticSearch objects.
 
 from . import config
 from flask import Flask
-from pyelasticsearch import ElasticSearch
+from elasticsearch import Elasticsearch
 
 def elasticsearch(cfg=config):
-    node = {'urls': cfg.ES_HOST,
+    node = {'host': cfg.ES_HOST,
             'port': cfg.ES_PORT}
     if cfg.ES_USERNAME:
-        node['username'] = cfg.ES_USERNAME
-        node['password'] = cfg.ES_PASSWORD
-    return ElasticSearch(**node)
+        node['http_auth'] = (cfg.ES_USERNAME, cfg.ES_PASSWORD)
+    return Elasticsearch([node])
 
 def flask_app(blueprint, cfg=config):
     app = Flask(__name__)
