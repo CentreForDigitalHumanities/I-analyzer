@@ -33,19 +33,20 @@ def front(corpusname):
     
     return render_template('app.html', corpus=corpusname,
         fields=[
-            field for field in corpus.fields if not field.hidden
+            field for field in corpus.fields
+            if not field.hidden
         ],
-        autocomplete=(
-            [
-                field.name+":" for field in corpus.fields if not field.hidden and not field.mapping
-            ]
-        )
+        autocomplete=[
+            field.name + ':' for field in corpus.fields
+            if not field.hidden and not field.mapping
+        ]
     )
 
 
 def collect_params(corpus):
     '''
-    Collect relevant parameters from POST request data.
+    Collect relevant parameters from POST request data and return them as a
+    dictionary.
     '''
     
     query_string = request.form.get('query')
@@ -60,9 +61,7 @@ def collect_params(corpus):
 
     # Collect active filters from form data; each filter's arguments get
     # prefixed by filter:<fieldname>
-    filter_should = []
-    filter_must = []
-    filter_must_not = []
+    filters = []
 
     for field in (f for f in corpus.fields if f.filter_):
         prefix = 'filter:' + field.name
@@ -76,29 +75,20 @@ def collect_params(corpus):
         }
         
         if enabled and (narg or kwargs):
-            filter_ = field.filter_.es(narg, **kwargs)
-            if filter_:
-                modality, es = filter_
-                if modality == 'should':
-                    filters = filter_should
-                elif modality == 'must_not':
-                    filters = filter_must_not
-                else:
-                    filters = filter_must
-                filters.append(es)
+            filters.append(
+                field.filter_.es(narg, **kwargs)
+            )
 
     return {
-        'filter_should' : filter_should,
-        'filter_must' : filter_must,
-        'filter_must_not' : filter_must_not,
         'fields' : fields,
-        'query_string' : query_string
+        'query_string' : query_string,
+        'filters' : filters,
     }
 
 
 
-@blueprint.route('/<corpusname>/stream', methods=['POST'])
-def stream_csv(corpusname):
+@blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
+def search_csv(corpusname):
     '''
     Stream all results of a search to a CSV file.
     '''
@@ -108,22 +98,20 @@ def stream_csv(corpusname):
         abort(404)
 
     parameters = collect_params(corpus)
-    
     query = search.make_query(**parameters)
     
-    logging.info('Requested CSV for `{}`'.format(parameters['query_string']))
 
-    #return jsonify(query)
+    # Perform the search and obtain output
+    logging.info('Requested CSV for query: {}'.format(query))
+    docs = search.execute(corpus, query, scroll=True)
 
-    # Perform the search
-    result = search.execute(query, corpus)
-
-    # Stream response
-    stream = stream_with_context(output.generate_csv(result, select=parameters['fields']))
+    # Stream results
+    result = output.as_csv_stream(docs, select=parameters['fields'])
+    stream = stream_with_context(result)
     response = Response(stream, mimetype='text/csv')
     response.headers['Content-Disposition'] = (
         'attachment; filename={}-{}.csv'.format(
-            corpusname, datetime.now().strftime('%Y.%m.%d-%H:%M')
+            corpusname, datetime.now().strftime('%Y%m%d-%H%M')
         )
     )
     return response
@@ -131,7 +119,7 @@ def stream_csv(corpusname):
 
 
 @blueprint.route('/<corpusname>/search.json', methods=['POST'])
-def get_json(corpusname):
+def search_json(corpusname):
     '''
     Return the first `n` results of a search as a JSON file that also includes
     statistics about the search. To act as example search.
@@ -142,9 +130,9 @@ def get_json(corpusname):
         abort(404)
 
     parameters = collect_params(corpus)
-    query = search.make_query(**data)
+    query = search.make_query(**parameters)
     
-    logging.info('Requested example JSON for `{}`'.format(query_string))
+    logging.info('Requested example JSON for {}'.format(query_string))
 
     # Perform the search
     result = search.execute(query, corpus, size=10)

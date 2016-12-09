@@ -32,19 +32,21 @@ MAX_DATE = config.TIMES_MAX_DATE
 # to each data field. Specific to the current database.
 
 class mapping:
-    keyword = { 'type' : 'keyword' } #{ 'type': 'string', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
-    date = { 'type' : 'date' }
+    keyword = { 'type' : 'keyword' }
+    multi_keyword = { 'type' : 'keyword' } #{ 'type': 'text', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
+    date = { 'type' : 'date', 'format': 'yyyy-MM-dd' }
     boolean = { 'type' : 'boolean' }
     float = { 'type' : 'float' }
     int = { 'type' : 'integer' }
+    
 
 fields = [
     Field(
         name='date',
         description='Publication date, programmatically generated.',
         mapping=mapping.date,
-        filter_=filters.DateFilter(MIN_DATE, MAX_DATE, description='Accept only articles with a publication date in this range.'),
-        extractor=extract.meta('date')
+        filter_=filters.DateFilter('date', MIN_DATE, MAX_DATE, description='Accept only articles with a publication date in this range.'),
+        extractor=extract.meta('date', transform=lambda x:x.strftime('%Y-%m-%d'))
     ),
     Field(indexed=False,
         name='issue-id',
@@ -185,7 +187,7 @@ fields = [
         name='ocr-relevant',
         description='Whether OCR confidence level is relevant.',
         mapping=mapping.boolean,
-        extractor=extract.attr(tag='ocr', attr='relevant', transform=lambda s:bool("yes" in s if s else False))
+        extractor=extract.attr(tag='ocr', attr='relevant', transform=lambda s:bool("yes" in s.lower() if s else False))
     ),
     Field(
         name='column',
@@ -239,7 +241,7 @@ fields = [
     Field(
         name='category',
         description='Article subject categories.',
-        mapping=mapping.keyword,
+        mapping=mapping.multi_keyword,
         filter_=filters.MultipleChoiceFilter('category',
             description='Accept only articles in these categories.',
             options=[
@@ -276,7 +278,7 @@ fields = [
     Field(
         name='illustration',
         description='Tables and other illustrations associated with the article.',
-        mapping=mapping.keyword,
+        mapping=mapping.multi_keyword,
         filter_=filters.MultipleChoiceFilter('illustration',
             description='Accept only articles associated with these types of illustrations.', 
             options=[

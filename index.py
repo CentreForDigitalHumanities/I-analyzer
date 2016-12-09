@@ -19,17 +19,19 @@ def create(client, corpus, clear=False):
     
     if clear:
         logging.info('Attempting to clean old index...')
-        es.indices.delete(index=corpus.ES_INDEX, ignore=[400, 404])
+        client.indices.delete(index=corpus.ES_INDEX, ignore=[400, 404])
 
     logging.info('Attempting to create index...')
     client.indices.create(
         index=corpus.ES_INDEX, 
         body={
             'mappings' : {
-                'properties' : {
-                    field.name : field.mapping
-                    for field in corpus.fields
-                    if field.mapping and field.indexed
+                corpus.ES_DOCTYPE : {
+                    'properties': {
+                        field.name : field.mapping
+                        for field in corpus.fields
+                        if field.mapping and field.indexed
+                    }
                 }
             }
         },
@@ -38,6 +40,8 @@ def create(client, corpus, clear=False):
 
 
 def populate(client, corpus, start=None, end=None):
+    
+    logging.info('Attempting to populate index...')
     files = corpus.files(start or corpus.MIN_DATE, end or corpus.MAX_DATE)
     docs = corpus.documents(files)
     actions = (
@@ -58,11 +62,10 @@ def populate(client, corpus, start=None, end=None):
         chunk_size=900,
         max_chunk_bytes=1*1024*1024,
         timeout='60s',
-        stats_only=True
+        stats_only=True,
+        refresh=True
     ):
-        print(result)
         logging.info('Indexed documents ({}).'.format(result))
-
 
 
 def index(client, corpus, start=None, end=None, clear=False):
@@ -88,5 +91,5 @@ if __name__ == '__main__':
         start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
     ))
     
-    index(client, corpus, start=start, end=end)
+    index(client, corpus, start=start, end=end, clear=True)
     logging.info('Finished indexing `{}`.'.format(corpus.ES_INDEX))

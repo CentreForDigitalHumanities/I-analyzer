@@ -4,51 +4,44 @@ Module handles searching through the indices.
 
 from . import factories
 
+from elasticsearch.helpers import scan
 from datetime import datetime, timedelta
 
 client = factories.elasticsearch()
 
-def make_query(query_string=None, filter_must=[], filter_should=[], filter_must_not=[], **kwargs):
+def make_query(query_string=None, filters=[], **kwargs):
+
+    # https://www.elastic.co/guide/en/elasticsearch/reference/5.x/query-dsl-simple-query-string-query.html
 
     # Construct query
     q = {
-        'query' : (
-            {
-                'query_string' : {
-                    'query' : query_string,
-                    'allow_leading_wildcard' : False
-                }
-            }
-        if query_string else
-            {
-                'match_all' : {}
-            }
-        )
+        'match_all' : {}
     }
     
-    # Note: filtering works differently in ES5.0
-    filters = {}
-    if filter_must:
-        filters['must'] = filter_must
-    if filter_must_not:
-        filters['must_not'] = filter_must_not
-    if filter_should:
-        filters['should'] = filter_should
+    if query_string:
+        q = {
+            'simple_query_string' : {
+                'query' : query_string,
+                #'allow_leading_wildcard' : False, not necessary for simple_
+                'lenient' : True,
+                'default_operator' : 'or'
+            }
+        }
+    
     
     if filters:
         return {
-            'query' : {
-                'filtered' : {
-                    'query': q['query'],
-                    'filter': {# filters['should'][0] 
-                        'bool': filters
-                    }
+            'query': {
+                'bool': {
+                    'must': q,
+                    'filter': filters,
                 }
             }
         }
     else:
-        return q
-    
+        return {
+            'query': q
+        }
 
 
 def validate(query):
@@ -57,7 +50,7 @@ def validate(query):
 
 
 # See page 127 for scan and scroll
-def execute(query, corpus, size=10000):
+def execute(corpus, query, size=1000, scroll=False):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -65,19 +58,31 @@ def execute(query, corpus, size=10000):
     If a query has been given, it is interpreted as the mini query string language.
     '''
 
+    #result = scan(client,
+    #    query=query,
+    #    index=corpus.ES_INDEX,
+    #    doc_type=corpus.ES_DOCTYPE,
+    #    size=size,
+    #    scroll='1m',
+    #)
+    
     # Search operation
     result = client.search(
         index=corpus.ES_INDEX,
+        doc_type=corpus.ES_DOCTYPE,
+        #lenient=True,
+        #fielddata_fields=[],
+        #stored_fields=[],
         size=size,
-        query=query,
-        query_params={
-            'query_path' : 'hits.hits._source, hits.hits._score'
-        }
+        body=query,
+        #filter_path=['hits.hits._id', 'hits.hits._source']
     )
 
     # Iterate through results
     for doc_source in result.get('hits', {}).get('hits', {}) or ():
-        doc = doc_source.get('_source')
+        doc = doc_source.get('_source', {}).get('doc')
+        id = doc_source.get('_id')
         score = doc_source.get('_score')
         doc['score'] = score if score is not None else 1
+        doc['id'] = id
         yield doc

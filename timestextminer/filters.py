@@ -10,7 +10,8 @@ class Filter(object):
 
 class DateFilter(Filter):
     
-    def __init__(self, lower, upper, description=None):
+    def __init__(self, fieldname, lower, upper, description=None):
+        self.fieldname = fieldname
         self.lower = lower
         self.upper = upper
         self.description = description
@@ -33,11 +34,12 @@ class DateFilter(Filter):
                 or not (self.lower <= upper <= self.upper):
             raise RuntimeError('Date arguments not within acceptable range.')
         
-        return 'must', {
+        return {
             'range' : {
-                'date' : {
-                    'gte' : lower,
-                    'lte' : upper
+                self.fieldname : {
+                    'gte' : lower.strftime('%Y-%m-%d'),
+                    'lte' : upper.strftime('%Y-%m-%d'),
+                    'format': 'yyyy-MM-dd'
                 }
             }
         }
@@ -63,7 +65,7 @@ class RangeFilter(Filter):
                 or not (self.lower <= upper <= self.upper):
             raise RuntimeError('N arguments not within acceptable range.')
         
-        return 'must', {
+        return {
             'range' : {
                 self.fieldname : {
                     'gte' : lower,
@@ -89,10 +91,9 @@ class MultipleChoiceFilter(Filter):
             if category in self.options
         ]
         
-        return 'should', {
+        return {
             'terms' : {
                 self.fieldname : selected,
-                #'execution' : 'or'
             }
         }
 
@@ -112,8 +113,8 @@ class BooleanFilter(Filter):
         except IndexError:
             raise RuntimeError('Number arguments not recognised.')
         
-        return 'must', {
+        return {
             'term' : {
-                self.fieldname : true
+                self.fieldname : True
             }
         }

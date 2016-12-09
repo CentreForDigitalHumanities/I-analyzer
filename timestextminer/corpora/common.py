@@ -23,7 +23,7 @@ class Field(object):
     def __init__(self,
             name=None, description=None,
             indexed=True, hidden=False,
-            mapping=None, filter_=None, extractor=[], **kwargs
+            mapping={ 'type' : 'text' }, filter_=None, extractor=[], **kwargs
         ):
 
         self.name = name
@@ -31,7 +31,7 @@ class Field(object):
         
         self.filter_ = filter_
  
-        self.mapping = mapping # ES. Text search is only suggested for fields without a mapping.
+        self.mapping = mapping
  
         self.indexed = indexed
         self.hidden = not indexed or hidden

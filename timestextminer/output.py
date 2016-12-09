@@ -1,4 +1,6 @@
 import csv
+import logging; logger = logging.getLogger(__name__)
+
 from datetime import datetime
 from .corpora.common import Field
 
@@ -24,7 +26,7 @@ def _stringify(value):
     
     
 
-def generate_csv(documents, select=None, include_score=True):
+def as_csv_stream(documents, select=None, include_score=True):
     '''
     Generate a CSV file from an iterator of document dictionaries; selecting
     only those fields referenced in the `select` iterator.
@@ -63,7 +65,7 @@ def as_list(documents, select=None, include_score=True):
         fields.append('score')
 
     result = [
-        [doc.get(field) for field in fields]
+        [ doc.get(field) for field in fields ]
     ]
     for doc in documents:
          result.append([_stringify(doc.get(field)) for field in fields])

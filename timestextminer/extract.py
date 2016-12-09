@@ -29,13 +29,21 @@ def const(value):
 
 
 
-def meta(key):
+def meta(key, transform):
     '''
     Create an extractor function that extracts the metadata for the given key.
     '''
     
     def extract(soup_top, soup_entry, **metadata):
-        return metadata.get(key)
+        result = metadata.get(key)
+        try:
+            return transform(result) if transform else result
+        except ValueError:
+            if not result:
+                return None
+            else:
+                logging.critical('Value could not be converted by the transformation function.')        
+        
     return extract
 
 
