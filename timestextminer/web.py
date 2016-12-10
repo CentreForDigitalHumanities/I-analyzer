@@ -103,7 +103,7 @@ def search_csv(corpusname):
 
     # Perform the search and obtain output
     logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute(corpus, query, scroll=True)
+    docs = search.execute_iterate(corpus, query)
 
     # Stream results
     result = output.as_csv_stream(docs, select=parameters['fields'])
@@ -132,12 +132,16 @@ def search_json(corpusname):
     parameters = collect_params(corpus)
     query = search.make_query(**parameters)
     
-    logging.info('Requested example JSON for {}'.format(query_string))
+    logging.info('Requested example JSON for query: {}'.format(query))
 
     # Perform the search
-    result = search.execute(query, corpus, size=10)
+    result = search.execute(corpus, query)
+    
+    hits = result.get('hits', {})
+
+    docs = ( dict(doc.get('_source'), id=doc.get('_id')) for doc in hits.get('hits', {}) )
 
     return jsonify({
-        'table': output.as_list(result, select=fields)
+        'total': hits.get('total', 0),
+        'table': output.as_list(docs, select=parameters['fields'])
     })
-

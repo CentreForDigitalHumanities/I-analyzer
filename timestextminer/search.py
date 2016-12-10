@@ -50,7 +50,7 @@ def validate(query):
 
 
 # See page 127 for scan and scroll
-def execute(corpus, query, size=1000, scroll=False):
+def execute_iterate(corpus, query, size=1000):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -70,7 +70,6 @@ def execute(corpus, query, size=1000, scroll=False):
     result = client.search(
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-        #lenient=True,
         #fielddata_fields=[],
         #stored_fields=[],
         size=size,
@@ -86,3 +85,22 @@ def execute(corpus, query, size=1000, scroll=False):
         doc['score'] = score if score is not None else 1
         doc['id'] = id
         yield doc
+
+
+def execute(corpus, query, size=5):
+    '''
+    Execute an ElasticSearch query and return a dict with results.
+    '''
+
+    # Search operation
+    result = client.search(
+        index=corpus.ES_INDEX,
+        doc_type=corpus.ES_DOCTYPE,
+        #fielddata_fields=[],
+        #stored_fields=[],
+        size=size,
+        body=query,
+        #filter_path=['hits.hits._id', 'hits.hits._source']
+    )
+    
+    return result 

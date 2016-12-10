@@ -65,9 +65,9 @@ def as_list(documents, select=None, include_score=True):
         fields.append('score')
 
     result = [
-        [ doc.get(field) for field in fields ]
+        [ field for field in fields ]
     ]
     for doc in documents:
-         result.append([_stringify(doc.get(field)) for field in fields])
+         result.append([ _stringify(doc.get(field)) for field in fields ])
     
     return result

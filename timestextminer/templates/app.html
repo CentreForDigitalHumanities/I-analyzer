@@ -9,80 +9,8 @@
 <script type="text/javascript"><!--
 
 var AUTOCOMPLETE = {{ autocomplete|tojson }},
-    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
-
-var queue = [];
-function dequeue(){
-    queue.shift();
-    if(queue.length > 0)
-        queue[0]();
-}
-
-/**
- * Generic API call; pushes an asynchronous action to the queue.
- */
-function api(kwargs){
-    var $dialog  = kwargs["dialog"],
-        endpoint = kwargs["endpoint"],
-        post     = kwargs["post"]        || null,
-        success  = kwargs["success"]     || $.noop,
-        before   = kwargs["before"]      || $.noop,
-        after    = kwargs["after"]       || $.noop,
-        title    = kwargs["title"]       || "Sending...",
-        descr    = kwargs["description"] || "Sending...";
-
-    if($dialog){
-        $modal.dialog("option", { width: 600, title: title, buttons: [] });
-        $modal.text(descr);
-        $modal.dialog("open");
-    }
-    before();
-    queue.push(function(){
-        $.post($SCRIPT_ROOT + endpoint, post, function(data){
-            if(data.success){
-                success(data);
-                after(null);
-            }
-            else {
-                var error = "The operation failed. "
-                          + (data.error || "There was no error message.");
-                if(dialog)
-                    dialog.text(error);
-                else
-                    alert(error);
-                after(error);
-            }
-        }, "json").fail(function(jqXHR, textStatus, errorThrown) {
-            var error = "Server request failed" + (errorThrown ? ", code: "
-                      + errorThrown+"." : ".");
-
-            if(dialog)
-                dialog.text(error);
-            else
-                alert(error);
-            after(error);
-            
-        }).always(function(){
-            if(!dialog) dequeue();
-        });
-    });
-    if(queue.length == 1)
-        queue[0]();
-}
-
-
-api.search = function(post){
-    api({
-        endpoint: "/search.json",
-        post: post,
-        dialog: $("search_dialog"),
-        success: function(data){
-            alert(data);
-        }
-    });
-}
-
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }},
+    $CORPUS_ROOT = {{ (request.script_root + "/" + corpus)|tojson|safe }};
 
 $(function(){
 
@@ -222,44 +150,102 @@ $(function(){
     $("input#download_fallback").hide();
 
     /* Search dialog */
-    var $search_dialog = $("#search-dialog");
+    var $search_dialog = $("#search_dialog");
     $("#search").button({
         icon: "ui-icon-search"
     }).css({
         width: '100%',
         marginTop: '5px'
-    }).click(function(){
-        
+    }).click(function(){        
         $search_dialog.dialog("open");
-        
-        var data = $search_dialog.parents('form:first').serializeArray();
-        var post = {};
-        for(var i=0; i<data.length; i++)
-            post[data[i].name] = data[i].value;
-        
-        api.search(post);
-        
     });
     $search_dialog.dialog({
         autoOpen: false,
-        close: function(event, ui) {
-            dequeue();
-        },
         modal: true,
         width: 600,
-        buttons: [{
-            text: "Download",
-            click: function() {
-                $search_dialog.parents('form:first').submit();
-                $search_dialog.dialog("close");
-            }
+        title: "Search",
+        close: function(event, ui){
         },
-        {
-            text: "Cancel",
-            click: function(){
-                $search_dialog.dialog("close");
-            }
-        }]
+        open: function(event, ui){
+            $search_dialog.dialog("option", { buttons: [] });
+            $search_dialog.text("Searching...");
+            
+            var post = {}, $form = $('form'), formdata = $form.serializeArray();
+            for(var i = 0; i < formdata.length; i++)
+                post[formdata[i].name] = formdata[i].value;
+            
+            $.post($CORPUS_ROOT + "/search.json", post, function(data){
+                console.log(data);
+                
+                var t = data.table, n = t.length-1;
+                
+                if(n>0){
+                    var table = $("<table/>");
+                    
+                    for(var row = 0; row < t.length; row++){
+                        var tr = $("<tr/>");
+                        for(var col = 0; col < t[row].length; col++){
+                            var td = $("<td/>");
+                            td.text(t[row][col]);
+                            tr.append(td);
+                        }
+                        table.append(tr);
+                    }
+                    
+                    var wrap = $("<div/>");
+                    wrap.addClass("wrap");
+                    wrap.append(table);
+                    
+                    $search_dialog.text("Your search resulted in "+(data.total)+" hits. This is a sample of "+(n)+" results:");
+                    $search_dialog.append(wrap);
+                    $search_dialog.dialog("option", {
+                        buttons: [{
+                            text: "Download",
+                            click: function() {
+                                $form.submit();
+                                $search_dialog.dialog("close");
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            click: function(){
+                                $search_dialog.dialog("close");
+                            }
+                        }]    
+                    });
+                }
+                else {
+                    $search_dialog.text("There were no results to your query.");
+                    $search_dialog.dialog("option", {
+                        buttons: [
+                        {
+                            text: "OK",
+                            click: function(){
+                                $search_dialog.dialog("close");
+                            }
+                        }
+                        ]    
+                    });
+
+                }
+                
+            }, "json").fail(function(jqXHR, textStatus, errorThrown) {
+                var error = "Server request failed" + (errorThrown ? ", code: " + errorThrown+"." : ".");
+
+                $search_dialog.text(error);
+                $search_dialog.dialog("option", {
+                    buttons: [
+                        {
+                            text: "OK",
+                            click: function(){
+                                $search_dialog.dialog("close");
+                            }
+                        }
+                    ]
+                });
+
+            });
+        }
     });
 
 });
@@ -292,6 +278,33 @@ td.lbl span {
 }
 .daterange div div {
     display: block;
+}
+
+
+#search_dialog .wrap {
+    overflow: scroll;
+    width: 100%;
+    height: 500px;
+}
+#search_dialog table {
+    border: 2px solid black;
+    padding: 1px;
+    border-collapse: collapse;
+}
+
+#search_dialog tr:nth-child(even) {background: #fff}
+#search_dialog tr:nth-child(odd) {background: #ccc}
+
+#search_dialog table tr td {
+    padding: 2px;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    max-width: 300px;
+}
+#search_dialog table tr:first-child td {
+    font-weight: bold;
+    color: #fff;
+    background-color: #000;
 }
 </style>
 </head>
@@ -389,13 +402,11 @@ td.lbl span {
         </tbody></table>
     </div>
 </div>
-
 <input type="submit" value="Download" id="download_fallback">
+</form>
 
 <button id="search">Search</button>
-<div id="search-dialog" title="Search">
+<div id="search_dialog" title="Search">
 </div>
-
-</form>
 </body>
 </html>
