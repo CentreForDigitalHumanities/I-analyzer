@@ -45,13 +45,13 @@ def populate(client, corpus, start=None, end=None):
     files = corpus.files(start or corpus.MIN_DATE, end or corpus.MAX_DATE)
     docs = corpus.documents(files)
     actions = (
-        {
+        dict(doc, **{
             '_op_type' : 'index',
             '_index' : corpus.ES_INDEX,
             '_type' : corpus.ES_DOCTYPE,
             '_id' : doc.pop('id'),
             'doc' : doc
-        }
+        })
         for doc in docs
     )
     

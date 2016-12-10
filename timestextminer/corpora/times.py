@@ -33,7 +33,7 @@ MAX_DATE = config.TIMES_MAX_DATE
 
 class mapping:
     keyword = { 'type' : 'keyword' }
-    multi_keyword = { 'type' : 'keyword' } #{ 'type': 'text', 'index' : 'not_analyzed' } # in ES5, it's { 'type' : 'keyword' }
+    multi_keyword = { 'type' : 'keyword' } #{ 'type': 'text', 'index' : 'not_analyzed' }
     date = { 'type' : 'date', 'format': 'yyyy-MM-dd' }
     boolean = { 'type' : 'boolean' }
     float = { 'type' : 'float' }
