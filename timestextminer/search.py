@@ -46,7 +46,7 @@ def make_query(query_string=None, filters=[], **kwargs):
 
 
 # See page 127 for scan and scroll
-def execute_iterate(corpus, query, size=1000000):
+def execute_iterate(corpus, query, size=50000):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -58,8 +58,8 @@ def execute_iterate(corpus, query, size=1000000):
         query=query,
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-#        size=2000,
-        scroll='30s',
+        size=size,
+        scroll='3m',
     )
     
     for doc_source in result:

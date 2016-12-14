@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css">
+<script type="text/javascript"><!--
+
+var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+$(function(){
+
+});
+
+//-->
+</script>
+<style>
+form {
+    width: 300px;
+    margin: 50px auto;
+}
+input {
+    display: block;
+    margin: 2px;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+<div id="flashes" class="ui-widget">
+    {%- for message in get_flashed_messages() %}
+    <div class="ui-state-highlight ui-corner-all">
+        <p><span class="ui-icon ui-icon-info"></span>
+        {{ message }}</p>
+    </div>
+    {%- endfor %}
+</div>
+<form method="post" action="{{ url_for('blueprint.login') }}">
+<input type="text" name="username" placeholder="username">
+<input type="password" name="password" placeholder="password">
+<input type="submit" value="log in">
+</form>
+</body>
+</html>

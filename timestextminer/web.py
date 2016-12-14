@@ -9,38 +9,73 @@ from . import config
 from . import search
 from . import output
 from . import factories
+from . import sqla
 from .corpora import corpora
 
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, stream_with_context, jsonify
+    render_template, url_for, stream_with_context, jsonify, redirect, flash
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_admin import Admin
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 
 blueprint = Blueprint('blueprint', __name__)
+admin = Admin()
+login_manager = LoginManager()
+
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return sqla.User.query.get(user_id)
+
+
+
+@blueprint.route('/login', methods=['GET', 'POST'])
+def login():
+    
+    if request.method == 'POST':
+        
+        user = sqla.User.query.filter(
+            sqla.User.username == request.form.get('username')
+        ).first()
+        
+        if user and check_password_hash(user.password, request.form.get('password')):
+
+            user.authenticated = True
+            sqla.db.session.add(user)
+            sqla.db.session.commit()
+            login_user(user)
+            
+            flash('Logged in successfully.')
+            return redirect(url_for('blueprint.front', corpusname='times'))
+        else:
+            flash('Combination of username and password not recognised.')
+            
+    return render_template('login.html')
+
+
+
+@blueprint.route('/logout')
+@login_required
+def logout():
+    user = current_user
+    user.authenticated = True
+    sqla.db.session.add(user)
+    sqla.db.session.commit()
+    logout_user()
+    flash('Logged out successfully.')
+    return redirect(url_for('blueprint.init'))
+
 
 
 @blueprint.route('/', methods=['GET'])
 def init():
-    return front('times')
+    return login()
 
-
-@blueprint.route('/<corpusname>', methods=['GET'])
-def front(corpusname):
-    
-    corpus = corpora.get(corpusname)
-    if not corpus:
-        abort(404)
-    
-    return render_template('app.html', corpus=corpusname,
-        fields=[
-            field for field in corpus.fields
-            if not field.hidden
-        ],
-        autocomplete=[
-            field.name + ':' for field in corpus.fields
-            if not field.hidden and not field.mapping
-        ]
-    )
 
 
 def collect_params(corpus):
@@ -87,7 +122,28 @@ def collect_params(corpus):
 
 
 
+@blueprint.route('/<corpusname>', methods=['GET'])
+@login_required
+def front(corpusname):
+    
+    corpus = corpora.get(corpusname)
+    if not corpus:
+        abort(404)
+    
+    return render_template('app.html', corpus=corpusname,
+        fields=[
+            field for field in corpus.fields
+            if not field.hidden
+        ],
+        autocomplete=[
+            field.name + ':' for field in corpus.fields
+            if not field.hidden and not field.mapping
+        ]
+    )
+
+
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
+@login_required
 def search_csv(corpusname):
     '''
     Stream all results of a search to a CSV file.
@@ -119,6 +175,7 @@ def search_csv(corpusname):
 
 
 @blueprint.route('/<corpusname>/search.json', methods=['POST'])
+@login_required
 def search_json(corpusname):
     '''
     Return the first `n` results of a search as a JSON file that also includes

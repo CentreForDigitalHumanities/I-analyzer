@@ -2,3 +2,7 @@ beautifulsoup4==4.4.1
 lxml
 elasticsearch>=5.0.0,<6.0.0
 Flask
+flask_login
+flask_admin
+Flask-SQLAlchemy
+celery[redis]

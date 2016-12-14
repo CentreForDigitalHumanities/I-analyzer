@@ -70,6 +70,7 @@ def populate(client, corpus, start=None, end=None):
 
 def index(client, corpus, start=None, end=None, clear=False):
     create(client, corpus, clear=clear)
+    client.cluster.health(wait_for_status='yellow')
     populate(client, corpus, start=start, end=end)
 
 
@@ -84,7 +85,7 @@ if __name__ == '__main__':
         raise
     
     client = factories.elasticsearch()
-    logging.basicConfig(filename=None and 'indexing-{}-{}.log'.format(start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')), level=config.LOG_LEVEL)
+    logging.basicConfig(filename='indexing-{}-{}.log'.format(start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')), level=config.LOG_LEVEL)
     
     logging.info('Started indexing `{}` from {} to {}...'.format(
         corpus.ES_INDEX,

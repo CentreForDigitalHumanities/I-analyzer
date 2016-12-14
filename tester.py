@@ -5,7 +5,7 @@ from timestextminer import factories
 client = factories.elasticsearch()
 
 def create(docs):
-    client.indices.delete(index='test')
+    client.indices.delete(index='test', ignore=[404])
     client.indices.create(
         index='test',
         body={

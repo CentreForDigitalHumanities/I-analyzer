@@ -149,6 +149,19 @@ $(function(){
 
     $("input#download_fallback").hide();
 
+    $("#logout a").button({
+        icon: "ui-icon-close",
+        iconPosition: "end"
+    });
+    $("#logout").css({
+        float: 'right',
+        marginBottom: -$("#logout").outerHeight(),
+        zIndex: '999',
+        position: 'relative',
+        top: '8px',
+        right: '7px'
+    });
+
     /* Search dialog */
     var $search_dialog = $("#search_dialog");
     $("#search").button({
@@ -248,6 +261,10 @@ $(function(){
         }
     });
 
+    $("#flashes *").delay(1000).fadeOut(500, function(){
+        $(this).remove();
+    });
+
 });
 
 //-->
@@ -291,10 +308,8 @@ td.lbl span {
     padding: 1px;
     border-collapse: collapse;
 }
-
 #search_dialog tr:nth-child(even) {background: #fff}
 #search_dialog tr:nth-child(odd) {background: #ccc}
-
 #search_dialog table tr td {
     padding: 2px;
     border-right: 1px solid black;
@@ -310,7 +325,21 @@ td.lbl span {
 </head>
 
 <body>
+
+<div id="flashes" class="ui-widget">
+    {%- for message in get_flashed_messages() %}
+    <div class="ui-state-highlight ui-corner-all">
+        <p><span class="ui-icon ui-icon-info"></span>
+        {{ message }}</p>
+    </div>
+    {%- endfor %}
+</div>
+    
 <form method="post" action="{{ url_for('blueprint.search_csv', corpusname=corpus) }}">
+
+<div id="logout">
+    <a href="{{ url_for('blueprint.logout') }}">logout</a>
+</div>
 
 <div class="tabs">
     <ul>
@@ -395,13 +424,14 @@ td.lbl span {
             <tr>
             {%- for field in fields[i:i+columns] %}
                 <td class="lbl"><span><input type="checkbox" name="field:{{ field.name }}" checked> {{ field.name }}</span></td>
-                <td>{{ field.description if field.description else "No description." }}</td>
+                <td>{{ field.description if field.description else "---" }}</td>
             {%- endfor %}
             </tr>
         {%- endfor %}
         </tbody></table>
     </div>
 </div>
+
 <input type="submit" value="Download" id="download_fallback">
 </form>
 
