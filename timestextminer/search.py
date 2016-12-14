@@ -44,13 +44,9 @@ def make_query(query_string=None, filters=[], **kwargs):
         }
 
 
-def validate(query):
-    raise NotImplementedError()
-
-
 
 # See page 127 for scan and scroll
-def execute_iterate(corpus, query, size=1000):
+def execute_iterate(corpus, query, size=1000000):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -58,27 +54,15 @@ def execute_iterate(corpus, query, size=1000):
     If a query has been given, it is interpreted as the mini query string language.
     '''
 
-    #result = scan(client,
-    #    query=query,
-    #    index=corpus.ES_INDEX,
-    #    doc_type=corpus.ES_DOCTYPE,
-    #    size=size,
-    #    scroll='1m',
-    #)
-    
-    # Search operation
-    result = client.search(
+    result = scan(client,
+        query=query,
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-        #fielddata_fields=[],
-        #stored_fields=[],
-        size=size,
-        body=query,
-        #filter_path=['hits.hits._id', 'hits.hits._source']
+#        size=2000,
+        scroll='30s',
     )
-
-    # Iterate through results
-    for doc_source in result.get('hits', {}).get('hits', {}) or ():
+    
+    for doc_source in result:
         doc = doc_source.get('_source', {}).get('doc')
         id = doc_source.get('_id')
         score = doc_source.get('_score')
