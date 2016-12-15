@@ -10,21 +10,42 @@ class User(db.Model):
     email = db.Column(db.String(255), nullable=True)
     active = db.Column(db.Boolean)
     authenticated = db.Column(db.Boolean)
-    download_limit = db.Column(db.Integer)
+    download_limit = db.Column(db.Integer, nullable=True)
     privileges = db.Column(db.Integer)
 
-    def __init__(self, username, password, email=None, active=True, authenticated=False, download_limit=10000, privileges=0):
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=10000, privileges=0):
         self.username = username
         self.password = password
         self.email = email
         self.active = active
         self.authenticated = authenticated
         self.download_limit = download_limit
-        self.privileges = self.privileges
+        self.privileges = privileges
         
 
     def __repr__(self):
-        return "<User #{}>".format( self.id )
+        return '<User #{}>'.format( self.id )
+
+
+    PRIVILEGES = ['search', 'download', 'admin', 'create-user', 'change-privileges']
+    
+    def privilege(self, key, value=None):
+        '''
+        Set or remove a privilege from this user.
+        '''
+
+        # Done in this way because privileges are still subject to change and
+        # I don't feel like updating the data model
+        
+        index = self.PRIVILEGES.index(key)
+        
+        if value is None:
+            return bool(self.privileges & (1 << index))
+        else:
+            if value: # turn on bit at index
+                self.privileges |= (bool(value) << index)
+            else: # turn off bit at index
+                self.privileges &= (bool(value) << index) ^ 0xffffff
 
 
 

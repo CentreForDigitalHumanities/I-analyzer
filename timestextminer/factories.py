@@ -16,13 +16,13 @@ def elasticsearch(cfg=config):
 
 
 
-def flask_app(blueprint, admin, login_manager, cfg=config):
+def flask_app(blueprint, admin_instance, login_manager, cfg=config):
     app = Flask(__name__)
     app.config.from_object(cfg)
     app.register_blueprint(blueprint)
     
     sqla.db.init_app(app)
     login_manager.init_app(app)
-    admin.init_app(app)
+    admin_instance.init_app(app)
 
     return app

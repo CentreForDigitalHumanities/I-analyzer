@@ -5,6 +5,9 @@ Present the data to the user through a web interface.
 import logging; logger = logging.getLogger(__name__)
 
 
+#https://flask-admin.readthedocs.io/en/latest/introduction/
+#http://wtforms.readthedocs.io/en/latest/
+
 from . import config
 from . import search
 from . import output
@@ -13,19 +16,71 @@ from . import sqla
 from .corpora import corpora
 
 from datetime import datetime, timedelta
+
+from wtforms import fields, validators, form
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, stream_with_context, jsonify, redirect, flash
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from flask_admin import Admin
 
+import flask_admin as admin
+import flask_admin.contrib.sqla as admin_sqla
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
+class ModelView(admin_sqla.ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.privilege('admin')
+        
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('blueprint.login'))
+
+
+
 blueprint = Blueprint('blueprint', __name__)
-admin = Admin()
+admin_instance = admin.Admin()
+admin_instance.add_view(ModelView(sqla.User, sqla.db.session))
 login_manager = LoginManager()
 
+
+
+###############################################################################
+
+class RegistrationForm(form.Form):
+    username = fields.StringField(validators=[validators.required()])
+    password = fields.PasswordField(validators=[validators.required()])
+
+    def validate_login(self, field):
+        if sqla.User.query.filter_by(username=self.username.data).count() > 0:
+            raise validators.ValidationError('Duplicate username')
+
+
+    #expand here
+
+class LoginForm(form.Form):
+    username = fields.StringField('Username', validators=[validators.required()])
+    password = fields.PasswordField('Password', validators=[validators.required()])
+
+    def validate(self):
+        rv = super().validate()
+        if not rv:
+            return False
+
+        user = sqla.User.query.filter_by(username=self.username.data).first()
+        
+        if user is None:
+            self.username.errors.append('Unknown username')
+            return False
+
+        if not check_password_hash(user.password, self.password.data):
+            self.password.errors.append('Invalid password')
+            return False
+
+        self.user = user
+        return True
+
+
+###############################################################################
 
 
 @login_manager.user_loader
@@ -34,28 +89,50 @@ def load_user(user_id):
 
 
 
+@blueprint.route('/', methods=['GET'])
+def init():
+    if current_user.is_authenticated:
+        return redirect(url_for('blueprint.front', corpusname='times'))
+    else:
+        return redirect(url_for('blueprint.login'))
+
+
+
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     
-    if request.method == 'POST':
+    lf = LoginForm(request.form)
+    
+    if admin.helpers.validate_form_on_submit(lf):
+        user = lf.user
         
-        user = sqla.User.query.filter(
-            sqla.User.username == request.form.get('username')
-        ).first()
+        user.authenticated = True
+        sqla.db.session.add(user)
+        sqla.db.session.commit()
+        login_user(user)
         
-        if user and check_password_hash(user.password, request.form.get('password')):
+        return redirect(url_for('blueprint.front', corpusname='times'))
+            
+    return render_template('form.html', form=lf)
 
-            user.authenticated = True
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
-            login_user(user)
-            
-            flash('Logged in successfully.')
-            return redirect(url_for('blueprint.front', corpusname='times'))
-        else:
-            flash('Combination of username and password not recognised.')
-            
-    return render_template('login.html')
+
+
+@blueprint.route('/register', methods=['GET', 'POST'])
+def register():
+    rf = RegistrationForm(request.form)
+    if admin.helpers.validate_form_on_submit(rf):
+        user = sqla.User()
+        rf.populate_obj(user)
+        user.password = generate_password_hash(rf.password.data)
+
+        sqla.db.session.add(user)
+        sqla.db.session.commit()
+
+        flash('Successfully added user {}'.format(user.username))
+        return redirect(url_for('blueprint.register'))
+
+    return render_template('form.html', form=rf)
+
 
 
 
@@ -72,16 +149,12 @@ def logout():
 
 
 
-@blueprint.route('/', methods=['GET'])
-def init():
-    return login()
-
-
-
 def collect_params(corpus):
     '''
     Collect relevant parameters from POST request data and return them as a
     dictionary.
+    
+    TODO: Can we do this in WTForms?
     '''
     
     query_string = request.form.get('query')

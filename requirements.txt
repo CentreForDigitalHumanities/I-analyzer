@@ -6,3 +6,4 @@ flask_login
 flask_admin
 Flask-SQLAlchemy
 celery[redis]
+wtforms

@@ -149,13 +149,17 @@ $(function(){
 
     $("input#download_fallback").hide();
 
-    $("#logout a").button({
+    $(".top_buttons #admin").button({
+        icon: "ui-icon-person",
+        iconPosition: "end"
+    });
+    $(".top_buttons #logout").button({
         icon: "ui-icon-close",
         iconPosition: "end"
     });
-    $("#logout").css({
+    $(".top_buttons").css({
         float: 'right',
-        marginBottom: -$("#logout").outerHeight(),
+        marginBottom: -$(".top_buttons").outerHeight(),
         zIndex: '999',
         position: 'relative',
         top: '8px',
@@ -337,8 +341,10 @@ td.lbl span {
     
 <form method="post" action="{{ url_for('blueprint.search_csv', corpusname=corpus) }}">
 
-<div id="logout">
-    <a href="{{ url_for('blueprint.logout') }}">logout</a>
+<div class="top_buttons">
+    <span style="padding-right:1em">logged in as {{ current_user.username }}</span>
+    {% if current_user.privilege('admin') %}<a id="admin" href="/admin">administrator</a>{% endif %}
+    <a id="logout" href="{{ url_for('blueprint.logout') }}">exit</a>
 </div>
 
 <div class="tabs">

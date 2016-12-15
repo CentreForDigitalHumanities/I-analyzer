@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css">
+<style>
+form {
+    width: 300px;
+    margin: 50px auto;
+}
+input {
+    display: block;
+    margin: 2px;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+<div id="flashes" class="ui-widget">
+    {%- for message in get_flashed_messages() %}
+    <div class="ui-state-highlight ui-corner-all">
+        <p><span class="ui-icon ui-icon-info"></span>
+        {{ message }}</p>
+    </div>
+    {%- endfor %}
+</div>
+
+<form method="post" action="{{ url_for('blueprint.login') }}">
+    <div>{{ form.username.label }}: {{ form.username() }}</div>
+    <div>{{ form.password.label }}: {{ form.password() }}</div>
+    <div><input type="submit" value="log in"></div>
+</form>
+
+<div class="row-fluid">
+    <form method="POST" action="">
+        {{ form.hidden_tag() if form.hidden_tag }}
+        {% for f in form if f.type != 'CSRFTokenField' %}
+        <div>
+        {{ f.label }}
+        {{ f }}
+        {% if f.errors %}
+        <ul>
+            {% for e in f.errors %}
+            <li>{{ e }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        </div>
+        {% endfor %}
+        <button class="btn" type="submit">Submit</button>
+    </form>
+</div>
+
+</body>
+</html>
+
+
