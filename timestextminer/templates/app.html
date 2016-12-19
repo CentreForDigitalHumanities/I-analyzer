@@ -343,8 +343,8 @@ td.lbl span {
 
 <div class="top_buttons">
     <span style="padding-right:1em">logged in as {{ current_user.username }}</span>
-    {% if current_user.privilege('admin') %}<a id="admin" href="/admin">administrator</a>{% endif %}
-    <a id="logout" href="{{ url_for('blueprint.logout') }}">exit</a>
+    {% if current_user.privilege('admin') %}<a id="admin" href="{{ url_for('admin.index') }}">administrator</a>{% endif %}
+    <a id="logout" href="{{ url_for('admin.logout') }}">exit</a>
 </div>
 
 <div class="tabs">

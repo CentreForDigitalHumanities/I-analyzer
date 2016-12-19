@@ -4,10 +4,6 @@ Present the data to the user through a web interface.
 
 import logging; logger = logging.getLogger(__name__)
 
-
-#https://flask-admin.readthedocs.io/en/latest/introduction/
-#http://wtforms.readthedocs.io/en/latest/
-
 from . import config
 from . import search
 from . import output
@@ -29,17 +25,84 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class ModelView(admin_sqla.ModelView):
+    can_create = False # TODO: Modify the creation form so that it is the same as the registration form
+    
     def is_accessible(self):
         return current_user.is_authenticated and current_user.privilege('admin')
         
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('blueprint.login'))
+        return redirect(url_for('admin.login'))
+
+
+
+class RegisterView(admin.BaseView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.privilege('admin')
+        
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('admin.login'))
+
+    @admin.expose('/', methods=['GET', 'POST'])
+    def index(self):
+        rf = RegistrationForm(request.form)
+        if admin.helpers.validate_form_on_submit(rf):
+            user = sqla.User()
+            rf.populate_obj(user)
+            user.password = generate_password_hash(rf.password.data)
+
+            sqla.db.session.add(user)
+            sqla.db.session.commit()
+            
+            flash('Successfully added user {}'.format(user.username))
+            return redirect(url_for('.index'))
+
+        return self.render('admin/form.html', title='Register', form=rf)
+
+
+
+class AdminIndexView(admin.AdminIndexView):
+
+    @admin.expose('/')
+    def index(self):
+        if not current_user.is_authenticated:
+            return redirect(url_for('.login'))
+        return super(AdminIndexView, self).index()
+
+    @admin.expose('/login', methods=['GET', 'POST'])
+    def login(self):
+
+        lf = LoginForm(request.form)
+        
+        if admin.helpers.validate_form_on_submit(lf):
+            user = lf.user
+            
+            user.authenticated = True
+            sqla.db.session.add(user)
+            sqla.db.session.commit()
+            login_user(user)
+            
+            return redirect(url_for('blueprint.front', corpusname='times'))
+        
+        return self.render('admin/form.html', title='Login', form=lf)
+
+
+    @admin.expose('/logout')
+    @login_required
+    def logout(self):
+        user = current_user
+        user.authenticated = True
+        sqla.db.session.add(user)
+        sqla.db.session.commit()
+        logout_user()
+        flash('Logged out successfully.')
+        return redirect(url_for('blueprint.init'))
 
 
 
 blueprint = Blueprint('blueprint', __name__)
-admin_instance = admin.Admin()
-admin_instance.add_view(ModelView(sqla.User, sqla.db.session))
+admin_instance = admin.Admin(name='textmining', index_view=AdminIndexView(), endpoint='admin')
+admin_instance.add_view(RegisterView(name='Register', endpoint='register'))
+admin_instance.add_view(ModelView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
 login_manager = LoginManager()
 
 
@@ -50,12 +113,18 @@ class RegistrationForm(form.Form):
     username = fields.StringField(validators=[validators.required()])
     password = fields.PasswordField(validators=[validators.required()])
 
-    def validate_login(self, field):
+    def validate(self):
+        rv = super().validate()
+        if not rv:
+            return False
+
         if sqla.User.query.filter_by(username=self.username.data).count() > 0:
-            raise validators.ValidationError('Duplicate username')
+            self.username.errors.append('Username already exists')
+            return False
+
+        return True
 
 
-    #expand here
 
 class LoginForm(form.Form):
     username = fields.StringField('Username', validators=[validators.required()])
@@ -91,61 +160,10 @@ def load_user(user_id):
 
 @blueprint.route('/', methods=['GET'])
 def init():
-    if current_user.is_authenticated:
+    if current_user and current_user.is_authenticated:
         return redirect(url_for('blueprint.front', corpusname='times'))
     else:
-        return redirect(url_for('blueprint.login'))
-
-
-
-@blueprint.route('/login', methods=['GET', 'POST'])
-def login():
-    
-    lf = LoginForm(request.form)
-    
-    if admin.helpers.validate_form_on_submit(lf):
-        user = lf.user
-        
-        user.authenticated = True
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
-        login_user(user)
-        
-        return redirect(url_for('blueprint.front', corpusname='times'))
-            
-    return render_template('form.html', form=lf)
-
-
-
-@blueprint.route('/register', methods=['GET', 'POST'])
-def register():
-    rf = RegistrationForm(request.form)
-    if admin.helpers.validate_form_on_submit(rf):
-        user = sqla.User()
-        rf.populate_obj(user)
-        user.password = generate_password_hash(rf.password.data)
-
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
-
-        flash('Successfully added user {}'.format(user.username))
-        return redirect(url_for('blueprint.register'))
-
-    return render_template('form.html', form=rf)
-
-
-
-
-@blueprint.route('/logout')
-@login_required
-def logout():
-    user = current_user
-    user.authenticated = True
-    sqla.db.session.add(user)
-    sqla.db.session.commit()
-    logout_user()
-    flash('Logged out successfully.')
-    return redirect(url_for('blueprint.init'))
+        return redirect(url_for('admin.login'))
 
 
 
@@ -221,6 +239,8 @@ def search_csv(corpusname):
     '''
     Stream all results of a search to a CSV file.
     '''
+    
+    #TODO: save query and expected size to db
 
     corpus = corpora.get(corpusname)
     if not corpus:
