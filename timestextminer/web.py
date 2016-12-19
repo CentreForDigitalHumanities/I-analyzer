@@ -50,9 +50,14 @@ class ModelView(admin_sqla.ModelView):
 
 
 
-class TimesView(admin.BaseView):
+class CorpusView(admin.BaseView):
+    
+    def __init__(self, corpus, **kwargs):
+        self.corpus = corpus
+        return super(CorpusView, self).__init__(**kwargs)
+    
     def is_accessible(self):
-        return current_user.is_authenticated # and current_user.privilege('times')
+        return current_user.is_authenticated # and current_user.has_access(self.corpus)
         
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin.index'))
@@ -60,9 +65,9 @@ class TimesView(admin.BaseView):
     @admin.expose('/', methods=['GET', 'POST'])
     @login_required
     def index(self):
-        corpus = corpora.get('times')
+        corpus = corpora.get(self.corpus)
         
-        return self.render('app.html', corpus='times',
+        return self.render('app.html', corpus=self.corpus,
             fields=[
                 field for field in corpus.fields
                 if not field.hidden
@@ -119,7 +124,7 @@ class AdminIndexView(admin.AdminIndexView):
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=AdminIndexView(), endpoint='admin')
-admin_instance.add_view(TimesView(name='Times', endpoint='times'))
+admin_instance.add_view(CorpusView(corpus='times', name='Times', endpoint='times'))
 admin_instance.add_view(ModelView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
 login_manager = LoginManager()
 
