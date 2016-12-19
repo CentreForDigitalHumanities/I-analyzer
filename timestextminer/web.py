@@ -9,42 +9,32 @@ from . import search
 from . import output
 from . import factories
 from . import sqla
+from . import forms
 from .corpora import corpora
 
 from datetime import datetime, timedelta
 
-from wtforms import fields, validators, form
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, stream_with_context, jsonify, redirect, flash
+    render_template, url_for, jsonify, redirect, flash
 
 import flask_admin as admin
 import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 
 
 class ModelView(admin_sqla.ModelView):
-    can_create = False # TODO: Modify the creation form so that it is the same as the registration form
     
     def is_accessible(self):
         return current_user.is_authenticated and current_user.privilege('admin')
         
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('admin.login'))
+        return redirect(url_for('admin.index'))
 
-
-
-class RegisterView(admin.BaseView):
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.privilege('admin')
-        
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('admin.login'))
-
-    @admin.expose('/', methods=['GET', 'POST'])
-    def index(self):
-        rf = RegistrationForm(request.form)
+    @admin.expose('/create', methods=['GET', 'POST'])
+    def create_view(self):
+        rf = forms.RegistrationForm(request.form)
         if admin.helpers.validate_form_on_submit(rf):
             user = sqla.User()
             rf.populate_obj(user)
@@ -54,9 +44,34 @@ class RegisterView(admin.BaseView):
             sqla.db.session.commit()
             
             flash('Successfully added user {}'.format(user.username))
-            return redirect(url_for('.index'))
+            return redirect(url_for('users.index_view'))
 
         return self.render('admin/form.html', title='Register', form=rf)
+
+
+
+class TimesView(admin.BaseView):
+    def is_accessible(self):
+        return current_user.is_authenticated # and current_user.privilege('times')
+        
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('admin.index'))
+
+    @admin.expose('/', methods=['GET', 'POST'])
+    @login_required
+    def index(self):
+        corpus = corpora.get('times')
+        
+        return self.render('app.html', corpus='times',
+            fields=[
+                field for field in corpus.fields
+                if not field.hidden
+            ],
+            autocomplete=[
+                field.name + ':' for field in corpus.fields
+                if not field.hidden and not field.mapping
+            ]
+        )
 
 
 
@@ -68,10 +83,12 @@ class AdminIndexView(admin.AdminIndexView):
             return redirect(url_for('.login'))
         return super(AdminIndexView, self).index()
 
+
+
     @admin.expose('/login', methods=['GET', 'POST'])
     def login(self):
 
-        lf = LoginForm(request.form)
+        lf = forms.LoginForm(request.form)
         
         if admin.helpers.validate_form_on_submit(lf):
             user = lf.user
@@ -81,9 +98,10 @@ class AdminIndexView(admin.AdminIndexView):
             sqla.db.session.commit()
             login_user(user)
             
-            return redirect(url_for('blueprint.front', corpusname='times'))
+            return redirect(url_for('times.index'))
         
         return self.render('admin/form.html', title='Login', form=lf)
+
 
 
     @admin.expose('/logout')
@@ -101,55 +119,10 @@ class AdminIndexView(admin.AdminIndexView):
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=AdminIndexView(), endpoint='admin')
-admin_instance.add_view(RegisterView(name='Register', endpoint='register'))
+admin_instance.add_view(TimesView(name='Times', endpoint='times'))
 admin_instance.add_view(ModelView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
 login_manager = LoginManager()
 
-
-
-###############################################################################
-
-class RegistrationForm(form.Form):
-    username = fields.StringField(validators=[validators.required()])
-    password = fields.PasswordField(validators=[validators.required()])
-
-    def validate(self):
-        rv = super().validate()
-        if not rv:
-            return False
-
-        if sqla.User.query.filter_by(username=self.username.data).count() > 0:
-            self.username.errors.append('Username already exists')
-            return False
-
-        return True
-
-
-
-class LoginForm(form.Form):
-    username = fields.StringField('Username', validators=[validators.required()])
-    password = fields.PasswordField('Password', validators=[validators.required()])
-
-    def validate(self):
-        rv = super().validate()
-        if not rv:
-            return False
-
-        user = sqla.User.query.filter_by(username=self.username.data).first()
-        
-        if user is None:
-            self.username.errors.append('Unknown username')
-            return False
-
-        if not check_password_hash(user.password, self.password.data):
-            self.password.errors.append('Invalid password')
-            return False
-
-        self.user = user
-        return True
-
-
-###############################################################################
 
 
 @login_manager.user_loader
@@ -161,7 +134,7 @@ def load_user(user_id):
 @blueprint.route('/', methods=['GET'])
 def init():
     if current_user and current_user.is_authenticated:
-        return redirect(url_for('blueprint.front', corpusname='times'))
+        return redirect(url_for('times.index'))
     else:
         return redirect(url_for('admin.login'))
 
@@ -212,27 +185,6 @@ def collect_params(corpus):
     }
 
 
-
-@blueprint.route('/<corpusname>', methods=['GET'])
-@login_required
-def front(corpusname):
-    
-    corpus = corpora.get(corpusname)
-    if not corpus:
-        abort(404)
-    
-    return render_template('app.html', corpus=corpusname,
-        fields=[
-            field for field in corpus.fields
-            if not field.hidden
-        ],
-        autocomplete=[
-            field.name + ':' for field in corpus.fields
-            if not field.hidden and not field.mapping
-        ]
-    )
-
-
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
 @login_required
 def search_csv(corpusname):
@@ -252,11 +204,10 @@ def search_csv(corpusname):
 
     # Perform the search and obtain output
     logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute_iterate(corpus, query)
+    docs = search.execute_iterate(corpus, query, size=current_user.download_limit)
 
     # Stream results
-    result = output.as_csv_stream(docs, select=parameters['fields'])
-    stream = stream_with_context(result)
+    stream = output.as_csv_stream(docs, select=parameters['fields'])
     response = Response(stream, mimetype='text/csv')
     response.headers['Content-Disposition'] = (
         'attachment; filename={}-{}.csv'.format(
@@ -285,7 +236,7 @@ def search_json(corpusname):
     logging.info('Requested example JSON for query: {}'.format(query))
 
     # Perform the search
-    result = search.execute(corpus, query)
+    result = search.execute(corpus, query, size=current_user.download_limit)
     
     hits = result.get('hits', {})
 
