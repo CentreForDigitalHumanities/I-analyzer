@@ -7,3 +7,4 @@ flask_admin
 flask_sqlalchemy
 celery[redis]
 wtforms
+mysqlclient
