@@ -1,6 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
+
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+)
 
 class User(db.Model):
 
@@ -10,44 +17,27 @@ class User(db.Model):
     email = db.Column(db.String(255), nullable=True)
     active = db.Column(db.Boolean)
     authenticated = db.Column(db.Boolean)
-    download_limit = db.Column(db.Integer, nullable=True)
-    privileges = db.Column(db.Integer)
+    download_limit = db.Column(db.Integer)
+    roles = db.relationship('Role',
+        secondary=roles_users,
+        backref=db.backref('users', lazy='dynamic'), lazy='joined'
+    )
+    queries = db.relationship('Query',
+        backref=db.backref('user', lazy='joined'), lazy='dynamic')
 
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=10000, privileges=0):
+
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=10000):
         self.username = username
         self.password = password
         self.email = email
         self.active = active
         self.authenticated = authenticated
         self.download_limit = download_limit
-        self.privileges = privileges
         
 
     def __repr__(self):
-        return '<User #{}>'.format( self.id )
-
-
-    PRIVILEGES = ['search', 'download', 'admin', 'create-user', 'change-privileges']
-    
-    def privilege(self, key, value=None):
-        '''
-        Set or remove a privilege from this user.
-        '''
-
-        # Done in this way because privileges are still subject to change and
-        # I don't feel like updating the data model
+        return self.username
         
-        index = self.PRIVILEGES.index(key)
-        
-        if value is None:
-            return bool(self.privileges & (1 << index))
-        else:
-            if value: # turn on bit at index
-                self.privileges |= (bool(value) << index)
-            else: # turn off bit at index
-                self.privileges &= (bool(value) << index) ^ 0xffffff
-
-
 
     @property
     def is_authenticated(self):
@@ -87,3 +77,47 @@ class User(db.Model):
         '''
         
         return str(self.id)
+
+
+    def has_role(self, role):
+        return bool([r for r in self.roles if r.name == role])
+
+
+
+class Role(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __init__(self, name, description=""):
+        self.name = name
+        self.description = description
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name
+
+
+
+class Query(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    query = db.Column(db.Text)
+    corpus = db.Column(db.String(255))
+    started = db.Column(db.DateTime)
+    completed = db.Column(db.DateTime)
+    aborted = db.Column(db.Boolean)
+    completed = db.Column(db.DateTime, nullable=True)
+    userID = db.Column(db.Integer, db.ForeignKey('user.id'))
+    
+    def __init__(self, query, corpus, user):
+        self.corpus = corpus
+        self.query = query
+        self.user = user
+        self.started = datetime.now()
+        self.completed = None
+        self.aborted = False
+
+    def __repr__(self):
+        return '<Query #{}>'.format( self.id )

@@ -15,7 +15,7 @@ from .corpora import corpora
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash
+    render_template, url_for, jsonify, redirect, flash, stream_with_context
 
 import flask_admin as admin
 import flask_admin.contrib.sqla as admin_sqla
@@ -27,11 +27,14 @@ from werkzeug.security import generate_password_hash
 class ModelView(admin_sqla.ModelView):
     
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.privilege('admin')
+        return current_user.is_authenticated and current_user.has_role('admin')
         
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin.index'))
 
+
+class UserView(ModelView):
+    
     @admin.expose('/create', methods=['GET', 'POST'])
     def create_view(self):
         rf = forms.RegistrationForm(request.form)
@@ -57,7 +60,7 @@ class CorpusView(admin.BaseView):
         return super(CorpusView, self).__init__(**kwargs)
     
     def is_accessible(self):
-        return current_user.is_authenticated # and current_user.has_access(self.corpus)
+        return current_user.is_authenticated and current_user.has_role(self.corpus)
         
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin.index'))
@@ -125,7 +128,9 @@ class AdminIndexView(admin.AdminIndexView):
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=AdminIndexView(), endpoint='admin')
 admin_instance.add_view(CorpusView(corpus='times', name='Times', endpoint='times'))
-admin_instance.add_view(ModelView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(UserView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(ModelView(sqla.Role, sqla.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(ModelView(sqla.Query, sqla.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 
 
@@ -197,23 +202,37 @@ def search_csv(corpusname):
     Stream all results of a search to a CSV file.
     '''
     
-    #TODO: save query and expected size to db
-
     corpus = corpora.get(corpusname)
     if not corpus:
         abort(404)
+    if not current_user.has_role(corpusname):
+        abort(403)
 
     parameters = collect_params(corpus)
     query = search.make_query(**parameters)
     
+    q = sqla.Query(query=str(query), corpus=corpusname, user=current_user)
+    sqla.db.session.add(q)
+    sqla.db.session.commit()
 
     # Perform the search and obtain output
     logging.info('Requested CSV for query: {}'.format(query))
     docs = search.execute_iterate(corpus, query, size=current_user.download_limit)
 
+    def stream():
+        try:
+            for line in output.as_csv_stream(docs, select=parameters['fields']):
+                yield line
+            q.completed = datetime.now()
+            sqla.db.session.add(q)
+            sqla.db.session.commit()
+        except IOError: #TODO: Does this work as expected?
+            q.aborted = True
+            sqla.db.session.add(q)
+            sqla.db.session.commit()
+
     # Stream results
-    stream = output.as_csv_stream(docs, select=parameters['fields'])
-    response = Response(stream, mimetype='text/csv')
+    response = Response(stream_with_context(stream()), mimetype='text/csv')
     response.headers['Content-Disposition'] = (
         'attachment; filename={}-{}.csv'.format(
             corpusname, datetime.now().strftime('%Y%m%d-%H%M')
@@ -234,12 +253,14 @@ def search_json(corpusname):
     corpus = corpora.get(corpusname)
     if not corpus:
         abort(404)
+    if not current_user.has_role(corpusname):
+        abort(403)
 
     parameters = collect_params(corpus)
     query = search.make_query(**parameters)
     
     logging.info('Requested example JSON for query: {}'.format(query))
-
+    
     # Perform the search
     result = search.execute(corpus, query, size=10)
     

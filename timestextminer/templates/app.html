@@ -347,7 +347,7 @@ td.lbl span {
 
 <div class="top_buttons">
     <span style="padding-right:1em">logged in as {{ current_user.username }}</span>
-    {% if current_user.privilege('admin') %}<a id="admin" href="{{ url_for('admin.index') }}">administrator</a>{% endif %}
+    {% if current_user.has_role('admin') %}<a id="admin" href="{{ url_for('admin.index') }}">administrator</a>{% endif %}
     <a id="logout" href="{{ url_for('admin.logout') }}">exit</a>
 </div>
 

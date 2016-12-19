@@ -22,12 +22,22 @@ def ctx():
 def create_admin():
     with ctx().app_context():
 
+
+        role_admin = sqla.Role('admin', 'Administrator role.')
+        role_times = sqla.Role('times', 'Role for users who may access Times data.')
+
         print('Please provide an administrator password: ')
         username = 'admin'
         password = getpass()
 
-        user = sqla.User(username, generate_password_hash(password), privileges=0xFFFFFF)
+        user = sqla.User(username, generate_password_hash(password))
+        
+        user.roles.append(role_admin)
+        user.roles.append(role_times)
+        
         sqla.db.session.add(user)
+        sqla.db.session.add(role_admin)
+        sqla.db.session.add(role_times)
         sqla.db.session.commit()
         
         print('Database created.')
