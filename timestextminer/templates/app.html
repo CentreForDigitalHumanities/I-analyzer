@@ -198,21 +198,23 @@ $(function(){
                 var t = data.table, n = t.length-1;
                 
                 if(n>0){
-                    var table = $("<table/>");
-                    
-                    for(var row = 0; row < t.length; row++){
-                        var tr = $("<tr/>");
-                        for(var col = 0; col < t[row].length; col++){
-                            var td = $("<td/>");
-                            td.text(t[row][col]);
-                            tr.append(td);
-                        }
-                        table.append(tr);
-                    }
                     
                     var wrap = $("<div/>");
                     wrap.addClass("wrap");
-                    wrap.append(table);
+                    
+                    for(var row = 1; row < t.length; row++){
+                        var table = $("<table/>");
+                        for(var col = 0; col < t[row].length; col++){
+                            var tr = $("<tr/>");
+                            var td1 = $("<td/>"), td2 = $("<td/>");
+                            td1.text(t[0][col]);
+                            td2.text(t[row][col]);
+                            tr.append(td1);
+                            tr.append(td2);
+                            table.append(tr);
+                        }
+                        wrap.append(table);
+                    }
                     
                     $search_dialog.text("Your search resulted in "+(data.total)+" hits. Your download limit is "+(DOWNLOAD_LIMIT)+". This is a sample of "+(n)+" results:");
                     $search_dialog.append(wrap);
@@ -304,7 +306,7 @@ td.lbl span {
 
 
 #search_dialog .wrap {
-    overflow: scroll;
+    overflow-y: scroll;
     width: 100%;
     height: 500px;
 }
@@ -312,20 +314,21 @@ td.lbl span {
     border: 2px solid black;
     padding: 1px;
     border-collapse: collapse;
+    width: 100%;
 }
-#search_dialog tr:nth-child(even) {background: #fff}
-#search_dialog tr:nth-child(odd) {background: #ccc}
 #search_dialog table tr td {
     padding: 2px;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
     max-width: 300px;
 }
-#search_dialog table tr:first-child td {
+#search_dialog table td:first-child {
     font-weight: bold;
     color: #fff;
     background-color: #000;
 }
+#search_dialog table:nth-child(even) td:first-child {background: #666}
+#search_dialog table:nth-child(odd) td:first-child {background: #000}
+#search_dialog table:nth-child(even) td {border-top: 1px dashed #666}
+#search_dialog table:nth-child(odd) td {border-top: 1px dashed #000}
 </style>
 </head>
 

@@ -58,7 +58,7 @@ def execute_iterate(corpus, query, size=50000):
         query=query,
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-        size=5000,
+        size=5000 if size > 5000 else size,
         scroll='3m',
     )
     
