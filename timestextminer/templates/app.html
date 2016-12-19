@@ -10,7 +10,8 @@
 
 var AUTOCOMPLETE = {{ autocomplete|tojson }},
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }},
-    $CORPUS_ROOT = {{ (request.script_root + "/" + corpus)|tojson|safe }};
+    $CORPUS_ROOT = {{ (request.script_root + "/" + corpus)|tojson|safe }},
+    DOWNLOAD_LIMIT = {{ current_user.download_limit }};
 
 $(function(){
 
@@ -213,7 +214,7 @@ $(function(){
                     wrap.addClass("wrap");
                     wrap.append(table);
                     
-                    $search_dialog.text("Your search resulted in "+(data.total)+" hits. This is a sample of "+(n)+" results:");
+                    $search_dialog.text("Your search resulted in "+(data.total)+" hits. Your download limit is "+(DOWNLOAD_LIMIT)+". This is a sample of "+(n)+" results:");
                     $search_dialog.append(wrap);
                     $search_dialog.dialog("option", {
                         buttons: [{

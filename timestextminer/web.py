@@ -241,7 +241,7 @@ def search_json(corpusname):
     logging.info('Requested example JSON for query: {}'.format(query))
 
     # Perform the search
-    result = search.execute(corpus, query, size=current_user.download_limit)
+    result = search.execute(corpus, query, size=10)
     
     hits = result.get('hits', {})
 

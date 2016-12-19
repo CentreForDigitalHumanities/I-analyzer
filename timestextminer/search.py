@@ -58,11 +58,13 @@ def execute_iterate(corpus, query, size=50000):
         query=query,
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-        size=size,
+        size=5000,
         scroll='3m',
     )
     
-    for doc_source in result:
+    for i, doc_source in enumerate(result):
+        if i >= size:
+            break
         doc = doc_source.get('_source', {}).get('doc')
         id = doc_source.get('_id')
         score = doc_source.get('_score')
