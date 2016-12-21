@@ -46,6 +46,10 @@ $(function(){
                 + ":" +
                 format($to.datepicker("getDate"))
             );
+        }, updateDay = function(lastDay){
+            return function(year, month, inst){
+                $(this).datepicker("setDate", format(lastDay ? new Date(year, month, 0) : new Date(year, month-1, 1)));
+            };
         };
             
         var base = {
@@ -58,8 +62,8 @@ $(function(){
             yearRange: lower.getFullYear() + ":" + upper.getFullYear()
         };
 
-        $from.datepicker($.extend({defaultDate: start}, base)).change(update);
-        $to.datepicker($.extend({defaultDate: end}, base)).change(update);
+        $from.datepicker($.extend({defaultDate: start, onChangeMonthYear: updateDay() }, base)).change(update);
+        $to.datepicker($.extend({defaultDate: end, onChangeMonthYear: updateDay(true) }, base)).change(update);
     });
 
 
