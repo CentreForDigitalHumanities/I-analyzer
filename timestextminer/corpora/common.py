@@ -49,8 +49,12 @@ class Field(object):
         for entry in self.extractors:
             try:
                 is_appropriate, extractor = entry
-            except (ValueError, TypeError): # If it wasn't a tuple, the entry
-                return entry # is supposedly an always-appropriate extractor
+            except (ValueError, TypeError):
+                # If the extractor was given as a singleton rather than being
+                # coupled in a tuple with a predicate determining whether the
+                # extractor is applicable for the current file, the extractor
+                # is supposedly appropriate for any file
+                return entry
             else:
                 if is_appropriate is None or is_appropriate(metadata):
                     return extractor

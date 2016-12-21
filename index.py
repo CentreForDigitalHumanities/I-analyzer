@@ -92,5 +92,5 @@ if __name__ == '__main__':
         start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
     ))
     
-    index(client, corpus, start=start, end=end, clear=True)
+    index(client, corpus, start=start, end=end)
     logging.info('Finished indexing `{}`.'.format(corpus.ES_INDEX))

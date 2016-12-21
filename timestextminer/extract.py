@@ -42,7 +42,7 @@ def meta(key, transform):
             if not result:
                 return None
             else:
-                logging.critical('Value could not be converted by the transformation function.')        
+                logging.critical('Metadata value {v} for key {k} could not be converted by the transformation function.'.format(v=result, k=key))        
         
     return extract
 
@@ -104,7 +104,7 @@ def create_extractor(method=None):
                 if result == '':
                     return None
                 else:
-                    logging.critical('Value could not be converted by the transformation function. Improper mapping?')
+                    logging.critical('Value "{v}", extracted from tag "{t}" could not be converted by the transformation function.'.format(v=result, t=str(tag)))
 
         # Obtain created extractor function
         return extract

@@ -86,7 +86,7 @@ fields = [
         name='issue',
         mapping=mapping.int,
         description='Source issue number.',
-        extractor=extract.string(tag='is', toplevel=True, transform=int)
+        extractor=extract.string(tag='is', toplevel=True, transform=lambda x: (62226 if x=="6222662226" else int(x))) # Hardcoded to ignore one particular issue with source data
     ),
     Field(
         name='volume',
