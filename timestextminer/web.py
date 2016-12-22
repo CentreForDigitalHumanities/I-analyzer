@@ -231,12 +231,22 @@ def search_csv(corpusname):
             sqla.db.session.add(q)
             sqla.db.session.commit()
 
+    def alphanums(string):
+        return ''.join(c for c in string if c.isalnum())
+
+    # Create filename
+    qs = parameters['query_string'] or ''
+    ds = request.form.get('filter:date')
+    filename = '{corpus}-{timestamp}{query}.csv'.format(
+        corpus=corpusname,
+        timestamp=alphanums('-'.join(ds.split(':'))) if ds else datetime.now().strftime('%Y%m%d'),
+        query='-' + alphanums(qs)[:12] if qs else ''
+    )
+
     # Stream results
     response = Response(stream_with_context(stream()), mimetype='text/csv')
     response.headers['Content-Disposition'] = (
-        'attachment; filename={}-{}.csv'.format(
-            corpusname, datetime.now().strftime('%Y%m%d-%H%M')
-        )
+        'attachment; filename={}'.format(filename)
     )
     return response
 
