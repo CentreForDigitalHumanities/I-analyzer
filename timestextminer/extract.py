@@ -100,7 +100,7 @@ def create_extractor(method=None):
             # Final transformation
             try:
                 return transform(result) if transform else result
-            except ValueError:
+            except (ValueError, TypeError):
                 if result == '':
                     return None
                 else:
