@@ -49,6 +49,7 @@ $(function(){
         }, updateDay = function(lastDay){
             return function(year, month, inst){
                 $(this).datepicker("setDate", format(lastDay ? new Date(year, month, 0) : new Date(year, month-1, 1)));
+                update();
             };
         };
             
