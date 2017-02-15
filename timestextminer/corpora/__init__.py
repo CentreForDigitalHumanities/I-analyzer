@@ -1,5 +1,5 @@
 from . import times
 
 corpora = {
-    'times': times
+    'times': times.Times()
 }

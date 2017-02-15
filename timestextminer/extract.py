@@ -12,8 +12,8 @@ import html
 import bs4
 import logging
 
-_regex1 = re.compile('(?<=\S)\n(?=\S)| +')
-_regex2 = re.compile('\n+')
+_regex1 = re.compile('(?<=\S)\n(?=\S)| +') # Match any 
+_regex2 = re.compile('\n+') # Match any multiple spaces
 
 
 
@@ -22,8 +22,8 @@ def const(value):
     Create an extractor function that extracts the same constant value on any
     input.
     '''
-    
-    def extract(soup_top, soup_entry, **metadata):
+
+    def extract(soup_top, soup_entry, metadata):
         return value
     return extract
 
@@ -33,8 +33,8 @@ def meta(key, transform):
     '''
     Create an extractor function that extracts the metadata for the given key.
     '''
-    
-    def extract(soup_top, soup_entry, **metadata):
+
+    def extract(soup_top, soup_entry, metadata):
         result = metadata.get(key)
         try:
             return transform(result) if transform else result
@@ -42,8 +42,8 @@ def meta(key, transform):
             if not result:
                 return None
             else:
-                logging.critical('Metadata value {v} for key {k} could not be converted by the transformation function.'.format(v=result, k=key))        
-        
+                logging.critical('Metadata value {v} for key {k} could not be converted by the transformation function.'.format(v=result, k=key))
+
     return extract
 
 
@@ -56,16 +56,16 @@ def create_extractor(method=None):
     calling with relevant information, creates an extractor function in which
     the original function is applied to the appropriate BeautifulSoup node(s).
     '''
-    
+
     if method is None:
         return functools.partial(create_extractor)
 
     @functools.wraps(method)
     def decorator(
             tag=None, toplevel=False, recursive=False,
-            multiple=False, transform=None, 
+            multiple=False, transform=None,
             **kwargs):
-        
+
         # Create extractor function
         def extract(soup_top, soup_entry, **metadata):
             if not tag:
@@ -73,7 +73,7 @@ def create_extractor(method=None):
             else:
                 # Select the appropriate starting soup element
                 soup = soup_top if toplevel else soup_entry
-                        
+
                 # If the tag was a path, walk through it before continuing
                 tag_ = tag
                 if isinstance(tag, list):
@@ -108,7 +108,7 @@ def create_extractor(method=None):
 
         # Obtain created extractor function
         return extract
-        
+
     return decorator
 
 
@@ -118,7 +118,7 @@ def string(soup, metadata):
     When combined with the `create_extractor` wrapper, `string` is a function
     that takes arguments `tag`, `toplevel`, `recursive`, `multiple`,
     `transform` and `attr`, and creates an extractor function.
-    
+
     This extractor function finds (a) node(s) and and outputs its direct
     text contents.
     '''
@@ -136,7 +136,7 @@ def attr(soup, metadata, attr=None):
     When combined with the `create_extractor` wrapper, `attr` is a function
     that takes arguments `tag`, `toplevel`, `recursive`, `multiple`,
     `transform` and `attr`, and creates an extractor function.
-    
+
     This extractor function finds (a) node(s) and and outputs the content of
     the attribute with the name `attr`.
     '''
@@ -157,8 +157,8 @@ def flatten(soup, metadata):
     When combined with the `create_extractor` wrapper, `flatten` is a function
     that takes arguments `tag`, `toplevel`, `recursive`, `multiple` and
     `transform` and creates an extractor function.
-    
-    This extractor function finds (a) node(s) and outputs its text content, 
+
+    This extractor function finds (a) node(s) and outputs its text content,
     disregarding any underlying XML structure.
     '''
 
