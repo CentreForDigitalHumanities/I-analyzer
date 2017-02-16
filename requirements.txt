@@ -1,10 +1,9 @@
+elasticsearch>=5.0.0,<6.0.0
 beautifulsoup4==4.4.1
 lxml
-elasticsearch>=5.0.0,<6.0.0
+wtforms
 Flask
 flask_login
 flask_admin
 flask_sqlalchemy
-celery[redis]
-wtforms
 mysqlclient
