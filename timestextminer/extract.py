@@ -1,174 +1,217 @@
 '''
-An extractor function is a function that takes the top-level BeautifulSoup tag,
-the BeautifulSoup tag of the entry that is under scrutiny (and possibly
-some metadata as keyword arguments) and extracts from it some desired data.
-
-This module contains functions that facilitate the creation of such functions.
+This module contains classes that specify 
 '''
 
-import functools
+import logging; logger = logging.getLogger(__name__)
 import re
 import html
 import bs4
-import logging
-
-_regex1 = re.compile('(?<=\S)\n(?=\S)| +')
-_regex2 = re.compile('\n+')
 
 
-
-def const(value):
+class Extractor(object):
     '''
-    Create an extractor function that extracts the same constant value on any
-    input.
+    An extractor is any function that can extract information in some way from
+    another object.
     '''
     
-    def extract(soup_top, soup_entry, **metadata):
-        return value
-    return extract
+    def __init__(self,
+        applicable=None, # Predicate that takes metadata and decides whether
+                         # this extractor is applicable. None means always.
+        transform=None   # Optional function to postprocess extracted value
+        ):
+        self.transform = transform
+        self.applicable = applicable 
 
 
 
-def meta(key, transform):
-    '''
-    Create an extractor function that extracts the metadata for the given key.
-    '''
-    
-    def extract(soup_top, soup_entry, **metadata):
-        result = metadata.get(key)
-        try:
-            return transform(result) if transform else result
-        except ValueError:
-            if not result:
-                return None
-            else:
-                logging.critical('Metadata value {v} for key {k} could not be converted by the transformation function.'.format(v=result, k=key))        
+    def apply(self, *nargs, **kwargs):
         
-    return extract
+        if self.applicable is None or self.applicable(kwargs.get('metadata')):
+            result = self._apply(*nargs, **kwargs)
 
-
-
-def create_extractor(method=None):
-    '''
-    Helper function: wraps boilerplate code around any function that operates
-    on a BeautifulSoup element, a metadata dictionary and optional keyword
-    arguments. This function is then transformed into a function that upon
-    calling with relevant information, creates an extractor function in which
-    the original function is applied to the appropriate BeautifulSoup node(s).
-    '''
-    
-    if method is None:
-        return functools.partial(create_extractor)
-
-    @functools.wraps(method)
-    def decorator(
-            tag=None, toplevel=False, recursive=False,
-            multiple=False, transform=None, 
-            **kwargs):
-        
-        # Create extractor function
-        def extract(soup_top, soup_entry, **metadata):
-            if not tag:
-                result = method(None, metadata, **kwargs)
-            else:
-                # Select the appropriate starting soup element
-                soup = soup_top if toplevel else soup_entry
-                        
-                # If the tag was a path, walk through it before continuing
-                tag_ = tag
-                if isinstance(tag, list):
-                    for i in range(0, len(tag)-1):
-                        if tag[i] == '..':
-                            soup = soup.parent
-                        elif tag[i] == '.':
-                            pass
-                        else:
-                            soup = soup.find(tag[i], recursive=recursive)
-                        if not soup:
-                            return None
-                    tag_ = tag[-1]
-
-                # Find (all) relevant BeautifulSoup element(s)
-                if multiple:
-                    soup = soup.find_all(tag_, recursive=recursive)
-                else:
-                    soup = soup.find(tag_, recursive=recursive)
-
-                # Apply function that we were wrapping
-                result = method(soup, metadata, **kwargs) if soup else None
-
-            # Final transformation
             try:
-                return transform(result) if transform else result
-            except (ValueError, TypeError):
-                if result == '':
-                    return None
-                else:
-                    logging.critical('Value "{v}", extracted from tag "{t}" could not be converted by the transformation function.'.format(v=result, t=str(tag)))
+                if self.transform:
+                    return self.transform(result)
+            except Exception:
+                logging.critical("Value {v} could not be converted."\
+                    .format(v=result, k=key))
+            else:
+                return result
+        else:
+            return None
 
-        # Obtain created extractor function
-        return extract
+    def _apply(self, *nargs, **kwargs):
+        raise NotImplementedError()
+
+
+
+class Choice(Extractor):
+    '''
+    Use the first applicable extractor from a list of extractors.
+    '''
+    
+    def __init__(self, *nargs, **kwargs):
+        self.extractors = list(nargs)
+        super().__init__(**kwargs)
         
-    return decorator
+        
+        
+    def _apply(self, metadata, *nargs, **kwargs):
+        for extractor in self.extractors:
+            is_appropriate = extractor.applicability
+            if is_appropriate is None or is_appropriate(metadata):
+                return extractor.apply(metadata=metadata, *nargs, **kwargs)
+        return None
 
 
-@create_extractor
-def string(soup, metadata):
+
+class Constant(Extractor):
     '''
-    When combined with the `create_extractor` wrapper, `string` is a function
-    that takes arguments `tag`, `toplevel`, `recursive`, `multiple`,
-    `transform` and `attr`, and creates an extractor function.
+    This extractor 'extracts' the same value every time, regardless of input.
+    '''
     
-    This extractor function finds (a) node(s) and and outputs its direct
-    text contents.
-    '''
-
-    if isinstance(soup, bs4.element.Tag):
-        return soup.string
-    else:
-        return [ node.string for node in soup ]
-
-
-
-@create_extractor
-def attr(soup, metadata, attr=None):
-    '''
-    When combined with the `create_extractor` wrapper, `attr` is a function
-    that takes arguments `tag`, `toplevel`, `recursive`, `multiple`,
-    `transform` and `attr`, and creates an extractor function.
+    def __init__(self, value, *nargs, **kwargs):
+        self.value = value
+        super().__init__(*nargs, **kwargs)
     
-    This extractor function finds (a) node(s) and and outputs the content of
-    the attribute with the name `attr`.
-    '''
-
-    if isinstance(soup, bs4.element.Tag):
-        return soup.attrs.get(attr)
-    else:
-        return [
-            node.attrs.get(attr)
-            for node in soup if node.attrs.get(attr) is not None
-        ]
-
-
-
-@create_extractor
-def flatten(soup, metadata):
-    '''
-    When combined with the `create_extractor` wrapper, `flatten` is a function
-    that takes arguments `tag`, `toplevel`, `recursive`, `multiple` and
-    `transform` and creates an extractor function.
     
-    This extractor function finds (a) node(s) and outputs its text content, 
-    disregarding any underlying XML structure.
+    def _apply(self, *nargs, **kwargs):
+        return self.value
+        
+        
+
+
+class Metadata(Extractor):
+    '''
+    This extractor extracts a value from provided metadata.
+    '''
+    
+    
+    def __init__(self, key, *nargs, **kwargs):
+        self.key = key
+        super().__init__(*nargs, **kwargs)
+        
+    
+    
+    def _apply(self, metadata, *nargs, **kwargs):
+        return metadata.get(self.key)
+
+
+
+
+class XML(Extractor):
+    '''
+    This extractor extracts attributes or contents from a BeautifulSoup node.
     '''
 
-    if isinstance(soup, bs4.element.Tag):
-        text = soup.get_text()
-    else:
-        text = '\n\n'.join(node.get_text() for node in soup)
+    def __init__(self,
+        tag=[], # Tag to select. When this is a list, read as a path (e.g.
+                # select successive children; makes sense when recursive=False)
+        attribute=None, # Which attribute, if any, to select
+        flatten=False, # Flatten the text content of a non-text children?
+        toplevel=False, # Tag to select for search: top-level or entry tag
+        recursive=False, # Whether to search all descendants
+        multiple=False, # Whether to abandon the search after the first element
+        *nargs,
+        **kwargs
+        ):
+        
+        self.tag = tag
+        self.attribute = attribute
+        self.flatten = flatten
+        self.toplevel = toplevel
+        self.recursive = recursive
+        self.multiple = multiple
+        super().__init__(*nargs, **kwargs)
 
-    return html.unescape(
-        _regex2.sub('\n',
-            _regex1.sub(' ', text)
-        ).strip()
-    )
+
+
+    def _select(self, soup):
+        '''
+        Return the BeautifulSoup element that matches the constraints of this
+        extractor.
+        '''
+        # If the tag was a path, walk through it before continuing
+        tag = self.tag
+        if isinstance(self.tag, list):
+            for i in range(0, len(self.tag)-1):
+                if self.tag[i] == '..':
+                    soup = soup.parent
+                elif self.tag[i] == '.':
+                    pass
+                else:
+                    soup = soup.find(self.tag[i], recursive=self.recursive)
+                if not soup:
+                    return None
+            tag = self.tag[-1]
+
+        # Find and return (all) relevant BeautifulSoup element(s)
+        if self.multiple:
+            return soup.find_all(tag, recursive=self.recursive)
+        else:
+            return soup.find(tag, recursive=self.recursive)
+
+
+
+    def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
+        
+        # Select appropriate BeautifulSoup element
+        soup = self._select(soup_top if self.toplevel else soup_entry)
+
+        # Use appropriate extractor
+        if self.attribute:
+            return self._attr(soup)
+        else:
+            if self.flatten:
+                return self._flatten(soup)
+            else:
+                return self._string(soup)
+
+
+
+    def _string(self, soup):
+        '''
+        Output direct text contents of a node.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            return soup.string
+        else:
+            return [ node.string for node in soup ]
+
+
+
+    _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
+    _newlines  = re.compile('\n+')
+    
+    def _flatten(self, soup):
+        '''
+        Output text content of node and descendant nodes, disregarding
+        underlying XML structure.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            text = soup.get_text()
+        else:
+            text = '\n\n'.join(node.get_text() for node in soup)
+
+        return html.unescape(
+            _newlines.sub('\n',
+                _softbreak.sub(' ', text)
+            ).strip()
+        )
+
+
+
+    def _attr(self, soup):
+        '''
+        Output content of nodes' attribute.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            return soup.attrs.get(self.attr)
+        else:
+            return [
+                node.attrs.get(self.attr)
+                for node in soup if node.attrs.get(self.attr) is not None
+            ]

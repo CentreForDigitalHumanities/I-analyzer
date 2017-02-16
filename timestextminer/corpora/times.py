@@ -14,389 +14,460 @@ from datetime import datetime, timedelta
 from .. import config
 from .. import extract
 from .. import filters
-from .common import Field, until, after, xml2dicts
-
-
-# Corpus-specific config ######################################################
-
-DATA = config.TIMES_DATA
-ES_INDEX = config.TIMES_ES_INDEX
-ES_DOCTYPE = config.TIMES_ES_DOCTYPE
-MIN_DATE = config.TIMES_MIN_DATE
-MAX_DATE = config.TIMES_MAX_DATE
-
-
-# Data structure ##############################################################
-#
-# `fields` collects filters, extractor functions, etcetera that are relevant
-# to each data field. Specific to the current database.
-
-class mapping:
-    keyword = { 'type' : 'keyword' }
-    multi_keyword = { 'type' : 'keyword' } #{ 'type': 'text', 'index' : 'not_analyzed' }
-    date = { 'type' : 'date', 'format': 'yyyy-MM-dd' }
-    boolean = { 'type' : 'boolean' }
-    float = { 'type' : 'float' }
-    int = { 'type' : 'integer' }
-    
-
-fields = [
-    Field(
-        name='date',
-        description='Publication date, programmatically generated.',
-        mapping=mapping.date,
-        filter_=filters.DateFilter('date', MIN_DATE, MAX_DATE, description='Accept only articles with a publication date in this range.'),
-        extractor=extract.meta('date', transform=lambda x:x.strftime('%Y-%m-%d'))
-    ),
-    Field(indexed=False,
-        name='issue-id',
-        description='Issue identifier.',
-        extractor=extract.string(tag='id', toplevel=True)
-    ),
-    Field(indexed=False,
-        name='journal',
-        description='Journal name.',
-        extractor=[
-            (until(1985), extract.string(tag='jn', toplevel=True))
-        ]
-    ),
-    Field(
-        name='source',
-        description='Library where the microfilm is sourced',
-        extractor=[
-            (after(1985), extract.string(tag=['metadatainfo','sourceLibrary'], toplevel=True)),
-        ]
-    ),
-    Field(
-        name='newspaperID',
-        indexed=False,
-        description='Publication code',
-        extractor=[
-            (after(1985), extract.string(tag=['metadatainfo','newspaperID'], toplevel=True)),
-        ]
-    ),
-    Field(
-        name='edition',
-        extractor=[
-            (until(1985), extract.string(tag='ed', toplevel=True)),
-            (after(1985), extract.string(tag='ed', toplevel=True, multiple=True)),
-        ]
-    ),
-    Field(
-        name='issue',
-        mapping=mapping.int,
-        description='Source issue number.',
-        extractor=extract.string(tag='is', toplevel=True, transform=lambda x: (62226 if x=="6222662226" else int(x))) # Hardcoded to ignore one particular issue with source data
-    ),
-    Field(
-        name='volume',
-        description='Volume number.',
-        extractor=[
-            (after(1985), extract.string(tag='volNum', toplevel=True))
-        ]
-    ),
-    Field(
-        name='date-pub',
-        description='Date of publication.',
-        extractor=extract.string(tag='da', toplevel=True)
-    ),
-    Field(
-        name='date-end',
-        description='Ending date of publication. For issues that span more than 1 day.',
-        extractor=[
-            (after(1985), extract.string(tag='tdate', toplevel=True))
-        ]
-    ),
-    Field(
-        name='weekday',
-        description='Day of the week.',
-        indexed=False,
-        extractor=[
-            (after(1985), extract.string(tag='dw', toplevel=True))
-        ]
-    ),
-    Field(
-        name='publication-date',
-        description='Fixed publication date. Logically generated from date, e.g. yyyymmdd',
-        indexed=False,
-        extractor=extract.string(tag='pf', toplevel=True)
-    ),
-    Field(
-        name='page-count',
-        description='Page count: number of images present in the issue.',
-        mapping=mapping.int,
-        extractor=extract.string(tag='ip', toplevel=True, transform=int)
-    ),
-    Field(
-        name='copyright',
-        description='Copyright holder and year.',
-        indexed=False,
-        extractor=[
-            (until(1985), extract.string(tag='cp', toplevel=True)),
-            (after(1985), extract.string(tag='copyright', toplevel=True))
-        ]
-    ),
-    Field(
-        name='page-type',
-        description='Supplement in which article occurs.',
-        mapping=mapping.keyword,
-        filter_=filters.MultipleChoiceFilter('page-type',
-            description='Accept only articles that occur in the relevant supplement. Only after 1985.',
-            options=['Special','Supplement','Standard']
-        ),
-        extractor=[
-            (after(1985), extract.attr(tag=['..','pageid'], attr='isPartOf'))
-        ]
-    ),
-    Field(
-        name='supplement-title',
-        description='Supplement title.',
-        extractor=[
-            (after(1985), extract.string(tag=['..','pageid','supptitle'], multiple=True))
-        ]
-    ),
-    Field(
-        name='supplement-subtitle',
-        description='Supplement subtitle.',
-        extractor=[
-            (after(1985), extract.string(tag=['..','pageid','suppsubtitle'], multiple=True))
-        ]
-    ),
-    Field(
-        name='cover',
-        description='Whether the article is on the cover page.',
-        mapping=mapping.boolean,
-        filter_=filters.BooleanFilter('cover', true='Cover page', false='Other', description='Accept only articles that are on the cover page. From 1985.'),
-        extractor=[
-            (after(1985), extract.attr(tag=['..','pageid'], attr='pageType', transform=lambda s:bool("Cover" in s if s else False)))
-        ]
-    ),
-    Field(
-        name='id',
-        description='Article identifier.',
-        extractor=extract.string(tag='id')
-    ),
-    Field(
-        name='ocr',
-        description='OCR confidence level.',
-        mapping=mapping.float,
-        extractor=extract.string(tag='ocr', transform=float),
-        filter_=filters.RangeFilter('ocr', 0, 100, description='Accept only articles for which the OCR confidence indicator is in this range.'),
-    ),
-    Field(
-        name='ocr-relevant',
-        description='Whether OCR confidence level is relevant.',
-        mapping=mapping.boolean,
-        extractor=extract.attr(tag='ocr', attr='relevant', transform=lambda s:bool("yes" in s.lower() if s else False))
-    ),
-    Field(
-        name='column',
-        description='Starting column: a string to label the column where article starts.',
-        extractor=extract.string(tag='sc')
-    ),
-    Field(
-        name='page',
-        description='Start page label, from source (1, 2, 17A, ...).',
-        extractor=[
-            (until(1985), extract.string(tag='pa')),
-            (after(1985), extract.string(tag=['..','pa']))
-        ]
-    ),
-    Field(
-        name='pages',
-        mapping=mapping.int,
-        description='Page count: total number of pages containing sections of the article.',
-        extractor=extract.string(tag='pc', transform=int)
-    ),
-    Field(
-        name='title',
-        description='Article title.',
-        extractor=extract.string(tag='ti')
-    ),
-    Field(
-        name='subtitle',
-        description='Article subtitle.',
-        extractor=extract.string(tag='ta', multiple=True)
-    ),
-    Field(
-        name='subheader',
-        description='Article subheader (product dependent field).',
-        extractor=[
-            (after(1985), extract.string(tag='subheader', multiple=True))
-        ]
-    ),
-    Field(
-        name='author',
-        description='Article author.',
-        extractor=[
-            (until(1985), extract.string(tag='au', multiple=True)),
-            (after(1985), extract.string(tag='au_composed', multiple=True))
-        ]
-    ),
-    Field(
-        name='source-paper',
-        description='Credited as source.',
-        extractor=extract.string(tag='altSource', multiple=True)
-    ),
-    Field(
-        name='category',
-        description='Article subject categories.',
-        mapping=mapping.multi_keyword,
-        filter_=filters.MultipleChoiceFilter('category',
-            description='Accept only articles in these categories.',
-            options=[
-                'Classified Advertising',
-                'Display Advertising',
-                'Property',
-                'News',
-                'News in Brief',
-                'Index',
-                'Law',
-                'Politics and Parliament',
-                'Court and Social',
-                'Business and Finance',
-                'Shipping News',
-                'Stock Exchange Tables',
-                'Births',
-                'Business Appointments',
-                'Deaths',
-                'Marriages',
-                'Obituaries',
-                'Official Appointments and Notices',
-                'Editorials/Leaders',
-                'Feature Articles (aka Opinion)',
-                'Opinion',
-                'Letters to the Editor',
-                'Arts and Entertainment',
-                'Reviews',
-                'Sport',
-                'Weather'
-            ]
-        ),
-        extractor=extract.string(tag='ct', multiple=True),
-    ),
-    Field(
-        name='illustration',
-        description='Tables and other illustrations associated with the article.',
-        mapping=mapping.multi_keyword,
-        filter_=filters.MultipleChoiceFilter('illustration',
-            description='Accept only articles associated with these types of illustrations.', 
-            options=[
-                'Cartoon',
-                'Map',
-                'Drawing-Painting',
-                'Photograph',
-                'Graph',
-                'Table',
-                'Chart',
-                'Engraving',
-                'Fine-Art-Reproduction',
-                'Illustration'
-            ]
-        ),
-        extractor=[
-            (until(1985), extract.string(tag='il', multiple=True)),
-            (after(1985), extract.attr(tag='il', attr='type', multiple=True))
-        ]
-    ),
-    Field(
-        name='content-preamble',
-        description='Raw OCR\'ed text (preamble).',
-        extractor=extract.flatten(tag=['text','text.preamble'])
-    ),
-    Field(
-        name='content-heading',
-        description='Raw OCR\'ed text (header).',
-        extractor=extract.flatten(tag=['text','text.title'])
-    ),
-    Field(
-        name='content',
-        description='Raw OCR\'ed text (content).',
-        extractor=extract.flatten(tag=['text','text.cr'], multiple=True)
-    ),
-]
+from .common import XMLCorpus, Field, until, after, string_contains
 
 
 
 # Source files ################################################################
 
-def files(start=datetime.min, end=datetime.max, **kwargs):
-    '''
-    Obtain filenames of XML-data for the Times, relevant to the given timespan.
+
+class Times(XMLCorpus):
+
+    data_directory = config.TIMES_DATA
+    min_date = config.TIMES_MIN_DATE
+    max_date = config.TIMES_MAX_DATE
+    es_index = config.TIMES_ES_INDEX
+    es_doctype = config.TIMES_ES_DOCTYPE    
+    es_settings = None
     
-    More abstractly, returns an iterator of tuples that contain a filename and
-    a dictionary of associated metadata.
-    '''
+    xml_tag_toplevel = 'issue'
+    xml_tag_entry = 'article'
 
-    if isinstance(start, int):
-        start = datetime(year=start, month=1, day=1)
-    if isinstance(end, int):
-        end = datetime(year=end, month=12, day=31)
+    def sources(self, start=datetime.min, end=datetime.max):
+        '''
+        Obtain source files for the Times data, relevant to the given timespan.
+        
+        Specifically, returns an iterator of tuples that each contain a string
+        filename and a dictionary of metadata (in this case, the date).
+        '''
 
-    if start > end:
-        tmp = start
-        start = end
-        end = tmp
+        if isinstance(start, int):
+            start = datetime(year=start, month=1, day=1)
+        if isinstance(end, int):
+            end = datetime(year=end, month=12, day=31)
 
-    if start < MIN_DATE:
-        start = MIN_DATE
-    if end > MAX_DATE:
-        end = MAX_DATE
+        if start > end:
+            tmp = start
+            start = end
+            end = tmp
 
-    date = start
-    delta = timedelta(days = 1)
-    while date <= end:
+        if start < self.min_date:
+            start = self.min_date
+        if end > self.max_date:
+            end = self.max_date
 
-        # Construct the tag to the correct directory
-        xmldir = os.path.join(*[
-            DATA,
-            'TDA_GDA'
-        ] + (
-            ['TDA_2010']
-                if date.year == 2010 else
-            ['TDA_GDA_1785-2009', date.strftime('%Y')]
-        ))
+        date = start
+        delta = timedelta(days = 1)
+        while date <= end:
 
-        # Skip this year if its directory doesn't exist
-        if not os.path.isdir(xmldir):
-            logger.warning('Directory {} does not exist'.format(xmldir))
-            date = datetime(year=date.year+1, month=1, day=1)
-            continue
+            # Construct the tag to the correct directory
+            xmldir = os.path.join(*[
+                self.data_directory,
+                'TDA_GDA'
+            ] + (
+                ['TDA_2010']
+                    if date.year == 2010 else
+                ['TDA_GDA_1785-2009', date.strftime('%Y')]
+            ))
 
-        # Construct the full tag
-        xmlfile = os.path.join(
-            xmldir,
-            date.strftime('%Y%m%d'), 
-            date.strftime('0FFO-%Y-%m%d.xml') \
-                if date.year > 1985 else \
-            date.strftime('0FFO-%Y-%b%d').upper() + '.xml' 
-        )
+            # Skip this year if its directory doesn't exist
+            if not os.path.isdir(xmldir):
+                logger.warning('Directory {} does not exist'.format(xmldir))
+                date = datetime(year=date.year+1, month=1, day=1)
+                continue
 
-        # Yield date and tag if the desired file is present
-        if os.path.isfile(xmlfile):
-            yield (xmlfile, { 'date' : date })
-        else:
-            logger.warning('XML file {} does not exist'.format(xmlfile))
-
-        date += delta
-
-
-
-# Wrapping up #################################################################
-
-def documents(datafiles):
-    '''
-    From the result type of files(), generate an iterator of document
-    dictionaries.
-    '''
-
-    return (document
-        for filename, metadata in datafiles
-            for document in xml2dicts(
-                fields,
-                tag_top='issue',
-                tag_entry='article',
-                xmlfile=filename,
-                metadata=metadata
+            # Construct the full tag
+            xmlfile = os.path.join(
+                xmldir,
+                date.strftime('%Y%m%d'), 
+                date.strftime('0FFO-%Y-%m%d.xml') \
+                    if date.year > 1985 else \
+                date.strftime('0FFO-%Y-%b%d').upper() + '.xml' 
             )
-    )
+
+            # Yield file and metadata if the desired file is present
+            if os.path.isfile(xmlfile):
+                yield (xmlfile, { 'date' : date })
+            else:
+                logger.warning('XML file {} does not exist'.format(xmlfile))
+
+            date += delta
+
+
+
+    fields = [
+        Field(
+            name='date',
+            description='Publication date, programmatically generated.',
+            es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            filter_=filters.DateFilter('date',
+                config.TIMES_MIN_DATE,
+                config.TIMES_MAX_DATE,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+            extractor=extract.Metadata('date',
+                transform=lambda x: x.strftime('%Y-%m-%d')
+            )
+        ),
+        Field(indexed=False,
+            name='issue-id',
+            description='Issue identifier.',
+            extractor=extract.XML(tag='id', toplevel=True)
+        ),
+        Field(indexed=False,
+            name='journal',
+            description='Journal name.',
+            extractor=extract.XML(
+                tag='jn', toplevel=True,
+                applicable=until(1985)
+            )
+        ),
+        Field(
+            name='source',
+            description='Library where the microfilm is sourced',
+            extractor=extract.XML(
+                tag=['metadatainfo','sourceLibrary'], toplevel=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(indexed=False,
+            name='newspaperID',
+            description='Publication code',
+            extractor=extract.XML(
+                tag=['metadatainfo','newspaperID'], toplevel=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='edition',
+            extractor=extract.Choice(
+                extract.XML(
+                    tag='ed', toplevel=True,
+                    applicable=until(1985)
+                ),
+                extract.XML(
+                    tag='ed', toplevel=True, multiple=True,
+                    applicable=after(1985)
+                )
+            )
+        ),
+        Field(
+            name='issue',
+            es_mapping={ 'type' : 'integer' },
+            description='Source issue number.',
+            extractor=extract.XML(
+                tag='is', toplevel=True,
+                # Hardcoded to ignore one particular issue with source data
+                transform=lambda x: (62226 if x=="6222662226" else int(x))
+            )
+        ),
+        Field(
+            name='volume',
+            description='Volume number.',
+            extractor=extract.XML(
+                tag='volNum', toplevel=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='date-pub',
+            description='Date of publication.',
+            extractor=extract.XML(
+                tag='da', toplevel=True
+            )
+        ),
+        Field(
+            name='date-end',
+            description=(
+                'Ending date of publication. '
+                'For issues that span more than 1 day.'
+            ),
+            extractor=extract.XML(
+                tag='tdate', toplevel=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(indexed=False,
+            name='weekday',
+            description='Day of the week.',
+            extractor=extract.XML(
+                tag='dw', toplevel=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(indexed=False,
+            name='publication-date',
+            description=(
+                'Fixed publication date. Logically generated from date, '
+                'e.g. yyyymmdd'
+            ),
+            extractor=extract.XML(
+                tag='pf', toplevel=True,
+            )
+        ),
+        Field(
+            name='page-count',
+            description='Page count: number of images present in the issue.',
+            es_mapping={ 'type' : 'integer' },
+            extractor=extract.XML(
+                tag='ip', toplevel=True, transform=int
+            )
+        ),
+        Field(indexed=False,
+            name='copyright',
+            description='Copyright holder and year.',
+            extractor=extract.Choice(
+                extract.XML(
+                    tag='cp', toplevel=True,
+                    applicable=until(1985)
+                ),
+                extract.XML(
+                    tag='copyright', toplevel=True,
+                    applicable=after(1985)
+                )
+            )
+        ),
+        Field(
+            name='page-type',
+            description='Supplement in which article occurs.',
+            es_mapping={ 'type' : 'keyword' },
+            filter_=filters.MultipleChoiceFilter('page-type',
+                description=(
+                    'Accept only articles that occur in the relevant '
+                    'supplement. Only after 1985.'
+                ),
+                options=[
+                    'Special',
+                    'Supplement',
+                    'Standard'
+                ]
+            ),
+            extractor=extract.XML(
+                tag=['..','pageid'], attribute='isPartOf',
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='supplement-title',
+            description='Supplement title.',
+            extractor=extract.XML(
+                tag=['..','pageid','supptitle'], multiple=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='supplement-subtitle',
+            description='Supplement subtitle.',
+            extractor=extract.XML(
+                tag=['..','pageid','suppsubtitle'], multiple=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='cover',
+            description='Whether the article is on the cover page.',
+            es_mapping={ 'type' : 'boolean' },
+            filter_=filters.BooleanFilter('cover',
+                true='Cover page',
+                false='Other',
+                description=(
+                    'Accept only articles that are on the cover page. '
+                    'From 1985.'
+                )
+            ),
+            extractor=extract.XML(
+                tag=['..','pageid'], attribute='pageType',
+                transform=string_contains("cover"),
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='id',
+            description='Article identifier.',
+            extractor=extract.XML(tag='id')
+        ),
+        Field(
+            name='ocr',
+            description='OCR confidence level.',
+            es_mapping={ 'type' : 'float' },
+            filter_=filters.RangeFilter('ocr', 0, 100,
+                description=(
+                    'Accept only articles for which the OCR confidence '
+                    'indicator is in this range.'
+                )
+            ),
+            extractor=extract.XML(tag='ocr', transform=float)
+        ),
+        Field(
+            name='ocr-relevant',
+            description='Whether OCR confidence level is relevant.',
+            es_mapping={ 'type' : 'boolean' },
+            extractor=extract.XML(
+                tag='ocr', attribute='relevant',
+                transform=string_contains("yes"),
+            )
+        ),
+        Field(
+            name='column',
+            description=(
+                'Starting column: a string to label the column'
+                'where article starts.'
+            ),
+            extractor=extract.XML(tag='sc')
+        ),
+        Field(
+            name='page',
+            description='Start page label, from source (1, 2, 17A, ...).',
+            extractor=extract.Choice(
+                extract.XML(tag='pa', applicable=until(1985)),
+                extract.XML(tag=['..','pa'], applicable=after(1985))
+            )
+        ),
+        Field(
+            name='pages',
+            es_mapping={ 'type' : 'integer' },
+            description=(
+                'Page count: total number of pages containing sections '
+                'of the article.'
+            ),
+            extractor=extract.XML(
+                tag='pc', transform=int
+            )
+        ),
+        Field(
+            name='title',
+            description='Article title.',
+            extractor=extract.XML(tag='ti')
+        ),
+        Field(
+            name='subtitle',
+            description='Article subtitle.',
+            extractor=extract.XML(tag='ta', multiple=True)
+        ),
+        Field(
+            name='subheader',
+            description='Article subheader (product dependent field).',
+            extractor=extract.XML(
+                tag='subheader', multiple=True,
+                applicable=after(1985)
+            )
+        ),
+        Field(
+            name='author',
+            description='Article author.',
+            extractor=extract.Choice(
+                extract.XML(
+                    tag='au', multiple=True,
+                    applicable=until(1985)
+                ),
+                extract.XML(
+                    tag='au_composed', multiple=True,
+                    applicable=after(1985)
+                )
+            )
+        ),
+        Field(
+            name='source-paper',
+            description='Credited as source.',
+            extractor=extract.XML(
+                tag='altSource', multiple=True
+            )
+        ),
+        Field(
+            name='category',
+            description='Article subject categories.',
+            es_mapping={ 'type' : 'keyword' },
+            filter_=filters.MultipleChoiceFilter('category',
+                description='Accept only articles in these categories.',
+                options=[
+                    'Classified Advertising',
+                    'Display Advertising',
+                    'Property',
+                    'News',
+                    'News in Brief',
+                    'Index',
+                    'Law',
+                    'Politics and Parliament',
+                    'Court and Social',
+                    'Business and Finance',
+                    'Shipping News',
+                    'Stock Exchange Tables',
+                    'Births',
+                    'Business Appointments',
+                    'Deaths',
+                    'Marriages',
+                    'Obituaries',
+                    'Official Appointments and Notices',
+                    'Editorials/Leaders',
+                    'Feature Articles (aka Opinion)',
+                    'Opinion',
+                    'Letters to the Editor',
+                    'Arts and Entertainment',
+                    'Reviews',
+                    'Sport',
+                    'Weather'
+                ]
+            ),
+            extractor=extract.XML(tag='ct', multiple=True)
+        ),
+        Field(
+            name='illustration',
+            description=(
+                'Tables and other illustrations associated with the article.'
+            ),
+            es_mapping={ 'type' : 'keyword' },
+            filter_=filters.MultipleChoiceFilter('illustration',
+                description=(
+                    'Accept only articles associated with these types'
+                    'of illustrations.'), 
+                options=[
+                    'Cartoon',
+                    'Map',
+                    'Drawing-Painting',
+                    'Photograph',
+                    'Graph',
+                    'Table',
+                    'Chart',
+                    'Engraving',
+                    'Fine-Art-Reproduction',
+                    'Illustration'
+                ]
+            ),
+            extractor=extract.Choice(
+                extract.XML(
+                    tag='il', multiple=True,
+                    applicable=until(1985)
+                ),
+                extract.XML(
+                    tag='il', attribute='type', multiple=True,
+                    applicable=after(1985)
+                )
+            )
+        ),
+        Field(
+            name='content-preamble',
+            description='Raw OCR\'ed text (preamble).',
+            extractor=extract.XML(
+                tag=['text','text.preamble'],
+                flatten=True
+            )
+        ),
+        Field(
+            name='content-heading',
+            description='Raw OCR\'ed text (header).',
+            extractor=extract.XML(
+                tag=['text','text.title'],
+                flatten=True
+            )
+        ),
+        Field(
+            name='content',
+            description='Raw OCR\'ed text (content).',
+            extractor=extract.XML(
+                tag=['text','text.cr'], multiple=True,
+                flatten=True
+            )
+        ),
+    ]

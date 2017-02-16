@@ -80,8 +80,8 @@ def execute(corpus, query, size=5):
 
     # Search operation
     result = client.search(
-        index=corpus.ES_INDEX,
-        doc_type=corpus.ES_DOCTYPE,
+        index=corpus.es_index,
+        doc_type=corpus.es_doctype,
         #fielddata_fields=[],
         #stored_fields=[],
         size=size,
