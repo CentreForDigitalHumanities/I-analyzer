@@ -15,6 +15,8 @@ from timestextminer import config
 from timestextminer import factories
 from timestextminer.corpora import corpora
 
+
+
 def create(client, corpus, clear=False):
     '''
     Initialise an ElasticSearch index.
@@ -39,11 +41,13 @@ def populate(client, corpus, start=None, end=None):
     '''
     
     logging.info('Attempting to populate index...')
+    
+    # Obtain source documents
     files = corpus.files(start or corpus.min_date, end or corpus.max_date)
     docs = corpus.documents(files)
     
-    # Each source document is passed to an indexing action, so that it can be
-    # sent to ElasticSearch in bulk
+    # Each source document is decorated as an indexing operation, so that it
+    # can be sent to ElasticSearch in bulk
     actions = (
         {
             '_op_type' : 'index',
@@ -54,27 +58,16 @@ def populate(client, corpus, start=None, end=None):
         } for doc in docs
     )
     
+    # Do bulk operation
     for result in es_helpers.bulk(
         client,
         actions,
-        chunk_size=900,
-        max_chunk_bytes=1*1024*1024,
-        timeout='60s',
-        stats_only=True,
-        refresh=True
+        chunk_size=config.ES_CHUNK_SIZE,
+        max_chunk_bytes=config.ES_MAX_CHUNK_BYTES,
+        timeout=config.ES_BULK_TIMEOUT,
+        stats_only=True, # We want to know how many documents were added
     ):
         logging.info('Indexed documents ({}).'.format(result))
-
-
-
-def index(client, corpus, start=None, end=None, clear=False):
-    '''
-    Create and populate an ElasticSearch index.
-    '''
-    
-    create(client, corpus, clear=clear)
-    client.cluster.health(wait_for_status='yellow')
-    populate(client, corpus, start=start, end=end)
 
 
 
@@ -83,10 +76,15 @@ if __name__ == '__main__':
     Enable indexing from the command line.
     '''
     
+    # Read CLI arguments
     try:
         corpus = corpora[sys.argv[1]]
-        start = datetime.strptime(sys.argv[2], '%Y-%m-%d')
-        end = datetime.strptime(sys.argv[3], '%Y-%m-%d')
+        if len(sys.argv) > 3:
+            start = datetime.strptime(sys.argv[2], '%Y-%m-%d')
+            end = datetime.strptime(sys.argv[3], '%Y-%m-%d')
+        else:
+            start = corpus.min_date
+            end = corpus.max_date
     except Exception:
         logging.critical(
             'Missing or incorrect arguments. '
@@ -94,13 +92,22 @@ if __name__ == '__main__':
         )
         raise
     
-    client = factories.elasticsearch()
-    logging.basicConfig(filename='indexing-{}-{}.log'.format(start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')), level=config.LOG_LEVEL)
-    
+    # Log to a specific file
+    logfile = 'indexing-{}-{}.log'.format(
+        start.strftime('%Y%m%d'),
+        end.strftime('%Y%m%d')
+    )
+    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
     logging.info('Started indexing `{}` from {} to {}...'.format(
-        corpus.ES_INDEX,
-        start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')
+        corpus.es_index,
+        start.strftime('%Y-%m-%d'),
+        end.strftime('%Y-%m-%d')
     ))
     
-    index(client, corpus, start=start, end=end)
+    # Create and populate the ES index
+    client = factories.elasticsearch()
+    create(client, corpus, clear=False)
+    client.cluster.health(wait_for_status='yellow')
+    populate(client, corpus, start=start, end=end)
+    
     logging.info('Finished indexing `{}`.'.format(corpus.es_index))
