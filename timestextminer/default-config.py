@@ -18,9 +18,12 @@ ES_HOST='localhost'
 ES_PORT=9200
 ES_USERNAME=''
 ES_PASSWORD=''
-ES_BULK_CHUNK_SIZE=900
-ES_MAX_CHUNK_BYTES=1*1024*1024
-ES_BULK_TIMEOUT='60s'
+ES_CHUNK_SIZE=900 # Maximum number of documents sent during ES bulk operation
+ES_MAX_CHUNK_BYTES=1*1024*1024 # Maximum size of ES chunk during bulk operation
+ES_BULK_TIMEOUT='60s' # Timeout of ES bulk operation
+ES_EXAMPLE_QUERY_SIZE=5 # Number of results to appear in example query 
+ES_SCROLL_TIMEOUT='3m' # Time before scroll results time out
+ES_SCROLL_PAGESIZE=5000 # Number of results per scroll page
 
 # Index configurations
 TIMES_ES_INDEX='times'

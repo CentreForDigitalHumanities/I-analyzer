@@ -10,10 +10,11 @@ from datetime import datetime, timedelta
 client = factories.elasticsearch()
 
 def make_query(query_string=None, filters=[], **kwargs):
+    '''
+    Construct a dictionary representing an ES query. Query strings are read as
+    the `simple_query_string` DSL of standard ElasticSearch.
+    '''
 
-    # https://www.elastic.co/guide/en/elasticsearch/reference/5.x/query-dsl-simple-query-string-query.html
-
-    # Construct query
     q = {
         'match_all' : {}
     }
@@ -45,21 +46,22 @@ def make_query(query_string=None, filters=[], **kwargs):
 
 
 
-# See page 127 for scan and scroll
-def execute_iterate(corpus, query, size=50000):
+def execute_iterate(corpus, query, size):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
-
-    If a query has been given, it is interpreted as the mini query string language.
     '''
 
     result = scan(client,
         query=query,
         index=corpus.ES_INDEX,
         doc_type=corpus.ES_DOCTYPE,
-        size=5000 if size > 5000 else size,
-        scroll='3m',
+        size=(
+            config.ES_SCROLL_PAGESIZE
+            if size > config.ES_SCROLL_PAGESIZE
+            else size
+        ),
+        scroll=config.ES_SCROLL_TIMEOUT,
     )
     
     for i, doc_source in enumerate(result):
@@ -73,20 +75,17 @@ def execute_iterate(corpus, query, size=50000):
         yield doc
 
 
-def execute(corpus, query, size=5):
+def execute(corpus, query, size=config.ES_EXAMPLE_QUERY_SIZE):
     '''
-    Execute an ElasticSearch query and return a dict with results.
+    Execute an ElasticSearch query and return a dictionary containing the
+    results.
     '''
 
-    # Search operation
     result = client.search(
         index=corpus.es_index,
         doc_type=corpus.es_doctype,
-        #fielddata_fields=[],
-        #stored_fields=[],
         size=size,
         body=query,
-        #filter_path=['hits.hits._id', 'hits.hits._source']
     )
     
     return result 
