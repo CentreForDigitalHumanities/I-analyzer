@@ -19,8 +19,9 @@ class Corpus(object):
     - What each attribute looks like, so that a search form can be constructed.    
     '''
 
+       
     @property
-    def DATA(self):
+    def data_directory(self):
         '''
         Path to source data directory.
         '''
@@ -29,25 +30,7 @@ class Corpus(object):
 
 
     @property
-    def ES_INDEX(self):
-        '''
-        ElasticSearch index name.
-        '''
-        raise NotImplementedError()
-
-
-
-    @property
-    def ES_DOCTYPE(self):
-        '''
-        ElasticSearch document type name.
-        '''
-        raise NotImplementedError()
-
-
-
-    @property
-    def MIN_DATE(self):
+    def min_date(self):
         '''
         Minimum timestamp for data files.
         '''
@@ -56,9 +39,36 @@ class Corpus(object):
 
 
     @property
-    def MAX_DATE(self):
+    def max_date(self):
         '''
         Maximum timestamp for data files.
+        '''
+        raise NotImplementedError()
+
+
+
+    @property
+    def es_index(self):
+        '''
+        ElasticSearch index name.
+        '''
+        raise NotImplementedError()
+
+
+
+    @property
+    def es_doctype(self):
+        '''
+        ElasticSearch document type name.
+        '''
+        raise NotImplementedError()
+        
+        
+        
+    @property
+    def es_settings(self):
+        '''
+        Dictionary containing ElasticSearch settings for the corpus' index.
         '''
         raise NotImplementedError()
 
@@ -71,6 +81,30 @@ class Corpus(object):
         the `Field` class, containing information about each attribute.
         '''
         raise NotImplementedError()
+
+
+
+    def es_mapping(self):
+        '''
+        Create the ElasticSearch mapping for the fields of this corpus. May be
+        passed to the body of an ElasticSearch index creation request.
+        '''
+        result = {
+            'mappings' : {
+                self.es_doctype : {
+                    'properties': {
+                        field.name : field.mapping
+                        for field in self.fields
+                        if field.mapping and field.indexed
+                    }
+                }
+            }
+        }
+        
+        if self.es_settings:
+            result['settings'] = self.es_settings
+
+        return result
 
 
 
@@ -215,7 +249,7 @@ class Field(object):
             hidden=False,
             es_mapping={ 'type' : 'text' },
             filter_=None,
-            extractor=extract.Const(None),
+            extractor=extract.Constant(None),
             **kwargs
             ):
 
@@ -233,6 +267,9 @@ class Field(object):
         '''
         Return the name of the filter associated with this Field, or None if
         there is no such filter.
+        
+        TODO: Used to automatically create a form in Jinja2 template. Clearly,
+        this can be done in a better way. (WTForms)
         '''
         return self.filter_ and self.filter_.__class__.__name__
 
