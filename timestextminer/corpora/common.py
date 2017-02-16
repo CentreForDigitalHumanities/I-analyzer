@@ -170,14 +170,23 @@ class XMLCorpus(Corpus):
         # Extract fields from soup
         tag0 = self.xml_tag_toplevel
         tag  = self.xml_tag_entry
-        soup_bowl = soup.find(tag0) if tag0 else soup
-        if soup_bowl:
-            for soup_spoon in soup_bowl.find_all(tag):
-                extractor = field.extractor(metadata)
+        bowl = soup.find(tag0) if tag0 else soup
+        if bowl:
+            for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find children
+
+                if not isinstance(field.extractor, (
+                        extract.XML,
+                        extract.Metadata,
+                        extract.Constant
+                    )):
+                    raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
+
                 yield {
-                    field.name : extractor(soup_bowl, soup_spoon, metadata)
-                    for field in fields
-                        if field.indexed
+                    field.name : field.extractor.apply(
+                        soup_top=bowl,
+                        soup_entry=spoon,
+                        metadata=metadata
+                    ) for field in fields if field.indexed
                 }
         else:
             logger.warning('Top-level tag not found in `{}`'.format(xmlfile))
@@ -190,7 +199,7 @@ class XMLCorpus(Corpus):
 class Field(object):
     '''
     Fields hold data about the name of their columns in CSV files, how the
-    corresponding content is to be extracted from BeautifulSoup, how they are
+    corresponding content is to be extracted from the source, how they are
     described in user interfaces, what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
     
@@ -200,45 +209,48 @@ class Field(object):
 
 
     def __init__(self,
-            name=None, # 
+            name=None,
             description=None,
             indexed=True,
             hidden=False,
-            mapping={ 'type' : 'text' },
+            es_mapping={ 'type' : 'text' },
             filter_=None,
-            extractor=[],
+            extractor=extract.Const(None),
             **kwargs
             ):
 
         self.name = name
         self.description = description
         self.filter_ = filter_
-        self.mapping = mapping
+        self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden
-        self.extractors = extractor
-
-
-    def extractor(self, metadata):
-        '''
-        Select the appropriate function to extract the data for this field from
-        the source file, based on the provided metadata about said source file.
-        '''
-
-        for is_appropriate, extractor in self.extractors:
-            if is_appropriate is None or is_appropriate(metadata):
-                return extractor
-        return extract.const(None)
+        self.extractor = extractor
 
 
     @property
     def filterclass(self):
+        '''
+        Return the name of the filter associated with this Field, or None if
+        there is no such filter.
+        '''
         return self.filter_ and self.filter_.__class__.__name__
 
 
 
 
 # Helper functions ############################################################
+
+def string_contains(target):
+    '''
+    Return a predicate that performs a case-insensitive search for the target
+    string and returns whether it was found.
+    '''
+    def f(string):
+        return bool(target.lower() in string.lower() if string else False)
+    return f
+
+
 
 def until(year):
     '''
@@ -261,11 +273,3 @@ def after(year):
         date = metadata.get('date')
         return date and date.year > year
     return f
-
-
-
-def default(metadata):
-    '''
-    Predicate that is true on any input.
-    '''
-    return True
