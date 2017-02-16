@@ -2,12 +2,16 @@
 For creation of Flask and ElasticSearch objects.
 '''
 
-from . import config
-from . import sqla
 from flask import Flask
 from elasticsearch import Elasticsearch
 
+from . import config
+from . import sqla
+
 def elasticsearch(cfg=config):
+    '''
+    Create ElasticSearch instance with default configuration.
+    '''
     node = {'host': cfg.ES_HOST,
             'port': cfg.ES_PORT}
     if cfg.ES_USERNAME:
@@ -17,10 +21,14 @@ def elasticsearch(cfg=config):
 
 
 def flask_app(blueprint, admin_instance, login_manager, cfg=config):
+    '''
+    Create Flask instance, with given configuration and flask_admin and
+    flask_login instances.
+    '''
     app = Flask(__name__)
     app.config.from_object(cfg)
     app.register_blueprint(blueprint)
-    
+
     sqla.db.init_app(app)
     login_manager.init_app(app)
     admin_instance.init_app(app)
