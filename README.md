@@ -4,16 +4,18 @@ timestextminer
 
 `timestextminer` is a Python package that provides the following:
 
-- A connection between a corpus' source XML data files, and corresponding entries in an ElasticSearch 5.x index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using `elasticsearch`---not `elasticsearch-dsl`, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version.
+- A front-end that enables users to search through an ElasticSearch 5 index of a text corpus, and stream search results into a CSV file. For now, `flask` is used for serving the interface and generating results. On the client side, the interface uses JQuery-UI.
 
-- A front-end that enables users to search through this index and stream search results into a CSV file. For now, `flask` is used for serving the interface and generating results, with a SQL database for user management. On the client side, the interface uses JQuery-UI.
+- Underneath, the package provides a way to link together the source data files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (not `elasticsearch-dsl`, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+
+
 
 
 
 Project layout
 -------------------------------------------------------------------------------
 
-Each corpus is defined by subclassing the `Corpus` class, found in [timestextmining/corpora/common.py], and registering that class in [timestextmining/corpora/__init__.py]. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+Each corpus is defined by subclassing the `Corpus` class, found in `timestextmining/corpora/common.py`, and registering that class in `timestextmining/corpora/__init__.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
 
 
 Running
@@ -21,12 +23,8 @@ Running
 
 ### Local instance
 
-After configuring `timestextminer/config.py` (see `default-config.py`), setting up the ElasticSearch daemon and creating an index, running `run.py` should create an instance of the server at `127.0.0.1:5000`.
+After configuring `timestextminer/config.py` (see `default-config.py`), setting up the ElasticSearch daemon and creating an index (`index.py`) and MySQL database (`create_database.py`), running `run.py` should create an instance of the server at `127.0.0.1:5000`.
 
-
-### Tests
-
-For testing, `py.test` is used.
 
 
 Indexing
