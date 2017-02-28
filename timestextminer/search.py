@@ -3,6 +3,7 @@ Module handles searching through the indices.
 '''
 
 from . import factories
+from . import config
 
 from elasticsearch.helpers import scan
 from datetime import datetime, timedelta
@@ -12,7 +13,8 @@ client = factories.elasticsearch()
 def make_query(query_string=None, filters=[], **kwargs):
     '''
     Construct a dictionary representing an ES query. Query strings are read as
-    the `simple_query_string` DSL of standard ElasticSearch.
+    the `simple_query_string` DSL of standard ElasticSearch; filters should be
+    a list of dictionaries representing the ES DSL.
     '''
 
     q = {
@@ -54,8 +56,8 @@ def execute_iterate(corpus, query, size):
 
     result = scan(client,
         query=query,
-        index=corpus.ES_INDEX,
-        doc_type=corpus.ES_DOCTYPE,
+        index=corpus.es_index,
+        doc_type=corpus.es_doctype,
         size=(
             config.ES_SCROLL_PAGESIZE
             if size > config.ES_SCROLL_PAGESIZE
@@ -68,14 +70,11 @@ def execute_iterate(corpus, query, size):
         if i >= size:
             break
         doc = doc_source.get('_source', {}).get('doc')
-        id = doc_source.get('_id')
-        score = doc_source.get('_score')
-        doc['score'] = score if score is not None else 1
-        doc['id'] = id
+        doc['id'] = doc_source.get('_id')
         yield doc
 
 
-def execute(corpus, query, size=config.ES_EXAMPLE_QUERY_SIZE):
+def execute(corpus, query, size):
     '''
     Execute an ElasticSearch query and return a dictionary containing the
     results.

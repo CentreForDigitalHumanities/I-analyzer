@@ -1,3 +1,7 @@
+'''
+Configuration.
+'''
+
 import logging
 from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta

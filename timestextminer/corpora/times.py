@@ -100,7 +100,7 @@ class Times(XMLCorpus):
             name='date',
             description='Publication date, programmatically generated.',
             es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
-            filter_=filters.DateFilter('date',
+            search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
                 config.TIMES_MAX_DATE,
                 description=(
@@ -233,7 +233,7 @@ class Times(XMLCorpus):
             name='page-type',
             description='Supplement in which article occurs.',
             es_mapping={ 'type' : 'keyword' },
-            filter_=filters.MultipleChoiceFilter('page-type',
+            search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles that occur in the relevant '
                     'supplement. Only after 1985.'
@@ -269,7 +269,7 @@ class Times(XMLCorpus):
             name='cover',
             description='Whether the article is on the cover page.',
             es_mapping={ 'type' : 'boolean' },
-            filter_=filters.BooleanFilter('cover',
+            search_filter=filters.BooleanFilter(
                 true='Cover page',
                 false='Other',
                 description=(
@@ -292,7 +292,7 @@ class Times(XMLCorpus):
             name='ocr',
             description='OCR confidence level.',
             es_mapping={ 'type' : 'float' },
-            filter_=filters.RangeFilter('ocr', 0, 100,
+            search_filter=filters.RangeFilter(0, 100,
                 description=(
                     'Accept only articles for which the OCR confidence '
                     'indicator is in this range.'
@@ -379,7 +379,7 @@ class Times(XMLCorpus):
             name='category',
             description='Article subject categories.',
             es_mapping={ 'type' : 'keyword' },
-            filter_=filters.MultipleChoiceFilter('category',
+            search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
                 options=[
                     'Classified Advertising',
@@ -418,9 +418,9 @@ class Times(XMLCorpus):
                 'Tables and other illustrations associated with the article.'
             ),
             es_mapping={ 'type' : 'keyword' },
-            filter_=filters.MultipleChoiceFilter('illustration',
+            search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only articles associated with these types'
+                    'Accept only articles associated with these types '
                     'of illustrations.'), 
                 options=[
                     'Cartoon',

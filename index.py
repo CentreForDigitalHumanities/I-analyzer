@@ -29,7 +29,7 @@ def create(client, corpus, clear=False):
     logging.info('Attempting to create index...')
     client.indices.create(
         index=corpus.es_index, 
-        body=corpus.es_mapping,
+        body=corpus.es_mapping(),
         ignore=400
     )
 
@@ -43,7 +43,7 @@ def populate(client, corpus, start=None, end=None):
     logging.info('Attempting to populate index...')
     
     # Obtain source documents
-    files = corpus.files(start or corpus.min_date, end or corpus.max_date)
+    files = corpus.sources(start or corpus.min_date, end or corpus.max_date)
     docs = corpus.documents(files)
     
     # Each source document is decorated as an indexing operation, so that it

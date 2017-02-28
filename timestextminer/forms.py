@@ -1,3 +1,12 @@
+'''
+Module contains WTForms to be presented to the user.
+
+TODO: Note that not all forms are WTForms; in particular, the search form is
+implemented ad-hoc in the Jinja2 template.
+TODO: Note also that there is no user editing form yet; this is particularly
+problematic because the password hash needs to be manually entered.
+'''
+
 from . import sqla
 from wtforms import fields, validators, form
 from werkzeug.security import check_password_hash

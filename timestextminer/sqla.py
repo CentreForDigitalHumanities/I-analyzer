@@ -1,3 +1,7 @@
+'''
+Module contains the models for user management and query logging in SQL.
+'''
+
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 

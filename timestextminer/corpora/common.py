@@ -11,12 +11,12 @@ from .. import extract
 
 class Corpus(object):
     '''
-    Subclasses of this class define corpora by specifying:
+    Subclasses of this class define corpora and their documents by specifying:
     
     - How to obtain its source files.
     - What attributes its documents have.
     - How to extract said attributes from the source files.
-    - What each attribute looks like, so that a search form can be constructed.    
+    - What each attribute looks like in terms of the search form.    
     '''
 
        
@@ -93,9 +93,9 @@ class Corpus(object):
             'mappings' : {
                 self.es_doctype : {
                     'properties': {
-                        field.name : field.mapping
+                        field.name : field.es_mapping
                         for field in self.fields
-                        if field.mapping and field.indexed
+                            if field.es_mapping and field.indexed
                     }
                 }
             }
@@ -183,47 +183,50 @@ class XMLCorpus(Corpus):
 
 
     
-    def source2dicts(self, xmlfile, metadata={}):
+    def source2dicts(self, filename, metadata={}):
         '''
-        Generate a document dictionaries from a given XML file. Default
-        implementation for standard XML layouts; may be subclassed.
+        Generate a document dictionaries from a given XML file. This is the
+        default implementation for XML layouts; may be subclassed if more
         '''
-        
-        fields = self.fields
+
+        # Make sure that extractors are sensible
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                    extract.Choice,
+                    extract.XML,
+                    extract.Metadata,
+                    extract.Constant
+                )):
+                raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
+
 
         # Loading XML
-        logger.info('Reading XML file {} ...'.format(xmlfile))
-        with open(xmlfile, 'rb') as f:
+        logger.info('Reading XML file {} ...'.format(filename))
+        with open(filename, 'rb') as f:
             data = f.read()
             
         # Parsing XML
         soup = bs4.BeautifulSoup(data, 'lxml-xml')
 
-        logger.info('Loaded {} into memory ...'.format(xmlfile))
+        logger.info('Loaded {} into memory ...'.format(filename))
 
         # Extract fields from soup
         tag0 = self.xml_tag_toplevel
         tag  = self.xml_tag_entry
         bowl = soup.find(tag0) if tag0 else soup
         if bowl:
-            for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find children
-
-                if not isinstance(field.extractor, (
-                        extract.XML,
-                        extract.Metadata,
-                        extract.Constant
-                    )):
-                    raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
-
+            for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find direct descendants of the top-level tag
                 yield {
                     field.name : field.extractor.apply(
+                        # The extractor is put to work by simply throwing at it
+                        # any and all information it might need
                         soup_top=bowl,
                         soup_entry=spoon,
                         metadata=metadata
-                    ) for field in fields if field.indexed
+                    ) for field in self.fields if field.indexed
                 }
         else:
-            logger.warning('Top-level tag not found in `{}`'.format(xmlfile))
+            logger.warning('Top-level tag not found in `{}`'.format(filename))
 
 
 
@@ -248,31 +251,22 @@ class Field(object):
             indexed=True,
             hidden=False,
             es_mapping={ 'type' : 'text' },
-            filter_=None,
+            search_filter=None,
             extractor=extract.Constant(None),
             **kwargs
             ):
 
         self.name = name
         self.description = description
-        self.filter_ = filter_
+        self.search_filter = search_filter
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
-
-
-    @property
-    def filterclass(self):
-        '''
-        Return the name of the filter associated with this Field, or None if
-        there is no such filter.
         
-        TODO: Used to automatically create a form in Jinja2 template. Clearly,
-        this can be done in a better way. (WTForms)
-        '''
-        return self.filter_ and self.filter_.__class__.__name__
-
+        # Add back reference to field in filter
+        if self.search_filter:
+            self.search_filter.field = self
 
 
 

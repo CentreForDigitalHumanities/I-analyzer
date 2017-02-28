@@ -1,5 +1,6 @@
 '''
-This module contains classes that specify 
+This module is a tool to define how to extract specific information from an
+object such as a dictionary or a BeautifulSoup XML node. 
 '''
 
 import logging; logger = logging.getLogger(__name__)
@@ -10,8 +11,8 @@ import bs4
 
 class Extractor(object):
     '''
-    An extractor is any function that can extract information in some way from
-    another object.
+    An extractor contains a method that can be applied to some number arguments
+    and attempts to obtain from that the information that it was looking for.
     '''
     
     def __init__(self,
@@ -25,7 +26,10 @@ class Extractor(object):
 
 
     def apply(self, *nargs, **kwargs):
-        
+        '''
+        Test if the extractor is applicable to the given arguments and if so,
+        try to extract the information. 
+        '''
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
 
@@ -35,12 +39,18 @@ class Extractor(object):
             except Exception:
                 logging.critical("Value {v} could not be converted."\
                     .format(v=result, k=key))
+                return None
             else:
                 return result
         else:
             return None
 
+
     def _apply(self, *nargs, **kwargs):
+        '''
+        Actual extractor method to be implemented in subclasses (assume that
+        testing for applicability and post-processing is taken care of).
+        '''
         raise NotImplementedError()
 
 
@@ -58,8 +68,7 @@ class Choice(Extractor):
         
     def _apply(self, metadata, *nargs, **kwargs):
         for extractor in self.extractors:
-            is_appropriate = extractor.applicability
-            if is_appropriate is None or is_appropriate(metadata):
+            if extractor.applicable is None or extractor.applicable(metadata):
                 return extractor.apply(metadata=metadata, *nargs, **kwargs)
         return None
 
@@ -158,6 +167,9 @@ class XML(Extractor):
         # Select appropriate BeautifulSoup element
         soup = self._select(soup_top if self.toplevel else soup_entry)
 
+        if not soup:
+            return None
+
         # Use appropriate extractor
         if self.attribute:
             return self._attr(soup)
@@ -181,9 +193,7 @@ class XML(Extractor):
 
 
 
-    _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
-    _newlines  = re.compile('\n+')
-    
+  
     def _flatten(self, soup):
         '''
         Output text content of node and descendant nodes, disregarding
@@ -194,6 +204,9 @@ class XML(Extractor):
             text = soup.get_text()
         else:
             text = '\n\n'.join(node.get_text() for node in soup)
+
+        _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
+        _newlines  = re.compile('\n+')
 
         return html.unescape(
             _newlines.sub('\n',
@@ -209,9 +222,9 @@ class XML(Extractor):
         '''
 
         if isinstance(soup, bs4.element.Tag):
-            return soup.attrs.get(self.attr)
+            return soup.attrs.get(self.attribute)
         else:
             return [
                 node.attrs.get(self.attr)
-                for node in soup if node.attrs.get(self.attr) is not None
+                for node in soup if node.attrs.get(self.attribute) is not None
             ]
