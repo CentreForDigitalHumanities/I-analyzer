@@ -3,25 +3,32 @@ Present the data to the user through a web interface.
 '''
 
 import logging; logger = logging.getLogger(__name__)
-
-from . import config
-from . import search
-from . import streaming
-from . import factories
-from . import sqla
-from . import forms
-from .corpora import corpora
-
 import functools
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, stream_with_context
-
 import flask_admin as admin
-import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from werkzeug.security import generate_password_hash
+
+
+from . import config
+from . import factories
+from . import sqla
+from . import views
+from . import search
+from . import streaming
+from .corpora import corpora
+
+
+blueprint = Blueprint('blueprint', __name__)
+admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+admin_instance.add_view(views.CorpusView(corpus='times', name='Times', endpoint='times'))
+admin_instance.add_view(views.UserView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.ModelView(sqla.Role, sqla.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.ModelView(sqla.Query, sqla.db.session, name='Queries', endpoint='queries'))
+login_manager = LoginManager()
+
 
 
 def corpus_required(method):
@@ -43,6 +50,7 @@ def corpus_required(method):
         return method(corpusname=corpusname, corpus=corpus, *nargs, **kwargs)
 
     return f
+
 
 
 def post_required(method):
@@ -83,121 +91,6 @@ def post_required(method):
         )
 
     return f
-
-
-
-class ModelView(admin_sqla.ModelView):
-    
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_role('admin')
-        
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('admin.index'))
-
-
-
-class UserView(ModelView):
-    
-    @admin.expose('/create', methods=['GET', 'POST'])
-    def create_view(self):
-        rf = forms.RegistrationForm(request.form)
-        if admin.helpers.validate_form_on_submit(rf):
-            user = sqla.User()
-            rf.populate_obj(user)
-            user.password = generate_password_hash(rf.password.data)
-
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
-            
-            flash('Successfully added user {}'.format(user.username))
-            return redirect(url_for('users.index_view'))
-
-        return self.render('admin/form.html', title='Register', form=rf)
-
-
-
-class CorpusView(admin.BaseView):
-    
-    def __init__(self, corpus, **kwargs):
-        self.corpus = corpus
-        return super(CorpusView, self).__init__(**kwargs)
-    
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_role(self.corpus)
-        
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('admin.index'))
-
-    @admin.expose('/', methods=['GET', 'POST'])
-    @login_required
-    def index(self):
-        corpus = corpora.get(self.corpus)
-        
-        return self.render('app.html', 
-            corpus=self.corpus,
-            fields=[
-                field 
-                for field in corpus.fields
-                    if not field.hidden
-            ],
-            autocomplete=[
-                field.name + ':'
-                for field in corpus.fields
-                    if not field.hidden
-            ]
-        )
-
-
-
-class AdminIndexView(admin.AdminIndexView):
-
-    @admin.expose('/')
-    def index(self):
-        if not current_user.is_authenticated:
-            return redirect(url_for('.login'))
-        return super(AdminIndexView, self).index()
-
-
-
-    @admin.expose('/login', methods=['GET', 'POST'])
-    def login(self):
-
-        lf = forms.LoginForm(request.form)
-        
-        if admin.helpers.validate_form_on_submit(lf):
-            user = lf.user
-            
-            user.authenticated = True
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
-            login_user(user)
-            
-            return redirect(url_for('times.index'))
-        
-        return self.render('admin/form.html', title='Login', form=lf)
-
-
-
-    @admin.expose('/logout')
-    @login_required
-    def logout(self):
-        user = current_user
-        user.authenticated = True
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
-        logout_user()
-        flash('Logged out successfully.')
-        return redirect(url_for('blueprint.init'))
-
-
-
-blueprint = Blueprint('blueprint', __name__)
-admin_instance = admin.Admin(name='textmining', index_view=AdminIndexView(), endpoint='admin')
-admin_instance.add_view(CorpusView(corpus='times', name='Times', endpoint='times'))
-admin_instance.add_view(UserView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(ModelView(sqla.Role, sqla.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(ModelView(sqla.Query, sqla.db.session, name='Queries', endpoint='queries'))
-login_manager = LoginManager()
 
 
 
