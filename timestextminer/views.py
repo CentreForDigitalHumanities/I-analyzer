@@ -9,6 +9,7 @@ import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
+
 from . import forms
 from . import sqla
 from .corpora import corpora
@@ -63,7 +64,8 @@ class CorpusView(admin.BaseView):
         return current_user.is_authenticated and current_user.has_role(self.corpus)
         
     def inaccessible_callback(self, name, **kwargs):
-        flash('Could not be granted access to this corpus.')
+        flash('User does not exist, is deactivated '
+              'or could not be granted access to this corpus.')
         return redirect(url_for('admin.index'))
 
     @admin.expose('/', methods=['GET', 'POST'])
@@ -125,4 +127,4 @@ class AdminIndexView(admin.AdminIndexView):
         sqla.db.session.commit()
         logout_user()
         flash('Logged out successfully.')
-        return redirect(url_for('blueprint.init'))
+        return redirect(url_for('.login'))

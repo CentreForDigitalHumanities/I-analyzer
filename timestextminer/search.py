@@ -2,6 +2,7 @@
 Module handles searching through the indices.
 '''
 
+import logging; logger = logging.getLogger(__name__)
 from . import factories
 from . import config
 

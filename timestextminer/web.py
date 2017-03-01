@@ -102,7 +102,7 @@ def load_user(user_id):
 
 @blueprint.route('/', methods=['GET'])
 def init():
-    if current_user and current_user.is_authenticated:
+    if current_user:
         return redirect(url_for('times.index'))
     else:
         return redirect(url_for('admin.login'))
@@ -130,15 +130,15 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
 
     def logged_stream(stream):
         '''
-        Wrap a stream such that its completion or abortion get logged to the
+        Wrap an iterator such that its completion or abortion get logged to the
         database.
         '''
+        total_transferred = 0
         try:
             for item in stream:
+                total_transferred += 1
                 yield item
             q.completed = datetime.now()
-            sqla.db.session.add(q)
-            sqla.db.session.commit()
         except IOError:
             # Does not work as expected. The initial idea was to catch an
             # unfinished download by the assumption that an exception will be
@@ -147,8 +147,9 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
             # (Of course, we can just assume that any unfinished download is
             # aborted until it is actually finished.)
             q.aborted = True
-            sqla.db.session.add(q)
-            sqla.db.session.commit()
+        q.transferred = total_transferred
+        sqla.db.session.add(q)
+        sqla.db.session.commit()
 
 
     # Perform the search and obtain output stream
