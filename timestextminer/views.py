@@ -20,10 +20,21 @@ class ModelView(admin_sqla.ModelView):
         return current_user.is_authenticated and current_user.has_role('admin')
         
     def inaccessible_callback(self, name, **kwargs):
-        flash('Could not view model (requires administrator access).')
+        flash('Could not view page (requires administrator access).')
         return redirect(url_for('admin.index'))
 
 
+
+class QueryView(ModelView):
+    can_create = False
+    can_edit = False
+    
+    
+    
+class RoleView(ModelView):
+    pass
+    
+    
 
 class UserView(ModelView):
     form_overrides = dict(
