@@ -1,9 +1,14 @@
+'''
+Views.
+'''
+
+import logging; logger = logging.getLogger(__name__)
 from flask import request, flash, redirect, url_for
 import flask_admin as admin
 import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.security import generate_password_hash
-
+from wtforms.widgets import PasswordInput
 from . import forms
 from . import sqla
 from .corpora import corpora
@@ -15,27 +20,25 @@ class ModelView(admin_sqla.ModelView):
         return current_user.is_authenticated and current_user.has_role('admin')
         
     def inaccessible_callback(self, name, **kwargs):
+        flash('Could not view model (requires administrator access).')
         return redirect(url_for('admin.index'))
 
 
 
 class UserView(ModelView):
+    form_overrides = dict(
+        password=forms.PasswordField,
+        queries=None,
+    )
     
-    @admin.expose('/create', methods=['GET', 'POST'])
-    def create_view(self):
-        rf = forms.RegistrationForm(request.form)
-        if admin.helpers.validate_form_on_submit(rf):
-            user = sqla.User()
-            rf.populate_obj(user)
-            user.password = generate_password_hash(rf.password.data)
+    form_widget_args = dict(
+        password=dict(
+            placeholder='Leave blank or enter new password',
+        ),
+    )
+    
+    form_excluded_columns = ('queries', 'authenticated')
 
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
-            
-            flash('Successfully added user {}'.format(user.username))
-            return redirect(url_for('users.index_view'))
-
-        return self.render('admin/form.html', title='Register', form=rf)
 
 
 
@@ -49,6 +52,7 @@ class CorpusView(admin.BaseView):
         return current_user.is_authenticated and current_user.has_role(self.corpus)
         
     def inaccessible_callback(self, name, **kwargs):
+        flash('Could not be granted access to this corpus.')
         return redirect(url_for('admin.index'))
 
     @admin.expose('/', methods=['GET', 'POST'])

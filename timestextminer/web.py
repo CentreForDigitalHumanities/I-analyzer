@@ -55,9 +55,9 @@ def corpus_required(method):
 
 def post_required(method):
     '''
-    Wrapper to add relevant POSTed data to the parameters of a function in the
-    correct format. (Requires that a `corpus` parameter is available, so wrap
-    with `@corpus_required` first.
+    Wrapper to add relevant POSTed data to the parameters of a function.
+    Also puts data in correct format. (Requires that a `corpus` parameter is
+    available, so wrap with `@corpus_required` first.
     '''
 
     @functools.wraps(method)
