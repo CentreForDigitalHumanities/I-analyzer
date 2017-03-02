@@ -1,6 +1,6 @@
 '''
 This module is a tool to define how to extract specific information from an
-object such as a dictionary or a BeautifulSoup XML node. 
+object such as a dictionary or a BeautifulSoup XML node.
 '''
 
 import logging; logger = logging.getLogger(__name__)
@@ -14,21 +14,21 @@ class Extractor(object):
     An extractor contains a method that can be applied to some number arguments
     and attempts to obtain from that the information that it was looking for.
     '''
-    
+
     def __init__(self,
         applicable=None, # Predicate that takes metadata and decides whether
                          # this extractor is applicable. None means always.
         transform=None   # Optional function to postprocess extracted value
         ):
         self.transform = transform
-        self.applicable = applicable 
+        self.applicable = applicable
 
 
 
     def apply(self, *nargs, **kwargs):
         '''
         Test if the extractor is applicable to the given arguments and if so,
-        try to extract the information. 
+        try to extract the information.
         '''
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
@@ -59,13 +59,13 @@ class Choice(Extractor):
     '''
     Use the first applicable extractor from a list of extractors.
     '''
-    
+
     def __init__(self, *nargs, **kwargs):
         self.extractors = list(nargs)
         super().__init__(**kwargs)
-        
-        
-        
+
+
+
     def _apply(self, metadata, *nargs, **kwargs):
         for extractor in self.extractors:
             if extractor.applicable is None or extractor.applicable(metadata):
@@ -78,30 +78,30 @@ class Constant(Extractor):
     '''
     This extractor 'extracts' the same value every time, regardless of input.
     '''
-    
+
     def __init__(self, value, *nargs, **kwargs):
         self.value = value
         super().__init__(*nargs, **kwargs)
-    
-    
+
+
     def _apply(self, *nargs, **kwargs):
         return self.value
-        
-        
+
+
 
 
 class Metadata(Extractor):
     '''
     This extractor extracts a value from provided metadata.
     '''
-    
-    
+
+
     def __init__(self, key, *nargs, **kwargs):
         self.key = key
         super().__init__(*nargs, **kwargs)
-        
-    
-    
+
+
+
     def _apply(self, metadata, *nargs, **kwargs):
         return metadata.get(self.key)
 
@@ -124,7 +124,7 @@ class XML(Extractor):
         *nargs,
         **kwargs
         ):
-        
+
         self.tag = tag
         self.attribute = attribute
         self.flatten = flatten
@@ -163,7 +163,7 @@ class XML(Extractor):
 
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
-        
+
         # Select appropriate BeautifulSoup element
         soup = self._select(soup_top if self.toplevel else soup_entry)
 
@@ -193,7 +193,7 @@ class XML(Extractor):
 
 
 
-  
+
     def _flatten(self, soup):
         '''
         Output text content of node and descendant nodes, disregarding
@@ -225,6 +225,6 @@ class XML(Extractor):
             return soup.attrs.get(self.attribute)
         else:
             return [
-                node.attrs.get(self.attr)
+                node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
             ]
