@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+Flask-Admin
+Flask-Login
+Werkzeug
+WTForms
+mysqlclient
+elasticsearch
+beautifulsoup4
+lxml
+pytest
+coverage
