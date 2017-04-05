@@ -11,9 +11,9 @@ import elasticsearch.helpers as es_helpers
 
 from datetime import datetime
 
-from timestextminer import config
-from timestextminer import factories
-from timestextminer.corpora import corpora
+from ianalyzer import config
+from ianalyzer import factories
+from ianalyzer.corpora import corpora
 
 
 

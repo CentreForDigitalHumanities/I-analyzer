@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
-from timestextminer import config, sqla
-from timestextminer.web import blueprint, admin, login_manager
-from timestextminer.factories import flask_app
+from ianalyzer import config, sqla
+from ianalyzer.web import blueprint, admin, login_manager
+from ianalyzer.factories import flask_app
 
 from flask import Flask
 from getpass import getpass

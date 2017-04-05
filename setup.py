@@ -8,15 +8,15 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "timestextmining",
+    name = "I-analyzer",
     version = "0.0.1",
     author = "Niels Steenbergen",
     author_email = "n.steenbergen@uu.nl",
-    description = ("ElasticSearch indexing of newspapers and Flask web application to retrieve them."),
+    description = ("ElasticSearch indexing of text corpora and Flask web application to retrieve them."),
     license = "MIT",
     keywords = "newspaper times elasticsearch database index download csv",
     url = "",
-    packages=['timestextminer', 'tests'],
+    packages=['ianalyzer', 'tests'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",

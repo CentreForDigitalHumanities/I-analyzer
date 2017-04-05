@@ -1,8 +1,8 @@
-timestextminer
+I-analyzer
 ===============================================================================
 
 
-`timestextminer` is a Python package that provides the following:
+`ianalyzer` is a Python package that provides the following:
 
 - A front-end that enables users to search through an ElasticSearch index of a text corpus, and stream search results into a CSV file. `Flask` is used for serving the interface and generating results. On the client side, the interface uses `JQuery-UI`.
 
@@ -23,7 +23,7 @@ Running
 To get an instance running, do the following:
 
 1. Install the ElasticSearch and MySQL daemons on the server or your local machine.
-2. Configure `timestextminer/config.py` (see `timestextminer/default-config.py`).
+2. Configure `ianalyzer/config.py` (see `ianalyzer/default-config.py`).
 3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them (see the [Indexing] section).
 4. Create the MySQL database by running `create_database.py` and providing an administrator password.
 5. Run `run.py` to create an instance of the Flask server at `127.0.0.1:5000`.
