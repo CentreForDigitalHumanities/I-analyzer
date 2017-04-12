@@ -161,6 +161,8 @@ class XML(Extractor):
         # If the tag was a path, walk through it before continuing
         tag = self.tag
         if isinstance(self.tag, list):
+            if len(tag) == 0:
+                return soup
             for i in range(0, len(self.tag)-1):
                 if self.tag[i] == '..':
                     soup = soup.parent
