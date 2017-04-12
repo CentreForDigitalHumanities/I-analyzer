@@ -5,6 +5,7 @@ import logging
 
 from flask import current_app
 
+from .. import config
 from .common import XMLCorpus, Field
 
 
@@ -12,11 +13,11 @@ class DutchBanking(XMLCorpus):
     """ Alto XML corpus of Dutch banking year records. """
     
     # Data overrides from .common.Corpus (fields at bottom of class)
-    data_directory = current_app.config['DUTCHBANK_DATA']
-    min_date = current_app.config['DUTCHBANK_MIN_DATE']
-    max_date = current_app.config['DUTCHBANK_MAX_DATE']
-    es_index = current_app.config['DUTCHBANK_ES_INDEX']
-    es_doctype = current_app.config['DUTCHBANK_ES_DOCTYPE']
+    data_directory = config.DUTCHBANK_DATA
+    min_date = config.DUTCHBANK_MIN_DATE
+    max_date = config.DUTCHBANK_MAX_DATE
+    es_index = config.DUTCHBANK_ES_INDEX
+    es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
     
     # Data overrides from .common.XMLCorpus
