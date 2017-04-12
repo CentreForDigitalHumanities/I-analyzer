@@ -194,6 +194,7 @@ class XMLCorpus(Corpus):
         for field in self.fields:
             if not isinstance(field.extractor, (
                     extract.Choice,
+                    extract.Combined,
                     extract.XML,
                     extract.Metadata,
                     extract.Constant

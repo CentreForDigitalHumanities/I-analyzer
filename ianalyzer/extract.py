@@ -74,6 +74,24 @@ class Choice(Extractor):
 
 
 
+class Combined(Extractor):
+    '''
+    Apply all given extractors and return the results as a tuple.
+    '''
+
+    def __init__(self, *nargs, **kwargs):
+        self.extractors = list(nargs)
+        super().__init__(**kwargs)
+
+
+
+    def _apply(self, *nargs, **kwargs):
+        return tuple(
+            extractor.apply(*nargs, **kwargs) for extractor in self.extractors
+        )
+
+
+
 class Constant(Extractor):
     '''
     This extractor 'extracts' the same value every time, regardless of input.
