@@ -79,6 +79,7 @@ class Corpus(object):
         '''
         Each corpus should implement a list of fields, that is, instances of
         the `Field` class, containing information about each attribute.
+        MUST include a field with `name='id'`.
         '''
         raise NotImplementedError()
 
