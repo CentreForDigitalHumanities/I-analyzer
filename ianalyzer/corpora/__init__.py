@@ -1,5 +1,5 @@
-from . import times
+from . import dutchbanking
 
 corpora = {
-    'times': times.Times()
+    'dutchbanking': dutchbanking.DutchBanking()
 }
