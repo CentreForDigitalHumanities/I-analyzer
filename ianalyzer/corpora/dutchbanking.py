@@ -40,7 +40,8 @@ class DutchBanking(XMLCorpus):
                 logger.warning(self.non_match_msg.format(filename))
                 continue
             bank, year, serial, scan = match.groups()
-            # TODO: check the date
+            if int(year) < start.year or end.year < int(year):
+                continue
             yield op.join(self.data_directory, filename), {
                 'bank': bank,
                 'year': year,
