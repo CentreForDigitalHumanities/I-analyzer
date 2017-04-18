@@ -79,6 +79,7 @@ class Corpus(object):
         '''
         Each corpus should implement a list of fields, that is, instances of
         the `Field` class, containing information about each attribute.
+        MUST include a field with `name='id'`.
         '''
         raise NotImplementedError()
 
@@ -193,6 +194,7 @@ class XMLCorpus(Corpus):
         for field in self.fields:
             if not isinstance(field.extractor, (
                     extract.Choice,
+                    extract.Combined,
                     extract.XML,
                     extract.Metadata,
                     extract.Constant

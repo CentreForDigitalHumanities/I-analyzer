@@ -112,7 +112,7 @@ class AdminIndexView(admin.AdminIndexView):
             sqla.db.session.commit()
             login_user(user)
             
-            return redirect(url_for('times.index'))
+            return redirect(url_for('DutchBanking.index'))
         
         return self.render('admin/form.html', title='Login', form=lf)
 
