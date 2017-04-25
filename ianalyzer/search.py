@@ -70,7 +70,7 @@ def execute_iterate(corpus, query, size):
     for i, doc_source in enumerate(result):
         if i >= size:
             break
-        doc = doc_source.get('_source', {}).get('doc')
+        doc = doc_source.get('_source', {})
         doc['id'] = doc_source.get('_id')
         yield doc
 
