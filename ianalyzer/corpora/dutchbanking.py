@@ -27,30 +27,32 @@ class DutchBanking(XMLCorpus):
     xml_tag_entry = 'TextBlock'
     
     # New data members
-    filename_pattern = re.compile('([A-Z]+)_(\d{4})_(\d)_(\d{5})')
+    filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
     
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
-        for filename in os.listdir(self.data_directory):
-            name, extension = op.splitext(filename)
-            if extension != '.xml':
-                logger.debug(self.non_xml_msg.format(filename))
-                continue
-            match = self.filename_pattern.match(name)
-            if not match:
-                logger.warning(self.non_match_msg.format(filename))
-                continue
-            bank, year, serial, scan = match.groups()
-            if int(year) < start.year or end.year < int(year):
-                continue
-            yield op.join(self.data_directory, filename), {
-                'bank': bank,
-                'year': year,
-                'serial': serial,
-                'scan': scan,
-            }
+        for directory, _, filenames in os.walk(self.data_directory):
+            for filename in filenames:
+                name, extension = op.splitext(filename)
+                full_path = op.join(directory, filename)
+                if extension != '.xml':
+                    logger.debug(self.non_xml_msg.format(full_path))
+                    continue
+                match = self.filename_pattern.match(name)
+                if not match:
+                    logger.warning(self.non_match_msg.format(full_path))
+                    continue
+                bank, year, serial, scan = match.groups()
+                if int(year) < start.year or end.year < int(year):
+                    continue
+                yield full_path, {
+                    'bank': bank,
+                    'year': year,
+                    'serial': serial,
+                    'scan': scan,
+                }
     
     fields = [
         Field(
@@ -78,8 +80,8 @@ class DutchBanking(XMLCorpus):
             extractor=Metadata(key='year', transform=int),
         ),
         Field(
-            name='issue',
-            description='Issue number of the financial report.',
+            name='objectno',
+            description='Object number in the dataset.',
             es_mapping={'type': 'integer'},
             extractor=Metadata(key='serial', transform=int),
         ),
