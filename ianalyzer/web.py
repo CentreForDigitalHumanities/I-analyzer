@@ -103,7 +103,7 @@ def load_user(user_id):
 @blueprint.route('/', methods=['GET'])
 def init():
     if current_user:
-        return redirect(url_for('times.index'))
+        return redirect(url_for('admin.index'))
     else:
         return redirect(url_for('admin.login'))
 
