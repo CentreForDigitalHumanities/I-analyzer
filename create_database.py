@@ -24,7 +24,7 @@ def create_admin():
 
 
         role_admin = sqla.Role('admin', 'Administrator role.')
-        role_times = sqla.Role('times', 'Role for users who may access Times data.')
+        role_dutchbanking = sqla.Role('dutchbanking', 'Role for users who may access DutchBanking data.')
 
         print('Please provide an administrator password: ')
         username = 'admin'
@@ -33,11 +33,11 @@ def create_admin():
         user = sqla.User(username, generate_password_hash(password))
         
         user.roles.append(role_admin)
-        user.roles.append(role_times)
+        user.roles.append(role_dutchbanking)
         
         sqla.db.session.add(user)
         sqla.db.session.add(role_admin)
-        sqla.db.session.add(role_times)
+        sqla.db.session.add(role_dutchbanking)
         sqla.db.session.commit()
         
         print('Database created.')
