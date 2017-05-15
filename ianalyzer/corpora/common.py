@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import logging; logger = logging.getLogger(__name__)
 from .. import extract
 
+import json
+import inspect
 
 class Corpus(object):
     '''
@@ -18,7 +20,6 @@ class Corpus(object):
     - How to extract said attributes from the source files.
     - What each attribute looks like in terms of the search form.    
     '''
-
        
     @property
     def data_directory(self):
@@ -115,8 +116,27 @@ class Corpus(object):
         can be used by other codebases, while retaining the Python class as the
         single source of truth.
         '''
-        #TODO
-        raise NotImplementedError()
+        json_dict = {}
+        # cannot use __dict__ on self as Corpus does not have an __init__
+        
+        # inspect.getmembers returns tuples for every Class attribute:
+        # tuple[0] attribute name; tuple[1] attribute content
+        # the following suppresses all private attributes and bound methods
+        corpus_attributes = [a for a in inspect.getmembers(self)\
+         if not a[0].startswith('__') and not inspect.ismethod(a[1])]
+        for ca in corpus_attributes:
+            if ca[0]=='fields':
+                field_list = []
+                for field in self.fields:
+                    field_dict = field.__dict__
+                    if 'extractor' in field_dict:
+                        del field_dict['extractor']
+                    field_list.append(field_dict)
+                json_dict[ca[0]] = field_list
+            else:
+                json_dict[ca[0]] = ca[1]
+
+        return json_dict
         
         
 

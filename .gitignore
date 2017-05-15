@@ -1,2 +1,3 @@
 __pycache__/
 ianalyzer/config.py
+.DS_Store
