@@ -20,14 +20,13 @@ class Corpus(object):
     - How to extract said attributes from the source files.
     - What each attribute looks like in terms of the search form.    
     '''
-       
+
     @property
     def data_directory(self):
         '''
         Path to source data directory.
         '''
         raise NotImplementedError()
-
 
 
     @property
@@ -116,26 +115,44 @@ class Corpus(object):
         can be used by other codebases, while retaining the Python class as the
         single source of truth.
         '''
-        json_dict = {}
-        # cannot use __dict__ on self as Corpus does not have an __init__
-        
+        corpus_dict = {}
         # inspect.getmembers returns tuples for every Class attribute:
         # tuple[0] attribute name; tuple[1] attribute content
-        # the following suppresses all private attributes and bound methods
-        corpus_attributes = [a for a in inspect.getmembers(self)\
-         if not a[0].startswith('__') and not inspect.ismethod(a[1])]
+        # the following suppresses all private attributes and bound methods,
+        # and attributes which are not implemented in the Corpus class
+        corpus_attributes = [
+            a for a in inspect.getmembers(self)
+            if not a[0].startswith('__') and not inspect.ismethod(a[1])
+            and a[0] in dir(Corpus)
+            ]
         for ca in corpus_attributes:
-            if ca[0]=='fields':
+            if ca[0]=='data_directory':
+                continue
+            elif ca[0]=='fields':
                 field_list = []
                 for field in self.fields:
                     field_dict = field.__dict__
-                    if 'extractor' in field_dict:
-                        del field_dict['extractor']
+                    if field_dict['search_filter']:
+                        search_dict = field_dict['search_filter'].__dict__
+                        del search_dict['field']
+                        filter_name = str(
+                            type(field_dict['search_filter'])
+                            ).split(sep = '.')[-1][:-2]
+                        field_dict['search_filter'] = search_dict
+                        search_dict['name'] = filter_name
+                    del field_dict['extractor']
                     field_list.append(field_dict)
-                json_dict[ca[0]] = field_list
+                corpus_dict[ca[0]] = field_list
+            elif type(ca[1])==datetime:
+                timedict = {'year': ca[1].year,
+                    'month': ca[1].month,
+                    'day': ca[1].day,
+                    'hour': ca[1].hour,
+                    'minute': ca[1].minute}
+                corpus_dict[ca[0]] = timedict
             else:
-                json_dict[ca[0]] = ca[1]
-
+                corpus_dict[ca[0]] = ca[1]
+        json_dict = json.dumps(corpus_dict)
         return json_dict
         
         
