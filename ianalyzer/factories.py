@@ -3,6 +3,7 @@ For creation of Flask and ElasticSearch objects.
 '''
 
 from flask import Flask
+from flask_scss import Scss
 from elasticsearch import Elasticsearch
 
 from . import config
@@ -32,5 +33,7 @@ def flask_app(blueprint, admin_instance, login_manager, cfg=config):
     sqla.db.init_app(app)
     login_manager.init_app(app)
     admin_instance.init_app(app)
+
+    Scss(app)
 
     return app

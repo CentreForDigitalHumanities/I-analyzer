@@ -2,6 +2,7 @@ Flask
 Flask-SQLAlchemy
 Flask-Admin
 Flask-Login
+Flask-Scss
 Werkzeug
 WTForms
 mysqlclient
