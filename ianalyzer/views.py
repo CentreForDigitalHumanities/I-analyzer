@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 
 from . import forms
-from . import sqla
+from . import models
 from .corpora import corpora
 
 
@@ -108,8 +108,8 @@ class AdminIndexView(admin.AdminIndexView):
             user = lf.user
             
             user.authenticated = True
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
+            models.db.session.add(user)
+            models.db.session.commit()
             login_user(user)
             
             return redirect(url_for('DutchBanking.index'))
@@ -123,8 +123,8 @@ class AdminIndexView(admin.AdminIndexView):
     def logout(self):
         user = current_user
         user.authenticated = True
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
+        models.db.session.add(user)
+        models.db.session.commit()
         logout_user()
         flash('Logged out successfully.')
         return redirect(url_for('.login'))
