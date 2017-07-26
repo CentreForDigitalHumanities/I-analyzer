@@ -141,6 +141,7 @@ class IndexingCommand(Command):
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)
     app = flask_app(blueprint, admin_instance, login_manager)
+    Migrate(app, db)
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)
     manager.add_command('admin', AdminCommand)
