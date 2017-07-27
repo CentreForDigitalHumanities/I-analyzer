@@ -28,6 +28,30 @@ def ctx():
 
 
 
+def create_admin(pwd)
+    with ctx().app_context():
+
+        role_admin = Role('admin', 'Administrator role.')
+        role_corpus_user = Role(config.CORPUS, 'Role for users who may access '+config.CORPUS+' data.')
+
+        username = 'admin'
+        password = pwd
+            
+        admin = User.query.filter_by(username='admin').first()
+            
+        if admin:
+            admin.password = generate_password_hash(password)
+        else:
+            user = User(username, generate_password_hash(password))
+            user.roles.append(role_admin)
+            user.roles.append(role_corpus_user)
+            db.session.add(user)
+            db.session.add(role_admin)
+            db.session.add(role_corpus_user)
+            
+        return db.session.commit()
+
+
 
 def migrations():
     '''
@@ -38,7 +62,6 @@ def migrations():
     '''
     with ctx().app_context():
         migrate = Migrate(app, db)
-
 
 
 
@@ -55,25 +78,7 @@ class AdminCommand(Command):
     )
 
     def run(self, pwd):
-        with ctx().app_context():
-
-            role_admin = Role('admin', 'Administrator role.')
-
-            username = 'admin'
-            password = pwd
-            
-            admin = User.query.filter_by(username='admin').first()
-            
-            if admin:
-                admin.password = generate_password_hash(password)
-            else:
-                user = User(username, generate_password_hash(password))
-                user.roles.append(role_admin)
-                db.session.add(user)
-                db.session.add(role_admin)
-            
-            return db.session.commit()
-
+        create_admin(pwd)
 
 
 
@@ -89,7 +94,7 @@ class IndexingCommand(Command):
             dest='corpus', 
             help='Sets which corpus should be indexed' +
                 'Options: times or dutchbanking' +
-                'If not set, times corpus will be indexed'
+                'If not set, corpus defined in config.py will be indexed'
             ),
         Option('--start', 
             '-s', 
@@ -110,7 +115,7 @@ class IndexingCommand(Command):
     def run(self, corpus, start, end):
         
         if not corpus:
-            corpus = 'times'
+            corpus = config.CORPUS
         
         corpus = corpora[corpus]
 
@@ -144,5 +149,5 @@ if __name__ == '__main__':
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)
     manager.add_command('admin', AdminCommand)
-    manager.add_command('index', IndexingCommand)
+    manager.add_command('es', IndexingCommand)
     manager.run()

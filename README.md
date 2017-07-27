@@ -24,9 +24,10 @@ To get an instance running, do the following:
 
 1. Install the ElasticSearch and MySQL daemons on the server or your local machine.
 2. Configure `ianalyzer/config.py` (see `ianalyzer/default-config.py`).
-3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them (see the [Indexing] section).
-4. Create the MySQL database by running `create_database.py` and providing an administrator password.
-5. Run `run.py` to create an instance of the Flask server at `127.0.0.1:5000`.
+3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `manage.py es --c times -s 1785-01-01 -e 2010-12-31`, for indexing the Times corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
+4. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
+5. Initialize the MySQL database by running `manage.py db -p password`, providing an administrator password.
+6. Run `run.py` to create an instance of the Flask server at `127.0.0.1:5000`.
 
 ### Testing
 

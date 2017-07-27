@@ -10,8 +10,9 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 
+from . import config
 from . import forms
-from . import sqla
+from . import models
 from .corpora import corpora
 
 
@@ -75,11 +76,7 @@ class CorpusView(admin.BaseView):
         
         return self.render('app.html', 
             corpus=self.corpus,
-            fields=[
-                field 
-                for field in corpus.fields
-                    if not field.hidden
-            ],
+            search_form = forms.populate_search_form(corpus, request.form),
             autocomplete=[
                 field.name + ':'
                 for field in corpus.fields
@@ -108,11 +105,11 @@ class AdminIndexView(admin.AdminIndexView):
             user = lf.user
             
             user.authenticated = True
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
+            models.db.session.add(user)
+            models.db.session.commit()
             login_user(user)
             
-            return redirect(url_for('DutchBanking.index'))
+            return redirect(url_for(config.CORPUS_URL))
         
         return self.render('admin/form.html', title='Login', form=lf)
 
@@ -123,8 +120,8 @@ class AdminIndexView(admin.AdminIndexView):
     def logout(self):
         user = current_user
         user.authenticated = True
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
+        models.db.session.add(user)
+        models.db.session.commit()
         logout_user()
         flash('Logged out successfully.')
         return redirect(url_for('.login'))
