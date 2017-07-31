@@ -14,7 +14,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 
 from . import config
 from . import factories
-from . import sqla
+from . import models
 from . import views
 from . import search
 from . import streaming
@@ -23,12 +23,11 @@ from .corpora import corpora
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus='dutchbanking', name='dutchbanking', endpoint='DutchBanking'))
-admin_instance.add_view(views.UserView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(views.RoleView(sqla.Role, sqla.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(views.QueryView(sqla.Query, sqla.db.session, name='Queries', endpoint='queries'))
+admin_instance.add_view(views.CorpusView(corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
-
 
 
 def corpus_required(method):
@@ -50,7 +49,6 @@ def corpus_required(method):
         return method(corpusname=corpusname, corpus=corpus, *nargs, **kwargs)
 
     return f
-
 
 
 def post_required(method):
@@ -75,7 +73,7 @@ def post_required(method):
 
         # Collect filters in ES format
         filters = (
-            field.search_filter.elasticsearch(request.form)
+            field.search_filter.elasticsearch
             for field in corpus.fields
                 if field.search_filter
         )
@@ -93,11 +91,9 @@ def post_required(method):
     return f
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
-    return sqla.User.query.get(user_id)
-
+    return models.User.query.get(user_id)
 
 
 @blueprint.route('/', methods=['GET'])
@@ -106,8 +102,6 @@ def init():
         return redirect(url_for('admin.index'))
     else:
         return redirect(url_for('admin.login'))
-
-
 
 
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
@@ -124,9 +118,9 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
 
 
     # Log the query to the database
-    q = sqla.Query(query=str(query), corpus=corpusname, user=current_user)
-    sqla.db.session.add(q)
-    sqla.db.session.commit()
+    q = models.Query(query=str(query), corpus=corpusname, user=current_user)
+    models.db.session.add(q)
+    models.db.session.commit()
 
     def logged_stream(stream):
         '''
@@ -148,8 +142,8 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
             # aborted until it is actually finished.)
             q.aborted = True
         q.transferred = total_transferred
-        sqla.db.session.add(q)
-        sqla.db.session.commit()
+        models.db.session.add(q)
+        models.db.session.commit()
 
 
     # Perform the search and obtain output stream
@@ -181,7 +175,6 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         'attachment; filename={}'.format(filename)
     )
     return response
-
 
 
 @blueprint.route('/<corpusname>/search.json', methods=['POST'])

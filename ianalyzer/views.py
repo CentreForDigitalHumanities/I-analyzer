@@ -10,8 +10,9 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 
+from . import config
 from . import forms
-from . import sqla
+from . import models
 from .corpora import corpora
 
 
@@ -25,17 +26,14 @@ class ModelView(admin_sqla.ModelView):
         return redirect(url_for('admin.index'))
 
 
-
 class QueryView(ModelView):
     can_create = False
-    can_edit = False
-    
+    can_edit = False    
     
     
 class RoleView(ModelView):
     pass
-    
-    
+       
 
 class UserView(ModelView):
     form_overrides = dict(
@@ -50,8 +48,6 @@ class UserView(ModelView):
     )
     
     form_excluded_columns = ('queries', 'authenticated')
-
-
 
 
 class CorpusView(admin.BaseView):
@@ -88,7 +84,6 @@ class CorpusView(admin.BaseView):
         )
 
 
-
 class AdminIndexView(admin.AdminIndexView):
 
     @admin.expose('/')
@@ -96,8 +91,6 @@ class AdminIndexView(admin.AdminIndexView):
         if not current_user.is_authenticated:
             return redirect(url_for('.login'))
         return super(AdminIndexView, self).index()
-
-
 
     @admin.expose('/login', methods=['GET', 'POST'])
     def login(self):
@@ -108,23 +101,21 @@ class AdminIndexView(admin.AdminIndexView):
             user = lf.user
             
             user.authenticated = True
-            sqla.db.session.add(user)
-            sqla.db.session.commit()
+            models.db.session.add(user)
+            models.db.session.commit()
             login_user(user)
             
-            return redirect(url_for('DutchBanking.index'))
+            return redirect(url_for(config.CORPUS_URL))
         
         return self.render('admin/form.html', title='Login', form=lf)
-
-
 
     @admin.expose('/logout')
     @login_required
     def logout(self):
         user = current_user
         user.authenticated = True
-        sqla.db.session.add(user)
-        sqla.db.session.commit()
+        models.db.session.add(user)
+        models.db.session.commit()
         logout_user()
         flash('Logged out successfully.')
         return redirect(url_for('.login'))

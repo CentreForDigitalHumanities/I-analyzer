@@ -3,6 +3,8 @@ Flask-SQLAlchemy
 Flask-Admin
 Flask-Login
 Flask-Scss
+Flask-Migrate
+Flask-WTF
 Werkzeug
 WTForms
 mysqlclient

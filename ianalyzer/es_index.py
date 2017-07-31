@@ -71,6 +71,30 @@ def populate(client, corpus, start=None, end=None):
 
 
 
+def perform_indexing(corpus, start, end):
+
+    # Log to a specific file
+    logfile = 'indexing-{}-{}.log'.format(
+        start.strftime('%Y%m%d'),
+        end.strftime('%Y%m%d')
+    )
+    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
+    logging.info('Started indexing `{}` from {} to {}...'.format(
+        corpus.es_index,
+        start.strftime('%Y-%m-%d'),
+        end.strftime('%Y-%m-%d')
+    ))
+    
+    # Create and populate the ES index
+    client = factories.elasticsearch()
+    create(client, corpus, clear=False)
+    client.cluster.health(wait_for_status='yellow')
+    populate(client, corpus, start=start, end=end)
+    
+    logging.info('Finished indexing `{}`.'.format(corpus.es_index))
+
+
+
 if __name__ == '__main__':
     '''
     Enable indexing from the command line.
@@ -91,23 +115,6 @@ if __name__ == '__main__':
             'Example call: ./index.py times 1785-01-01 2010-12-31'
         )
         raise
-    
-    # Log to a specific file
-    logfile = 'indexing-{}-{}.log'.format(
-        start.strftime('%Y%m%d'),
-        end.strftime('%Y%m%d')
-    )
-    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
-    logging.info('Started indexing `{}` from {} to {}...'.format(
-        corpus.es_index,
-        start.strftime('%Y-%m-%d'),
-        end.strftime('%Y-%m-%d')
-    ))
-    
-    # Create and populate the ES index
-    client = factories.elasticsearch()
-    create(client, corpus, clear=False)
-    client.cluster.health(wait_for_status='yellow')
-    populate(client, corpus, start=start, end=end)
-    
-    logging.info('Finished indexing `{}`.'.format(corpus.es_index))
+
+    perform_indexing(corpus, start, end)
+

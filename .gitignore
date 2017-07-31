@@ -1,3 +1,8 @@
 __pycache__/
 ianalyzer/config.py
 .DS_Store
+Dockerfile
+docker-compose.yml
+indexing*
+migrations
+Tests
