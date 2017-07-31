@@ -30,7 +30,6 @@ admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Q
 login_manager = LoginManager()
 
 
-
 def corpus_required(method):
     '''
     Wrapper to make sure that a `corpus` argument is made accessible from a
@@ -50,7 +49,6 @@ def corpus_required(method):
         return method(corpusname=corpusname, corpus=corpus, *nargs, **kwargs)
 
     return f
-
 
 
 def post_required(method):
@@ -93,11 +91,9 @@ def post_required(method):
     return f
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return models.User.query.get(user_id)
-
 
 
 @blueprint.route('/', methods=['GET'])
@@ -108,12 +104,10 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-
-
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
 @login_required
 @corpus_required
-#@post_required
+@post_required
 def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=None):
     '''
     Stream all results of a search to a CSV file.
@@ -181,7 +175,6 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         'attachment; filename={}'.format(filename)
     )
     return response
-
 
 
 @blueprint.route('/<corpusname>/search.json', methods=['POST'])

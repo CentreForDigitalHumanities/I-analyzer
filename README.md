@@ -23,10 +23,11 @@ Running
 To get an instance running, do the following:
 
 1. Install the ElasticSearch and MySQL daemons on the server or your local machine.
-2. Configure `ianalyzer/config.py` (see `ianalyzer/default-config.py`).
-3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `manage.py es --c times -s 1785-01-01 -e 2010-12-31`, for indexing the Times corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
+2. Configure `ianalyzer/config.py` (see `ianalyzer/default-config.py`). The variable `CORPUS` specifies for which corpus the application is made; `CORPUS_ENDPOINT` the associated python class in corpora; `CORPUS_URL` specifiies the url of the landing page of the web application.
+3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `manage.py es -c times -s 1785-01-01 -e 2010-12-31`, for indexing the Times corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
 4. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
-5. Initialize the MySQL database by running `manage.py db -p password`, providing an administrator password.
+5. Set up the database and migrations by running `manage.py db init`.
+6. Initialize the users of the MySQL database by running `manage.py admin -p password`, providing an administrator password.
 6. Run `run.py` to create an instance of the Flask server at `127.0.0.1:5000`.
 
 ### Testing
@@ -38,7 +39,7 @@ Tests exist in the `tests/` directory and may be run by calling `python -m py.te
 Indexing
 -------------------------------------------------------------------------------
 
-`index.py` is, naturally, only used for indexing. As this should not be a situation that occurs often, a reminder.
+`es_index.py` is used for indexing. As this should not be a situation that occurs often, a reminder.
 
 1. If you are not indexing on your local machine, `ssh` into the server. After `sudo su`-ing to a relevant user, do `script /dev/null` so that `screen` will not get [confused](http://serverfault.com/q/116775) from being called by a different user. Now, create and attach to a new `screen` session, or reattach with `screen -r <id>` to an existing ID in `screen -ls`.
 2. After activating the virtual environment, start indexing in the background with `./index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.

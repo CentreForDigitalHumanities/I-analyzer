@@ -26,17 +26,14 @@ class ModelView(admin_sqla.ModelView):
         return redirect(url_for('admin.index'))
 
 
-
 class QueryView(ModelView):
     can_create = False
-    can_edit = False
-    
+    can_edit = False    
     
     
 class RoleView(ModelView):
     pass
-    
-    
+       
 
 class UserView(ModelView):
     form_overrides = dict(
@@ -51,8 +48,6 @@ class UserView(ModelView):
     )
     
     form_excluded_columns = ('queries', 'authenticated')
-
-
 
 
 class CorpusView(admin.BaseView):
@@ -76,14 +71,17 @@ class CorpusView(admin.BaseView):
         
         return self.render('app.html', 
             corpus=self.corpus,
-            search_form = forms.populate_search_form(corpus, request.form),
+            fields=[
+                field 
+                for field in corpus.fields
+                    if not field.hidden
+            ],
             autocomplete=[
                 field.name + ':'
                 for field in corpus.fields
                     if not field.hidden
             ]
         )
-
 
 
 class AdminIndexView(admin.AdminIndexView):
@@ -93,8 +91,6 @@ class AdminIndexView(admin.AdminIndexView):
         if not current_user.is_authenticated:
             return redirect(url_for('.login'))
         return super(AdminIndexView, self).index()
-
-
 
     @admin.expose('/login', methods=['GET', 'POST'])
     def login(self):
@@ -112,8 +108,6 @@ class AdminIndexView(admin.AdminIndexView):
             return redirect(url_for(config.CORPUS_URL))
         
         return self.render('admin/form.html', title='Login', form=lf)
-
-
 
     @admin.expose('/logout')
     @login_required

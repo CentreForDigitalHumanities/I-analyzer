@@ -17,7 +17,7 @@ SECRET_KEY = '0987654321'
 SQLALCHEMY_DATABASE_URI = 'mysql://ianalyzer@localhost/ianalyzer'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-# set which variables will be used
+# set which corpora will be used
 CORPUS = 'dutchbanking'
 CORPUS_URL = 'DutchBanking.index'
 CORPUS_ENDPOINT = 'DutchBanking'
