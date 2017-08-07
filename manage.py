@@ -23,7 +23,7 @@ def ctx():
     return app
 
 
-def create_admin(pwd)
+def create_admin(pwd):
     with ctx().app_context():
 
         role_admin = Role('admin', 'Administrator role.')
