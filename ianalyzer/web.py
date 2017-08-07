@@ -113,7 +113,7 @@ def init():
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
 @login_required
 @corpus_required
-#@post_required
+@post_required
 def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=None):
     '''
     Stream all results of a search to a CSV file.
