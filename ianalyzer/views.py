@@ -76,7 +76,11 @@ class CorpusView(admin.BaseView):
         
         return self.render('app.html', 
             corpus=self.corpus,
-            search_form = forms.populate_search_form(corpus, request.form),
+            fields=[
+                field 
+                for field in corpus.fields
+                    if not field.hidden
+            ],
             autocomplete=[
                 field.name + ':'
                 for field in corpus.fields
