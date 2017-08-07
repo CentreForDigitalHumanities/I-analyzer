@@ -4,28 +4,23 @@ import sys
 import logging
 from datetime import datetime
 
-from ianalyzer.corpora import corpora
+from flask import Flask
+from werkzeug.security import generate_password_hash
+from sqlalchemy import exc
+from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager, Command, Option
 
+from ianalyzer.corpora import corpora
 from ianalyzer import config
 from ianalyzer.models import User, Role, db
 from ianalyzer.web import blueprint, admin_instance, login_manager
 from ianalyzer.factories import flask_app, elasticsearch
 from es_index import perform_indexing
 
-from flask import Flask
-
-from werkzeug.security import generate_password_hash
-from sqlalchemy import exc
-
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager, Command, Option
-
-
 
 def ctx():
     app = flask_app(blueprint, admin_instance, login_manager)
     return app
-
 
 
 def create_admin(pwd)
@@ -52,10 +47,8 @@ def create_admin(pwd)
         return db.session.commit()
 
 
-
 def migrations():
-    '''
-    initialize migration
+    ''' initialize migration
     options: init, migrate
     run after database models change
     can be accessed through the MigrationsCommand interface
@@ -64,11 +57,8 @@ def migrations():
         migrate = Migrate(app, db)
 
 
-
 class AdminCommand(Command):
-    '''
-        (re)sets admin password
-    '''
+    '''(re)sets admin password'''
     option_list = (
         Option('--password', 
             '-p', 
@@ -81,12 +71,9 @@ class AdminCommand(Command):
         create_admin(pwd)
 
 
-
 class IndexingCommand(Command):
-    ''' 
-    perform es indexing on the data source specified in config.py
-    '''
-    # Create and populate the ES index
+    ''' perform elastic search indexing on the data source 
+    specified in config.py'''
 
     option_list = (
         Option('--corpus', 
@@ -140,7 +127,6 @@ class IndexingCommand(Command):
             raise
         
         perform_indexing(corpus, start_index, end_index)
-
 
 
 if __name__ == '__main__':

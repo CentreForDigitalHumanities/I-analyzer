@@ -9,7 +9,7 @@ implemented ad-hoc in the Jinja2 template.
 '''
 
 import logging; logger = logging.getLogger(__name__)
-from . import sqla
+from . import models
 from wtforms import fields, validators, form, TextField
 from wtforms.widgets import PasswordInput
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -53,7 +53,7 @@ class RegistrationForm(form.Form):
         if not rv:
             return False
 
-        if sqla.User.query.filter_by(username=self.username.data).count() > 0:
+        if models.User.query.filter_by(username=self.username.data).count() > 0:
             self.username.errors.append('Username already exists')
             return False
 
@@ -70,7 +70,7 @@ class LoginForm(form.Form):
         if not rv:
             return False
 
-        user = sqla.User.query.filter_by(username=self.username.data).first()
+        user = models.User.query.filter_by(username=self.username.data).first()
         
         if user is None:
             self.username.errors.append('Unknown username')
