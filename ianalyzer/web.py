@@ -75,7 +75,7 @@ def post_required(method):
 
         # Collect filters in ES format
         filters = (
-            field.search_filter.elasticsearch
+            field.search_filter.elasticsearch(request.form)
             for field in corpus.fields
                 if field.search_filter
         )
