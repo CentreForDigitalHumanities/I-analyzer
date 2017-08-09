@@ -14,7 +14,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 
 from . import config
 from . import factories
-from . import sqla
+from . import models
 from . import views
 from . import search
 from . import streaming
@@ -23,10 +23,10 @@ from .corpora import corpora
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus='dutchbanking', name='dutchbanking', endpoint='DutchBanking'))
-admin_instance.add_view(views.UserView(sqla.User, sqla.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(views.RoleView(sqla.Role, sqla.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(views.QueryView(sqla.Query, sqla.db.session, name='Queries', endpoint='queries'))
+admin_instance.add_view(views.CorpusView(corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 
 
@@ -96,7 +96,7 @@ def post_required(method):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return sqla.User.query.get(user_id)
+    return models.User.query.get(user_id)
 
 
 
@@ -124,9 +124,9 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
 
 
     # Log the query to the database
-    q = sqla.Query(query=str(query), corpus=corpusname, user=current_user)
-    sqla.db.session.add(q)
-    sqla.db.session.commit()
+    q = models.Query(query=str(query), corpus=corpusname, user=current_user)
+    models.db.session.add(q)
+    models.db.session.commit()
 
     def logged_stream(stream):
         '''
@@ -148,8 +148,8 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
             # aborted until it is actually finished.)
             q.aborted = True
         q.transferred = total_transferred
-        sqla.db.session.add(q)
-        sqla.db.session.commit()
+        models.db.session.add(q)
+        models.db.session.commit()
 
 
     # Perform the search and obtain output stream
