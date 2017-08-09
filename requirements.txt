@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
+
 alembic==0.9.4            # via flask-migrate
 beautifulsoup4==4.4.1
 click==6.7                # via flask
@@ -11,7 +12,8 @@ coverage==4.3.4
 elasticsearch==5.0.1
 flask-admin==1.4.2
 flask-login==0.4.0
-flask-migrate==2.1.0
+flask-migrate==2.0.4
+flask-script==2.0.5       # via flask-migrate
 flask-scss==0.5
 flask-sqlalchemy==2.1
 flask==0.11.1
@@ -31,3 +33,6 @@ sqlalchemy==1.1.4         # via alembic, flask-sqlalchemy
 urllib3==1.13.1           # via elasticsearch
 werkzeug==0.11.11
 wtforms==2.1
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools                # via pytest

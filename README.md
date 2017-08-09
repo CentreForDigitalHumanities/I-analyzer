@@ -28,7 +28,7 @@ To get an instance running, do the following:
 4. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
 5. Set up the database and migrations by running `manage.py db init`.
 6. Initialize the users of the MySQL database by running `manage.py admin -p password`, providing an administrator password.
-7. Run `run.py` to create an instance of the Flask server at `127.0.0.1:5000`.
+7. Run `python manage.py runserver` to create an instance of the Flask server at `127.0.0.1:5000`.
 
 ### Testing
 
@@ -36,10 +36,8 @@ Tests exist in the `tests/` directory and may be run by calling `python -m py.te
 
 
 
-Indexing
+Indexing large corpora on the remote server
 -------------------------------------------------------------------------------
-
-`es_index.py` is used for indexing. As this should not be a situation that occurs often, a reminder.
 
 1. If you are not indexing on your local machine, `ssh` into the server. After `sudo su`-ing to a relevant user, do `script /dev/null` so that `screen` will not get [confused](http://serverfault.com/q/116775) from being called by a different user. Now, create and attach to a new `screen` session, or reattach with `screen -r <id>` to an existing ID in `screen -ls`.
 2. After activating the virtual environment, start indexing in the background with `./index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.

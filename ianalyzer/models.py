@@ -5,6 +5,14 @@ Module contains the models for user management and query logging in SQL.
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
+MAX_LENGTH_NAME = 126
+MAX_LENGTH_PASSWORD = 254
+MAX_LENGTH_EMAIL = 254
+DOWNLOAD_LIMIT = 10000
+MAX_LENGTH_DESCRIPTION = 254
+MAX_LENGTH_CORPUS_NAME = 254
+
 db = SQLAlchemy()
 
 roles_users = db.Table(
@@ -16,9 +24,9 @@ roles_users = db.Table(
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(127), unique=True)
-    password = db.Column(db.String(256))
-    email = db.Column(db.String(255), nullable=True)
+    username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    password = db.Column(db.String(MAX_LENGTH_PASSWORD))
+    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
     
     active = db.Column(db.Boolean)
     '''
@@ -50,7 +58,7 @@ class User(db.Model):
     '''
 
 
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=10000):
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT):
         self.username = username
         self.password = password
         self.email = email
@@ -114,8 +122,8 @@ class Role(db.Model):
     '''
     
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
+    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
 
     def __init__(self, name, description=""):
         self.name = name
@@ -140,7 +148,7 @@ class Query(db.Model):
     JSON string sent out to ElasticSearch for this query.
     '''
     
-    corpus = db.Column(db.String(255))
+    corpus = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))
     '''
     Name of the corpus for which the query was performed.
     '''
