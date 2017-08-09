@@ -47,16 +47,6 @@ def create_admin(pwd):
         return db.session.commit()
 
 
-def migrations():
-    ''' initialize migration
-    options: init, migrate
-    run after database models change
-    can be accessed through the MigrationsCommand interface
-    '''
-    with ctx().app_context():
-        migrate = Migrate(app, db)
-
-
 class AdminCommand(Command):
     '''(re)sets admin password'''
     option_list = (
@@ -129,12 +119,15 @@ class IndexingCommand(Command):
         perform_indexing(corpus, start_index, end_index)
 
 
+app = flask_app(blueprint, admin_instance, login_manager)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
+manager.add_command('admin', AdminCommand)
+manager.add_command('es', IndexingCommand)
+
+migrate = Migrate(app, db)
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)
-    app = flask_app(blueprint, admin_instance, login_manager)
-    Migrate(app, db)
-    manager = Manager(app)
-    manager.add_command('db', MigrateCommand)
-    manager.add_command('admin', AdminCommand)
-    manager.add_command('es', IndexingCommand)
     manager.run()
