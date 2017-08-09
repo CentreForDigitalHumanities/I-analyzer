@@ -17,6 +17,11 @@ SECRET_KEY = ''
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+# Global corpus variables
+CORPUS = 'times'
+CORPUS_URL = 'Times.index'
+CORPUS_ENDPOINT = 'Times'
+
 # ElasticSearch
 ES_HOST='localhost'
 ES_PORT=9200

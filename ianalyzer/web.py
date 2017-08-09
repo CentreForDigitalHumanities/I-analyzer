@@ -23,7 +23,7 @@ from .corpora import corpora
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus='dutchbanking', name='dutchbanking', endpoint='DutchBanking'))
+admin_instance.add_view(views.CorpusView(corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
 admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
 admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))

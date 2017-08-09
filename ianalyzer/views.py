@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 
+from . import config
 from . import forms
 from . import models
 from .corpora import corpora
@@ -112,7 +113,7 @@ class AdminIndexView(admin.AdminIndexView):
             models.db.session.commit()
             login_user(user)
             
-            return redirect(url_for('DutchBanking.index'))
+            return redirect(url_for(config.CORPUS_URL))
         
         return self.render('admin/form.html', title='Login', form=lf)
 
