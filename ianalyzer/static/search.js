@@ -138,8 +138,6 @@ $(function(){
         
     });
 
-    $("input#download_fallback").hide();
-
     $(".top_buttons #admin").button({
         icon: "ui-icon-person",
         iconPosition: "end"
@@ -158,14 +156,19 @@ $(function(){
     });
 
     /* Search dialog */
-    var $search_dialog = $("#search_dialog");
+    var $search_dialog = $("#search_dialog"),
+        $form = $('form');
     $("#search").button({
         icon: "ui-icon-search"
     }).css({
         width: '100%',
         marginTop: '5px'
-    }).click(function(){        
-        $search_dialog.dialog("open");
+    });
+    $form.submit(function(event){        
+        if (!$search_dialog.dialog("isOpen")) {
+            event.preventDefault();
+            $search_dialog.dialog("open");
+        }
     });
     $search_dialog.dialog({
         autoOpen: false,
@@ -178,7 +181,7 @@ $(function(){
             $search_dialog.dialog("option", { buttons: [] });
             $search_dialog.text("Searching...");
             
-            var post = {}, $form = $('form'), formdata = $form.serializeArray();
+            var post = {}, formdata = $form.serializeArray();
             for(var i = 0; i < formdata.length; i++)
                 post[formdata[i].name] = formdata[i].value;
             
