@@ -22,7 +22,7 @@ Running
 
 To get an instance running, do the following:
 
-1. Install the ElasticSearch and MySQL daemons on the server or your local machine.
+1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine.
 2. Configure `ianalyzer/config.py` (see `ianalyzer/default-config.py`). The variable `CORPUS` specifies for which corpus the application is made; `CORPUS_ENDPOINT` the associated python class in corpora; `CORPUS_URL` specifiies the url of the landing page of the web application.
 3. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `manage.py es -c times -s 1785-01-01 -e 2010-12-31`, for indexing the Times corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
 4. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
