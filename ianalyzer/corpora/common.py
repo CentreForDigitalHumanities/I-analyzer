@@ -129,18 +129,19 @@ class Corpus(object):
             if ca[0]=='data_directory':
                 continue
             elif ca[0]=='fields':
-                field_list = []
+                field_list = []                
                 for field in self.fields:
-                    field_dict = field.__dict__
-                    if field_dict['search_filter']:
-                        search_dict = field_dict['search_filter'].__dict__
-                        del search_dict['field']
-                        filter_name = str(
-                            type(field_dict['search_filter'])
-                            ).split(sep = '.')[-1][:-2]
-                        field_dict['search_filter'] = search_dict
-                        search_dict['name'] = filter_name
-                    del field_dict['extractor']
+                    field_dict = {}
+                    for key, value in field.__dict__.items():
+                        if key == 'search_filter' and value != None:                            
+                            filter_name = str(type(value)).split(sep = '.')[-1][:-2]
+                            search_dict = {'name': filter_name}
+                            for search_key, search_value in value.__dict__.items():
+                                if search_key =='search_filter' or search_key != 'field':
+                                    search_dict[search_key] = search_value
+                            field_dict['search_filter'] = search_dict
+                        elif key != 'extractor':
+                            field_dict[key] = value
                     field_list.append(field_dict)
                 corpus_dict[ca[0]] = field_list
             elif type(ca[1])==datetime:
