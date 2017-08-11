@@ -107,7 +107,11 @@ def init():
     else:
         return redirect(url_for('admin.login'))
 
-
+@blueprint.route('/corpus', methods=['GET'])
+def corpus_list():
+    response = jsonify({key: value.serialize() for key, value in corpora.items()})
+    response.headers['Access-Control-Allow-Origin'] = '*' # TODO: more secure
+    return response
 
 
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])

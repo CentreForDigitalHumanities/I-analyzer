@@ -107,14 +107,17 @@ class Corpus(object):
 
         return result
 
-
-
     def json(self):
         '''
         Corpora should be able to produce JSON, so that the fields they define
         can be used by other codebases, while retaining the Python class as the
         single source of truth.
         '''
+        corpus_dict = self.serialize()
+        json_dict = json.dumps(corpus_dict)
+        return json_dict
+
+    def serialize(self):
         corpus_dict = {}
         # inspect.getmembers returns tuples for every Class attribute:
         # tuple[0] attribute name; tuple[1] attribute content
@@ -152,11 +155,8 @@ class Corpus(object):
                 corpus_dict[ca[0]] = timedict
             else:
                 corpus_dict[ca[0]] = ca[1]
-        json_dict = json.dumps(corpus_dict)
-        return json_dict
+        return corpus_dict
         
-        
-
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
