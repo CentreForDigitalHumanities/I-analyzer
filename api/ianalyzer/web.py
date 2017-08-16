@@ -2,7 +2,8 @@
 Present the data to the user through a web interface.
 '''
 
-import logging; logger = logging.getLogger(__name__)
+import logging
+logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 
@@ -22,13 +23,17 @@ from .corpora import corpora
 
 
 blueprint = Blueprint('blueprint', __name__)
-admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
-admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
+admin_instance = admin.Admin(
+    name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+admin_instance.add_view(views.CorpusView(
+    corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.UserView(
+    models.User, models.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.RoleView(
+    models.Role, models.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.QueryView(
+    models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
-
 
 
 def corpus_required(method):
@@ -52,7 +57,6 @@ def corpus_required(method):
     return f
 
 
-
 def post_required(method):
     '''
     Wrapper to add relevant POSTed data to the parameters of a function.
@@ -65,27 +69,26 @@ def post_required(method):
         if not request.method == 'POST':
             abort(405)
 
-
         # Collect fields selected for appearance
         fields = (
             field
             for field in corpus.fields
-                if ('field:' + field.name) in request.form
+            if ('field:' + field.name) in request.form
         )
 
         # Collect filters in ES format
         filters = (
             field.search_filter.elasticsearch(request.form)
             for field in corpus.fields
-                if field.search_filter
+            if field.search_filter
         )
 
         return method(
-            corpusname = corpusname,
-            corpus = corpus,
-            query_string = request.form.get('query'),
-            fields = list(fields),
-            filters = list(f for f in filters if f is not None),
+            corpusname=corpusname,
+            corpus=corpus,
+            query_string=request.form.get('query'),
+            fields=list(fields),
+            filters=list(f for f in filters if f is not None),
             *nargs,
             **kwargs
         )
@@ -93,11 +96,9 @@ def post_required(method):
     return f
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return models.User.query.get(user_id)
-
 
 
 @blueprint.route('/', methods=['GET'])
@@ -107,10 +108,12 @@ def init():
     else:
         return redirect(url_for('admin.login'))
 
+
 @blueprint.route('/corpus', methods=['GET'])
 def corpus_list():
-    response = jsonify({key: value.serialize() for key, value in corpora.items()})
-    response.headers['Access-Control-Allow-Origin'] = '*' # TODO: more secure
+    response = jsonify({key: value.serialize()
+                        for key, value in corpora.items()})
+    response.headers['Access-Control-Allow-Origin'] = '*'  # TODO: more secure
     return response
 
 
@@ -122,10 +125,9 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
     '''
     Stream all results of a search to a CSV file.
     '''
-    
-    # Create a query from POST data
-    query = search.make_query(query_string = query_string, filters = filters)
 
+    # Create a query from POST data
+    query = search.make_query(query_string=query_string, filters=filters)
 
     # Log the query to the database
     q = models.Query(query=str(query), corpus=corpusname, user=current_user)
@@ -155,17 +157,18 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         models.db.session.add(q)
         models.db.session.commit()
 
-
     # Perform the search and obtain output stream
     logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute_iterate(corpus, query, size=current_user.download_limit)
+    docs = search.execute_iterate(
+        corpus, query, size=current_user.download_limit)
     rows = streaming.field_lists(docs, selected=fields)
     stream = logged_stream(streaming.as_csv(rows))
 
     # Create appropriate filename
-    alphanums = lambda string:  ''.join(char for char in string if char.isalnum())
+    def alphanums(string): return ''.join(
+        char for char in string if char.isalnum())
     query_memo = '-' + alphanums(query_string)[:12] if query_string else ''
-    
+
     try:
         # TODO: Too dependent on particular string structure I chose somewhere
         # else for the date filter
@@ -173,11 +176,11 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         date1_memo = alphanums(date_memo[0])
         date2_memo = alphanums(date_memo[1])
     except (IndexError, AttributeError, KeyError):
-        date1_memo = corpus.min_date.strftime('%Y%m%d') 
+        date1_memo = corpus.min_date.strftime('%Y%m%d')
         date2_memo = corpus.max_date.strftime('%Y%m%d')
 
-    filename = '{}-{}-{}{}.csv'.format(corpusname, date1_memo, date2_memo, query_memo)
-
+    filename = '{}-{}-{}{}.csv'.format(corpusname,
+                                       date1_memo, date2_memo, query_memo)
 
     # Stream results CSV
     response = Response(stream_with_context(stream), mimetype='text/csv')
@@ -185,7 +188,6 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         'attachment; filename={}'.format(filename)
     )
     return response
-
 
 
 @blueprint.route('/<corpusname>/search.json', methods=['POST'])
@@ -200,24 +202,23 @@ def search_json(corpusname, corpus=None, query_string=None, fields=None, filters
     '''
 
     # Build the query from POST data
-    query = search.make_query(query_string = query_string, filters = filters)
-    
+    query = search.make_query(query_string=query_string, filters=filters)
+
     # Perform the search
     logging.info('Requested example JSON for query: {}'.format(query))
     result = search.execute(corpus, query, size=config.ES_EXAMPLE_QUERY_SIZE)
-    
+
     # Extract relevant information from dictionary returned by ES
     stats = result.get('hits', {})
     docs = (
         # reassemble _source dictionary and _id string into single dict
-        dict( 
+        dict(
             doc.get('_source'),
             id=doc.get('_id')
         )
         for doc in stats.get('hits', ())
     )
     rows = streaming.field_lists(docs, selected=fields)
-
 
     # Return result as JSON
     return jsonify({

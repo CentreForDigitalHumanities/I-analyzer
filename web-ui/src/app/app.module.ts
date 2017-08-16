@@ -11,30 +11,30 @@ import { CorpusListComponent } from './corpus-list/corpus-list.component';
 import { HomeComponent } from './home/home.component';
 
 const appRoutes: Routes = [
-  {
-    path: 'home',
-    component: HomeComponent,
-    pathMatch: 'full'
-  },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  }
+    {
+        path: 'home',
+        component: HomeComponent,
+        pathMatch: 'full'
+    },
+    {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+    }
 ]
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    CorpusListComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forRoot(appRoutes),
-    HttpModule,
-    BrowserModule
-  ],
-  providers: [ApiService, CorpusService, ConfigService],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        HomeComponent,
+        CorpusListComponent
+    ],
+    imports: [
+        CommonModule,
+        RouterModule.forRoot(appRoutes),
+        HttpModule,
+        BrowserModule
+    ],
+    providers: [ApiService, CorpusService, ConfigService],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
