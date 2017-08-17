@@ -1,0 +1,6 @@
+<div class="top_buttons" *ngIf="currentUser">
+    <a [routerLink]="['/home']">home</a>
+    <span style="padding-right:1em">logged in as {{currentUser.name}}</span>
+    <a *ngIf="isAdmin" id="admin" (click)="gotoAdmin()">administrator</a>
+    <a id="logout" (click)="logout()">exit</a>
+</div>

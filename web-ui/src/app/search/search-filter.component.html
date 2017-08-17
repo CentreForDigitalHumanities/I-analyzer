@@ -1,0 +1,22 @@
+<ng-container *ngIf="filter">
+    <div class="select" *ngIf="filter.name == 'BooleanFilter'">
+        <select [(ngModel)]="data" name="data" [disabled]="!enabled">
+            <option value="1">{{ filter.trueText }}</option>
+            <option value="">{{ filter.falseText }}</option>
+        </select>
+    </div>
+    <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'">
+        <ng-container *ngFor="let option of filter.options">
+            <input type="checkbox" [(ngModel)]="data[option]" [id]="name + ':' + option" [disabled]="!enabled" (change)="update()" />
+            <label [for]="name + ':' + option" style="margin-top:2px;margin-bottom:2px;margin-right:-1px">{{ option }}</label>
+        </ng-container>
+    </div>
+    <div class="range" *ngIf="filter.name == 'RangeFilter'">
+        <input [disabled]="!enabled" type="range" [name]="range" [(ngModel)]="data.min" [min]="filter.lower" [max]="data.max" (change)="update()" />
+        <input [disabled]="!enabled" type="range" [name]="range" [(ngModel)]="data.max" [min]="data.min" [max]="filter.upper" (change)="update()" />
+        <span>{{data.min}} : {{data.max}}</span>
+    </div>
+    <div class="daterange" *ngIf="filter.name == 'DateFilter'">
+        TODO!!!
+    </div>
+</ng-container>

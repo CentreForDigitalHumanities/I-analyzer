@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 import { Http, Response, RequestOptionsArgs } from '@angular/http';
 import { Observable } from 'rxjs';
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class ApiService {
@@ -36,16 +37,11 @@ export class ApiService {
     }
 
     private requestPath<T>(path: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs) {
-        return this.config.get().then(config =>
-            new Promise<T>((resolve, reject) => {
-                this.requestUrl(`${config.apiUrl}/${path}`, method, body, options).subscribe(response => {
-                    if (response.ok) {
-                        resolve(response.json() as T);
-                    } else {
-                        reject(`${response.status}: response.statusText`);
-                    }
-                });
-            }));
+        return this.config.get()
+            .then(config => this.requestUrl(`${config.apiUrl}/${path}`, method, body, options).toPromise())
+            .then(response => response.ok
+                ? Promise.resolve<T>(response.json())
+                : Promise.reject(`${response.status}: ${response.statusText}`));
     }
 
     private requestUrl(url: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs): Observable<Response> {

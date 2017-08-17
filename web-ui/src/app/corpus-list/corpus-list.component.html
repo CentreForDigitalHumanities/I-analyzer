@@ -3,6 +3,6 @@
         <th>Corpus</th>
     </tr>
     <tr *ngFor="let item of items">
-        <td>{{item.name}}</td>
+        <td><a [routerLink]="['/search', item.name]">{{item.name}}</a></td>
     </tr>
 </table>

@@ -1,3 +1,4 @@
 {
-    "apiUrl": "http://localhost:5000"
+    "apiUrl": "/api",
+    "adminUrl": "http://localhost:5000/admin/"
 }

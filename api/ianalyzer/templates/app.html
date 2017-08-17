@@ -30,7 +30,7 @@ var AUTOCOMPLETE = {{ autocomplete|tojson }},
     </div>
     {%- endfor %}
 </div>
-    
+
 <form method="post" action="{{ url_for('blueprint.search_csv', corpusname=corpus) }}">
 
 <div class="top_buttons">
@@ -51,7 +51,7 @@ var AUTOCOMPLETE = {{ autocomplete|tojson }},
             <td class="lbl"><span>Query</span></td>
             <td><input id="query" name="query" type="text"></td>
         </tr>
-               
+
         {%- for field in fields %}
         {%- if field.search_filter %}
         <tr>

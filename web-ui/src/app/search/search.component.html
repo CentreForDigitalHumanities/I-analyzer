@@ -1,0 +1,49 @@
+<form (ngSubmit)="search()" class="tabs" *ngIf="corpus">
+    <ul>
+        <li><a (click)="showTab('search')">Search</a></li>
+        <li><a (click)="showTab('columns')">Columns</a></li>
+    </ul>
+    <div *ngIf="visibleTab == 'search'">
+
+        <table>
+            <tr>
+                <td class="lbl"><label for="query">Query</label></td>
+                <td><input id="query" [(ngModel)]="query" name="query" type="text"></td>
+            </tr>
+
+            <ng-container *ngFor="let field of corpus.fields">
+                <tr *ngIf="field.searchFilter">
+                    <td class="lbl">
+                        <span>
+                            <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name" type="checkbox">
+                            <label [for]="'filter' + field.name">Filter ({{ field.name }})</label>
+                        </span> {{ field.searchFilter.description }}
+                    </td>
+                    <td>
+                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="queryField[field.name].useAsFilter = true" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    </td>
+                </tr>
+            </ng-container>
+        </table>
+    </div>
+    <div *ngIf="visibleTab == 'columns'">
+        <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
+
+        <div class="columns">
+            <div class="column" *ngFor="let field of corpus.fields">
+                <div class="lbl">
+                    <label><input type="checkbox"  [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">{{ field.name }}</label>
+                </div>
+                <div class="description" *ngIf="field.description">
+                    {{ field.description }}
+                </div>
+                <div class="description" *ngIf="!field.description">
+                    ---
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" id="search">Search</button>
+</form>
+<search-sample [sample]="sample" *ngIf="sample"></search-sample>

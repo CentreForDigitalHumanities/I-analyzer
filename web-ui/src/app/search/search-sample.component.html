@@ -1,0 +1,10 @@
+Your search resulted in {{sample.total}} hits. Your download limit is 10000. This is a sample of 5 results:
+
+<table>
+    <tbody *ngFor="let hit of sample.hits">
+        <tr *ngFor="let field of sample.fields">
+            <th>{{field}} </th>
+            <td>{{hit[field]}}</td>
+        </tr>
+    </tbody>
+</table>

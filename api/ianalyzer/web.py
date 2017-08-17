@@ -18,6 +18,7 @@ from . import factories
 from . import models
 from . import views
 from . import search
+from . import security
 from . import streaming
 from .corpora import corpora
 
@@ -109,12 +110,46 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-@blueprint.route('/corpus', methods=['GET'])
-def corpus_list():
+@blueprint.route('/api/corpus', methods=['GET'])
+@login_required
+def api_corpus_list():
     response = jsonify({key: value.serialize()
                         for key, value in corpora.items()})
-    response.headers['Access-Control-Allow-Origin'] = '*'  # TODO: more secure
     return response
+
+
+@blueprint.route('/api/login', methods=['POST'])
+def api_login():
+    if not request.json:
+        abort(400)
+    username = request.json['username']
+    password = request.json['password']
+    user = security.validate_user(username, password)
+    if user is None:
+        response = jsonify({'success': False})
+    else:
+        security.login_user(user)
+        response = jsonify({
+            'success': True,
+            'username': user.username,
+            'roles': [{'name': role.name, 'description': role.description} for role in user.roles]
+        })
+
+    return response
+
+
+@blueprint.route('/api/search', methods=['POST'])
+@login_required
+def api_search_json():
+    if not request.json:
+        abort(400)
+    corpusName = request.json['corpusName']
+    query = request.json['query']
+    fields = request.json['fields']
+    filters = request.json['filters']
+    corpus = corpora[corpusName]
+
+    return search_json(corpusName, corpus, query, fields, filters)
 
 
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
@@ -194,6 +229,10 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
 @login_required
 @corpus_required
 @post_required
+def search_json_route(corpusname, corpus=None, query_string=None, fields=None, filters=None):
+    return search_json(corpusname, corpus, query_string, fields, filters)
+
+
 def search_json(corpusname, corpus=None, query_string=None, fields=None, filters=None):
     '''
     Return the first `n` results of a search operation. The result is a JSON
