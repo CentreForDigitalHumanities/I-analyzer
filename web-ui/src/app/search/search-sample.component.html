@@ -1,10 +1,36 @@
-Your search resulted in {{sample.total}} hits. Your download limit is 10000. This is a sample of 5 results:
-
-<table>
-    <tbody *ngFor="let hit of sample.hits">
-        <tr *ngFor="let field of sample.fields">
-            <th>{{field}} </th>
-            <td>{{hit[field]}}</td>
-        </tr>
-    </tbody>
-</table>
+<h1 class="title">
+    Search sample
+</h1>
+<ng-container *ngIf="!sample.total">
+    <h2 class="subtitle">
+        0 hits
+    </h2>
+</ng-container>
+<ng-container *ngIf="sample.total">
+    <h2 class="subtitle" *ngIf="sample.total <= 5">
+        {{sample.total}} hits
+    </h2>
+    <h2 class="subtitle" *ngIf="sample.total > 5">
+        {{sample.total}} hits. The download limit is 10000. This is a sample of 5 results:
+    </h2>
+    <div class="hits">
+        <div *ngFor="let hit of sample.hits" class="hit">
+            <div class="box">
+                <table class="table">
+                    <ng-container *ngFor="let field of sample.fields">
+                        <tr *ngIf="hit[field]">
+                            <th>{{field}} </th>
+                            <td>{{hit[field]}}</td>
+                        </tr>
+                    </ng-container>
+                </table>
+            </div>
+        </div>
+    </div>
+    <button class="button" (click)="download()">
+        <span class="icon is-small">
+        <i class="fa fa-download"></i>
+        </span>
+        <span>Download CSV</span>
+    </button>
+</ng-container>

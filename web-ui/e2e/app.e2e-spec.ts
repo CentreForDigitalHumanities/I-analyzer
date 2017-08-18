@@ -9,6 +9,6 @@ describe('web-ui App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('I-analyzer ftw!');
+    expect(page.getParagraphText()).toEqual('I-Analyzer');
   });
 });

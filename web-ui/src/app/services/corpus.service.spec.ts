@@ -1,14 +1,16 @@
 import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 
+import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
 import { CorpusService } from './corpus.service';
 
 describe('CorpusService', () => {
     let service: CorpusService;
+    let apiServiceMock = new ApiServiceMock();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: ApiService, useClass: ApiServiceMock }, CorpusService]
+            providers: [{ provide: ApiService, useValue: apiServiceMock }, CorpusService]
         });
         service = TestBed.get(CorpusService);
     });
@@ -18,7 +20,7 @@ describe('CorpusService', () => {
     }));
 
     it('should parse the list of corpora', () => {
-        ApiServiceMock.fakeResult = {
+        apiServiceMock.fakeResult['corpus'] = {
             "dutchbanking": {
                 "es_doctype": "article",
                 "es_index": "dutchbank",
@@ -42,7 +44,7 @@ describe('CorpusService', () => {
     });
 
     it('should parse filters', () => {
-        ApiServiceMock.fakeResult = {
+        apiServiceMock.fakeResult['corpus'] = {
             "times": {
                 "es_doctype": "article",
                 "es_index": "times",
@@ -103,17 +105,9 @@ describe('CorpusService', () => {
                     }
                 }
                 ],
-                minDate: new Date(1785, 0, 0, 0, 0),
-                maxDate: new Date(2010, 11, 30, 0, 0),
+                minDate: new Date(1785, 0, 1, 0, 0),
+                maxDate: new Date(2010, 11, 31, 0, 0),
             }]);
         });
     });
 });
-
-class ApiServiceMock {
-    static fakeResult: any;
-
-    public get(): Promise<any> {
-        return Promise.resolve(ApiServiceMock.fakeResult);
-    }
-}

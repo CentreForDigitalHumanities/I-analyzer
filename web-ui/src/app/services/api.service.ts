@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 import { Http, Response, RequestOptionsArgs } from '@angular/http';
-import { Observable } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class ApiService {
+    private sessionExpiredSubject = new Subject();
+    public SessionExpired = this.sessionExpiredSubject.asObservable();
+
     constructor(private config: ConfigService, private http: Http) { }
 
     public get<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
@@ -36,12 +39,22 @@ export class ApiService {
         return this.requestPath(path, HttpMethod.Patch, body, options);
     }
 
+    public resolveUrl(path: string): Promise<string> {
+        return this.config.get().then(config => `${config.apiUrl}/${path}`);
+    }
+
     private requestPath<T>(path: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs) {
-        return this.config.get()
-            .then(config => this.requestUrl(`${config.apiUrl}/${path}`, method, body, options).toPromise())
+        return this.resolveUrl(path)
+            .then(url => this.requestUrl(url, method, body, options).toPromise())
             .then(response => response.ok
                 ? Promise.resolve<T>(response.json())
-                : Promise.reject(`${response.status}: ${response.statusText}`));
+                : Promise.reject(`${response.status}: ${response.statusText}`))
+            .catch((error) => {
+                if (error instanceof Response && error.status == 401) {
+                    this.sessionExpiredSubject.next();
+                }
+                throw error;
+            });
     }
 
     private requestUrl(url: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs): Observable<Response> {

@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { SearchSample } from '../models/index';
 
 @Component({
     selector: 'search-sample',
@@ -7,11 +8,17 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class SearchSampleComponent implements OnInit {
     @Input()
-    public sample;
+    public sample: SearchSample;
+
+    @Output('download')
+    public downloadEvent = new EventEmitter();
 
     constructor() { }
 
     ngOnInit() {
     }
 
+    public download() {
+        this.downloadEvent.next();
+    }
 }

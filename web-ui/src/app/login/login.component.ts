@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 
@@ -10,10 +11,14 @@ import { UserService } from '../services/user.service';
 export class LoginComponent implements OnInit {
     public username: string;
     public password: string;
+    public isLoading: boolean;
+    public isWrong: boolean;
 
     private returnUrl: string;
 
-    constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router) { }
+    constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
+        this.title.setTitle('I-Analyzer');
+    }
 
     ngOnInit() {
         // get return url from route parameters or default to '/'
@@ -21,12 +26,11 @@ export class LoginComponent implements OnInit {
     }
 
     login() {
-        // TODO: show that we are loading!
+        this.isLoading = true;
         this.userService.authorize(this.username, this.password).then(result => {
-            console.log(result);
             if (!result) {
-                // TODO: something better!
-                alert('Invalid username, password or Zodiac sign. Please try again with different (preferably correct) information.');
+                this.isLoading = false;
+                this.isWrong = true;
             } else {
                 this.router.navigateByUrl(this.returnUrl);
             }

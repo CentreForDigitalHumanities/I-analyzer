@@ -2,6 +2,7 @@
 Present the data to the user through a web interface.
 '''
 
+import json
 import logging
 logger = logging.getLogger(__name__)
 import functools
@@ -143,19 +144,37 @@ def api_login():
 def api_search_json():
     if not request.json:
         abort(400)
-    corpusName = request.json['corpusName']
+    corpus_name = request.json['corpusName']
     query = request.json['query']
     fields = request.json['fields']
     filters = request.json['filters']
-    corpus = corpora[corpusName]
+    corpus = corpora[corpus_name]
 
-    return search_json(corpusName, corpus, query, fields, filters)
+    return search_json(corpus_name, corpus, query, fields, filters)
+
+
+@blueprint.route('/api/search/csv', methods=['POST'])
+@login_required
+def api_search_csv():
+    if not request.form:
+        abort(400)
+    corpus_name = request.form['corpus_name']
+    query = request.form['query']
+    fields = json.loads(request.form['fields'])
+    filters = json.loads(request.form['filters'])
+    corpus = corpora[corpus_name]
+
+    return search_csv(corpus_name, corpus, query, fields, filters)
 
 
 @blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
 @login_required
 @corpus_required
 @post_required
+def search_csv_route(corpusname, corpus=None, query_string=None, fields=None, filters=None):
+    return search_csv(corpusname, corpus, query_string, fields, filters)
+
+
 def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=None):
     '''
     Stream all results of a search to a CSV file.

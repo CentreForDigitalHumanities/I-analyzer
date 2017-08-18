@@ -68,7 +68,7 @@ export class CorpusService {
     }
 
     private parseDate(date: any): Date {
-        // months and days are zero-based!
-        return new Date(date.year, date.month - 1, date.day - 1, date.hour, date.minute);
+        // months are zero-based!
+        return new Date(date.year, date.month - 1, date.day, date.hour, date.minute);
     }
 }

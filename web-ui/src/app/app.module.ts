@@ -1,9 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
+
+import { CalendarModule, SelectButtonModule, SliderModule } from 'primeng/primeng';
 
 import { ApiService, ConfigService, CorpusService, SearchService, UserService } from './services/index';
 
@@ -48,11 +51,15 @@ const appRoutes: Routes = [
         LoginComponent
     ],
     imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        CalendarModule,
         CommonModule,
         FormsModule,
-        RouterModule.forRoot(appRoutes),
         HttpModule,
-        BrowserModule
+        RouterModule.forRoot(appRoutes),
+        SelectButtonModule,
+        SliderModule
     ],
     providers: [ApiService, CorpusService, ConfigService, SearchService, UserService, LoggedOnGuard],
     bootstrap: [AppComponent]

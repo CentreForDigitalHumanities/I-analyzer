@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from '../models/index';
 import { ConfigService, UserService } from '../services/index';
 
@@ -8,11 +9,24 @@ import { ConfigService, UserService } from '../services/index';
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnInit {
-    public currentUser: User;
+export class MenuComponent implements OnDestroy, OnInit {
+    public currentUser: User | undefined;
     public isAdmin = false;
 
-    constructor(private configService: ConfigService, private userService: UserService, private router: Router) { }
+    private routerSubscription: Subscription;
+
+    constructor(private configService: ConfigService, private userService: UserService, private router: Router) {
+        this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
+    }
+
+    ngOnDestroy() {
+        this.routerSubscription.unsubscribe();
+    }
+
+    ngOnInit() {
+        this.checkCurrentUser();
+    }
+
 
     public gotoAdmin() {
         this.configService.get().then(config => {
@@ -21,18 +35,20 @@ export class MenuComponent implements OnInit {
     }
 
     public logout() {
+        this.currentUser = undefined;
         this.userService.logoff();
-        this.router.navigateByUrl('/login');
     }
 
-    ngOnInit() {
+    private checkCurrentUser() {
         if (this.userService.currentUser) {
+            if (this.userService.currentUser == this.currentUser) {
+                // nothing changed
+                return;
+            }
             this.currentUser = this.userService.currentUser;
             this.isAdmin = this.currentUser.hasRole('admin');
         } else {
             this.isAdmin = false;
         }
     }
-
-
 }

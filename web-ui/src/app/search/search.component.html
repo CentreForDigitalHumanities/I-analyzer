@@ -1,49 +1,62 @@
-<form (ngSubmit)="search()" class="tabs" *ngIf="corpus">
-    <ul>
-        <li><a (click)="showTab('search')">Search</a></li>
-        <li><a (click)="showTab('columns')">Columns</a></li>
-    </ul>
-    <div *ngIf="visibleTab == 'search'">
+<section class="section">
+    <div class="container">
+        <div class="tabs">
+            <ul>
+                <li (click)="showTab('search')" [ngClass]="{'is-active': visibleTab == 'search'}"><a>Search</a></li>
+                <li (click)="showTab('columns')" [ngClass]="{'is-active': visibleTab == 'columns'}"><a>Columns</a></li>
+            </ul>
+        </div>
+        <form (ngSubmit)="search()" *ngIf="corpus">
+            <ng-container *ngIf="visibleTab == 'search'">
+                <div class="field">
+                    <label class="label" for="query">Query</label>
+                    <input class="input" id="query" [(ngModel)]="query" name="query" type="text">
+                </div>
+                <ng-container *ngFor="let field of corpus.fields">
+                    <div class="field" *ngIf="field.searchFilter">
+                        <div class="checkbox">
+                            <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
+                                type="checkbox">
+                            <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
+                        </div> {{ field.searchFilter.description }}
 
-        <table>
-            <tr>
-                <td class="lbl"><label for="query">Query</label></td>
-                <td><input id="query" [(ngModel)]="query" name="query" type="text"></td>
-            </tr>
-
-            <ng-container *ngFor="let field of corpus.fields">
-                <tr *ngIf="field.searchFilter">
-                    <td class="lbl">
-                        <span>
-                            <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name" type="checkbox">
-                            <label [for]="'filter' + field.name">Filter ({{ field.name }})</label>
-                        </span> {{ field.searchFilter.description }}
-                    </td>
-                    <td>
-                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="queryField[field.name].useAsFilter = true" (update)="updateFilterData(field.name, $event)"></search-filter>
-                    </td>
-                </tr>
+                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    </div>
+                </ng-container>
             </ng-container>
-        </table>
-    </div>
-    <div *ngIf="visibleTab == 'columns'">
-        <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
+            <ng-container *ngIf="visibleTab == 'columns'">
+                <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
 
-        <div class="columns">
-            <div class="column" *ngFor="let field of corpus.fields">
-                <div class="lbl">
-                    <label><input type="checkbox"  [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">{{ field.name }}</label>
+                <div class="csv-columns">
+                    <div class="csv-column" *ngFor="let field of corpus.fields">
+                        <label class="checkbox">
+                            <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">
+                            {{ field.name }}
+                        </label>
+                        <div class="description" *ngIf="field.description">
+                            {{ field.description }}
+                        </div>
+                        <div class="description" *ngIf="!field.description">
+                            ---
+                        </div>
+                    </div>
                 </div>
-                <div class="description" *ngIf="field.description">
-                    {{ field.description }}
-                </div>
-                <div class="description" *ngIf="!field.description">
-                    ---
-                </div>
+            </ng-container>
+            <div class="field">
+                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
+                    <span class="icon is-small">
+                    <i class="fa fa-search"></i>
+                    </span>
+                    <span>Search</span>
+                </button>
             </div>
+        </form>
+    </div>
+</section>
+<section class="hero is-primary" *ngIf="sample">
+    <div class="hero-body">
+        <div class="container">
+            <search-sample [sample]="sample" (download)="download()"></search-sample>
         </div>
     </div>
-
-    <button type="submit" id="search">Search</button>
-</form>
-<search-sample [sample]="sample" *ngIf="sample"></search-sample>
+</section>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CorpusField, SearchFilterData } from '../models/index';
 
 @Component({
@@ -6,7 +6,7 @@ import { CorpusField, SearchFilterData } from '../models/index';
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnInit {
+export class SearchFilterComponent implements OnChanges, OnInit {
     @Input()
     public field: CorpusField;
 
@@ -24,21 +24,31 @@ export class SearchFilterComponent implements OnInit {
 
     constructor() { }
 
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['field']) {
+            this.fillFilterData();
+        }
+    }
+
     ngOnInit() {
-        // TODO: it might be nicer to listen to changes in filter property instead
+        if (this.field) {
+            this.fillFilterData();
+        }
+    }
+
+    fillFilterData() {
         switch (this.filter.name) {
             case 'BooleanFilter':
-                this.data = '1';
+                this.data = true;
                 break;
             case 'RangeFilter':
-                this.data = { min: this.filter.lower, max: this.filter.upper };
+                this.data = [this.filter.lower, this.filter.upper];
                 break;
             case 'MultipleChoiceFilter':
-                this.data = {};
-                for (let option of this.filter.options) {
-                    this.data[option] = false;
-                }
+                this.data = { options: this.filter.options.map(x => { return { 'label': x, 'value': x } }), selected: [] };
                 break;
+            case 'DateFilter':
+                this.data = { min: this.filter.lower, max: this.filter.upper };
         }
         // default values should also work
         this.update();
@@ -48,13 +58,17 @@ export class SearchFilterComponent implements OnInit {
         let filterData: SearchFilterData;
         switch (this.filter.name) {
             case 'BooleanFilter':
-                // TODO
-                throw 'not implemented!';
+                filterData = {
+                    'term': {
+                        [this.field.name]: this.data
+                    }
+                };
+                break;
             case 'RangeFilter':
                 filterData = {
                     'range':
                     {
-                        [this.field.name]: { gte: this.data.min, lte: this.data.max }
+                        [this.field.name]: { gte: this.data[0], lte: this.data[1] }
                     }
                 };
                 break;
@@ -62,13 +76,31 @@ export class SearchFilterComponent implements OnInit {
                 filterData = {
                     'terms':
                     {
-                        [this.field.name]: Object.keys(this.data).filter(option => this.data[option])
+                        [this.field.name]: this.data.selected
                     }
                 };
                 break;
             case 'DateFilter':
-                // TODO
-                throw 'not implemented!';
+                if (!this.data.min) {
+                    this.data.min = this.filter.lower;
+                }
+
+                if (!this.data.max) {
+                    this.data.max = this.filter.upper;
+                }
+
+                let formatData = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                filterData = {
+                    'range':
+                    {
+                        [this.field.name]: {
+                            gte: formatData(this.data.min),
+                            lte: formatData(this.data.max),
+                            format: 'yyyy-MM-dd'
+                        }
+                    }
+                };
+                break;
         }
 
         this.updateEmitter.emit(filterData);
