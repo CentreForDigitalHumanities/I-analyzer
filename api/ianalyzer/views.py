@@ -69,21 +69,7 @@ class CorpusView(admin.BaseView):
     @admin.expose('/', methods=['GET', 'POST'])
     @login_required
     def index(self):
-        corpus = corpora.get(self.corpus)
-
-        return self.render('app.html',
-                           corpus=self.corpus,
-                           fields=[
-                               field
-                               for field in corpus.fields
-                               if not field.hidden
-                           ],
-                           autocomplete=[
-                               field.name + ':'
-                               for field in corpus.fields
-                               if not field.hidden
-                           ]
-                           )
+        return redirect('../search/' + self.corpus)
 
 
 class AdminIndexView(admin.AdminIndexView):
@@ -96,23 +82,11 @@ class AdminIndexView(admin.AdminIndexView):
 
     @admin.expose('/login', methods=['GET', 'POST'])
     def login(self):
-
-        lf = forms.LoginForm(request.form)
-
-        if admin.helpers.validate_form_on_submit(lf):
-            user = lf.user
-            security.login_user(user)
-            return redirect(url_for(config.CORPUS_URL))
-
-        return self.render('admin/form.html', title='Login', form=lf)
+        return redirect('/login')
 
     @admin.expose('/logout')
     @login_required
     def logout(self):
-        user = current_user
-        user.authenticated = True
-        models.db.session.add(user)
-        models.db.session.commit()
-        logout_user()
+        security.logout_user(current_user)
         flash('Logged out successfully.')
         return redirect(url_for('.login'))

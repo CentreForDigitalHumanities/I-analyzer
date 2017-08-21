@@ -3,14 +3,42 @@ import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { User } from '../models/user';
 
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 const localStorageKey = 'currentUser';
+const sessionCheckInterval = 10000;
 
 @Injectable()
 export class UserService implements OnDestroy {
     private deserializedCurrentUser: User | false = false;
     private sessionExpiredSubscription: Subscription;
+    // Basic behavior:
+    // - If the session on the API server hasn't been checked for 10 seconds it will be checked again.
+    // - If the user logs on or off, the value is directly updated.
+    // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
+    private sessionCheckPromise: Promise<boolean> = Promise.resolve(false);
+    // The session on the API server might have expired (or the admin could have logged off)
+    private requestSessionCheck = new Subject();
+    private sessionCheckSubscription = this.requestSessionCheck.throttleTime(sessionCheckInterval)
+        .subscribe(() => {
+            this.sessionCheckPromise = !this.currentUser
+                ? Promise.resolve(false)
+                : this.apiService.post<{ success: boolean }>('check_session', { username: this.currentUser.name })
+                    .then(response => {
+                        if (!response.success) {
+                            return false;
+                        }
+                        return true;
+                    }).catch(() => {
+                        return false;
+                    }).then((success) => {
+                        if (!success) {
+                            this.currentUser = false;
+                        }
+
+                        return success;
+                    })
+        });
 
     public get currentUser(): User | false {
         if (this.deserializedCurrentUser) {
@@ -37,7 +65,8 @@ export class UserService implements OnDestroy {
 
     constructor(private apiService: ApiService, private router: Router) {
         this.sessionExpiredSubscription = this.apiService.SessionExpired.subscribe(() => {
-            this.logoff();
+            // no need to notify the server that we are going to logoff, because it told us this is already the case
+            this.logout(false);
         });
     }
 
@@ -47,7 +76,15 @@ export class UserService implements OnDestroy {
         }
     }
 
-    public authorize(username: string, password: string): Promise<User | false> {
+    /**
+     * Check that the user is still logged on
+     */
+    public checkSession(): Promise<boolean> {
+        this.requestSessionCheck.next();
+        return this.sessionCheckPromise;
+    }
+
+    public login(username: string, password: string): Promise<User | false> {
         return this.apiService.post<any>('login', { username, password }).then(result => {
             if (result.success) {
                 this.currentUser = new User(result.username, result.roles);
@@ -55,11 +92,16 @@ export class UserService implements OnDestroy {
             }
 
             return false;
+        }).then(user => {
+            this.sessionCheckPromise = Promise.resolve(!!user);
+            return user;
         });
     }
 
-    public logoff() {
+    public logout(notifyServer: boolean = true) {
         this.currentUser = false;
+        this.sessionCheckPromise = Promise.resolve(false);
+        this.apiService.post<{ success: boolean }>('logout');
         this.router.navigateByUrl('/login');
     }
 }

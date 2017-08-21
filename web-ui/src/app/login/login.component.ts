@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
 
     login() {
         this.isLoading = true;
-        this.userService.authorize(this.username, this.password).then(result => {
+        this.userService.login(this.username, this.password).then(result => {
             if (!result) {
                 this.isLoading = false;
                 this.isWrong = true;

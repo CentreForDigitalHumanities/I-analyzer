@@ -1,6 +1,7 @@
 from . import models
 from werkzeug.security import check_password_hash
 from flask_login import login_user as flask_login_user
+from flask_login import logout_user as flask_logout_user
 
 
 def validate_user(username, password):
@@ -22,3 +23,9 @@ def login_user(user):
     models.db.session.add(user)
     models.db.session.commit()
     flask_login_user(user)
+
+def logout_user(user):
+    user.authenticated = True
+    models.db.session.add(user)
+    models.db.session.commit()
+    flask_logout_user()

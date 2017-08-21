@@ -139,6 +139,28 @@ def api_login():
     return response
 
 
+@blueprint.route('/api/logout', methods=['POST'])
+def api_logout():
+    if current_user.is_authenticated:
+        security.logout_user(current_user)
+    return jsonify({'success': True})
+
+
+@blueprint.route('/api/check_session', methods=['POST'])
+def api_check_session():
+    """
+    Check that the specified user is still logged on.
+    """
+    if not request.json:
+        abort(400)
+    username = request.json['username']
+
+    if not current_user.is_authenticated or current_user.username != username:
+        abort(401)
+    else:
+        return jsonify({'success': True})
+
+
 @blueprint.route('/api/search', methods=['POST'])
 @login_required
 def api_search_json():
@@ -165,14 +187,6 @@ def api_search_csv():
     corpus = corpora[corpus_name]
 
     return search_csv(corpus_name, corpus, query, fields, filters)
-
-
-@blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
-@login_required
-@corpus_required
-@post_required
-def search_csv_route(corpusname, corpus=None, query_string=None, fields=None, filters=None):
-    return search_csv(corpusname, corpus, query_string, fields, filters)
 
 
 def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=None):
@@ -242,14 +256,6 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         'attachment; filename={}'.format(filename)
     )
     return response
-
-
-@blueprint.route('/<corpusname>/search.json', methods=['POST'])
-@login_required
-@corpus_required
-@post_required
-def search_json_route(corpusname, corpus=None, query_string=None, fields=None, filters=None):
-    return search_json(corpusname, corpus, query_string, fields, filters)
 
 
 def search_json(corpusname, corpus=None, query_string=None, fields=None, filters=None):

@@ -1,4 +1,4 @@
 {
     "apiUrl": "/api",
-    "adminUrl": "http://localhost:5000/admin/"
+    "adminUrl": "/admin/"
 }

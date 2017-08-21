@@ -36,19 +36,21 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     public logout() {
         this.currentUser = undefined;
-        this.userService.logoff();
+        this.userService.logout();
     }
 
     private checkCurrentUser() {
-        if (this.userService.currentUser) {
-            if (this.userService.currentUser == this.currentUser) {
-                // nothing changed
-                return;
+        this.userService.checkSession().then(success => {
+            if (success && this.userService.currentUser) {
+                if (this.userService.currentUser == this.currentUser) {
+                    // nothing changed
+                    return;
+                }
+                this.currentUser = this.userService.currentUser;
+                this.isAdmin = this.currentUser.hasRole('admin');
+            } else {
+                this.isAdmin = false;
             }
-            this.currentUser = this.userService.currentUser;
-            this.isAdmin = this.currentUser.hasRole('admin');
-        } else {
-            this.isAdmin = false;
-        }
+        });
     }
 }
