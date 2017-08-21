@@ -1,0 +1,89 @@
+$fontFamily: $family-primary;
+$fontSize: $size-normal;
+$borderRadius: $radius;
+$disabledOpacity: 0.35;
+
+// Define a primeng theme using the same variables as Bulma
+//Header
+$headerBorderWidth: 1px;
+$headerBorderColor: $primary;
+$headerBgColor: $primary;
+$headerTextColor: $primary-invert;
+$headerFontWeight: bold;
+$headerIconTextColor: $primary-invert;
+
+//Content
+$contentBorderWidth: 1px;
+$contentBorderColor: $border;
+$contentBgColor: $background;
+$contentTextColor: $text;
+
+//Default State
+$stateDefaultBorderWidth: 1px;
+$stateDefaultBorderColor: $link;
+$stateDefaultBgColor: $link-invert;
+$stateDefaultTextColor: $link;
+
+//Active State
+$stateActiveBorderColor: $primary;
+$stateActiveBgColor: $primary;
+$stateActiveTextColor: $primary-invert;
+
+//Highlight State
+$stateHighlightBorderColor: #fed22f;
+$stateHighlightBgColor: #ffe45c;
+$stateHighlightTextColor: #363636;
+
+//Focus State
+$stateFocusBorderColor: $primary;
+$stateFocusBgColor: $primary-invert;
+$stateFocusTextColor: $primary;
+
+//Error State
+$stateErrorBorderColor: $danger;
+$stateErrorBgColor: $danger;
+$stateErrorTextColor: $danger-invert;
+
+//Hover State
+$stateHoverBorderColor: $primary;
+$stateHoverBgColor: $primary;
+$stateHoverTextColor: $primary-invert;
+
+//Forms
+$inputBgColor: $text-invert;
+$inputTextColor: $text;
+$invalidInputBorderColor: $danger;
+$inputGroupTextColor: $text;
+
+@import "~primeng/resources/primeng.css";
+@import "~primeng/resources/themes/_theme.scss";
+
+.ui-button {
+    @extend .button;
+
+    &:hover {
+        background: $primary;
+        border-color: $primary;
+        color: $primary-invert;
+    }
+}
+
+.ui-inputtext {
+    @extend .input;
+    border-color: $border;
+}
+
+.ui-buttonset .ui-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+
+    &:hover {
+        @extend .is-primary;
+    }
+}
+
+.ui-slider-horizontal .ui-slider-range {
+    border: none;
+    height: calc(100% + 2px);
+    margin: -1px 0;
+}
