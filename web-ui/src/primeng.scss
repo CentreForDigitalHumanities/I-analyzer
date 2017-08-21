@@ -82,8 +82,19 @@ $inputGroupTextColor: $text;
     }
 }
 
-.ui-slider-horizontal .ui-slider-range {
-    border: none;
-    height: calc(100% + 2px);
-    margin: -1px 0;
+.ui-slider {
+    .ui-slider-handle {
+        cursor: pointer;
+    }
+
+    &.ui-slider-horizontal .ui-slider-range {
+        border: none;
+        height: calc(100% + 2px);
+        margin: -1px 0;
+    }
+
+    .ui-slider-handle-active {
+        border-color: $dark;
+        background: $dark;
+    }
 }
