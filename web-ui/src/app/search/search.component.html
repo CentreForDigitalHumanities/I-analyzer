@@ -7,7 +7,7 @@
             </ul>
         </div>
         <form (ngSubmit)="search()" *ngIf="corpus">
-            <ng-container *ngIf="visibleTab == 'search'">
+            <div [hidden]="visibleTab != 'search'">
                 <div class="field">
                     <label class="label" for="query">Query</label>
                     <input class="input" id="query" [(ngModel)]="query" name="query" type="text">
@@ -23,8 +23,8 @@
                         <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                     </div>
                 </ng-container>
-            </ng-container>
-            <ng-container *ngIf="visibleTab == 'columns'">
+            </div>
+            <div [hidden]="visibleTab != 'columns'">
                 <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
 
                 <div class="csv-columns">
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-            </ng-container>
+            </div>
             <div class="field">
                 <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
                     <span class="icon is-small">
