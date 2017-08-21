@@ -13,7 +13,7 @@ from wtforms.widgets import PasswordInput
 from . import config
 from . import forms
 from . import models
-from .corpora import corpora
+from . import corpora
 
 
 class ModelView(admin_sqla.ModelView):
@@ -26,7 +26,6 @@ class ModelView(admin_sqla.ModelView):
         return redirect(url_for('admin.index'))
 
 
-
 class QueryView(ModelView):
     can_create = False
     can_edit = False
@@ -37,7 +36,6 @@ class RoleView(ModelView):
     pass
     
     
-
 class UserView(ModelView):
     form_overrides = dict(
         password=forms.PasswordField,
@@ -53,16 +51,14 @@ class UserView(ModelView):
     form_excluded_columns = ('queries', 'authenticated')
 
 
-
-
 class CorpusView(admin.BaseView):
     
-    def __init__(self, corpus, **kwargs):
-        self.corpus = corpus
+    def __init__(self, corpus_name, **kwargs):
+        self.corpus_name = corpus_name
         return super(CorpusView, self).__init__(**kwargs)
     
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_role(self.corpus)
+        return current_user.is_authenticated and current_user.has_role(self.corpus_name)
         
     def inaccessible_callback(self, name, **kwargs):
         flash('User does not exist, is deactivated '
@@ -72,22 +68,20 @@ class CorpusView(admin.BaseView):
     @admin.expose('/', methods=['GET', 'POST'])
     @login_required
     def index(self):
-        corpus = corpora.get(self.corpus)
-        
+        corpus_definition=corpora.corpus_obj
         return self.render('app.html', 
-            corpus=self.corpus,
+            corpus_name=self.corpus_name,
             fields=[
                 field 
-                for field in corpus.fields
+                for field in corpus_definition.fields
                     if not field.hidden
             ],
             autocomplete=[
                 field.name + ':'
-                for field in corpus.fields
+                for field in corpus_definition.fields
                     if not field.hidden
             ]
         )
-
 
 
 class AdminIndexView(admin.AdminIndexView):
@@ -97,8 +91,6 @@ class AdminIndexView(admin.AdminIndexView):
         if not current_user.is_authenticated:
             return redirect(url_for('.login'))
         return super(AdminIndexView, self).index()
-
-
 
     @admin.expose('/login', methods=['GET', 'POST'])
     def login(self):
@@ -116,8 +108,6 @@ class AdminIndexView(admin.AdminIndexView):
             return redirect(url_for(config.CORPUS_URL))
         
         return self.render('admin/form.html', title='Login', form=lf)
-
-
 
     @admin.expose('/logout')
     @login_required

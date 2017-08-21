@@ -5,9 +5,9 @@ import logging
 
 from flask import current_app
 
-from .. import config
-from ..extract import XML, Metadata, Combined
-from ..filters import MultipleChoiceFilter, RangeFilter
+from ianalyzer import config
+from ianalyzer.extract import XML, Metadata, Combined
+from ianalyzer.filters import MultipleChoiceFilter, RangeFilter
 from .common import XMLCorpus, Field
 
 

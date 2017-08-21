@@ -11,46 +11,47 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
-
 from . import config
 from . import factories
 from . import models
 from . import views
 from . import search
 from . import streaming
-from .corpora import corpora
+from . import corpora
 
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.CorpusView(corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
 admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
 admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 
 
-
 def corpus_required(method):
     '''
     Wrapper to make sure that a `corpus` argument is made accessible from a
-    'corpusname' argument.
+    'corpus_name' argument.
     '''
 
     @functools.wraps(method)
-    def f(corpusname, *nargs, **kwargs):
-        corpus = corpora.get(corpusname)
-        if not corpus:
+    def f(corpus_name, *nargs, **kwargs):
+        corpus_definition = corpora.corpus_obj
+        print(corpus_definition)
+        if not corpus_definition:
             return abort(404)
-        if not current_user.has_role(corpusname):
+        if not current_user.has_role(corpus_name):
             return abort(403)
 
         # TODO: Ideally, the new variables should be made available in the
         # method in flask-style, that is, thread local
-        return method(corpusname=corpusname, corpus=corpus, *nargs, **kwargs)
+        return method(
+            corpus_name=corpus_name, 
+            corpus_definition=corpus_definition, 
+            *nargs, **kwargs)
 
     return f
-
 
 
 def post_required(method):
@@ -61,28 +62,28 @@ def post_required(method):
     '''
 
     @functools.wraps(method)
-    def f(corpusname, corpus, *nargs, **kwargs):
+    def f(corpus_name, corpus_definition, *nargs, **kwargs):
         if not request.method == 'POST':
             abort(405)
-
+        #corpus_definition = corpora.corpus_obj
 
         # Collect fields selected for appearance
         fields = (
             field
-            for field in corpus.fields
+            for field in corpus_definition.fields
                 if ('field:' + field.name) in request.form
         )
 
         # Collect filters in ES format
         filters = (
             field.search_filter.elasticsearch(request.form)
-            for field in corpus.fields
+            for field in corpus_definition.fields
                 if field.search_filter
         )
 
         return method(
-            corpusname = corpusname,
-            corpus = corpus,
+            corpus_name = corpus_name,
+            corpus_definition = corpus_definition,
             query_string = request.form.get('query'),
             fields = list(fields),
             filters = list(f for f in filters if f is not None),
@@ -93,11 +94,9 @@ def post_required(method):
     return f
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return models.User.query.get(user_id)
-
 
 
 @blueprint.route('/', methods=['GET'])
@@ -108,13 +107,11 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-
-
-@blueprint.route('/<corpusname>/stream.csv', methods=['POST'])
+@blueprint.route('/<corpus_name>/stream.csv', methods=['POST'])
 @login_required
 @corpus_required
 @post_required
-def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=None):
+def search_csv(corpus_name, corpus_definition=None, query_string=None, fields=None, filters=None):
     '''
     Stream all results of a search to a CSV file.
     '''
@@ -122,11 +119,11 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
     # Create a query from POST data
     query = search.make_query(query_string = query_string, filters = filters)
 
-
     # Log the query to the database
-    q = models.Query(query=str(query), corpus=corpusname, user=current_user)
+    q = models.Query(query=str(query), corpus_name=corpus_name, user=current_user)
     models.db.session.add(q)
     models.db.session.commit()
+
 
     def logged_stream(stream):
         '''
@@ -151,7 +148,6 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         models.db.session.add(q)
         models.db.session.commit()
 
-
     # Perform the search and obtain output stream
     logging.info('Requested CSV for query: {}'.format(query))
     docs = search.execute_iterate(corpus, query, size=current_user.download_limit)
@@ -169,11 +165,10 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
         date1_memo = alphanums(date_memo[0])
         date2_memo = alphanums(date_memo[1])
     except (IndexError, AttributeError, KeyError):
-        date1_memo = corpus.min_date.strftime('%Y%m%d') 
-        date2_memo = corpus.max_date.strftime('%Y%m%d')
+        date1_memo = corpus_definition.min_date.strftime('%Y%m%d') 
+        date2_memo = corpus_definition.max_date.strftime('%Y%m%d')
 
-    filename = '{}-{}-{}{}.csv'.format(corpusname, date1_memo, date2_memo, query_memo)
-
+    filename = '{}-{}-{}{}.csv'.format(corpus_name, date1_memo, date2_memo, query_memo)
 
     # Stream results CSV
     response = Response(stream_with_context(stream), mimetype='text/csv')
@@ -183,12 +178,11 @@ def search_csv(corpusname, corpus=None, query_string=None, fields=None, filters=
     return response
 
 
-
-@blueprint.route('/<corpusname>/search.json', methods=['POST'])
+@blueprint.route('/<corpus_name>/search.json', methods=['POST'])
 @login_required
 @corpus_required
 @post_required
-def search_json(corpusname, corpus=None, query_string=None, fields=None, filters=None):
+def search_json(corpus_name, corpus_definition=None, query_string=None, fields=None, filters=None):
     '''
     Return the first `n` results of a search operation. The result is a JSON
     dictionary, containing search statistics, plus the result entries as a list
@@ -200,7 +194,7 @@ def search_json(corpusname, corpus=None, query_string=None, fields=None, filters
     
     # Perform the search
     logging.info('Requested example JSON for query: {}'.format(query))
-    result = search.execute(corpus, query, size=config.ES_EXAMPLE_QUERY_SIZE)
+    result = search.execute(corpus_definition, query, size=config.ES_EXAMPLE_QUERY_SIZE)
     
     # Extract relevant information from dictionary returned by ES
     stats = result.get('hits', {})
@@ -213,7 +207,6 @@ def search_json(corpusname, corpus=None, query_string=None, fields=None, filters
         for doc in stats.get('hits', ())
     )
     rows = streaming.field_lists(docs, selected=fields)
-
 
     # Return result as JSON
     return jsonify({

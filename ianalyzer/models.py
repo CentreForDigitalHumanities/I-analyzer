@@ -148,7 +148,7 @@ class Query(db.Model):
     JSON string sent out to ElasticSearch for this query.
     '''
     
-    corpus = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))
+    corpus_name = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))
     '''
     Name of the corpus for which the query was performed.
     '''
@@ -180,7 +180,7 @@ class Query(db.Model):
     '''
     
     def __init__(self, query, corpus, user):
-        self.corpus = corpus
+        self.corpus_name = corpus_name
         self.query = query
         self.user = user
         self.started = datetime.now()
