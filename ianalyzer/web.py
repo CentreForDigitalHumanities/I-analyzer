@@ -65,7 +65,6 @@ def post_required(method):
     def f(corpus_name, corpus_definition, *nargs, **kwargs):
         if not request.method == 'POST':
             abort(405)
-        #corpus_definition = corpora.corpus_obj
 
         # Collect fields selected for appearance
         fields = (
