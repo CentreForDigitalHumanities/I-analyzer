@@ -11,10 +11,10 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from .. import config
-from .. import extract
-from .. import filters
-from .common import XMLCorpus, Field, until, after, string_contains
+from ianalyzer import config
+from ianalyzer import extract
+from ianalyzer import filters
+from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
 
 
 

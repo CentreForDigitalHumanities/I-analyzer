@@ -17,6 +17,12 @@ SECRET_KEY = ''
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+# the corpora dictionary provides the file path of the corpus definition(s)
+# these definitions can be anywhere on the file system
+CORPORA = {
+   'times': 'ianalyzer/corpora/times.py'
+}
+
 # Global corpus variables
 CORPUS = 'times'
 CORPUS_URL = 'Times.index'

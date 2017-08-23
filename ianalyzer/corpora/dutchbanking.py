@@ -8,7 +8,7 @@ from flask import current_app
 from ianalyzer import config
 from ianalyzer.extract import XML, Metadata, Combined
 from ianalyzer.filters import MultipleChoiceFilter, RangeFilter
-from .common import XMLCorpus, Field
+from ianalyzer.corpora.common import XMLCorpus, Field
 
 
 class DutchBanking(XMLCorpus):
