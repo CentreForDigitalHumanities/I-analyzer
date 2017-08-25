@@ -17,7 +17,11 @@ describe('MenuComponent', () => {
             providers: [
                 { provide: Router, useValue: { events: Observable.of({}) } },
                 { provide: ConfigService, useValue: {} },
-                { provide: UserService, useValue: {} }
+                { provide: UserService, useValue: {
+                    checkSession: () => {
+                        return Promise.resolve(true)
+                    }
+                } }
             ]
         }).compileComponents();
     }));
