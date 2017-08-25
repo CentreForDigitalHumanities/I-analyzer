@@ -28,18 +28,20 @@
                 <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
 
                 <div class="csv-columns">
-                    <div class="csv-column" *ngFor="let field of corpus.fields">
-                        <label class="checkbox">
-                            <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">
-                            {{ field.name }}
-                        </label>
-                        <div class="description" *ngIf="field.description">
-                            {{ field.description }}
+                    <ng-container *ngFor="let field of corpus.fields">
+                        <div class="csv-column" *ngIf="!field.hidden">
+                            <label class="checkbox">
+                                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">
+                                {{ field.name }}
+                            </label>
+                            <div class="description" *ngIf="field.description">
+                                {{ field.description }}
+                            </div>
+                            <div class="description" *ngIf="!field.description">
+                                ---
+                            </div>
                         </div>
-                        <div class="description" *ngIf="!field.description">
-                            ---
-                        </div>
-                    </div>
+                    </ng-container>
                 </div>
             </div>
             <div class="field">
@@ -53,7 +55,7 @@
         </form>
     </div>
 </section>
-<section class="hero is-primary" *ngIf="sample">
+<section class="hero is-primary" *ngIf="sample" scrollTo>
     <div class="hero-body">
         <div class="container">
             <search-sample [sample]="sample" (download)="download()"></search-sample>

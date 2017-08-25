@@ -114,8 +114,14 @@ def init():
 @blueprint.route('/api/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
-    response = jsonify({key: value.serialize()
-                        for key, value in corpora.items()})
+    if hasattr(config, 'AVAILABLE_CORPORA'):
+        available_corpora = config.AVAILABLE_CORPORA
+    else:
+        available_corpora = [config.CORPUS]
+
+    response = jsonify(dict(
+        (key, corpora[key].serialize()) for key in available_corpora
+    ))
     return response
 
 

@@ -17,6 +17,7 @@ import { SearchComponent, SearchFilterComponent, SearchSampleComponent } from '.
 import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
+import { ScrollToDirective } from './scroll-to.directive';
 
 const appRoutes: Routes = [
     {
@@ -48,7 +49,8 @@ const appRoutes: Routes = [
         SearchFilterComponent,
         SearchSampleComponent,
         MenuComponent,
-        LoginComponent
+        LoginComponent,
+        ScrollToDirective
     ],
     imports: [
         BrowserAnimationsModule,
