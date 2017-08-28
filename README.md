@@ -33,7 +33,7 @@ To get an instance running, do the following:
 
 ### Testing
 
-Tests exist in the `tests/` directory and may be run by calling `python -m py.test`. Assess code coverage by running `coverage run --m py.test && coverage report`
+Tests exist in the `tests/` directory and may be run by calling `python -m pytest`. Assess code coverage by running `coverage run --m py.test && coverage report`
 
 
 

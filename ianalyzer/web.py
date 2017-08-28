@@ -149,7 +149,9 @@ def search_csv(corpus_name, corpus_definition=None, query_string=None, fields=No
 
     # Perform the search and obtain output stream
     logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute_iterate(corpus, query, size=current_user.download_limit)
+    docs = search.execute_iterate(corpus_definition, 
+        query, size=current_user.download_limit
+        )
     rows = streaming.field_lists(docs, selected=fields)
     stream = logged_stream(streaming.as_csv(rows))
 

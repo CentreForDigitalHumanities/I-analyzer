@@ -1,7 +1,6 @@
 from __future__ import with_statement
 from alembic import context
-from sqlalchemy import engine_from_config, pool, types
-from sqlalchemy.dialects import mysql
+from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 import logging
 
@@ -29,26 +28,6 @@ target_metadata = current_app.extensions['migrate'].db.metadata
 # ... etc.
 
 
-def implementation_safe_compare_type(
-    context,
-    inspected_column,
-    metadata_column,
-    inspected_type,
-    metadata_type,
-):
-    """ Enable comparison of column types without raising false alarms. """
-    # return True if the types are different,
-    # False if not, or None to allow the default implementation
-    # to compare these types
-    if (
-        type(inspected_type) == mysql.TINYINT and
-        inspected_type.display_width == 1 and
-        type(metadata_type) == types.Boolean
-    ):
-        return False
-    return None
-
-
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
@@ -62,7 +41,7 @@ def run_migrations_offline():
 
     """
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url, compare_type=implementation_safe_compare_type)
+    context.configure(url=url)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -94,7 +73,6 @@ def run_migrations_online():
     context.configure(connection=connection,
                       target_metadata=target_metadata,
                       process_revision_directives=process_revision_directives,
-                      compare_type=implementation_safe_compare_type,
                       **current_app.extensions['migrate'].configure_args)
 
     try:

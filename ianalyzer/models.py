@@ -179,7 +179,7 @@ class Query(db.Model):
     does not say anything about the size of those documents.
     '''
     
-    def __init__(self, query, corpus, user):
+    def __init__(self, query, corpus_name, user):
         self.corpus_name = corpus_name
         self.query = query
         self.user = user

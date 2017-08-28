@@ -1,8 +1,11 @@
-import pytest
-from os.path import expanduser, realpath, join, dirname, relpath
+from os.path import expanduser, realpath, join, dirname, relpath, abspath
 from datetime import datetime
+from importlib import reload
 
-from ianalyzer import config
+import pytest
+
+from ianalyzer import config, corpora
+
 
 @pytest.fixture(scope="module")
 def client():
@@ -15,23 +18,23 @@ def client():
 def configuration(monkeypatch):
     monkeypatch.setattr(config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/test.db')
     monkeypatch.setattr(config, 'TIMES_DATA', realpath(join(dirname(__file__))))
-
+    monkeypatch.setattr(config, 'CORPUS', 'times')
+    monkeypatch.setattr(config, 'CORPUS_ENDPOINT', 'Times')
+    monkeypatch.setattr(config, 'CORPUS_URL', 'Times.index')
+    monkeypatch.setattr(config, 'CORPORA', {'times': abspath('ianalyzer/corpora/times.py')})
 
 
 def test_times_source():
     '''
     Verify that times source files are read correctly.
     '''
-    
-    config.CORPUS = 'times'
-    config.CORPUS_ENDPOINT = 'Times'
-    config.CORPUS_URL = 'Times.index'
-    config.CORPORA = {'times': '/Users/janss089/git/ianalyzer/ianalyzer/corpora/times.py'}
-    from ianalyzer import corpora
+    # initialize the corpora module within the testing context
+    reload(corpora)
 
-    
+    print(dirname(__file__), corpora.corpus_obj.data_directory)
+
     # Assert that indeed we are drawing sources from the testing folder
-    assert dirname(__file__) in corpora.corpus_obj.data_directory 
+    assert dirname(__file__) in corpora.corpus_obj.data_directory
     
     
     # Obtain our mock source XML
