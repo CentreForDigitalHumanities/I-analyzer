@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>{{ corpus.capitalize() }}</title>
+<title>{{ corpus_name.capitalize() }}</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -12,7 +12,7 @@
 
 var AUTOCOMPLETE = {{ autocomplete|tojson }},
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }},
-    $CORPUS_ROOT = {{ (request.script_root + "/" + corpus)|tojson|safe }},
+    $CORPUS_ROOT = {{ (request.script_root + "/" + corpus_name)|tojson|safe }},
     DOWNLOAD_LIMIT = {{ current_user.download_limit }};
 
 -->
@@ -31,7 +31,7 @@ var AUTOCOMPLETE = {{ autocomplete|tojson }},
     {%- endfor %}
 </div>
     
-<form method="post" action="{{ url_for('blueprint.search_csv', corpusname=corpus) }}">
+<form method="post" action="{{ url_for('blueprint.search_csv', corpus_name=corpus_name) }}">
 
 <div class="top_buttons">
     <span style="padding-right:1em">logged in as {{ current_user.username }}</span>

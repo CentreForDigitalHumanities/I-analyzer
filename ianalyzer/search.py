@@ -49,7 +49,7 @@ def make_query(query_string=None, filters=[], **kwargs):
 
 
 
-def execute_iterate(corpus, query, size):
+def execute_iterate(corpus_definition, query, size):
     '''
     Execute an ElasticSearch query and return an iterator of results
     as dictionaries.
@@ -57,8 +57,8 @@ def execute_iterate(corpus, query, size):
 
     result = scan(client,
         query=query,
-        index=corpus.es_index,
-        doc_type=corpus.es_doctype,
+        index=corpus_definition.es_index,
+        doc_type=corpus_definition.es_doctype,
         size=(
             config.ES_SCROLL_PAGESIZE
             if size > config.ES_SCROLL_PAGESIZE
@@ -75,15 +75,15 @@ def execute_iterate(corpus, query, size):
         yield doc
 
 
-def execute(corpus, query, size):
+def execute(corpus_definition, query, size):
     '''
     Execute an ElasticSearch query and return a dictionary containing the
     results.
     '''
 
     result = client.search(
-        index=corpus.es_index,
-        doc_type=corpus.es_doctype,
+        index=corpus_definition.es_index,
+        doc_type=corpus_definition.es_doctype,
         size=size,
         body=query,
     )

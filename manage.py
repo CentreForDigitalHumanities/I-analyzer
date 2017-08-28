@@ -2,6 +2,7 @@
 
 import sys
 import logging
+import importlib
 from datetime import datetime
 
 from flask import Flask
@@ -10,7 +11,6 @@ from sqlalchemy import exc
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Command, Option
 
-from ianalyzer.corpora import corpora
 from ianalyzer import config
 from ianalyzer.models import User, Role, db
 from ianalyzer.web import blueprint, admin_instance, login_manager
@@ -94,7 +94,7 @@ class IndexingCommand(Command):
         if not corpus:
             corpus = config.CORPUS
         
-        corpus = corpora[corpus]
+        
 
         try:
             if not start:

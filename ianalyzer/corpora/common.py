@@ -2,14 +2,15 @@
 Module contains the base classes from which corpora can derive; 
 '''
 
-import bs4
 from datetime import datetime, timedelta
-
 import logging; logger = logging.getLogger(__name__)
-from .. import extract
 
+import bs4
 import json
 import inspect
+
+from ianalyzer import extract
+
 
 class Corpus(object):
     '''

@@ -1,6 +1,10 @@
-import pytest
-from os.path import expanduser, realpath, join, dirname, relpath
+from os.path import expanduser, realpath, join, dirname, relpath, abspath
 from datetime import datetime
+from importlib import reload
+
+import pytest
+
+from ianalyzer import config, corpora
 
 
 @pytest.fixture(scope="module")
@@ -12,34 +16,36 @@ def client():
 
 @pytest.fixture(autouse=True)
 def configuration(monkeypatch):
-    from .. import config
     monkeypatch.setattr(config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/test.db')
     monkeypatch.setattr(config, 'TIMES_DATA', realpath(join(dirname(__file__))))
-
+    monkeypatch.setattr(config, 'CORPUS', 'times')
+    monkeypatch.setattr(config, 'CORPUS_ENDPOINT', 'Times')
+    monkeypatch.setattr(config, 'CORPUS_URL', 'Times.index')
+    monkeypatch.setattr(config, 'CORPORA', {'times': abspath('ianalyzer/corpora/times.py')})
 
 
 def test_times_source():
     '''
     Verify that times source files are read correctly.
     '''
-    
-    from ..corpora import corpora
-    
-    corpus = corpora.get('times')
-    
+    # initialize the corpora module within the testing context
+    reload(corpora)
+
+    print(dirname(__file__), corpora.corpus_obj.data_directory)
+
     # Assert that indeed we are drawing sources from the testing folder
-    assert dirname(__file__) in corpus.data_directory 
+    assert dirname(__file__) in corpora.corpus_obj.data_directory
     
     
     # Obtain our mock source XML
-    sources = list(corpus.sources(
+    sources = list(corpora.corpus_obj.sources(
         start=datetime(1970,1,1),
         end=datetime(1970,1,1)
     ))
     assert len(sources) == 1
     
     
-    docs = corpus.documents(sources)
+    docs = corpora.corpus_obj.documents(sources)
     doc1 = next(docs)
     doc2 = next(docs)
     assert 'Category A' in doc1['category']
