@@ -1,0 +1,15 @@
+<nav class="navbar" *ngIf="currentUser">
+    <a class="navbar-item is-tab" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
+    <a class="navbar-item is-tab" *ngIf="isAdmin" id="admin" (click)="gotoAdmin()">Administration</a>
+    <a class="navbar-item is-tab" id="logout" (click)="logout()">
+        <span class="icon is-small">
+            <i class="fa fa-sign-out"></i>
+        </span>
+        <span>Exit</span>
+    </a>
+    <em class="navbar-item">
+        <span class="icon is-small">
+            <i class="fa fa-user-circle"></i>
+        </span>Logged in as {{currentUser.name}}
+    </em>
+</nav>
