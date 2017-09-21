@@ -174,9 +174,10 @@ def api_search_json():
     query = request.json['query']
     fields = request.json['fields']
     filters = request.json['filters']
+    num_results = request.json['n']
     corpus = corpora.DEFINITIONS[corpus_name]
 
-    return search_json(corpus, query, fields, filters)
+    return search_json(corpus, query, fields, filters, num_results)
 
 
 @blueprint.route('/api/search/csv', methods=['POST'])
@@ -263,7 +264,7 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
     return response
 
 
-def search_json(corpus_definition, query_string=None, fields=None, filters=None):
+def search_json(corpus_definition, query_string=None, fields=None, filters=None, n=None):
     '''
     Return the first `n` results of a search operation. The result is a JSON
     dictionary, containing search statistics, plus the result entries as a list
@@ -275,7 +276,8 @@ def search_json(corpus_definition, query_string=None, fields=None, filters=None)
 
     # Perform the search
     logging.info('Requested example JSON for query: {}'.format(query))
-    result = search.execute(corpus_definition, query, size=config.ES_EXAMPLE_QUERY_SIZE)
+    n = config.ES_EXAMPLE_QUERY_SIZE if n==None else n
+    result = search.execute(corpus_definition, query, size=n)
 
     # Extract relevant information from dictionary returned by ES
     stats = result.get('hits', {})

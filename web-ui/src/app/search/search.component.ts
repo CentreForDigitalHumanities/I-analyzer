@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+
+import { Subscription }   from 'rxjs/Subscription';
 
 import { Corpus, SearchFilterData, SearchSample } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
@@ -9,17 +11,29 @@ import { CorpusService, SearchService } from '../services/index';
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
+    @Input() private searchData: Array<any>;
+
     public visibleTab: Tab = "search";
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
     public isSearching: boolean;
+    public searched: boolean;
     public query: string;
     public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
     public sample: SearchSample;
 
-    constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) { }
+    private searchResults: Array<any>;
+
+    private subscription: Subscription;
+
+    constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
+        // listen to changes in the results returned by the searchService
+        this.subscription = searchService.results$.subscribe(searchResults => { 
+          this.searchResults = searchResults;
+        });
+    }
 
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
@@ -39,6 +53,10 @@ export class SearchComponent implements OnInit {
                 }
             });
         })
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     public enableFilter(name: string) {
@@ -61,7 +79,16 @@ export class SearchComponent implements OnInit {
             .then(sample => {
                 this.sample = sample;
                 this.isSearching = false;
+                this.searched = true;
             });
+    }
+
+    public visualize() {
+        this.searchService.searchForVisualization(
+            this.corpus.name,
+            this.query,
+            this.getQueryFields(),
+            this.getFilterData())
     }
 
     public download() {
