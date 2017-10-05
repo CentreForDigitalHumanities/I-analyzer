@@ -14,7 +14,7 @@ import { CorpusService, SearchService } from '../services/index';
 export class SearchComponent implements OnInit, OnDestroy {
     @Input() private searchData: Array<any>;
 
-    public visibleTab: Tab = "search";
+    public visibleTab: Tab;
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -33,6 +33,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.subscription = searchService.results$.subscribe(searchResults => { 
           this.searchResults = searchResults;
         });
+        this.visibleTab = "search";
     }
 
     ngOnInit() {

@@ -264,7 +264,7 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
     return response
 
 
-def search_json(corpus_definition, query_string=None, fields=None, filters=None, n=None):
+def search_json(corpus_definition, query_string=None, fields=None, filters=None, n=config.ES_EXAMPLE_QUERY_SIZE):
     '''
     Return the first `n` results of a search operation. The result is a JSON
     dictionary, containing search statistics, plus the result entries as a list
@@ -276,7 +276,6 @@ def search_json(corpus_definition, query_string=None, fields=None, filters=None,
 
     # Perform the search
     logging.info('Requested example JSON for query: {}'.format(query))
-    n = config.ES_EXAMPLE_QUERY_SIZE if n==None else n
     result = search.execute(corpus_definition, query, size=n)
 
     # Extract relevant information from dictionary returned by ES
