@@ -18,6 +18,7 @@ import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
+import { VisualizationComponent } from './visualization/visualization.component';
 
 const appRoutes: Routes = [
     {
@@ -38,6 +39,10 @@ const appRoutes: Routes = [
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
+    },
+    {
+        path: 'visual',
+        component: VisualizationComponent
     }
 ]
 @NgModule({
@@ -50,7 +55,8 @@ const appRoutes: Routes = [
         SearchSampleComponent,
         MenuComponent,
         LoginComponent,
-        ScrollToDirective
+        ScrollToDirective,
+        VisualizationComponent
     ],
     imports: [
         BrowserAnimationsModule,

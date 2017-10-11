@@ -1,14 +1,21 @@
 import { Injectable } from '@angular/core';
+import { Subject }    from 'rxjs/Subject';
+
 import { ApiService } from './api.service';
 import { SearchFilterData, SearchSample } from '../models/index';
 
+
 @Injectable()
 export class SearchService {
+  private results = new Subject<Array<Hit>>();
+ 
+  // Observable string streams
+  results$ = this.results.asObservable();
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService) {}
 
     public search(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
-        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters, resultType: 'json' })
+        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters,  n: null, resultType: 'json'})
             .then(result => {
                 let table = result.table;
                 let records = table;
@@ -20,6 +27,7 @@ export class SearchService {
                         hit[fields[j]] = records[i][j];
                     }
                     hits.push(hit);
+                    
                 }
 
                 return <SearchSample>{
@@ -59,6 +67,30 @@ export class SearchService {
 
             return true;
         });
+    }
+
+    public searchForVisualization(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
+        // search n results for visualization
+        let n = 10000;
+        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters, n: n, resultType: 'json' })
+            .then(result => {
+                let table = result.table;
+                let records = table;
+                let fields: string[] = records[0];
+                let hits: Hit[] = [];
+                for (let i = 1; i < records.length; i++) {
+                    let hit: Hit = {};
+                    for (let j = 0; j < fields.length; j++) {
+                        hit[fields[j]] = records[i][j];
+                    }
+                    hits.push(hit);
+                    
+                }
+                
+                this.results.next(hits);
+                
+                return true;
+            });
     }
 }
 
