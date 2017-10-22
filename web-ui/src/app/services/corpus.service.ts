@@ -6,10 +6,11 @@ import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 @Injectable()
 export class CorpusService {
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService) {
+    }
 
     public get(): Promise<Corpus[]> {
-        return this.apiService.get('corpus').then(data => this.parseCorpusList(data));
+        return this.apiService.corpus().then(data => this.parseCorpusList(data));
     }
 
     private parseCorpusList(data: any): Corpus[] {

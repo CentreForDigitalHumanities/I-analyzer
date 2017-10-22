@@ -23,7 +23,7 @@ export class UserService implements OnDestroy {
         .subscribe(() => {
             this.sessionCheckPromise = !this.currentUser
                 ? Promise.resolve(false)
-                : this.apiService.post<{ success: boolean }>('check_session', { username: this.currentUser.name })
+                : this.apiService.checkSession({ username: this.currentUser.name })
                     .then(response => {
                         if (!response.success) {
                             return false;
@@ -85,7 +85,7 @@ export class UserService implements OnDestroy {
     }
 
     public login(username: string, password: string): Promise<User | false> {
-        return this.apiService.post<any>('login', { username, password }).then(result => {
+        return this.apiService.login({ username, password }).then(result => {
             if (result.success) {
                 this.currentUser = new User(result.username, result.roles);
                 return this.currentUser;
@@ -101,7 +101,7 @@ export class UserService implements OnDestroy {
     public logout(notifyServer: boolean = true) {
         this.currentUser = false;
         this.sessionCheckPromise = Promise.resolve(false);
-        this.apiService.post<{ success: boolean }>('logout');
-        this.router.navigateByUrl('/login');
+        this.apiService.logout().then(() => 
+            this.router.navigateByUrl('/login'));
     }
 }

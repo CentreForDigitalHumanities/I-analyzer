@@ -1,83 +1,61 @@
 import { Injectable } from '@angular/core';
-import { ConfigService } from './config.service';
-import { Http, Response, RequestOptionsArgs } from '@angular/http';
+import { Http, Response, RequestMethod, RequestOptionsArgs } from '@angular/http';
+import { Resource,  ResourceAction, ResourceMethodPromise } from 'ngx-resource';
 import { Subject, Observable } from 'rxjs';
-import 'rxjs/add/operator/toPromise';
+
+import { ConfigService } from './config.service';
+import { SearchFilterData, UserRole } from '../models/index';
 
 @Injectable()
-export class ApiService {
+export class ApiService extends Resource {
+    // TODO: deal with expired sessions
     private sessionExpiredSubject = new Subject();
+    private apiUrl: Promise<string> | null = null;
     public SessionExpired = this.sessionExpiredSubject.asObservable();
-
-    constructor(private config: ConfigService, private http: Http) { }
-
-    public get<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Get, undefined, options);
-    }
-
-    public delete<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Delete, undefined, options);
-    }
-
-    public head<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Head, undefined, options);
-    }
-
-    public options<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Options, undefined, options);
-    }
-
-    public post<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Post, body, options);
-    }
-
-    public put<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Put, body, options);
-    }
-
-    public patch<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Patch, body, options);
-    }
-
-    public resolveUrl(path: string): Promise<string> {
-        return this.config.get().then(config => `${config.apiUrl}/${path}`);
-    }
-
-    private requestPath<T>(path: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs) {
-        return this.resolveUrl(path)
-            .then(url => this.requestUrl(url, method, body, options).toPromise())
-            .then(response => response.ok
-                ? Promise.resolve<T>(response.json())
-                : Promise.reject(`${response.status}: ${response.statusText}`))
-            .catch((error) => {
-                if (error instanceof Response && error.status == 401) {
-                    this.sessionExpiredSubject.next();
-                }
-                throw error;
-            });
-    }
-
-    private requestUrl(url: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs): Observable<Response> {
-        switch (method) {
-            case HttpMethod.Get:
-            case HttpMethod.Delete:
-            case HttpMethod.Head:
-            case HttpMethod.Options:
-                return this.http[method](url, options);
-            case HttpMethod.Post:
-            case HttpMethod.Put:
-            case HttpMethod.Patch:
-                return this.http[method](url, body, options);
+    
+    constructor(private config: ConfigService, http: Http) { 
+        super(http);
+    } 
+    
+    $getUrl(methodOptions?: any): string | Promise<string> {
+        let resPath = super.$getUrl();
+        // TODO: if this is a promise??
+        if (!this.apiUrl) {
+            this.apiUrl = this.config.get().then(config => config.apiUrl);
         }
-    }
-}
 
-enum HttpMethod {
-    Get = 'get',
-    Post = 'post',
-    Put = 'put',
-    Delete = 'delete',
-    Patch = 'patch',
-    Head = 'head',
-    Options = 'options'
+        return this.apiUrl.then(apiUrl => apiUrl + resPath);
+    }
+    
+    @ResourceAction({
+        method: RequestMethod.Get,
+        path: '/check_session'
+    })
+    public checkSession: ResourceMethodPromise<{ username: string}, { success: boolean}>;
+
+    @ResourceAction({
+        method: RequestMethod.Get,
+        path: '/corpus'
+    })
+    public corpus: ResourceMethodPromise<void, any>;
+
+    @ResourceAction({
+        method: RequestMethod.Post,
+        path: '/login'
+    })
+    public login: ResourceMethodPromise<
+        { username: string, password: string }, 
+        { success: boolean, username: string, roles: UserRole[] }>;
+
+    @ResourceAction({
+        method: RequestMethod.Post,
+        path: '/logout'
+    })
+    public logout: ResourceMethodPromise<void, { success: boolean }>;
+
+    @ResourceAction({
+        method: RequestMethod.Post,
+        path: '/search'
+    })
+    public search: ResourceMethodPromise<{ corpusName: string, query: string, fields: string[], filters: SearchFilterData[], n: null, resultType: 'json'}, any>;
 }
