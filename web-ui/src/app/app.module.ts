@@ -3,12 +3,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CalendarModule, SelectButtonModule, SliderModule } from 'primeng/primeng';
+import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
+import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, SearchService, UserService } from './services/index';
+import { ApiService, ConfigService, CorpusService, SearchService, SessionService, UserService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusListComponent } from './corpus-list/corpus-list.component';
@@ -67,9 +69,34 @@ const appRoutes: Routes = [
         HttpModule,
         RouterModule.forRoot(appRoutes),
         SelectButtonModule,
-        SliderModule
+        SliderModule,
+        RestModule.forRoot({
+            handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
+        })
     ],
-    providers: [ApiService, CorpusService, ConfigService, SearchService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, SearchService, SessionService, UserService, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+// AoT requires an exported function for factories
+export function restHandlerFactory(http: Http) {
+    return new RestHandlerSession(http);
+}
+
+/**
+ * Rest handler which will emit an event when the session expired.
+ */
+class RestHandlerSession extends RestHandlerHttp {
+    constructor(http: Http) {
+        super(http);
+    }
+
+    public handleResponse(req: IRestRequest, response: Response): IRestResponse {
+        if (!response.ok && response.status == 401) {
+            SessionService.markExpired();
+        }
+
+        return super.handleResponse(req, response);
+    }
+}

@@ -12,4 +12,8 @@ export class ApiServiceMock {
     public get(path: string): Promise<any> {
         return Promise.resolve(this.fakeResult[path]);
     }
+
+    public corpus() {
+        return this.get('corpus');
+    }
 }

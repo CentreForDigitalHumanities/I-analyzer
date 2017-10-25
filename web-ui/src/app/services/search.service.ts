@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs/Subject';
+import { Subject } from 'rxjs/Subject';
 
 import { ApiService } from './api.service';
 import { SearchFilterData, SearchSample } from '../models/index';
@@ -7,15 +7,15 @@ import { SearchFilterData, SearchSample } from '../models/index';
 
 @Injectable()
 export class SearchService {
-  private results = new Subject<Array<Hit>>();
- 
-  // Observable string streams
-  results$ = this.results.asObservable();
+    private results = new Subject<Array<Hit>>();
 
-    constructor(private apiService: ApiService) {}
+    // Observable string streams
+    results$ = this.results.asObservable();
+
+    constructor(private apiService: ApiService) { }
 
     public search(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
-        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters,  n: null, resultType: 'json'})
+        return this.apiService.search({ corpusName, query: query, fields, filters: filters, n: null, resultType: 'json' })
             .then(result => {
                 let table = result.table;
                 let records = table;
@@ -27,7 +27,7 @@ export class SearchService {
                         hit[fields[j]] = records[i][j];
                     }
                     hits.push(hit);
-                    
+
                 }
 
                 return <SearchSample>{
@@ -40,7 +40,7 @@ export class SearchService {
 
     public searchAsCsv(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
         let form: HTMLFormElement;
-        return this.apiService.resolveUrl('search/csv').then(url => {
+        return this.apiService.getSearchCsvUrl().then(url => {
             form = document.createElement('form');
             document.body.appendChild(form);
             form.method = 'post';
@@ -72,7 +72,7 @@ export class SearchService {
     public searchForVisualization(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
         // search n results for visualization
         let n = 10000;
-        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters, n: n, resultType: 'json' })
+        return this.apiService.search()
             .then(result => {
                 let table = result.table;
                 let records = table;
@@ -84,11 +84,11 @@ export class SearchService {
                         hit[fields[j]] = records[i][j];
                     }
                     hits.push(hit);
-                    
+
                 }
-                
+
                 this.results.next(hits);
-                
+
                 return true;
             });
     }

@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
+import { SessionService } from './session.service';
 import { User } from '../models/user';
 
 import { Subject, Subscription } from 'rxjs';
@@ -23,7 +24,7 @@ export class UserService implements OnDestroy {
         .subscribe(() => {
             this.sessionCheckPromise = !this.currentUser
                 ? Promise.resolve(false)
-                : this.apiService.post<{ success: boolean }>('check_session', { username: this.currentUser.name })
+                : this.apiService.checkSession({ username: this.currentUser.name })
                     .then(response => {
                         if (!response.success) {
                             return false;
@@ -63,8 +64,8 @@ export class UserService implements OnDestroy {
         }
     }
 
-    constructor(private apiService: ApiService, private router: Router) {
-        this.sessionExpiredSubscription = this.apiService.SessionExpired.subscribe(() => {
+    constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
+        this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case
             this.logout(false);
         });
@@ -85,7 +86,7 @@ export class UserService implements OnDestroy {
     }
 
     public login(username: string, password: string): Promise<User | false> {
-        return this.apiService.post<any>('login', { username, password }).then(result => {
+        return this.apiService.login({ username, password }).then(result => {
             if (result.success) {
                 this.currentUser = new User(result.username, result.roles);
                 return this.currentUser;
@@ -101,7 +102,7 @@ export class UserService implements OnDestroy {
     public logout(notifyServer: boolean = true) {
         this.currentUser = false;
         this.sessionCheckPromise = Promise.resolve(false);
-        this.apiService.post<{ success: boolean }>('logout');
-        this.router.navigateByUrl('/login');
+        this.apiService.logout().then(() =>
+            this.router.navigateByUrl('/login'));
     }
 }

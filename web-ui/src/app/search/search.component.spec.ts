@@ -14,19 +14,23 @@ import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchSampleComponent } from './search-sample.component';
 
+import { VisualizationComponent } from '../visualization/visualization.component';
+
 describe('SearchComponent', () => {
     let component: SearchComponent;
     let fixture: ComponentFixture<SearchComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [SearchComponent, SearchFilterComponent, SearchSampleComponent],
+            declarations: [SearchComponent, SearchFilterComponent, SearchSampleComponent, VisualizationComponent],
             imports: [FormsModule, CalendarModule, SelectButtonModule, SliderModule],
             providers: [
                 CorpusService,
-                { provide: ApiService, useValue: new ApiServiceMock({
-                    ['corpus']: corpus.foo
-                }) },
+                {
+                    provide: ApiService, useValue: new ApiServiceMock({
+                        ['corpus']: corpus.foo
+                    })
+                },
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
