@@ -10,6 +10,7 @@ import * as corpus from '../../mock-data/corpus';
 import { ApiService, CorpusService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 
+import { HighlightPipe } from './highlight-pipe';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchSampleComponent } from './search-sample.component';
@@ -22,7 +23,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [SearchComponent, SearchFilterComponent, SearchSampleComponent, VisualizationComponent],
+            declarations: [HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent, VisualizationComponent],
             imports: [FormsModule, CalendarModule, SelectButtonModule, SliderModule],
             providers: [
                 CorpusService,
@@ -34,7 +35,7 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        params: Observable.of({ corpus: 'test' })
+                        params: Observable.of({ corpus: 'dutchbanking' })
                     }
                 }]
         }).compileComponents();

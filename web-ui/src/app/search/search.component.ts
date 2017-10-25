@@ -22,6 +22,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searched: boolean;
     public query: string;
     public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
+    /**
+     * This is the query currently used for searching,
+     * it might differ from what the user is currently typing in the query input field.
+     */
+    public searchQuery: string;
     public sample: SearchSample;
 
     private searchResults: Array<any>;
@@ -30,7 +35,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
         // listen to changes in the results returned by the searchService
-        this.subscription = searchService.results$.subscribe(searchResults => { 
+        this.subscription = searchService.results$.subscribe(searchResults => {
           this.searchResults = searchResults;
         });
         this.visibleTab = "search";
@@ -44,7 +49,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.availableCorpora.then(items => {
                 let found = items.find(corpus => corpus.name == corpusName);
                 if (!found) {
-                    throw 'Invalid corpus specified!';
+                    throw `Invalid corpus ${corpusName} specified!`;
                 }
                 this.corpus = found;
                 this.title.setTitle(this.corpus.name);
@@ -72,12 +77,15 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public search() {
         this.isSearching = true;
+        // store it, the user might change it in the meantime
+        let searchQuery = this.query;
         this.searchService.search(
             this.corpus.name,
-            this.query,
+            searchQuery,
             this.getQueryFields(),
             this.getFilterData())
             .then(sample => {
+                this.searchQuery = searchQuery;
                 this.sample = sample;
                 this.isSearching = false;
                 this.searched = true;

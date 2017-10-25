@@ -58,7 +58,7 @@
 <section class="hero is-primary" *ngIf="sample" scrollTo>
     <div class="hero-body">
         <div class="container">
-            <search-sample [sample]="sample" (download)="download()"></search-sample>
+            <search-sample [sample]="sample" [query]="searchQuery" (download)="download()"></search-sample>
             <button class="button is-info" type="submit" (click)="visualize();doVisualize=true">
                 <span>Visualize</span>
             </button>
