@@ -35,7 +35,7 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        params: Observable.of({ corpus: 'dutchbanking' })
+                        params: Observable.of({ corpus: 'test1' })
                     }
                 }]
         }).compileComponents();
