@@ -20,7 +20,7 @@
                     <ng-container *ngFor="let field of sample.fields">
                         <tr *ngIf="hit[field]">
                             <th>{{field}} </th>
-                            <td>{{hit[field]}}</td>
+                            <td [innerHtml]="hit[field] | highlight:query"></td>
                         </tr>
                     </ng-container>
                 </table>

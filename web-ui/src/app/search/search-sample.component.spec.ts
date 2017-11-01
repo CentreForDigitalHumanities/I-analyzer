@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { HighlightService } from '../services/highlight.service';
+import { HighlightPipe } from './highlight-pipe';
 import { SearchSampleComponent } from './search-sample.component';
 
 describe('SearchSampleComponent', () => {
@@ -8,7 +10,8 @@ describe('SearchSampleComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [SearchSampleComponent]
+            declarations: [HighlightPipe, SearchSampleComponent],
+            providers: [HighlightService]
         })
             .compileComponents();
     }));

@@ -10,12 +10,12 @@ import { CalendarModule, SelectButtonModule, SliderModule } from 'primeng/primen
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, SearchService, SessionService, UserService } from './services/index';
+import { ApiService, ConfigService, CorpusService, HighlightService, SearchService, SessionService, UserService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusListComponent } from './corpus-list/corpus-list.component';
 import { HomeComponent } from './home/home.component';
-import { SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
@@ -52,6 +52,7 @@ const appRoutes: Routes = [
         AppComponent,
         HomeComponent,
         CorpusListComponent,
+        HighlightPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchSampleComponent,
@@ -74,7 +75,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, SearchService, SessionService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, HighlightService, SearchService, SessionService, UserService, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
