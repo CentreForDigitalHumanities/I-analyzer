@@ -20,6 +20,8 @@ export class CorpusService {
     private parseCorpusItem(name: string, data: any): Corpus {
         return {
             name,
+            doctype: data.doctype,
+            index: data.index,
             minDate: this.parseDate(data.min_date),
             maxDate: this.parseDate(data.max_date),
             fields: data.fields.map(item => this.parseField(item))

@@ -80,7 +80,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         // store it, the user might change it in the meantime
         let searchQuery = this.query;
         this.searchService.search(
-            this.corpus.name,
+            this.corpus,
             searchQuery,
             this.getQueryFields(),
             this.getFilterData())
@@ -102,7 +102,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public download() {
         this.searchService.searchAsCsv(
-            this.corpus.name,
+            this.corpus,
             this.query,
             this.getQueryFields(),
             this.getFilterData());

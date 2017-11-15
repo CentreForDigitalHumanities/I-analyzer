@@ -29,7 +29,7 @@ Running
 To get an instance running, do the following. Ideally run using a `virtualenv`:
 
 1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine.
-2. Start your ElasticSearch Server.
+2. Start your ElasticSearch Server. Make sure cross-origin handling is set up correctly for it to be accessible by the web user.
 3. Install the PIP requirements.
 ```
 cd api

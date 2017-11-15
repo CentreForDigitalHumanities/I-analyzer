@@ -17,18 +17,22 @@ from . import config
 from . import factories
 from . import models
 from . import views
-from . import search
 from . import security
 from . import streaming
 from . import corpora
 
 
 blueprint = Blueprint('blueprint', __name__)
-admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
-admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
+admin_instance = admin.Admin(
+    name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+admin_instance.add_view(views.CorpusView(
+    corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.UserView(
+    models.User, models.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.RoleView(
+    models.Role, models.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.QueryView(
+    models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 
 
@@ -73,22 +77,22 @@ def post_required(method):
         fields = (
             field
             for field in corpus_definition.fields
-                if ('field:' + field.name) in request.form
+            if ('field:' + field.name) in request.form
         )
 
         # Collect filters in ES format
         filters = (
             field.search_filter.elasticsearch(request.form)
             for field in corpus_definition.fields
-                if field.search_filter
+            if field.search_filter
         )
 
         return method(
-            corpus_name = corpus_name,
-            corpus_definition = corpus_definition,
-            query_string = request.form.get('query'),
-            fields = list(fields),
-            filters = list(f for f in filters if f is not None),
+            corpus_name=corpus_name,
+            corpus_definition=corpus_definition,
+            query_string=request.form.get('query'),
+            fields=list(fields),
+            filters=list(f for f in filters if f is not None),
             *nargs,
             **kwargs
         )
@@ -165,21 +169,6 @@ def api_check_session():
         return jsonify({'success': True})
 
 
-@blueprint.route('/api/search', methods=['POST'])
-@login_required
-def api_search_json():
-    if not request.json:
-        abort(400)
-    corpus_name = request.json['corpusName']
-    query = request.json['query']
-    fields = request.json['fields']
-    filters = request.json['filters']
-    num_results = request.json['n']
-    corpus = corpora.DEFINITIONS[corpus_name]
-
-    return search_json(corpus, query, fields, filters, num_results)
-
-
 @blueprint.route('/api/search/csv', methods=['POST'])
 @login_required
 def api_search_csv():
@@ -203,10 +192,10 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
     query = search.make_query(query_string=query_string, filters=filters)
 
     # Log the query to the database
-    q = models.Query(query=str(query), corpus_name=corpus_name, user=current_user)
+    q = models.Query(query=str(query),
+                     corpus_name=corpus_name, user=current_user)
     models.db.session.add(q)
     models.db.session.commit()
-
 
     def logged_stream(stream):
         '''
@@ -234,8 +223,8 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
     # Perform the search and obtain output stream
     logging.info('Requested CSV for query: {}'.format(query))
     docs = search.execute_iterate(corpus_definition,
-        query, size=current_user.download_limit
-        )
+                                  query, size=current_user.download_limit
+                                  )
     rows = streaming.field_lists(docs, selected=fields)
     stream = logged_stream(streaming.as_csv(rows))
 
@@ -254,7 +243,8 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
         date1_memo = corpus_definition.min_date.strftime('%Y%m%d')
         date2_memo = corpus_definition.max_date.strftime('%Y%m%d')
 
-    filename = '{}-{}-{}{}.csv'.format(corpus_name, date1_memo, date2_memo, query_memo)
+    filename = '{}-{}-{}{}.csv'.format(corpus_name,
+                                       date1_memo, date2_memo, query_memo)
 
     # Stream results CSV
     response = Response(stream_with_context(stream), mimetype='text/csv')
@@ -262,36 +252,3 @@ def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, f
         'attachment; filename={}'.format(filename)
     )
     return response
-
-
-def search_json(corpus_definition, query_string=None, fields=None, filters=None, n=config.ES_EXAMPLE_QUERY_SIZE):
-    '''
-    Return the first `n` results of a search operation. The result is a JSON
-    dictionary, containing search statistics, plus the result entries as a list
-    of lists. Used to provide example results.
-    '''
-
-    # Build the query from POST data
-    query = search.make_query(query_string=query_string, filters=filters)
-
-    # Perform the search
-    logging.info('Requested example JSON for query: {}'.format(query))
-    result = search.execute(corpus_definition, query, size=n)
-
-    # Extract relevant information from dictionary returned by ES
-    stats = result.get('hits', {})
-    docs = (
-        # reassemble _source dictionary and _id string into single dict
-        dict(
-            doc.get('_source'),
-            id=doc.get('_id')
-        )
-        for doc in stats.get('hits', ())
-    )
-    rows = streaming.field_lists(docs, selected=fields)
-
-    # Return result as JSON
-    return jsonify({
-        'total': stats.get('total', 0),
-        'table': list(rows)
-    })
