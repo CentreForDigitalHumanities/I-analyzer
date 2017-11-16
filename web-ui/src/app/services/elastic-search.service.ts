@@ -52,7 +52,7 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    execute<T>(index: ElasticSearchIndex, query, size) {
+    private execute<T>(index: ElasticSearchIndex, query, size) {
         return this.clientPromise.then((client) => client.search<T>({
             index: index.index,
             type: index.doctype,
@@ -62,33 +62,33 @@ export class ElasticSearchService {
     }
 
     /**
-     * Execute an ElasticSearch query and return an observable of results as dictionaries.
+     * Execute an ElasticSearch query and return an observable of search results.
      * @param corpusDefinition
      * @param query
      * @param size Maximum number of hits
      */
-    executeIterate<T>(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<FoundDocument<T>> {
+    searchObservable<T>(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResult<T>> {
         return new Observable((observer) => {
             let retrieved = 0;
             this.clientPromise.then((client) => {
-                function getMoreUntilDone(error: any, response: Elasticsearch.SearchResponse<{}>) {
-                    response.hits.hits.forEach(function (hit) {
-                        retrieved++;
-
-                        let doc: FoundDocument<T> = Object.apply({
-                            id: hit._id
-                        }, hit._source);
-
-                        observer.next(doc);
-                    });
+                let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
+                    let result: SearchResult<T> = {
+                        completed: false,
+                        documents: response.hits.hits.map((hit) => this.hitToDocument<T>(hit)),
+                        retrieved: retrieved += response.hits.hits.length,
+                        total: response.hits.total
+                    }
 
                     if (response.hits.total !== retrieved && retrieved < size) {
                         // now we can call scroll over and over
+                        observer.next(result);
                         client.scroll({
                             scrollId: response._scroll_id,
                             scroll: this.scrollTimeOut
                         }, getMoreUntilDone);
                     } else {
+                        result.completed = true;
+                        observer.next(result);
                         observer.complete();
                     }
                 }
@@ -104,58 +104,39 @@ export class ElasticSearchService {
         });
     }
 
-    /**
-     * Iterate through some dictionaries and yield for each dictionary the values
-     * of the selected fields, in given order.
-     */
-    documentRow<T>(document: { [id: string]: T }, fields: string[] = []): string[] {
-        // TODO: move this declaration outside the scope of this function
-        let _stringify = (value) => {
-            if (!value) {
-                return '';
-            }
-            if (Array.isArray(value)) {
-                return value.join(', ');
-            }
-            if (value instanceof Date) {
-                return value.toISOString(); // TODO: '%Y-%m-%d'
-            }
-
-            return String(value);
-        }
-
-        return fields.map(field => _stringify(document[field]));
-    }
-
     // corpus_definition, query_string=None, fields=None, filters=None, n=config.ES_EXAMPLE_QUERY_SIZE
-    public search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, fields?: (CorpusField | string)[], filters?: any[], size = 500 /* TODO: ES_EXAMPLE_QUERY_SIZE */) {
+    public async search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size = 500 /* TODO: ES_EXAMPLE_QUERY_SIZE */): Promise<SearchResult<T>> {
         let query = this.makeQuery(queryString, filters);
         // Perform the search
-        // TODO: logging.info('Requested example JSON for query: {}'.format(query))
         return this.execute(corpusDefinition, query, size).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
-            let fieldNames = fields.map(field => (<any>field).name ? (<CorpusField>field).name : <string>field);
-            let rows = stats.hits.map(hit => {
-                // TODO: as a function
-                let doc: FoundDocument<T> = Object.apply({
-                    id: hit._id
-                }, hit._source);
-                // TODO: WHY IS doc EMPTY??
-                return this.documentRow(doc, fieldNames);
-            });
+            let documents = stats.hits.map(hit => this.hitToDocument<T>(hit));
 
             return {
-                fieldNames,
+                completed: true,
                 total: stats.total || 0,
-                table: rows
+                retrieved: documents.length,
+                documents
             };
         });
+    }
+
+    private hitToDocument<T>(hit: { _id: string, _source: {} }) {
+        return <FoundDocument<T>>Object.assign({
+            id: hit._id
+        }, hit._source);
     }
 }
 
 export type FoundDocument<T> = T & { ['id']: string };
+export type SearchResult<T> = {
+    completed: boolean,
+    total: number,
+    retrieved: number,
+    documents: FoundDocument<T>[]
+}
 export type SearchQuery = {
     aborted?: boolean,
     completed?: Date,

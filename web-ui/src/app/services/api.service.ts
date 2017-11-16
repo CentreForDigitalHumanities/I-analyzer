@@ -10,6 +10,18 @@ import { SearchFilterData, UserRole } from '../models/index';
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
 
+/**
+ * Describes the values as expected and returned by the server.
+ */
+type QueryDb = {
+    query: string,
+    corpus_name: string,
+    started: Date | undefined,
+    completed: Date | undefined,
+    aborted: boolean,
+    userID: number,
+    transferred: number
+}
 @Injectable()
 @RestParams()
 export class ApiService extends Rest {
@@ -44,22 +56,28 @@ export class ApiService extends Rest {
         path: '/log'
     })
     public log: RestMethod<
-        { msg: string, type: 'info' | 'error' },
-        { success: boolean }>;
+    { msg: string, type: 'info' | 'error' },
+    { success: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
         path: '/login'
     })
     public login: RestMethod<
-        { username: string, password: string },
-        { success: boolean, username: string, roles: UserRole[] }>;
+    { username: string, password: string },
+    { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
         path: '/logout'
     })
     public logout: RestMethod<void, { success: boolean }>;
+
+    @RestAction({
+        method: RestRequestMethod.Put,
+        path: '/query'
+    })
+    public query: RestMethod<QueryDb & { id?: number }, QueryDb & { id: number }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

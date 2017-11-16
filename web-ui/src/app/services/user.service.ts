@@ -49,7 +49,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['name'], parsed['roles']);
+            return new User(parsed['id'], parsed['name'], parsed['roles'], parsed['downloadLimit']);
         } else {
             return false;
         }
@@ -85,10 +85,18 @@ export class UserService implements OnDestroy {
         return this.sessionCheckPromise;
     }
 
+    public getCurrentUserOrFail(): User {
+        let user = this.currentUser;
+        if (!user) {
+            throw 'User required!';
+        }
+        return user;
+    }
+
     public login(username: string, password: string): Promise<User | false> {
         return this.apiService.login({ username, password }).then(result => {
             if (result.success) {
-                this.currentUser = new User(result.username, result.roles);
+                this.currentUser = new User(result.id, result.username, result.roles, result.downloadLimit);
                 return this.currentUser;
             }
 

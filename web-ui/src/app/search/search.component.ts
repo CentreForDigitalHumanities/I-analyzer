@@ -29,15 +29,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchQuery: string;
     public sample: SearchSample;
 
-    private searchResults: Array<any>;
+    private searchResults: { [fieldName: string]: any }[];
 
-    private subscription: Subscription;
+    private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
-        // listen to changes in the results returned by the searchService
-        this.subscription = searchService.results$.subscribe(searchResults => {
-            this.searchResults = searchResults;
-        });
         this.visibleTab = "search";
     }
 
@@ -62,7 +58,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 
     public enableFilter(name: string) {
@@ -93,11 +91,19 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public visualize() {
-        this.searchService.searchForVisualization(
-            this.corpus.name,
+        this.searchResults = [];
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+
+        this.subscription = this.searchService.searchObservable(
+            this.corpus,
             this.query,
             this.getQueryFields(),
             this.getFilterData())
+            .subscribe(searchResults => {
+                this.searchResults.push(searchResults);
+            });
     }
 
     public async download() {

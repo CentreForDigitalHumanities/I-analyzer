@@ -4,6 +4,7 @@ export * from './corpus.service';
 export * from './elastic-search.service';
 export * from './highlight.service';
 export * from './log.service';
+export * from './query.service';
 export * from './search.service';
 export * from './session.service';
 export * from './user.service';

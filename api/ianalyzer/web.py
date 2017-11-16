@@ -140,8 +140,10 @@ def api_login():
         security.login_user(user)
         response = jsonify({
             'success': True,
+            'id': user.id,
             'username': user.username,
-            'roles': [{'name': role.name, 'description': role.description} for role in user.roles]
+            'roles': [{'name': role.name, 'description': role.description} for role in user.roles],
+            'downloadLimit': user.download_limit
         })
 
     return response
@@ -149,7 +151,7 @@ def api_login():
 
 @blueprint.route('/api/log', methods=['POST'])
 @login_required
-def api_log():    
+def api_log():
     if not request.json:
         abort(400)
     msg_type = request.json['type']
@@ -182,5 +184,19 @@ def api_check_session():
         abort(401)
     else:
         return jsonify({'success': True})
+
+
+
+@blueprint.route('/api/query', methods=['PUT'])
+@login_required
+def api_query():
+    """
+    Check that the specified user is still logged on.
+    """
+    if not request.json:
+        abort(400)
+
+    # TODO: IMPLEMENT!
+    raise "NOT IMPLEMENTED"
 
 
