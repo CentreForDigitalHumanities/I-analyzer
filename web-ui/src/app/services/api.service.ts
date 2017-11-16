@@ -41,11 +41,19 @@ export class ApiService extends Rest {
 
     @RestAction({
         method: RestRequestMethod.Post,
+        path: '/log'
+    })
+    public log: RestMethod<
+        { msg: string, type: 'info' | 'error' },
+        { success: boolean }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
         path: '/login'
     })
     public login: RestMethod<
-    { username: string, password: string },
-    { success: boolean, username: string, roles: UserRole[] }>;
+        { username: string, password: string },
+        { success: boolean, username: string, roles: UserRole[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
+import { saveAs } from 'file-saver';
+
 import { ApiService } from './api.service';
-import { ElasticSearchService } from './elastic-search.service';
+import { ElasticSearchService, FoundDocument } from './elastic-search.service';
+import { LogService } from './log.service';
 import { Corpus, SearchFilterData, SearchSample } from '../models/index';
 
 
@@ -13,7 +17,9 @@ export class SearchService {
     // Observable string streams
     results$ = this.results.asObservable();
 
-    constructor(private apiService: ApiService, private elasticSearchService: ElasticSearchService) { }
+    constructor(private apiService: ApiService,
+        private elasticSearchService: ElasticSearchService,
+        private logService: LogService) { }
 
     public async search(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
         let result = await this.elasticSearchService.search(corpus, query, fields, filters);
@@ -35,55 +41,70 @@ export class SearchService {
         };
     }
 
-    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
+    public searchObservable<T>(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<FoundDocument<T>> {
         // TODO: maybe this should a specific log structure?
         let queryModel = this.elasticSearchService.makeQuery(query, filters);
-
-        /**
-         * Wrap an iterator such that its completion or abortion get logged to the database.
-         * @param rows
-         */
-        let loggedIterator = function* (rows: IterableIterator<string[]>) {
-            let totalTransferred = 0;
-            try {
-                for (let row in rows) {
-                    totalTransferred++;
-                    yield row;
-                }
-                // TODO: this depends on proper date/time settings on the client
-                queryModel.completed = new Date();
-            } catch (error) {
-                queryModel.aborted = true;
-                console.error(error);
-            }
-            queryModel.transferred = totalTransferred;
-        }
-
+        let totalTransferred = 0;
         // Perform the search and obtain output stream
         // Log the query to the database
         // q = models.Query(query=str(query),
         //                  corpus_name=corpus_name, user=current_user)
         // models.db.session.add(q)
         // models.db.session.commit()
-        // TODO: logging.info('Requested CSV for query: {}'.format(query))
+        this.logService.info(`Requested observable for query: ${query}`);
+        // TODO: wrap this in an object to represent the current state
+        return this.elasticSearchService.executeIterate<T>(
+            corpus, queryModel, 10000 /* TODO: current_user.download_limit */);
+
+        //         .subscribe(
+        //         row => {
+        //             rows.push(row.join(','));
+        //             totalTransferred++;
+        //         },
+        //         (error) => reject(error),
+        //         () => {                    
+        //             queryModel.completed = new Date();
+        //             resolve(rows);
+        //         }).catch((error) => {                    
+        //             queryModel.aborted = true;
+        //             console.error(error);
+        //         });
+        // });
+
+        // queryModel.transferred = totalTransferred;
+
+        // TODO: log
+        //return rows;
+    }
+
+    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<string[]> {
+        let totalTransferred = 0;
+
+        // Log the query to the database
+        // q = models.Query(query=str(query),
+        //                  corpus_name=corpus_name, user=current_user)
+        // models.db.session.add(q)
+        // models.db.session.commit()
+        this.logService.info(`Requested CSV for query: ${query}`);
         // TODO: wrap this in an object to represent the current state
         let rows = await new Promise<string[]>((resolve, reject) => {
             let rows: string[] = [];
-            this.elasticSearchService.executeIterate(corpus, queryModel, 10000 /* TODO: current_user.download_limit */).map(
-                document => this.elasticSearchService.documentRow(document, fields))
+            this.searchObservable(corpus, query, fields, filters)
                 .subscribe(
-                row => {
+                document => {
+                    let row = this.elasticSearchService.documentRow(document, fields);
                     rows.push(row.join(','));
+                    totalTransferred++;
                 },
                 (error) => reject(error),
                 () => resolve(rows));
         });
 
-        // TODO: actually show this file
-        new Blob(rows, {});
-        return true;
+        // TODO: log?
+        return rows;
     }
 
+    // TODO: use searchObservable instead
     public searchForVisualization(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
         // search n results for visualization
         let n = 10000;

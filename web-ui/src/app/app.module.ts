@@ -10,7 +10,7 @@ import { CalendarModule, SelectButtonModule, SliderModule } from 'primeng/primen
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService } from './services/index';
+import { ApiService, ConfigService, CorpusService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusListComponent } from './corpus-list/corpus-list.component';
@@ -75,7 +75,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, ElasticSearchService, HighlightService, LogService, SearchService, SessionService, UserService, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -147,6 +147,21 @@ def api_login():
     return response
 
 
+@blueprint.route('/api/log', methods=['POST'])
+@login_required
+def api_log():    
+    if not request.json:
+        abort(400)
+    msg_type = request.json['type']
+    msg = request.json['msg']
+
+    if msg_type == 'info':
+        logger.info(msg)
+    else:
+        logger.error(msg)
+
+    return jsonify({'success': True})
+
 @blueprint.route('/api/logout', methods=['POST'])
 def api_logout():
     if current_user.is_authenticated:
@@ -169,86 +184,3 @@ def api_check_session():
         return jsonify({'success': True})
 
 
-@blueprint.route('/api/search/csv', methods=['POST'])
-@login_required
-def api_search_csv():
-    if not request.form:
-        abort(400)
-    corpus_name = request.form['corpus_name']
-    query = request.form['query']
-    fields = json.loads(request.form['fields'])
-    filters = json.loads(request.form['filters'])
-    corpus = corpora.DEFINITIONS[corpus_name]
-
-    return search_csv(corpus_name, corpus, query, fields, filters)
-
-
-def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, filters=None):
-    '''
-    Stream all results of a search to a CSV file.
-    '''
-
-    # Create a query from POST data
-    query = search.make_query(query_string=query_string, filters=filters)
-
-    # Log the query to the database
-    q = models.Query(query=str(query),
-                     corpus_name=corpus_name, user=current_user)
-    models.db.session.add(q)
-    models.db.session.commit()
-
-    def logged_stream(stream):
-        '''
-        Wrap an iterator such that its completion or abortion get logged to the
-        database.
-        '''
-        total_transferred = 0
-        try:
-            for item in stream:
-                total_transferred += 1
-                yield item
-            q.completed = datetime.now()
-        except IOError:
-            # Does not work as expected. The initial idea was to catch an
-            # unfinished download by the assumption that an exception will be
-            # raised when the stream cannot continue. It seems obvious that
-            # won't work, but I'm not sure how it would work.  TODO
-            # (Of course, we can just assume that any unfinished download is
-            # aborted until it is actually finished.)
-            q.aborted = True
-        q.transferred = total_transferred
-        models.db.session.add(q)
-        models.db.session.commit()
-
-    # Perform the search and obtain output stream
-    logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute_iterate(corpus_definition,
-                                  query, size=current_user.download_limit
-                                  )
-    rows = streaming.field_lists(docs, selected=fields)
-    stream = logged_stream(streaming.as_csv(rows))
-
-    # Create appropriate filename
-    def alphanums(string): return ''.join(
-        char for char in string if char.isalnum())
-    query_memo = '-' + alphanums(query_string)[:12] if query_string else ''
-
-    try:
-        # TODO: Too dependent on particular string structure I chose somewhere
-        # else for the date filter
-        date_memo = request.form['filter:date'].split(':')
-        date1_memo = alphanums(date_memo[0])
-        date2_memo = alphanums(date_memo[1])
-    except (IndexError, AttributeError, KeyError):
-        date1_memo = corpus_definition.min_date.strftime('%Y%m%d')
-        date2_memo = corpus_definition.max_date.strftime('%Y%m%d')
-
-    filename = '{}-{}-{}{}.csv'.format(corpus_name,
-                                       date1_memo, date2_memo, query_memo)
-
-    # Stream results CSV
-    response = Response(stream_with_context(stream), mimetype='text/csv')
-    response.headers['Content-Disposition'] = (
-        'attachment; filename={}'.format(filename)
-    )
-    return response

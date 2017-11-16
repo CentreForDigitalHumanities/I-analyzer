@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
-import { Subscription }   from 'rxjs/Subscription';
+import { Subscription } from 'rxjs/Subscription';
 
 import { Corpus, SearchFilterData, SearchSample } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
@@ -36,7 +36,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
         // listen to changes in the results returned by the searchService
         this.subscription = searchService.results$.subscribe(searchResults => {
-          this.searchResults = searchResults;
+            this.searchResults = searchResults;
         });
         this.visibleTab = "search";
     }
@@ -100,12 +100,20 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.getFilterData())
     }
 
-    public download() {
-        this.searchService.searchAsCsv(
+    public async download() {
+        let rows = await this.searchService.searchAsCsv(
             this.corpus,
             this.query,
             this.getQueryFields(),
             this.getFilterData());
+
+        let minDate = this.corpus.minDate.toISOString().split('T')[0];
+        let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
+        let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
+
+        let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
+
+        saveAs(new Blob(rows, { type: "text/csv;charset=utf-8", endings: "\n" }), `${this.corpus.name}.csv`);
     }
 
     public updateFilterData(name: string, data: any) {
