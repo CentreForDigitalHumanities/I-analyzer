@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client } from 'elasticsearch';
+import { Client, ConfigOptions } from 'elasticsearch';
 import { CorpusField, ElasticSearchIndex } from '../models/index';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class ElasticSearchService {
-    private clientPromise: Promise<Client>;
-    private scrollPageSize: number;
-    private scrollTimeOut: string;
+    private connection: Promise<Connection>;
 
-    constructor() {
-        // TODO: configure client / move to wrapper service
-        this.clientPromise = Promise.resolve(new Client({}));
-        this.scrollPageSize = 5000;// TODO: ES_SCROLL_PAGESIZE
-        this.scrollTimeOut = '3m'; // TODO: ES_SCROLL_TIMEOUT;
+    constructor(apiService: ApiService) {
+        this.connection = apiService.esConfig().then(config => {
+            return {
+                config,
+                client: new Client({
+                    host: config.host + ':' + config.port,
+                })
+            };
+        });
     }
 
     /**
@@ -53,7 +56,7 @@ export class ElasticSearchService {
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
     private execute<T>(index: ElasticSearchIndex, query, size) {
-        return this.clientPromise.then((client) => client.search<T>({
+        return this.connection.then((connection) => connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
@@ -70,7 +73,7 @@ export class ElasticSearchService {
     searchObservable<T>(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResult<T>> {
         return new Observable((observer) => {
             let retrieved = 0;
-            this.clientPromise.then((client) => {
+            this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
                     let result: SearchResult<T> = {
                         completed: false,
@@ -82,9 +85,9 @@ export class ElasticSearchService {
                     if (response.hits.total !== retrieved && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
-                        client.scroll({
+                        connection.client.scroll({
                             scrollId: response._scroll_id,
-                            scroll: this.scrollTimeOut
+                            scroll: connection.config.scrollTimeout
                         }, getMoreUntilDone);
                     } else {
                         result.completed = true;
@@ -93,22 +96,22 @@ export class ElasticSearchService {
                     }
                 }
 
-                client.search({
+                connection.client.search({
                     body: query,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
-                    size: this.scrollPageSize,
-                    scroll: this.scrollTimeOut
+                    size: connection.config.scrollPagesize,
+                    scroll: connection.config.scrollTimeout
                 }, getMoreUntilDone);
             });
         });
     }
 
-    // corpus_definition, query_string=None, fields=None, filters=None, n=config.ES_EXAMPLE_QUERY_SIZE
-    public async search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size = 500 /* TODO: ES_EXAMPLE_QUERY_SIZE */): Promise<SearchResult<T>> {
+    public async search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResult<T>> {
         let query = this.makeQuery(queryString, filters);
+        let connection = await this.connection;
         // Perform the search
-        return this.execute(corpusDefinition, query, size).then(result => {
+        return this.execute(corpusDefinition, query, size || connection.config.exampleQuerySize).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
@@ -157,3 +160,12 @@ export type SearchClause = {
 } | {
         'match_all': {}
     };
+
+type Connection = {
+    client: Client,
+    config: {
+        exampleQuerySize: number,
+        scrollPagesize: number,
+        scrollTimeout: string
+    }
+};

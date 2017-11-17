@@ -52,20 +52,35 @@ export class ApiService extends Rest {
     public corpus: RestMethod<void, any>;
 
     @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/es_config'
+    })
+    public esConfig: RestMethod<void, {
+        'host': string,
+        'port': number,
+        'chunkSize': number,
+        'maxChunkBytes': number,
+        'bulkTimeout': string,
+        'exampleQuerySize': number,
+        'scrollTimeout': string,
+        'scrollPagesize': number
+    }>;
+
+    @RestAction({
         method: RestRequestMethod.Post,
         path: '/log'
     })
     public log: RestMethod<
-    { msg: string, type: 'info' | 'error' },
-    { success: boolean }>;
+        { msg: string, type: 'info' | 'error' },
+        { success: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
         path: '/login'
     })
     public login: RestMethod<
-    { username: string, password: string },
-    { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number }>;
+        { username: string, password: string },
+        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
