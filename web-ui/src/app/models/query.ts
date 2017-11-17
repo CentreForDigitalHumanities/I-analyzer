@@ -17,19 +17,17 @@ export class Query {
     }
 
     /**
-     * The query id, a placeholder or a promise for the query id (when waiting for a save).
+     * The query id, when `undefined` it will automatically assign one on save.
      */
-    public id: number | undefined | Promise<number> = undefined;
+    public id?: number ;
 
     /**
      * Time the first document was sent.
-     * TODO: use server time
      */
-    public started: Date = new Date();
+    public started?: Date;
 
     /**
      * Time the last document was sent, if not aborted.
-     * TODO: use server time
      */
     public completed?: Date;
 

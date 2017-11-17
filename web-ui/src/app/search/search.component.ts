@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
+import { saveAs } from 'file-saver';
 
 import { Corpus, SearchFilterData, SearchSample } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
@@ -102,15 +103,17 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.getQueryFields(),
             this.getFilterData())
             .subscribe(searchResults => {
-                this.searchResults.push(searchResults);
+                // the array pointer needs to be updated for a change to be detected
+                this.searchResults = this.searchResults.concat(...searchResults.documents);
             });
     }
 
     public async download() {
+        let fields = this.getQueryFields();
         let rows = await this.searchService.searchAsCsv(
             this.corpus,
             this.query,
-            this.getQueryFields(),
+            fields,
             this.getFilterData());
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
@@ -119,7 +122,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
-        saveAs(new Blob(rows, { type: "text/csv;charset=utf-8", endings: "\n" }), `${this.corpus.name}.csv`);
+        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), `${this.corpus.name}.csv`);
     }
 
     public updateFilterData(name: string, data: any) {

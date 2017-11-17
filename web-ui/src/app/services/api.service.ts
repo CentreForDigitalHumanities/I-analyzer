@@ -13,13 +13,12 @@ type RestMethod<IB, O> = IRestMethod<IB, O>;
 /**
  * Describes the values as expected and returned by the server.
  */
-type QueryDb = {
+type QueryDb<TDateType> = {
     query: string,
     corpus_name: string,
-    started: Date | undefined,
-    completed: Date | undefined,
+    started?: TDateType,
+    completed?: TDateType,
     aborted: boolean,
-    userID: number,
     transferred: number
 }
 @Injectable()
@@ -92,7 +91,20 @@ export class ApiService extends Rest {
         method: RestRequestMethod.Put,
         path: '/query'
     })
-    public query: RestMethod<QueryDb & { id?: number }, QueryDb & { id: number }>;
+    public query: RestMethod<QueryDb<Date> & {
+        id?: number,
+        /**
+         * Mark the query as started, and use the server time for determining this timestamp.
+         */
+        markStarted: boolean,
+        /**
+         * Mark the query as completed, and use the server time for determining this timestamp.
+         */
+        markCompleted: boolean,
+    }, QueryDb<string> & {
+        id: number,
+        userID: number
+    }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

@@ -2,10 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
-import { saveAs } from 'file-saver';
-
 import { ApiService } from './api.service';
-import { ElasticSearchService, FoundDocument } from './elastic-search.service';
+import { ElasticSearchService, FoundDocument, SearchResult } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
@@ -17,7 +15,8 @@ export class SearchService {
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
-        private logService: LogService) { }
+        private logService: LogService) {
+    }
 
     public async search(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
         this.logService.info(`Requested flat results for query: ${query}`);
@@ -30,35 +29,38 @@ export class SearchService {
         };
     }
 
-    public searchObservable(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<FoundDocument<Hit>> {
-        let queryModel = this.elasticSearchService.makeQuery(query, filters);
+    public searchObservable(corpus: Corpus, queryText: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<SearchResult<Hit>> {
+        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+        let completed = false;
         let totalTransferred = 0;
 
         // Log the query to the database
-        let q = new Query(query, corpus.name, this.userService.getCurrentUserOrFail().id);
-        this.queryService.save(q);
-        this.logService.info(`Requested observable results for query: ${query}`);
+        let query = new Query(queryText, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let querySave = this.queryService.save(query, true);
+        this.logService.info(`Requested observable results for query: ${queryText}`);
 
         // Perform the search and obtain output stream
         return this.elasticSearchService.searchObservable<Hit>(
             corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
             .map(result => {
-                q.transferred = result.retrieved;
+                totalTransferred = result.retrieved;
                 if (result.completed) {
-                    q.completed = new Date();
+                    completed = true;
                 }
                 return result;
             })
-            .flatMap(result => result.documents)
             .finally(() => {
-                if (!q.completed) {
-                    q.aborted = true;
-                }
-                this.queryService.save(q);
+                querySave.then((savedQuery) => {
+                    if (!completed) {
+                        savedQuery.aborted = true;
+                    }
+
+                    this.queryService.save(savedQuery, undefined, completed);
+                });
             });
     }
 
-    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<string[]> {
+    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
         let totalTransferred = 0;
 
         this.logService.info(`Requested CSV file for query: ${query}`);
@@ -67,24 +69,25 @@ export class SearchService {
             let rows: string[] = [];
             this.searchObservable(corpus, query, fields, filters)
                 .subscribe(
-                document => {
-                    let row = this.documentRow(document, fields);
-                    rows.push(row.join(','));
-                    totalTransferred++;
+                result => {
+                    rows.push(...
+                        result.documents.map(document =>
+                            this.documentRow(document, fields)
+                                .map(this.csvCell).join(separator) + '\n'));
+
+                    totalTransferred = result.retrieved;
                 },
                 (error) => reject(error),
                 () => resolve(rows));
         });
     }
 
-    private mapIterator = function*<T, TOut>(iterator: IterableIterator<T>, mapper: (value: T) => TOut) {
-        while (true) {
-            let result = iterator.next();
-            if (result.done) {
-                break;
-            }
-            yield mapper(result.value);
+    private csvCell(value: string) {
+        if (value.indexOf('"') >= 0) {
+            return `"${value.replace('"', '""')}"`;
         }
+
+        return value;
     }
 
     /**

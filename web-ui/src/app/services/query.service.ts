@@ -7,37 +7,27 @@ export class QueryService {
 
     constructor(private apiService: ApiService) { }
 
-    async save(query: Query): Promise<Query> {
-        let queryDb = {
+    async save(query: Query, started = false, completed = false): Promise<Query> {
+        let queryCommand = {
+            id: query.id,
             query: query.query,
             corpus_name: query.corpusName,
+            markStarted: started,
+            markCompleted: completed,
             started: query.started,
             completed: query.completed,
             aborted: query.aborted,
-            userID: query.userId,
             transferred: query.transferred
         };
 
-        let setQueryId: number | undefined;
-
-        if (query.id instanceof Promise) {
-            // It might be that another operation is already busy assigning an ID to this query object
-            // wait for that to prevent a race condition.
-            setQueryId = await query.id;
-        } else if (query.id != undefined) {
-            setQueryId = query.id;
-        }
-
-        let response = await (setQueryId != undefined
-            ? this.apiService.query(Object.assign({ id: setQueryId }, queryDb))
-            : this.setQueryIdPromise(this.apiService.query(queryDb), query));
+        let response = await this.apiService.query(queryCommand);
 
         return {
             id: response.id,
             query: response.query,
             corpusName: response.corpus_name,
-            started: response.started,
-            completed: response.completed,
+            started: response.started ? new Date(response.started) : undefined,
+            completed: response.completed ? new Date(response.completed) : undefined,
             aborted: response.aborted,
             userId: response.userID,
             transferred: response.transferred

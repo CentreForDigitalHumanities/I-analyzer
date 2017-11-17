@@ -112,19 +112,21 @@ def init():
     else:
         return redirect(url_for('admin.login'))
 
+
 @blueprint.route('/api/es_config', methods=['GET'])
 @login_required
 def api_es_config():
     return jsonify({
-        'host':config.ES_HOST,
-        'port':config.ES_PORT,
+        'host': config.ES_HOST,
+        'port': config.ES_PORT,
         'chunkSize': config.ES_CHUNK_SIZE,
         'maxChunkBytes': config.ES_MAX_CHUNK_BYTES,
         'bulkTimeout': config.ES_BULK_TIMEOUT,
         'exampleQuerySize': config.ES_EXAMPLE_QUERY_SIZE,
-        'scrollTimeout':config.ES_SCROLL_TIMEOUT,
+        'scrollTimeout': config.ES_SCROLL_TIMEOUT,
         'scrollPagesize': config.ES_SCROLL_PAGESIZE
     })
+
 
 @blueprint.route('/api/corpus', methods=['GET'])
 @login_required
@@ -177,6 +179,7 @@ def api_log():
 
     return jsonify({'success': True})
 
+
 @blueprint.route('/api/logout', methods=['POST'])
 def api_logout():
     if current_user.is_authenticated:
@@ -199,7 +202,6 @@ def api_check_session():
         return jsonify({'success': True})
 
 
-
 @blueprint.route('/api/query', methods=['PUT'])
 @login_required
 def api_query():
@@ -209,20 +211,35 @@ def api_query():
     if not request.json:
         abort(400)
 
-    query = request.json['query']
+    query_text = request.json['query']
     corpus_name = request.json['corpus_name']
-    
-    # TODO: validate user?    
-    q = models.Query(query=query, corpus_name=corpus_name, user=current_user)
+
     if 'id' in request.json:
-        q.id = request.json['id'] 
-    
-    q.started = request.json['started'] if 'started' in request.json else None
-    q.completed = request.json['completed'] if 'completed' in request.json else None
-    q.aborted = request.json['aborted']
-    q.transferred = request.json['transferred']
+        query = models.Query.query.filter_by(id=request.json['id']).first()
+    else:
+        query = models.Query(
+            query=query_text, corpus_name=corpus_name, user=current_user)
 
-    models.db.session.add(q) 
-    models.db.session.commit() 
 
-    return jsonify(q)
+    date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
+        else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)
+    query.completed = datetime.now() if ('markCompleted' in request.json and request.json['markCompleted'] == True)  \
+        else (datetime.strptime(request.json['completed'], date_format) if 'completed' in request.json else None)
+
+    query.aborted = request.json['aborted']
+    query.transferred = request.json['transferred']
+
+    models.db.session.add(query)
+    models.db.session.commit()
+
+    return jsonify({
+        'id': query.id,
+        'query': query.query_text,
+        'corpus_name': query.corpus_name,
+        'started': query.started,
+        'completed': query.completed,
+        'aborted': query.aborted,
+        'transferred': query.transferred,
+        'userID': query.userID
+    })
