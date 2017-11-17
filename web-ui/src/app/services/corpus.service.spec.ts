@@ -82,6 +82,8 @@ describe('CorpusService', () => {
         return service.get().then((items) => {
             expect(items).toEqual([{
                 name: 'times',
+                doctype: 'article',
+                index: 'times',
                 fields: [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
