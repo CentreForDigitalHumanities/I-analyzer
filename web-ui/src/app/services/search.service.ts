@@ -35,7 +35,7 @@ export class SearchService {
         let totalTransferred = 0;
 
         // Log the query to the database
-        let query = new Query(queryText, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
         let querySave = this.queryService.save(query, true);
         this.logService.info(`Requested observable results for query: ${queryText}`);
 

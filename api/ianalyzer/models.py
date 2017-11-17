@@ -143,7 +143,7 @@ class Query(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    query_text = db.Column('query', db.Text)
+    query_json = db.Column('query', db.Text)
     '''
     JSON string sent out to ElasticSearch for this query.
     '''
@@ -181,7 +181,7 @@ class Query(db.Model):
 
     def __init__(self, query, corpus_name, user):
         self.corpus_name = corpus_name
-        self.query_text = query
+        self.query_json = query
         self.user = user
         self.started = datetime.now()
         self.completed = None

@@ -211,14 +211,14 @@ def api_query():
     if not request.json:
         abort(400)
 
-    query_text = request.json['query']
+    query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
     if 'id' in request.json:
         query = models.Query.query.filter_by(id=request.json['id']).first()
     else:
         query = models.Query(
-            query=query_text, corpus_name=corpus_name, user=current_user)
+            query=query_json, corpus_name=corpus_name, user=current_user)
 
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -235,7 +235,7 @@ def api_query():
 
     return jsonify({
         'id': query.id,
-        'query': query.query_text,
+        'query': query.query_json,
         'corpus_name': query.corpus_name,
         'started': query.started,
         'completed': query.completed,

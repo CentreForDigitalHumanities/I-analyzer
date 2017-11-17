@@ -1,10 +1,8 @@
+import { SearchQuery } from "../services/elastic-search.service";
+
 export class Query {
     constructor(
-        /**
-         * JSON string sent out to ElasticSearch for this query.
-         */
-        public query: string,
-
+        query: SearchQuery,
         /**
          * Name of the corpus for which the query was performed.
          */
@@ -14,12 +12,18 @@ export class Query {
          * User that performed this query.
          */
         public userId: number) {
+        this.query = JSON.stringify(query);
     }
 
     /**
      * The query id, when `undefined` it will automatically assign one on save.
      */
-    public id?: number ;
+    public id?: number;
+
+    /**
+     * JSON string sent out to ElasticSearch for this query.
+     */
+    public query: string;
 
     /**
      * Time the first document was sent.
