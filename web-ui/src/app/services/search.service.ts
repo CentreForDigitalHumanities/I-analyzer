@@ -51,9 +51,11 @@ export class SearchService {
             })
             .finally(() => {
                 querySave.then((savedQuery) => {
+                    // update the last saved query object, it might have changed on the server
                     if (!completed) {
                         savedQuery.aborted = true;
                     }
+                    savedQuery.transferred = totalTransferred;
 
                     this.queryService.save(savedQuery, undefined, completed);
                 });

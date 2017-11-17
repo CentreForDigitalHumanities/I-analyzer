@@ -137,6 +137,9 @@ export type FoundDocument<T> = T & { ['id']: string };
 export type SearchResult<T> = {
     completed: boolean,
     total: number,
+    /**
+     * Total number of retrieved documents for this search.
+     */
     retrieved: number,
     documents: FoundDocument<T>[]
 }
