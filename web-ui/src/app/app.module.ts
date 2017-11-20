@@ -20,6 +20,7 @@ import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
+import { BarChartComponent } from './visualization/barchart.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 
 const appRoutes: Routes = [
@@ -44,7 +45,8 @@ const appRoutes: Routes = [
     },
     {
         path: 'visual',
-        component: VisualizationComponent
+        //component: VisualizationComponent
+        component: BarChartComponent
     }
 ]
 @NgModule({
@@ -59,6 +61,7 @@ const appRoutes: Routes = [
         MenuComponent,
         LoginComponent,
         ScrollToDirective,
+        BarChartComponent,
         VisualizationComponent
     ],
     imports: [

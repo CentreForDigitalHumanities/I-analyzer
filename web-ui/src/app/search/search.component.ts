@@ -31,11 +31,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     public sample: SearchSample;
 
     private searchResults: { [fieldName: string]: any }[];
+    private barChartKey: string;
 
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
         this.visibleTab = "search";
+        // setting the aspect for which term frequencies are counted to year.
+        // TODO: make several miniature visualizations for different term frequencies
+        this.barChartKey = "year";
     }
 
     ngOnInit() {

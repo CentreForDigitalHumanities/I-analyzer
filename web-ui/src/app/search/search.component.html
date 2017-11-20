@@ -65,8 +65,8 @@
         </div>
     </div>
 </section>
-<div class="timeline" *ngIf="doVisualize">
+<div class="termFreq" *ngIf="doVisualize">
     <br>
     <button class="delete" id="hide-viz" (click)="doVisualize=false"></button>
-    <visualization *ngIf="searchResults" [searchData]="searchResults"></visualization>
+    <barchart *ngIf="searchResults" [searchData]="searchResults" [countKey]="barChartKey"></barchart>
 </div>

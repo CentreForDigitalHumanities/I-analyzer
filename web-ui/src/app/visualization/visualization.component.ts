@@ -51,13 +51,13 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
   createTimelineData(results: Array<any>) {
   	// transform the results exposed from search.service.ts to suitable timeline data
+    // the countkey defines which aspect of the data appears in the timeline
     let yearCounts = _.countBy(results.map(d => d['year']));
     this.timeLineData = [];
     for (let key in yearCounts) {
     	let yearFreqPair = {year: Number(key), frequency: yearCounts[key]};
     	this.timeLineData.push(yearFreqPair);
     }
-    console.log(this.timeLineData);
   }
 
   calculateDomains() {
@@ -74,8 +74,8 @@ export class VisualizationComponent implements OnInit, OnChanges {
   	this.height = element.offsetHeight - this.margin.top - this.margin.bottom;		      	
   	const svg = d3.select(element).append('svg')		      
   		.attr('width', element.offsetWidth)		      
-  		.attr('height', element.offsetHeight);		
-  	
+  		.attr('height', element.offsetHeight);
+
   	// chart plot area		    
   	this.chart = svg.append('g')		      
   		.attr('class', 'bars')		      
