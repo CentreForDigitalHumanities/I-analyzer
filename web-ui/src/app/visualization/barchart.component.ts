@@ -20,7 +20,7 @@ export class BarChartComponent implements OnInit, OnChanges {
   @Input() private countKey: string;
   yAsPercent: boolean = false;
 
-  private margin: any = { top: 20, bottom: 60, left: 60, right: 20};        
+  private margin = { top: 20, bottom: 60, left: 60, right: 20};    
   private chart: any; 
   private width: number;    
   private height: number;     
