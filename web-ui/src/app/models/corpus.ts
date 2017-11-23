@@ -1,8 +1,8 @@
-export class Corpus {
-    constructor(public name: string, public fields: CorpusField[], public minDate: Date, public maxDate: Date) { }
+export class Corpus implements ElasticSearchIndex {
+    constructor(public name: string, public doctype, public index, public fields: CorpusField[], public minDate: Date, public maxDate: Date) { }
 }
 
-type ElasticSearchIndex = {
+export type ElasticSearchIndex = {
     doctype: 'article',
     index: string
 }

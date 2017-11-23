@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
+import { SessionService } from './session.service';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -11,6 +12,7 @@ describe('UserService', () => {
             providers: [
                 { provide: ApiService, useValue: new ApiServiceMock() },
                 UserService,
+                SessionService,
                 { provide: Router, useClass: RouterMock }]
         });
     });

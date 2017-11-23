@@ -1,83 +1,118 @@
 import { Injectable } from '@angular/core';
-import { ConfigService } from './config.service';
-import { Http, Response, RequestOptionsArgs } from '@angular/http';
+import { Http, Response, RequestMethod, RequestOptionsArgs } from '@angular/http';
+import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestAction, IRestMethod } from 'rest-core';
 import { Subject, Observable } from 'rxjs';
-import 'rxjs/add/operator/toPromise';
 
-@Injectable()
-export class ApiService {
-    private sessionExpiredSubject = new Subject();
-    public SessionExpired = this.sessionExpiredSubject.asObservable();
+import { ConfigService } from './config.service';
+import { SessionService } from './session.service';
+import { SearchFilterData, UserRole } from '../models/index';
 
-    constructor(private config: ConfigService, private http: Http) { }
+// workaround for https://github.com/angular/angular-cli/issues/2034
+type RestMethod<IB, O> = IRestMethod<IB, O>;
 
-    public get<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Get, undefined, options);
-    }
-
-    public delete<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Delete, undefined, options);
-    }
-
-    public head<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Head, undefined, options);
-    }
-
-    public options<T>(path: string, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Options, undefined, options);
-    }
-
-    public post<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Post, body, options);
-    }
-
-    public put<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Put, body, options);
-    }
-
-    public patch<T>(path: string, body?: any, options?: RequestOptionsArgs): Promise<T> {
-        return this.requestPath(path, HttpMethod.Patch, body, options);
-    }
-
-    public resolveUrl(path: string): Promise<string> {
-        return this.config.get().then(config => `${config.apiUrl}/${path}`);
-    }
-
-    private requestPath<T>(path: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs) {
-        return this.resolveUrl(path)
-            .then(url => this.requestUrl(url, method, body, options).toPromise())
-            .then(response => response.ok
-                ? Promise.resolve<T>(response.json())
-                : Promise.reject(`${response.status}: ${response.statusText}`))
-            .catch((error) => {
-                if (error instanceof Response && error.status == 401) {
-                    this.sessionExpiredSubject.next();
-                }
-                throw error;
-            });
-    }
-
-    private requestUrl(url: string, method: HttpMethod, body?: any, options?: RequestOptionsArgs): Observable<Response> {
-        switch (method) {
-            case HttpMethod.Get:
-            case HttpMethod.Delete:
-            case HttpMethod.Head:
-            case HttpMethod.Options:
-                return this.http[method](url, options);
-            case HttpMethod.Post:
-            case HttpMethod.Put:
-            case HttpMethod.Patch:
-                return this.http[method](url, body, options);
-        }
-    }
+/**
+ * Describes the values as expected and returned by the server.
+ */
+type QueryDb<TDateType> = {
+    query: string,
+    corpus_name: string,
+    started?: TDateType,
+    completed?: TDateType,
+    aborted: boolean,
+    transferred: number
 }
+@Injectable()
+@RestParams()
+export class ApiService extends Rest {
+    private apiUrl: Promise<string> | null = null;
 
-enum HttpMethod {
-    Get = 'get',
-    Post = 'post',
-    Put = 'put',
-    Delete = 'delete',
-    Patch = 'patch',
-    Head = 'head',
-    Options = 'options'
+    constructor(private config: ConfigService, private sessionService: SessionService, restHandler: RestHandler) {
+        super(restHandler);
+    }
+
+    $getUrl(actionOptions: IRestAction): string | Promise<string> {
+        let urlPromise = super.$getUrl(actionOptions);
+        if (!this.apiUrl) {
+            this.apiUrl = this.config.get().then(config => config.apiUrl);
+        }
+
+        return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
+    }
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/check_session'
+    })
+    public checkSession: RestMethod<{ username: string }, { success: boolean }>;
+
+    @RestAction({
+        path: '/corpus'
+    })
+    public corpus: RestMethod<void, any>;
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/es_config'
+    })
+    public esConfig: RestMethod<void, {
+        'host': string,
+        'port': number,
+        'chunkSize': number,
+        'maxChunkBytes': number,
+        'bulkTimeout': string,
+        'exampleQuerySize': number,
+        'scrollTimeout': string,
+        'scrollPagesize': number
+    }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/log'
+    })
+    public log: RestMethod<
+        { msg: string, type: 'info' | 'error' },
+        { success: boolean }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/login'
+    })
+    public login: RestMethod<
+        { username: string, password: string },
+        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/logout'
+    })
+    public logout: RestMethod<void, { success: boolean }>;
+
+    @RestAction({
+        method: RestRequestMethod.Put,
+        path: '/query'
+    })
+    public query: RestMethod<QueryDb<Date> & {
+        id?: number,
+        /**
+         * Mark the query as started, and use the server time for determining this timestamp.
+         */
+        markStarted: boolean,
+        /**
+         * Mark the query as completed, and use the server time for determining this timestamp.
+         */
+        markCompleted: boolean,
+    }, QueryDb<string> & {
+        id: number,
+        userID: number
+    }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/search'
+    })
+    public search: RestMethod<{ corpusName: string, query: string, fields: string[], filters: SearchFilterData[], n: null, resultType: 'json' }, any>;
+
+    public getSearchCsvUrl(): Promise<string> {
+        return Promise.resolve().then(() => this.$getUrl({ path: '/search//csv' }));
+    }
 }

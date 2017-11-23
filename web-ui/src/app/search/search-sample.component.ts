@@ -10,6 +10,12 @@ export class SearchSampleComponent implements OnInit {
     @Input()
     public sample: SearchSample;
 
+    /**
+     * The search query to use for highlighting the results
+     */
+    @Input()
+    public query: string;
+
     @Output('download')
     public downloadEvent = new EventEmitter();
 

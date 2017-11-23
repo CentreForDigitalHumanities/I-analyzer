@@ -1,96 +1,117 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 import { ApiService } from './api.service';
-import { SearchFilterData, SearchSample } from '../models/index';
-
+import { ElasticSearchService, FoundDocument, SearchResult } from './elastic-search.service';
+import { LogService } from './log.service';
+import { QueryService } from './query.service';
+import { UserService } from './user.service';
+import { Corpus, Query, SearchFilterData, SearchSample } from '../models/index';
 
 @Injectable()
 export class SearchService {
-  private results = new Subject<Array<Hit>>();
- 
-  // Observable string streams
-  results$ = this.results.asObservable();
+    constructor(private apiService: ApiService,
+        private elasticSearchService: ElasticSearchService,
+        private queryService: QueryService,
+        private userService: UserService,
+        private logService: LogService) {
+    }
 
-    constructor(private apiService: ApiService) {}
+    public async search(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
+        this.logService.info(`Requested flat results for query: ${query}`);
+        let result = await this.elasticSearchService.search(corpus, query, filters);
 
-    public search(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
-        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters,  n: null, resultType: 'json'})
-            .then(result => {
-                let table = result.table;
-                let records = table;
-                let fields: string[] = records[0];
-                let hits: Hit[] = [];
-                for (let i = 1; i < records.length; i++) {
-                    let hit: Hit = {};
-                    for (let j = 0; j < fields.length; j++) {
-                        hit[fields[j]] = records[i][j];
-                    }
-                    hits.push(hit);
-                    
+        return <SearchSample>{
+            total: result.total,
+            fields,
+            hits: result.documents
+        };
+    }
+
+    public searchObservable(corpus: Corpus, queryText: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<SearchResult<Hit>> {
+        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+        let completed = false;
+        let totalTransferred = 0;
+
+        // Log the query to the database
+        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let querySave = this.queryService.save(query, true);
+        this.logService.info(`Requested observable results for query: ${queryText}`);
+
+        // Perform the search and obtain output stream
+        return this.elasticSearchService.searchObservable<Hit>(
+            corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
+            .map(result => {
+                totalTransferred = result.retrieved;
+                if (result.completed) {
+                    completed = true;
                 }
+                return result;
+            })
+            .finally(() => {
+                querySave.then((savedQuery) => {
+                    // update the last saved query object, it might have changed on the server
+                    if (!completed) {
+                        savedQuery.aborted = true;
+                    }
+                    savedQuery.transferred = totalTransferred;
 
-                return <SearchSample>{
-                    total: result.total,
-                    fields,
-                    hits
-                };
+                    this.queryService.save(savedQuery, undefined, completed);
+                });
             });
     }
 
-    public searchAsCsv(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
-        let form: HTMLFormElement;
-        return this.apiService.resolveUrl('search/csv').then(url => {
-            form = document.createElement('form');
-            document.body.appendChild(form);
-            form.method = 'post';
-            form.target = 'csv';
-            form.action = url;
+    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
+        let totalTransferred = 0;
 
-            let createInput = (name: string, value: string) => {
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = name;
-                input.value = value;
-                return input;
-            };
+        this.logService.info(`Requested CSV file for query: ${query}`);
 
-            form.appendChild(createInput('corpus_name', corpusName));
-            form.appendChild(createInput('query', query));
-            form.appendChild(createInput('fields', JSON.stringify(fields)));
-            form.appendChild(createInput('filters', JSON.stringify(filters)));
+        return new Promise<string[]>((resolve, reject) => {
+            let rows: string[] = [];
+            this.searchObservable(corpus, query, fields, filters)
+                .subscribe(
+                result => {
+                    rows.push(...
+                        result.documents.map(document =>
+                            this.documentRow(document, fields)
+                                .map(this.csvCell).join(separator) + '\n'));
 
-            form.submit();
-
-            document.body.removeChild(form);
-            form = undefined;
-
-            return true;
+                    totalTransferred = result.retrieved;
+                },
+                (error) => reject(error),
+                () => resolve(rows));
         });
     }
 
-    public searchForVisualization(corpusName: string, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<boolean> {
-        // search n results for visualization
-        let n = 10000;
-        return this.apiService.post<any>('search', { corpusName, query: query, fields, filters: filters, n: n, resultType: 'json' })
-            .then(result => {
-                let table = result.table;
-                let records = table;
-                let fields: string[] = records[0];
-                let hits: Hit[] = [];
-                for (let i = 1; i < records.length; i++) {
-                    let hit: Hit = {};
-                    for (let j = 0; j < fields.length; j++) {
-                        hit[fields[j]] = records[i][j];
-                    }
-                    hits.push(hit);
-                    
-                }
-                
-                this.results.next(hits);
-                
-                return true;
-            });
+    private csvCell(value: string) {
+        if (value.indexOf('"') >= 0) {
+            return `"${value.replace('"', '""')}"`;
+        }
+
+        return value;
+    }
+
+    /**
+     * Iterate through some dictionaries and yield for each dictionary the values
+     * of the selected fields, in given order.
+     */
+    private documentRow<T>(document: { [id: string]: T }, fields: string[] = []): string[] {
+        return fields.map(field => this.documentFieldValue(document[field]));
+    }
+
+    private documentFieldValue(value: any) {
+        if (!value) {
+            return '';
+        }
+        if (Array.isArray(value)) {
+            return value.join(', ');
+        }
+        if (value instanceof Date) {
+            return value.toISOString().split('T')[0];
+        }
+
+        return String(value);
     }
 }
 

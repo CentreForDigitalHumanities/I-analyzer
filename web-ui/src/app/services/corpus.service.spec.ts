@@ -21,17 +21,17 @@ describe('CorpusService', () => {
 
     it('should parse the list of corpora', () => {
         apiServiceMock.fakeResult['corpus'] = {
-            "dutchbanking": {
+            "test1": {
                 "es_doctype": "article",
-                "es_index": "dutchbank",
+                "es_index": "test1",
                 "es_settings": null,
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
             },
-            "times": {
+            "test2": {
                 "es_doctype": "article",
-                "es_index": "times",
+                "es_index": "test2",
                 "es_settings": null,
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
@@ -39,7 +39,7 @@ describe('CorpusService', () => {
             },
         };
         service.get().then((items) => {
-            expect(items.map(item => item.name)).toEqual(['dutchbanking', 'times']);
+            expect(items.map(item => item.name)).toEqual(['test1', 'test2']);
         });
     });
 
@@ -82,6 +82,8 @@ describe('CorpusService', () => {
         return service.get().then((items) => {
             expect(items).toEqual([{
                 name: 'times',
+                doctype: 'article',
+                index: 'times',
                 fields: [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,

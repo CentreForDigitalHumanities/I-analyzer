@@ -17,18 +17,22 @@ from . import config
 from . import factories
 from . import models
 from . import views
-from . import search
 from . import security
 from . import streaming
 from . import corpora
 
 
 blueprint = Blueprint('blueprint', __name__)
-admin_instance = admin.Admin(name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
-admin_instance.add_view(views.UserView(models.User, models.db.session, name='Users', endpoint='users'))
-admin_instance.add_view(views.RoleView(models.Role, models.db.session, name='Roles', endpoint='roles'))
-admin_instance.add_view(views.QueryView(models.Query, models.db.session, name='Queries', endpoint='queries'))
+admin_instance = admin.Admin(
+    name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+admin_instance.add_view(views.CorpusView(
+    corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+admin_instance.add_view(views.UserView(
+    models.User, models.db.session, name='Users', endpoint='users'))
+admin_instance.add_view(views.RoleView(
+    models.Role, models.db.session, name='Roles', endpoint='roles'))
+admin_instance.add_view(views.QueryView(
+    models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 
 
@@ -73,22 +77,22 @@ def post_required(method):
         fields = (
             field
             for field in corpus_definition.fields
-                if ('field:' + field.name) in request.form
+            if ('field:' + field.name) in request.form
         )
 
         # Collect filters in ES format
         filters = (
             field.search_filter.elasticsearch(request.form)
             for field in corpus_definition.fields
-                if field.search_filter
+            if field.search_filter
         )
 
         return method(
-            corpus_name = corpus_name,
-            corpus_definition = corpus_definition,
-            query_string = request.form.get('query'),
-            fields = list(fields),
-            filters = list(f for f in filters if f is not None),
+            corpus_name=corpus_name,
+            corpus_definition=corpus_definition,
+            query_string=request.form.get('query'),
+            fields=list(fields),
+            filters=list(f for f in filters if f is not None),
             *nargs,
             **kwargs
         )
@@ -107,6 +111,21 @@ def init():
         return redirect(url_for('admin.index'))
     else:
         return redirect(url_for('admin.login'))
+
+
+@blueprint.route('/api/es_config', methods=['GET'])
+@login_required
+def api_es_config():
+    return jsonify({
+        'host': config.ES_HOST,
+        'port': config.ES_PORT,
+        'chunkSize': config.ES_CHUNK_SIZE,
+        'maxChunkBytes': config.ES_MAX_CHUNK_BYTES,
+        'bulkTimeout': config.ES_BULK_TIMEOUT,
+        'exampleQuerySize': config.ES_EXAMPLE_QUERY_SIZE,
+        'scrollTimeout': config.ES_SCROLL_TIMEOUT,
+        'scrollPagesize': config.ES_SCROLL_PAGESIZE
+    })
 
 
 @blueprint.route('/api/corpus', methods=['GET'])
@@ -136,11 +155,29 @@ def api_login():
         security.login_user(user)
         response = jsonify({
             'success': True,
+            'id': user.id,
             'username': user.username,
-            'roles': [{'name': role.name, 'description': role.description} for role in user.roles]
+            'roles': [{'name': role.name, 'description': role.description} for role in user.roles],
+            'downloadLimit': user.download_limit
         })
 
     return response
+
+
+@blueprint.route('/api/log', methods=['POST'])
+@login_required
+def api_log():
+    if not request.json:
+        abort(400)
+    msg_type = request.json['type']
+    msg = request.json['msg']
+
+    if msg_type == 'info':
+        logger.info(msg)
+    else:
+        logger.error(msg)
+
+    return jsonify({'success': True})
 
 
 @blueprint.route('/api/logout', methods=['POST'])
@@ -165,133 +202,44 @@ def api_check_session():
         return jsonify({'success': True})
 
 
-@blueprint.route('/api/search', methods=['POST'])
+@blueprint.route('/api/query', methods=['PUT'])
 @login_required
-def api_search_json():
+def api_query():
+    """
+    Check that the specified user is still logged on.
+    """
     if not request.json:
         abort(400)
-    corpus_name = request.json['corpusName']
-    query = request.json['query']
-    fields = request.json['fields']
-    filters = request.json['filters']
-    num_results = request.json['n']
-    corpus = corpora.DEFINITIONS[corpus_name]
 
-    return search_json(corpus, query, fields, filters, num_results)
+    query_json = request.json['query']
+    corpus_name = request.json['corpus_name']
 
-
-@blueprint.route('/api/search/csv', methods=['POST'])
-@login_required
-def api_search_csv():
-    if not request.form:
-        abort(400)
-    corpus_name = request.form['corpus_name']
-    query = request.form['query']
-    fields = json.loads(request.form['fields'])
-    filters = json.loads(request.form['filters'])
-    corpus = corpora.DEFINITIONS[corpus_name]
-
-    return search_csv(corpus_name, corpus, query, fields, filters)
+    if 'id' in request.json:
+        query = models.Query.query.filter_by(id=request.json['id']).first()
+    else:
+        query = models.Query(
+            query=query_json, corpus_name=corpus_name, user=current_user)
 
 
-def search_csv(corpus_name, corpus_definition, query_string=None, fields=None, filters=None):
-    '''
-    Stream all results of a search to a CSV file.
-    '''
+    date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
+        else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)
+    query.completed = datetime.now() if ('markCompleted' in request.json and request.json['markCompleted'] == True)  \
+        else (datetime.strptime(request.json['completed'], date_format) if 'completed' in request.json else None)
 
-    # Create a query from POST data
-    query = search.make_query(query_string=query_string, filters=filters)
+    query.aborted = request.json['aborted']
+    query.transferred = request.json['transferred']
 
-    # Log the query to the database
-    q = models.Query(query=str(query), corpus_name=corpus_name, user=current_user)
-    models.db.session.add(q)
+    models.db.session.add(query)
     models.db.session.commit()
 
-
-    def logged_stream(stream):
-        '''
-        Wrap an iterator such that its completion or abortion get logged to the
-        database.
-        '''
-        total_transferred = 0
-        try:
-            for item in stream:
-                total_transferred += 1
-                yield item
-            q.completed = datetime.now()
-        except IOError:
-            # Does not work as expected. The initial idea was to catch an
-            # unfinished download by the assumption that an exception will be
-            # raised when the stream cannot continue. It seems obvious that
-            # won't work, but I'm not sure how it would work.  TODO
-            # (Of course, we can just assume that any unfinished download is
-            # aborted until it is actually finished.)
-            q.aborted = True
-        q.transferred = total_transferred
-        models.db.session.add(q)
-        models.db.session.commit()
-
-    # Perform the search and obtain output stream
-    logging.info('Requested CSV for query: {}'.format(query))
-    docs = search.execute_iterate(corpus_definition,
-        query, size=current_user.download_limit
-        )
-    rows = streaming.field_lists(docs, selected=fields)
-    stream = logged_stream(streaming.as_csv(rows))
-
-    # Create appropriate filename
-    def alphanums(string): return ''.join(
-        char for char in string if char.isalnum())
-    query_memo = '-' + alphanums(query_string)[:12] if query_string else ''
-
-    try:
-        # TODO: Too dependent on particular string structure I chose somewhere
-        # else for the date filter
-        date_memo = request.form['filter:date'].split(':')
-        date1_memo = alphanums(date_memo[0])
-        date2_memo = alphanums(date_memo[1])
-    except (IndexError, AttributeError, KeyError):
-        date1_memo = corpus_definition.min_date.strftime('%Y%m%d')
-        date2_memo = corpus_definition.max_date.strftime('%Y%m%d')
-
-    filename = '{}-{}-{}{}.csv'.format(corpus_name, date1_memo, date2_memo, query_memo)
-
-    # Stream results CSV
-    response = Response(stream_with_context(stream), mimetype='text/csv')
-    response.headers['Content-Disposition'] = (
-        'attachment; filename={}'.format(filename)
-    )
-    return response
-
-
-def search_json(corpus_definition, query_string=None, fields=None, filters=None, n=config.ES_EXAMPLE_QUERY_SIZE):
-    '''
-    Return the first `n` results of a search operation. The result is a JSON
-    dictionary, containing search statistics, plus the result entries as a list
-    of lists. Used to provide example results.
-    '''
-
-    # Build the query from POST data
-    query = search.make_query(query_string=query_string, filters=filters)
-
-    # Perform the search
-    logging.info('Requested example JSON for query: {}'.format(query))
-    result = search.execute(corpus_definition, query, size=n)
-
-    # Extract relevant information from dictionary returned by ES
-    stats = result.get('hits', {})
-    docs = (
-        # reassemble _source dictionary and _id string into single dict
-        dict(
-            doc.get('_source'),
-            id=doc.get('_id')
-        )
-        for doc in stats.get('hits', ())
-    )
-    rows = streaming.field_lists(docs, selected=fields)
-
-    # Return result as JSON
     return jsonify({
-        'total': stats.get('total', 0),
-        'table': list(rows)
+        'id': query.id,
+        'query': query.query_json,
+        'corpus_name': query.corpus_name,
+        'started': query.started,
+        'completed': query.completed,
+        'aborted': query.aborted,
+        'transferred': query.transferred,
+        'userID': query.userID
     })
