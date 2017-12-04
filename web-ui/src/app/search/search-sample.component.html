@@ -1,17 +1,17 @@
 <h2 class="title">
     Search sample
 </h2>
-<ng-container *ngIf="!sample.total">
+<ng-container *ngIf="!sample.total; else resultsBlock">
     <h2 class="subtitle">
         0 hits
     </h2>
 </ng-container>
-<ng-container *ngIf="sample.total">
+<ng-template #resultsBlock>
     <h2 class="subtitle" *ngIf="sample.total <= 5">
-        {{sample.total}} hits
+        {sample.total, plural, =1 {1 hit} other {{{sample.total}} hits}}
     </h2>
     <h2 class="subtitle" *ngIf="sample.total > 5">
-        {{sample.total}} hits. The download limit is 10000. This is a sample of 5 results:
+        {{sample.total}} hits. The download limit is 10000. This is a sample of {{sample.hits.length}} results:
     </h2>
     <div class="hits">
         <div *ngFor="let hit of sample.hits" class="hit">
@@ -27,4 +27,4 @@
             </div>
         </div>
     </div>
-</ng-container>
+</ng-template>

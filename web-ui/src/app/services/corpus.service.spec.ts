@@ -22,6 +22,8 @@ describe('CorpusService', () => {
     it('should parse the list of corpora', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "test1": {
+                "title": "Test 1",
+                "description": "Test description 1.",
                 "es_doctype": "article",
                 "es_index": "test1",
                 "es_settings": null,
@@ -30,6 +32,8 @@ describe('CorpusService', () => {
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
             },
             "test2": {
+                "title": "Test 2",
+                "description": "Test description 2.",
                 "es_doctype": "article",
                 "es_index": "test2",
                 "es_settings": null,
@@ -46,6 +50,8 @@ describe('CorpusService', () => {
     it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "times": {
+                "title": "Times",
+                "description": "This is a description.",
                 "es_doctype": "article",
                 "es_index": "times",
                 "es_settings": null,
@@ -82,6 +88,8 @@ describe('CorpusService', () => {
         return service.get().then((items) => {
             expect(items).toEqual([{
                 name: 'times',
+                title: 'Times',
+                description: 'This is a description',
                 doctype: 'article',
                 index: 'times',
                 fields: [{

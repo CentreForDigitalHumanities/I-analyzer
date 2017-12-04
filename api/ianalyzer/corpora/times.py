@@ -11,7 +11,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 from ianalyzer import extract
 from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
@@ -22,21 +22,23 @@ from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_cont
 
 
 class Times(XMLCorpus):
+    title = config.TIMES_TITLE
+    description = config.TIMES_DESCRIPTION
 
     data_directory = config.TIMES_DATA
     min_date = config.TIMES_MIN_DATE
     max_date = config.TIMES_MAX_DATE
     es_index = config.TIMES_ES_INDEX
-    es_doctype = config.TIMES_ES_DOCTYPE    
+    es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
-    
+
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the Times data, relevant to the given timespan.
-        
+
         Specifically, returns an iterator of tuples that each contain a string
         filename and a dictionary of metadata (in this case, the date).
         '''
@@ -79,10 +81,10 @@ class Times(XMLCorpus):
             # Construct the full tag
             xmlfile = os.path.join(
                 xmldir,
-                date.strftime('%Y%m%d'), 
+                date.strftime('%Y%m%d'),
                 date.strftime('0FFO-%Y-%m%d.xml') \
                     if date.year > 1985 else \
-                date.strftime('0FFO-%Y-%b%d').upper() + '.xml' 
+                date.strftime('0FFO-%Y-%b%d').upper() + '.xml'
             )
 
             # Yield file and metadata if the desired file is present
@@ -421,7 +423,7 @@ class Times(XMLCorpus):
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
-                    'of illustrations.'), 
+                    'of illustrations.'),
                 options=[
                     'Cartoon',
                     'Map',

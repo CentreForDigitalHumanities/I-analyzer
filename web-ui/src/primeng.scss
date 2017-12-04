@@ -1,11 +1,9 @@
 $fontFamily: $family-primary;
 $fontSize: $size-normal;
 $borderRadius: $radius;
-$disabledOpacity: 0.35;
-
 // Define a primeng theme using the same variables as Bulma
 //Header
-$headerBorderWidth: 1px;
+$headerBorderWidth: $borderWidth;
 $headerBorderColor: $primary;
 $headerBgColor: $primary;
 $headerTextColor: $primary-invert;
@@ -13,13 +11,13 @@ $headerFontWeight: bold;
 $headerIconTextColor: $primary-invert;
 
 //Content
-$contentBorderWidth: 1px;
+$contentBorderWidth: $borderWidth;
 $contentBorderColor: $border;
 $contentBgColor: $background;
 $contentTextColor: $text;
 
 //Default State
-$stateDefaultBorderWidth: 1px;
+$stateDefaultBorderWidth: $borderWidth;
 $stateDefaultBorderColor: $link;
 $stateDefaultBgColor: $link-invert;
 $stateDefaultTextColor: $link;
@@ -28,11 +26,6 @@ $stateDefaultTextColor: $link;
 $stateActiveBorderColor: $primary;
 $stateActiveBgColor: $primary;
 $stateActiveTextColor: $primary-invert;
-
-//Highlight State
-$stateHighlightBorderColor: #fed22f;
-$stateHighlightBgColor: #ffe45c;
-$stateHighlightTextColor: #363636;
 
 //Focus State
 $stateFocusBorderColor: $primary;
