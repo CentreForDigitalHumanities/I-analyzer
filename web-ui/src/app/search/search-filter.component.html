@@ -6,7 +6,7 @@
         </select>
     </div>
     <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'">
-        <p-selectButton [disabled]="!enabled" [multiple]="true" [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()"></p-selectButton>
+        <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'">
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>

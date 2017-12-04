@@ -19,7 +19,6 @@ export class BarChartComponent implements OnInit, OnChanges {
   @Input() public searchData: Array<any>;
   @Input() public countKey: string;
   yAsPercent: boolean = false;
-
   private margin = { top: 20, bottom: 60, left: 60, right: 20};
   private chart: any;
   private width: number;
@@ -54,7 +53,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
 
   createBarChartData(results: Array<any>) {
-    /**
+    /** 
     * transform the results exposed from search.service.ts to suitable term frequency data
     * d3 needs an array of dictionaries
     * the countkey defines which aspect of the data appears in the bar chart
@@ -77,7 +76,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
   rescaleY() {
     /**
-    * if the user selects percentage / count display,
+    * if the user selects percentage / count display, 
     * - rescale y values & axis
     * - change axis label and ticks
     */
@@ -89,13 +88,12 @@ export class BarChartComponent implements OnInit, OnChanges {
 
     this.chart.selectAll('.bar')
       .attr('y', d => this.yScale(preScale(d.frequency)))
-      .attr('height', d => this.height - this.yScale(preScale(d.frequency)));
-
+      .attr('height', d => this.height - this.yScale(preScale(d.frequency))); 
+    
     let theFormat = this.yAsPercent? d3.format(".0%") : d3.format("d");
     let theMax = this.yAsPercent ? 10 : this.yMax;
     let theAxis = d3.axisLeft(this.yScale).ticks(theMax).tickFormat(theFormat)
     this.yAxis.call(theAxis);
-
     let yLabelText = this.yAsPercent? "Percent" : "Frequency";
     this.yAxisLabel.text(yLabelText);
   }
@@ -130,7 +128,6 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
       .call(d3.axisLeft(this.yScale).ticks(this.yMax).tickFormat(d3.format("d")));
 
-
     // adding axis labels
     let xLabelText = this.countKey.replace(/\b\w/g, l => l.toUpperCase());
     // capitalize name of variable
@@ -139,7 +136,7 @@ export class BarChartComponent implements OnInit, OnChanges {
     svg.append("text")
       .attr("class", "xlabel")
       .attr("text-anchor", "middle")
-      .attr("x", this.width/2)
+      .attr("x", this.width/2)   
       .attr("y", this.height + this.margin.bottom)
       .text(xLabelText);
 
@@ -152,7 +149,6 @@ export class BarChartComponent implements OnInit, OnChanges {
       .text(yLabelText);
 
     }
-
 
   updateChart() {
   /**
