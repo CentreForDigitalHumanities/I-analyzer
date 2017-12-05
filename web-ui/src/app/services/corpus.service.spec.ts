@@ -4,6 +4,8 @@ import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
 import { CorpusService } from './corpus.service';
 
+import { Corpus } from '../models/corpus';
+
 describe('CorpusService', () => {
     let service: CorpusService;
     let apiServiceMock = new ApiServiceMock();
@@ -86,13 +88,13 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
-            expect(items).toEqual([{
-                name: 'times',
-                title: 'Times',
-                description: 'This is a description',
-                doctype: 'article',
-                index: 'times',
-                fields: [{
+            expect(items).toEqual([new Corpus(
+                 'times',
+                 'Times',
+                 'This is a description.',
+                 'article',
+                 'times',
+                 [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
                     name: 'bank',
@@ -115,9 +117,9 @@ describe('CorpusService', () => {
                     }
                 }
                 ],
-                minDate: new Date(1785, 0, 1, 0, 0),
-                maxDate: new Date(2010, 11, 31, 0, 0),
-            }]);
+                 new Date(1785, 0, 1, 0, 0),
+                 new Date(2010, 11, 31, 0, 0))
+            ]);
         });
     });
 });

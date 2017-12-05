@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule, Router } from '@angular/router';
 
 import { Observable } from 'rxjs';
+import { MenuModule } from 'primeng/primeng';
 
 import { ConfigService, UserService } from '../services/index';
 import { MenuComponent } from './menu.component';
@@ -13,15 +14,17 @@ describe('MenuComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [MenuComponent],
-            imports: [RouterModule],
+            imports: [RouterModule, MenuModule],
             providers: [
                 { provide: Router, useValue: { events: Observable.of({}) } },
                 { provide: ConfigService, useValue: {} },
-                { provide: UserService, useValue: {
-                    checkSession: () => {
-                        return Promise.resolve(true)
+                {
+                    provide: UserService, useValue: {
+                        checkSession: () => {
+                            return Promise.resolve(true)
+                        }
                     }
-                } }
+                }
             ]
         }).compileComponents();
     }));
