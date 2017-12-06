@@ -21,6 +21,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public isSearching: boolean;
     public searched: boolean;
+    public showVisualization: boolean = false;
     public query: string;
     public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
     /**
@@ -30,7 +31,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchQuery: string;
     public sample: SearchSample;
 
-    private searchResults: { [fieldName: string]: any }[];
+    public searchResults: { [fieldName: string]: any }[];
     private barChartKey: string;
 
     private subscription: Subscription | undefined;
@@ -100,7 +101,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
-
         this.subscription = this.searchService.searchObservable(
             this.corpus,
             this.query,
@@ -109,7 +109,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(searchResults => {
                 // the array pointer needs to be updated for a change to be detected
                 this.searchResults = this.searchResults.concat(...searchResults.documents);
-            });
+            })
+        this.showVisualization = true;
     }
 
     public async download() {
