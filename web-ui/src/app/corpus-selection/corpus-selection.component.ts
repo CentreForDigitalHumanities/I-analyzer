@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '../models/corpus';
 
 @Component({
-    selector: 'corpus-list',
-    templateUrl: './corpus-list.component.html',
-    styleUrls: ['./corpus-list.component.scss']
+    selector: 'corpus-selection',
+    templateUrl: './corpus-selection.component.html',
+    styleUrls: ['./corpus-selection.component.scss']
 })
-export class CorpusListComponent implements OnInit {
+export class CorpusSelectionComponent implements OnInit {
     @Input()
     public items: Corpus[];
 

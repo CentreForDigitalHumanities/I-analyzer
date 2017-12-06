@@ -13,7 +13,7 @@ import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 import { ApiService, ConfigService, CorpusService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
-import { CorpusListComponent } from './corpus-list/corpus-list.component';
+import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
 import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
@@ -53,7 +53,7 @@ const appRoutes: Routes = [
     declarations: [
         AppComponent,
         HomeComponent,
-        CorpusListComponent,
+        CorpusSelectionComponent,
         HighlightPipe,
         SearchComponent,
         SearchFilterComponent,

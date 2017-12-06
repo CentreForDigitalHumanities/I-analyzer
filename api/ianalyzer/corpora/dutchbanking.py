@@ -5,7 +5,7 @@ import logging
 
 from flask import current_app
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 from ianalyzer.extract import XML, Metadata, Combined
 from ianalyzer.filters import MultipleChoiceFilter, RangeFilter
 from ianalyzer.corpora.common import XMLCorpus, Field
@@ -13,24 +13,26 @@ from ianalyzer.corpora.common import XMLCorpus, Field
 
 class DutchBanking(XMLCorpus):
     """ Alto XML corpus of Dutch banking year records. """
-    
+
     # Data overrides from .common.Corpus (fields at bottom of class)
+    title = config.DUTCHBANK_TITLE
+    description = config.DUTCHBANK_DESCRIPTION
     data_directory = config.DUTCHBANK_DATA
     min_date = config.DUTCHBANK_MIN_DATE
     max_date = config.DUTCHBANK_MAX_DATE
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
-    
+
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'
     xml_tag_entry = 'TextBlock'
-    
+
     # New data members
     filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
-    
+
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
@@ -53,7 +55,7 @@ class DutchBanking(XMLCorpus):
                     'serial': serial,
                     'scan': scan,
                 }
-    
+
     fields = [
         Field(
             name='bank',

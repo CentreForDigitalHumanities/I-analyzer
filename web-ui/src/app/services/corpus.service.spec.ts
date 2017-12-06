@@ -4,6 +4,8 @@ import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
 import { CorpusService } from './corpus.service';
 
+import { Corpus } from '../models/corpus';
+
 describe('CorpusService', () => {
     let service: CorpusService;
     let apiServiceMock = new ApiServiceMock();
@@ -22,6 +24,8 @@ describe('CorpusService', () => {
     it('should parse the list of corpora', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "test1": {
+                "title": "Test 1",
+                "description": "Test description 1.",
                 "es_doctype": "article",
                 "es_index": "test1",
                 "es_settings": null,
@@ -30,6 +34,8 @@ describe('CorpusService', () => {
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
             },
             "test2": {
+                "title": "Test 2",
+                "description": "Test description 2.",
                 "es_doctype": "article",
                 "es_index": "test2",
                 "es_settings": null,
@@ -46,6 +52,8 @@ describe('CorpusService', () => {
     it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "times": {
+                "title": "Times",
+                "description": "This is a description.",
                 "es_doctype": "article",
                 "es_index": "times",
                 "es_settings": null,
@@ -80,11 +88,13 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
-            expect(items).toEqual([{
-                name: 'times',
-                doctype: 'article',
-                index: 'times',
-                fields: [{
+            expect(items).toEqual([new Corpus(
+                 'times',
+                 'Times',
+                 'This is a description.',
+                 'article',
+                 'times',
+                 [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
                     name: 'bank',
@@ -107,9 +117,9 @@ describe('CorpusService', () => {
                     }
                 }
                 ],
-                minDate: new Date(1785, 0, 1, 0, 0),
-                maxDate: new Date(2010, 11, 31, 0, 0),
-            }]);
+                 new Date(1785, 0, 1, 0, 0),
+                 new Date(2010, 11, 31, 0, 0))
+            ]);
         });
     });
 });

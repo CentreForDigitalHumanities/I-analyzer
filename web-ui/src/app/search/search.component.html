@@ -1,6 +1,6 @@
 <section class="section">
     <h1 class="title">
-    Search
+    Search <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
     </h1>
     <nav class="level">
       <div class="level-left">
@@ -17,7 +17,7 @@
             <div class="field has-addons">
               <!--label class="label" for="query">Query</label-->
               <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
-                        
+
               <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
                 <span class="icon is-small">
                   <i class="fa fa-search"></i>
@@ -25,7 +25,7 @@
                 <span>Search</span>
               </button>
             </div>
-          </form> 
+          </form>
         </div>
         <div class="level-right">
           <div class="level-item">
@@ -48,15 +48,15 @@
       </div>
     </nav>
 
-            
+
 
 
 
         <!-- Options for download, visualization etc., on top-->
-        
+
 
         <!-- Search bar and button
-        <div class="container">    
+        <div class="container">
             <form (ngSubmit)="search()" *ngIf="corpus">
                 <div class="columns">
                     <div class="column is four-fifths">
@@ -64,7 +64,7 @@
                             <label class="label" for="query">Query</label>
                             <input class="input" id="query" [(ngModel)]="query" name="query" type="text">
                         </div>
-                    </div>  
+                    </div>
 
                     <div class="column">
                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
@@ -75,34 +75,34 @@
                         </button>
                     </div>
                 </div>
-            </form> 
+            </form>
 
         </div>
         -->
 
-        
+
 </section>
 
 <!-- filters and search results -->
 <section>
   <div class="container is-fluid">
     <div class="tile is-ancestor">
-        
-        <!-- Filters, on left -->     
-        <div class="tile is-vertical is-4 is-parent">
+
+        <!-- Filters, on left -->
+        <div class="tile is-vertical is-4 is-parent" *ngIf="corpus">
             <ng-container *ngFor="let field of corpus.fields">
                 <div class="box" *ngIf="field.searchFilter">
                     <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                 </div>
             </ng-container>
-        </div>      
+        </div>
 
         <!-- search results, on right -->
         <div class="tile is-vertical is-8 is-parent" *ngIf="sample">
             <div class="tile is-child">
                 <search-sample [sample]="sample" [query]="searchQuery"></search-sample>
             </div>
-        </div>      
+        </div>
 
     </div>
   </div>
