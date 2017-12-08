@@ -60,6 +60,12 @@ describe('HighlightService', () => {
             [[4, 'apple']]);
     });
 
+    it('Accepts numbers', () => {
+        expectHighlights(42, '', []);
+        expectHighlights(123456, '23', []);
+        expectHighlights(123, '123', [[0, '123']]);
+    })
+
     it('Should accept wildcards', () => {
         expectHighlights(
             'They told me computers could only do arithmetic.',
@@ -83,9 +89,10 @@ describe('HighlightService', () => {
             [13, 'في']]);
     });
 
-    let expectHighlights = (text: string, query: string, expectedHighlightRanges: [number, string][]) => {
+    let expectHighlights = (value: string | number, query: string, expectedHighlightRanges: [number, string][]) => {
+        let text = `${value}`;
         let highlights = highlightService.highlight(
-            text,
+            value,
             query);
         let expectedHighlights = getExpectedHighlights(new UnicodeString(text), expectedHighlightRanges);
         expect(getHighlightedString(highlights)).toEqual(getHighlightedString(expectedHighlights));
