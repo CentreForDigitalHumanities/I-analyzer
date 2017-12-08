@@ -15,6 +15,7 @@ import { ElasticSearchServiceMock } from '../services/elastic-search.service.moc
 import { HighlightPipe } from './highlight-pipe';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
+import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchSampleComponent } from './search-sample.component';
 
 import { BarChartComponent } from '../visualization/barchart.component';
@@ -26,7 +27,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent, VisualizationComponent, BarChartComponent],
+            declarations: [HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchSampleComponent, VisualizationComponent, BarChartComponent],
             imports: [FormsModule, CalendarModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 CorpusService,

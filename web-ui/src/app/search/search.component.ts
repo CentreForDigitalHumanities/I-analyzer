@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { saveAs } from 'file-saver';
 
-import { Corpus, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchSample } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
 @Component({
     selector: 'app-search',
@@ -22,7 +22,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public isSearching: boolean;
     public searched: boolean;
     public query: string;
-    public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
+    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean }) };
     /**
      * This is the query currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
@@ -56,7 +56,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.title.setTitle(this.corpus.name);
                 this.queryField = {};
                 for (let field of this.corpus.fields) {
-                    this.queryField[field.name] = { useAsFilter: false, visible: true };
+                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false }, field);
                 }
             });
         })
@@ -133,9 +133,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.queryField[name].data = data;
     }
 
-    private getQueryFields(): string[] {
-        return Object.keys(this.queryField).filter(field => this.queryField[field].visible);
+    private getQueryFields(): CorpusField[] {
+        return Object.values(this.queryField).filter(field => !field.hidden);
     }
+
     private getFilterData(): SearchFilterData[] {
         let data = [];
         for (let fieldName of Object.keys(this.queryField)) {

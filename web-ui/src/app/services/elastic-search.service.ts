@@ -77,7 +77,7 @@ export class ElasticSearchService {
                 let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
                     let result: SearchResult<T> = {
                         completed: false,
-                        documents: response.hits.hits.map((hit) => this.hitToDocument<T>(hit)),
+                        documents: response.hits.hits.map((hit) => this.hitToDocument<T>(hit, response.hits.max_score)),
                         retrieved: retrieved += response.hits.hits.length,
                         total: response.hits.total
                     }
@@ -115,7 +115,7 @@ export class ElasticSearchService {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
-            let documents = stats.hits.map(hit => this.hitToDocument<T>(hit));
+            let documents = stats.hits.map(hit => this.hitToDocument<T>(hit, stats.max_score));
 
             return {
                 completed: true,
@@ -126,14 +126,22 @@ export class ElasticSearchService {
         });
     }
 
-    private hitToDocument<T>(hit: { _id: string, _source: {} }) {
+    private hitToDocument<T>(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
         return <FoundDocument<T>>Object.assign({
-            id: hit._id
+            id: hit._id,
+            relevance: hit._score / maxScore
         }, hit._source);
     }
 }
 
-export type FoundDocument<T> = T & { ['id']: string };
+export type FoundDocument<T> = T & {
+    id: string,
+    /**
+     * Normalized relevance [0,1] with 1 being most relevant
+     */
+    relevance: number
+};
+export type Hit = FoundDocument<{ [fieldName: string]: string }>;
 export type SearchResult<T> = {
     completed: boolean,
     total: number,

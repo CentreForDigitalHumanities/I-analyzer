@@ -15,7 +15,7 @@ import { ApiService, ConfigService, CorpusService, ElasticSearchService, Highlig
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchSampleComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
@@ -63,6 +63,7 @@ const appRoutes: Routes = [
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
+        SearchRelevanceComponent,
     ],
     imports: [
         BrowserAnimationsModule,

@@ -26,7 +26,8 @@ describe('SearchFilterComponent', () => {
         component = fixture.componentInstance;
         component.field = {
             description: 'test',
-            type: 'boolean',
+            displayName: 'Test',
+            displayType: 'boolean',
             hidden: false,
             name: 'name',
             searchFilter: {
