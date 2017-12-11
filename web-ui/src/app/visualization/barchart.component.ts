@@ -35,12 +35,11 @@ export class BarChartComponent implements OnInit, OnChanges {
   private update: any;
 
   ngOnInit() {
-    if (this.searchData) {
-      this.createBarChartData(this.searchData);
-      this.calculateDomains();
-      this.createChart();
-      this.updateChart();
-    }
+    setTimeout(500);
+    this.createBarChartData(this.searchData);
+    this.calculateDomains();  
+    this.createChart();
+    this.updateChart();
   }
 
   ngOnChanges() {
@@ -58,6 +57,7 @@ export class BarChartComponent implements OnInit, OnChanges {
     * d3 needs an array of dictionaries
     * the countkey defines which aspect of the data appears in the bar chart
     */
+    console.log(results, this.countKey);
     let counts = _.countBy(results.map(d => d[this.countKey]));
     this.yMax = d3.max(Object.values(counts));
     let yMax = this.yMax;
@@ -66,6 +66,7 @@ export class BarChartComponent implements OnInit, OnChanges {
       let catFreqPair = {category: cat, frequency: counts[cat]};
       return catFreqPair;
     });
+    console.log(this.barChartData);
   }
 
   calculateDomains() {

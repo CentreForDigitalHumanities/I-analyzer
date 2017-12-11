@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CalendarModule, MultiSelectModule, SliderModule, MenuModule } from 'primeng/primeng';
+import { CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule } from 'primeng/primeng';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
@@ -76,6 +76,7 @@ const appRoutes: Routes = [
         MultiSelectModule,
         SliderModule,
         MenuModule,
+        DialogModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
