@@ -16,7 +16,7 @@ import { HighlightPipe } from './highlight-pipe';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
-import { SearchSampleComponent } from './search-sample.component';
+import { SearchResultsComponent } from './search-results.component';
 
 import { BarChartComponent } from '../visualization/barchart.component';
 import { VisualizationComponent } from '../visualization/visualization.component';
@@ -27,7 +27,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchSampleComponent, VisualizationComponent, BarChartComponent],
+            declarations: [HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, VisualizationComponent, BarChartComponent],
             imports: [FormsModule, CalendarModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 CorpusService,

@@ -7,7 +7,7 @@ import { ElasticSearchService, Hit, FoundDocument, SearchResult } from './elasti
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, Query, SearchFilterData, SearchResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -18,11 +18,11 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
+    public async search(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${query}`);
         let result = await this.elasticSearchService.search(corpus, query, filters);
 
-        return <SearchSample>{
+        return <SearchResults>{
             total: result.total,
             fields,
             hits: result.documents

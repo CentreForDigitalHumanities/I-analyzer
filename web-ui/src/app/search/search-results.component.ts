@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SearchSample } from '../models/index';
+import { SearchResults } from '../models/index';
 
 @Component({
-    selector: 'search-sample',
-    templateUrl: './search-sample.component.html',
-    styleUrls: ['./search-sample.component.scss']
+    selector: 'search-results',
+    templateUrl: './search-results.component.html',
+    styleUrls: ['./search-results.component.scss']
 })
-export class SearchSampleComponent implements OnInit {
+export class SearchResultsComponent implements OnInit {
     @Input()
-    public sample: SearchSample;
+    public results: SearchResults;
 
     /**
      * The search query to use for highlighting the results

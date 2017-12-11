@@ -29,7 +29,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <button class="button is-info" type="submit" (click)="visualize();doVisualize=true" 
+            <button class="button is-info" type="submit" (click)="visualize();doVisualize=true"
             [disabled]="!sample">
               <span class="icon is-small">
                 <i class="fa fa-bar-chart"></i>
@@ -67,9 +67,9 @@
         </div>
 
         <!-- search results, on right -->
-        <div class="tile is-vertical is-8 is-parent" *ngIf="sample">
+        <div class="tile is-vertical is-8 is-parent" *ngIf="results">
             <div class="tile is-child">
-                <search-sample [sample]="sample" [query]="searchQuery"></search-sample>
+                <search-results [results]="results" [query]="searchQuery"></search-results>
             </div>
         </div>
 

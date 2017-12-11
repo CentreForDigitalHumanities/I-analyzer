@@ -4,25 +4,25 @@ import { CorpusField } from '../models/corpus';
 import { HighlightService } from '../services/highlight.service';
 import { HighlightPipe } from './highlight-pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
-import { SearchSampleComponent } from './search-sample.component';
+import { SearchResultsComponent } from './search-results.component';
 
-describe('SearchSampleComponent', () => {
-    let component: SearchSampleComponent;
-    let fixture: ComponentFixture<SearchSampleComponent>;
+describe('Search Results Component', () => {
+    let component: SearchResultsComponent;
+    let fixture: ComponentFixture<SearchResultsComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, SearchRelevanceComponent, SearchSampleComponent],
+            declarations: [HighlightPipe, SearchRelevanceComponent, SearchResultsComponent],
             providers: [HighlightService]
         })
             .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SearchSampleComponent);
+        fixture = TestBed.createComponent(SearchResultsComponent);
         component = fixture.componentInstance;
         let hits: { [key: string]: string }[] = [];
-        component.sample = {
+        component.results = {
             fields: ['a', 'b'].map(createField),
             hits: [createHit({ 'a': '1', 'b': '2' }, '1', 1),
             createHit({ 'a': '3', 'b': '4' }, '2', 0.5)],

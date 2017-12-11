@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { saveAs } from 'file-saver';
 
-import { Corpus, CorpusField, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
 @Component({
     selector: 'app-search',
@@ -30,7 +30,7 @@ export class SearchComponent implements OnInit, OnDestroy {
      * it might differ from what the user is currently typing in the query input field.
      */
     public searchQuery: string;
-    public sample: SearchSample;
+    public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
     private barChartKey: string;
@@ -93,9 +93,9 @@ export class SearchComponent implements OnInit, OnDestroy {
             searchQuery,
             this.getQueryFields(),
             this.getFilterData())
-            .then(sample => {
+            .then(results => {
                 this.searchQuery = searchQuery;
-                this.sample = sample;
+                this.results = results;
                 this.isSearching = false;
                 this.searched = true;
             });
