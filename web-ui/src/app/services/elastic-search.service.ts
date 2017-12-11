@@ -126,6 +126,7 @@ export class ElasticSearchService {
         });
     }
 
+
     private hitToDocument<T>(hit: { _id: string, _source: {} }) {
         return <FoundDocument<T>>Object.assign({
             id: hit._id

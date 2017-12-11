@@ -62,6 +62,12 @@ export class SearchService {
             });
     }
 
+    public async searchForVisualization(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) => {
+
+        });
+    }
+
     public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
         let totalTransferred = 0;
 
