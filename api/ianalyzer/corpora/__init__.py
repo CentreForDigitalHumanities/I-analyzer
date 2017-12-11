@@ -3,7 +3,7 @@ from importlib import util
 from importlib.machinery import SourceFileLoader
 import logging
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 
 
 def load_corpus(corpus_name):
