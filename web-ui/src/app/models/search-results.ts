@@ -1,8 +1,13 @@
-import { NgIterable } from '@angular/core';
 import { CorpusField } from './corpus';
-import { Hit } from '../services/elastic-search.service';
+import { FoundDocument } from './found-document'
+
 export type SearchResults = {
-    fields: CorpusField[],
-    hits: NgIterable<Hit>,
+    completed: boolean,
+    fields?: CorpusField[],
+    documents: FoundDocument[],
+    /**
+     * Total number of retrieved documents for this search.
+     */
+    retrieved: number,
     total: number
 }

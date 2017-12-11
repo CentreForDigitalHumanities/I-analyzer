@@ -23,9 +23,11 @@ describe('Search Results Component', () => {
         component = fixture.componentInstance;
         let hits: { [key: string]: string }[] = [];
         component.results = {
+            completed: true,
             fields: ['a', 'b'].map(createField),
-            hits: [createHit({ 'a': '1', 'b': '2' }, '1', 1),
-            createHit({ 'a': '3', 'b': '4' }, '2', 0.5)],
+            documents: [createDocument({ 'a': '1', 'b': '2' }, '1', 1),
+            createDocument({ 'a': '3', 'b': '4' }, '2', 0.5)],
+            retrieved: 2,
             total: 2
         };
 
@@ -43,8 +45,8 @@ describe('Search Results Component', () => {
         };
     }
 
-    function createHit(values: { [name: string]: string }, id: string, relevance: number) {
-        return Object.assign({ id, relevance }, values);
+    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number) {
+        return { id, relevance, fieldValues };
     }
 
     it('should be created', () => {

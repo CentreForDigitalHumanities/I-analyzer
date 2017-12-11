@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import { ApiService } from './api.service';
-import { ElasticSearchService, Hit, FoundDocument, SearchResult } from './elastic-search.service';
+import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
@@ -23,13 +23,14 @@ export class SearchService {
         let result = await this.elasticSearchService.search(corpus, query, filters);
 
         return <SearchResults>{
+            completed: true,
             total: result.total,
             fields,
-            hits: result.documents
+            documents: result.documents
         };
     }
 
-    public searchObservable(corpus: Corpus, queryText: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Observable<SearchResult<Hit>> {
+    public searchObservable(corpus: Corpus, queryText: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Observable<SearchResults> {
         let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
         let completed = false;
         let totalTransferred = 0;
@@ -40,7 +41,7 @@ export class SearchService {
         this.logService.info(`Requested observable results for query: ${queryText}`);
 
         // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable<Hit>(
+        return this.elasticSearchService.searchObservable(
             corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
             .map(result => {
                 totalTransferred = result.retrieved;

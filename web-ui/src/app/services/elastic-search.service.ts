@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions } from 'elasticsearch';
-import { CorpusField, ElasticSearchIndex } from '../models/index';
+import { CorpusField, FoundDocument, ElasticSearchIndex, SearchResults } from '../models/index';
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -70,14 +70,14 @@ export class ElasticSearchService {
      * @param query
      * @param size Maximum number of hits
      */
-    searchObservable<T>(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResult<T>> {
+    searchObservable(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResults> {
         return new Observable((observer) => {
             let retrieved = 0;
             this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
-                    let result: SearchResult<T> = {
+                    let result: SearchResults = {
                         completed: false,
-                        documents: response.hits.hits.map((hit) => this.hitToDocument<T>(hit, response.hits.max_score)),
+                        documents: response.hits.hits.map((hit) => this.hitToDocument(hit, response.hits.max_score)),
                         retrieved: retrieved += response.hits.hits.length,
                         total: response.hits.total
                     }
@@ -107,7 +107,7 @@ export class ElasticSearchService {
         });
     }
 
-    public async search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResult<T>> {
+    public async search(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResults> {
         let query = this.makeQuery(queryString, filters);
         let connection = await this.connection;
         // Perform the search
@@ -115,7 +115,7 @@ export class ElasticSearchService {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
-            let documents = stats.hits.map(hit => this.hitToDocument<T>(hit, stats.max_score));
+            let documents = stats.hits.map(hit => this.hitToDocument(hit, stats.max_score));
 
             return {
                 completed: true,
@@ -126,30 +126,13 @@ export class ElasticSearchService {
         });
     }
 
-    private hitToDocument<T>(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
-        return <FoundDocument<T>>Object.assign({
+    private hitToDocument(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
+        return <FoundDocument>{
             id: hit._id,
-            relevance: hit._score / maxScore
-        }, hit._source);
+            relevance: hit._score / maxScore,
+            fieldValues: hit._source
+        };
     }
-}
-
-export type FoundDocument<T> = T & {
-    id: string,
-    /**
-     * Normalized relevance [0,1] with 1 being most relevant
-     */
-    relevance: number
-};
-export type Hit = FoundDocument<{ [fieldName: string]: string }>;
-export type SearchResult<T> = {
-    completed: boolean,
-    total: number,
-    /**
-     * Total number of retrieved documents for this search.
-     */
-    retrieved: number,
-    documents: FoundDocument<T>[]
 }
 export type SearchQuery = {
     aborted?: boolean,
