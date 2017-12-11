@@ -22,6 +22,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public isSearching: boolean;
     public searched: boolean;
     public showVisualization: boolean = false;
+    public showFilters: boolean = false;
     public query: string;
     public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
     /**
@@ -77,6 +78,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public showTab(tab: Tab) {
         this.visibleTab = tab;
+    }
+
+    public toggleFilters() {
+        this.showFilters = !this.showFilters;
     }
 
     public search() {
