@@ -63,7 +63,7 @@ const appRoutes: Routes = [
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
-        SearchRelevanceComponent,
+        SearchRelevanceComponent
     ],
     imports: [
         BrowserAnimationsModule,

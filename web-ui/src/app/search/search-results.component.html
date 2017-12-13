@@ -11,20 +11,20 @@
         {results.total, plural, =1 {1 hit} other {{{results.total}} hits}}
     </h2>
     <h2 class="subtitle" *ngIf="results.total > 5">
-        {{results.total}} hits. The download limit is 10000. This is a subset of {{results.hits.length}} results:
+        {{results.total}} hits. The download limit is 10000. This is a subset of {{results.documents.length}} results:
     </h2>
     <div class="hits">
-        <div *ngFor="let hit of results.hits" class="hit">
+        <div *ngFor="let document of results.documents" class="document">
             <div class="box">
                 <table class="table">
                     <tr>
                         <th>Relevance</th>
-                        <td><search-relevance [value]="hit.relevance"></search-relevance></td>
+                        <td><search-relevance [value]="document.relevance"></search-relevance></td>
                     </tr>
                     <ng-container *ngFor="let field of results.fields">
-                        <tr *ngIf="hit[field.name]">
+                        <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
-                            <td [innerHtml]="hit[field.name] | highlight:query"></td>
+                            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
                         </tr>
                     </ng-container>
                 </table>

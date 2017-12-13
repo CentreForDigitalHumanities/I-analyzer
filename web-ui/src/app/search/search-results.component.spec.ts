@@ -21,12 +21,19 @@ describe('Search Results Component', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchResultsComponent);
         component = fixture.componentInstance;
-        let hits: { [key: string]: string }[] = [];
         component.results = {
             completed: true,
-            fields: ['a', 'b'].map(createField),
-            documents: [createDocument({ 'a': '1', 'b': '2' }, '1', 1),
-            createDocument({ 'a': '3', 'b': '4' }, '2', 0.5)],
+            fields: ['a', 'b', 'c'].map(createField),
+            documents: [createDocument({
+                'a': '1',
+                'b': '2',
+                'c': 'Hide-and-seek!'
+            }, '1', 1),
+            createDocument({
+                'a': '3',
+                'b': '4',
+                'c': 'Wally is here'
+            }, '2', 0.5)],
             retrieved: 2,
             total: 2
         };
@@ -51,6 +58,12 @@ describe('Search Results Component', () => {
 
     it('should be created', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should render result', async () => {
+        await fixture.whenStable();
+        let compiled = fixture.debugElement.nativeElement;
+        expect(compiled.innerHTML).toContain('Wally is here');
     });
 });
 
