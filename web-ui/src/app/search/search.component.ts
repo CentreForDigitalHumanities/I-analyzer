@@ -15,7 +15,7 @@ import { CorpusService, SearchService } from '../services/index';
 export class SearchComponent implements OnInit, OnDestroy {
     @Input() private searchData: Array<any>;
 
-    public visibleTab: Tab;
+    public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -38,7 +38,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
-        this.visibleTab = "search";
+        //this.visibleTab = "search";
         // setting the aspect for which term frequencies are counted to year.
         // TODO: make several miniature visualizations for different term frequencies
         this.barChartKey = "year";
@@ -76,9 +76,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
-    public showTab(tab: Tab) {
-        this.visibleTab = tab;
-    }
+    //public showTab(tab: Tab) {
+    //    this.visibleTab = tab;
+    //}
 
     public toggleFilters() {
         this.showFilters = !this.showFilters;

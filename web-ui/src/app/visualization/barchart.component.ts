@@ -18,7 +18,8 @@ export class BarChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') private chartContainer: ElementRef;
   @Input() public searchData: Array<any>;
   @Input() public countKey: string;
-  yAsPercent: boolean = false;
+  private yAsPercent: boolean = false;
+  private yTicks: number;
   private margin = { top: 20, bottom: 60, left: 60, right: 20};
   private chart: any;
   private width: number;
@@ -35,7 +36,6 @@ export class BarChartComponent implements OnInit, OnChanges {
   private update: any;
 
   ngOnInit() {
-    setTimeout(500);
     this.createBarChartData(this.searchData);
     this.calculateDomains();  
     this.createChart();
@@ -57,7 +57,6 @@ export class BarChartComponent implements OnInit, OnChanges {
     * d3 needs an array of dictionaries
     * the countkey defines which aspect of the data appears in the bar chart
     */
-    console.log(results, this.countKey);
     let counts = _.countBy(results.map(d => d[this.countKey]));
     this.yMax = d3.max(Object.values(counts));
     let yMax = this.yMax;
@@ -66,13 +65,13 @@ export class BarChartComponent implements OnInit, OnChanges {
       let catFreqPair = {category: cat, frequency: counts[cat]};
       return catFreqPair;
     });
-    console.log(this.barChartData);
   }
 
   calculateDomains() {
     // adjust the x and y ranges
     this.xDomain = this.barChartData.map(d => d.category);
     this.yDomain = this.yAsPercent? [0, 1] : [0, this.yMax];
+    this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
   }
 
   rescaleY() {
@@ -88,12 +87,12 @@ export class BarChartComponent implements OnInit, OnChanges {
     let preScale = this.yAsPercent? d3.scaleLinear().domain([0,totalCount]).range([0,1]) : d3.scaleLinear();
 
     this.chart.selectAll('.bar')
+      .transition()
       .attr('y', d => this.yScale(preScale(d.frequency)))
       .attr('height', d => this.height - this.yScale(preScale(d.frequency))); 
     
     let theFormat = this.yAsPercent? d3.format(".0%") : d3.format("d");
-    let theMax = this.yAsPercent ? 10 : this.yMax;
-    let theAxis = d3.axisLeft(this.yScale).ticks(theMax).tickFormat(theFormat)
+    let theAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(theFormat)
     this.yAxis.call(theAxis);
     let yLabelText = this.yAsPercent? "Percent" : "Frequency";
     this.yAxisLabel.text(yLabelText);
@@ -122,12 +121,12 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.xAxis = svg.append('g')
       .attr('class', 'axis x')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-      .call(d3.axisBottom(this.xScale));
+      .call(d3.axisBottom(this.xScale)); 
 
     this.yAxis = svg.append('g')
       .attr('class', 'axis y')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-      .call(d3.axisLeft(this.yScale).ticks(this.yMax).tickFormat(d3.format("d")));
+      .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
     // adding axis labels
     let xLabelText = this.countKey.replace(/\b\w/g, l => l.toUpperCase());
