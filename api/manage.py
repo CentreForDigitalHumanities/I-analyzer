@@ -92,8 +92,7 @@ class IndexingCommand(Command):
     def run(self, corpus, start, end):
         
         if not corpus:
-            corpus = config.CORPUS
-        
+            corpus = config.CORPUS        
         
 
         try:

@@ -99,6 +99,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.isSearching = false;
                 this.searched = true;
             });
+        this.showFilters = true;
     }
 
     public visualize() {
