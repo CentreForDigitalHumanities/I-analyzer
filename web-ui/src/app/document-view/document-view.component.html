@@ -1,0 +1,15 @@
+<table class="table">
+    <tr>
+        <th>Relevance</th>
+        <td><search-relevance [value]="document.relevance"></search-relevance></td>
+    </tr>
+    <ng-container *ngFor="let field of propertyFields">
+        <tr *ngIf="document.fieldValues[field.name]">
+            <th>{{field.displayName}}</th>
+            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+        </tr>
+    </ng-container>
+</table>
+<ng-container *ngFor="let field of contentFields">
+    <div *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+</ng-container>

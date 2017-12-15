@@ -15,7 +15,7 @@
     </h2>
     <div class="hits">
         <div *ngFor="let document of results.documents" class="document">
-            <div class="box">
+            <div class="box" (click)="view(document)">
                 <table class="table">
                     <tr>
                         <th>Relevance</th>

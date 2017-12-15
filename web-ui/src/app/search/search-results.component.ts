@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SearchResults } from '../models/index';
+import { SearchResults, FoundDocument } from '../models/index';
 
 @Component({
     selector: 'search-results',
@@ -19,6 +19,9 @@ export class SearchResultsComponent implements OnInit {
     @Output('download')
     public downloadEvent = new EventEmitter();
 
+    @Output('view')
+    public viewEvent = new EventEmitter<FoundDocument>();
+
     constructor() { }
 
     ngOnInit() {
@@ -26,5 +29,9 @@ export class SearchResultsComponent implements OnInit {
 
     public download() {
         this.downloadEvent.next();
+    }
+
+    public view(document: FoundDocument) {
+        this.viewEvent.next(document);
     }
 }

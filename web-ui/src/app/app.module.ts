@@ -22,6 +22,7 @@ import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { VisualizationComponent } from './visualization/visualization.component';
+import { DocumentViewComponent } from './document-view/document-view.component';
 
 const appRoutes: Routes = [
     {
@@ -63,7 +64,8 @@ const appRoutes: Routes = [
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
-        SearchRelevanceComponent
+        SearchRelevanceComponent,
+        DocumentViewComponent
     ],
     imports: [
         BrowserAnimationsModule,

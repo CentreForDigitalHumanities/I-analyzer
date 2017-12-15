@@ -69,7 +69,7 @@
         <!-- search results, on right -->
         <div class="tile is-vertical is-8 is-parent" *ngIf="results">
             <div class="tile is-child">
-                <search-results [results]="results" [query]="searchQuery"></search-results>
+                <search-results [results]="results" [query]="searchQuery" (view)="viewDocument($event)"></search-results>
             </div>
         </div>
 
@@ -97,6 +97,10 @@
                 </div>
          </div>
 -->
+<!-- bring up visualization when the button has been clicked -->
+<p-dialog header="Document" [(visible)]="showDocument" *ngIf="selectedDocument">
+    <document-view [document]="selectedDocument" [fields]="corpus.fields"></document-view>
+</p-dialog>
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog header="Title" [(visible)]="showVisualization" *ngIf="doVisualize">
     <barchart [searchData]="searchResults" [countKey]="barChartKey"></barchart>
