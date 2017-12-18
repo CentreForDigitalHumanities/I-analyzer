@@ -21,6 +21,9 @@ export class DocumentViewComponent implements OnInit {
     @Input()
     public document: FoundDocument;
 
+    @Input()
+    public query: string;
+
     constructor() { }
 
     ngOnInit() {

@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule } from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 
 import { DocumentViewComponent } from './document-view.component';
 import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
@@ -12,8 +12,7 @@ describe('DocumentViewComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [HighlightPipe, DocumentViewComponent, SearchRelevanceComponent],
-            providers: [HighlightService],
-            imports: [BrowserModule]
+            providers: [HighlightService]
         }).compileComponents();
     }));
 
@@ -23,8 +22,31 @@ describe('DocumentViewComponent', () => {
         fixture.detectChanges();
     });
 
-    // TODO: Uncaught NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'ng:///DynamicTestModule/DocumentViewComponent.ngfactory.js'.
-    xit('should be created', () => {
+    it('should be created', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should render fields', async () => {
+        component.fields = [{
+            name: 'test',
+            displayName: 'Test',
+            displayType: 'text',
+            description: 'Description',
+            hidden: false,
+            searchFilter: null
+        }];
+        component.document = {
+            relevance: 0.5,
+            fieldValues: { 'test': 'Hello world!' },
+            id: 'test',
+            position: 1
+        };
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        let debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
+        expect(debug.length).toEqual(1); // number of fields
+        let element = debug[0].nativeElement;
+        expect(element.textContent).toBe('Hello world!');
     });
 });

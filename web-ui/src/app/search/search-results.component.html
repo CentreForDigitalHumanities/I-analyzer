@@ -24,7 +24,7 @@
                     <ng-container *ngFor="let field of results.fields">
                         <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
-                            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
                         </tr>
                     </ng-container>
                 </table>

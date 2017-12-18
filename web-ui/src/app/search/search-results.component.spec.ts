@@ -28,12 +28,12 @@ describe('Search Results Component', () => {
                 'a': '1',
                 'b': '2',
                 'c': 'Hide-and-seek!'
-            }, '1', 1),
+            }, '1', 1, 1),
             createDocument({
                 'a': '3',
                 'b': '4',
                 'c': 'Wally is here'
-            }, '2', 0.5)],
+            }, '2', 0.5, 2)],
             retrieved: 2,
             total: 2
         };
@@ -52,8 +52,8 @@ describe('Search Results Component', () => {
         };
     }
 
-    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number) {
-        return { id, relevance, fieldValues };
+    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
+        return { id, relevance, fieldValues, position };
     }
 
     it('should be created', () => {

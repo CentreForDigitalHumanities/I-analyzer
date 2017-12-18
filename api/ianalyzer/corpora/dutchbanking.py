@@ -110,7 +110,7 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='content',
-            display_type='content',
+            display_type='text_content',
             description='Text content of the block.',
             extractor=XML(
                 tag='String',

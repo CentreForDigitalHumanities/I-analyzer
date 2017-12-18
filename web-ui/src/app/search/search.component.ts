@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { saveAs } from 'file-saver';
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, FoundDocument } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
 @Component({
     selector: 'app-search',
@@ -21,6 +21,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public isSearching: boolean;
     public searched: boolean;
+    /**
+     * Whether a document has been selected to be shown.
+     */
+    public showDocument: boolean = false;
+    /**
+     * The document to view separately.
+     */
+    public viewDocument: FoundDocument;
     public showVisualization: boolean = false;
     public showFilters: boolean = false;
     public query: string;
@@ -137,6 +145,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public updateFilterData(name: string, data: any) {
         this.queryField[name].data = data;
+    }
+
+    public onViewDocument(document: FoundDocument) {
+        this.showDocument = true;
+        this.viewDocument = document;
     }
 
     private getQueryFields(): CorpusField[] {

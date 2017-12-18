@@ -30,7 +30,7 @@
         <div class="level-right">
           <div class="level-item">
             <button class="button is-info" type="submit" (click)="visualize();doVisualize=true"
-            [disabled]="!sample">
+            [disabled]="!results">
               <span class="icon is-small">
                 <i class="fa fa-bar-chart"></i>
               </span>
@@ -38,7 +38,7 @@
             </button>
           </div>
           <div class="level-item">
-            <button class="button is-info" type="download" (click)="download()" [disabled]="!sample">
+            <button class="button is-info" type="download" (click)="download()" [disabled]="!results">
                 <span class="icon is-small">
                     <i class="fa fa-download"></i>
                 </span>
@@ -69,7 +69,7 @@
         <!-- search results, on right -->
         <div class="tile is-vertical is-8 is-parent" *ngIf="results">
             <div class="tile is-child">
-                <search-results [results]="results" [query]="searchQuery" (view)="viewDocument($event)"></search-results>
+                <search-results [results]="results" [query]="searchQuery" (view)="onViewDocument($event)"></search-results>
             </div>
         </div>
 
@@ -98,8 +98,8 @@
          </div>
 -->
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog header="Document" [(visible)]="showDocument" *ngIf="selectedDocument">
-    <document-view [document]="selectedDocument" [fields]="corpus.fields"></document-view>
+<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument" width="800" *ngIf="viewDocument">
+    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQuery"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog header="Title" [(visible)]="showVisualization" *ngIf="doVisualize">
