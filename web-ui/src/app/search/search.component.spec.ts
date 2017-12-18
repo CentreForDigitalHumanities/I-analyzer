@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
 
-import { CalendarModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
+import { CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
 import { ApiService, CorpusService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService } from '../services/index';
@@ -29,7 +29,7 @@ describe('SearchComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [HighlightPipe, DocumentViewComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, VisualizationComponent, BarChartComponent],
-            imports: [FormsModule, CalendarModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
+            imports: [FormsModule, CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 CorpusService,
                 {

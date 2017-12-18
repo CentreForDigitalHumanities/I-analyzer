@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
+import { CalendarModule, CheckboxModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import { SearchFilterComponent } from './search-filter.component';
 
@@ -12,6 +12,7 @@ describe('SearchFilterComponent', () => {
         TestBed.configureTestingModule({
             imports: [
                 CalendarModule,
+                CheckboxModule,
                 FormsModule,
                 SelectButtonModule,
                 SliderModule,

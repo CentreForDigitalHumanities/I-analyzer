@@ -1,12 +1,10 @@
 <ng-container *ngIf="filter">
-    <div class="select" *ngIf="filter.name == 'BooleanFilter'">
-        <select [(ngModel)]="data" name="data" [disabled]="!enabled" (change)="update()">
-            <option value="true">{{ filter.trueText }}</option>
-            <option value="false">{{ filter.falseText }}</option>
-        </select>
+    <div class="bool" *ngIf="filter.name == 'BooleanFilter'">
+        <p-checkbox [(ngModel)]="trueCondition" binary="true" (onChange)="update()"></p-checkbox>
+        {{trueCondition? filter.trueText : filter.falseText}}
     </div>
     <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'">
-        <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" ></p-multiSelect>
+        <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'">
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>

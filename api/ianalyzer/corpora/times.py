@@ -24,7 +24,6 @@ from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_cont
 class Times(XMLCorpus):
     title = config.TIMES_TITLE
     description = config.TIMES_DESCRIPTION
-
     data_directory = config.TIMES_DATA
     min_date = config.TIMES_MIN_DATE
     max_date = config.TIMES_MAX_DATE
