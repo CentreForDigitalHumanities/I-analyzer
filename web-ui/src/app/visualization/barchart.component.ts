@@ -91,9 +91,9 @@ export class BarChartComponent implements OnInit, OnChanges {
       .attr('y', d => this.yScale(preScale(d.frequency)))
       .attr('height', d => this.height - this.yScale(preScale(d.frequency))); 
     
-    let theFormat = this.yAsPercent? d3.format(".0%") : d3.format("d");
-    let theAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(theFormat)
-    this.yAxis.call(theAxis);
+    let tickFormat = this.yAsPercent? d3.format(".0%") : d3.format("d");
+    let yAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
+    this.yAxis.call(yAxis);
     let yLabelText = this.yAsPercent? "Percent" : "Frequency";
     this.yAxisLabel.text(yLabelText);
   }

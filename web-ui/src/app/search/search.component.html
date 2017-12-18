@@ -68,8 +68,12 @@
           <div *ngIf="corpus&&showFilters">
             <ng-container *ngFor="let field of corpus.fields">
                 <div class="box" *ngIf="field.searchFilter">
-                    <span> Filter ({{field.name}}) </span>
-                    <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
+                    <div class="checkbox">
+                    <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
+                        type="checkbox">
+                  </div> {{ field.searchFilter.description }}
+                  <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                 </div>
             </ng-container>
           </div>
@@ -87,7 +91,8 @@
 </section>
 
 <!-- show customizations for downloading csv -->
-<p-dialog header="Please select the columns that are to appear in your csv file." [(visible)]="showCsvFields" *ngIf="showCsvFields">
+<p-dialog header="Select Visible Columns" [(visible)]="showCsvFields" *ngIf="showCsvFields">
+  <b> You can deselect columns to limit the size of your <code>.csv</code> file. </b>
   <ng-container *ngFor="let field of corpus.fields">
       <div class="csv-column" *ngIf="!field.hidden">
           <label class="checkbox">
@@ -104,6 +109,6 @@
 </p-dialog>
 
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog header="Time line visualization" [(visible)]="showVisualization" *ngIf="showVisualization">
+<p-dialog header="Time Line Visualization" [(visible)]="showVisualization" *ngIf="showVisualization">
     <barchart [searchData]="searchResults" [countKey]="barChartKey"></barchart>
 </p-dialog>

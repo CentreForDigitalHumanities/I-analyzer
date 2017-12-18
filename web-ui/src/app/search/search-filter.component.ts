@@ -21,6 +21,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     }
 
     public data: any;
+    public trueCondition: boolean = false;
 
     constructor() { }
 
@@ -39,7 +40,6 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     fillFilterData() {
         switch (this.filter.name) {
             case 'BooleanFilter':
-                this.data = true;
                 break;
             case 'RangeFilter':
                 this.data = [this.filter.lower, this.filter.upper];
@@ -60,7 +60,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'BooleanFilter':
                 filterData = {
                     'term': {
-                        [this.field.name]: this.data
+                        [this.field.name]: this.trueCondition
                     }
                 };
                 break;

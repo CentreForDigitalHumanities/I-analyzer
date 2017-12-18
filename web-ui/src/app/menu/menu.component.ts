@@ -40,7 +40,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         },
         {
             label: 'Administration',
-            //icon: 'fa-sign-out',
+            icon: 'fa-cogs',
             command: (click)=>this.gotoAdmin(),
             visible: this.isAdmin
         }];

@@ -76,9 +76,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
-    //public showTab(tab: Tab) {
-    //    this.visibleTab = tab;
-    //}
 
     public toggleFilters() {
         this.showFilters = !this.showFilters;
@@ -115,8 +112,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(searchResults => {
                 // the array pointer needs to be updated for a change to be detected
                 this.searchResults = this.searchResults.concat(...searchResults.documents);
+                console.log(this.searchResults[0].date);
             })
-        this.showVisualization = true;
     }
 
     public async download() {
