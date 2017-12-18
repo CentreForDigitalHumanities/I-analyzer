@@ -12,7 +12,7 @@ import { ConfigService, UserService } from '../services/index';
 })
 export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
-    public isAdmin = false;
+    public isAdmin: boolean  = false;
 
     private routerSubscription: Subscription;
     private items: MenuItem[];
@@ -37,6 +37,12 @@ export class MenuComponent implements OnDestroy, OnInit {
             label: 'Exit',
             icon: 'fa-sign-out',
             command: (onclick)=>this.logout()
+        },
+        {
+            label: 'Administration',
+            icon: 'fa-cogs',
+            command: (click)=>this.gotoAdmin(),
+            visible: this.isAdmin
         }];
 
     }

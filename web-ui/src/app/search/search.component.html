@@ -1,8 +1,9 @@
+<!-- Toggle filter button, search bar, visualize and download buttons -->
 <section class="section">
     <h1 class="title">
     Search <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
     </h1>
-    <nav class="level">
+    <nav class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
             <button class="button" (click)="toggleFilters()">
@@ -29,7 +30,7 @@
         </div>
         <div class="level-right">
           <div class="level-item">
-            <button class="button is-info" type="submit" (click)="visualize();doVisualize=true" 
+            <button class="button is-info" type="submit" (click)="visualize()" 
             [disabled]="!sample">
               <span class="icon is-small">
                 <i class="fa fa-bar-chart"></i>
@@ -38,12 +39,19 @@
             </button>
           </div>
           <div class="level-item">
+            <div class="field has-addons">
             <button class="button is-info" type="download" (click)="download()" [disabled]="!sample">
-                <span class="icon is-small">
-                    <i class="fa fa-download"></i>
-                </span>
-                <span>Download</span>
+              <span class="icon is-small">
+                <i class="fa fa-download"></i>
+              </span>
+              <span>Download</span>
             </button>
+            <button class="button is-info is-outlined" type="downloadSettings" (click)="showCsvFields=true" [disabled]="!sample">
+              <span class="icon is-small">
+                <i class="fa fa-cog"></i>
+              </span>
+            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -60,13 +68,18 @@
           <div *ngIf="corpus&&showFilters">
             <ng-container *ngFor="let field of corpus.fields">
                 <div class="box" *ngIf="field.searchFilter">
-                    <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
+                    <div class="checkbox">
+                    <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
+                        type="checkbox">
+                  </div> {{ field.searchFilter.description }}
+                  <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                 </div>
             </ng-container>
           </div>
         </div>
 
-        <!-- search results, on right -->
+        <!-- Search results, on right -->
         <div class="tile is-vertical is-8 is-parent" *ngIf="sample">
             <div class="tile is-child">
                 <search-sample [sample]="sample" [query]="searchQuery"></search-sample>
@@ -76,28 +89,26 @@
     </div>
   </div>
 </section>
-<!-- To do: bring this up in a dialog when downloading csv (make the download button a multiselect button?)
-    <div [hidden]="visibleTab != 'columns'">
-                <p>Please select the columns that are to appear in your <code>csv</code> file.</p>
 
-                <div class="csv-columns">
-                    <ng-container *ngFor="let field of corpus.fields">
-                        <div class="csv-column" *ngIf="!field.hidden">
-                            <label class="checkbox">
-                                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">
-                                {{ field.name }}
-                            </label>
-                            <div class="description" *ngIf="field.description">
-                                {{ field.description }}
-                            </div>
-                            <div class="description" *ngIf="!field.description">
-                            </div>
-                        </div>
-                    </ng-container>
-                </div>
-         </div>
--->
+<!-- show customizations for downloading csv -->
+<p-dialog header="Select Visible Columns" [(visible)]="showCsvFields" *ngIf="showCsvFields">
+  <b> You can deselect columns to limit the size of your <code>.csv</code> file. </b>
+  <ng-container *ngFor="let field of corpus.fields">
+      <div class="csv-column" *ngIf="!field.hidden">
+          <label class="checkbox">
+              <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.name">
+              {{ field.name }}
+          </label>
+          <div class="description" *ngIf="field.description">
+              {{ field.description }}
+          </div>
+          <div class="description" *ngIf="!field.description">
+          </div>
+      </div>
+  </ng-container>
+</p-dialog>
+
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog header="Title" [(visible)]="showVisualization" *ngIf="doVisualize">
+<p-dialog header="Time Line Visualization" [(visible)]="showVisualization" *ngIf="showVisualization">
     <barchart [searchData]="searchResults" [countKey]="barChartKey"></barchart>
 </p-dialog>

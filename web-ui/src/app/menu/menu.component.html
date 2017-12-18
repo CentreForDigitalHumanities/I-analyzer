@@ -1,21 +1,19 @@
 <nav class="navbar" *ngIf="currentUser">
   <div class="navbar-brand">
     <a class="navbar-item" href="https://dig.hum.uu.nl/">
-      <img src="https://dig.hum.uu.nl/wp-content/uploads/sites/270/2014/05/cropped-cropped-logo1-1.png" alt="Digital Humanities Lab Utrecht" width="200" height="28">
+      <img src="assets/dhlab.png" alt="Digital Humanities Lab Utrecht" width="200">
     </a>
   </div>
-  <div class="navbar-menu">
-    <a class="navbar-item is-tab" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
-    <a class="navbar-item is-tab" *ngIf="isAdmin" id="admin" (click)="gotoAdmin()">Administration</a>
-    <a class="navbar-item is-tab" id="logout" (click)="logout()"></a>
+  <div class="navbar-menu is-active">
+    <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
     <a class="navbar-item">
       <button type="button"
         pButton icon="fa fa-user-circle"
-        attr.label="Logged in as {{currentUser.name}}"
+        label="Logged in as {{currentUser.name}}"
         (click)="menu.toggle($event)">
       </button>
         <!-- drop down menu to log out, or see previous queries-->
-        <p-menu #menu popup="popup" [model]="items"></p-menu>
+        <p-menu #menu popup="popup" [model]="items" appendTo="body"></p-menu>
     </a>
   </div>
 </nav>
