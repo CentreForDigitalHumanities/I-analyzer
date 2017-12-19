@@ -14,7 +14,7 @@ export class ElasticSearchService {
             return {
                 config,
                 client: new Client({
-                    host: config.host + ':' + config.port,
+                    host: config.host + (config.port ? `:${config.port}` : ''),
                 })
             };
         });
