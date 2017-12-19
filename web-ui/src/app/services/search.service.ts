@@ -3,11 +3,11 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import { ApiService } from './api.service';
-import { ElasticSearchService, FoundDocument, SearchResult } from './elastic-search.service';
+import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, Query, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, Query, SearchFilterData, SearchResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -18,18 +18,19 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
+    public async search(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${query}, with filters: ${JSON.stringify(filters)}`);
         let result = await this.elasticSearchService.search(corpus, query, filters);
 
-        return <SearchSample>{
+        return <SearchResults>{
+            completed: true,
             total: result.total,
             fields,
-            hits: result.documents
+            documents: result.documents
         };
     }
 
-    public searchObservable(corpus: Corpus, queryText: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<SearchResult<Hit>> {
+    public searchObservable(corpus: Corpus, queryText: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Observable<SearchResults> {
         let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
         let completed = false;
         let totalTransferred = 0;
@@ -40,7 +41,7 @@ export class SearchService {
         this.logService.info(`Requested observable results for query: ${queryText}`);
 
         // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable<Hit>(
+        return this.elasticSearchService.searchObservable(
             corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
             .map(result => {
                 totalTransferred = result.retrieved;
@@ -68,7 +69,7 @@ export class SearchService {
         });
     }
 
-    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
+    public async searchAsCsv(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
         let totalTransferred = 0;
 
         this.logService.info(`Requested CSV file for query: ${query}`);
@@ -80,7 +81,7 @@ export class SearchService {
                 result => {
                     rows.push(...
                         result.documents.map(document =>
-                            this.documentRow(document, fields)
+                            this.documentRow(document, fields.map(field => field.name))
                                 .map(this.csvCell).join(separator) + '\n'));
 
                     totalTransferred = result.retrieved;
@@ -102,8 +103,8 @@ export class SearchService {
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
-    private documentRow<T>(document: { [id: string]: T }, fields: string[] = []): string[] {
-        return fields.map(field => this.documentFieldValue(document[field]));
+    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
+        return fieldNames.map(field => this.documentFieldValue(document[field]));
     }
 
     private documentFieldValue(value: any) {
@@ -120,5 +121,3 @@ export class SearchService {
         return String(value);
     }
 }
-
-type Hit = { [fieldName: string]: string };

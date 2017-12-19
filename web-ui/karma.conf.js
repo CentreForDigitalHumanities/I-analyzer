@@ -27,7 +27,18 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
-    singleRun: false
+    browsers: ['ChromeHeadless'],
+    singleRun: false,
+    customLaunchers: {
+        ChromeHeadless: {
+          base: 'Chrome',
+          flags: [
+            '--headless',
+            // '--disable-gpu', this might not be needed http://cvuorinen.net/2017/05/running-angular-tests-in-headless-chrome/
+            // Without a remote debugging port, Google Chrome exits immediately.
+            '--remote-debugging-port=9222',
+          ],
+        }
+      }
   });
 };
