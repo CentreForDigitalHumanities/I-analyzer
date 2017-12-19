@@ -106,20 +106,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public visualize() {
-        this.searchResults = [];
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-        this.subscription = this.searchService.searchObservable(
-            this.corpus,
-            this.query,
-            this.getQueryFields(),
-            this.getFilterData())
-            .subscribe(searchResults => {
-                // the array pointer needs to be updated for a change to be detected
-                this.searchResults = this.searchResults.concat(...searchResults.documents);
-                console.log(this.corpus);
-            })
+
+        this.searchService.searchForVisualization(this.corpus, this.query, this.getQueryFields(), this.getFilterData());
         this.showVisualization = true;
     }
 

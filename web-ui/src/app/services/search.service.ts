@@ -63,10 +63,11 @@ export class SearchService {
             });
     }
 
-    public async aggregateSearch(corpus: Corpus, queryText: string = '', field: string, filters: SearchFilterData[] = []): Promise<string[]> {
-        return new Promise<string[]>((resolve, reject) => {
 
-        });
+    public async searchForVisualization<TKey>(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<{
+        completed: boolean,
+        aggregations: { key: TKey, doc_count: number }[]{
+        return this.elasticSearchService.aggregate<TKey>(corpus, query, 'year', filters);
     }
 
     public async searchAsCsv(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {

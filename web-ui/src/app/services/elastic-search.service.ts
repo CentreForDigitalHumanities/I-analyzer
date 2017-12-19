@@ -14,7 +14,7 @@ export class ElasticSearchService {
             return {
                 config,
                 client: new Client({
-                    host: config.host + ':' + config.port,
+                    host: config.host + (config.port ? `:${config.port}` : ''),
                 })
             };
         });
@@ -52,6 +52,7 @@ export class ElasticSearchService {
         }
     }
 
+<<<<<<< HEAD
     /*makeAggregrateQuery(queryString: string | null = null, filters: any[] = [], aggregator: string): AggregateQuery {
         let query = this.makeQuery(queryString, filters);
         let agquery = {query, aggregator: {
@@ -61,6 +62,26 @@ export class ElasticSearchService {
         }}
         return agquery
     }*/
+=======
+    private executeAggregate(index: ElasticSearchIndex, query, aggregator: string, fieldName: string = aggregator) {
+        return this.connection.then((connection) => connection.client.search({
+            index: index.index,
+            type: index.doctype,
+            size: 0,
+            body: Object.assign({
+                aggs: {
+                    [aggregator]: {
+                        terms: {
+                            field: fieldName,
+                            // order by quarter, ascending
+                            // order: { "_term": "asc" }
+                        }
+                    }
+                }
+            }, query)
+        }));
+    }
+>>>>>>> 7a48ef3b19d7f57a81e1f8304e3cb5efb440b4ef
 
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
@@ -117,7 +138,25 @@ export class ElasticSearchService {
         });
     }
 
+<<<<<<< HEAD
     public async search(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResults> {
+=======
+    public async aggregate<TKey>(corpusDefinition: ElasticSearchIndex, queryString: string, aggregator: string, filters?: any[]) {
+        let query = this.makeQuery(queryString, filters);
+        let connection = await this.connection;
+        let result = await this.executeAggregate(corpusDefinition, query, aggregator);
+
+        // Extract relevant information from dictionary returned by ES
+        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number }[] } } = result.aggregations;
+        let buckets = aggregations[aggregator].buckets;
+        return {
+            completed: true,
+            aggregations: buckets
+        };
+    }
+
+    public async search<T>(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResult<T>> {
+>>>>>>> 7a48ef3b19d7f57a81e1f8304e3cb5efb440b4ef
         let query = this.makeQuery(queryString, filters);
         let connection = await this.connection;
         // Perform the search
