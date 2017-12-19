@@ -21,7 +21,7 @@ export class HighlightService {
 
     /**
      * Returns the full text in parts and show which parts matched (part of) the query.
-     * @param text The text to search for hits.
+     * @param value The field value to search for hits.
      * @param query The simple query to use to search the text for hits.
      * @returns The full string subdivided in consecutive parts. Combining all the substrings
      * will result in the input string. Each part is marked with whether it matches the input query.
