@@ -22,6 +22,7 @@ export class CorpusService {
             name,
             data.title,
             data.description,
+            data.visualize,
             data.es_doctype,
             data.es_index,
             data.fields.map(item => this.parseField(item)),

@@ -3,10 +3,6 @@ import { Input, Component, OnInit, OnChanges, ElementRef, ViewChild, ViewEncapsu
 import * as d3 from 'd3';
 import * as _ from "lodash";
 
-import { Subscription }   from 'rxjs/Subscription';
-
-
-import { SearchService } from '../services/index';
 
 @Component({
   selector: 'barchart',
@@ -14,13 +10,14 @@ import { SearchService } from '../services/index';
   styleUrls: ['./barchart.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
+
 export class BarChartComponent implements OnInit, OnChanges {
   @ViewChild('chart') private chartContainer: ElementRef;
   @Input() public searchData: Array<any>;
   @Input() public countKey: string;
   private yAsPercent: boolean = false;
-  private yTicks: number;
-  private margin = { top: 20, bottom: 60, left: 60, right: 20};
+  private yTicks: number = 10;
+  private margin = { top: 10, bottom: 100, left: 70, right: 10 };
   private chart: any;
   private width: number;
   private height: number;
@@ -44,6 +41,7 @@ export class BarChartComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     if (this.chart) {
+      console.log(this.searchData);
       this.createBarChartData(this.searchData);
       this.calculateDomains();
       this.updateChart();
@@ -158,6 +156,11 @@ export class BarChartComponent implements OnInit, OnChanges {
     this.xScale.domain(this.xDomain);
     this.yScale.domain(this.yDomain);
     this.xAxis.transition().call(d3.axisBottom(this.xScale));
+    this.xAxis.selectAll('text')
+      .style("text-anchor", "end")
+       .attr("dx", "-.8em")
+       .attr("dy", ".15em")
+       .attr("transform", "rotate(-35)" );
 
     const update = this.chart.selectAll('.bar')
       .data(this.barChartData);

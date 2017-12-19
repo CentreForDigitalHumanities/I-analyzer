@@ -52,6 +52,16 @@ export class ElasticSearchService {
         }
     }
 
+    /*makeAggregrateQuery(queryString: string | null = null, filters: any[] = [], aggregator: string): AggregateQuery {
+        let query = this.makeQuery(queryString, filters);
+        let agquery = {query, aggregator: {
+            'terms': {
+                'field': aggregator
+            }
+        }}
+        return agquery
+    }*/
+
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
@@ -154,6 +164,16 @@ export type SearchQuery = {
         }
     },
     transferred?: Number
+}
+export type AggregateQuery = {
+    SearchQuery,
+    aggs: {
+        aggregator_name: {
+            'terms': {
+                'field': string
+            }
+        }
+    }
 }
 export type SearchClause = {
     'simple_query_string': {

@@ -62,7 +62,7 @@ export class SearchService {
             });
     }
 
-    public async searchForVisualization(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<string[]> {
+    public async aggregateSearch(corpus: Corpus, queryText: string = '', field: string, filters: SearchFilterData[] = []): Promise<string[]> {
         return new Promise<string[]>((resolve, reject) => {
 
         });

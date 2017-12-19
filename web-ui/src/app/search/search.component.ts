@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
@@ -13,8 +13,6 @@ import { CorpusService, SearchService } from '../services/index';
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
-    @Input() private searchData: Array<any>;
-
     public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
@@ -41,7 +39,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         //this.visibleTab = "search";
         // setting the aspect for which term frequencies are counted to year.
         // TODO: make several miniature visualizations for different term frequencies
-        this.barChartKey = "year";
+        this.barChartKey = "category";
     }
 
     ngOnInit() {
@@ -112,8 +110,9 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(searchResults => {
                 // the array pointer needs to be updated for a change to be detected
                 this.searchResults = this.searchResults.concat(...searchResults.documents);
-                console.log(this.searchResults[0].date);
+                console.log(this.corpus);
             })
+        this.showVisualization = true;
     }
 
     public async download() {

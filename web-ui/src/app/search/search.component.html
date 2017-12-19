@@ -110,5 +110,6 @@
 
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog header="Time Line Visualization" [(visible)]="showVisualization" *ngIf="showVisualization">
+    <!--visualization [searchData]="searchResults" [corpus]="corpus"></visualization-->
     <barchart [searchData]="searchResults" [countKey]="barChartKey"></barchart>
 </p-dialog>
