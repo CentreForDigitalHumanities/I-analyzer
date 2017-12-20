@@ -1,5 +1,6 @@
 import { CorpusField } from './corpus';
-import { FoundDocument } from './found-document'
+import { SearchQuery } from './query';
+import { FoundDocument } from './found-document';
 
 export type SearchResults = {
     completed: boolean,
@@ -9,5 +10,14 @@ export type SearchResults = {
      * Total number of retrieved documents for this search.
      */
     retrieved: number,
-    total: number
+    total: number,
+    queryModel: SearchQuery
+}
+
+export type AggregateResults = {
+    completed: boolean,
+    aggregations: { 
+    	key: string, 
+    	doc_count: number
+    }[]
 }

@@ -1,28 +1,42 @@
 import { Input, Component, OnInit, OnChanges } from '@angular/core';
 
-import { Corpus } from '../models/index';
+import { Corpus, AggregateResults, SearchQuery } from '../models/index';
+import { SearchService } from '../services/index';
+
 
 @Component({
   selector: 'visualization',
   templateUrl: './visualization.component.html',
   styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnInit, OnChanges {
-  @Input() public searchData: Array<any>;
+export class VisualizationComponent implements OnInit {
+  @Input() public searchQuery: SearchQuery;
   @Input() public corpus: Corpus;
 
-  public countKey: string;
+  public visualizedField: string;
 
-  constructor() {
-      this.countKey = 'category';
+  public aggResults: {
+      key: any, 
+      doc_count: number
+    }[];
+
+  constructor(private searchService: SearchService) {
     }
 
  
-  ngOnInit() {	    	
+  ngOnInit() {
+    this.visualizedField = this.corpus.visualize[0];
+    this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
+      this.aggResults = vis.aggregations;
+    })
   }
 
-  ngOnChanges() {
-    console.log(this.searchData);		      
-  }	
+  setVisualizedField(visField: string) {
+    this.visualizedField = visField;
+    this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
+      this.aggResults = vis.aggregations;
+    })
+  }
+ 
 
 }

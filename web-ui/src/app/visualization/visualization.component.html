@@ -1,1 +1,9 @@
-<barchart> [searchData]="searchData" [countKey]="countKey" </barchart>
+<p-header>
+    Select visualization options:
+     <ng-container *ngFor="let visField of corpus.visualize">
+        <button class="button is-info" (click)="setVisualizedField(visField)">
+            <span>{{visField}}</span>
+        </button>
+     </ng-container>
+</p-header>
+<barchart [searchData]="aggResults" [visualizedField]="visualizedField"></barchart>

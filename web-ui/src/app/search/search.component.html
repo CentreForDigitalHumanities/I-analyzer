@@ -17,7 +17,6 @@
             <div class="level-item">
                 <form (ngSubmit)="search()" *ngIf="corpus">
                     <div class="field has-addons">
-                        <!--label class="label" for="query">Query</label-->
                         <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
 
                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
@@ -112,7 +111,6 @@
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQuery"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog header="Time Line Visualization" [(visible)]="showVisualization" *ngIf="showVisualization">
-    <!--visualization [searchData]="searchResults" [corpus]="corpus"></visualization-->
-    <barchart [searchData]="searchResults" [countKey]="barChartKey"></barchart>
+<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" width="800">
+    <visualization [searchQuery]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>
