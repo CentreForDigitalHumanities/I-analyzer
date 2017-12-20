@@ -14,10 +14,10 @@ export type SearchResults = {
     queryModel: SearchQuery
 }
 
-export type AggregateResults = {
+export type AggregateResults<TKey> = {
     completed: boolean,
-    aggregations: { 
-    	key: string, 
+    aggregations: {
+    	key: TKey,
     	doc_count: number
     }[]
 }

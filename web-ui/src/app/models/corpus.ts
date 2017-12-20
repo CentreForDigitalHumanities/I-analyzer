@@ -12,7 +12,7 @@ export class Corpus implements ElasticSearchIndex {
          * Description of the corpus to show to users.
          */
         public description: string,
-        public visualize: Array<string>,
+        public visualize: string[],
         public doctype: DocumentType,
         public index: string,
         public fields: CorpusField[],

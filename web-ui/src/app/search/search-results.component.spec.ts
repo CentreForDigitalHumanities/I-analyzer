@@ -35,7 +35,18 @@ describe('Search Results Component', () => {
                 'c': 'Wally is here'
             }, '2', 0.5, 2)],
             retrieved: 2,
-            total: 2
+            total: 2,
+            queryModel: {
+                aborted: false,
+                completed: (new Date()),
+                query: {
+                    'bool': {
+                        'must': [],
+                        'filter': [],
+                    }
+                },
+                transferred: 0
+            }
         };
 
         fixture.detectChanges();

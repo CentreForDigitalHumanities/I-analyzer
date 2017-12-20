@@ -17,6 +17,7 @@ class DutchBanking(XMLCorpus):
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = config.DUTCHBANK_TITLE
     description = config.DUTCHBANK_DESCRIPTION
+    visualize = ['bank','year']
     data_directory = config.DUTCHBANK_DATA
     min_date = config.DUTCHBANK_MIN_DATE
     max_date = config.DUTCHBANK_MAX_DATE

@@ -127,7 +127,7 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults> {
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
         let connection = await this.connection;
         let result = await this.executeAggregate(corpusDefinition, queryModel, aggregator);
 

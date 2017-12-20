@@ -59,6 +59,7 @@ describe('CorpusService', () => {
                 "es_settings": null,
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "visualize": [],
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -90,12 +91,13 @@ describe('CorpusService', () => {
 
         return service.get().then((items) => {
             expect(items).toEqual([new Corpus(
-                 'times',
-                 'Times',
-                 'This is a description.',
-                 'article',
-                 'times',
-                 [{
+                'times',
+                'Times',
+                'This is a description.',
+                [],
+                'article',
+                'times',
+                [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
                     name: 'bank',
@@ -120,8 +122,8 @@ describe('CorpusService', () => {
                     }
                 }
                 ],
-                 new Date(1785, 0, 1, 0, 0),
-                 new Date(2010, 11, 31, 0, 0))
+                new Date(1785, 0, 1, 0, 0),
+                new Date(2010, 11, 31, 0, 0))
             ]);
         });
     });

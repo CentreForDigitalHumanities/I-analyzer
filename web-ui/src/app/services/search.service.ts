@@ -66,7 +66,7 @@ export class SearchService {
     }
 
 
-    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults> {
+    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 

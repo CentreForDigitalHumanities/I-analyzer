@@ -5,38 +5,33 @@ import { SearchService } from '../services/index';
 
 
 @Component({
-  selector: 'visualization',
-  templateUrl: './visualization.component.html',
-  styleUrls: ['./visualization.component.scss'],
+    selector: 'visualization',
+    templateUrl: './visualization.component.html',
+    styleUrls: ['./visualization.component.scss'],
 })
 export class VisualizationComponent implements OnInit {
-  @Input() public searchQuery: SearchQuery;
-  @Input() public corpus: Corpus;
+    @Input() public searchQuery: SearchQuery;
+    @Input() public corpus: Corpus;
 
-  public visualizedField: string;
+    public visualizedField: string;
 
-  public aggResults: {
-      key: any, 
-      doc_count: number
+    public aggResults: {
+        key: any,
+        doc_count: number
     }[];
 
-  constructor(private searchService: SearchService) {
+    constructor(private searchService: SearchService) {
     }
 
- 
-  ngOnInit() {
-    this.visualizedField = this.corpus.visualize[0];
-    this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
-      this.aggResults = vis.aggregations;
-    })
-  }
 
-  setVisualizedField(visField: string) {
-    this.visualizedField = visField;
-    this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
-      this.aggResults = vis.aggregations;
-    })
-  }
- 
+    ngOnInit() {
+        this.setVisualizedField(this.corpus.visualize[0]);
+    }
 
+    setVisualizedField(visField: string) {
+        this.visualizedField = visField;
+        this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
+            this.aggResults = vis.aggregations;
+        });
+    }
 }
