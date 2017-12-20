@@ -27,7 +27,12 @@ export type DocumentType = 'article';
 
 export type CorpusField = {
     description: string,
-    type: 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
+    displayName: string,
+    /**
+     * How the field value should be displayed.
+     * text_content: Main text content of the document
+     */
+    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
     hidden: boolean,
     name: string,
     searchFilter: SearchFilter | null

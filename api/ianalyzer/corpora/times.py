@@ -465,6 +465,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content',
+            display_type='text_content',
             description='Raw OCR\'ed text (content).',
             extractor=extract.XML(
                 tag=['text','text.cr'], multiple=True,

@@ -1,0 +1,34 @@
+<h2 class="title">
+    Search results
+</h2>
+<ng-container *ngIf="!results.total; else resultsBlock">
+    <h2 class="subtitle">
+        0 hits
+    </h2>
+</ng-container>
+<ng-template #resultsBlock>
+    <h2 class="subtitle" *ngIf="results.total <= 5">
+        {results.total, plural, =1 {1 hit} other {{{results.total}} hits}}
+    </h2>
+    <h2 class="subtitle" *ngIf="results.total > 5">
+        {{results.total}} hits. The download limit is 10000. This is a subset of {{results.documents.length}} results:
+    </h2>
+    <div class="hits">
+        <div *ngFor="let document of results.documents" class="document">
+            <div class="box" (click)="view(document)">
+                <table class="table">
+                    <tr>
+                        <th>Relevance</th>
+                        <td><search-relevance [value]="document.relevance"></search-relevance></td>
+                    </tr>
+                    <ng-container *ngFor="let field of results.fields">
+                        <tr *ngIf="document.fieldValues[field.name]">
+                            <th>{{field.displayName}}</th>
+                            <td [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                        </tr>
+                    </ng-container>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template>

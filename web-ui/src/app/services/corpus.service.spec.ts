@@ -65,6 +65,7 @@ describe('CorpusService', () => {
                     "hidden": true,
                     "indexed": false,
                     "name": "bank",
+                    "display_name": "Bank",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -98,7 +99,8 @@ describe('CorpusService', () => {
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
                     name: 'bank',
-                    type: 'keyword',
+                    displayName: 'Bank',
+                    displayType: 'keyword',
                     searchFilter: {
                         description: "Search only within these banks.",
                         name: "MultipleChoiceFilter",
@@ -108,7 +110,8 @@ describe('CorpusService', () => {
                     description: "Year of the financial report.",
                     hidden: false,
                     name: 'year',
-                    type: 'integer',
+                    displayName: 'year',
+                    displayType: 'integer',
                     searchFilter: {
                         description: "Restrict the years from which search results will be returned.",
                         name: "RangeFilter",
