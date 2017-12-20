@@ -111,7 +111,7 @@ export class ElasticSearchService {
         let query = this.makeQuery(queryString, filters);
         let connection = await this.connection;
         // Perform the search
-        return this.execute(corpusDefinition, query, size || connection.config.exampleQuerySize).then(result => {
+        return this.execute(corpusDefinition, query, size || connection.config.overviewQuerySize).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
@@ -162,7 +162,7 @@ export type SearchClause = {
 type Connection = {
     client: Client,
     config: {
-        exampleQuerySize: number,
+        overviewQuerySize: number,
         scrollPagesize: number,
         scrollTimeout: string
     }

@@ -82,7 +82,7 @@
             <!-- search results, on right -->
             <div class="tile is-vertical is-8 is-parent" *ngIf="results">
                 <div class="tile is-child">
-                    <search-results [results]="results" [query]="searchQuery" (view)="onViewDocument($event)"></search-results>
+                    <search-results [results]="results" [corpus]="corpus" [query]="searchQuery" (view)="onViewDocument($event)"></search-results>
                 </div>
             </div>
 

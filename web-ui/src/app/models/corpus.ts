@@ -13,6 +13,7 @@ export class Corpus implements ElasticSearchIndex {
         public description: string,
         public doctype: DocumentType,
         public index: string,
+        public overviewFields: CorpusField[],
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date) { }

@@ -20,10 +20,11 @@ describe('Search Results Component', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchResultsComponent);
+        let fields = ['a', 'b', 'c'].map(createField);
         component = fixture.componentInstance;
         component.results = {
             completed: true,
-            fields: ['a', 'b', 'c'].map(createField),
+            fields,
             documents: [createDocument({
                 'a': '1',
                 'b': '2',
@@ -36,6 +37,9 @@ describe('Search Results Component', () => {
             }, '2', 0.5, 2)],
             retrieved: 2,
             total: 2
+        };
+        component.corpus = <any>{
+            fields
         };
 
         fixture.detectChanges();

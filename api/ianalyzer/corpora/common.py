@@ -88,6 +88,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    @property
+    def overview_fields(self):
+        '''
+        Each corpus should implement a list of field names which should be shown in the overview.
+        '''
+        raise NotImplementedError()
 
 
     @property

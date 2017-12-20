@@ -1,5 +1,19 @@
+@import "~bulma/bulma.sass";
+@import "../../variables";
 .document {
-    display: inline-block;
-    padding: 0 20px 10px 0;
-}
+    .table {
+        td, th {
+            border: none;
+        }
+    }
 
+    .relevance-score {
+        @extend .title;
+        text-align: center;
+    }
+
+    &:hover {
+        box-shadow: $boxShadowHover;
+        cursor: pointer;
+    }
+}
