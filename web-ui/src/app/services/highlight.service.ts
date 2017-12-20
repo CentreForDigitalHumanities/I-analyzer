@@ -26,10 +26,11 @@ export class HighlightService {
      * @returns The full string subdivided in consecutive parts. Combining all the substrings
      * will result in the input string. Each part is marked with whether it matches the input query.
      */
-    public highlight(value: string | number, query: string = ''): TextPart[] {
+    public * highlight(value: string | number, query: string = ''): IterableIterator<TextPart> {
         let text = `${value}`;
         if (query == null || query == '') {
-            return [{ substring: text, isHit: false }];
+            yield { substring: text, isHit: false };
+            return;
         }
         let expression = HighlightService.queryExpressions[query];
         if (!expression) {
@@ -43,18 +44,17 @@ export class HighlightService {
         for (let i = 0; (result = expression.exec(text)) !== null && i < maxHits; i++) {
             let patternIndex = result.index + result[1].length;
             if (lastIndex < patternIndex) {
-                parsedText.push({ substring: text.substring(lastIndex, patternIndex), isHit: false });
+                yield { substring: text.substring(lastIndex, patternIndex), isHit: false };
             }
 
             // regex groups: (1 = word boundary)(2 = pattern)(3 = word boundary)
-            parsedText.push({ substring: result[2], isHit: true });
+            yield { substring: result[2], isHit: true };
             lastIndex = patternIndex + result[2].length;
         }
 
         if (text.length > lastIndex) {
-            parsedText.push({ substring: text.substring(lastIndex), isHit: false });
+            yield { substring: text.substring(lastIndex), isHit: false };
         }
-        return parsedText;
     }
 
     /**

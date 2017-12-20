@@ -10,7 +10,7 @@ export class HighlightPipe implements PipeTransform {
     }
 
     transform(text: string, query: string) {
-        let highlightedText = this.highlightService.highlight(text, query).map(part => {
+        let highlightedText = Array.from(this.highlightService.highlight(text, query)).map(part => {
             let sanitizedText = this.sanitizer.sanitize(SecurityContext.HTML, part.substring);
 
             return part.isHit ? `<span class="highlight">${sanitizedText}</span>` : sanitizedText;

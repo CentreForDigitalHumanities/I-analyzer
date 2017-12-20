@@ -124,8 +124,8 @@ describe('HighlightService', () => {
         return expectedHighlights;
     }
 
-    let getHighlightedString = (parts: TextPart[]) =>
-        parts.map(part => part.isHit ? `*${part.substring}*` : part.substring).join('');
+    let getHighlightedString = (parts: Iterable<TextPart>) =>
+        Array.from(parts).map(part => part.isHit ? `*${part.substring}*` : part.substring).join('');
 });
 
 /**
