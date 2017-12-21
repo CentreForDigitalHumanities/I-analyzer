@@ -23,7 +23,6 @@ export class VisualizationComponent implements OnInit {
     constructor(private searchService: SearchService) {
     }
 
-
     ngOnInit() {
         this.setVisualizedField(this.corpus.visualize[0]);
     }

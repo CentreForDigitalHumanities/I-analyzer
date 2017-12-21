@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CorpusField } from '../models/corpus';
+import { CorpusField, SearchQuery } from '../models/index';
 import { HighlightService } from '../services/highlight.service';
 import { HighlightPipe } from './highlight-pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
@@ -36,6 +36,7 @@ describe('Search Results Component', () => {
             }, '2', 0.5, 2)],
             retrieved: 2,
             total: 2,
+<<<<<<< Updated upstream
             queryModel: {
                 aborted: false,
                 completed: (new Date()),
@@ -47,6 +48,9 @@ describe('Search Results Component', () => {
                 },
                 transferred: 0
             }
+=======
+            queryModel: createQueryModel()
+>>>>>>> Stashed changes
         };
 
         fixture.detectChanges();
@@ -61,6 +65,20 @@ describe('Search Results Component', () => {
             searchFilter: null,
             hidden: false
         };
+    }
+
+    function createQueryModel(name: string): SearchQuery {
+        return {
+            query: {
+            'bool': {
+                'must': 'simple_query_string': {
+                    'query':'Where is Wally?',
+                    'lenient': true,
+                    'default_operator': 'or'
+                }
+                'filter': any[],
+            }
+    }
     }
 
     function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {

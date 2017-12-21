@@ -30,7 +30,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public showVisualization: boolean = false;
     public showFilters: boolean = false;
     public query: string;
-    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean }) };
+    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
     public queryModel: SearchQuery;
     /**
      * This is the query currently used for searching,
@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
-    private barChartKey: string;
+    private selectedAll: boolean = false;
 
     private subscription: Subscription | undefined;
 
@@ -61,7 +61,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.title.setTitle(this.corpus.name);
                 this.queryField = {};
                 for (let field of this.corpus.fields) {
-                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false }, field);
+                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: false }, field);
                 }
             });
         })
@@ -104,7 +104,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public visualize() {
-        //this.searchService.searchForVisualization(this.corpus, this.query, this.getQueryFields(), this.getFilterData());
         this.showVisualization = true;
     }
 
@@ -120,8 +119,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
 
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
-
-        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), `${this.corpus.name}.csv`);
+        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), filename);
     }
 
     public updateFilterData(name: string, data: any) {
@@ -131,6 +129,17 @@ export class SearchComponent implements OnInit, OnDestroy {
     public onViewDocument(document: FoundDocument) {
         this.showDocument = true;
         this.viewDocument = document;
+    }
+
+    public selectAllCsvFields() {
+        for (let field of this.corpus.fields) {
+            this.queryField[field.name].visible = this.selectedAll;
+        }
+    }
+
+    public checkIfAllSelected() {
+        let fields = Object.values(this.queryField).filter(field => !field.hidden);
+        this.selectedAll = fields.every(field => field.visible);
     }
 
     private getQueryFields(): CorpusField[] {

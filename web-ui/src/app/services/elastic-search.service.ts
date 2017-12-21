@@ -52,22 +52,47 @@ export class ElasticSearchService {
         }
     }
 
-    private executeAggregate(index: ElasticSearchIndex, query, aggregator: string, aggregatorName: string = aggregator) {
+
+    /**
+    * Construct the aggregator, based on kind of field
+    * Date fiels are aggregated in year intervals
+    */
+    makeAggregation(aggregator: string, aggregatorName: string = aggregator){
+        let aggregation: any;
+        if (aggregator=="date") { 
+            aggregation = {
+                aggs: {
+                    [aggregatorName]: {
+                            date_histogram: {
+                                field: aggregator,
+                                interval:"year",
+                                format:"yyyy"
+                        }
+                    }
+                }
+            }
+        }
+        else { 
+            aggregation = {
+                aggs: {
+                    [aggregatorName]: {
+                        terms: {
+                            field: aggregator
+                        }
+                    }
+                }
+            }
+        }
+        return aggregation;
+        }
+    
+
+    private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connection.then((connection) => connection.client.search({
             index: index.index,
             type: index.doctype,
             size: 0,
-            body: Object.assign({
-                aggs: {
-                    [aggregatorName]: {
-                        terms: {
-                            field: aggregator,
-                            // order by quarter, ascending
-                            // order: { "_term": "asc" }
-                        }
-                    }
-                }
-            }, query)
+            body: aggregationModel
         }));
     }
 
@@ -127,12 +152,17 @@ export class ElasticSearchService {
         });
     }
 
+
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+        let aggregation = this.makeAggregation(aggregator);
+
         let connection = await this.connection;
-        let result = await this.executeAggregate(corpusDefinition, queryModel, aggregator);
+        let aggregationModel = Object.assign(aggregation, queryModel);
+
+        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
         // Extract relevant information from dictionary returned by ES
-        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number }[] } } = result.aggregations;
+        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number, key_as_string?: string }[] } } = result.aggregations;
         let buckets = aggregations[aggregator].buckets;
         return {
             completed: true,

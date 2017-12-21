@@ -42,8 +42,7 @@ class Corpus(object):
         '''
         List of data fields which should be visualized with a bar chart.
         '''
-        #raise NotImplementedError()
-        pass
+        raise NotImplementedError()
 
     @property
     def data_directory(self):

@@ -24,6 +24,7 @@ class DutchBanking(XMLCorpus):
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
+    visualize = ['year','bank']
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'

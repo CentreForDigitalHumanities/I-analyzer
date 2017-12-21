@@ -23,6 +23,7 @@ class JewishInscriptions(XMLCorpus):
     es_index = config.JEWISH_INSCRIPTIONS_ES_INDEX
     es_doctype = config.JEWISH_INSCRIPTIONS_ES_DOCTYPE
     es_settings = None
+    visualize = []
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = ''
