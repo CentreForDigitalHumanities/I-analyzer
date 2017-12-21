@@ -32,7 +32,7 @@ export class BarChartComponent implements OnInit {
 
   private yAsPercent: boolean = false;
   private yTicks: number = 10;
-  private margin = { top: 10, bottom: 100, left: 70, right: 10 };
+  private margin = { top: 10, bottom: 120, left: 70, right: 10 };
   private svg: any;
   private chart: any;
   private width: number;
@@ -124,8 +124,7 @@ export class BarChartComponent implements OnInit {
       .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
     // adding axis labels
-    let xLabelText = this.visualizedField.displayName;
-    // capitalize name of variable
+    let xLabelText = this.visualizedField.replace(/\b\w/g, l => l.toUpperCase());
     let yLabelText = "Frequency";
 
     this.svg.append("text")
