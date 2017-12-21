@@ -30,7 +30,7 @@
             </div>
             <div class="level-right">
                 <div class="level-item">
-                    <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=corpus&&corpus.visualize.length>
+                    <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results" *ngIf="corpus&&corpus.visualize.length">
                         <span class="icon is-small">
                             <i class="fa fa-bar-chart"></i>
                         </span>
@@ -102,7 +102,7 @@
     <ng-container *ngFor="let field of corpus.fields">
         <div class="csv-column" *ngIf="!field.hidden">
             <label class="checkbox">
-                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="'visibleField' + field.displayName" (change)="checkIfAllSelected();"> {{ field.displayName }}
+                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="visibleField" (change)="checkIfAllSelected()"> {{ field.displayName }}
             </label>
             <div class="description" *ngIf="field.description">
                 {{ field.description }}

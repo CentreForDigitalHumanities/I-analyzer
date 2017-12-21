@@ -57,29 +57,20 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fiels are aggregated in year intervals
     */
-    makeAggregation(aggregator: string, aggregatorName: string = aggregator){
+    makeAggregation(aggregator: string){
         let aggregation: any;
         if (aggregator=="date") { 
-            aggregation = {
-                aggs: {
-                    [aggregatorName]: {
-                            date_histogram: {
-                                field: aggregator,
-                                interval:"year",
-                                format:"yyyy"
-                        }
-                    }
+            aggregation = { 
+                date_histogram: {
+                    field: aggregator,
+                    interval:"year",
+                    format:"yyyy"
                 }
             }
         }
         else { 
-            aggregation = {
-                aggs: {
-                    [aggregatorName]: {
-                        terms: {
-                            field: aggregator
-                        }
-                    }
+            aggregation = { terms: {
+                field: aggregator
                 }
             }
         }
@@ -155,9 +146,8 @@ export class ElasticSearchService {
 
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
-
         let connection = await this.connection;
-        let aggregationModel = Object.assign(aggregation, queryModel);
+        let aggregationModel = Object.assign({aggs: {[aggregator]: aggregation}}, queryModel);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 

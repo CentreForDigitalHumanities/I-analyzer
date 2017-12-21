@@ -40,7 +40,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
-    private selectedAll: boolean = false;
+    private selectedAll: boolean = true;
 
     private subscription: Subscription | undefined;
 
@@ -61,7 +61,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.title.setTitle(this.corpus.name);
                 this.queryField = {};
                 for (let field of this.corpus.fields) {
-                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: false }, field);
+                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
                 }
             });
         })

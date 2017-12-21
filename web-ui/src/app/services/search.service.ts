@@ -106,7 +106,7 @@ export class SearchService {
      * of the selected fields, in given order.
      */
     private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(field => this.documentFieldValue(document[field]));
+        return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
     }
 
     private documentFieldValue(value: any) {
