@@ -1,11 +1,11 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
 import { saveAs } from 'file-saver';
 
-import { Corpus, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument } from '../models/index';
 import { CorpusService, SearchService } from '../services/index';
 @Component({
     selector: 'app-search',
@@ -13,35 +13,38 @@ import { CorpusService, SearchService } from '../services/index';
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
-    @Input() private searchData: Array<any>;
-
     public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
     public isSearching: boolean;
     public searched: boolean;
+    /**
+     * Whether a document has been selected to be shown.
+     */
+    public showDocument: boolean = false;
+    /**
+     * The document to view separately.
+     */
+    public viewDocument: FoundDocument;
     public showVisualization: boolean = false;
     public showFilters: boolean = false;
     public query: string;
-    public queryField: { [name: string]: { useAsFilter: boolean, visible: boolean, data?: SearchFilterData } };
+    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
+    public queryModel: SearchQuery;
     /**
      * This is the query currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
     public searchQuery: string;
-    public sample: SearchSample;
+    public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
-    private barChartKey: string;
+    private selectedAll: boolean = false;
 
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
-        //this.visibleTab = "search";
-        // setting the aspect for which term frequencies are counted to year.
-        // TODO: make several miniature visualizations for different term frequencies
-        this.barChartKey = "year";
     }
 
     ngOnInit() {
@@ -58,7 +61,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.title.setTitle(this.corpus.name);
                 this.queryField = {};
                 for (let field of this.corpus.fields) {
-                    this.queryField[field.name] = { useAsFilter: false, visible: true };
+                    this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: false }, field);
                 }
             });
         })
@@ -90,56 +93,59 @@ export class SearchComponent implements OnInit, OnDestroy {
             searchQuery,
             this.getQueryFields(),
             this.getFilterData())
-            .then(sample => {
+            .then(results => {
                 this.searchQuery = searchQuery;
-                this.sample = sample;
+                this.results = results;
                 this.isSearching = false;
                 this.searched = true;
+                this.queryModel = results.queryModel;
             });
         this.showFilters = true;
     }
 
     public visualize() {
-        this.searchResults = [];
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-        this.subscription = this.searchService.searchObservable(
-            this.corpus,
-            this.query,
-            this.getQueryFields(),
-            this.getFilterData())
-            .subscribe(searchResults => {
-                // the array pointer needs to be updated for a change to be detected
-                this.searchResults = this.searchResults.concat(...searchResults.documents);
-                console.log(this.searchResults[0].date);
-            })
+        this.showVisualization = true;
     }
 
     public async download() {
         let fields = this.getQueryFields();
         let rows = await this.searchService.searchAsCsv(
             this.corpus,
-            this.query,
-            fields,
-            this.getFilterData());
+            this.queryModel,
+            fields);
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
         let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
 
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
-
-        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), `${this.corpus.name}.csv`);
+        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), filename);
     }
 
     public updateFilterData(name: string, data: any) {
         this.queryField[name].data = data;
     }
 
-    private getQueryFields(): string[] {
-        return Object.keys(this.queryField).filter(field => this.queryField[field].visible);
+    public onViewDocument(document: FoundDocument) {
+        this.showDocument = true;
+        this.viewDocument = document;
     }
+
+    public selectAllCsvFields() {
+        for (let field of this.corpus.fields) {
+            this.queryField[field.name].visible = this.selectedAll;
+        }
+    }
+
+    public checkIfAllSelected() {
+        let fields = Object.values(this.queryField).filter(field => !field.hidden);
+        this.selectedAll = fields.every(field => field.visible);
+    }
+
+    private getQueryFields(): CorpusField[] {
+        return Object.values(this.queryField).filter(field => !field.hidden);
+    }
+
     private getFilterData(): SearchFilterData[] {
         let data = [];
         for (let fieldName of Object.keys(this.queryField)) {

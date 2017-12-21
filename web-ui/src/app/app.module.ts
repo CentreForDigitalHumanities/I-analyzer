@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule } from 'primeng/primeng';
+import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule } from 'primeng/primeng';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
@@ -15,13 +15,14 @@ import { ApiService, ConfigService, CorpusService, ElasticSearchService, Highlig
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { VisualizationComponent } from './visualization/visualization.component';
+import { DocumentViewComponent } from './document-view/document-view.component';
 
 const appRoutes: Routes = [
     {
@@ -57,12 +58,14 @@ const appRoutes: Routes = [
         HighlightPipe,
         SearchComponent,
         SearchFilterComponent,
-        SearchSampleComponent,
+        SearchResultsComponent,
         MenuComponent,
         LoginComponent,
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
+        SearchRelevanceComponent,
+        DocumentViewComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -77,6 +80,7 @@ const appRoutes: Routes = [
         MenuModule,
         DialogModule,
         CheckboxModule,
+        SharedModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })

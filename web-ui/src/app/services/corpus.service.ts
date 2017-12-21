@@ -22,6 +22,7 @@ export class CorpusService {
             name,
             data.title,
             data.description,
+            data.visualize,
             data.es_doctype,
             data.es_index,
             data.fields.map(item => this.parseField(item)),
@@ -32,7 +33,8 @@ export class CorpusService {
     private parseField(data: any): CorpusField {
         return {
             description: data.description,
-            type: data['es_mapping'].type,
+            displayName: data.display_name || data.name,
+            displayType: data.display_type || data['es_mapping'].type,
             hidden: data.hidden,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null

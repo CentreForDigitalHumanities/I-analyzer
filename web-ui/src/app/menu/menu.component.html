@@ -1,22 +1,12 @@
 <nav class="navbar" *ngIf="currentUser">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="https://dig.hum.uu.nl/">
-      <img src="assets/dhlab.png" alt="Digital Humanities Lab Utrecht" width="200">
-    </a>
-  </div>
-  <div class="navbar-menu is-active">
-    <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
-    <a class="navbar-item">
-      <button type="button"
-        pButton icon="fa fa-user-circle"
-        label="Logged in as {{currentUser.name}}"
-        (click)="menu.toggle($event)">
-      </button>
-        <!-- drop down menu to log out, or see previous queries-->
-        <p-menu #menu popup="popup" [model]="items" appendTo="body"></p-menu>
-    </a>
-  </div>
+    <div class="navbar-brand">
+        <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
+    </div>
+    <div class="navbar-menu is-active">
+        <a class="navbar-item">
+            <button type="button" pButton icon="fa fa-user-circle" label="Logged in as {{currentUser.name}}" (click)="menu.toggle($event)"></button>
+            <!-- drop down menu to log out, or see previous queries-->
+            <p-menu #menu popup="popup" [model]="items" appendTo="body"></p-menu>
+        </a>
+    </div>
 </nav>
-
-
-

@@ -17,12 +17,14 @@ class DutchBanking(XMLCorpus):
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = config.DUTCHBANK_TITLE
     description = config.DUTCHBANK_DESCRIPTION
+    visualize = ['bank','year']
     data_directory = config.DUTCHBANK_DATA
     min_date = config.DUTCHBANK_MIN_DATE
     max_date = config.DUTCHBANK_MAX_DATE
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
+    visualize = ['year','bank']
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'
@@ -59,6 +61,7 @@ class DutchBanking(XMLCorpus):
     fields = [
         Field(
             name='bank',
+            display_name='Bank',
             description='Banking concern to which the report belongs.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -72,6 +75,7 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='year',
+            display_name='Year',
             description='Year of the financial report.',
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
@@ -83,18 +87,21 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='objectno',
+            display_name='#',
             description='Object number in the dataset.',
             es_mapping={'type': 'integer'},
             extractor=Metadata(key='serial', transform=int),
         ),
         Field(
             name='scan',
+            display_name='Scan',
             description='Scan number within the financial report. A scan contains one or two pages.',
             es_mapping={'type': 'integer'},
             extractor=Metadata(key='scan', transform=int),
         ),
         Field(
             name='id',
+            display_name='ID',
             description='Unique identifier of the text block.',
             extractor=Combined(
                 Metadata(key='bank'),
@@ -105,6 +112,7 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='content',
+            display_type='text_content',
             description='Text content of the block.',
             extractor=XML(
                 tag='String',
@@ -116,6 +124,7 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='hpos',
+            display_name='Horizontal Position',
             description='Horizontal position on the scan in pixels.',
             indexed=False,
             es_mapping={'type': 'integer'},
@@ -123,6 +132,8 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='vpos',
+            display_name='Vertical Position',
+            display_type='px',
             description='Vertical position on the scan in pixels.',
             indexed=False,
             es_mapping={'type': 'integer'},
@@ -130,6 +141,8 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='width',
+            display_name='Width',
+            display_type='px',
             description='Width on the scan in pixels.',
             indexed=False,
             es_mapping={'type': 'integer'},
@@ -137,6 +150,8 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='height',
+            display_name='Height',
+            display_type='px',
             description='Height on the scan in pixels.',
             indexed=False,
             es_mapping={'type': 'integer'},

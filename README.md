@@ -53,5 +53,5 @@ Indexing large corpora on the remote server
 -------------------------------------------------------------------------------
 
 1. If you are not indexing on your local machine, `ssh` into the server. After `sudo su`-ing to a relevant user, do `script /dev/null` so that `screen` will not get [confused](http://serverfault.com/q/116775) from being called by a different user. Now, create and attach to a new `screen` session, or reattach with `screen -r <id>` to an existing ID in `screen -ls`.
-2. After activating the virtual environment, start indexing in the background with `./index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.
+2. After activating the virtual environment, start indexing in the background with `./es_index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.
 3. If required, you can then detach with `screen -D` so that you can safely exit the terminal while indexing is in progress.

@@ -38,6 +38,13 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def visualize(self):
+        '''
+        List of data fields which should be visualized with a bar chart.
+        '''
+        raise NotImplementedError()
+
+    @property
     def data_directory(self):
         '''
         Path to source data directory.
@@ -303,6 +310,8 @@ class Field(object):
 
     def __init__(self,
             name=None,
+            display_name=None,
+            display_type=None,
             description=None,
             indexed=True,
             hidden=False,
@@ -313,6 +322,8 @@ class Field(object):
             ):
 
         self.name = name
+        self.display_name = display_name
+        self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
         self.es_mapping = es_mapping

@@ -30,6 +30,7 @@ class Times(XMLCorpus):
     es_index = config.TIMES_ES_INDEX
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
+    visualize = ['category','date']
 
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'
@@ -465,6 +466,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content',
+            display_type='text_content',
             description='Raw OCR\'ed text (content).',
             extractor=extract.XML(
                 tag=['text','text.cr'], multiple=True,

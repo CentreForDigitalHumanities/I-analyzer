@@ -59,12 +59,14 @@ describe('CorpusService', () => {
                 "es_settings": null,
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "visualize": [],
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
                     "hidden": true,
                     "indexed": false,
                     "name": "bank",
+                    "display_name": "Bank",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -89,16 +91,18 @@ describe('CorpusService', () => {
 
         return service.get().then((items) => {
             expect(items).toEqual([new Corpus(
-                 'times',
-                 'Times',
-                 'This is a description.',
-                 'article',
-                 'times',
-                 [{
+                'times',
+                'Times',
+                'This is a description.',
+                [],
+                'article',
+                'times',
+                [{
                     description: "Banking concern to which the report belongs.",
                     hidden: true,
                     name: 'bank',
-                    type: 'keyword',
+                    displayName: 'Bank',
+                    displayType: 'keyword',
                     searchFilter: {
                         description: "Search only within these banks.",
                         name: "MultipleChoiceFilter",
@@ -108,7 +112,8 @@ describe('CorpusService', () => {
                     description: "Year of the financial report.",
                     hidden: false,
                     name: 'year',
-                    type: 'integer',
+                    displayName: 'year',
+                    displayType: 'integer',
                     searchFilter: {
                         description: "Restrict the years from which search results will be returned.",
                         name: "RangeFilter",
@@ -117,8 +122,8 @@ describe('CorpusService', () => {
                     }
                 }
                 ],
-                 new Date(1785, 0, 1, 0, 0),
-                 new Date(2010, 11, 31, 0, 0))
+                new Date(1785, 0, 1, 0, 0),
+                new Date(2010, 11, 31, 0, 0))
             ]);
         });
     });
