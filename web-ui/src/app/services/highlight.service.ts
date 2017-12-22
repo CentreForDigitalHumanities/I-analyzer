@@ -5,6 +5,15 @@ import { Injectable } from '@angular/core';
  * a more scalable approach would need to be implemented if rendering many hits is required.
  */
 const maxHits = 100;
+/**
+ * The maximum character length of all the text snippets combined.
+ */
+const maxSnippetsLength = 140;
+/**
+ * The maximum number of snippets.
+ */
+const maxSnippetsCount = 7;
+const omissionString = '…'
 
 export type TextPart = {
     substring: string,
@@ -55,6 +64,40 @@ export class HighlightService {
         if (text.length > lastIndex) {
             yield { substring: text.substring(lastIndex), isHit: false };
         }
+    }
+
+    /**
+     * Gets short snippets from the text part to give the user a short overview of the text content.
+     */
+    public snippets(parts: IterableIterator<TextPart>): TextPart[] {
+        let snippets: TextPart[] = [];
+        for (let i = 0, next = parts.next(); !next.done && i < maxSnippetsCount; i++ , next = parts.next()) {
+            snippets.push(next.value);
+        }
+
+        let limitString = (text: string, maxLength: number, location: 'left' | 'middle' | 'right') => {
+            if (text.length <= maxLength) {
+                return text;
+            }
+
+            switch (location) {
+                case 'left':
+                    return text.substr(0, maxLength) + omissionString;
+
+                case 'middle':
+                    return text.substr(0, maxLength / 2) + omissionString + text.substr(text.length - maxLength / 2);
+
+                case 'right':
+                    return omissionString + text.substr(text.length - maxLength);
+            }
+        }
+
+        snippets.forEach((part, index) => {
+            // TODO: better divide text length (what if one part is small enough?)
+            part.substring = limitString(part.substring, maxSnippetsLength / snippets.length, index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
+        });
+
+        return snippets;
     }
 
     /**

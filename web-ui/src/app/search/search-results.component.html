@@ -31,7 +31,7 @@
             </div>
             <ng-container *ngIf="contentFieldNames">
                 <ng-container *ngFor="let fieldName of contentFieldNames">
-                    <div *ngIf="document.fieldValues[fieldName]" [innerHtml]="document.fieldValues[fieldName] | highlight:query"></div>
+                    <div *ngIf="document.fieldValues[fieldName]" [innerHtml]="document.fieldValues[fieldName] | highlight:query:true"></div>
                 </ng-container>
             </ng-container>
         </div>
