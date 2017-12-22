@@ -3,10 +3,10 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
-import { saveAs } from 'file-saver';
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, FoundDocument } from '../models/index';
-import { CorpusService, SearchService } from '../services/index';
+import { CorpusService, SearchService, DownloadService } from '../services/index';
+
 @Component({
     selector: 'app-search',
     templateUrl: './search.component.html',
@@ -45,7 +45,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private subscription: Subscription | undefined;
 
-    constructor(private corpusService: CorpusService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
+    constructor(private corpusService: CorpusService, private downloadService: DownloadService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
         //this.visibleTab = "search";
         // setting the aspect for which term frequencies are counted to year.
         // TODO: make several miniature visualizations for different term frequencies
@@ -126,7 +126,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public async download() {
         let fields = this.getQueryFields();
-        let rows = await this.searchService.searchAsCsv(
+        let rows = await this.searchService.searchAsTable(
             this.corpus,
             this.query,
             fields,
@@ -137,8 +137,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
 
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
-
-        saveAs(new Blob([fields.join(',') + '\n', ...rows], { type: "text/csv;charset=utf-8" }), `${this.corpus.name}.csv`);
+        this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
     }
 
     public updateFilterData(name: string, data: any) {

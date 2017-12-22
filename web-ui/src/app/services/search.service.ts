@@ -69,20 +69,19 @@ export class SearchService {
         });
     }
 
-    public async searchAsCsv(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
+    public async searchAsTable(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
-        this.logService.info(`Requested CSV file for query: ${query}`);
+        this.logService.info(`Requested tabular data for query: ${query}`);
 
-        return new Promise<string[]>((resolve, reject) => {
-            let rows: string[] = [];
+        return new Promise<string[][]>((resolve, reject) => {
+            let rows: string[][] = [];
             this.searchObservable(corpus, query, fields, filters)
                 .subscribe(
                 result => {
                     rows.push(...
                         result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                                .map(this.csvCell).join(separator) + '\n'));
+                            this.documentRow(document.fieldValues, fields.map(field => field.name))));
 
                     totalTransferred = result.retrieved;
                 },
@@ -91,20 +90,12 @@ export class SearchService {
         });
     }
 
-    private csvCell(value: string) {
-        if (value.indexOf('"') >= 0) {
-            return `"${value.replace('"', '""')}"`;
-        }
-
-        return value;
-    }
-
     /**
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
-    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(field => this.documentFieldValue(document[field]));
+    private documentRow<T>(fieldValues: { [id: string]: T }, fieldNames: string[] = []): string[] {
+        return fieldNames.map(field => this.documentFieldValue(fieldValues[field]));
     }
 
     private documentFieldValue(value: any) {

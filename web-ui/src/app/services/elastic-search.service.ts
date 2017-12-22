@@ -133,7 +133,7 @@ export class ElasticSearchService {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
-            fieldValues: hit._source,
+            fieldValues: Object.assign({ id: hit._id }, hit._source),
             position: index + 1
         };
     }
