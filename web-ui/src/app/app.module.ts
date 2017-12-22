@@ -10,7 +10,7 @@ import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModu
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -84,7 +84,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
