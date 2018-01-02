@@ -6,14 +6,14 @@ import { Injectable } from '@angular/core';
  */
 const maxHits = 100;
 /**
- * The maximum character length of all the text snippets combined.
- */
-const maxSnippetsLength = 140;
-/**
  * The maximum number of snippets.
  */
 const maxSnippetsCount = 7;
-const omissionString = '…'
+/**
+ * The maximum character length of all the text snippets combined.
+ */
+export const maxSnippetsLength = 140;
+export const omissionString = '…'
 
 export type TextPart = {
     substring: string,
@@ -75,29 +75,68 @@ export class HighlightService {
             snippets.push(next.value);
         }
 
-        let limitString = (text: string, maxLength: number, location: 'left' | 'middle' | 'right') => {
-            if (text.length <= maxLength) {
-                return text;
-            }
-
-            switch (location) {
-                case 'left':
-                    return text.substr(0, maxLength) + omissionString;
-
-                case 'middle':
-                    return text.substr(0, maxLength / 2) + omissionString + text.substr(text.length - maxLength / 2);
-
-                case 'right':
-                    return omissionString + text.substr(text.length - maxLength);
-            }
-        }
+        let lengths = this.getSnippetLengths(snippets.map(snippet => snippet.substring.length), maxSnippetsLength);
 
         snippets.forEach((part, index) => {
-            // TODO: better divide text length (what if one part is small enough?)
-            part.substring = limitString(part.substring, maxSnippetsLength / snippets.length, index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
+            part.substring = this.cropSnippetText(part.substring,
+                lengths[index],
+                index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
         });
 
         return snippets;
+    }
+
+    private getSnippetLengths(actualLengths: number[], maxTotalLength: number, croppedSnippets = actualLengths.length) {
+        let targetLengths: number[] = [];
+        let remainingCharacters = maxTotalLength;
+        let maxLength = Math.max(1, Math.floor(maxTotalLength / croppedSnippets));
+
+        let remainingSnippets = 0;
+
+        let i = 0;
+        for (; i < actualLengths.length && remainingCharacters > 0; i++) {
+            let actualLength = actualLengths[i];
+            let targetLength = Math.min(actualLength, maxLength);
+
+            remainingCharacters -= targetLength;
+            targetLengths[i] = targetLength;
+
+            if (actualLength > targetLength) {
+                // only the cropped snippets could become longer
+                remainingSnippets++;
+            }
+        }
+        for (; i < actualLengths.length; i++) {
+            targetLengths[i] = 0;
+        }
+
+        if (remainingCharacters && remainingSnippets) {
+            // if a snippet is shorter than the maximum snippet length, allow the remaining snippets to become longer
+            let additionalLengths = this.getSnippetLengths(
+                actualLengths.map((length, index) => length - targetLengths[index]),
+                remainingCharacters,
+                remainingSnippets);
+            return targetLengths.map((length, index) => length + additionalLengths[index]);
+        }
+
+        return targetLengths;
+    }
+
+    private cropSnippetText(text: string, maxLength: number, location: 'left' | 'middle' | 'right'): string {
+        if (text.length <= maxLength) {
+            return text;
+        }
+
+        switch (location) {
+            case 'left':
+                return text.substr(0, maxLength) + omissionString;
+
+            case 'middle':
+                return text.substr(0, maxLength / 2) + omissionString + text.substr(text.length - maxLength / 2);
+
+            case 'right':
+                return omissionString + text.slice(-maxLength);
+        }
     }
 
     /**
