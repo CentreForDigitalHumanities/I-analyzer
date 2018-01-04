@@ -70,35 +70,28 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 
-
-    public async searchAsCsv(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = [], separator = ','): Promise<string[]> {
+    /**
+     * Search and return a simple two-dimensional string array containing the values.
+     */
+    public async searchAsTable(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
-        this.logService.info(`Requested CSV file for query: ${JSON.stringify(queryModel)}`);
+        this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
-        return new Promise<string[]>((resolve, reject) => {
-            let rows: string[] = [];
+        return new Promise<string[][]>((resolve, reject) => {
+            let rows: string[][] = [];
             this.searchObservable(corpus, queryModel)
                 .subscribe(
                 result => {
                     rows.push(...
                         result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                                .map(this.csvCell).join(separator) + '\n'));
+                            this.documentRow(document, fields.map(field => field.name))));
 
                     totalTransferred = result.retrieved;
                 },
                 (error) => reject(error),
                 () => resolve(rows));
         });
-    }
-
-    private csvCell(value: string) {
-        if (value.indexOf('"') >= 0) {
-            return `"${value.replace('"', '""')}"`;
-        }
-
-        return value;
     }
 
     /**

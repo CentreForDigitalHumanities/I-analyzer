@@ -1,6 +1,7 @@
 export * from './api.service';
 export * from './config.service';
 export * from './corpus.service';
+export * from './download.service';
 export * from './elastic-search.service';
 export * from './highlight.service';
 export * from './log.service';
