@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions } from 'elasticsearch';
-import { CorpusField, FoundDocument, ElasticSearchIndex, SearchResults } from '../models/index';
+import { CorpusField, FoundDocument, ElasticSearchIndex, SearchQuery, SearchClause, SearchResults, AggregateResults } from '../models/index';
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class ElasticSearchService {
             return {
                 config,
                 client: new Client({
-                    host: config.host + ':' + config.port,
+                    host: config.host + (config.port ? `:${config.port}` : ''),
                 })
             };
         });
@@ -52,15 +52,50 @@ export class ElasticSearchService {
         }
     }
 
+
+    /**
+    * Construct the aggregator, based on kind of field
+    * Date fiels are aggregated in year intervals
+    */
+    makeAggregation(aggregator: string){
+        let aggregation: any;
+        if (aggregator=="date") { 
+            aggregation = { 
+                date_histogram: {
+                    field: aggregator,
+                    interval:"year",
+                    format:"yyyy"
+                }
+            }
+        }
+        else { 
+            aggregation = { terms: {
+                field: aggregator
+                }
+            }
+        }
+        return aggregation;
+        }
+    
+
+    private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
+        return this.connection.then((connection) => connection.client.search({
+            index: index.index,
+            type: index.doctype,
+            size: 0,
+            body: aggregationModel
+        }));
+    }
+
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private execute<T>(index: ElasticSearchIndex, query, size) {
+    private execute<T>(index: ElasticSearchIndex, queryModel, size) {
         return this.connection.then((connection) => connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
-            body: query
+            body: queryModel
         }));
     }
 
@@ -79,7 +114,8 @@ export class ElasticSearchService {
                         completed: false,
                         documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
                         retrieved: retrieved += response.hits.hits.length,
-                        total: response.hits.total
+                        total: response.hits.total,
+                        queryModel: query
                     }
 
                     if (response.hits.total !== retrieved && retrieved < size) {
@@ -107,11 +143,27 @@ export class ElasticSearchService {
         });
     }
 
-    public async search(corpusDefinition: ElasticSearchIndex, queryString: string, filters?: any[], size?: number): Promise<SearchResults> {
-        let query = this.makeQuery(queryString, filters);
+
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+        let aggregation = this.makeAggregation(aggregator);
+        let connection = await this.connection;
+        let aggregationModel = Object.assign({aggs: {[aggregator]: aggregation}}, queryModel);
+
+        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
+
+        // Extract relevant information from dictionary returned by ES
+        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number, key_as_string?: string }[] } } = result.aggregations;
+        let buckets = aggregations[aggregator].buckets;
+        return {
+            completed: true,
+            aggregations: buckets
+        };
+    }
+
+    public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
         // Perform the search
-        return this.execute(corpusDefinition, query, size || connection.config.exampleQuerySize).then(result => {
+        return this.execute(corpusDefinition, queryModel, size || connection.config.exampleQuerySize).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
@@ -121,7 +173,8 @@ export class ElasticSearchService {
                 completed: true,
                 total: stats.total || 0,
                 retrieved: documents.length,
-                documents
+                documents,
+                queryModel
             };
         });
     }
@@ -138,26 +191,6 @@ export class ElasticSearchService {
         };
     }
 }
-export type SearchQuery = {
-    aborted?: boolean,
-    completed?: Date,
-    query: SearchClause | {
-        'bool': {
-            'must': SearchClause[],
-            'filter': any[],
-        }
-    },
-    transferred?: Number
-}
-export type SearchClause = {
-    'simple_query_string': {
-        'query': string,
-        'lenient': true,
-        'default_operator': 'or'
-    }
-} | {
-        'match_all': {}
-    };
 
 type Connection = {
     client: Client,

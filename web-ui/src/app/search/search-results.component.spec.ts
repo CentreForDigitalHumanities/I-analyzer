@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CorpusField } from '../models/corpus';
+import { CorpusField, SearchQuery } from '../models/index';
 import { HighlightService } from '../services/highlight.service';
 import { HighlightPipe } from './highlight-pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
@@ -35,7 +35,18 @@ describe('Search Results Component', () => {
                 'c': 'Wally is here'
             }, '2', 0.5, 2)],
             retrieved: 2,
-            total: 2
+            total: 2,
+            queryModel: {
+                aborted: false,
+                completed: (new Date()),
+                query: {
+                    'bool': {
+                        'must': [],
+                        'filter': [],
+                    }
+                },
+                transferred: 0
+            }
         };
 
         fixture.detectChanges();
@@ -51,6 +62,7 @@ describe('Search Results Component', () => {
             hidden: false
         };
     }
+
 
     function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
         return { id, relevance, fieldValues, position };

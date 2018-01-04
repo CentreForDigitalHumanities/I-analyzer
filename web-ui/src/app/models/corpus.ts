@@ -1,5 +1,6 @@
 export class Corpus implements ElasticSearchIndex {
-    constructor(/**
+    constructor(
+    /**
      * Internal name for referring to this corpus e.g. in URLs.
      */
         public name: string,
@@ -11,6 +12,7 @@ export class Corpus implements ElasticSearchIndex {
          * Description of the corpus to show to users.
          */
         public description: string,
+        public visualize: string[],
         public doctype: DocumentType,
         public index: string,
         public fields: CorpusField[],
