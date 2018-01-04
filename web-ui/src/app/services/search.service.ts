@@ -85,7 +85,7 @@ export class SearchService {
                 result => {
                     rows.push(...
                         result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))));
+                            this.documentRow(document.fieldValues, fields.map(field => field.name))));
 
                     totalTransferred = result.retrieved;
                 },
@@ -98,6 +98,7 @@ export class SearchService {
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
+  
     private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
         return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
     }
