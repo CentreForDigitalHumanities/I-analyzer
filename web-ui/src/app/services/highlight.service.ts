@@ -86,7 +86,7 @@ export class HighlightService {
         return snippets;
     }
 
-    private getSnippetLengths(actualLengths: number[], maxTotalLength: number, croppedSnippets = actualLengths.length) {
+    private getSnippetLengths(actualLengths: number[], maxTotalLength: number, croppedSnippets = actualLengths.length): number[] {
         let targetLengths: number[] = [];
         let remainingCharacters = maxTotalLength;
         let maxLength = Math.max(1, Math.floor(maxTotalLength / croppedSnippets));

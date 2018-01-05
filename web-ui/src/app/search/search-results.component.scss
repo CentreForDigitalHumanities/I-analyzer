@@ -1,5 +1,6 @@
 @import "~bulma/bulma.sass";
 @import "../../variables";
+
 .document {
     .table {
         td, th {
@@ -8,8 +9,15 @@
     }
 
     .relevance-score {
-        @extend .title;
         text-align: center;
+
+        strong, span {
+            vertical-align: baseline;
+        }
+
+        strong {
+            @extend .title;
+        }
     }
 
     &:hover {

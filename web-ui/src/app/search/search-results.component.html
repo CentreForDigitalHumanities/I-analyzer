@@ -25,8 +25,11 @@
                     </ng-container>
                 </table>
                 <div class="column is-one-quarter is-centered">
+                    <div class="relevance-score">
+                        <span>Relevance:</span>
+                        <strong>{{document.relevance * 100 | number:'1.0-0' }}%</strong>
+                    </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
-                    <p class="relevance-score">{{document.relevance * 100 | number:'1.0-0' }}%</p>
                 </div>
             </div>
             <ng-container *ngIf="contentFieldNames">
