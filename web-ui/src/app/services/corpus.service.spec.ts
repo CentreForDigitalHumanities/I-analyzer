@@ -63,6 +63,7 @@ describe('CorpusService', () => {
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
                 "overview_fields": ["bank", "year"],
+                "visualize": [],
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -121,6 +122,7 @@ describe('CorpusService', () => {
                 'times',
                 'Times',
                 'This is a description.',
+                [],
                 'article',
                 'times',
                 allFields,

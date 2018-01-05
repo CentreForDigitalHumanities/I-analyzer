@@ -7,7 +7,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, SearchFilterData, SearchResults } from '../models/index';
+import { Corpus, CorpusField, Query, SearchFilterData, SearchResults, AggregateResults, SearchQuery } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -18,27 +18,28 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, query: string = '', filters: SearchFilterData[] = []): Promise<SearchResults> {
-        this.logService.info(`Requested flat results for query: ${query}, with filters: ${JSON.stringify(filters)}`);
-        let result = await this.elasticSearchService.search(corpus, query, filters);
+    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = []): Promise<SearchResults> {
+        this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
+        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+        let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
             completed: true,
             total: result.total,
             fields: corpus.overviewFields,
-            documents: result.documents
+            documents: result.documents,
+            queryModel: queryModel
         };
     }
 
-    public searchObservable(corpus: Corpus, queryText: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Observable<SearchResults> {
-        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+    public searchObservable(corpus: Corpus, queryModel: SearchQuery): Observable<SearchResults> {
         let completed = false;
         let totalTransferred = 0;
 
         // Log the query to the database
         let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
         let querySave = this.queryService.save(query, true);
-        this.logService.info(`Requested observable results for query: ${queryText}`);
+        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
 
         // Perform the search and obtain output stream
         return this.elasticSearchService.searchObservable(
@@ -63,20 +64,21 @@ export class SearchService {
             });
     }
 
-    public async searchForVisualization(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<string[]> {
-        return new Promise<string[]>((resolve, reject) => {
-
-        });
+    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 
-    public async searchAsTable(corpus: Corpus, query: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<string[][]> {
+    /**
+     * Search and return a simple two-dimensional string array containing the values.
+     */
+    public async searchAsTable(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
-        this.logService.info(`Requested tabular data for query: ${query}`);
+        this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
         return new Promise<string[][]>((resolve, reject) => {
             let rows: string[][] = [];
-            this.searchObservable(corpus, query, fields, filters)
+            this.searchObservable(corpus, queryModel)
                 .subscribe(
                 result => {
                     rows.push(...
@@ -94,8 +96,8 @@ export class SearchService {
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
-    private documentRow<T>(fieldValues: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(field => this.documentFieldValue(fieldValues[field]));
+    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
+        return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
     }
 
     private documentFieldValue(value: any) {

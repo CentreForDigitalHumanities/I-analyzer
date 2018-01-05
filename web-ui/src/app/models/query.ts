@@ -1,5 +1,3 @@
-import { SearchQuery } from "../services/elastic-search.service";
-
 export class Query {
     constructor(
         query: SearchQuery,
@@ -45,3 +43,25 @@ export class Query {
      */
     public transferred: number = 0
 }
+
+export type SearchQuery = {
+    aborted?: boolean,
+    completed?: Date,
+    query: SearchClause | {
+        'bool': {
+            'must': SearchClause[],
+            'filter': any[],
+        }
+    },
+    transferred?: Number
+}
+export type SearchClause = {
+    'simple_query_string': {
+        'query': string,
+        'lenient': true,
+        'default_operator': 'or'
+    }
+} | {
+        'match_all': {}
+    };
+
