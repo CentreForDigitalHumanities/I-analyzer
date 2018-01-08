@@ -17,12 +17,14 @@ class DutchBanking(XMLCorpus):
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = config.DUTCHBANK_TITLE
     description = config.DUTCHBANK_DESCRIPTION
+    visualize = ['bank','year']
     data_directory = config.DUTCHBANK_DATA
     min_date = config.DUTCHBANK_MIN_DATE
     max_date = config.DUTCHBANK_MAX_DATE
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
+    visualize = ['year','bank']
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'
@@ -55,6 +57,8 @@ class DutchBanking(XMLCorpus):
                     'serial': serial,
                     'scan': scan,
                 }
+
+    overview_fields = ['bank', 'year', 'objectno', 'scan']
 
     fields = [
         Field(

@@ -18,13 +18,18 @@ export class CorpusService {
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {
+        let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
+        let overviewFields = data.overview_fields.map(fieldName => allFields.find(field => field.name == fieldName));
+
         return new Corpus(
             name,
             data.title,
             data.description,
+            data.visualize,
             data.es_doctype,
             data.es_index,
-            data.fields.map(item => this.parseField(item)),
+            overviewFields,
+            allFields,
             this.parseDate(data.min_date),
             this.parseDate(data.max_date));
     }

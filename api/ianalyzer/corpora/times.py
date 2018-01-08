@@ -30,6 +30,7 @@ class Times(XMLCorpus):
     es_index = config.TIMES_ES_INDEX
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
+    visualize = ['category','date']
 
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'
@@ -94,7 +95,7 @@ class Times(XMLCorpus):
 
             date += delta
 
-
+    overview_fields = ['title', 'author', 'publication-date', 'journal', 'edition']
 
     fields = [
         Field(

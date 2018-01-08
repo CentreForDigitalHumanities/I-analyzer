@@ -38,6 +38,13 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def visualize(self):
+        '''
+        List of data fields which should be visualized with a bar chart.
+        '''
+        raise NotImplementedError()
+
+    @property
     def data_directory(self):
         '''
         Path to source data directory.
@@ -88,6 +95,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    @property
+    def overview_fields(self):
+        '''
+        Each corpus should implement a list of field names which should be shown in the overview.
+        '''
+        raise NotImplementedError()
 
 
     @property
