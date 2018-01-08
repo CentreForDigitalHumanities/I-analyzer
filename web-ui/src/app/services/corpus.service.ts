@@ -18,20 +18,22 @@ export class CorpusService {
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {
-        return {
+        return new Corpus(
             name,
-            doctype: data.es_doctype,
-            index: data.es_index,
-            minDate: this.parseDate(data.min_date),
-            maxDate: this.parseDate(data.max_date),
-            fields: data.fields.map(item => this.parseField(item))
-        }
+            data.title,
+            data.description,
+            data.es_doctype,
+            data.es_index,
+            data.fields.map(item => this.parseField(item)),
+            this.parseDate(data.min_date),
+            this.parseDate(data.max_date));
     }
 
     private parseField(data: any): CorpusField {
         return {
             description: data.description,
-            type: data['es_mapping'].type,
+            displayName: data.display_name || data.name,
+            displayType: data.display_type || data['es_mapping'].type,
             hidden: data.hidden,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null

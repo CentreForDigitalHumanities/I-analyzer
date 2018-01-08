@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {MenuItem} from 'primeng/primeng';
 import { User } from '../models/index';
 import { ConfigService, UserService } from '../services/index';
 
@@ -11,9 +12,10 @@ import { ConfigService, UserService } from '../services/index';
 })
 export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
-    public isAdmin = false;
+    public isAdmin: boolean  = false;
 
     private routerSubscription: Subscription;
+    private items: MenuItem[];
 
     constructor(private configService: ConfigService, private userService: UserService, private router: Router) {
         this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
@@ -25,6 +27,24 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
+        this.items = [
+        {
+            label: 'Search history',
+            icon: 'fa-history',
+            url: '#'
+        },
+        {
+            label: 'Exit',
+            icon: 'fa-sign-out',
+            command: (onclick)=>this.logout()
+        },
+        {
+            label: 'Administration',
+            icon: 'fa-cogs',
+            command: (click)=>this.gotoAdmin(),
+            visible: this.isAdmin
+        }];
+
     }
 
 
