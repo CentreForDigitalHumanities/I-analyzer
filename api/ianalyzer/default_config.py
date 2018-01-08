@@ -37,7 +37,7 @@ ES_PASSWORD=''
 ES_CHUNK_SIZE=900 # Maximum number of documents sent during ES bulk operation
 ES_MAX_CHUNK_BYTES=1*1024*1024 # Maximum size of ES chunk during bulk operation
 ES_BULK_TIMEOUT='60s' # Timeout of ES bulk operation
-ES_EXAMPLE_QUERY_SIZE=5 # Number of results to appear in example query
+ES_OVERVIEW_QUERY_SIZE=20 # Number of results to appear in the overview query
 ES_SCROLL_TIMEOUT='3m' # Time before scroll results time out
 ES_SCROLL_PAGESIZE=5000 # Number of results per scroll page
 

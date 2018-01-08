@@ -91,7 +91,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.searchService.search(
             this.corpus,
             searchQuery,
-            this.getQueryFields(),
             this.getFilterData())
             .then(results => {
                 this.searchQuery = searchQuery;

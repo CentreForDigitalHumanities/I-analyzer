@@ -58,6 +58,8 @@ class DutchBanking(XMLCorpus):
                     'scan': scan,
                 }
 
+    overview_fields = ['bank', 'year', 'objectno', 'scan']
+
     fields = [
         Field(
             name='bank',

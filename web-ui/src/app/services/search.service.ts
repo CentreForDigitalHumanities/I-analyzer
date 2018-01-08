@@ -18,7 +18,7 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, queryText: string = '', fields: CorpusField[] = [], filters: SearchFilterData[] = []): Promise<SearchResults> {
+    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = corpus.overviewFields): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
         let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
         let result = await this.elasticSearchService.search(corpus, queryModel);
@@ -32,8 +32,7 @@ export class SearchService {
         };
     }
 
-    public searchObservable(corpus: Corpus, queryModel): Observable<SearchResults> {
-        //let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+    public searchObservable(corpus: Corpus, queryModel: SearchQuery): Observable<SearchResults> {
         let completed = false;
         let totalTransferred = 0;
 
@@ -64,7 +63,6 @@ export class SearchService {
                 });
             });
     }
-
 
     public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
@@ -98,7 +96,6 @@ export class SearchService {
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
-  
     private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
         return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
     }

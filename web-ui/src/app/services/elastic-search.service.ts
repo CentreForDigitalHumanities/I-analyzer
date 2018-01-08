@@ -52,31 +52,30 @@ export class ElasticSearchService {
         }
     }
 
-
     /**
     * Construct the aggregator, based on kind of field
-    * Date fiels are aggregated in year intervals
+    * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string){
+    makeAggregation(aggregator: string) {
         let aggregation: any;
-        if (aggregator=="date") { 
-            aggregation = { 
+        if (aggregator == "date") {
+            aggregation = {
                 date_histogram: {
                     field: aggregator,
-                    interval:"year",
-                    format:"yyyy"
+                    interval: "year",
+                    format: "yyyy"
                 }
             }
         }
-        else { 
-            aggregation = { terms: {
-                field: aggregator
+        else {
+            aggregation = {
+                terms: {
+                    field: aggregator
                 }
             }
         }
         return aggregation;
-        }
-    
+    }
 
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connection.then((connection) => connection.client.search({
@@ -143,11 +142,10 @@ export class ElasticSearchService {
         });
     }
 
-
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
         let connection = await this.connection;
-        let aggregationModel = Object.assign({aggs: {[aggregator]: aggregation}}, queryModel);
+        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, queryModel);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
@@ -163,7 +161,7 @@ export class ElasticSearchService {
     public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
         // Perform the search
-        return this.execute(corpusDefinition, queryModel, size || connection.config.exampleQuerySize).then(result => {
+        return this.execute(corpusDefinition, queryModel, size || connection.config.overviewQuerySize).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
@@ -195,7 +193,7 @@ export class ElasticSearchService {
 type Connection = {
     client: Client,
     config: {
-        exampleQuerySize: number,
+        overviewQuerySize: number,
         scrollPagesize: number,
         scrollTimeout: string
     }

@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 import { CorpusService } from './corpus.service';
 
 import { Corpus } from '../models/corpus';
+import { CorpusField } from '../models/index';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -29,6 +30,7 @@ describe('CorpusService', () => {
                 "es_doctype": "article",
                 "es_index": "test1",
                 "es_settings": null,
+                "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
@@ -39,6 +41,7 @@ describe('CorpusService', () => {
                 "es_doctype": "article",
                 "es_index": "test2",
                 "es_settings": null,
+                "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
@@ -59,6 +62,7 @@ describe('CorpusService', () => {
                 "es_settings": null,
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "overview_fields": ["bank", "year"],
                 "visualize": [],
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
@@ -90,6 +94,30 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
+            let allFields: CorpusField[] = [{
+                description: "Banking concern to which the report belongs.",
+                hidden: true,
+                name: 'bank',
+                displayName: 'Bank',
+                displayType: 'keyword',
+                searchFilter: {
+                    description: "Search only within these banks.",
+                    name: "MultipleChoiceFilter",
+                    options: ['A', 'B', 'C']
+                }
+            }, {
+                description: "Year of the financial report.",
+                hidden: false,
+                name: 'year',
+                displayName: 'year',
+                displayType: 'integer',
+                searchFilter: {
+                    description: "Restrict the years from which search results will be returned.",
+                    name: "RangeFilter",
+                    lower: 1785,
+                    upper: 2010
+                }
+            }];
             expect(items).toEqual([new Corpus(
                 'times',
                 'Times',
@@ -97,31 +125,8 @@ describe('CorpusService', () => {
                 [],
                 'article',
                 'times',
-                [{
-                    description: "Banking concern to which the report belongs.",
-                    hidden: true,
-                    name: 'bank',
-                    displayName: 'Bank',
-                    displayType: 'keyword',
-                    searchFilter: {
-                        description: "Search only within these banks.",
-                        name: "MultipleChoiceFilter",
-                        options: ['A', 'B', 'C']
-                    }
-                }, {
-                    description: "Year of the financial report.",
-                    hidden: false,
-                    name: 'year',
-                    displayName: 'year',
-                    displayType: 'integer',
-                    searchFilter: {
-                        description: "Restrict the years from which search results will be returned.",
-                        name: "RangeFilter",
-                        lower: 1785,
-                        upper: 2010
-                    }
-                }
-                ],
+                allFields,
+                allFields,
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0))
             ]);

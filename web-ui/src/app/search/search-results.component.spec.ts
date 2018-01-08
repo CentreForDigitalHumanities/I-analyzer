@@ -20,10 +20,11 @@ describe('Search Results Component', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchResultsComponent);
+        let fields = ['a', 'b', 'c'].map(createField);
         component = fixture.componentInstance;
         component.results = {
             completed: true,
-            fields: ['a', 'b', 'c'].map(createField),
+            fields,
             documents: [createDocument({
                 'a': '1',
                 'b': '2',
@@ -48,6 +49,9 @@ describe('Search Results Component', () => {
                 transferred: 0
             }
         };
+        component.corpus = <any>{
+            fields
+        };
 
         fixture.detectChanges();
     });
@@ -62,7 +66,6 @@ describe('Search Results Component', () => {
             hidden: false
         };
     }
-
 
     function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
         return { id, relevance, fieldValues, position };

@@ -60,7 +60,7 @@ export class ApiService extends Rest {
         'chunkSize': number,
         'maxChunkBytes': number,
         'bulkTimeout': string,
-        'exampleQuerySize': number,
+        'overviewQuerySize': number,
         'scrollTimeout': string,
         'scrollPagesize': number
     }>;
