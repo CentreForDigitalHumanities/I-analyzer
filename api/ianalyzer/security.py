@@ -8,7 +8,8 @@ def validate_user(username, password):
     """Validates the user and returns it if the username and password are valid."""
     user = models.User.query.filter_by(username=username).first()
 
-    if user is None:
+    if user is None or not password or user.password is None:
+        # User doesn't exist, or no password has been given or set
         return None
 
     if not check_password_hash(user.password, password):
