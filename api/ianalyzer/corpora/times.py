@@ -30,7 +30,6 @@ class Times(XMLCorpus):
     es_index = config.TIMES_ES_INDEX
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
-    visualize = ['category','date']
 
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'
@@ -100,8 +99,11 @@ class Times(XMLCorpus):
     fields = [
         Field(
             name='date',
+            display_name='Date',
             description='Publication date, programmatically generated.',
             es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            term_frequency=True,
+            prominent_field=True,
             search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
                 config.TIMES_MAX_DATE,
@@ -340,6 +342,8 @@ class Times(XMLCorpus):
         ),
         Field(
             name='title',
+            display_name='Title',
+            prominent_field = True,
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
@@ -379,6 +383,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
+            term_frequency = True,
             description='Article subject categories.',
             es_mapping={ 'type' : 'keyword' },
             search_filter=filters.MultipleChoiceFilter(
@@ -466,8 +471,10 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content',
+            display_name='Content',
             display_type='text_content',
             description='Raw OCR\'ed text (content).',
+            prominent_field = True,
             extractor=extract.XML(
                 tag=['text','text.cr'], multiple=True,
                 flatten=True

@@ -4,8 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument } from '../models/index';
-import { CorpusService, SearchService, DownloadService } from '../services/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, User, FoundDocument } from '../models/index';
+import { CorpusService, SearchService, DownloadService, UserService } from '../services/index';
 
 @Component({
     selector: 'app-search',
@@ -28,8 +28,10 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public viewDocument: FoundDocument;
     public showVisualization: boolean = false;
+    public showVisualizationButton: boolean = false;
     public showFilters: boolean = false;
     public query: string;
+    public user: User;
     public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
     public queryModel: SearchQuery;
     /**
@@ -44,12 +46,12 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private subscription: Subscription | undefined;
 
-    constructor(private corpusService: CorpusService, private downloadService: DownloadService, private searchService: SearchService, private activatedRoute: ActivatedRoute, private title: Title) {
+    constructor(private corpusService: CorpusService, private downloadService: DownloadService, private searchService: SearchService, private userService: UserService, private activatedRoute: ActivatedRoute, private title: Title) {
     }
 
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
-
+        this.user = this.userService.getCurrentUserOrFail();
         this.activatedRoute.params.subscribe(params => {
             let corpusName = params['corpus'];
             this.availableCorpora.then(items => {
@@ -63,8 +65,13 @@ export class SearchComponent implements OnInit, OnDestroy {
                 for (let field of this.corpus.fields) {
                     this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
                 }
+                
+                if (this.corpus.fields.filter( field => field.termFrequency ).length>0) {
+                    this.showVisualizationButton = true;
+                }
             });
         })
+
     }
 
     ngOnDestroy() {

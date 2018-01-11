@@ -37,12 +37,6 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    @property
-    def visualize(self):
-        '''
-        List of data fields which should be visualized with a bar chart.
-        '''
-        raise NotImplementedError()
 
     @property
     def data_directory(self):
@@ -92,13 +86,6 @@ class Corpus(object):
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
-        '''
-        raise NotImplementedError()
-
-    @property
-    def overview_fields(self):
-        '''
-        Each corpus should implement a list of field names which should be shown in the overview.
         '''
         raise NotImplementedError()
 
@@ -306,7 +293,10 @@ class Field(object):
     '''
     Fields hold data about the name of their columns in CSV files, how the
     corresponding content is to be extracted from the source, how they are
-    described in user interfaces, what ElasticSearch filters are associated
+    described in user interfaces, whether the field lends itself to term 
+    frequency queries, whether it has prominent information 
+    for the user interface, 
+    what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
 
     In short, this is how all things related to the informational structure of
@@ -321,6 +311,8 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
+            term_frequency=False,
+            prominent_field=False,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
             extractor=extract.Constant(None),
@@ -332,6 +324,8 @@ class Field(object):
         self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
+        self.term_frequency = term_frequency
+        self.prominent_field = prominent_field
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import {MenuItem} from 'primeng/primeng';
+import { MenuItem } from 'primeng/primeng';
 import { User } from '../models/index';
 import { ConfigService, UserService } from '../services/index';
 
@@ -15,7 +15,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     public isAdmin: boolean  = false;
 
     private routerSubscription: Subscription;
-    private items: MenuItem[];
+    private menuItems: MenuItem[];
 
     constructor(private configService: ConfigService, private userService: UserService, private router: Router) {
         this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
@@ -27,23 +27,24 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
-        this.items = [
+        this.menuItems = [
         {
             label: 'Search history',
             icon: 'fa-history',
             url: '#'
         },
         {
+            label: 'Administration',
+            icon: 'fa-cogs',
+            disabled: true,
+            command: (click)=>this.gotoAdmin(),
+        },
+        {
             label: 'Exit',
             icon: 'fa-sign-out',
             command: (onclick)=>this.logout()
-        },
-        {
-            label: 'Administration',
-            icon: 'fa-cogs',
-            command: (click)=>this.gotoAdmin(),
-            visible: this.isAdmin
-        }];
+        }
+        ];
 
     }
 
@@ -68,8 +69,12 @@ export class MenuComponent implements OnDestroy, OnInit {
                 }
                 this.currentUser = this.userService.currentUser;
                 this.isAdmin = this.currentUser.hasRole('admin');
+                if (this.isAdmin) {
+                    this.menuItems[1].disabled = false;
+                }
             } else {
                 this.isAdmin = false;
+                this.menuItems[1].disabled = true;
             }
         });
     }

@@ -13,7 +13,6 @@ export class ConfigService {
                 this.http.get('/assets/config.json')
                     .subscribe(response => resolve(response.json() as Config)));
         }
-
         return this.config;
     }
 }

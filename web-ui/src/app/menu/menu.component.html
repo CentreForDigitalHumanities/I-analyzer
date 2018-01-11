@@ -6,7 +6,7 @@
         <a class="navbar-item">
             <button type="button" pButton icon="fa fa-user-circle" label="Logged in as {{currentUser.name}}" (click)="menu.toggle($event)"></button>
             <!-- drop down menu to log out, or see previous queries-->
-            <p-menu #menu popup="popup" [model]="items" appendTo="body"></p-menu>
+            <p-menu #menu popup="popup" [model]="menuItems" appendTo="body"></p-menu>
         </a>
     </div>
 </nav>

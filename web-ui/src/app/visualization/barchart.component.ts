@@ -26,6 +26,7 @@ export class BarChartComponent implements OnInit {
             this.calculateDomains();
             this.createChart();
             this.updateChart();
+            this.rescale();
         }
     };
     @Input() public visualizedField;
@@ -69,10 +70,10 @@ export class BarChartComponent implements OnInit {
         this.yMax = d3.max(this.barChartData.map(d => d.doc_count));
         this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
-        this.xTicks = this.xDomain.length > 20 ? this.xDomain.length : 20;
+        this.xTicks = this.xDomain.length > 30 ? 30 : this.xDomain.length;
     }
 
-    rescaleY() {
+    rescale() {
         /**
         * if the user selects percentage / count display,
         * - rescale y values & axis

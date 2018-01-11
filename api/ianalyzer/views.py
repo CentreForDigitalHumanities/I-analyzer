@@ -45,7 +45,7 @@ class UserView(ModelView):
 
     form_widget_args = dict(
         password=dict(
-            placeholder='Leave blank or enter new password',
+            placeholder='Enter new password',
         ),
     )
 

@@ -1,8 +1,8 @@
 <p-header>
     Select data column for visualization:
-     <ng-container *ngFor="let visField of corpus.visualize">
-        <button class="button is-info" (click)="setVisualizedField(visField)">
-            <span>{{visField}}</span>
+     <ng-container *ngFor="let field of termFrequencyFields">
+        <button class="button is-info" (click)="setVisualizedField(field)">
+            <span>{{field}}</span>
         </button>
      </ng-container>
 </p-header>

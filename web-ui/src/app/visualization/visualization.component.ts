@@ -14,6 +14,7 @@ export class VisualizationComponent implements OnInit {
     @Input() public corpus: Corpus;
 
     public visualizedField: string;
+    public termFrequencyFields: string [];
 
     public aggResults: {
         key: any,
@@ -24,13 +25,14 @@ export class VisualizationComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.setVisualizedField(this.corpus.visualize[0]);
+        this.termFrequencyFields = this.corpus.fields.filter( field => field.termFrequency ).map( field => field.name );
+        this.setVisualizedField(this.termFrequencyFields[0]);
     }
 
-    setVisualizedField(visField: string) {
-        this.visualizedField = visField;
-        this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(vis => {
-            this.aggResults = vis.aggregations;
+    setVisualizedField(visualizedField: string) {
+        this.visualizedField = visualizedField;
+        this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(visual => {
+            this.aggResults = visual.aggregations;
         });
     }
 }
