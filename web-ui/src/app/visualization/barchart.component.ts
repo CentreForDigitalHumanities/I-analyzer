@@ -33,7 +33,7 @@ export class BarChartComponent implements OnInit {
 
     private yAsPercent: boolean = false;
     private yTicks: number = 10;
-    private xTicks: number = 20;
+    private xTickValues: string [];
     private margin = { top: 10, bottom: 120, left: 70, right: 10 };
     private svg: any;
     private chart: any;
@@ -70,7 +70,7 @@ export class BarChartComponent implements OnInit {
         this.yMax = d3.max(this.barChartData.map(d => d.doc_count));
         this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
-        this.xTicks = this.xDomain.length > 30 ? 30 : this.xDomain.length;
+        this.xTickValues = this.xDomain.length > 30 ? this.xDomain.filter( (d,i) => i % 10 == 0 )  : this.xDomain;
     }
 
     rescale() {
@@ -93,6 +93,7 @@ export class BarChartComponent implements OnInit {
         let tickFormat = this.yAsPercent ? d3.format(".0%") : d3.format("d");
         let yAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
         this.yAxis.call(yAxis);
+
         let yLabelText = this.yAsPercent ? "Percent" : "Frequency";
         this.yAxisLabel.text(yLabelText);
     }
@@ -112,7 +113,8 @@ export class BarChartComponent implements OnInit {
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis x')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-            .call(d3.axisBottom(this.xScale).ticks(this.xTicks));
+            .call(d3.axisBottom(this.xScale).tickValues(this.xTickValues));
+        console.log(this.xTickValues);
 
         // set style of x tick marks
         this.xAxis.selectAll('text')
