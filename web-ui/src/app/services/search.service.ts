@@ -82,9 +82,11 @@ export class SearchService {
                 .subscribe(
                 result => {
                     rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document.fieldValues, fields.map(field => field.name))));
-
+                        result.documents.map(document => 
+                            this.documentRow(document, fields.map(field => field.name))
+                        )
+                    );
+                    
                     totalTransferred = result.retrieved;
                 },
                 (error) => reject(error),
@@ -97,7 +99,9 @@ export class SearchService {
      * of the selected fields, in given order.
      */
     private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
+        return fieldNames.map(
+            field => this.documentFieldValue(document.fieldValues[field])
+        );
     }
 
     private documentFieldValue(value: any) {

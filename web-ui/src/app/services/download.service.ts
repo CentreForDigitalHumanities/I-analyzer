@@ -21,7 +21,7 @@ export class DownloadService {
         let rows: string[] = [headerRow];
 
         for (let row of values) {
-            rows.push(row.map(cell => this.csvCell(cell, separator)).join(',') + newline);
+            rows.push(row.map(cell => this.csvCell(cell, separator)).join(separator) + newline);
         }
 
         saveAs(new Blob(rows, { type: "text/csv;charset=utf-8" }), filename);

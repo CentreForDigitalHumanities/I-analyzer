@@ -123,8 +123,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
         let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
-
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
+        
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
     }
 
@@ -149,7 +149,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private getQueryFields(): CorpusField[] {
-        return Object.values(this.queryField).filter(field => !field.hidden);
+        return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 
     private getFilterData(): SearchFilterData[] {
