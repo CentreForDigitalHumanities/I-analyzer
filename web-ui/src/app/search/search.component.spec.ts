@@ -21,6 +21,7 @@ import { SearchResultsComponent } from './search-results.component';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { BarChartComponent } from '../visualization/barchart.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
+import { UserServiceMock } from '../services/user.service.mock';
 
 describe('SearchComponent', () => {
     let component: SearchComponent;
@@ -50,7 +51,9 @@ describe('SearchComponent', () => {
                     }
                 },
                 SessionService,
-                UserService]
+                {
+                    provide: UserService, useValue: new UserServiceMock()
+                }]
         }).compileComponents();
     }));
 
