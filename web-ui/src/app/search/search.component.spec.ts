@@ -12,7 +12,7 @@ import { ApiService, CorpusService, DownloadService, ElasticSearchService, LogSe
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 
-import { HighlightPipe } from './highlight-pipe';
+import { HighlightPipe } from './highlight.pipe';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchRelevanceComponent } from './search-relevance.component';

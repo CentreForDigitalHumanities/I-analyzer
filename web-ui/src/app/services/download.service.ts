@@ -27,11 +27,11 @@ export class DownloadService {
         saveAs(new Blob(rows, { type: "text/csv;charset=utf-8" }), filename);
     }
 
-    private csvCell(value: string, separator: string) {
+    public csvCell(value: string, separator: string) {
         // escape "
-        let escaped = value.indexOf('"') >= 0 ? `"${value.replace('"', '""')}"` : value;
+        let escaped = value.indexOf('"') >= 0 ? `${value.replace(/"/g, '""')}` : value;
 
-        // values containing the separator, should be surrounded with "
-        return escaped.indexOf(separator) >= 0 ? `"${escaped}"` : escaped;
+        // values containing the separator, " or newlines should be surrounded with "
+        return new RegExp(`["\n${separator}]`).test(escaped) ? `"${escaped}"` : escaped;
     }
 }

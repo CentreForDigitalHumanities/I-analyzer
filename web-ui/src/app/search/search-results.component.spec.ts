@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CorpusField, SearchQuery } from '../models/index';
 import { HighlightService } from '../services/highlight.service';
-import { HighlightPipe } from './highlight-pipe';
+import { HighlightPipe } from './highlight.pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
 
