@@ -6,4 +6,4 @@
         </button>
      </ng-container>
 </p-header>
-<barchart [searchData]="aggResults" [visualizedField]="visualizedField"></barchart>
+<barchart *ngIf="aggResults" [searchData]="aggResults" [visualizedField]="visualizedField"></barchart>

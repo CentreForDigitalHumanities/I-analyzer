@@ -3,10 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { BarChartComponent } from './barchart.component';
 
-/**
- * TODO: EXCLUDED THIS TEST BECAUSE IT FAILS (probably caused by the d3 or lodash import)
- */
-xdescribe('BarchartComponent', () => {
+describe('BarchartComponent', () => {
     let component: BarChartComponent;
     let fixture: ComponentFixture<BarChartComponent>;
 
