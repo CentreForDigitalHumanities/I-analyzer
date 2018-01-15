@@ -3,6 +3,8 @@ import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
 import { CorpusService } from './corpus.service';
+import { UserService } from './user.service';
+import { UserServiceMock } from './user.service.mock';
 
 import { Corpus } from '../models/corpus';
 import { CorpusField } from '../models/index';
@@ -10,10 +12,19 @@ import { CorpusField } from '../models/index';
 describe('CorpusService', () => {
     let service: CorpusService;
     let apiServiceMock = new ApiServiceMock();
+    let userServiceMock = new UserServiceMock();
+    // TODO: validate that this shouldn't be done server-side
+    userServiceMock.currentUser.roles.push(...[
+        { name: "test1", description: "" },
+        { name: "test2", description: "" },
+        { name: "times", description: "" },]);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: ApiService, useValue: apiServiceMock }, CorpusService]
+            providers: [
+                { provide: ApiService, useValue: apiServiceMock },
+                CorpusService,
+                { provide: UserService, useValue: userServiceMock }]
         });
         service = TestBed.get(CorpusService);
     });
@@ -62,8 +73,6 @@ describe('CorpusService', () => {
                 "es_settings": null,
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
-                "overview_fields": ["bank", "year"],
-                "visualize": [],
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -71,6 +80,8 @@ describe('CorpusService', () => {
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
+                    "prominent_field": false,
+                    "term_frequency": true,
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -83,6 +94,8 @@ describe('CorpusService', () => {
                     "hidden": false,
                     "indexed": true,
                     "name": "year",
+                    "prominent_field": true,
+                    "term_frequency": false,
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
@@ -100,6 +113,8 @@ describe('CorpusService', () => {
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
+                prominentField: false,
+                termFrequency: true,
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -111,6 +126,8 @@ describe('CorpusService', () => {
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
+                prominentField: true,
+                termFrequency: false,
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",
@@ -122,10 +139,8 @@ describe('CorpusService', () => {
                 'times',
                 'Times',
                 'This is a description.',
-                [],
                 'article',
                 'times',
-                allFields,
                 allFields,
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0))

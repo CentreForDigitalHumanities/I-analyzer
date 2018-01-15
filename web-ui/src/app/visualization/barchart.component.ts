@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, OnChanges, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Input, Component, OnChanges, ElementRef, ViewChild, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -11,28 +11,19 @@ import * as _ from "lodash";
     encapsulation: ViewEncapsulation.None
 })
 
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnChanges {
     @ViewChild('chart') private chartContainer: ElementRef;
-    @Input('searchData') set searchData(value: {
+    @Input('searchData')
+    public searchData: {
         key: any,
         doc_count: number,
         key_as_string?: string
-    }[]) {
-        if (value && value != this.barChartData) {
-            this.barChartData = value;
-            if ('key_as_string' in this.barChartData[0]) {
-                this.barChartData.forEach(cat => cat.key = cat.key_as_string)
-            }
-            this.calculateDomains();
-            this.createChart();
-            this.updateChart();
-        }
-    };
+    }[];
     @Input() public visualizedField;
 
     private yAsPercent: boolean = false;
     private yTicks: number = 10;
-    private xTicks: number = 20;
+    private xTickValues: string[];
     private margin = { top: 10, bottom: 120, left: 70, right: 10 };
     private svg: any;
     private chart: any;
@@ -43,36 +34,35 @@ export class BarChartComponent implements OnInit {
     private xAxis: d3.Selection<any, any, any, any>;
     private yAxis: d3.Selection<any, any, any, any>;
     private yMax: number;
-    private barChartData: Array<KeyFrequencyPair>;
     private xDomain: Array<string>;
     private yDomain: Array<number>;
     private yAxisLabel: any;
     private update: any;
 
-    ngOnInit() {
-        /**
-        * select DOM elements, set up scales and axes
-        */
-        const element = this.chartContainer.nativeElement;
-        this.width = element.offsetWidth - this.margin.left - this.margin.right;
-        this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
-        this.svg = d3.select(element).append('svg')
-            .attr('width', element.offsetWidth)
-            .attr('height', element.offsetHeight);
+    ngOnChanges(changes: SimpleChanges) {
+        if (this.searchData && this.visualizedField) {
+            if ('key_as_string' in this.searchData[0]) {
+                this.searchData.forEach(cat => cat.key = cat.key_as_string)
+            }
+            this.calculateDomains();
+            this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+            this.drawChartData();
+            this.setScale();
+        }
     }
 
     calculateDomains() {
         /**
          adjust the x and y ranges
          */
-        this.xDomain = this.barChartData.map(d => d.key);
-        this.yMax = d3.max(this.barChartData.map(d => d.doc_count));
+        this.xDomain = this.searchData.map(d => d.key);
+        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
         this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
-        this.xTicks = this.xDomain.length > 20 ? this.xDomain.length : 20;
+        this.xTickValues = this.xDomain.length > 30 ? this.xDomain.filter((d, i) => i % 10 == 0) : this.xDomain;
     }
 
-    rescaleY() {
+    setScale() {
         /**
         * if the user selects percentage / count display,
         * - rescale y values & axis
@@ -81,7 +71,7 @@ export class BarChartComponent implements OnInit {
         this.calculateDomains();
         this.yScale.domain(this.yDomain);
 
-        let totalCount = _.sumBy(this.barChartData, d => d.doc_count);
+        let totalCount = _.sumBy(this.searchData, d => d.doc_count);
         let preScale = this.yAsPercent ? d3.scaleLinear().domain([0, totalCount]).range([0, 1]) : d3.scaleLinear();
 
         this.chart.selectAll('.bar')
@@ -92,12 +82,34 @@ export class BarChartComponent implements OnInit {
         let tickFormat = this.yAsPercent ? d3.format(".0%") : d3.format("d");
         let yAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
         this.yAxis.call(yAxis);
+
         let yLabelText = this.yAsPercent ? "Percent" : "Frequency";
         this.yAxisLabel.text(yLabelText);
     }
 
+    /**
+     * Creates the chart to draw the data on (including axes and labels).
+     * @param forceRedraw Erases the current chart and create a new one.
+     */
+    createChart(forceRedraw: boolean) {
+        if (this.svg) {
+            if (forceRedraw) {
+                this.svg.remove();
+            } else {
+                // chart already created
+                return;
+            }
+        }
+        /**
+        * select DOM elements, set up scales and axes
+        */
+        const element = this.chartContainer.nativeElement;
+        this.width = element.offsetWidth - this.margin.left - this.margin.right;
+        this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+        this.svg = d3.select(element).append('svg')
+            .attr('width', element.offsetWidth)
+            .attr('height', element.offsetHeight);
 
-    createChart() {
         this.svg.selectAll('g').remove();
         this.svg.selectAll('text').remove();
         // chart plot area
@@ -111,7 +123,7 @@ export class BarChartComponent implements OnInit {
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis x')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-            .call(d3.axisBottom(this.xScale).ticks(this.xTicks));
+            .call(d3.axisBottom(this.xScale).tickValues(this.xTickValues));
 
         // set style of x tick marks
         this.xAxis.selectAll('text')
@@ -145,13 +157,13 @@ export class BarChartComponent implements OnInit {
             .text(yLabelText);
     }
 
-    updateChart() {
+    drawChartData() {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
 
         const update = this.chart.selectAll('.bar')
-            .data(this.barChartData);
+            .data(this.searchData);
 
         // remove exiting bars
         update.exit().remove();

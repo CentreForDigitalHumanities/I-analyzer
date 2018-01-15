@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import {MenuItem} from 'primeng/primeng';
+import { MenuItem } from 'primeng/primeng';
 import { User } from '../models/index';
 import { ConfigService, UserService } from '../services/index';
 
@@ -12,10 +12,10 @@ import { ConfigService, UserService } from '../services/index';
 })
 export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
-    public isAdmin: boolean  = false;
+    public isAdmin: boolean = false;
 
     private routerSubscription: Subscription;
-    private items: MenuItem[];
+    private menuItems: MenuItem[];
 
     constructor(private configService: ConfigService, private userService: UserService, private router: Router) {
         this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
@@ -27,26 +27,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
-        this.items = [
-        {
-            label: 'Search history',
-            icon: 'fa-history',
-            url: '#'
-        },
-        {
-            label: 'Exit',
-            icon: 'fa-sign-out',
-            command: (onclick)=>this.logout()
-        },
-        {
-            label: 'Administration',
-            icon: 'fa-cogs',
-            command: (click)=>this.gotoAdmin(),
-            visible: this.isAdmin
-        }];
-
     }
-
 
     public gotoAdmin() {
         this.configService.get().then(config => {
@@ -71,6 +52,29 @@ export class MenuComponent implements OnDestroy, OnInit {
             } else {
                 this.isAdmin = false;
             }
+
+            this.setMenuItems();
         });
+    }
+
+    private setMenuItems() {
+        this.menuItems = [
+            {
+                label: 'Search history',
+                icon: 'fa-history',
+                url: '#'
+            },
+            ...this.isAdmin ? [
+                {
+                    label: 'Administration',
+                    icon: 'fa-cogs',
+                    command: (click) => this.gotoAdmin(),
+                }] : [],
+            {
+                label: 'Exit',
+                icon: 'fa-sign-out',
+                command: (onclick) => this.logout()
+            }
+        ];
     }
 }

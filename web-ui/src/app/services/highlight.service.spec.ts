@@ -127,6 +127,17 @@ describe('HighlightService', () => {
         }]);
     });
 
+    it('Should highlight multiline text', () => {
+        expectHighlights(
+            `I used to steal up there by myself (indeed I still do it in dreams) and sit conducting a little worship service of my own, adoring the chemical elements.
+Here were the warp and woof of the world, a world that was later to expand into a Universe.
+ -- Cecilia Payne-Gaposchkin`,
+            'world Cecilia',
+            [[189, 'world'],
+            [198, 'world'],
+            [250, 'Cecilia']]);
+    });
+
     let expectHighlights = (value: string | number, query: string, expectedHighlightRanges: [number, string][]) => {
         let text = `${value}`;
         let highlights = highlightService.highlight(

@@ -17,14 +17,12 @@ class DutchBanking(XMLCorpus):
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = config.DUTCHBANK_TITLE
     description = config.DUTCHBANK_DESCRIPTION
-    visualize = ['bank','year']
     data_directory = config.DUTCHBANK_DATA
     min_date = config.DUTCHBANK_MIN_DATE
     max_date = config.DUTCHBANK_MAX_DATE
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
-    visualize = ['year','bank']
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'
@@ -58,13 +56,14 @@ class DutchBanking(XMLCorpus):
                     'scan': scan,
                 }
 
-    overview_fields = ['bank', 'year', 'objectno', 'scan']
 
     fields = [
         Field(
             name='bank',
             display_name='Bank',
             description='Banking concern to which the report belongs.',
+            term_frequency=True,
+            prominent_field=True,
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these banks.',
@@ -79,6 +78,8 @@ class DutchBanking(XMLCorpus):
             name='year',
             display_name='Year',
             description='Year of the financial report.',
+            term_frequency=True,
+            prominent_field=True,
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
                 description='Restrict the years from which search results will be returned.',
@@ -114,8 +115,10 @@ class DutchBanking(XMLCorpus):
         ),
         Field(
             name='content',
+            display_name='Content',
             display_type='text_content',
             description='Text content of the block.',
+            prominent_field=True,
             extractor=XML(
                 tag='String',
                 attribute='CONTENT',

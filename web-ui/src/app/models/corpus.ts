@@ -12,10 +12,8 @@ export class Corpus implements ElasticSearchIndex {
          * Description of the corpus to show to users.
          */
         public description: string,
-        public visualize: string[],
         public doctype: DocumentType,
         public index: string,
-        public overviewFields: CorpusField[],
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date) { }
@@ -36,6 +34,8 @@ export type CorpusField = {
      * text_content: Main text content of the document
      */
     displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
+    prominentField?: boolean,
+    termFrequency?: boolean,
     hidden: boolean,
     name: string,
     searchFilter: SearchFilter | null

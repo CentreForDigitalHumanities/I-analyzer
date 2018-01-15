@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
+import { includes } from 'lodash';
 import { ApiService } from './api.service';
+import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 
 @Injectable()
 export class CorpusService {
 
-    constructor(private apiService: ApiService) {
+    constructor(private apiService: ApiService, private userService: UserService) {
     }
 
     public get(): Promise<Corpus[]> {
@@ -14,21 +16,20 @@ export class CorpusService {
     }
 
     private parseCorpusList(data: any): Corpus[] {
-        return Object.keys(data).map(name => this.parseCorpusItem(name, data[name]));
+        let currentUser = this.userService.getCurrentUserOrFail();
+        let availableCorpora = Object.keys(data).filter( name => currentUser.hasRole(name));
+        return availableCorpora.map( corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {
         let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
-        let overviewFields = data.overview_fields.map(fieldName => allFields.find(field => field.name == fieldName));
 
         return new Corpus(
             name,
             data.title,
             data.description,
-            data.visualize,
             data.es_doctype,
             data.es_index,
-            overviewFields,
             allFields,
             this.parseDate(data.min_date),
             this.parseDate(data.max_date));
@@ -39,6 +40,8 @@ export class CorpusService {
             description: data.description,
             displayName: data.display_name || data.name,
             displayType: data.display_type || data['es_mapping'].type,
+            prominentField: data.prominent_field,
+            termFrequency: data.term_frequency,
             hidden: data.hidden,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null

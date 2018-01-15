@@ -12,7 +12,7 @@ import { ApiService, CorpusService, DownloadService, ElasticSearchService, LogSe
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 
-import { HighlightPipe } from './highlight-pipe';
+import { HighlightPipe } from './highlight.pipe';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
@@ -21,6 +21,7 @@ import { SearchResultsComponent } from './search-results.component';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { BarChartComponent } from '../visualization/barchart.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
+import { UserServiceMock } from '../services/user.service.mock';
 
 describe('SearchComponent', () => {
     let component: SearchComponent;
@@ -34,7 +35,7 @@ describe('SearchComponent', () => {
                 CorpusService,
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
-                        ['corpus']: corpus.foo
+                        ['corpus']: corpus.MockCorpusResponse
                     })
                 },
                 DownloadService,
@@ -46,11 +47,13 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        params: Observable.of({ corpus: 'test1' })
+                        params: Observable.of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' })
                     }
                 },
                 SessionService,
-                UserService]
+                {
+                    provide: UserService, useValue: new UserServiceMock()
+                }]
         }).compileComponents();
     }));
 

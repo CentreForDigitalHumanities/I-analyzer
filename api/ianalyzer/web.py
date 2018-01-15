@@ -24,9 +24,9 @@ from . import corpora
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
-    name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+    name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 admin_instance.add_view(views.CorpusView(
-    corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+    corpus_name=config.CORPUS, name='Return to search', endpoint=config.CORPUS_ENDPOINT))
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(

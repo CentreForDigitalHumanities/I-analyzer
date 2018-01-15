@@ -43,11 +43,6 @@ const appRoutes: Routes = [
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
-    },
-    {
-        path: 'visual',
-        //component: VisualizationComponent
-        component: BarChartComponent
     }
 ]
 @NgModule({

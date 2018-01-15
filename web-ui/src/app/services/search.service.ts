@@ -18,15 +18,15 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = corpus.overviewFields): Promise<SearchResults> {
+    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
         let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
         let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
             completed: true,
+            fields: corpus.fields.filter( field => field.prominentField ),
             total: result.total,
-            fields,
             documents: result.documents,
             queryModel: queryModel
         };
@@ -82,9 +82,11 @@ export class SearchService {
                 .subscribe(
                 result => {
                     rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document.fieldValues, fields.map(field => field.name))));
-
+                        result.documents.map(document => 
+                            this.documentRow(document, fields.map(field => field.name))
+                        )
+                    );
+                    
                     totalTransferred = result.retrieved;
                 },
                 (error) => reject(error),
@@ -97,7 +99,9 @@ export class SearchService {
      * of the selected fields, in given order.
      */
     private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(field => this.documentFieldValue(document.fieldValues[field]));
+        return fieldNames.map(
+            field => this.documentFieldValue(document.fieldValues[field])
+        );
     }
 
     private documentFieldValue(value: any) {

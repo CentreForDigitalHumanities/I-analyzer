@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Corpus, SearchResults, FoundDocument } from '../models/index';
+import { User, Corpus, SearchResults, FoundDocument } from '../models/index';
 
 @Component({
     selector: 'search-results',
@@ -17,6 +17,9 @@ export class SearchResultsComponent implements OnInit {
     public query: string;
 
     @Input()
+    public user: User;
+
+    @Input()
     public corpus: Corpus;
 
     @Output('download')
@@ -24,10 +27,6 @@ export class SearchResultsComponent implements OnInit {
 
     @Output('view')
     public viewEvent = new EventEmitter<FoundDocument>();
-
-    public get contentFieldNames() {
-        return this.corpus.fields.filter(field => !field.hidden && field.displayType == 'text_content').map(field => field.name);
-    }
 
     constructor() { }
 

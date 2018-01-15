@@ -1,7 +1,7 @@
 /**
  * Mock corpus data as would be returned by the Flask service.
  */
-export var foo = {
+export const MockCorpusResponse = {
     "test1": {
         "name": "test1",
         "es_doctype": "article",
@@ -23,3 +23,12 @@ export var foo = {
         "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
     },
 }
+
+export type MockCorpusName = keyof (typeof MockCorpusResponse);
+export const MockCorpusRoles =
+    Object.keys(MockCorpusResponse).map(name => {
+        return {
+            name,
+            description: ''
+        };
+    });

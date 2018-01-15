@@ -48,7 +48,7 @@ class UserView(ModelView):
         username=dict(autocomplete="off"),
         password=dict(
             autocomplete="new-password",
-            placeholder='Leave blank or enter new password',
+            placeholder='Enter new password'
         ),
     )
 

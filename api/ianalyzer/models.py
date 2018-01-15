@@ -125,7 +125,7 @@ class Role(db.Model):
     name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
 
-    def __init__(self, name, description=""):
+    def __init__(self, name="", description=""):
         self.name = name
         self.description = description
 
