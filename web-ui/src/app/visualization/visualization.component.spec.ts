@@ -8,8 +8,7 @@ import { VisualizationComponent } from './visualization.component';
 import { SearchService } from '../services/index';
 import { AggregateResults, Corpus, SearchQuery } from '../models/index';
 
-// TODO: fix
-xdescribe('VisualizationComponent', () => {
+describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
     let fixture: ComponentFixture<VisualizationComponent>;
 

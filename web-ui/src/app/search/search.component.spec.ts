@@ -35,7 +35,7 @@ describe('SearchComponent', () => {
                 CorpusService,
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
-                        ['corpus']: corpus.foo
+                        ['corpus']: corpus.MockCorpusResponse
                     })
                 },
                 DownloadService,
@@ -47,7 +47,7 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        params: Observable.of({ corpus: 'test1' })
+                        params: Observable.of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' })
                     }
                 },
                 SessionService,

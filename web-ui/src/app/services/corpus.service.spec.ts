@@ -63,8 +63,7 @@ describe('CorpusService', () => {
         });
     });
 
-    // TODO: fix
-    xit('should parse filters', () => {
+    it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "times": {
                 "title": "Times",
@@ -81,6 +80,8 @@ describe('CorpusService', () => {
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
+                    "prominent_field": false,
+                    "term_frequency": true,
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -93,6 +94,8 @@ describe('CorpusService', () => {
                     "hidden": false,
                     "indexed": true,
                     "name": "year",
+                    "prominent_field": true,
+                    "term_frequency": false,
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
@@ -110,6 +113,8 @@ describe('CorpusService', () => {
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
+                prominentField: false,
+                termFrequency: true,
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -121,6 +126,8 @@ describe('CorpusService', () => {
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
+                prominentField: true,
+                termFrequency: false,
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",

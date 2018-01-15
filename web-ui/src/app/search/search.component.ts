@@ -65,7 +65,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 for (let field of this.corpus.fields) {
                     this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
                 }
-                
+
                 if (this.corpus.fields.filter( field => field.termFrequency ).length>0) {
                     this.showVisualizationButton = true;
                 }
@@ -124,7 +124,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
         let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
-        
+
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
     }
 
