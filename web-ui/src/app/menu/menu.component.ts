@@ -12,7 +12,7 @@ import { ConfigService, UserService } from '../services/index';
 })
 export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
-    public isAdmin: boolean  = false;
+    public isAdmin: boolean = false;
 
     private routerSubscription: Subscription;
     private menuItems: MenuItem[];
@@ -27,27 +27,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
-        this.menuItems = [
-        {
-            label: 'Search history',
-            icon: 'fa-history',
-            url: '#'
-        },
-        {
-            label: 'Administration',
-            icon: 'fa-cogs',
-            disabled: true,
-            command: (click)=>this.gotoAdmin(),
-        },
-        {
-            label: 'Exit',
-            icon: 'fa-sign-out',
-            command: (onclick)=>this.logout()
-        }
-        ];
-
     }
-
 
     public gotoAdmin() {
         this.configService.get().then(config => {
@@ -69,13 +49,32 @@ export class MenuComponent implements OnDestroy, OnInit {
                 }
                 this.currentUser = this.userService.currentUser;
                 this.isAdmin = this.currentUser.hasRole('admin');
-                if (this.isAdmin) {
-                    this.menuItems[1].disabled = false;
-                }
             } else {
                 this.isAdmin = false;
-                this.menuItems[1].disabled = true;
             }
+
+            this.setMenuItems();
         });
+    }
+
+    private setMenuItems() {
+        this.menuItems = [
+            {
+                label: 'Search history',
+                icon: 'fa-history',
+                url: '#'
+            },
+            ...this.isAdmin ? [
+                {
+                    label: 'Administration',
+                    icon: 'fa-cogs',
+                    command: (click) => this.gotoAdmin(),
+                }] : [],
+            {
+                label: 'Exit',
+                icon: 'fa-sign-out',
+                command: (onclick) => this.logout()
+            }
+        ];
     }
 }
