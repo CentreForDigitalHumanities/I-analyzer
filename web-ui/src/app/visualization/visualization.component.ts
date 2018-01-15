@@ -35,7 +35,7 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        this.searchService.searchForVisualization(this.corpus, this.searchQuery, this.visualizedField).then(visual => {
+        this.searchService.searchForVisualization(this.corpus, this.searchQuery, visualizedField).then(visual => {
             this.visualizedField = visualizedField;
             this.aggResults = visual.aggregations;
         });
