@@ -6,9 +6,7 @@ import { SharedModule } from 'primeng/primeng';
 import { BarChartComponent } from './barchart.component';
 import { VisualizationComponent } from './visualization.component';
 import { SearchService } from '../services/index';
-import { Corpus } from '../models/index';
-import { SearchQuery } from '../models/query';
-import { AggregateResults } from '../models/search-results';
+import { AggregateResults, Corpus, SearchQuery } from '../models/index';
 
 // TODO: fix
 xdescribe('VisualizationComponent', () => {
@@ -23,8 +21,7 @@ xdescribe('VisualizationComponent', () => {
                 provide: SearchService,
                 useValue: new MockSearchService()
             }]
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     beforeEach(() => {
