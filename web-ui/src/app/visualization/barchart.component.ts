@@ -45,7 +45,7 @@ export class BarChartComponent implements OnChanges {
                 this.searchData.forEach(cat => cat.key = cat.key_as_string)
             }
             this.calculateDomains();
-            this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+            this.createChart(changes['visualizedField'] && changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
             this.drawChartData();
             this.setScale();
         }

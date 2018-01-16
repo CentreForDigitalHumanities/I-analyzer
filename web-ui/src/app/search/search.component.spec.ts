@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
@@ -47,12 +47,15 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        params: Observable.of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' })
+                        paramMap: Observable.of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).map(convertToParamMap)
                     }
                 },
                 SessionService,
                 {
                     provide: UserService, useValue: new UserServiceMock()
+                },
+                {
+                    provide: Router, useValue: new RouterMock()
                 }]
         }).compileComponents();
     }));
@@ -67,3 +70,7 @@ describe('SearchComponent', () => {
         expect(component).toBeTruthy();
     });
 });
+
+class RouterMock {
+
+}
