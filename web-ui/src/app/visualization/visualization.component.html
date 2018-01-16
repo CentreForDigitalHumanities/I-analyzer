@@ -1,9 +1,6 @@
-<p-header>
-    Select data column for visualization:
-     <ng-container *ngFor="let field of termFrequencyFields">
+<ng-container *ngFor="let field of termFrequencyFields">
         <button class="button is-info" (click)="setVisualizedField(field)">
             <span>{{field}}</span>
         </button>
-     </ng-container>
-</p-header>
+</ng-container>
 <barchart *ngIf="aggResults" [searchData]="aggResults" [visualizedField]="visualizedField"></barchart>

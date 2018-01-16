@@ -117,6 +117,7 @@
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQuery"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" width="800">
+<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
+    <p-header>Select a data column for visualization</p-header>
     <visualization [searchQuery]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>

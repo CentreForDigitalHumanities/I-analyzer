@@ -41,13 +41,17 @@ export class BarChartComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
+            // date fields are returned with keys containing identifiers by elasticsearch
+            // replace with string representation, contained in 'key_as_string' field
             if ('key_as_string' in this.searchData[0]) {
                 this.searchData.forEach(cat => cat.key = cat.key_as_string)
             }
             this.calculateDomains();
-            this.createChart(changes['visualizedField'] && changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-            this.drawChartData();
-            this.setScale();
+            if (changes['visualizedField'] != undefined) {
+                this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+                this.drawChartData();
+                this.setScale();
+            }
         }
     }
 
@@ -92,23 +96,20 @@ export class BarChartComponent implements OnChanges {
      * @param forceRedraw Erases the current chart and create a new one.
      */
     createChart(forceRedraw: boolean) {
-        if (this.svg) {
-            if (forceRedraw) {
-                this.svg.remove();
-            } else {
-                // chart already created
-                return;
-            }
-        }
         /**
         * select DOM elements, set up scales and axes
         */
+        if (this.svg) {
+            this.svg.remove();
+        }
+
         const element = this.chartContainer.nativeElement;
-        this.width = element.offsetWidth - this.margin.left - this.margin.right;
-        this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+
         this.svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight);
+        this.width = element.offsetWidth - this.margin.left - this.margin.right;
+        this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
 
         this.svg.selectAll('g').remove();
         this.svg.selectAll('text').remove();
