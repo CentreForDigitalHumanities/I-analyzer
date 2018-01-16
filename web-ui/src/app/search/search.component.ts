@@ -52,8 +52,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
         this.user = this.userService.getCurrentUserOrFail();
-        this.activatedRoute.params.subscribe(params => {
-            let corpusName = params['corpus'];
+        this.activatedRoute.paramMap.subscribe(params => {
+            let corpusName = params.get('corpus');
             this.availableCorpora.then(items => {
                 let found = items.find(corpus => corpus.name == corpusName);
                 if (!found) {
