@@ -1,0 +1,8 @@
+.notification {
+    transition: opacity 0.5s;
+
+    &.is-loading {
+        opacity: 0.5;
+        transition: none;
+    }
+}

@@ -44,8 +44,11 @@ class UserView(ModelView):
     )
 
     form_widget_args = dict(
+        email=dict(type="email"),
+        username=dict(autocomplete="off"),
         password=dict(
-            placeholder='Enter new password',
+            autocomplete="new-password",
+            placeholder='Enter new password'
         ),
     )
 
