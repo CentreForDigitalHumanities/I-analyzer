@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
 
@@ -61,41 +61,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
         this.user = this.userService.getCurrentUserOrFail();
+
+        // the search to perform is specified in the query parameters
         this.activatedRoute.paramMap.subscribe(params => {
             let corpusName = params.get('corpus');
             this.query = params.get('query');
-            this.availableCorpora.then(items => {
-                // TODO: is this actually required all the time?
-                let found = items.find(corpus => corpus.name == corpusName);
-                if (!found) {
-                    throw `Invalid corpus ${corpusName} specified!`;
-                }
-                if (!this.queryField || !this.corpus || found.name != this.corpus.name) {
-                    this.queryField = {};
-                }
-                this.corpus = found;
-                this.title.setTitle(this.corpus.name);
+            this.setCorpus(corpusName).then(corpus => {
+                let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
 
-                let fieldsSet = false;
-
-                for (let field of this.corpus.fields) {
-                    let param = this.getParamForFieldName(field.name);
-                    if (params.has(param)) {
-                        if (this.showFilters == undefined) {
-                            this.showFilters = true;
-                        }
-                        fieldsSet = true;
-                        this.queryField[field.name] = Object.assign({
-                            data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
-                            useAsFilter: true,
-                            visible: true
-                        }, field);
-                    } else {
-                        this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
-                    }
-                }
-
-                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (corpus.fields.filter(field => field.termFrequency).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
@@ -216,6 +190,50 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     private getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
+    }
+
+    private async setCorpus(corpusName: string) {
+        let items = await this.availableCorpora;
+
+        if (!this.corpus || this.corpus.name != corpusName) {
+            let found = items.find(corpus => corpus.name == corpusName);
+            if (!found) {
+                throw `Invalid corpus ${corpusName} specified!`;
+            }
+            if (!this.queryField || !this.corpus || found.name != this.corpus.name) {
+                this.queryField = {};
+            }
+            this.corpus = found;
+            this.title.setTitle(this.corpus.name);
+        }
+
+        return this.corpus;
+    }
+
+    /**
+     * Sets the field data from the query parameters and return whether any fields were actually set.
+     */
+    private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
+        let fieldsSet = false;
+
+        for (let field of corpusFields) {
+            let param = this.getParamForFieldName(field.name);
+            if (params.has(param)) {
+                if (this.showFilters == undefined) {
+                    this.showFilters = true;
+                }
+                fieldsSet = true;
+                this.queryField[field.name] = Object.assign({
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
+                    useAsFilter: true,
+                    visible: true
+                }, field);
+            } else {
+                this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
+            }
+        }
+
+        return fieldsSet;
     }
 }
 
