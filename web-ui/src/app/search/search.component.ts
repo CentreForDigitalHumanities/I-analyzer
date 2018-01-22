@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 
@@ -13,13 +13,13 @@ import { CorpusService, SearchService, DownloadService, UserService } from '../s
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
-    @ViewChild('downloadbutton') button: ElementRef;
 
     public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
     public isSearching: boolean;
+    public isDownloading: boolean;
     public searched: boolean;
     /**
      * Whether a document has been selected to be shown.
@@ -116,8 +116,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public async download() {
-        let button = this.button.nativeElement;
-        button.classList.add('is-loading');
+        this.isDownloading = true;
         let fields = this.getQueryFields();
         let rows = await this.searchService.searchAsTable(
             this.corpus,
@@ -130,7 +129,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
-        button.classList.remove('is-loading');
+        this.isDownloading = false;
     }
 
     public updateFilterData(name: string, data: any) {

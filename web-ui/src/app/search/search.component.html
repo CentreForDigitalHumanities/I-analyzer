@@ -39,7 +39,7 @@
                 </div>
                 <div class="level-item">
                     <div class="field has-addons">
-                        <button #downloadbutton class="button is-info" type="download" (click)="download()" [disabled]="!results">
+                        <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
                             <span class="icon is-small">
                                 <i class="fa fa-download"></i>
                             </span>
