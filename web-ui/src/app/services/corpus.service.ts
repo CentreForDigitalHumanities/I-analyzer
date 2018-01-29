@@ -1,14 +1,35 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { includes } from 'lodash';
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { ApiService } from './api.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 
 @Injectable()
 export class CorpusService {
+    private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(undefined);
+
+    public currentCorpus = this.currentCorpusSubject.asObservable();
 
     constructor(private apiService: ApiService, private userService: UserService) {
+    }
+
+    /**
+     * Sets a corpus and returns a boolean indicating whether the corpus exists and is accessible.
+     * @param corpusName Name of the corpus
+     */
+    public set(corpusName: string): Promise<boolean> {
+        return this.get().then(all => {
+            let corpus = all.find(c => c.name == corpusName);
+            if (!corpus) {
+                return false;
+            } else {
+                this.currentCorpusSubject.next(corpus);
+                return true;
+            }
+        })
     }
 
     public get(): Promise<Corpus[]> {
@@ -17,8 +38,8 @@ export class CorpusService {
 
     private parseCorpusList(data: any): Corpus[] {
         let currentUser = this.userService.getCurrentUserOrFail();
-        let availableCorpora = Object.keys(data).filter( name => currentUser.hasRole(name));
-        return availableCorpora.map( corpus => this.parseCorpusItem(corpus, data[corpus]));
+        let availableCorpora = Object.keys(data).filter(name => currentUser.hasRole(name));
+        return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {

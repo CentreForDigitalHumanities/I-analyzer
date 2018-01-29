@@ -17,6 +17,7 @@ import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.co
 import { HomeComponent } from './home/home.component';
 import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
+import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
@@ -28,7 +29,7 @@ const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'login',
@@ -80,7 +81,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

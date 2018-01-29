@@ -2,7 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
+import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import "rxjs/add/operator/filter";
+import "rxjs/add/observable/zip";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService } from '../services/index';
@@ -65,10 +68,15 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.user = this.userService.getCurrentUserOrFail();
 
         // the search to perform is specified in the query parameters
-        this.activatedRoute.paramMap.subscribe(params => {
-            let corpusName = params.get('corpus');
-            this.query = params.get('query');
-            this.setCorpus(corpusName).then(corpus => {
+        Observable.zip(
+            this.corpusService.currentCorpus,
+            this.activatedRoute.paramMap,
+            (corpus, params) => {
+                return { corpus, params };
+            }).filter(({ corpus, params }) => !!corpus)
+            .subscribe(({ corpus, params }) => {
+                this.query = params.get('query');
+                this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
 
                 if (corpus.fields.filter(field => field.termFrequency).length > 0) {
@@ -79,7 +87,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                     this.performSearch();
                 }
             });
-        });
     }
 
     ngOnDestroy() {
@@ -196,22 +203,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         return `$${fieldName}`;
     }
 
-    private async setCorpus(corpusName: string) {
-        let items = await this.availableCorpora;
-
-        if (!this.corpus || this.corpus.name != corpusName) {
-            let found = items.find(corpus => corpus.name == corpusName);
-            if (!found) {
-                throw `Invalid corpus ${corpusName} specified!`;
-            }
-            if (!this.queryField || !this.corpus || found.name != this.corpus.name) {
+    private setCorpus(corpus: Corpus) {
+        if (!this.corpus || this.corpus.name != corpus.name) {
+            if (!this.queryField || !this.corpus || corpus.name != this.corpus.name) {
                 this.queryField = {};
             }
-            this.corpus = found;
+            this.corpus = corpus;
             this.title.setTitle(this.corpus.name);
         }
-
-        return this.corpus;
     }
 
     /**
