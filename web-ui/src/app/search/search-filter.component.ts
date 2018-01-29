@@ -70,7 +70,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     filterData.data = { gte: this.filter.lower, lte: this.filter.upper };
                     break;
                 case 'DateFilter':
-                    filterData.data = { gte: this.filter.lower.toString(), lte: this.filter.upper.toString() };
+                    let padLeft = (n: number) => `0${n}`.slice(-2);
+                    let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
+                    filterData.data = { gte: toString(this.filter.lower), lte: toString(this.filter.upper) };
                     break;
             }
 
@@ -90,7 +92,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 }
                 break;
             case 'DateFilter':
-                this.data = { min: this.filterData.data.gte, max: this.filterData.data.lte };
+                this.data = { min: new Date(this.filterData.data.gte), max: new Date(this.filterData.data.lte) };
         }
     }
 
