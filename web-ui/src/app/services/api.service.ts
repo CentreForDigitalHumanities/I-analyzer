@@ -5,7 +5,7 @@ import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
 import { SessionService } from './session.service';
-import { SearchFilterData, UserRole } from '../models/index';
+import { UserRole } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -105,14 +105,4 @@ export class ApiService extends Rest {
         id: number,
         userID: number
     }>;
-
-    @RestAction({
-        method: RestRequestMethod.Post,
-        path: '/search'
-    })
-    public search: RestMethod<{ corpusName: string, query: string, fields: string[], filters: SearchFilterData[], n: null, resultType: 'json' }, any>;
-
-    public getSearchCsvUrl(): Promise<string> {
-        return Promise.resolve().then(() => this.$getUrl({ path: '/search//csv' }));
-    }
 }

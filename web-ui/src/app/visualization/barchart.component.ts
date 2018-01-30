@@ -47,7 +47,7 @@ export class BarChartComponent implements OnChanges {
                 this.searchData.forEach(cat => cat.key = cat.key_as_string)
             }
             this.calculateDomains();
-            if (changes['visualizedField']!=undefined) {
+            if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.drawChartData();
                 this.setScale();
@@ -104,7 +104,7 @@ export class BarChartComponent implements OnChanges {
         }
 
         const element = this.chartContainer.nativeElement;
-        
+
         this.svg = d3.select(element).append('svg')
             .attr('width', element.offsetWidth)
             .attr('height', element.offsetHeight);

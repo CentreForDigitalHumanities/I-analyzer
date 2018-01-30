@@ -72,7 +72,7 @@
                                 <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
                                     type="checkbox">
                             </div> {{ field.searchFilter.description }}
-                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
