@@ -152,13 +152,15 @@ def api_login():
     if user is None:
         response = jsonify({'success': False})
     else:
+        print(user.queries)
         security.login_user(user)
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
             'roles': [{'name': role.name, 'description': role.description} for role in user.roles],
-            'downloadLimit': user.download_limit
+            'downloadLimit': user.download_limit,
+            'queries': [{'query': query.query_json, 'corpusName': query.corpus_name} for query in user.queries]
         })
 
     return response

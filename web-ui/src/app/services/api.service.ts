@@ -5,7 +5,7 @@ import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
 import { SessionService } from './session.service';
-import { SearchFilterData, UserRole } from '../models/index';
+import { SearchFilterData, UserRole, Query } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -79,7 +79,7 @@ export class ApiService extends Rest {
     })
     public login: RestMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number }>;
+        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

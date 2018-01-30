@@ -23,6 +23,7 @@ import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
+import { SearchHistoryComponent } from './search-history/search-history.component';
 
 const appRoutes: Routes = [
     {
@@ -38,6 +39,10 @@ const appRoutes: Routes = [
         path: 'home',
         component: HomeComponent,
         canActivate: [LoggedOnGuard]
+    },
+    {
+        path: 'search-history',
+        component: SearchHistoryComponent
     },
     {
         path: '',
@@ -60,7 +65,8 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         SearchRelevanceComponent,
-        DocumentViewComponent
+        DocumentViewComponent,
+        SearchHistoryComponent
     ],
     imports: [
         BrowserAnimationsModule,
