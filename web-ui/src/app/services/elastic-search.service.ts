@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client, ConfigOptions } from 'elasticsearch';
+import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
 import { CorpusField, ElasticSearchIndex } from '../models/index';
 import { ApiService } from './api.service';
 
@@ -74,7 +74,7 @@ export class ElasticSearchService {
         return new Observable((observer) => {
             let retrieved = 0;
             this.connection.then((connection) => {
-                let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
+                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
                     let result: SearchResult<T> = {
                         completed: false,
                         documents: response.hits.hits.map((hit) => this.hitToDocument<T>(hit)),
