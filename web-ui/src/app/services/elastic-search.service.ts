@@ -109,7 +109,7 @@ export class ElasticSearchService {
             let retrieved = 0;
             this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result: SearchResult<T> = {
+                    let result: SearchResults = {
                         completed: false,
                         documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
                         retrieved: retrieved += response.hits.hits.length,
