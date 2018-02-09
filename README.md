@@ -1,7 +1,6 @@
 I-analyzer
 ===============================================================================
 
-
 `ianalyzer/api` is a Python package that provides the following:
 
 - An API that enables users to search through an ElasticSearch index of a text corpus, and stream search results into a CSV file. `Flask` is used for serving the interface and generating results.
@@ -9,7 +8,6 @@ I-analyzer
 - Underneath, the package provides a way to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
 
 `ianalyzer/web-ui` is an [Angular 4](https://angular.io/) web interface.
-
 
 Project layout
 -------------------------------------------------------------------------------
@@ -30,7 +28,7 @@ To get an instance running, do the following. Ideally run using a `virtualenv`:
 
 1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine.
 2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user.
-3. Install the requirements.
+3. Install the requirements for both the API and the client with `npm install`.
 ```
 npm install
 ```
@@ -45,9 +43,7 @@ npm install
 
 ### Testing
 
-Tests exist in the `api/tests/` directory and may be run by calling `python -m py.test`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `web-ui`, they should be run from that directory using Angular.
-
-
+Tests exist in the `api/tests/` directory and may be run by calling `python -m py.test` from `/api`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `web-ui`, they should be run from that directory using Angular.
 
 Indexing large corpora on the remote server
 -------------------------------------------------------------------------------
