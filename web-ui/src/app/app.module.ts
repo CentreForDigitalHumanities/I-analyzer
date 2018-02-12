@@ -6,11 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
+import { MarkdownModule } from 'ngx-md';
 import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule } from 'primeng/primeng';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -71,6 +72,7 @@ const appRoutes: Routes = [
         FormsModule,
         HttpModule,
         RouterModule.forRoot(appRoutes),
+        MarkdownModule,
         MultiSelectModule,
         SliderModule,
         MenuModule,
@@ -81,7 +83,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
