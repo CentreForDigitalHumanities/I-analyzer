@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 import { Subscription } from 'rxjs/Subscription';
 
@@ -9,7 +9,7 @@ import { ManualService } from './services/manual.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
     private pageEventSubscription: Subscription;
 
     public manualPath: string | undefined;
@@ -20,5 +20,10 @@ export class AppComponent {
             this.manualPath = event.show ? event.path : undefined;
             this.showManual = !!this.manualPath;
         });
+    }
+
+
+    ngOnDestroy() {
+        this.pageEventSubscription.unsubscribe();
     }
 }
