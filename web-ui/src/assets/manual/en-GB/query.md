@@ -1,8 +1,6 @@
-The database used in I-analyzer is organised using Elasticsearch. To search it, it is necessary to use terms and operators which Elasticsearch can understand. A good reference to use can be the Simple Query String manual from Elasticsearch itself. It can be found here: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html
+The database used in I-analyzer is organised using Elasticsearch. To search it, it is necessary to use terms and operators which Elasticsearch can understand. They are explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
 
-Note that not everything mentioned in that manual is actually possible. Some options might have been switched off.
-
-For your convenience, a summary of the main points from the manual follows below.
+For your convenience, a summary of the search operators is shown below.
 
 # Simple Query String Syntax
 
@@ -45,8 +43,3 @@ Illustrating the differences when searching for different combinations of `bank`
 | `bank~1` | 76241 hits (compare with just bank) | 
 | `"the bank is"` | 24 hits |
 | `"the bank is" ~1`| 32 hits |
-
-By default all the fields are searched. If this is not the desired behavior specify a field name before the query e.g. `year:` or `content:`.
-
-Generally it's clear what is causing the differences in search results. But in some other cases the cause can be harder to find. Hopefully some help can be found in this manual.
-
