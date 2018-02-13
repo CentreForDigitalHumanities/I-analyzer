@@ -3,12 +3,7 @@
 </div>
 <main>
     <router-outlet></router-outlet>
-    <p-dialog [(visible)]="showManual" *ngIf="showManual" positionTop="50" width="800">
-        <p-header>Documentation</p-header>
-        <div class="content manual-dialog">
-            <markdown [path]="manualPath"></markdown>
-        </div>
-    </p-dialog>
+    <ia-manual-dialog></ia-manual-dialog>
 </main>
 <footer class="footer">
     <div class="container">

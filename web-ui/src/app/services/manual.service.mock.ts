@@ -1,16 +1,16 @@
 import { Injectable } from "@angular/core";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
-
-import { MarkdownService } from 'ngx-md';
+import { DomSanitizer } from "@angular/platform-browser";
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+import { PageManualEvent } from './manual.service';
+
 @Injectable()
-export class ManualService {
+export class ManualServiceMock {
     private behavior = new BehaviorSubject<PageManualEvent>({ status: 'hide' });
     public pageEvent = this.behavior.asObservable();
 
-    public constructor(private domSanitizer: DomSanitizer, private markdownService: MarkdownService) {
+    public constructor(private domSanitizer: DomSanitizer) {
     }
 
     public closePage() {
@@ -27,26 +27,10 @@ export class ManualService {
         this.behavior.next({
             status: 'loading'
         });
-        let html = await fetch(path).then(response => this.parseResponse(response));
+        let html = await Promise.resolve('<p>Hello world!</p>');
         this.behavior.next({
-            html,
+            html: this.domSanitizer.bypassSecurityTrustHtml(html),
             status: 'show'
         });
     }
-
-    private async parseResponse(response: Response) {
-        let text = await response.text();
-        let html = this.markdownService.compile(text);
-        return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));
-    }
 }
-
-export type PageManualEvent =
-    {
-        status: 'loading'
-    } | {
-        status: 'show',
-        html: SafeHtml
-    } | {
-        status: 'hide'
-    }

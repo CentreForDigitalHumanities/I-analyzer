@@ -9,21 +9,6 @@ import { ManualService } from './services/manual.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnDestroy {
-    private pageEventSubscription: Subscription;
-
-    public manualPath: string | undefined;
-    public showManual = false;
-
-    constructor(manualService: ManualService) {
-        this.pageEventSubscription = manualService.pageEvent.subscribe(event => {
-            this.manualPath = event.show ? event.path : undefined;
-            this.showManual = !!this.manualPath;
-        });
-    }
-
-
-    ngOnDestroy() {
-        this.pageEventSubscription.unsubscribe();
-    }
+export class AppComponent {
 }
+
