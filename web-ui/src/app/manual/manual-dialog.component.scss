@@ -1,0 +1,13 @@
+@import "../../variables";
+
+.content {
+    ::ng-deep a {
+        color: $primary;
+    }
+
+    max-height: 80vh;
+
+    &.is-loading {
+        @extend %content-loader;
+    }
+}
