@@ -37,6 +37,8 @@ export class ManualService {
     private async parseResponse(response: Response) {
         let text = await response.text();
         let html = this.markdownService.compile(text);
+        // mark that the output of the markdown service is safe to accept: it can contain style and id attributes,
+        // which normally aren't liked by Angular
         return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));
     }
 }

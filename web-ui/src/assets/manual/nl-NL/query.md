@@ -1,8 +1,6 @@
-De database waar I-analyzer mee werkt is georganiseerd met Elasticsearch. Om daarin te zoeken, is het nodig termen en operatoren te gebruiken, die Elasticsearch “begrijpt”. Hiervoor is de Simple Query String-handleiding van Elasticsearch geadviseerd. Die vind je hier: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html
+De database waar I-analyzer mee werkt is georganiseerd met Elasticsearch. Om daarin te zoeken, is het nodig termen en operatoren te gebruiken, die Elasticsearch “begrijpt”. Deze worden uitgebreid uitgelegd in de [Simple Query String-handleiding van Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
 
-Het is een goed idee om deze handleiding bij de hand te houden als je met I-analyzer in zijn huidige vorm aan de gang gaat en hem regelmatig te raadplegen. Let wel: niet alles wat in de handleiding wordt genoemd is ook mogelijk. Soms hebben we dingen niet “aan” gezet, die theoretisch wel zouden kunnen. 
-
-Hier volgen de belangrijkste punten uit die handleiding.
+Hieronder volgt een beschrijving van de ondersteunde operatoren.
 
 # Simple Query String syntax
 
@@ -48,7 +46,3 @@ Een spatie kan ook een speciaal teken zijn. Soms kan een escape (dus `\`) voor d
 | `bank~1` | 			76241 treffers (vergelijk met bank hiervoor) | 
 | `"de bank is"` |  			24 treffers |
 | `"de bank is" ~1`|		32 treffers  |
-
-Er wordt standaard in alle velden gezocht. Wil je dat niet, dan geef je eerst een veldnaam op. Bijvoorbeeld `year:` of `content:`
-
-In sommige gevallen is het duidelijk waarom de verschillen in zoekresultaten optreden. Maar soms zijn de oorzaken van de verschillen niet zo voor de hand liggend. Dan vind je hopelijk wat hulp in de bovenstaande handleiding. 
