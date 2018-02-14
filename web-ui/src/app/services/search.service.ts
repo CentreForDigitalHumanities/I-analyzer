@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/finally';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
