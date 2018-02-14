@@ -126,26 +126,4 @@ export class SearchService {
         return String(value);
     }
 
-    private mapFilters(filters: SearchFilterData[]) {
-        return filters.map(filter => {
-            switch (filter.filterName) {
-                case "BooleanFilter":
-                    return { 'term': { [filter.fieldName]: filter.data } };
-                case "MultipleChoiceFilter":
-                    return { 'terms': { [filter.fieldName]: filter.data } };
-                case "RangeFilter":
-                    return {
-                        'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
-                        }
-                    }
-                case "DateFilter":
-                    return {
-                        'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
-                        }
-                    }
-            }
-        });
-    };
 };

@@ -11,7 +11,6 @@ export type SearchResults = {
      */
     retrieved: number,
     total: number
-    //queryModel: queryModel
 }
 
 export type AggregateResults<TKey> = {

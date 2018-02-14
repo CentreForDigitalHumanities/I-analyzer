@@ -112,6 +112,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         };
 
         for (let filter of this.getFilterData().map(data => {
+            console.log(data);
             return {
                 param: this.getParamForFieldName(data.fieldName),
                 value: searchFilterDataToParam(data)

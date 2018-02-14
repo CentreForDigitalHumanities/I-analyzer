@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResults } from '../models/index';
+import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
 import { ApiService } from './api.service';
 
@@ -42,7 +42,7 @@ export class ElasticSearchService {
                 'query': {
                     'bool': {
                         'must': clause,
-                        'filter': queryModel.filters,
+                        'filter': this.mapFilters(queryModel.filters),
                     }
                 }
             }
@@ -190,6 +190,32 @@ export class ElasticSearchService {
             position: index + 1
         };
     }
+
+    /**
+    * Convert filters from query model into elasticsearch form
+    */
+    private mapFilters(filters: SearchFilterData[]) {
+        return filters.map(filter => {
+            switch (filter.filterName) {
+                case "BooleanFilter":
+                    return { 'term': { [filter.fieldName]: filter.data } };
+                case "MultipleChoiceFilter":
+                    return { 'terms': { [filter.fieldName]: filter.data } };
+                case "RangeFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
+                        }
+                    }
+                case "DateFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
+                        }
+                    }
+            }
+        });
+    };
 }
 
 type Connection = {
