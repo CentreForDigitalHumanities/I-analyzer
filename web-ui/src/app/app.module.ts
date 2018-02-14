@@ -21,9 +21,11 @@ import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent } from './search-history/search-history.component';
+import { DisplayFilterPipe } from './search-history/display-filter.pipe';
 
 const appRoutes: Routes = [
     {
@@ -56,6 +58,7 @@ const appRoutes: Routes = [
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
+        DisplayFilterPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchResultsComponent,
@@ -64,6 +67,7 @@ const appRoutes: Routes = [
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
+        WordcloudComponent,
         SearchRelevanceComponent,
         DocumentViewComponent,
         SearchHistoryComponent

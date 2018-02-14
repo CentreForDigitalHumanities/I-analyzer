@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchHistoryComponent } from './search-history.component';
+import { DisplayFilterPipe } from './display-filter.pipe';
+import { UserService } from '../services/user.service';
+import { UserServiceMock } from '../services/user.service.mock';
 
 describe('SearchHistoryComponent', () => {
   let component: SearchHistoryComponent;
@@ -8,7 +11,12 @@ describe('SearchHistoryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchHistoryComponent ]
+      declarations: [ DisplayFilterPipe, SearchHistoryComponent ], 
+      providers: [
+        {
+          provide: UserService, useValue: new UserServiceMock()
+        }
+      ]
     })
     .compileComponents();
   }));

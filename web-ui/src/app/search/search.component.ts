@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs/Subscription';
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, User, FoundDocument } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, User, FoundDocument } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService } from '../services/index';
 
 @Component({
@@ -33,12 +33,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     public query: string;
     public user: User;
     public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
-    public queryModel: SearchQuery;
+    public queryModel: QueryModel;
     /**
      * This is the query currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
-    public searchQuery: string;
+    public queryText: string;
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
@@ -94,17 +94,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     public search() {
         this.isSearching = true;
         // store it, the user might change it in the meantime
-        let searchQuery = this.query;
+        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
         this.searchService.search(
-            this.corpus,
-            searchQuery,
-            this.getFilterData())
+            this.queryModel,
+            this.corpus)
             .then(results => {
-                this.searchQuery = searchQuery;
                 this.results = results;
                 this.isSearching = false;
                 this.searched = true;
-                this.queryModel = results.queryModel;
             });
         this.showFilters = true;
     }
@@ -114,7 +111,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public async download() {
-        let fields = this.getQueryFields();
+        let fields = this.getCsvDownloadFields();
         let rows = await this.searchService.searchAsTable(
             this.corpus,
             this.queryModel,
@@ -148,7 +145,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.selectedAll = fields.every(field => field.visible);
     }
 
-    private getQueryFields(): CorpusField[] {
+    private getCsvDownloadFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 

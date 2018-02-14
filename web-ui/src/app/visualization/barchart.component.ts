@@ -1,4 +1,4 @@
-import { Input, Component, OnChanges, ElementRef, ViewChild, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -12,7 +12,6 @@ import * as _ from "lodash";
 })
 
 export class BarChartComponent implements OnChanges {
-    @ViewChild('chart') private chartContainer: ElementRef;
     @Input('searchData')
     public searchData: {
         key: any,
@@ -20,6 +19,7 @@ export class BarChartComponent implements OnChanges {
         key_as_string?: string
     }[];
     @Input() public visualizedField;
+    @Input() public chartElement;
 
     private yAsPercent: boolean = false;
     private yTicks: number = 10;
@@ -103,13 +103,11 @@ export class BarChartComponent implements OnChanges {
             this.svg.remove();
         }
 
-        const element = this.chartContainer.nativeElement;
-        
-        this.svg = d3.select(element).append('svg')
-            .attr('width', element.offsetWidth)
-            .attr('height', element.offsetHeight);
-        this.width = element.offsetWidth - this.margin.left - this.margin.right;
-        this.height = element.offsetHeight - this.margin.top - this.margin.bottom;
+        this.svg = d3.select(this.chartElement).append('svg')
+            .attr('width', this.chartElement.offsetWidth)
+            .attr('height', this.chartElement.offsetHeight);
+        this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
+        this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
 
         this.svg.selectAll('g').remove();
         this.svg.selectAll('text').remove();
@@ -189,6 +187,7 @@ export class BarChartComponent implements OnChanges {
             .delay((d, i) => i * 10)
             .attr('y', d => this.yScale(d.doc_count))
             .attr('height', d => this.height - this.yScale(d.doc_count));
+
     }
 
 }

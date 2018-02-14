@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Query, User } from '../models/index'
+import { QueryModel, User } from '../models/index'
 import { UserService } from '../services/index';
+
 
 @Component({
   selector: 'search-history',
@@ -9,13 +10,18 @@ import { UserService } from '../services/index';
 })
 export class SearchHistoryComponent implements OnInit {
   private user: User;
-  private queries: Query[];
+  private queries: QueryModel [];
+  private timestamps: Date [];
   constructor(private userService: UserService) { }
 
   ngOnInit() {
   	this.user = this.userService.getCurrentUserOrFail();
-  	this.queries = this.user.queries;
-  	console.log(this.queries[0].query);
+  	this.queries = this.user.queries.map( query => JSON.parse(query.query) );
   }
+
+  returnToSavedQuery() {
+    console.log("clicked!");
+  }
+
 
 }

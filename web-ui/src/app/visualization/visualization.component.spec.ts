@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'primeng/primeng';
 
 import { BarChartComponent } from './barchart.component';
+import { WordcloudComponent } from './wordcloud.component';
 import { VisualizationComponent } from './visualization.component';
 import { SearchService } from '../services/index';
-import { AggregateResults, Corpus, SearchQuery } from '../models/index';
+import { AggregateResults, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
@@ -15,7 +16,7 @@ describe('VisualizationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, SharedModule],
-            declarations: [BarChartComponent, VisualizationComponent],
+            declarations: [BarChartComponent, WordcloudComponent, VisualizationComponent],
             providers: [{
                 provide: SearchService,
                 useValue: new MockSearchService()
@@ -26,11 +27,8 @@ describe('VisualizationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(VisualizationComponent);
         component = fixture.componentInstance;
-        component.searchQuery = {
-            aborted: false,
-            completed: new Date(),
-            query: { 'match_all': {} },
-            transferred: 0
+        component.queryModel = {
+            queryText: "Wally"
         }
         component.corpus = <any>{ visualize: ['test_field'] };
 
@@ -43,7 +41,7 @@ describe('VisualizationComponent', () => {
 });
 
 class MockSearchService {
-    public async searchForVisualization(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<string>> {
+    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<string>> {
         return {
             completed: false,
             aggregations: [{

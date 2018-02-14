@@ -17,7 +17,7 @@
             <div class="level-item">
                 <form (ngSubmit)="search()" *ngIf="corpus">
                     <div class="field has-addons">
-                        <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
+                        <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query">
 
                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
                             <span class="icon is-small">
@@ -114,10 +114,10 @@
 </p-dialog>
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument" width="800" *ngIf="viewDocument">
-    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQuery"></document-view>
+    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
     <p-header>Select a data column for visualization</p-header>
-    <visualization [searchQuery]="queryModel" [corpus]="corpus"></visualization>
+    <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>

@@ -1,5 +1,5 @@
 import { CorpusField } from './corpus';
-import { SearchQuery } from './query';
+import { QueryModel } from './query';
 import { FoundDocument } from './found-document';
 
 export type SearchResults = {
@@ -10,8 +10,8 @@ export type SearchResults = {
      * Total number of retrieved documents for this search.
      */
     retrieved: number,
-    total: number,
-    queryModel: SearchQuery
+    total: number
+    //queryModel: queryModel
 }
 
 export type AggregateResults<TKey> = {

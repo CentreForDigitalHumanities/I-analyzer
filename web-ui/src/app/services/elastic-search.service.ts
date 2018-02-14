@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions } from 'elasticsearch';
-import { CorpusField, FoundDocument, ElasticSearchIndex, SearchQuery, SearchClause, SearchResults, AggregateResults } from '../models/index';
+import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResults } from '../models/index';
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -25,10 +25,10 @@ export class ElasticSearchService {
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    makeQuery(queryString: string | null = null, filters: any[] = []): SearchQuery {
-        let clause: SearchClause = queryString ? {
+    makeEsQuery(queryModel: QueryModel): EsQuery {
+        let clause: EsSearchClause = queryModel.queryText ? {
             'simple_query_string': {
-                'query': queryString,
+                'query': queryModel.queryText,
                 'lenient': true,
                 'default_operator': 'or'
             }
@@ -36,12 +36,12 @@ export class ElasticSearchService {
                 'match_all': {}
             };
 
-        if (filters) {
+        if (queryModel.filters) {
             return {
                 'query': {
                     'bool': {
-                        'must': [clause],
-                        'filter': filters,
+                        'must': clause,
+                        'filter': queryModel.filters,
                     }
                 }
             }
@@ -104,17 +104,17 @@ export class ElasticSearchService {
      * @param query
      * @param size Maximum number of hits
      */
-    searchObservable(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResults> {
+    searchObservable(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size: number): Observable<SearchResults> {
         return new Observable((observer) => {
             let retrieved = 0;
+            let esQuery = this.makeEsQuery(queryModel);
             this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
                     let result: SearchResults = {
                         completed: false,
                         documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
                         retrieved: retrieved += response.hits.hits.length,
-                        total: response.hits.total,
-                        queryModel: query
+                        total: response.hits.total
                     }
 
                     if (response.hits.total !== retrieved && retrieved < size) {
@@ -132,7 +132,7 @@ export class ElasticSearchService {
                 }
 
                 connection.client.search({
-                    body: query,
+                    body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
                     size: connection.config.scrollPagesize,
@@ -142,10 +142,11 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
+        let esQuery = this.makeEsQuery(queryModel);
         let connection = await this.connection;
-        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, queryModel);
+        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
@@ -158,10 +159,11 @@ export class ElasticSearchService {
         };
     }
 
-    public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
+    public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
+        let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, queryModel, size || connection.config.overviewQuerySize).then(result => {
+        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize).then(result => {
             // Extract relevant information from dictionary returned by ES
             let stats = result.hits;
 
@@ -171,8 +173,7 @@ export class ElasticSearchService {
                 completed: true,
                 total: stats.total || 0,
                 retrieved: documents.length,
-                documents,
-                queryModel
+                documents
             };
         });
     }
@@ -198,3 +199,25 @@ type Connection = {
         scrollTimeout: string
     }
 };
+
+type EsQuery = {
+    aborted?: boolean,
+    completed?: Date,
+    query: EsSearchClause | {
+        'bool': {
+            'must': EsSearchClause,
+            'filter': any[],
+        }
+    },
+    transferred?: Number
+}
+type EsSearchClause = {
+    'simple_query_string': {
+        'query': string,
+        'lenient': true,
+        'default_operator': 'or'
+    }
+} | {
+        'match_all': {}
+    };
+

@@ -7,7 +7,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, SearchFilterData, SearchResults, AggregateResults, SearchQuery } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -18,21 +18,27 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
-        this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
-        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+    public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
+        return <QueryModel> {
+            queryText: queryText,
+            filters: filters
+        }
+    }
+
+    // fields: CorpusField[] = [],
+    public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
+        this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
             completed: true,
             fields: corpus.fields.filter( field => field.prominentField ),
             total: result.total,
-            documents: result.documents,
-            queryModel: queryModel
+            documents: result.documents
         };
     }
 
-    public searchObservable(corpus: Corpus, queryModel: SearchQuery): Observable<SearchResults> {
+    public searchObservable(corpus: Corpus, queryModel: QueryModel): Observable<SearchResults> {
         let completed = false;
         let totalTransferred = 0;
 
@@ -64,14 +70,14 @@ export class SearchService {
             });
     }
 
-    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 
     /**
      * Search and return a simple two-dimensional string array containing the values.
      */
-    public async searchAsTable(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = []): Promise<string[][]> {
+    public async searchAsTable(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
