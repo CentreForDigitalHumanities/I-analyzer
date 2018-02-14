@@ -5,6 +5,15 @@ import { Injectable } from '@angular/core';
  * a more scalable approach would need to be implemented if rendering many hits is required.
  */
 const maxHits = 100;
+/**
+ * The maximum number of snippets.
+ */
+const maxSnippetsCount = 7;
+/**
+ * The maximum character length of all the text snippets combined.
+ */
+export const maxSnippetsLength = 140;
+export const omissionString = '…'
 
 export type TextPart = {
     substring: string,
@@ -26,10 +35,11 @@ export class HighlightService {
      * @returns The full string subdivided in consecutive parts. Combining all the substrings
      * will result in the input string. Each part is marked with whether it matches the input query.
      */
-    public highlight(value: string | number, query: string = ''): TextPart[] {
+    public * highlight(value: string | number, query: string = ''): IterableIterator<TextPart> {
         let text = `${value}`;
         if (query == null || query == '') {
-            return [{ substring: text, isHit: false }];
+            yield { substring: text, isHit: false };
+            return;
         }
         let expression = HighlightService.queryExpressions[query];
         if (!expression) {
@@ -43,18 +53,90 @@ export class HighlightService {
         for (let i = 0; (result = expression.exec(text)) !== null && i < maxHits; i++) {
             let patternIndex = result.index + result[1].length;
             if (lastIndex < patternIndex) {
-                parsedText.push({ substring: text.substring(lastIndex, patternIndex), isHit: false });
+                yield { substring: text.substring(lastIndex, patternIndex), isHit: false };
             }
 
             // regex groups: (1 = word boundary)(2 = pattern)(3 = word boundary)
-            parsedText.push({ substring: result[2], isHit: true });
+            yield { substring: result[2], isHit: true };
             lastIndex = patternIndex + result[2].length;
         }
 
         if (text.length > lastIndex) {
-            parsedText.push({ substring: text.substring(lastIndex), isHit: false });
+            yield { substring: text.substring(lastIndex), isHit: false };
         }
-        return parsedText;
+    }
+
+    /**
+     * Gets short snippets from the text part to give the user a short overview of the text content.
+     */
+    public snippets(parts: IterableIterator<TextPart>): TextPart[] {
+        let snippets: TextPart[] = [];
+        for (let i = 0, next = parts.next(); !next.done && i < maxSnippetsCount; i++ , next = parts.next()) {
+            snippets.push(next.value);
+        }
+
+        let lengths = this.getSnippetLengths(snippets.map(snippet => snippet.substring.length), maxSnippetsLength);
+
+        snippets.forEach((part, index) => {
+            part.substring = this.cropSnippetText(part.substring,
+                lengths[index],
+                index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
+        });
+
+        return snippets;
+    }
+
+    private getSnippetLengths(actualLengths: number[], maxTotalLength: number, croppedSnippets = actualLengths.length): number[] {
+        let targetLengths: number[] = [];
+        let remainingCharacters = maxTotalLength;
+        let maxLength = Math.max(1, Math.floor(maxTotalLength / croppedSnippets));
+
+        let remainingSnippets = 0;
+
+        let i = 0;
+        for (; i < actualLengths.length && remainingCharacters > 0; i++) {
+            let actualLength = actualLengths[i];
+            let targetLength = Math.min(actualLength, maxLength);
+
+            remainingCharacters -= targetLength;
+            targetLengths[i] = targetLength;
+
+            if (actualLength > targetLength) {
+                // only the cropped snippets could become longer
+                remainingSnippets++;
+            }
+        }
+        for (; i < actualLengths.length; i++) {
+            targetLengths[i] = 0;
+        }
+
+        if (remainingCharacters && remainingSnippets) {
+            // if a snippet is shorter than the maximum snippet length, allow the remaining snippets to become longer
+            let additionalLengths = this.getSnippetLengths(
+                actualLengths.map((length, index) => length - targetLengths[index]),
+                remainingCharacters,
+                remainingSnippets);
+            return targetLengths.map((length, index) => length + additionalLengths[index]);
+        }
+
+        return targetLengths;
+    }
+
+    private cropSnippetText(text: string, maxLength: number, location: 'left' | 'middle' | 'right'): string {
+        if (text.length <= maxLength) {
+            return text;
+        }
+
+        switch (location) {
+            case 'left':
+                return text.substr(0, maxLength) + omissionString;
+
+            case 'middle':
+                return text.substr(0, maxLength / 2) + omissionString + text.substr(text.length - maxLength / 2);
+
+            case 'right':
+                return omissionString + text.slice(-maxLength);
+        }
     }
 
     /**

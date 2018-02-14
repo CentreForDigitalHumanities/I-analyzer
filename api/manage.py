@@ -15,6 +15,7 @@ from ianalyzer import config
 from ianalyzer.models import User, Role, db
 from ianalyzer.web import blueprint, admin_instance, login_manager
 from ianalyzer.factories import flask_app, elasticsearch
+from ianalyzer import corpora
 from es_index import perform_indexing
 
 
@@ -70,8 +71,7 @@ class IndexingCommand(Command):
             '-c', 
             dest='corpus', 
             help='Sets which corpus should be indexed' +
-                'Options: times or dutchbanking' +
-                'If not set, corpus defined in config.py will be indexed'
+                'If not set, corpus defined as CORPUS in config.py will be indexed'
             ),
         Option('--start', 
             '-s', 
@@ -92,18 +92,17 @@ class IndexingCommand(Command):
     def run(self, corpus, start, end):
         
         if not corpus:
-            corpus = config.CORPUS
-        
-        
+            corpus = config.CORPUS        
+        this_corpus = corpora.DEFINITIONS[corpus]
 
         try:
             if not start:
-                start_index = corpus.min_date
+                start_index = this_corpus.min_date
             else:
                 start_index = datetime.strptime(start, '%Y-%m-%d')
             
             if not end:
-                end_index = corpus.max_date
+                end_index = this_corpus.max_date
             else:
                 end_index = datetime.strptime(end, '%Y-%m-%d')  
 
@@ -116,7 +115,7 @@ class IndexingCommand(Command):
             )
             raise
         
-        perform_indexing(corpus, start_index, end_index)
+        perform_indexing(this_corpus, start_index, end_index)
 
 
 app = flask_app(blueprint, admin_instance, login_manager)

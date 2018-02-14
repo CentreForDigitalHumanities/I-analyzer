@@ -1,5 +1,5 @@
 '''
-Module contains the base classes from which corpora can derive; 
+Module contains the base classes from which corpora can derive;
 '''
 
 from datetime import datetime, timedelta
@@ -15,12 +15,28 @@ from ianalyzer import extract
 class Corpus(object):
     '''
     Subclasses of this class define corpora and their documents by specifying:
-    
+
     - How to obtain its source files.
     - What attributes its documents have.
     - How to extract said attributes from the source files.
-    - What each attribute looks like in terms of the search form.    
+    - What each attribute looks like in terms of the search form.
     '''
+
+    @property
+    def title(self):
+        '''
+        Path to source data directory.
+        '''
+        raise NotImplementedError()
+
+
+    @property
+    def description(self):
+        '''
+        Minimum timestamp for data files.
+        '''
+        raise NotImplementedError()
+
 
     @property
     def data_directory(self):
@@ -63,16 +79,15 @@ class Corpus(object):
         ElasticSearch document type name.
         '''
         raise NotImplementedError()
-        
-        
-        
+
+
+
     @property
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
         '''
         raise NotImplementedError()
-
 
 
     @property
@@ -102,7 +117,7 @@ class Corpus(object):
                 }
             }
         }
-        
+
         if self.es_settings:
             result['settings'] = self.es_settings
 
@@ -133,11 +148,11 @@ class Corpus(object):
             if ca[0]=='data_directory':
                 continue
             elif ca[0]=='fields':
-                field_list = []                
+                field_list = []
                 for field in self.fields:
                     field_dict = {}
                     for key, value in field.__dict__.items():
-                        if key == 'search_filter' and value != None:                            
+                        if key == 'search_filter' and value != None:
                             filter_name = str(type(value)).split(sep = '.')[-1][:-2]
                             search_dict = {'name': filter_name}
                             for search_key, search_value in value.__dict__.items():
@@ -158,11 +173,11 @@ class Corpus(object):
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
-        
+
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the corpus, relevant to the given timespan.
-        
+
         Specifically, returns an iterator of tuples that each contain a string
         filename and a dictionary of associated metadata. The latter is usually
         empty or contains only a timestamp; but any data that is to be
@@ -175,7 +190,7 @@ class Corpus(object):
     def source2dicts(self, filename, metadata={}):
         '''
         Generate an iterator of document dictionaries from a given source file.
-        
+
         The dictionaries are created from this corpus' `Field`s.
         '''
         raise NotImplementedError()
@@ -204,7 +219,7 @@ class XMLCorpus(Corpus):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
     '''
-    
+
     @property
     def xml_tag_toplevel(self):
         '''
@@ -222,7 +237,7 @@ class XMLCorpus(Corpus):
         raise NotImplementedError()
 
 
-    
+
     def source2dicts(self, filename, metadata={}):
         '''
         Generate a document dictionaries from a given XML file. This is the
@@ -245,7 +260,7 @@ class XMLCorpus(Corpus):
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
             data = f.read()
-            
+
         # Parsing XML
         soup = bs4.BeautifulSoup(data, 'lxml-xml')
 
@@ -278,9 +293,12 @@ class Field(object):
     '''
     Fields hold data about the name of their columns in CSV files, how the
     corresponding content is to be extracted from the source, how they are
-    described in user interfaces, what ElasticSearch filters are associated
+    described in user interfaces, whether the field lends itself to term 
+    frequency queries, whether it has prominent information 
+    for the user interface, 
+    what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
-    
+
     In short, this is how all things related to the informational structure of
     each particular corpus is stored.
     '''
@@ -288,9 +306,13 @@ class Field(object):
 
     def __init__(self,
             name=None,
+            display_name=None,
+            display_type=None,
             description=None,
             indexed=True,
             hidden=False,
+            term_frequency=False,
+            prominent_field=False,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
             extractor=extract.Constant(None),
@@ -298,13 +320,17 @@ class Field(object):
             ):
 
         self.name = name
+        self.display_name = display_name
+        self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
+        self.term_frequency = term_frequency
+        self.prominent_field = prominent_field
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
-        
+
         # Add back reference to field in filter
         if self.search_filter:
             self.search_filter.field = self

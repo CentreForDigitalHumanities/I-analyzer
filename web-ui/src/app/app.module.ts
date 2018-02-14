@@ -6,28 +6,30 @@ import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CalendarModule, SelectButtonModule, SliderModule } from 'primeng/primeng';
+import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule } from 'primeng/primeng';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
-import { CorpusListComponent } from './corpus-list/corpus-list.component';
+import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchSampleComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent } from './search/index';
 import { MenuComponent } from './menu/menu.component';
+import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { VisualizationComponent } from './visualization/visualization.component';
+import { DocumentViewComponent } from './document-view/document-view.component';
 
 const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
-        canActivate: [LoggedOnGuard]
+        canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
         path: 'login',
@@ -42,27 +44,24 @@ const appRoutes: Routes = [
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
-    },
-    {
-        path: 'visual',
-        //component: VisualizationComponent
-        component: BarChartComponent
     }
 ]
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
-        CorpusListComponent,
+        CorpusSelectionComponent,
         HighlightPipe,
         SearchComponent,
         SearchFilterComponent,
-        SearchSampleComponent,
+        SearchResultsComponent,
         MenuComponent,
         LoginComponent,
         ScrollToDirective,
         BarChartComponent,
-        VisualizationComponent
+        VisualizationComponent,
+        SearchRelevanceComponent,
+        DocumentViewComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -72,13 +71,17 @@ const appRoutes: Routes = [
         FormsModule,
         HttpModule,
         RouterModule.forRoot(appRoutes),
-        SelectButtonModule,
+        MultiSelectModule,
         SliderModule,
+        MenuModule,
+        DialogModule,
+        CheckboxModule,
+        SharedModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

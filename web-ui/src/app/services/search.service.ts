@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/finally';
 
 import { ApiService } from './api.service';
-import { ElasticSearchService, FoundDocument, SearchResult } from './elastic-search.service';
+import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, Query, SearchFilterData, SearchSample } from '../models/index';
+import { Corpus, CorpusField, Query, SearchFilterData, SearchResults, AggregateResults, SearchQuery } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -18,29 +19,31 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public async search(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Promise<SearchSample> {
-        this.logService.info(`Requested flat results for query: ${query}`);
-        let result = await this.elasticSearchService.search(corpus, query, filters);
+    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
+        this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
+        let queryModel = this.elasticSearchService.makeQuery(queryText, this.mapFilters(filters));
+        let result = await this.elasticSearchService.search(corpus, queryModel);
 
-        return <SearchSample>{
+        return <SearchResults>{
+            completed: true,
+            fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
-            fields,
-            hits: result.documents
+            documents: result.documents,
+            queryModel: queryModel
         };
     }
 
-    public searchObservable(corpus: Corpus, queryText: string = '', fields: string[] = [], filters: SearchFilterData[] = []): Observable<SearchResult<Hit>> {
-        let queryModel = this.elasticSearchService.makeQuery(queryText, filters);
+    public searchObservable(corpus: Corpus, queryModel: SearchQuery): Observable<SearchResults> {
         let completed = false;
         let totalTransferred = 0;
 
         // Log the query to the database
         let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
         let querySave = this.queryService.save(query, true);
-        this.logService.info(`Requested observable results for query: ${queryText}`);
+        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
 
         // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable<Hit>(
+        return this.elasticSearchService.searchObservable(
             corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
             .map(result => {
                 totalTransferred = result.retrieved;
@@ -62,20 +65,28 @@ export class SearchService {
             });
     }
 
-    public async searchAsCsv(corpus: Corpus, query: string = '', fields: string[] = [], filters: SearchFilterData[] = [], separator = ','): Promise<string[]> {
+    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
+    }
+
+    /**
+     * Search and return a simple two-dimensional string array containing the values.
+     */
+    public async searchAsTable(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
-        this.logService.info(`Requested CSV file for query: ${query}`);
+        this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
-        return new Promise<string[]>((resolve, reject) => {
-            let rows: string[] = [];
-            this.searchObservable(corpus, query, fields, filters)
+        return new Promise<string[][]>((resolve, reject) => {
+            let rows: string[][] = [];
+            this.searchObservable(corpus, queryModel)
                 .subscribe(
                 result => {
                     rows.push(...
                         result.documents.map(document =>
-                            this.documentRow(document, fields)
-                                .map(this.csvCell).join(separator) + '\n'));
+                            this.documentRow(document, fields.map(field => field.name))
+                        )
+                    );
 
                     totalTransferred = result.retrieved;
                 },
@@ -84,20 +95,14 @@ export class SearchService {
         });
     }
 
-    private csvCell(value: string) {
-        if (value.indexOf('"') >= 0) {
-            return `"${value.replace('"', '""')}"`;
-        }
-
-        return value;
-    }
-
     /**
      * Iterate through some dictionaries and yield for each dictionary the values
      * of the selected fields, in given order.
      */
-    private documentRow<T>(document: { [id: string]: T }, fields: string[] = []): string[] {
-        return fields.map(field => this.documentFieldValue(document[field]));
+    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
+        return fieldNames.map(
+            field => this.documentFieldValue(document.fieldValues[field])
+        );
     }
 
     private documentFieldValue(value: any) {
@@ -113,6 +118,27 @@ export class SearchService {
 
         return String(value);
     }
-}
 
-type Hit = { [fieldName: string]: string };
+    private mapFilters(filters: SearchFilterData[]) {
+        return filters.map(filter => {
+            switch (filter.filterName) {
+                case "BooleanFilter":
+                    return { 'term': { [filter.fieldName]: filter.data } };
+                case "MultipleChoiceFilter":
+                    return { 'terms': { [filter.fieldName]: filter.data } };
+                case "RangeFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
+                        }
+                    }
+                case "DateFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
+                        }
+                    }
+            }
+        });
+    };
+};

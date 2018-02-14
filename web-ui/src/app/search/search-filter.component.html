@@ -1,12 +1,10 @@
 <ng-container *ngIf="filter">
-    <div class="select" *ngIf="filter.name == 'BooleanFilter'">
-        <select [(ngModel)]="data" name="data" [disabled]="!enabled" (change)="update()">
-            <option value="true">{{ filter.trueText }}</option>
-            <option value="false">{{ filter.falseText }}</option>
-        </select>
+    <div class="bool" *ngIf="filter.name == 'BooleanFilter'">
+        <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
+        {{data? filter.trueText : filter.falseText}}
     </div>
     <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'">
-        <p-selectButton [disabled]="!enabled" [multiple]="true" [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()"></p-selectButton>
+        <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'">
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>
@@ -14,8 +12,8 @@
     </div>
     <div class="daterange" *ngIf="filter.name == 'DateFilter'">
         <p-calendar [disabled]="!enabled" [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" (onSelect)="update()"
-            (onInput)="update()"></p-calendar>
+            (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
         <p-calendar [disabled]="!enabled" [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" (onSelect)="update()"
-            (onInput)="update()"></p-calendar>
+            (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
     </div>
 </ng-container>

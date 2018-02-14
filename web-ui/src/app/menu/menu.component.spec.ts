@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule, Router } from '@angular/router';
 
 import { Observable } from 'rxjs';
+import { ButtonModule, MenuModule } from 'primeng/primeng';
 
 import { ConfigService, UserService } from '../services/index';
 import { MenuComponent } from './menu.component';
@@ -13,15 +14,17 @@ describe('MenuComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [MenuComponent],
-            imports: [RouterModule],
+            imports: [RouterModule, ButtonModule, MenuModule],
             providers: [
                 { provide: Router, useValue: { events: Observable.of({}) } },
                 { provide: ConfigService, useValue: {} },
-                { provide: UserService, useValue: {
-                    checkSession: () => {
-                        return Promise.resolve(true)
+                {
+                    provide: UserService, useValue: {
+                        checkSession: () => {
+                            return Promise.resolve(true)
+                        }
                     }
-                } }
+                }
             ]
         }).compileComponents();
     }));
@@ -33,6 +36,7 @@ describe('MenuComponent', () => {
     });
 
     it('should be created', () => {
+        // TODO: DOESN'T WORK BECAUSE label isn't a known property of 'button'
         expect(component).toBeTruthy();
     });
 });

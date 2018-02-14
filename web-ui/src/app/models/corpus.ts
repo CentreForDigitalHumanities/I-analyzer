@@ -1,15 +1,41 @@
 export class Corpus implements ElasticSearchIndex {
-    constructor(public name: string, public doctype, public index, public fields: CorpusField[], public minDate: Date, public maxDate: Date) { }
+    constructor(
+    /**
+     * Internal name for referring to this corpus e.g. in URLs.
+     */
+        public name: string,
+        /**
+         * Human readable title of this corpus.
+         */
+        public title: string,
+        /**
+         * Description of the corpus to show to users.
+         */
+        public description: string,
+        public doctype: DocumentType,
+        public index: string,
+        public fields: CorpusField[],
+        public minDate: Date,
+        public maxDate: Date) { }
 }
 
 export type ElasticSearchIndex = {
-    doctype: 'article',
+    doctype: DocumentType,
     index: string
 }
 
+export type DocumentType = 'article';
+
 export type CorpusField = {
     description: string,
-    type: 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
+    displayName: string,
+    /**
+     * How the field value should be displayed.
+     * text_content: Main text content of the document
+     */
+    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
+    prominentField?: boolean,
+    termFrequency?: boolean,
     hidden: boolean,
     name: string,
     searchFilter: SearchFilter | null

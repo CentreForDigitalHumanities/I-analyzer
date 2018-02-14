@@ -13,7 +13,7 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
-from . import config
+from . import config_fallback as config
 from . import factories
 from . import models
 from . import views
@@ -24,9 +24,9 @@ from . import corpora
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
-    name='textmining', index_view=views.AdminIndexView(), endpoint='admin')
+    name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 admin_instance.add_view(views.CorpusView(
-    corpus_name=config.CORPUS, name=config.CORPUS, endpoint=config.CORPUS_ENDPOINT))
+    corpus_name=config.CORPUS, name='Return to search', endpoint=config.CORPUS_ENDPOINT))
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(
@@ -122,7 +122,7 @@ def api_es_config():
         'chunkSize': config.ES_CHUNK_SIZE,
         'maxChunkBytes': config.ES_MAX_CHUNK_BYTES,
         'bulkTimeout': config.ES_BULK_TIMEOUT,
-        'exampleQuerySize': config.ES_EXAMPLE_QUERY_SIZE,
+        'overviewQuerySize': config.ES_OVERVIEW_QUERY_SIZE,
         'scrollTimeout': config.ES_SCROLL_TIMEOUT,
         'scrollPagesize': config.ES_SCROLL_PAGESIZE
     })

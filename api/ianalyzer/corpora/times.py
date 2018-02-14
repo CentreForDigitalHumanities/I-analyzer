@@ -11,7 +11,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 from ianalyzer import extract
 from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
@@ -22,21 +22,22 @@ from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_cont
 
 
 class Times(XMLCorpus):
-
+    title = config.TIMES_TITLE
+    description = config.TIMES_DESCRIPTION
     data_directory = config.TIMES_DATA
     min_date = config.TIMES_MIN_DATE
     max_date = config.TIMES_MAX_DATE
     es_index = config.TIMES_ES_INDEX
-    es_doctype = config.TIMES_ES_DOCTYPE    
+    es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
-    
+
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the Times data, relevant to the given timespan.
-        
+
         Specifically, returns an iterator of tuples that each contain a string
         filename and a dictionary of metadata (in this case, the date).
         '''
@@ -79,10 +80,10 @@ class Times(XMLCorpus):
             # Construct the full tag
             xmlfile = os.path.join(
                 xmldir,
-                date.strftime('%Y%m%d'), 
+                date.strftime('%Y%m%d'),
                 date.strftime('0FFO-%Y-%m%d.xml') \
                     if date.year > 1985 else \
-                date.strftime('0FFO-%Y-%b%d').upper() + '.xml' 
+                date.strftime('0FFO-%Y-%b%d').upper() + '.xml'
             )
 
             # Yield file and metadata if the desired file is present
@@ -93,13 +94,16 @@ class Times(XMLCorpus):
 
             date += delta
 
-
+    overview_fields = ['title', 'author', 'publication-date', 'journal', 'edition']
 
     fields = [
         Field(
             name='date',
+            display_name='Date',
             description='Publication date, programmatically generated.',
             es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            term_frequency=True,
+            prominent_field=True,
             search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
                 config.TIMES_MAX_DATE,
@@ -338,6 +342,8 @@ class Times(XMLCorpus):
         ),
         Field(
             name='title',
+            display_name='Title',
+            prominent_field = True,
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
@@ -377,6 +383,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
+            term_frequency = True,
             description='Article subject categories.',
             es_mapping={ 'type' : 'keyword' },
             search_filter=filters.MultipleChoiceFilter(
@@ -421,7 +428,7 @@ class Times(XMLCorpus):
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
-                    'of illustrations.'), 
+                    'of illustrations.'),
                 options=[
                     'Cartoon',
                     'Map',
@@ -464,7 +471,10 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content',
+            display_name='Content',
+            display_type='text_content',
             description='Raw OCR\'ed text (content).',
+            prominent_field = True,
             extractor=extract.XML(
                 tag=['text','text.cr'], multiple=True,
                 flatten=True

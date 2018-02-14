@@ -1,0 +1,22 @@
+<section class="section">
+    <h1 class="title">
+        Welcome
+    </h1>
+    <h2 class="subtitle">
+        Select a corpus to search
+    </h2>
+    <label *ngFor="let item of items" class="box">
+        <div class="content">
+            <p>
+                <strong>{{item.title}}</strong>
+                <br> {{item.description}}
+            </p>
+            <button class="button is-primary" role="link" [routerLink]="['/search', item.name]">
+                <span class="icon is-small">
+                  <i class="fa fa-search"></i>
+                </span>
+                <span>Search</span>
+            </button>
+        </div>
+    </label>
+</section>

@@ -1,12 +1,35 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { ApiService } from './api.service';
+import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 
 @Injectable()
 export class CorpusService {
+    private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(undefined);
 
-    constructor(private apiService: ApiService) {
+    public currentCorpus = this.currentCorpusSubject.asObservable();
+
+    constructor(private apiService: ApiService, private userService: UserService) {
+    }
+
+    /**
+     * Sets a corpus and returns a boolean indicating whether the corpus exists and is accessible.
+     * @param corpusName Name of the corpus
+     */
+    public set(corpusName: string): Promise<boolean> {
+        return this.get().then(all => {
+            let corpus = all.find(c => c.name == corpusName);
+            if (!corpus) {
+                return false;
+            } else {
+                this.currentCorpusSubject.next(corpus);
+                return true;
+            }
+        })
     }
 
     public get(): Promise<Corpus[]> {
@@ -14,24 +37,32 @@ export class CorpusService {
     }
 
     private parseCorpusList(data: any): Corpus[] {
-        return Object.keys(data).map(name => this.parseCorpusItem(name, data[name]));
+        let currentUser = this.userService.getCurrentUserOrFail();
+        let availableCorpora = Object.keys(data).filter(name => currentUser.hasRole(name));
+        return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {
-        return {
+        let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
+
+        return new Corpus(
             name,
-            doctype: data.es_doctype,
-            index: data.es_index,
-            minDate: this.parseDate(data.min_date),
-            maxDate: this.parseDate(data.max_date),
-            fields: data.fields.map(item => this.parseField(item))
-        }
+            data.title,
+            data.description,
+            data.es_doctype,
+            data.es_index,
+            allFields,
+            this.parseDate(data.min_date),
+            this.parseDate(data.max_date));
     }
 
     private parseField(data: any): CorpusField {
         return {
             description: data.description,
-            type: data['es_mapping'].type,
+            displayName: data.display_name || data.name,
+            displayType: data.display_type || data['es_mapping'].type,
+            prominentField: data.prominent_field,
+            termFrequency: data.term_frequency,
             hidden: data.hidden,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
