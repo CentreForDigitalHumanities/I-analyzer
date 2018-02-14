@@ -1,0 +1,67 @@
+import { Component, OnInit } from '@angular/core';
+import { ManualService, ManualPageMetaData, HighlightService } from '../services';
+
+@Component({
+    selector: 'ia-manual-navigation',
+    templateUrl: './manual-navigation.component.html',
+    styleUrls: ['./manual-navigation.component.scss']
+})
+export class ManualNavigationComponent implements OnInit {
+    private manifest: ManualPageMetaData[] | undefined;
+    private filtered: ManualPageMetaData[] | undefined;
+    private _filterText: string;
+
+    public set filterText(value: string) {
+        this._filterText = value;
+
+        if (this.manifest) {
+            this.filtered = Array.from(this.filter(this.manifest, value));
+        }
+    }
+
+    public get filterText() {
+        return this._filterText;
+    }
+
+    /**
+     * The text to use for highlighting the search results. This differs from the filter text, because additional wildcards are added
+     */
+    public highlightText: string | undefined;
+
+    constructor(private highlightService: HighlightService, private manualService: ManualService) {
+    }
+
+    async ngOnInit() {
+        this.manifest = await this.manualService.getManifest();
+        this.filtered = [].concat(this.manifest);
+    }
+
+    private *filter(pages: ManualPageMetaData[], filter: string): Iterable<ManualPageMetaData> {
+        if (filter.trim().length == 0) {
+            filter = '*';
+        }
+
+        // make all terms a wildcard search
+        let parts = filter.split(' ').filter(part => part.length).map(part => part.slice(-1) != '*' ? `*${part}*` : part);
+        this.highlightText = filter = parts.join(' ');
+
+        // this is a massively over-engineered filter, but as we have this function already anyway: why not?
+        // and at least it will be consistent with the highlights which also uses this expression
+        let expressions = parts.map(part => this.highlightService.getQueryExpression(part));
+
+        for (let page of pages) {
+            let isMatch = true;
+            for (let expression of expressions) {
+                expression.lastIndex = 0;
+                if (!expression.test(page.title)) {
+                    isMatch = false;
+                    break;
+                }
+            }
+
+            if (isMatch) {
+                yield page;
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+<div class="columns section">
+    <div class="column is-one-quarter">
+        <ia-manual-navigation></ia-manual-navigation>
+    </div>
+    <div class="column">
+        <h1 class="title">{{title}}</h1>
+        <div class="content" [ngClass]="{'is-loading':isLoading}" [innerHTML]="manualHtml"></div>
+    </div>
+</div>

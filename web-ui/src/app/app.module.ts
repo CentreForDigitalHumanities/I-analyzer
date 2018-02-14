@@ -17,7 +17,9 @@ import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { HomeComponent } from './home/home.component';
 import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent } from './search/index';
+import { ManualComponent } from './manual/manual.component';
 import { ManualDialogComponent } from './manual/manual-dialog.component';
+import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
@@ -43,6 +45,10 @@ const appRoutes: Routes = [
         canActivate: [LoggedOnGuard]
     },
     {
+        path: 'manual/:identifier',
+        component: ManualComponent
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -57,7 +63,9 @@ const appRoutes: Routes = [
         SearchComponent,
         SearchFilterComponent,
         SearchResultsComponent,
+        ManualComponent,
         ManualDialogComponent,
+        ManualNavigationComponent,
         MenuComponent,
         LoginComponent,
         ScrollToDirective,

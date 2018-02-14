@@ -3,11 +3,11 @@ import { DomSanitizer } from "@angular/platform-browser";
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { PageManualEvent } from './manual.service';
+import { ManualPageEvent } from './manual.service';
 
 @Injectable()
 export class ManualServiceMock {
-    private behavior = new BehaviorSubject<PageManualEvent>({ status: 'hide' });
+    private behavior = new BehaviorSubject<ManualPageEvent>({ status: 'hide' });
     public pageEvent = this.behavior.asObservable();
 
     public constructor(private domSanitizer: DomSanitizer) {
@@ -30,6 +30,8 @@ export class ManualServiceMock {
         let html = await Promise.resolve('<p>Hello world!</p>');
         this.behavior.next({
             html: this.domSanitizer.bypassSecurityTrustHtml(html),
+            identifier: 'example',
+            title: 'Example Title',
             status: 'show'
         });
     }

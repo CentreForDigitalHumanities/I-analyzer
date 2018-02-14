@@ -1,0 +1,21 @@
+<nav class="panel" *ngIf="filtered">
+    <p class="panel-heading">
+        Manual Topics
+    </p>
+    <div class="panel-block">
+        <p class="control has-icons-left">
+            <input class="input is-small" type="text" placeholder="search" [(ngModel)]="filterText">
+            <span class="icon is-small is-left">
+                <i class="fa fa-search"></i>
+            </span>
+        </p>
+    </div>
+    <ng-container *ngFor="let page of filtered">
+        <a class="panel-block" routerLinkActive="is-active" [routerLink]="['/manual', page.id]">
+            <span class="panel-icon">
+                <i class="fa fa-book"></i>
+            </span>
+            <span [innerHtml]="page.title | highlight:highlightText"></span>
+        </a>
+    </ng-container>
+</nav>
