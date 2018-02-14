@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
@@ -54,6 +54,9 @@ describe('SearchComponent', () => {
                 SessionService,
                 {
                     provide: UserService, useValue: new UserServiceMock()
+                },
+                {
+                    provide: Router, useValue: new RouterMock()
                 }]
         }).compileComponents();
     }));
@@ -68,3 +71,7 @@ describe('SearchComponent', () => {
         expect(component).toBeTruthy();
     });
 });
+
+class RouterMock {
+
+}

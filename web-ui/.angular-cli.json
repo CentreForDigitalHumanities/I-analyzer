@@ -19,6 +19,7 @@
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "",
             "styles": [
+                "../node_modules/primeng/resources/primeng.css",
                 "styles.scss",
                 "../node_modules/font-awesome/css/font-awesome.min.css"
             ],

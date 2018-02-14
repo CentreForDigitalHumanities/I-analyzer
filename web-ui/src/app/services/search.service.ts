@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/finally';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
@@ -28,11 +29,12 @@ export class SearchService {
     // fields: CorpusField[] = [],
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
+
         let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
             completed: true,
-            fields: corpus.fields.filter( field => field.prominentField ),
+            fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
             documents: result.documents
         };
@@ -88,11 +90,11 @@ export class SearchService {
                 .subscribe(
                 result => {
                     rows.push(...
-                        result.documents.map(document => 
+                        result.documents.map(document =>
                             this.documentRow(document, fields.map(field => field.name))
                         )
                     );
-                    
+
                     totalTransferred = result.retrieved;
                 },
                 (error) => reject(error),
@@ -123,4 +125,27 @@ export class SearchService {
 
         return String(value);
     }
-}
+
+    private mapFilters(filters: SearchFilterData[]) {
+        return filters.map(filter => {
+            switch (filter.filterName) {
+                case "BooleanFilter":
+                    return { 'term': { [filter.fieldName]: filter.data } };
+                case "MultipleChoiceFilter":
+                    return { 'terms': { [filter.fieldName]: filter.data } };
+                case "RangeFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
+                        }
+                    }
+                case "DateFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
+                        }
+                    }
+            }
+        });
+    };
+};

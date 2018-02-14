@@ -105,14 +105,4 @@ export class ApiService extends Rest {
         id: number,
         userID: number
     }>;
-
-    @RestAction({
-        method: RestRequestMethod.Post,
-        path: '/search'
-    })
-    public search: RestMethod<{ corpusName: string, query: string, fields: string[], filters: SearchFilterData[], n: null, resultType: 'json' }, any>;
-
-    public getSearchCsvUrl(): Promise<string> {
-        return Promise.resolve().then(() => this.$getUrl({ path: '/search//csv' }));
-    }
 }

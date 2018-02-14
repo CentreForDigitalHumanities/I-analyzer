@@ -8,7 +8,7 @@ Run `npm install` to install all the dependencies. You can also run this from th
 
 ## Development server
 
-Run `npm start` for a dev server. Make sure the back-end (see `../api/README.md`) is running. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `npm start` for a dev server. Make sure the back-end (see `../README.md`) is running. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 

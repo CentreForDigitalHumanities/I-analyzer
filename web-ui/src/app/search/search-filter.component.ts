@@ -13,6 +13,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     @Input()
     public enabled: boolean;
 
+    @Input()
+    public filterData: SearchFilterData;
+
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilterData>();
 
@@ -21,63 +24,102 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     }
 
     public data: any;
-    public trueCondition: boolean = false;
 
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['field']) {
+        if (changes['field'] || changes['filterData']) {
+            if (changes['field'] && !changes['filterData']) {
+                // reset the filter data if the field changed
+                this.filterData = null;
+            }
             this.fillFilterData();
+            if (!changes['filterData']) {
+                this.update();
+            }
         }
     }
 
     ngOnInit() {
         if (this.field) {
             this.fillFilterData();
+
+            if (!this.filterData) {
+                // default values should also work
+                this.update();
+            }
         }
     }
 
     fillFilterData() {
-        switch (this.filter.name) {
+        if (!this.filterData) {
+            // unfortunately this isn't typed, so be careful here
+            let filterData: any = {
+                fieldName: this.field.name,
+                filterName: this.filter.name
+            };
+
+            switch (this.filter.name) {
+                case 'BooleanFilter':
+                    filterData.data = false;
+                    break;
+                case 'MultipleChoiceFilter':
+                    filterData.data = [] as string[];
+                    break;
+                case 'RangeFilter':
+                    filterData.data = { gte: this.filter.lower, lte: this.filter.upper };
+                    break;
+                case 'DateFilter':
+                    let padLeft = (n: number) => `0${n}`.slice(-2);
+                    let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
+                    filterData.data = { gte: toString(this.filter.lower), lte: toString(this.filter.upper) };
+                    break;
+            }
+
+            this.filterData = filterData;
+        }
+
+        switch (this.filterData.filterName) {
             case 'BooleanFilter':
+                this.data = this.filterData.data;
                 break;
             case 'RangeFilter':
-                this.data = [this.filter.lower, this.filter.upper];
+                this.data = [this.filterData.data.gte, this.filterData.data.lte];
                 break;
             case 'MultipleChoiceFilter':
-                this.data = { options: this.filter.options.map(x => { return { 'label': x, 'value': x } }), selected: [] };
+                if (this.filter.name == this.filterData.filterName) {
+                    this.data = { options: this.filter.options.map(x => { return { 'label': x, 'value': x } }), selected: this.filterData.data };
+                }
                 break;
             case 'DateFilter':
-                this.data = { min: this.filter.lower, max: this.filter.upper };
+                this.data = { min: new Date(this.filterData.data.gte), max: new Date(this.filterData.data.lte) };
         }
-        // default values should also work
-        this.update();
     }
 
+    /**
+     * Update the filter data from the user input and trigger a change event.
+     */
     update() {
-        let filterData: SearchFilterData;
         switch (this.filter.name) {
             case 'BooleanFilter':
-                filterData = {
-                    'term': {
-                        [this.field.name]: this.trueCondition
-                    }
+                this.filterData = {
+                    fieldName: this.field.name,
+                    filterName: this.filter.name,
+                    data: this.data
                 };
                 break;
             case 'RangeFilter':
-                filterData = {
-                    'range':
-                    {
-                        [this.field.name]: { gte: this.data[0], lte: this.data[1] }
-                    }
+                this.filterData = {
+                    fieldName: this.field.name,
+                    filterName: this.filter.name,
+                    data: { gte: this.data[0], lte: this.data[1] }
                 };
                 break;
             case 'MultipleChoiceFilter':
-                filterData = {
-                    'terms':
-                    {
-                        [this.field.name]: this.data.selected
-                    }
+                this.filterData = {
+                    fieldName: this.field.name,
+                    filterName: this.filter.name,
+                    data: this.data.selected
                 };
                 break;
             case 'DateFilter':
@@ -90,20 +132,16 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 }
 
                 let formatData = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-                filterData = {
-                    'range':
-                    {
-                        [this.field.name]: {
-                            gte: formatData(this.data.min),
-                            lte: formatData(this.data.max),
-                            format: 'yyyy-MM-dd'
-                        }
+                this.filterData = {
+                    fieldName: this.field.name,
+                    filterName: this.filter.name,
+                    data: {
+                        gte: formatData(this.data.min),
+                        lte: formatData(this.data.max)
                     }
                 };
                 break;
         }
-
-        this.updateEmitter.emit(filterData);
+        this.updateEmitter.emit(this.filterData);
     }
-
 }

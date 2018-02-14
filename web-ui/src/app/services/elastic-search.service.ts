@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client, ConfigOptions } from 'elasticsearch';
+import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
 import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResults } from '../models/index';
+
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -109,7 +110,7 @@ export class ElasticSearchService {
             let retrieved = 0;
             let esQuery = this.makeEsQuery(queryModel);
             this.connection.then((connection) => {
-                let getMoreUntilDone = (error: any, response: Elasticsearch.SearchResponse<{}>) => {
+                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
                     let result: SearchResults = {
                         completed: false,
                         documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
