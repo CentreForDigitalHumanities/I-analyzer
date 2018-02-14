@@ -19,7 +19,7 @@ Each corpus is defined by subclassing the `Corpus` class, found in `timestextmin
 Prerequisites
 -------------------------------------------------------------------------------
 
-* Python 3
+* Python 3.4 or Python 3.5
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
 
@@ -35,13 +35,12 @@ To get an instance running, do the following. Ideally run using a `virtualenv`:
 npm install
 ```
 4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPUS` specifies for which corpus the application is made; `CORPUS_ENDPOINT` the associated python class in corpora; `CORPUS_URL` specifiies the url of the landing page of the web application.
-5. Go to `/api`, start a virtual environment with Python 3.
-6. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `python manage.py es -c dutchbanking -s 1785-01-01 -e 2010-12-31`, for indexing the Dutchbanking corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
-7. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
-8. Set up the database and migrations by running `python manage.py db init`.
-9. Initialize the users of the MySQL database by running `python manage.py admin -p [password]`, providing an administrator password.
-10. Run `python manage.py runserver` to create an instance of the Flask server at `127.0.0.1:5000`.
-11. Go to `/web-ui` and follow the instructions in the README to start it.
+5. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `python manage.py es -c dutchbanking -s 1785-01-01 -e 2010-12-31`, for indexing the Dutchbanking corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
+6. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
+7. Set up the database and migrations by running `python manage.py db upgrade`.
+8. Initialize the users of the MySQL database by running `python manage.py admin -p [password]`, providing an administrator password.
+9. Run `python manage.py runserver` to create an instance of the Flask server at `127.0.0.1:5000`.
+10. Go to `/web-ui` and follow the instructions in the README to start it.
 
 ### Testing
 
