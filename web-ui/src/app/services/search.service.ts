@@ -19,17 +19,26 @@ export class SearchService {
         private logService: LogService) {
     }
 
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
+        return this.elasticSearchService.loadMore(existingResults);
+    }
+
     public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
         let queryModel = this.elasticSearchService.makeQuery(queryText, this.mapFilters(filters));
         let result = await this.elasticSearchService.search(corpus, queryModel);
-
+        console.log(result);
         return <SearchResults>{
-            completed: true,
+            completed: result.completed,
             fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
             documents: result.documents,
-            queryModel: queryModel
+            queryModel: queryModel,
+            scrollId: result.scrollId
         };
     }
 
@@ -81,17 +90,17 @@ export class SearchService {
             let rows: string[][] = [];
             this.searchObservable(corpus, queryModel)
                 .subscribe(
-                result => {
-                    rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                        )
-                    );
+                    result => {
+                        rows.push(...
+                            result.documents.map(document =>
+                                this.documentRow(document, fields.map(field => field.name))
+                            )
+                        );
 
-                    totalTransferred = result.retrieved;
-                },
-                (error) => reject(error),
-                () => resolve(rows));
+                        totalTransferred = result.retrieved;
+                    },
+                    (error) => reject(error),
+                    () => resolve(rows));
         });
     }
 
