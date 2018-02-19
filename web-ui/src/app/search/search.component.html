@@ -1,81 +1,97 @@
 <!-- Toggle filter button, search bar, visualize and download buttons -->
-<section class="section">
-    <h1 class="title">
-        Search
-        <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
-    </h1>
-    <nav class="level is-mobile">
-        <div class="level-left search-controls">
-            <div class="level-item">
-                <button class="button" (click)="toggleFilters()">
-                    <span class="icon is-small">
-                        <i class="fa fa-bars"></i>
-                    </span>
-                    <span>Filters</span>
-                </button>
-            </div>
-            <div class="level-item">
-                <form (ngSubmit)="search()" *ngIf="corpus">
-                    <div class="field has-addons">
-                        <div class="control">
-                            <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
-                        </div>
-                        <div class="control">
-                            <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
-                                <span class="icon is-small">
-                                    <i class="fa fa-search"></i>
-                                </span>
-                                <span>Search</span>
-                            </button>
-                        </div>
-                    </div>
-                    <a (click)="showQueryDocumentation()">View query documentation</a>
-                </form>
-            </div>
-            <div class="level-right">
+<section class="section title-section">
+    <div class="container is-fluid">
+        <h1 class="title">
+            Search
+            <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+        </h1>
+    </div>
+</section>
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}">
+    <div class="container is-fluid">
+        <nav class="level is-mobile">
+            <div class="level-left search-controls">
                 <div class="level-item">
-                    <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
+                    <button class="button" (click)="toggleFilters()">
                         <span class="icon is-small">
-                            <i class="fa fa-bar-chart"></i>
+                            <i class="fa fa-bars"></i>
                         </span>
-                        <span>Visualize</span>
+                        <span>Filters</span>
                     </button>
                 </div>
                 <div class="level-item">
-                    <div class="field has-addons">
-                        <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                    <form (ngSubmit)="search()" *ngIf="corpus">
+                        <div class="field has-addons">
+                            <div class="control" iaBalloon="View query documentation">
+                                <a class="button" (click)="showQueryDocumentation()">
+                                    <span class="icon is-small">
+                                        <i class="fa fa-question-circle"></i>
+                                    </span>
+                                </a>
+                            </div>
+                            <div class="control">
+                                <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
+                            </div>
+                            <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasModifiedFilters">
+                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasModifiedFilters}">
+                                    <span class="icon is-small">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                    <span>Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
                             <span class="icon is-small">
-                                <i class="fa fa-download"></i>
+                                <i class="fa fa-bar-chart"></i>
                             </span>
-                            <span>Download csv</span>
+                            <span>Visualize</span>
                         </button>
-                        <button class="button is-info is-outlined" type="downloadSettings" (click)="showCsvFields=true" [disabled]="!results">
-                            <span class="icon is-small">
-                                <i class="fa fa-cog"></i>
-                            </span>
-                        </button>
+                    </div>
+                    <div class="level-item">
+                        <div class="field has-addons">
+                            <p class="control">
+                                <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                                    <span class="icon is-small">
+                                        <i class="fa fa-download"></i>
+                                    </span>
+                                    <span>Download csv</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-info is-outlined" type="downloadSettings" (click)="showCsvFields=true" [disabled]="!results">
+                                    <span class="icon is-small">
+                                        <i class="fa fa-cog"></i>
+                                    </span>
+                                </button>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </div>
 </section>
-
-<!-- filters and search results -->
-<section>
+<section class="section search-results">
     <div class="container is-fluid">
+        <!-- filters and search results -->
         <div class="tile is-ancestor">
-
             <!-- Filters, on left -->
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
                 <div>
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box" *ngIf="field.searchFilter">
                             <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
-                            <div class="checkbox">
-                                <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
-                                    type="checkbox">
-                            </div> {{ field.searchFilter.description }}
+                            <label>
+                                <div class="checkbox">
+                                    <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
+                                        type="checkbox">
+                                </div> {{ field.searchFilter.description }}
+                            </label>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                                 (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
