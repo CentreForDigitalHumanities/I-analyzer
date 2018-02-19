@@ -22,8 +22,8 @@
                 <div class="level-item">
                     <form (ngSubmit)="search()" *ngIf="corpus">
                         <div class="field has-addons">
-                            <div class="control">
-                                <a class="button" (click)="showQueryDocumentation()" title="View query documentation">
+                            <div class="control" iaBalloon="View query documentation">
+                                <a class="button" (click)="showQueryDocumentation()">
                                     <span class="icon is-small">
                                         <i class="fa fa-question-circle"></i>
                                     </span>
@@ -32,8 +32,8 @@
                             <div class="control">
                                 <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
                             </div>
-                            <div class="control">
-                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
+                            <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasModifiedFilters">
+                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasModifiedFilters}">
                                     <span class="icon is-small">
                                         <i class="fa fa-search"></i>
                                     </span>
@@ -86,10 +86,12 @@
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box" *ngIf="field.searchFilter">
                             <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
-                            <div class="checkbox">
-                                <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
-                                    type="checkbox">
-                            </div> {{ field.searchFilter.description }}
+                            <label>
+                                <div class="checkbox">
+                                    <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
+                                        type="checkbox">
+                                </div> {{ field.searchFilter.description }}
+                            </label>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                                 (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
