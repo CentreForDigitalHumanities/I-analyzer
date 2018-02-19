@@ -94,7 +94,8 @@ export class ElasticSearchService {
             index: index.index,
             type: index.doctype,
             size: size,
-            body: queryModel
+            body: queryModel,
+            scroll: connection.config.scrollTimeout
         }));
     }
 
@@ -109,15 +110,10 @@ export class ElasticSearchService {
             let retrieved = 0;
             this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result: SearchResults = {
-                        completed: false,
-                        documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
-                        retrieved: retrieved += response.hits.hits.length,
-                        total: response.hits.total,
-                        queryModel: query
-                    }
+                    let result = this.parseResponse(response, query, retrieved);
+                    retrieved += result.retrieved;
 
-                    if (response.hits.total !== retrieved && retrieved < size) {
+                    if (!result.completed && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -158,23 +154,50 @@ export class ElasticSearchService {
         };
     }
 
-    public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
+    public async search(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
         // Perform the search
-        return this.execute(corpusDefinition, queryModel, size || connection.config.overviewQuerySize).then(result => {
-            // Extract relevant information from dictionary returned by ES
-            let stats = result.hits;
+        return this.execute(corpusDefinition, queryModel, size || connection.config.overviewQuerySize)
+            .then(result => this.parseResponse(result, queryModel, 0));
+    }
 
-            let documents = stats.hits.map((hit, index) => this.hitToDocument(hit, stats.max_score, index));
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+        if (!existingResults.scrollId) {
+            throw 'No scroll ID found.';
+        }
 
-            return {
-                completed: true,
-                total: stats.total || 0,
-                retrieved: documents.length,
-                documents,
-                queryModel
-            };
+        let connection = await this.connection;
+        let response = await connection.client.scroll({
+            scrollId: existingResults.scrollId,
+            scroll: connection.config.scrollTimeout
         });
+
+        let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
+        additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
+        additionalResults.fields = existingResults.fields;
+        return additionalResults;
+    }
+
+    /**
+     * Extract relevant information from dictionary returned by ES
+     * @param response
+     * @param queryModel
+     * @param alreadyRetrieved
+     * @param completed
+     */
+    private parseResponse(response: SearchResponse<{}>, queryModel: SearchQuery, alreadyRetrieved: number = 0): SearchResults {
+        let retrieved = alreadyRetrieved += response.hits.hits.length;
+        return {
+            completed: response.hits.total <= retrieved,
+            documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
+            retrieved,
+            total: response.hits.total,
+            queryModel,
+            scrollId: response._scroll_id
+        }
     }
 
     /**

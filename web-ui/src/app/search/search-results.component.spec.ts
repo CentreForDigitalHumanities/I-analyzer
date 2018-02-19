@@ -1,10 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import * as corpus from '../../mock-data/corpus';
+
 import { CorpusField, SearchQuery } from '../models/index';
-import { HighlightService } from '../services/highlight.service';
+import { ApiService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
+import { ApiServiceMock } from '../services/api.service.mock';
+import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
+import { UserServiceMock } from '../services/user.service.mock';
+
 import { HighlightPipe } from './highlight.pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
+
 
 describe('Search Results Component', () => {
     let component: SearchResultsComponent;
@@ -13,7 +20,22 @@ describe('Search Results Component', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [HighlightPipe, SearchRelevanceComponent, SearchResultsComponent],
-            providers: [HighlightService]
+            providers: [
+                {
+                    provide: ApiService, useValue: new ApiServiceMock({
+                        ['corpus']: corpus.MockCorpusResponse
+                    })
+                },
+                {
+                    provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
+                },
+                HighlightService,
+                LogService,
+                QueryService,
+                SearchService,
+                {
+                    provide: UserService, useValue: new UserServiceMock()
+                }]
         })
             .compileComponents();
     }));
