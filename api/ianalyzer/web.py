@@ -131,10 +131,10 @@ def api_es_config():
 @blueprint.route('/api/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
-    if hasattr(config, 'AVAILABLE_CORPORA'):
-        available_corpora = config.AVAILABLE_CORPORA
+    if hasattr(config, 'CORPORA'):
+        available_corpora = config.CORPORA.keys()
     else:
-        available_corpora = [config.CORPUS]
+        logger.error('No corpora detected')
 
     response = jsonify(dict(
         (key, corpora.DEFINITIONS[key].serialize()) for key in available_corpora

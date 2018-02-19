@@ -42,12 +42,7 @@ def load_corpus(corpus_name):
         raise
 
 
-if not hasattr(config, 'AVAILABLE_CORPORA'):
-    config.AVAILABLE_CORPORA = [config.CORPUS]
 
 DEFINITIONS = {}
-for corpus_name in config.AVAILABLE_CORPORA:
+for corpus_name in config.CORPORA.keys():
     DEFINITIONS[corpus_name] = load_corpus(corpus_name)
-
-# default corpus
-corpus_obj = DEFINITIONS[config.CORPUS]
