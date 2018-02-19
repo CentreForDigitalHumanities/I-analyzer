@@ -108,7 +108,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public search() {
         let route = {
-            query: this.query || ''
+            query: this.queryText || ''
         };
 
         for (let filter of this.getFilterData().map(data => {
