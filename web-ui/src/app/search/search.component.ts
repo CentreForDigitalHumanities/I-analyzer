@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -16,6 +16,9 @@ import { CorpusService, SearchService, DownloadService, UserService, ManualServi
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
+    @ViewChild('searchSection')
+    public searchSection: ElementRef;
+    public isScrolledDown: boolean;
 
     public selectedFields: string[] = [];
     public corpus: Corpus;
@@ -94,6 +97,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
 
     public enableFilter(name: string) {
