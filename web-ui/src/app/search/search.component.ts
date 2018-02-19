@@ -8,7 +8,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/zip";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
-import { CorpusService, SearchService, DownloadService, UserService } from '../services/index';
+import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
 
 @Component({
     selector: 'app-search',
@@ -58,6 +58,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private downloadService: DownloadService,
         private searchService: SearchService,
         private userService: UserService,
+        private manualService: ManualService,
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private title: Title) {
@@ -163,6 +164,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     public checkIfAllSelected() {
         let fields = Object.values(this.queryField).filter(field => !field.hidden);
         this.selectedAll = fields.every(field => field.visible);
+    }
+
+    public showQueryDocumentation() {
+        this.manualService.showPage('query');
     }
 
     private performSearch() {
