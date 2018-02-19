@@ -31,13 +31,13 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
         let queryModel = this.elasticSearchService.makeQuery(queryText, this.mapFilters(filters));
         let result = await this.elasticSearchService.search(corpus, queryModel);
-        console.log(result);
-        return <SearchResults>{
+        return {
             completed: result.completed,
             fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
             documents: result.documents,
             queryModel: queryModel,
+            retrieved: result.retrieved,
             scrollId: result.scrollId
         };
     }
