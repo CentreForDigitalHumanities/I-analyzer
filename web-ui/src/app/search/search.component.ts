@@ -27,7 +27,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * The filters have been modified.
      */
-    public hasModifiedFilters: boolean;
+    public hasModifiedFilters: boolean = false;
     public isSearching: boolean;
     public isDownloading: boolean;
     public hasSearched: boolean;
