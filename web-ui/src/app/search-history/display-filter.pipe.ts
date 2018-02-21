@@ -7,11 +7,13 @@ export class DisplayFilterPipe implements PipeTransform {
     private returnHtml: string = '';
 
     transform(queryModel: QueryModel): string {
-        let filters = queryModel.filters;
-        filters.forEach(filter => {
-            this.returnHtml += filter.filterName + ": <b>" + filter.fieldName + "</b>: " + 
-            searchFilterDataToParam(filter) + "<br>"
-        });
+        let filters = JSON.parse(queryModel).filters;
+        if filters {
+	        filters.forEach(filter => {
+	            this.returnHtml += filter.filterName + ": <b>" + filter.fieldName + "</b>: " + 
+	            searchFilterDataToParam(filter) + "<br>"
+	        });
+	    }
 
         return this.returnHtml;
     }

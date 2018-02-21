@@ -252,6 +252,7 @@ def api_search_history():
             'query': query.query_json, 
             'corpusName': query.corpus_name,
             'started': query.started,
+            'completed': query.completed,
             'transferred': query.transferred 
             } for query in user.queries]
         })

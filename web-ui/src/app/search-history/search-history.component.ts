@@ -18,6 +18,7 @@ export class SearchHistoryComponent implements OnInit {
         this.queryService.retrieveQueries().then(
             searchHistory => {
                 this.queries = searchHistory;
+                console.log(this.queries);
             });
     }
 
