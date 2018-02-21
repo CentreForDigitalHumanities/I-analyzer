@@ -6,7 +6,7 @@ import { QueryModel } from '../models/index'
 export class DisplayQueryTextPipe implements PipeTransform {
 
     transform(queryModel: QueryModel): string {
-        let queryText = JSON.parse(queryModel).queryText;
+        let queryText = queryModel.queryText;
         return queryText;
     }
 

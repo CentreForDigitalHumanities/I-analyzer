@@ -1,8 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SearchHistoryComponent } from './search-history.component';
-import { DisplayFilterPipe } from './display-filter.pipe';
-import { DisplayQueryTextPipe } from './display-query-text.pipe';
+import { DisplayFilterPipe, DisplayQueryTextPipe, SearchHistoryComponent } from './index';
 import { UserService, QueryService, ApiService } from '../services/index';
 import { UserServiceMock } from '../services/user.service.mock';
 import { ApiServiceMock } from '../services/api.service.mock';

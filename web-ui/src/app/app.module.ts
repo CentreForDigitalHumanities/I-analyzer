@@ -25,9 +25,7 @@ import { BarChartComponent } from './visualization/barchart.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
-import { SearchHistoryComponent } from './search-history/search-history.component';
-import { DisplayFilterPipe } from './search-history/display-filter.pipe';
-import { DisplayQueryTextPipe } from './search-history/display-query-text.pipe';
+import { DisplayFilterPipe, DisplayQueryTextPipe, SearchHistoryComponent } from './search-history/index';
 
 const appRoutes: Routes = [
     {

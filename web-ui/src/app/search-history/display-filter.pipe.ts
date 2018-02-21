@@ -7,8 +7,8 @@ export class DisplayFilterPipe implements PipeTransform {
     private returnHtml: string = '';
 
     transform(queryModel: QueryModel): string {
-        let filters = JSON.parse(queryModel).filters;
-        if filters {
+        let filters = queryModel.filters;
+        if (filters) {
 	        filters.forEach(filter => {
 	            this.returnHtml += filter.filterName + ": <b>" + filter.fieldName + "</b>: " + 
 	            searchFilterDataToParam(filter) + "<br>"
