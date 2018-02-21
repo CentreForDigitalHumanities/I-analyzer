@@ -105,4 +105,10 @@ export class ApiService extends Rest {
         id: number,
         userID: number
     }>;
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/search_history'
+    })
+    public search_history: RestMethod<void, { 'queries': Query[] }>;
 }

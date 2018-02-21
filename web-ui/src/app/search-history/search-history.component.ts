@@ -1,27 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { QueryModel, User } from '../models/index'
-import { UserService } from '../services/index';
+import { User, Query } from '../models/index'
+import { UserService, QueryService } from '../services/index';
 
 
 @Component({
-  selector: 'search-history',
-  templateUrl: './search-history.component.html',
-  styleUrls: ['./search-history.component.scss']
+    selector: 'search-history',
+    templateUrl: './search-history.component.html',
+    styleUrls: ['./search-history.component.scss']
 })
 export class SearchHistoryComponent implements OnInit {
-  private user: User;
-  private queries: QueryModel [];
-  private timestamps: Date [];
-  constructor(private userService: UserService) { }
+    private user: User;
+    private queries: Query[];
+    private timestamps: Date [];
+    constructor(private userService: UserService, private queryService: QueryService) { }
 
-  ngOnInit() {
-  	this.user = this.userService.getCurrentUserOrFail();
-  	this.queries = this.user.queries.map( query => JSON.parse(query.query) );
-  }
+    ngOnInit() {
+        this.queryService.retrieveQueries().then(
+            searchHistory => {
+                this.queries = searchHistory;
+            });
+    }
 
-  returnToSavedQuery() {
-    console.log("clicked!");
-  }
+    returnToSavedQuery() {
+        console.log("clicked!");
+    }
 
 
 }

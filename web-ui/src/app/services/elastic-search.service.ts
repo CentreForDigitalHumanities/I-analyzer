@@ -26,7 +26,7 @@ export class ElasticSearchService {
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    makeEsQuery(queryModel: QueryModel): EsQuery {
+    private makeEsQuery(queryModel: QueryModel): EsQuery {
         let clause: EsSearchClause = queryModel.queryText ? {
             'simple_query_string': {
                 'query': queryModel.queryText,

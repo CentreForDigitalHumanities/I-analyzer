@@ -1,32 +1,16 @@
 
 <p class="title" align="center"> Showing search history </p>
-<div class="columns">
-	<div class="column is-2">
-		<p class="title is-4"> Timestamp </p>
-	</div>
-	<div class="column is-2">
-		<p class="title is-4"> Query text </p>
-	</div>
-	<div class="column is-8">
-		<p class="title is-4"> Filters </p>
-	</div>
-</div>
-<ul>
-  	<div class="box" *ngFor="let query of queries" (click)="returnToSavedQuery()" role="button">
-  		<div class="columns">
-  		<div class="column is-2">
-  			Timestamp	
-  		</div>
-  		<div class="column is-2">
-  			"{{query.queryText}}"
-  		</div>
-  		<div class="column is-8">
-  			<ul *ngIf="query.filters">
-  				<li *ngFor="let filter of query.filters">
-  					<div [innerHtml]="filter | displayFilter"> </div>
-  				</li>
-  			</ul>
-  		</div>
-  	</div>
-  	</div>
-</ul>
+<table>
+  <tr>
+    <th>Timestamp</th>
+    <th>Query text</th>
+    <th>Filters</th>
+    <th>Number of Results</th>
+  </tr>
+  <tr *ngFor="let query of queries" (click)="returnToSavedQuery()">
+    <td>{{query.completed}}</td>
+    <td>{{query.query | displayQueryText }}</td>
+    <td [innerHtml]="query.query | displayFilter"></td>
+    <td>{{query.transferred}}</td>
+  </tr>
+</table>

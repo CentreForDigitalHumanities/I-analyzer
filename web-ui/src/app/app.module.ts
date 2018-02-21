@@ -27,6 +27,7 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent } from './search-history/search-history.component';
 import { DisplayFilterPipe } from './search-history/display-filter.pipe';
+import { DisplayQueryTextPipe } from './search-history/display-query-text.pipe';
 
 const appRoutes: Routes = [
     {
@@ -60,6 +61,7 @@ const appRoutes: Routes = [
         CorpusSelectionComponent,
         HighlightPipe,
         DisplayFilterPipe,
+        DisplayQueryTextPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchResultsComponent,
