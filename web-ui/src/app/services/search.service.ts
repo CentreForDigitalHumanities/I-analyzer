@@ -21,7 +21,7 @@ export class SearchService {
 
     public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
-        let queryModel = this.elasticSearchService.makeQuery(queryText, this.mapFilters(filters));
+        let queryModel = this.elasticSearchService.makeQuery(queryText, null, this.mapFilters(filters));
         let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{

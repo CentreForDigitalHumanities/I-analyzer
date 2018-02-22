@@ -23,18 +23,28 @@ export class ElasticSearchService {
     /**
      * Construct a dictionary representing an ES query.
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
+     * @param fields Optional list of fields to restrict the queryString to.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    makeQuery(queryString: string | null = null, filters: any[] = []): SearchQuery {
-        let clause: SearchClause = queryString ? {
-            simple_query_string: {
-                query: queryString,
-                lenient: true,
-                default_operator: 'or'
+    makeQuery(queryString: string | null = null, fields: string[] | null = null, filters: any[] = []): SearchQuery {
+        let clause: SearchClause;
+
+        if (queryString) {
+            clause = {
+                simple_query_string: {
+                    query: queryString,
+                    lenient: true,
+                    default_operator: 'or'
+                }
+            };
+            if (fields) {
+                clause.simple_query_string.fields = fields;
             }
-        } : {
-            match_all: {}
-        };
+        } else {
+            clause = {
+                match_all: {}
+            };
+        }
 
         if (filters) {
             return {
