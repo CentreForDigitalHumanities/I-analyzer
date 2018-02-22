@@ -19,6 +19,14 @@ export class SearchService {
         private logService: LogService) {
     }
 
+    /**
+     * Perform an ES search with a single set of results asynchronously.
+     * @param corpus The corpus to search in.
+     * @param queryText The query text in simple query string query syntax.
+     * @param filters Optional per-field filter settings.
+     * @param fields Currently unused parameter (optional).
+     * @return An instance of SearchResults.
+     */
     public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
         let queryModel = this.elasticSearchService.makeQuery(queryText, null, this.mapFilters(filters));
