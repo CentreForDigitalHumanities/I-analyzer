@@ -49,19 +49,20 @@ export type SearchQuery = {
     completed?: Date,
     query: SearchClause | {
         'bool': {
-            'must': SearchClause[],
-            'filter': any[],
+            must: SearchClause[],
+            filter: any[],
         }
     },
     transferred?: Number
 }
+
 export type SearchClause = {
-    'simple_query_string': {
-        'query': string,
-        'lenient': true,
-        'default_operator': 'or'
+    simple_query_string: {
+        query: string,
+        lenient: true,
+        default_operator: 'or'
     }
 } | {
-        'match_all': {}
-    };
+    match_all: {}
+};
 
