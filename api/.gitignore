@@ -1,3 +1,4 @@
 __pycache__/
 ianalyzer/config.py
 *.pyc
+.cache
