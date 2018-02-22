@@ -27,27 +27,27 @@ export class ElasticSearchService {
      */
     makeQuery(queryString: string | null = null, filters: any[] = []): SearchQuery {
         let clause: SearchClause = queryString ? {
-            'simple_query_string': {
-                'query': queryString,
-                'lenient': true,
-                'default_operator': 'or'
+            simple_query_string: {
+                query: queryString,
+                lenient: true,
+                default_operator: 'or'
             }
         } : {
-                'match_all': {}
-            };
+            match_all: {}
+        };
 
         if (filters) {
             return {
-                'query': {
+                query: {
                     'bool': {
-                        'must': [clause],
-                        'filter': filters,
+                        must: [clause],
+                        filter: filters,
                     }
                 }
             }
         } else {
             return {
-                'query': clause
+                query: clause
             }
         }
     }
