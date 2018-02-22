@@ -59,6 +59,7 @@ export type SearchQuery = {
 export type SearchClause = {
     simple_query_string: {
         query: string,
+        fields?: string[],
         lenient: true,
         default_operator: 'or'
     }
