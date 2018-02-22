@@ -59,20 +59,32 @@ export class ElasticSearchService {
     */
     makeAggregation(aggregator: string) {
         let aggregation: any;
-        if (aggregator == "date") {
-            aggregation = {
-                date_histogram: {
-                    field: aggregator,
-                    interval: "year",
-                    format: "yyyy"
+        switch(aggregator) {
+            case "date": {
+                aggregation = {
+                    date_histogram: {
+                        field: aggregator,
+                        interval: "year",
+                        format: "yyyy"
+                    }
                 }
+                break;
             }
-        }
-        else {
-            aggregation = {
-                terms: {
-                    field: aggregator
+            case "wordcloud": {
+                aggregation = {
+                    significant_text: {
+                    field: "content"
+                    }
                 }
+                break;
+            }
+            default: {
+                aggregation = {
+                    terms: {
+                        field: aggregator
+                    }
+                }
+                break;
             }
         }
         return aggregation;
@@ -148,7 +160,6 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         let connection = await this.connection;
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
-
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
         // Extract relevant information from dictionary returned by ES

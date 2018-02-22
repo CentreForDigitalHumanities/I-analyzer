@@ -99,9 +99,7 @@ export class BarChartComponent implements OnChanges {
         /**
         * select DOM elements, set up scales and axes
         */
-        if (this.svg) {
-            this.svg.remove();
-        }
+        d3.selectAll('svg').remove();
 
         this.svg = d3.select(this.chartElement).append('svg')
             .attr('width', this.chartElement.offsetWidth)
@@ -109,8 +107,6 @@ export class BarChartComponent implements OnChanges {
         this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
 
-        this.svg.selectAll('g').remove();
-        this.svg.selectAll('text').remove();
         // chart plot area
         this.chart = this.svg.append('g')
             .attr('class', 'bars')

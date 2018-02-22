@@ -7,6 +7,6 @@
 	<span>Wordcloud</span>
 </button>
 <div class="d3-chart" #chart>
-<barchart *ngIf="aggResults" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
-<wordcloud *ngIf="wordCloud" [chartElement]="chartElement"></wordcloud>
+<barchart *ngIf="barChart" [(hidden)]="barChart" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
+<wordcloud *ngIf="wordCloud" [(hidden)]="!wordCloud" [chartElement]="chartElement" [significantText]="significantText"></wordcloud>
 </div>
