@@ -143,7 +143,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public async download() {
         this.isDownloading = true;
-        let fields = this.getQueryFields();
+        let fields = this.getCsvFields();
         let rows = await this.searchService.searchAsTable(
             this.corpus,
             this.queryModel,
@@ -204,7 +204,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             });
     }
 
-    private getQueryFields(): CorpusField[] {
+    private getCsvFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 
