@@ -24,12 +24,12 @@ export class SearchService {
      * @param corpus The corpus to search in.
      * @param queryText The query text in simple query string query syntax.
      * @param filters Optional per-field filter settings.
-     * @param fields Currently unused parameter (optional).
+     * @param fields Optional list of fields to restrict the queryText to.
      * @return An instance of SearchResults.
      */
-    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: CorpusField[] = []): Promise<SearchResults> {
+    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: string[] | null = null): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
-        let queryModel = this.elasticSearchService.makeQuery(queryText, null, this.mapFilters(filters));
+        let queryModel = this.elasticSearchService.makeQuery(queryText, fields, this.mapFilters(filters));
         let result = await this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
