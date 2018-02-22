@@ -51,6 +51,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         [name: string]: (CorpusField & {
             data: SearchFilterData,
             useAsFilter: boolean,
+            restrictQuery: boolean,
             visible: boolean
         })
     };
@@ -118,6 +119,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public enableFilter(name: string) {
         if (!this.queryField[name].useAsFilter) {
             this.queryField[name].useAsFilter = true;
+            this.queryField[name].restrictQuery = false;
         }
     }
 
@@ -130,6 +132,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         let route = {
             query: this.query || ''
         };
+        let fields = this.getQueryFields();
+
+        if (fields) {
+            route['fields'] = fields.join(',');
+        }
 
         for (let filter of this.getFilterData().map(data => {
             return {
@@ -200,7 +207,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.searchService.search(
             this.corpus,
             searchQuery,
-            this.getFilterData())
+            this.getFilterData(),
+            this.getQueryFields())
             .then(results => {
                 this.searchQuery = searchQuery;
                 this.results = results;
@@ -212,6 +220,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private getCsvFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
+    }
+
+    private getQueryFields(): string[] | null {
+        let fields = Object.values(this.queryField)
+            .filter(field => field.restrictQuery)
+            .map(field => field.name);
+        if (!fields.length) return null;
+        return fields;
     }
 
     private getFilterData(): SearchFilterData[] {
@@ -247,6 +263,10 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
         let fieldsSet = false;
+        let queryRestriction: string[] = [];
+        if (params.has('fields')) {
+            queryRestriction = params.get('fields').split(',');
+        }
 
         for (let field of corpusFields) {
             let param = this.getParamForFieldName(field.name);
@@ -258,10 +278,23 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryField[field.name] = Object.assign({
                     data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
                     useAsFilter: true,
+                    restrictQuery: false,
+                    visible: true
+                }, field);
+            } else if (queryRestriction.includes(field.name)) {
+                this.queryField[field.name] = Object.assign({
+                    data: null,
+                    useAsFilter: false,
+                    restrictQuery: true,
                     visible: true
                 }, field);
             } else {
-                this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
+                this.queryField[field.name] = Object.assign({
+                    data: null,
+                    useAsFilter: false,
+                    restrictQuery: false,
+                    visible: true
+                }, field);
             }
         }
 
