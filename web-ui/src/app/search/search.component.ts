@@ -47,7 +47,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     public showFilters: boolean | undefined;
     public query: string;
     public user: User;
-    public queryField: { [name: string]: (CorpusField & { data: SearchFilterData, useAsFilter: boolean, visible: boolean }) };
+    public queryField: {
+        [name: string]: (CorpusField & {
+            data: SearchFilterData,
+            useAsFilter: boolean,
+            visible: boolean
+        })
+    };
     public queryModel: SearchQuery;
     /**
      * This is the query currently used for searching,
