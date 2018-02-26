@@ -1,0 +1,4 @@
+<p-dialog [(visible)]="showManual" *ngIf="showManual" positionTop="50" width="800">
+    <p-header>Documentation</p-header>
+    <div class="content" [ngClass]="{'is-loading':isLoading}" [innerHTML]="manualHtml"></div>
+</p-dialog>
