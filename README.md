@@ -32,13 +32,22 @@ To get an instance running, do the following. Ideally run using a `virtualenv`:
 ```
 npm install
 ```
-4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPUS` specifies for which corpus the application is made; `CORPUS_ENDPOINT` the associated python class in corpora; `CORPUS_URL` specifiies the url of the landing page of the web application.
+4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module.
 5. Go to `/api`, start a virtual environment with Python 3.
-6. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `python manage.py es -c dutchbanking -s 1785-01-01 -e 2010-12-31`, for indexing the Dutchbanking corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
-7. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
-8. Set up the database and migrations by running `python manage.py db upgrade`.
-9. Initialize the users of the MySQL database by running `python manage.py admin -p [password]`, providing an administrator password.
-10. Run `python manage.py runserver` to create an instance of the Flask server at `127.0.0.1:5000`.
+6. Define that the startup code for the Flask application is located within. manage.py by exporting / setting the environment variable:
+- Mac/Linux:
+```
+export FLASK_APP=manage.py
+```
+- Windows:
+```
+set FLASK_APP=manage.py
+```
+7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchbanking -s 1785-01-01 -e 2010-12-31`, for indexing the Dutchbanking corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
+8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
+9. Set up the database and migrations by running `flask db upgrade`.
+10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
+11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
 11. Go to `/web-ui` and follow the instructions in the README to start it.
 
 ### Testing

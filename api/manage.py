@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
 import logging
-import importlib
 from datetime import datetime
+import click
 
 from flask import Flask
 from werkzeug.security import generate_password_hash
-from sqlalchemy import exc
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager, Command, Option
+from flask_migrate import Migrate
 
 from ianalyzer import config
 from ianalyzer.models import User, Role, db
@@ -19,114 +16,85 @@ from ianalyzer import corpora
 from es_index import perform_indexing
 
 
-def ctx():
-    app = flask_app(blueprint, admin_instance, login_manager)
-    return app
+app = flask_app(blueprint, admin_instance, login_manager)
 
+migrate = Migrate(app, db)
 
-def create_admin(pwd):
-    with ctx().app_context():
+@app.cli.command()
+@click.option('--name', '-n', help='Name of superuser', required=True)
+@click.option('--pwd', prompt='Please enter password', hide_input=True,
+              confirmation_prompt=True, help='Password for superuser.')
+def admin(name, pwd):
+    ''' Create a superuser with admin rights and access to all corpora. 
+    If an admin role does not exist yet, it will be created.
+    Likewise, if roles for the defined corpora do not exist yet, they will be created.
+    '''
+    if User.query.filter_by(username=name).all():
+        logging.critical('Superuser with this name already exists.')
+        return None
 
+    user = User(name, generate_password_hash(pwd))
+
+    role_admin = Role.query.filter_by(name='admin').all()[0]
+    if not role_admin:
         role_admin = Role('admin', 'Administrator role.')
-        role_corpus_user = Role(config.CORPUS, 'Role for users who may access '+config.CORPUS+' data.')
-
-        username = 'admin'
-        password = pwd
-            
-        admin = User.query.filter_by(username='admin').first()
-            
-        if admin:
-            admin.password = generate_password_hash(password)
+        db.session.add(role_admin)
+    else:
+        print("admin role already present")
+    user.roles.append(role_admin)
+    
+    for corpus in list(config.CORPORA.keys()):
+        role_corpus = Role.query.filter_by(name=corpus).all()
+        print(role_corpus)
+        if not role_corpus:
+            role_corpus = Role(corpus, 'Role for users who may access ' + corpus + ' data.')
+            db.session.add(role_corpus)
         else:
-            user = User(username, generate_password_hash(password))
-            user.roles.append(role_admin)
-            user.roles.append(role_corpus_user)
-            db.session.add(user)
-            db.session.add(role_admin)
-            db.session.add(role_corpus_user)
-            
-        return db.session.commit()
+            role_corpus = role_corpus[0]
+            print(corpus, " role already present")
+        user.roles.append(role_corpus)
+
+    db.session.add(user)
+    return db.session.commit()
 
 
-class AdminCommand(Command):
-    '''(re)sets admin password'''
-    option_list = (
-        Option('--password', 
-            '-p', 
-            dest='pwd', 
-            help='Set administrator password'
-            ),
-    )
-
-    def run(self, pwd):
-        create_admin(pwd)
-
-
-class IndexingCommand(Command):
-    ''' perform elastic search indexing on the data source 
-    specified in config.py'''
-
-    option_list = (
-        Option('--corpus', 
-            '-c', 
-            dest='corpus', 
-            help='Sets which corpus should be indexed' +
-                'If not set, corpus defined as CORPUS in config.py will be indexed'
-            ),
-        Option('--start', 
-            '-s', 
-            dest='start', 
-            help='Set the date where indexing should start.' +
+@app.cli.command()
+@click.option('--corpus', '-c', help='Sets which corpus should be indexed' +
+                'If not set, first corpus of CORPORA in config.py will be indexed')
+@click.option('--start', '-s', help='Set the date where indexing should start.' +
                 'The input format is YYYY-MM-DD.' + 
-                'If not set, indexing will start from corpus minimum date.'
-            ),
-        Option('--end', 
-            '-e', 
-            dest='end', 
-            help='Set the date where indexing should end' + 
+                'If not set, indexing will start from corpus minimum date.')
+@click.option('--end', '-e', help='Set the date where indexing should end' + 
                 'The input format is YYYY-MM-DD.' +
-                'If not set, indexing will start from corpus maximum date.'
-            ),
-    )
-
-    def run(self, corpus, start, end):
-        
-        if not corpus:
-            corpus = config.CORPUS        
+                'If not set, indexing will start from corpus maximum date.')        
+def es(corpus, start, end):
+    if not corpus:
+        corpus = list(config.CORPORA.keys())[0]
         this_corpus = corpora.DEFINITIONS[corpus]
 
-        try:
-            if not start:
-                start_index = this_corpus.min_date
-            else:
-                start_index = datetime.strptime(start, '%Y-%m-%d')
+    try:
+        if not start:
+            start_index = this_corpus.min_date
+        else:
+            start_index = datetime.strptime(start, '%Y-%m-%d')
             
-            if not end:
-                end_index = this_corpus.max_date
-            else:
-                end_index = datetime.strptime(end, '%Y-%m-%d')  
+        if not end:
+            end_index = this_corpus.max_date
+        else:
+            end_index = datetime.strptime(end, '%Y-%m-%d')  
 
             print (start_index, end_index)
             
-        except Exception:
-            logging.critical(
-                'Incorrect data format '
-                'Example call: manage.py es -c times -s 1785-01-01 -e 2010-12-31'
-            )
-            raise
+    except Exception:
+        logging.critical(
+            'Incorrect data format '
+            'Example call: flask es -c times -s 1785-01-01 -e 2010-12-31'
+        )
+        raise
         
-        perform_indexing(this_corpus, start_index, end_index)
-
-
-app = flask_app(blueprint, admin_instance, login_manager)
-manager = Manager(app)
-manager.add_command('db', MigrateCommand)
-manager.add_command('admin', AdminCommand)
-manager.add_command('es', IndexingCommand)
-
-migrate = Migrate(app, db)
+    perform_indexing(this_corpus, start_index, end_index)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)
-    manager.run()
+    app.run()
