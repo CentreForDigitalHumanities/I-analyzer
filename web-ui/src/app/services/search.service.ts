@@ -9,7 +9,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -25,6 +25,23 @@ export class SearchService {
             queryText: queryText,
             filters: filters
         }
+    }
+
+    public queryModelToRoute(queryModel: QueryModel): any {
+        let route = {
+            query: queryModel.queryText || ''
+        };
+
+        for (let filter of queryModel.filters.map(data => {
+            return {
+                param: this.getParamForFieldName(data.fieldName),
+                value: searchFilterDataToParam(data)
+            };
+        })) {
+            route[filter.param] = filter.value;
+        }
+
+        return route;
     }
 
     // fields: CorpusField[] = [],
@@ -115,6 +132,10 @@ export class SearchService {
         }
 
         return String(value);
+    }
+
+    public getParamForFieldName(fieldName: string) {
+        return `$${fieldName}`;
     }
 
 };

@@ -1,9 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MultiSelectModule } from 'primeng/primeng';
 
-import { DisplayFilterPipe, DisplayQueryTextPipe, SearchHistoryComponent } from './index';
-import { UserService, QueryService, ApiService } from '../services/index';
-import { UserServiceMock } from '../services/user.service.mock';
+import * as corpus from '../../mock-data/corpus';
+import { ApiService, SearchService, QueryService, UserService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
+import { SearchServiceMock } from '../services/search.service.mock';
+import { UserServiceMock } from '../services/user.service.mock';
+import { HistoryQueryDisplayComponent, SearchHistoryComponent } from './index';
+
 
 describe('SearchHistoryComponent', () => {
     let component: SearchHistoryComponent;
@@ -11,12 +17,19 @@ describe('SearchHistoryComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ DisplayFilterPipe, DisplayQueryTextPipe, SearchHistoryComponent ],
+            imports: [ FormsModule, MultiSelectModule ],
+            declarations: [ HistoryQueryDisplayComponent, SearchHistoryComponent ],
             providers: [
-                QueryService,
                 { 
                     provide: ApiService, useValue: new ApiServiceMock()
                 },
+                QueryService,
+                {
+                    provide: SearchService, useValue: new SearchServiceMock()
+                },
+                {
+                    provide: Router, useValue: new RouterMock()
+                }
                 { 
                     provide: UserService, useValue: new UserServiceMock()
                 }
@@ -35,3 +48,7 @@ describe('SearchHistoryComponent', () => {
         expect(component).toBeTruthy();
     });
 });
+
+class RouterMock {
+
+}

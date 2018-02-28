@@ -38,12 +38,11 @@ export class SearchComponent implements OnInit, OnDestroy {
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
     public showFilters: boolean | undefined;
-    public query: string;
     public user: User;
     public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
     public queryModel: QueryModel;
     /**
-     * This is the query currently used for searching,
+     * This is the query text currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
     public queryText: string;
@@ -75,7 +74,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 return { corpus, params };
             }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
-                this.query = params.get('query');
+                this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
 
@@ -107,19 +106,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        let route = {
-            query: this.queryText || ''
-        };
-
-        for (let filter of this.getFilterData().map(data => {
-            return {
-                param: this.getParamForFieldName(data.fieldName),
-                value: searchFilterDataToParam(data)
-            };
-        })) {
-            route[filter.param] = filter.value;
-        }
-
+        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
 
@@ -129,7 +117,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public async download() {
         this.isDownloading = true;
-        let fields = this.getQueryFields();
+        let fields = this.getCsvFields();
         let rows = await this.searchService.searchAsTable(
             this.corpus,
             this.queryModel,
@@ -137,7 +125,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
-        let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
+        let queryPart = this.queryText ? '-' + this.queryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
@@ -165,9 +153,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
+        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
         this.isSearching = true;
         // store it, the user might change it in the meantime
-        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
         this.searchService.search(
             this.queryModel,
             this.corpus)
@@ -179,7 +167,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.showFilters = true;
     }
 
-    private getQueryFields(): CorpusField[] {
+    private getCsvFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 
@@ -197,9 +185,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * Escape field names these so they won't interfere with any other parameter (e.g. query)
      */
-    private getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
-    }
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
@@ -218,7 +203,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let fieldsSet = false;
 
         for (let field of corpusFields) {
-            let param = this.getParamForFieldName(field.name);
+            let param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;

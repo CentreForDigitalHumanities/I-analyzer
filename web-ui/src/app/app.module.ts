@@ -25,7 +25,7 @@ import { BarChartComponent } from './visualization/barchart.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
-import { DisplayFilterPipe, DisplayQueryTextPipe, SearchHistoryComponent } from './search-history/index';
+import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 
 const appRoutes: Routes = [
     {
@@ -58,8 +58,6 @@ const appRoutes: Routes = [
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
-        DisplayFilterPipe,
-        DisplayQueryTextPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchResultsComponent,
@@ -71,7 +69,8 @@ const appRoutes: Routes = [
         WordcloudComponent,
         SearchRelevanceComponent,
         DocumentViewComponent,
-        SearchHistoryComponent
+        SearchHistoryComponent,
+        HistoryQueryDisplayComponent
     ],
     imports: [
         BrowserAnimationsModule,

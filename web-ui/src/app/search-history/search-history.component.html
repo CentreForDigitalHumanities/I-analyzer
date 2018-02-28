@@ -1,18 +1,15 @@
 
 <p class="title" align="center"> Showing search history </p>
-<table>
-  <tr>
-    <th>Timestamp</th>
-    <th>Query text</th>
-    <th>Filters</th>
-    <th>Number of Results</th>
-    <th *ngIf="displayCorpora">Corpus</th>
-  </tr>
-  <tr *ngFor="let query of queries" (click)="returnToSavedQuery()">
-    <td>{{query.completed}}</td>
-    <td>{{query.query | displayQueryText }}</td>
-    <td [innerHtml]="query.query | displayFilter"></td>
-    <td>{{query.transferred}}</td>
-    <td *ngIf="displayCorpora">{{query.corpusName}}</td>
-  </tr>
+<table is-hoverable>
+  <thead>
+    <th class="title is-4">Timestamp </th>
+    <th class="title is-4">Query</th>
+    <th class="title is-4">Filters</th>
+    <th class="title is-4">#Results</th>
+    <th *ngIf="displayCorpora"> <p-multiSelect [options]="corpora" [(ngModel)]="selectedCorpora" defaultLabel="Corpus" (onChange)="queriesForCorpora()"> </p-multiSelect> </th>
+  </thead>
+  <tbody>
+    <tr history-query-display *ngFor="let query of queries" (click)="returnToSavedQuery(query)" [timeStamp]="query.completed" [queryModel]="query.query" [numberResults]="query.transferred" [displayCorpora]="displayCorpora" [corpus]="query.corpusName" >
+    </tr>
+  </tbody>
 </table>
