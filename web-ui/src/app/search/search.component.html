@@ -5,7 +5,7 @@
         <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
     </h1>
     <nav class="level is-mobile">
-        <div class="level-left">
+        <div class="level-left search-controls">
             <div class="level-item">
                 <button class="button" (click)="toggleFilters()">
                     <span class="icon is-small">
@@ -17,8 +17,10 @@
             <div class="level-item">
                 <form (ngSubmit)="search()" *ngIf="corpus">
                     <div class="field has-addons">
+                    <div class="control">
                         <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query">
-
+                    </div>
+                    <div class="control">
                         <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching}">
                             <span class="icon is-small">
                                 <i class="fa fa-search"></i>
@@ -26,6 +28,8 @@
                             <span>Search</span>
                         </button>
                     </div>
+                    </div>
+                    <a (click)="showQueryDocumentation()">View query documentation</a>
                 </form>
             </div>
             <div class="level-right">
@@ -72,7 +76,8 @@
                                 <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
                                     type="checkbox">
                             </div> {{ field.searchFilter.description }}
-                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
+                                (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
