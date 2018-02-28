@@ -1,0 +1,22 @@
+@import "../../variables";
+
+table {
+	margin-left: 100px;
+	margin-bottom: 50px;
+}
+
+th, td {
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+tr {
+	border: 1px solid black;
+	border-collapse: separate;
+}
+
+tr:hover {
+	background-color: $turquoise;
+	cursor: pointer;
+}
+

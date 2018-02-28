@@ -84,7 +84,7 @@
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
                 <div>
                     <ng-container *ngFor="let field of corpus.fields">
-                        <div class="box" *ngIf="field.searchFilter">
+                        <div class="box" *ngIf="field.searchFilter" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" >
                             <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
                             <label>
                                 <div class="checkbox">
@@ -135,10 +135,10 @@
 </p-dialog>
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument" width="800" *ngIf="viewDocument">
-    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQuery"></document-view>
+    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
     <p-header>Select a data column for visualization</p-header>
-    <visualization [searchQuery]="queryModel" [corpus]="corpus"></visualization>
+    <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>

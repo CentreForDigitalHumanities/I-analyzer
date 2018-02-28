@@ -22,6 +22,7 @@ import { SearchResultsComponent } from './search-results.component';
 import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
 
