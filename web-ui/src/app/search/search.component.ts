@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -16,14 +16,21 @@ import { CorpusService, SearchService, DownloadService, UserService, ManualServi
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
+    @ViewChild('searchSection')
+    public searchSection: ElementRef;
+    public isScrolledDown: boolean;
 
     public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
+    /**
+     * The filters have been modified.
+     */
+    public hasModifiedFilters: boolean = false;
     public isSearching: boolean;
     public isDownloading: boolean;
-    public searched: boolean;
+    public hasSearched: boolean;
     /**
      * Whether a document has been selected to be shown.
      */
@@ -95,6 +102,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
+    }
+
     public enableFilter(name: string) {
         if (!this.queryField[name].useAsFilter) {
             this.queryField[name].useAsFilter = true;
@@ -134,6 +147,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
+        if (this.hasSearched) {
+            // no need to bother the user that the filters have been modified if no search has been applied yet
+            this.hasModifiedFilters = true;
+        }
         this.queryField[name].data = data;
     }
 
@@ -159,6 +176,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private performSearch() {
         this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
         this.searchService.search(
@@ -167,7 +185,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             .then(results => {
                 this.results = results;
                 this.isSearching = false;
-                this.searched = true;
+                this.hasSearched = true;
+                this.queryModel = results.queryModel;
             });
         this.showFilters = true;
     }

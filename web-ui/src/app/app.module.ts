@@ -22,6 +22,7 @@ import { MenuComponent } from './menu/menu.component';
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
+import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
@@ -57,6 +58,7 @@ const appRoutes: Routes = [
 @NgModule({
     declarations: [
         AppComponent,
+        BalloonDirective,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,

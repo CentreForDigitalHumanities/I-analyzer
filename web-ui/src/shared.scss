@@ -1,14 +1,23 @@
+@import "~balloon-css";
+
+[data-balloon]:after {
+    border-radius: 0;
+}
+
 $primary: #00d1b2;
 
 $borderWidth: 1px;
 
 $disabledOpacity: 0.35;
 
+$spacing: 1rem;
+
 //Highlight State
 $stateHighlightBorderColor: #fed22f;
 $stateHighlightBgColor: #ffe45c;
 $stateHighlightTextColor: #363636;
 
+$boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
 
 // based on the Bulma loader
