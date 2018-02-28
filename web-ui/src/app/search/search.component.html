@@ -40,6 +40,14 @@
                                     <span>Search</span>
                                 </button>
                             </div>
+                            <div class="control" iaBalloon="Choose to which fields the query should be applied">
+                                <button class="button is-primary is-outlined" type="button" (click)="showSearchFields=true">
+                                    <span class="icon is-small">
+                                        <i class="fa fa-caret-down"></i>
+                                    </span>
+                                    <span>in fields</span>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -107,6 +115,14 @@
         </div>
     </div>
 </section>
+
+<!-- show custom selection of fields to search in -->
+<p-dialog header="Select Search Fields" [(visible)]="showSearchFields" *ngIf="showSearchFields" [contentStyle]="{'overflow': 'visible'}">
+    <b>To which fields should your query be applied?</b>
+    <div class="mc">
+        <p-multiSelect [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryField"></p-multiSelect>
+    </div>
+</p-dialog>
 
 <!-- show customizations for downloading csv -->
 <p-dialog header="Select CSV Columns" [(visible)]="showCsvFields" *ngIf="showCsvFields">

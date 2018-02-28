@@ -124,6 +124,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
+    public toggleQueryField(event) {
+        let toggledField = event.itemValue;
+        // We don't allow searching and filtering by the same field.
+        if (event.value.includes(toggledField)) {
+            toggledField.useAsFilter = false;
+        }
+    }
+
 
     public toggleFilters() {
         this.showFilters = !this.showFilters;
