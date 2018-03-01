@@ -50,6 +50,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     public queryField: {
         [name: string]: QueryField
     };
+    /**
+     * The next two members facilitate a p-multiSelect in the template.
+     */
     public availableQueryFields: QueryField[];
     public selectedQueryFields: QueryField[];
     public queryModel: SearchQuery;
@@ -115,21 +118,23 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public enableFilter(name: string) {
         let field = this.queryField[name];
-        let searchSelection = this.selectedQueryFields;
         field.useAsFilter = true;
-        // We don't allow searching and filtering by the same field.
-        let indexInSelection = searchSelection.findIndex(f => f === field);
-        if (indexInSelection !== -1) {
-            searchSelection.splice(indexInSelection, 1);
-        }
+        this.toggleFilterFields();
     }
 
-    public toggleQueryField(event) {
-        let toggledField = event.itemValue;
+    public toggleFilterFields() {
+        this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
+        // (De)selecting filters also yields different results.
+        this.hasModifiedFilters = true;
+    }
+
+    public toggleQueryFields(event) {
         // We don't allow searching and filtering by the same field.
-        if (event.value.includes(toggledField)) {
-            toggledField.useAsFilter = false;
+        for (let field of event.value) {
+            field.useAsFilter = false;
         }
+        // Searching in different fields also yields different results.
+        this.hasModifiedFilters = true;
     }
 
 
@@ -181,10 +186,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        if (this.hasSearched) {
-            // no need to bother the user that the filters have been modified if no search has been applied yet
-            this.hasModifiedFilters = true;
-        }
+        this.hasModifiedFilters = true;
         this.queryField[name].data = data;
     }
 
@@ -274,6 +276,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let queryRestriction: string[] = [];
         if (params.has('fields')) {
             queryRestriction = params.get('fields').split(',');
+            this.selectedQueryFields = [];
         }
 
         for (let field of corpusFields) {

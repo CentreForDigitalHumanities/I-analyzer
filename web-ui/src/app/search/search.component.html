@@ -32,8 +32,8 @@
                             <div class="control">
                                 <input class="input" id="query" [(ngModel)]="query" name="query" type="text" placeholder="Query">
                             </div>
-                            <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasModifiedFilters">
-                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasModifiedFilters}">
+                            <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters">
+                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
                                     <span class="icon is-small">
                                         <i class="fa fa-search"></i>
                                     </span>
@@ -95,8 +95,7 @@
                         <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
                         <label>
                             <div class="checkbox">
-                                <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name"
-                                    type="checkbox">
+                                <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name" type="checkbox" (change)="toggleFilterFields()">
                             </div> {{ field.searchFilter.description }}
                         </label>
                         <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
@@ -120,7 +119,7 @@
 <p-dialog header="Select Search Fields" [(visible)]="showSearchFields" *ngIf="showSearchFields" [contentStyle]="{'overflow': 'visible'}">
     <b>To which fields should your query be applied?</b>
     <div class="mc">
-        <p-multiSelect [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryField"></p-multiSelect>
+        <p-multiSelect [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryFields($event)"></p-multiSelect>
     </div>
 </p-dialog>
 
