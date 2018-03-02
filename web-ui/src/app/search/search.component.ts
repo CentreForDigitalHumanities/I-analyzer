@@ -49,10 +49,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
     public queryModel: QueryModel;
     /**
+     * This is the query text currently entered in the interface.
+     */
+    public queryText: string;
+    /**
      * This is the query text currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
-    public queryText: string;
+    public searchQueryText: string;
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
@@ -139,7 +143,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
-        let queryPart = this.queryText ? '-' + this.queryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
+        let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
@@ -179,6 +183,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
+        let currentQueryText = this.queryText;
         this.searchService.search(
             this.queryModel,
             this.corpus)
@@ -186,7 +191,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.results = results;
                 this.isSearching = false;
                 this.hasSearched = true;
-                this.queryModel = results.queryModel;
+                this.searchQueryText = currentQueryText;
             });
         this.showFilters = true;
     }

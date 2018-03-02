@@ -51,6 +51,6 @@ export class QueryService {
 
     async retrieveQueries(): Promise<Query[]> {
         let response = await this.apiService.search_history();
-        return response.queries
+        return response.queries;
     }
 }

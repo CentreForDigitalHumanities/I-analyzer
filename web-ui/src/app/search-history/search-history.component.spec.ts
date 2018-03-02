@@ -17,11 +17,13 @@ describe('SearchHistoryComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [ FormsModule, MultiSelectModule ],
-            declarations: [ HistoryQueryDisplayComponent, SearchHistoryComponent ],
+            imports: [FormsModule, MultiSelectModule],
+            declarations: [HistoryQueryDisplayComponent, SearchHistoryComponent],
             providers: [
-                { 
-                    provide: ApiService, useValue: new ApiServiceMock()
+                {
+                    provide: ApiService, useValue: new ApiServiceMock({
+                        'search_history': { queries: [] }
+                    })
                 },
                 QueryService,
                 {
@@ -29,20 +31,17 @@ describe('SearchHistoryComponent', () => {
                 },
                 {
                     provide: Router, useValue: new RouterMock()
-                }
-                { 
+                },
+                {
                     provide: UserService, useValue: new UserServiceMock()
                 }
             ]
-        })
-        .compileComponents();
-    }));
+        }).compileComponents();
 
-    beforeEach(() => {
         fixture = TestBed.createComponent(SearchHistoryComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
+    }));
 
     it('should be created', () => {
         expect(component).toBeTruthy();
