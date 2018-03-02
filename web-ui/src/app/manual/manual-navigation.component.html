@@ -10,7 +10,7 @@
             </span>
         </p>
     </div>
-    <ng-container *ngFor="let page of filtered">
+    <ng-container *ngFor="let page of filtered | async">
         <a class="panel-block" routerLinkActive="is-active" [routerLink]="['/manual', page.id]">
             <span class="panel-icon">
                 <i class="fa fa-book"></i>

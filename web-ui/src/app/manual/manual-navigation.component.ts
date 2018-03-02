@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import { ManualService, ManualPageMetaData, HighlightService } from '../services';
+import "rxjs/add/observable/combineLatest";
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -7,20 +11,22 @@ import { ManualService, ManualPageMetaData, HighlightService } from '../services
     styleUrls: ['./manual-navigation.component.scss']
 })
 export class ManualNavigationComponent implements OnInit {
-    private manifest: ManualPageMetaData[] | undefined;
-    private filtered: ManualPageMetaData[] | undefined;
-    private _filterText: string;
+    private manifest = new Subject<ManualPageMetaData[]>();
+    private filterTextSubject = new BehaviorSubject<string>('');
+    private filtered = Observable.combineLatest(
+        this.manifest,
+        this.filterTextSubject,
+        (manifest, filterText) => {
+            return { manifest, filterText };
+        })
+        .map(({ manifest, filterText }) => Array.from(this.filter(manifest, filterText)));
 
     public set filterText(value: string) {
-        this._filterText = value;
-
-        if (this.manifest) {
-            this.filtered = Array.from(this.filter(this.manifest, value));
-        }
+        this.filterTextSubject.next(value)
     }
 
     public get filterText() {
-        return this._filterText;
+        return this.filterTextSubject.value;
     }
 
     /**
@@ -32,8 +38,7 @@ export class ManualNavigationComponent implements OnInit {
     }
 
     async ngOnInit() {
-        this.manifest = await this.manualService.getManifest();
-        this.filtered = [].concat(this.manifest);
+        this.manifest.next(await this.manualService.getManifest());
     }
 
     private *filter(pages: ManualPageMetaData[], filter: string): Iterable<ManualPageMetaData> {
