@@ -109,16 +109,26 @@ export class ElasticSearchService {
         return new Observable((observer) => {
             let retrieved = 0;
             let esQuery = this.makeEsQuery(queryModel);
+
             this.connection.then((connection) => {
+                let getPageSize = () => {
+                    let pageSize = connection.config.scrollPagesize;
+                    let left = Math.min(size, retrieved + pageSize) - retrieved;
+                    return Math.min(left, pageSize);
+                }
+
                 let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
+                    // only get the number of results specified in the configuration
+                    let pageSize = getPageSize();
+                    let hits = response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
                     let result: SearchResults = {
                         completed: false,
-                        documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
-                        retrieved: retrieved += response.hits.hits.length,
+                        documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
+                        retrieved: retrieved += Math.min(pageSize, response.hits.hits.length),
                         total: response.hits.total
                     }
 
-                    if (response.hits.total !== retrieved && retrieved < size) {
+                    if (getPageSize() > 0 && response.hits.total !== retrieved && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -136,7 +146,7 @@ export class ElasticSearchService {
                     body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
-                    size: connection.config.scrollPagesize,
+                    size: getPageSize(),
                     scroll: connection.config.scrollTimeout
                 }, getMoreUntilDone);
             });
