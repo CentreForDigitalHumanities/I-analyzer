@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/zip";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
 
 @Component({
@@ -16,14 +16,21 @@ import { CorpusService, SearchService, DownloadService, UserService, ManualServi
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
+    @ViewChild('searchSection')
+    public searchSection: ElementRef;
+    public isScrolledDown: boolean;
 
     public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
+    /**
+     * The filters have been modified.
+     */
+    public hasModifiedFilters: boolean = false;
     public isSearching: boolean;
     public isDownloading: boolean;
-    public searched: boolean;
+    public hasSearched: boolean;
     /**
      * Whether a document has been selected to be shown.
      */
@@ -38,15 +45,18 @@ export class SearchComponent implements OnInit, OnDestroy {
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
     public showFilters: boolean | undefined;
-    public query: string;
     public user: User;
-    public queryField: { [name: string]: (CorpusField & { data: SearchFilterData, useAsFilter: boolean, visible: boolean }) };
-    public queryModel: SearchQuery;
+    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
+    public queryModel: QueryModel;
     /**
-     * This is the query currently used for searching,
+     * This is the query text currently entered in the interface.
+     */
+    public queryText: string;
+    /**
+     * This is the query text currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
-    public searchQuery: string;
+    public searchQueryText: string;
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
@@ -76,7 +86,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 return { corpus, params };
             }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
-                this.query = params.get('query');
+                this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
 
@@ -96,6 +106,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
+    }
+
     public enableFilter(name: string) {
         if (!this.queryField[name].useAsFilter) {
             this.queryField[name].useAsFilter = true;
@@ -108,19 +124,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        let route = {
-            query: this.query || ''
-        };
-
-        for (let filter of this.getFilterData().map(data => {
-            return {
-                param: this.getParamForFieldName(data.fieldName),
-                value: searchFilterDataToParam(data)
-            };
-        })) {
-            route[filter.param] = filter.value;
-        }
-
+        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
 
@@ -130,7 +135,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public async download() {
         this.isDownloading = true;
-        let fields = this.getQueryFields();
+        let fields = this.getCsvFields();
         let rows = await this.searchService.searchAsTable(
             this.corpus,
             this.queryModel,
@@ -138,7 +143,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
-        let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
+        let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
@@ -146,6 +151,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
+        if (this.hasSearched) {
+            // no need to bother the user that the filters have been modified if no search has been applied yet
+            this.hasModifiedFilters = true;
+        }
         this.queryField[name].data = data;
     }
 
@@ -170,23 +179,24 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
+        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
-        let searchQuery = this.query;
+        let currentQueryText = this.queryText;
         this.searchService.search(
-            this.corpus,
-            searchQuery,
-            this.getFilterData())
+            this.queryModel,
+            this.corpus)
             .then(results => {
-                this.searchQuery = searchQuery;
                 this.results = results;
                 this.isSearching = false;
-                this.searched = true;
-                this.queryModel = results.queryModel;
+                this.hasSearched = true;
+                this.searchQueryText = currentQueryText;
             });
+        this.showFilters = true;
     }
 
-    private getQueryFields(): CorpusField[] {
+    private getCsvFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 
@@ -204,9 +214,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * Escape field names these so they won't interfere with any other parameter (e.g. query)
      */
-    private getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
-    }
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
@@ -225,7 +232,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let fieldsSet = false;
 
         for (let field of corpusFields) {
-            let param = this.getParamForFieldName(field.name);
+            let param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;

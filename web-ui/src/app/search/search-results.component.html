@@ -40,7 +40,8 @@
             <span class="button is-primary" [ngClass]="{'is-loading': isLoadingMore}" (click)="loadMore()">Load more</span>
         </div>
         <div class="level-item buttons" *ngIf="results.completed">
-            <em>{results.total, plural, other {Retrieved all {{results.total}} results.}}</em>
+            <em *ngIf="results.total == results.retrieved">{results.total, plural, other {Retrieved all {{results.total}} results.}}</em>
+            <em *ngIf="results.total > results.retrieved">{results.retrieved, plural, other {Results limited to {{results.retrieved}} results.}}</em>
         </div>
     </div>
 </ng-template>

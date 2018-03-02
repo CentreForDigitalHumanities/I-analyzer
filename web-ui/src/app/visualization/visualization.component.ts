@@ -1,6 +1,6 @@
-import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
-import { Corpus, AggregateResults, SearchQuery } from '../models/index';
+import { Corpus, AggregateResults, QueryModel } from '../models/index';
 import { SearchService } from '../services/index';
 
 
@@ -10,11 +10,16 @@ import { SearchService } from '../services/index';
     styleUrls: ['./visualization.component.scss'],
 })
 export class VisualizationComponent implements OnChanges {
-    @Input() public searchQuery: SearchQuery;
+    @ViewChild('chart') private chartContainer: ElementRef;
+
+    @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
 
     public visualizedField: string;
     public termFrequencyFields: string[];
+    public wordCloud: boolean = false;
+
+    public chartElement: any;
 
     public aggResults: {
         key: any,
@@ -22,6 +27,10 @@ export class VisualizationComponent implements OnChanges {
     }[];
 
     constructor(private searchService: SearchService) {
+    }
+
+    ngOnInit() {
+        this.chartElement = this.chartContainer.nativeElement;
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -35,9 +44,14 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        this.searchService.searchForVisualization(this.corpus, this.searchQuery, visualizedField).then(visual => {
+        this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
             this.visualizedField = visualizedField;
             this.aggResults = visual.aggregations;
         });
     }
+
+    showWordcloud() {
+        this.wordCloud = true;
+    }
+
 }

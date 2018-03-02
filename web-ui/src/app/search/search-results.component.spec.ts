@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import * as corpus from '../../mock-data/corpus';
 
-import { CorpusField, SearchQuery } from '../models/index';
+import { CorpusField, QueryModel } from '../models/index';
 import { ApiService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
@@ -60,15 +60,8 @@ describe('Search Results Component', () => {
             retrieved: 2,
             total: 2,
             queryModel: {
-                aborted: false,
-                completed: (new Date()),
-                query: {
-                    'bool': {
-                        'must': [],
-                        'filter': [],
-                    }
-                },
-                transferred: 0
+                queryText: '',
+                filters: []
             }
         };
         component.corpus = <any>{

@@ -24,10 +24,13 @@ import { MenuComponent } from './menu/menu.component';
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
+import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
+import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 
 const appRoutes: Routes = [
     {
@@ -49,6 +52,10 @@ const appRoutes: Routes = [
         component: ManualComponent
     },
     {
+        path: 'search-history',
+        component: SearchHistoryComponent
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -57,6 +64,7 @@ const appRoutes: Routes = [
 @NgModule({
     declarations: [
         AppComponent,
+        BalloonDirective,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
@@ -71,8 +79,11 @@ const appRoutes: Routes = [
         ScrollToDirective,
         BarChartComponent,
         VisualizationComponent,
+        WordcloudComponent,
         SearchRelevanceComponent,
-        DocumentViewComponent
+        DocumentViewComponent,
+        SearchHistoryComponent,
+        HistoryQueryDisplayComponent
     ],
     imports: [
         BrowserAnimationsModule,

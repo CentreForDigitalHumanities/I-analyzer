@@ -1,5 +1,5 @@
 import { CorpusField } from './corpus';
-import { SearchQuery } from './query';
+import { QueryModel } from './query';
 import { FoundDocument } from './found-document';
 
 export type SearchResults = {
@@ -11,7 +11,7 @@ export type SearchResults = {
      */
     retrieved: number,
     total: number,
-    queryModel: SearchQuery,
+    queryModel: QueryModel,
     /**
      * Id identifying this search, to be able to get more results
      */

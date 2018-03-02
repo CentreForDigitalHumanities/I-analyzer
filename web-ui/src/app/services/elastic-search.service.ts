@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import { CorpusField, FoundDocument, ElasticSearchIndex, SearchQuery, SearchClause, SearchResults, AggregateResults } from '../models/index';
+import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+
 import { ApiService } from './api.service';
 
 @Injectable()
@@ -25,10 +26,10 @@ export class ElasticSearchService {
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    makeQuery(queryString: string | null = null, filters: any[] = []): SearchQuery {
-        let clause: SearchClause = queryString ? {
+    private makeEsQuery(queryModel: QueryModel): EsQuery {
+        let clause: EsSearchClause = queryModel.queryText ? {
             'simple_query_string': {
-                'query': queryString,
+                'query': queryModel.queryText,
                 'lenient': true,
                 'default_operator': 'or'
             }
@@ -36,12 +37,12 @@ export class ElasticSearchService {
                 'match_all': {}
             };
 
-        if (filters) {
+        if (queryModel.filters) {
             return {
                 'query': {
                     'bool': {
-                        'must': [clause],
-                        'filter': filters,
+                        'must': clause,
+                        'filter': this.mapFilters(queryModel.filters),
                     }
                 }
             }
@@ -89,12 +90,12 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private execute<T>(index: ElasticSearchIndex, queryModel, size) {
+    private execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
         return this.connection.then((connection) => connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
-            body: queryModel,
+            body: esQuery,
             scroll: connection.config.scrollTimeout
         }));
     }
@@ -105,12 +106,13 @@ export class ElasticSearchService {
      * @param query
      * @param size Maximum number of hits
      */
-    searchObservable(corpusDefinition: ElasticSearchIndex, query: SearchQuery, size: number): Observable<SearchResults> {
+    searchObservable(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size: number): Observable<SearchResults> {
         return new Observable((observer) => {
             let retrieved = 0;
+            let esQuery = this.makeEsQuery(queryModel);
             this.connection.then((connection) => {
                 let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result = this.parseResponse(response, query, retrieved);
+                    let result = this.parseResponse(response, queryModel, retrieved);
                     retrieved += result.retrieved;
 
                     if (!result.completed && retrieved < size) {
@@ -128,7 +130,7 @@ export class ElasticSearchService {
                 }
 
                 connection.client.search({
-                    body: query,
+                    body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
                     size: connection.config.scrollPagesize,
@@ -138,10 +140,11 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
+        let esQuery = this.makeEsQuery(queryModel);
         let connection = await this.connection;
-        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, queryModel);
+        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
@@ -154,10 +157,11 @@ export class ElasticSearchService {
         };
     }
 
-    public async search(corpusDefinition: ElasticSearchIndex, queryModel: SearchQuery, size?: number): Promise<SearchResults> {
+    public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
+        let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, queryModel, size || connection.config.overviewQuerySize)
+        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize)
             .then(result => this.parseResponse(result, queryModel, 0));
     }
 
@@ -188,7 +192,7 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>, queryModel: SearchQuery, alreadyRetrieved: number = 0): SearchResults {
+    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0): SearchResults {
         let retrieved = alreadyRetrieved += response.hits.hits.length;
         return {
             completed: response.hits.total <= retrieved,
@@ -211,6 +215,32 @@ export class ElasticSearchService {
             position: index + 1
         };
     }
+
+    /**
+    * Convert filters from query model into elasticsearch form
+    */
+    private mapFilters(filters: SearchFilterData[]) {
+        return filters.map(filter => {
+            switch (filter.filterName) {
+                case "BooleanFilter":
+                    return { 'term': { [filter.fieldName]: filter.data } };
+                case "MultipleChoiceFilter":
+                    return { 'terms': { [filter.fieldName]: filter.data } };
+                case "RangeFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
+                        }
+                    }
+                case "DateFilter":
+                    return {
+                        'range': {
+                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
+                        }
+                    }
+            }
+        });
+    };
 }
 
 type Connection = {
@@ -221,3 +251,25 @@ type Connection = {
         scrollTimeout: string
     }
 };
+
+type EsQuery = {
+    aborted?: boolean,
+    completed?: Date,
+    query: EsSearchClause | {
+        'bool': {
+            'must': EsSearchClause,
+            'filter': any[],
+        }
+    },
+    transferred?: Number
+}
+type EsSearchClause = {
+    'simple_query_string': {
+        'query': string,
+        'lenient': true,
+        'default_operator': 'or'
+    }
+} | {
+        'match_all': {}
+    };
+
