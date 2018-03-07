@@ -184,15 +184,21 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isSearching = true;
         // store it, the user might change it in the meantime
         let currentQueryText = this.queryText;
+        let finallyReset = () => {
+            this.isSearching = false;
+            this.hasSearched = true;
+            this.searchQueryText = currentQueryText;
+        };
         this.searchService.search(
             this.queryModel,
-            this.corpus)
-            .then(results => {
-                this.results = results;
-                this.isSearching = false;
-                this.hasSearched = true;
-                this.searchQueryText = currentQueryText;
-            });
+            this.corpus
+        ).then(results => {
+            this.results = results;
+            finallyReset();
+        }, error => {
+            console.trace(error);
+            finallyReset();
+        });
         this.showFilters = true;
     }
 
