@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/zip";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
+import { Corpus, CorpusField, QueryModel, SearchFilterData, SearchResults, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
 
 @Component({
@@ -199,7 +199,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.results = results;
                 this.isSearching = false;
                 this.hasSearched = true;
-                this.queryModel = results.queryModel;
             });
         this.showFilters = true;
     }
