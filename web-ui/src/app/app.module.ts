@@ -62,7 +62,6 @@ const appRoutes: Routes = [
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
-        DisplayFilterPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchResultsComponent,
