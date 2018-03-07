@@ -209,9 +209,6 @@ def api_check_session():
 @blueprint.route('/api/query', methods=['PUT'])
 @login_required
 def api_query():
-    """
-    Check that the specified user is still logged on.
-    """
     if not request.json:
         abort(400)
 
@@ -247,3 +244,20 @@ def api_query():
         'transferred': query.transferred,
         'userID': query.userID
     })
+
+
+@blueprint.route('/api/search_history', methods=['GET'])
+@login_required
+def api_search_history():
+    user = current_user
+    queries = user.queries
+    return jsonify({
+        'queries': [{
+            'query': query.query_json, 
+            'corpusName': query.corpus_name,
+            'started': query.started,
+            'completed': query.completed,
+            'transferred': query.transferred 
+            } for query in user.queries]
+        })
+    

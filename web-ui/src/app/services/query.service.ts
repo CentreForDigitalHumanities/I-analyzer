@@ -43,4 +43,14 @@ export class QueryService {
         query.id = new Promise((resolve) => promise.then(value => resolve(value.id)));
         return promise;
     }
+
+
+    /**
+    * Retrieve saved queries
+    */
+
+    async retrieveQueries(): Promise<Query[]> {
+        let response = await this.apiService.search_history();
+        return response.queries;
+    }
 }

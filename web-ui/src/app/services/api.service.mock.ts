@@ -16,4 +16,8 @@ export class ApiServiceMock {
     public corpus() {
         return this.get('corpus');
     }
+
+    public search_history() {
+        return this.get('search_history');
+    };
 }

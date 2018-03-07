@@ -1,0 +1,6 @@
+
+	<td>{{timeStamp}}</td>
+	<td>{{queryModel.queryText}}</td>
+	<td [innerHtml]="formattedFilters"></td>
+	<td>{{numberResults}}</td>
+	<td *ngIf="displayCorpora">{{corpus}}</td>
