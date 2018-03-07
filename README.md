@@ -48,7 +48,7 @@ set FLASK_APP=manage.py
 9. Set up the database and migrations by running `flask db upgrade`.
 10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
-11. Go to `/web-ui` and follow the instructions in the README to start it.
+12. Go to `/web-ui` and follow the instructions in the README to start it.
 
 ### Testing
 

@@ -20,6 +20,7 @@ app = flask_app(blueprint, admin_instance, login_manager)
 
 migrate = Migrate(app, db)
 
+
 @app.cli.command()
 @click.option('--name', '-n', help='Name of superuser', required=True)
 @click.option('--pwd', prompt='Please enter password', hide_input=True,
@@ -27,7 +28,7 @@ migrate = Migrate(app, db)
 def admin(name, pwd):
     ''' Create a superuser with admin rights and access to all corpora. 
     If an admin role does not exist yet, it will be created.
-    Likewise, if roles for the defined corpora do not exist yet, they will be created.
+    If roles for the defined corpora do not exist yet, they will be created.
     '''
     if User.query.filter_by(username=name).all():
         logging.critical('Superuser with this name already exists.')
@@ -39,19 +40,18 @@ def admin(name, pwd):
     if not role_admin:
         role_admin = Role('admin', 'Administrator role.')
         db.session.add(role_admin)
-    else:
-        print("admin role already present")
     user.roles.append(role_admin)
     
     for corpus in list(config.CORPORA.keys()):
         role_corpus = Role.query.filter_by(name=corpus).all()
-        print(role_corpus)
         if not role_corpus:
-            role_corpus = Role(corpus, 'Role for users who may access ' + corpus + ' data.')
+            role_corpus = Role(
+                corpus, 
+                'Role for users who may access {0} data'.format(corpus)
+            )
             db.session.add(role_corpus)
         else:
             role_corpus = role_corpus[0]
-            print(corpus, " role already present")
         user.roles.append(role_corpus)
 
     db.session.add(user)
@@ -59,32 +59,38 @@ def admin(name, pwd):
 
 
 @app.cli.command()
-@click.option('--corpus', '-c', help='Sets which corpus should be indexed' +
-                'If not set, first corpus of CORPORA in config.py will be indexed')
-@click.option('--start', '-s', help='Set the date where indexing should start.' +
-                'The input format is YYYY-MM-DD.' + 
-                'If not set, indexing will start from corpus minimum date.')
-@click.option('--end', '-e', help='Set the date where indexing should end' + 
-                'The input format is YYYY-MM-DD.' +
-                'If not set, indexing will start from corpus maximum date.')        
+@click.option(
+    '--corpus', '-c', help='Sets which corpus should be indexed' +
+    'If not set, first corpus of CORPORA in config.py will be indexed'
+)
+@click.option(
+    '--start', '-s', 
+    help='Set the date where indexing should start.' + 
+    'The input format is YYYY-MM-DD.' + 
+    'If not set, indexing will start from corpus minimum date.'
+)
+@click.option(
+    '--end', '-e', 
+    help='Set the date where indexing should end' + 
+    'The input format is YYYY-MM-DD.' +
+    'If not set, indexing will start from corpus maximum date.'
+)        
 def es(corpus, start, end):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
         this_corpus = corpora.DEFINITIONS[corpus]
 
     try:
-        if not start:
-            start_index = this_corpus.min_date
-        else:
+        if start:
             start_index = datetime.strptime(start, '%Y-%m-%d')
-            
-        if not end:
-            end_index = this_corpus.max_date
         else:
-            end_index = datetime.strptime(end, '%Y-%m-%d')  
-
-            print (start_index, end_index)
+            start_index = this_corpus.min_date            
             
+        if end:
+            end_index = datetime.strptime(end, '%Y-%m-%d')
+        else:
+            end_index = this_corpus.max_date
+
     except Exception:
         logging.critical(
             'Incorrect data format '

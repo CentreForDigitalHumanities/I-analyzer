@@ -34,6 +34,4 @@ def flask_app(blueprint, admin_instance, login_manager, cfg=config):
     login_manager.init_app(app)
     admin_instance.init_app(app)
 
-    print("app created!")
-
     return app
