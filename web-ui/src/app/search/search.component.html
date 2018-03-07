@@ -41,7 +41,7 @@
                                 </button>
                             </div>
                             <div class="control" iaBalloon="Choose to which fields the query should be applied">
-                                <p-multiSelect styleClass="button is-primary is-outlined" [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryFields($event)" [ngModelOptions]="{standalone: true}"></p-multiSelect>
+                                <p-multiSelect styleClass="button is-primary is-outlined" defaultLabel="All fields" [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryFields($event)" [ngModelOptions]="{standalone: true}"></p-multiSelect>
                             </div>
                         </div>
                     </form>
