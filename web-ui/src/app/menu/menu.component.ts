@@ -62,7 +62,9 @@ export class MenuComponent implements OnDestroy, OnInit {
             {
                 label: 'Search history',
                 icon: 'fa-history',
-                url: '#'
+                command: (click) => {
+                    this.router.navigate(['search-history'])
+                }
             },
             ...this.isAdmin ? [
                 {

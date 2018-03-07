@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/zip";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, SearchQuery, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
 
 @Component({
@@ -45,7 +45,6 @@ export class SearchComponent implements OnInit, OnDestroy {
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
     public showFilters: boolean | undefined;
-    public query: string;
     public user: User;
     public queryField: {
         [name: string]: QueryField
@@ -55,12 +54,16 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public availableQueryFields: QueryField[];
     public selectedQueryFields: QueryField[];
-    public queryModel: SearchQuery;
+    public queryModel: QueryModel;
     /**
-     * This is the query currently used for searching,
+     * This is the query text currently entered in the interface.
+     */
+    public queryText: string;
+    /**
+     * This is the query text currently used for searching,
      * it might differ from what the user is currently typing in the query input field.
      */
-    public searchQuery: string;
+    public searchQueryText: string;
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
@@ -90,7 +93,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 return { corpus, params };
             }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
-                this.query = params.get('query');
+                this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
 
@@ -143,24 +146,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        let route = {
-            query: this.query || ''
-        };
-        let fields = this.getQueryFields();
-
-        if (fields) {
-            route['fields'] = fields.join(',');
-        }
-
-        for (let filter of this.getFilterData().map(data => {
-            return {
-                param: this.getParamForFieldName(data.fieldName),
-                value: searchFilterDataToParam(data)
-            };
-        })) {
-            route[filter.param] = filter.value;
-        }
-
+        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getQueryFields(), this.getFilterData());
+        let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
 
@@ -178,7 +165,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
-        let queryPart = this.query ? '-' + this.query.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
+        let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
         let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
 
         this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
@@ -211,22 +198,21 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
+        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getQueryFields(), this.getFilterData());
         this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
-        let searchQuery = this.query;
+        let currentQueryText = this.queryText;
         this.searchService.search(
-            this.corpus,
-            searchQuery,
-            this.getFilterData(),
-            this.getQueryFields())
+            this.queryModel,
+            this.corpus)
             .then(results => {
-                this.searchQuery = searchQuery;
                 this.results = results;
                 this.isSearching = false;
                 this.hasSearched = true;
-                this.queryModel = results.queryModel;
+                this.searchQueryText = currentQueryText;
             });
+        this.showFilters = true;
     }
 
     private getCsvFields(): CorpusField[] {
@@ -253,9 +239,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * Escape field names these so they won't interfere with any other parameter (e.g. query)
      */
-    private getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
-    }
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
@@ -280,7 +263,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
 
         for (let field of corpusFields) {
-            let param = this.getParamForFieldName(field.name);
+            let param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;

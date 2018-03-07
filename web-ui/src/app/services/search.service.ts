@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/finally';
+import 'rxjs/add/operator/map';
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, SearchFilterData, SearchResults, AggregateResults, SearchQuery } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -20,67 +21,84 @@ export class SearchService {
     }
 
     /**
-     * Perform an ES search with a single set of results asynchronously.
-     * @param corpus The corpus to search in.
-     * @param queryText The query text in simple query string query syntax.
-     * @param filters Optional per-field filter settings.
-     * @param fields Optional list of fields to restrict the queryText to.
-     * @return An instance of SearchResults.
+     * Construct a dictionary representing an ES query.
+     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
+     * @param fields Optional list of fields to restrict the queryString to.
+     * @param filters A list of dictionaries representing the ES DSL.
      */
-    public async search(corpus: Corpus, queryText: string = '', filters: SearchFilterData[] = [], fields: string[] | null = null): Promise<SearchResults> {
-        this.logService.info(`Requested flat results for query: ${queryText}, with filters: ${JSON.stringify(filters)}`);
-        let queryModel = this.elasticSearchService.makeQuery(queryText, fields, this.mapFilters(filters));
+    public makeQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = []): QueryModel {
+        let model: QueryModel = {
+            queryText: queryText,
+            filters: filters
+        };
+        if (fields) model.fields = fields;
+        return model;
+    }
+
+    public queryModelToRoute(queryModel: QueryModel): any {
+        let route = {
+            query: queryModel.queryText || ''
+        };
+
+        if (queryModel.fields) {
+            route['fields'] = queryModel.fields.join(',');
+        }
+
+        for (let filter of queryModel.filters.map(data => {
+            return {
+                param: this.getParamForFieldName(data.fieldName),
+                value: searchFilterDataToParam(data)
+            };
+        })) {
+            route[filter.param] = filter.value;
+        }
+
+        return route;
+    }
+
+    public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
+        this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
+        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let querySave = this.queryService.save(query, true);
         let result = await this.elasticSearchService.search(corpus, queryModel);
+        querySave.then((savedQuery) => {
+                    // update the last saved query object, it might have changed on the server
+                    
+                if (!result.completed) {
+                    savedQuery.aborted = true;
+                }
+                savedQuery.transferred = result.total;
+                this.queryService.save(savedQuery, undefined, result.completed);
+        });
 
         return <SearchResults>{
             completed: true,
             fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
-            documents: result.documents,
-            queryModel: queryModel
+            documents: result.documents
         };
     }
 
-    public searchObservable(corpus: Corpus, queryModel: SearchQuery): Observable<SearchResults> {
+    public searchObservable(corpus: Corpus, queryModel: QueryModel): Observable<SearchResults> {
         let completed = false;
         let totalTransferred = 0;
 
         // Log the query to the database
-        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
-        let querySave = this.queryService.save(query, true);
         this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
 
         // Perform the search and obtain output stream
         return this.elasticSearchService.searchObservable(
-            corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit)
-            .map(result => {
-                totalTransferred = result.retrieved;
-                if (result.completed) {
-                    completed = true;
-                }
-                return result;
-            })
-            .finally(() => {
-                querySave.then((savedQuery) => {
-                    // update the last saved query object, it might have changed on the server
-                    if (!completed) {
-                        savedQuery.aborted = true;
-                    }
-                    savedQuery.transferred = totalTransferred;
-
-                    this.queryService.save(savedQuery, undefined, completed);
-                });
-            });
+            corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit);
     }
 
-    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: SearchQuery, aggregator: string): Promise<AggregateResults<TKey>> {
+    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 
     /**
      * Search and return a simple two-dimensional string array containing the values.
      */
-    public async searchAsTable(corpus: Corpus, queryModel: SearchQuery, fields: CorpusField[] = []): Promise<string[][]> {
+    public async searchAsTable(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[] = []): Promise<string[][]> {
         let totalTransferred = 0;
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
@@ -127,26 +145,8 @@ export class SearchService {
         return String(value);
     }
 
-    private mapFilters(filters: SearchFilterData[]) {
-        return filters.map(filter => {
-            switch (filter.filterName) {
-                case "BooleanFilter":
-                    return { 'term': { [filter.fieldName]: filter.data } };
-                case "MultipleChoiceFilter":
-                    return { 'terms': { [filter.fieldName]: filter.data } };
-                case "RangeFilter":
-                    return {
-                        'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
-                        }
-                    }
-                case "DateFilter":
-                    return {
-                        'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
-                        }
-                    }
-            }
-        });
-    };
+    public getParamForFieldName(fieldName: string) {
+        return `$${fieldName}`;
+    }
+
 };

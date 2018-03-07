@@ -1,6 +1,9 @@
+import { SearchFilterData } from '../models/index';
+
+/** This is the query object as it is saved in the database.*/
 export class Query {
     constructor(
-        query: SearchQuery,
+        query: QueryModel,
         /**
          * Name of the corpus for which the query was performed.
          */
@@ -19,7 +22,7 @@ export class Query {
     public id?: number;
 
     /**
-     * JSON string sent out to ElasticSearch for this query.
+     * JSON string representing the query model (i.e., query text and filters, see below).
      */
     public query: string;
 
@@ -44,26 +47,9 @@ export class Query {
     public transferred: number = 0
 }
 
-export type SearchQuery = {
-    aborted?: boolean,
-    completed?: Date,
-    query: SearchClause | {
-        'bool': {
-            must: SearchClause[],
-            filter: any[],
-        }
-    },
-    transferred?: Number
-}
-
-export type SearchClause = {
-    simple_query_string: {
-        query: string,
-        fields?: string[],
-        lenient: true,
-        default_operator: 'or'
-    }
-} | {
-    match_all: {}
+/** This is the client's representation of the query by the user, shared between components */
+export type QueryModel = {
+    queryText: string,
+    fields?: string[],
+    filters?: SearchFilterData [];
 };
-

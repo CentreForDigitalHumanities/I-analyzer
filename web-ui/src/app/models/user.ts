@@ -1,7 +1,7 @@
-import { UserRole } from './user-role';
+import { Query, UserRole } from '../models/index';
 
 export class User {
-    constructor(public id, public name, public roles: UserRole[], public downloadLimit: number) {
+    constructor(public id, public name, public roles: UserRole[], public downloadLimit: number, public queries: Query[]) {
     }
 
     public hasRole(role): boolean {

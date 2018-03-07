@@ -22,6 +22,7 @@ import { SearchResultsComponent } from './search-results.component';
 import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
 
@@ -31,7 +32,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, HighlightPipe, DocumentViewComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, VisualizationComponent, BarChartComponent],
+            declarations: [BalloonDirective, HighlightPipe, DocumentViewComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, VisualizationComponent, WordcloudComponent, BarChartComponent],
             imports: [FormsModule, CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 CorpusService,
