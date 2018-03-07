@@ -7,12 +7,6 @@ import pytest
 
 from ianalyzer import config, corpora
 
-@pytest.fixture(autouse=True)
-def configuration(monkeypatch):
-    monkeypatch.setattr(config, 'CORPUS', 'times')
-    monkeypatch.setattr(config, 'CORPUS_ENDPOINT', 'Times')
-    monkeypatch.setattr(config, 'CORPUS_URL', 'Times.index')
-
 
 def test_key_error(monkeypatch,capsys):
 	''' Verify that exception is correctly raised
@@ -30,7 +24,6 @@ def test_import_error(monkeypatch,capsys):
 	- in case the file path in config.CORPORA is faulty
 	'''
 	with pytest.raises(FileNotFoundError) as e:
-		monkeypatch.setattr(config, 'CORPUS', 'times')
 		monkeypatch.setattr(
 			config, 'CORPORA', {'times': '/ianalyzer/corpora/tmes.py'}
 		)

@@ -18,9 +18,6 @@ def client():
 def configuration(monkeypatch):
     monkeypatch.setattr(config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/test.db')
     monkeypatch.setattr(config, 'TIMES_DATA', realpath(join(dirname(__file__))))
-    monkeypatch.setattr(config, 'CORPUS', 'times')
-    monkeypatch.setattr(config, 'CORPUS_ENDPOINT', 'Times')
-    monkeypatch.setattr(config, 'CORPUS_URL', 'Times.index')
     monkeypatch.setattr(config, 'CORPORA', {'times': abspath('ianalyzer/corpora/times.py')})
 
 

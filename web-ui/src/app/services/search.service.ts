@@ -134,6 +134,7 @@ export class SearchService {
         return String(value);
     }
 
+  
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
     }

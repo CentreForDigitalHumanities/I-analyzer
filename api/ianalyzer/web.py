@@ -1,7 +1,6 @@
 '''
 Present the data to the user through a web interface.
 '''
-
 import json
 import logging
 logger = logging.getLogger(__name__)
@@ -11,7 +10,8 @@ from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, stream_with_context
 import flask_admin as admin
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_login import LoginManager, login_required, login_user, \
+    logout_user, current_user
 
 from . import config_fallback as config
 from . import factories
@@ -26,7 +26,8 @@ blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 admin_instance.add_view(views.CorpusView(
-    corpus_name=config.CORPUS, name='Return to search', endpoint=config.CORPUS_ENDPOINT))
+    corpus_name=config.CORPUS, name='Return to search', 
+    endpoint=config.CORPUS_ENDPOINT))
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(
@@ -131,13 +132,9 @@ def api_es_config():
 @blueprint.route('/api/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
-    if hasattr(config, 'AVAILABLE_CORPORA'):
-        available_corpora = config.AVAILABLE_CORPORA
-    else:
-        available_corpora = [config.CORPUS]
-
     response = jsonify(dict(
-        (key, corpora.DEFINITIONS[key].serialize()) for key in available_corpora
+        (key, corpora.DEFINITIONS[key].serialize()) for key in
+        corpora.DEFINITIONS.keys()
     ))
     return response
 
@@ -157,8 +154,15 @@ def api_login():
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': [{'name': role.name, 'description': role.description} for role in user.roles],
-            'downloadLimit': user.download_limit
+            'roles': [{
+                'name': role.name, 
+                'description': role.description
+            } for role in user.roles],
+            'downloadLimit': user.download_limit,
+            'queries': [{
+                'query': query.query_json, 
+                'corpusName': query.corpus_name
+            } for query in user.queries]
         })
 
     return response
