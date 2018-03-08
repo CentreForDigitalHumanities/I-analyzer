@@ -60,6 +60,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     public results: SearchResults;
 
     public searchResults: { [fieldName: string]: any }[];
+
+    /**
+     * For failed searches.
+     */
+    public showError: false | undefined | {
+        date: string,
+        href: string,
+        message: string
+    };
+
     private selectedAll: boolean = true;
 
     private subscription: Subscription | undefined;
@@ -196,6 +206,11 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.results = results;
             finallyReset();
         }, error => {
+            this.showError = {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
             console.trace(error);
             finallyReset();
         });
