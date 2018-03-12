@@ -3,6 +3,12 @@ import { Subscription } from "rxjs/Subscription";
 
 import { Notification, NotificationService } from '../services/notification.service';
 
+const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['class']} = {
+    info: 'is-info',
+    warning: 'is-warning',
+    danger: 'is-danger'
+}
+
 @Component({
     selector: 'ia-notifications',
     templateUrl: './notifications.component.html',
@@ -23,21 +29,12 @@ export class NotificationsComponent implements OnDestroy {
             canDelete: true,
             fadeOut: false,
             message: notification.message,
-            class: this.getNotificationClass(notification.type)
+            class: notificationClassMap[notification.type]
         };
 
         this.notifications.push(notificationDisplay);
 
         notificationDisplay.timeout = setTimeout(() => this.remove(notificationDisplay), this.defaultTimeout);
-    }
-
-    private getNotificationClass(type: Notification['type']) {
-        switch (type) {
-            case 'info':
-                return 'is-info';
-            case 'warning':
-                return 'is-warning';
-        }
     }
 
     public remove(notification: NotificationDisplay) {
