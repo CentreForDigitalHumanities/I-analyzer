@@ -38,7 +38,7 @@ export class SearchResultsComponent implements OnInit {
 
     public async loadMore() {
         this.isLoadingMore = true;
-        this.results = await this.searchService.loadMore(this.results);
+        this.results = await this.searchService.loadMore(this.corpus, this.results);
         this.isLoadingMore = false;
     }
 

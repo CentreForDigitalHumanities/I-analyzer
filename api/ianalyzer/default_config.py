@@ -23,7 +23,24 @@ CORPORA = {
    'times': 'ianalyzer/corpora/times.py'
 }
 
-# ElasticSearch
+# Specify additional servers here
+SERVERS = {
+    # ['server_name']: {
+    #'corpora': [],
+    #'host': ES_HOST,
+    #'port': ES_PORT,
+    #'username': ES_USERNAME,
+    #'password': ES_PASSWORD,
+    #'chunk_size': ES_CHUNK_SIZE,
+    #'max_chunk_bytes': ES_MAX_CHUNK_BYTES,
+    #'bulk_timeout': ES_BULK_TIMEOUT,
+    #'overview_query_size': ES_OVERVIEW_QUERY_SIZE,
+    #'scroll_timeout': ES_SCROLL_TIMEOUT,
+    #'scroll_page_size': ES_SCROLL_PAGESIZE
+    # }
+}
+
+# Default ElasticSearch server
 ES_HOST='localhost'
 ES_PORT=9200
 ES_USERNAME=''

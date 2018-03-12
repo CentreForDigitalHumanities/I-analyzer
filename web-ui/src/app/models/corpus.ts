@@ -1,5 +1,6 @@
 export class Corpus implements ElasticSearchIndex {
     constructor(
+        public serverName,
     /**
      * Internal name for referring to this corpus e.g. in URLs.
      */
@@ -21,7 +22,8 @@ export class Corpus implements ElasticSearchIndex {
 
 export type ElasticSearchIndex = {
     doctype: DocumentType,
-    index: string
+    index: string,
+    serverName: string
 }
 
 export type DocumentType = 'article';
