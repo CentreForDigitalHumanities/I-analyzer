@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
-import "rxjs/add/observable/zip";
+import "rxjs/add/observable/combineLatest";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
@@ -83,7 +83,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.availableCorpora = this.corpusService.get();
         this.user = this.userService.getCurrentUserOrFail();
         // the search to perform is specified in the query parameters
-        Observable.zip(
+        Observable.combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
             (corpus, params) => {
@@ -199,7 +199,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.results = results;
                 this.isSearching = false;
                 this.hasSearched = true;
-                this.hasLimitedResults = results.total > this.user.downloadLimit;
+                this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
                 this.searchQueryText = currentQueryText;
             });
         this.showFilters = true;

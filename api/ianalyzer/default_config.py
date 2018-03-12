@@ -23,12 +23,6 @@ CORPORA = {
    'times': 'ianalyzer/corpora/times.py'
 }
 
-# Global corpus variables
-AVAILABLE_CORPORA = ['times']
-CORPUS = 'times'
-CORPUS_URL = 'Times.index'
-CORPUS_ENDPOINT = 'Times'
-
 # ElasticSearch
 ES_HOST='localhost'
 ES_PORT=9200

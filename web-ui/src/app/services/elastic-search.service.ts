@@ -90,12 +90,13 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private execute<T>(index: ElasticSearchIndex, queryModel, size) {
+    private execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
         return this.connection.then((connection) => connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
-            body: queryModel
+            body: esQuery,
+            scroll: connection.config.scrollTimeout
         }));
     }
 
@@ -120,15 +121,10 @@ export class ElasticSearchService {
                 let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
                     // only get the number of results specified in the configuration
                     let pageSize = getPageSize();
-                    let hits = response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
-                    let result: SearchResults = {
-                        completed: false,
-                        documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, retrieved + index)),
-                        retrieved: retrieved += Math.min(pageSize, response.hits.hits.length),
-                        total: response.hits.total
-                    }
+                    let result = this.parseResponse(response, queryModel, retrieved, pageSize);
+                    retrieved = result.retrieved;
 
-                    if (getPageSize() > 0 && response.hits.total !== retrieved && retrieved < size) {
+                    if (getPageSize() > 0 && !result.completed && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -170,23 +166,52 @@ export class ElasticSearchService {
         };
     }
 
-    public async search<T>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
+    public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
         let connection = await this.connection;
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize).then(result => {
-            // Extract relevant information from dictionary returned by ES
-            let stats = result.hits;
+        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        return this.parseResponse(response, queryModel, 0);
+    }
 
-            let documents = stats.hits.map((hit, index) => this.hitToDocument(hit, stats.max_score, index));
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+        if (!existingResults.scrollId) {
+            throw 'No scroll ID found.';
+        }
 
-            return {
-                completed: true,
-                total: stats.total || 0,
-                retrieved: documents.length,
-                documents
-            };
+        let connection = await this.connection;
+        let response = await connection.client.scroll({
+            scrollId: existingResults.scrollId,
+            scroll: connection.config.scrollTimeout
         });
+
+        let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
+        additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
+        additionalResults.fields = existingResults.fields;
+        return additionalResults;
+    }
+
+    /**
+     * Extract relevant information from dictionary returned by ES
+     * @param response
+     * @param queryModel
+     * @param alreadyRetrieved
+     * @param completed
+     */
+    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
+        let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
+        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
+        return {
+            completed: response.hits.total <= retrieved,
+            documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
+            retrieved,
+            total: response.hits.total,
+            queryModel,
+            scrollId: response._scroll_id
+        }
     }
 
     /**

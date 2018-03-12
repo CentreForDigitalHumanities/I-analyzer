@@ -20,8 +20,17 @@ export class SearchService {
         private logService: LogService) {
     }
 
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
+        let results = await this.elasticSearchService.loadMore(existingResults);
+        return this.limitResults(results);
+    }
+
     public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
-        return <QueryModel> {
+        return <QueryModel>{
             queryText: queryText,
             filters: filters
         }
@@ -44,27 +53,29 @@ export class SearchService {
         return route;
     }
 
-    // fields: CorpusField[] = [],
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let user = this.userService.getCurrentUserOrFail();
+        let query = new Query(queryModel, corpus.name, user.id);
         let querySave = this.queryService.save(query, true);
-        let result = await this.elasticSearchService.search(corpus, queryModel);
+        let results = this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
-                    // update the last saved query object, it might have changed on the server
-                    
-                if (!result.completed) {
-                    savedQuery.aborted = true;
-                }
-                savedQuery.transferred = result.total;
-                this.queryService.save(savedQuery, undefined, result.completed);
+            // update the last saved query object, it might have changed on the server
+            if (!results.completed) {
+                savedQuery.aborted = true;
+            }
+            savedQuery.transferred = results.total;
+            this.queryService.save(savedQuery, undefined, results.completed);
         });
 
         return <SearchResults>{
-            completed: true,
+            completed: results.completed,
             fields: corpus.fields.filter(field => field.prominentField),
-            total: result.total,
-            documents: result.documents
+            total: results.total,
+            documents: results.documents,
+            queryModel: queryModel,
+            retrieved: results.retrieved,
+            scrollId: results.scrollId
         };
     }
 
@@ -96,17 +107,17 @@ export class SearchService {
             let rows: string[][] = [];
             this.searchObservable(corpus, queryModel)
                 .subscribe(
-                result => {
-                    rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                        )
-                    );
+                    result => {
+                        rows.push(...
+                            result.documents.map(document =>
+                                this.documentRow(document, fields.map(field => field.name))
+                            )
+                        );
 
-                    totalTransferred = result.retrieved;
-                },
-                (error) => reject(error),
-                () => resolve(rows));
+                        totalTransferred = result.retrieved;
+                    },
+                    (error) => reject(error),
+                    () => resolve(rows));
         });
     }
 
@@ -134,8 +145,16 @@ export class SearchService {
         return String(value);
     }
 
+    private limitResults(results: SearchResults) {
+        let downloadLimit = this.userService.getCurrentUserOrFail().downloadLimit;
+        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
+            // download limit exceeded
+            results.completed = true;
+        }
+        return results;
+    }
+
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
     }
-
-};
+}

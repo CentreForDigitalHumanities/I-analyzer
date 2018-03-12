@@ -17,6 +17,8 @@ export class ManualDialogComponent implements OnDestroy {
     private pageEventSubscription: Subscription;
 
     public manualHtml: SafeHtml | undefined;
+    public identifier: string | undefined;
+    public title = 'Documentation';
     public showManual = false;
     public isLoading = false;
 
@@ -36,6 +38,8 @@ export class ManualDialogComponent implements OnDestroy {
 
                 case 'show':
                     this.manualHtml = event.html;
+                    this.identifier = event.identifier;
+                    this.title = event.title;
                     this.showManual = true;
                     this.isLoading = false;
                     break;
