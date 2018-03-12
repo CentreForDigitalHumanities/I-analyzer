@@ -20,8 +20,16 @@ export class SearchService {
         private logService: LogService) {
     }
 
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
+        return this.elasticSearchService.loadMore(existingResults);
+    }
+
     public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
-        return <QueryModel> {
+        return <QueryModel>{
             queryText: queryText,
             filters: filters
         }
@@ -44,27 +52,28 @@ export class SearchService {
         return route;
     }
 
-    // fields: CorpusField[] = [],
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
         let querySave = this.queryService.save(query, true);
         let result = await this.elasticSearchService.search(corpus, queryModel);
         querySave.then((savedQuery) => {
-                    // update the last saved query object, it might have changed on the server
-                    
-                if (!result.completed) {
-                    savedQuery.aborted = true;
-                }
-                savedQuery.transferred = result.total;
-                this.queryService.save(savedQuery, undefined, result.completed);
+            // update the last saved query object, it might have changed on the server
+            if (!result.completed) {
+                savedQuery.aborted = true;
+            }
+            savedQuery.transferred = result.total;
+            this.queryService.save(savedQuery, undefined, result.completed);
         });
 
         return <SearchResults>{
-            completed: true,
+            completed: result.completed,
             fields: corpus.fields.filter(field => field.prominentField),
             total: result.total,
-            documents: result.documents
+            documents: result.documents,
+            queryModel: queryModel,
+            retrieved: result.retrieved,
+            scrollId: result.scrollId
         };
     }
 
@@ -96,17 +105,17 @@ export class SearchService {
             let rows: string[][] = [];
             this.searchObservable(corpus, queryModel)
                 .subscribe(
-                result => {
-                    rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                        )
-                    );
+                    result => {
+                        rows.push(...
+                            result.documents.map(document =>
+                                this.documentRow(document, fields.map(field => field.name))
+                            )
+                        );
 
-                    totalTransferred = result.retrieved;
-                },
-                (error) => reject(error),
-                () => resolve(rows));
+                        totalTransferred = result.retrieved;
+                    },
+                    (error) => reject(error),
+                    () => resolve(rows));
         });
     }
 
@@ -138,5 +147,4 @@ export class SearchService {
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
     }
-
-};
+}

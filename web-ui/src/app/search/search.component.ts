@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
-import "rxjs/add/observable/zip";
+import "rxjs/add/observable/combineLatest";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
@@ -79,7 +79,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.user = this.userService.getCurrentUserOrFail();
 
         // the search to perform is specified in the query parameters
-        Observable.zip(
+        Observable.combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
             (corpus, params) => {

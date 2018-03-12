@@ -19,7 +19,9 @@
                 <table class=" column table is-fullwidth">
                     <ng-container *ngFor="let field of results.fields">
                         <tr *ngIf="document.fieldValues[field.name]">
-                            <td><b>{{field.displayName}}: </b></td>
+                            <td>
+                                <b>{{field.displayName}}: </b>
+                            </td>
                             <td [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
                         </tr>
                     </ng-container>
@@ -31,6 +33,15 @@
                     <search-relevance [value]="document.relevance"></search-relevance>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="levels load-more" *ngIf="results.total > 5">
+        <div class="level-item buttons" *ngIf="!results.completed">
+            <span class="button is-primary" [ngClass]="{'is-loading': isLoadingMore}" (click)="loadMore()">Load more</span>
+        </div>
+        <div class="level-item buttons" *ngIf="results.completed">
+            <em *ngIf="results.total == results.retrieved">{results.total, plural, other {Retrieved all {{results.total}} results.}}</em>
+            <em *ngIf="results.total > results.retrieved">{results.retrieved, plural, other {Results limited to {{results.retrieved}} results.}}</em>
         </div>
     </div>
 </ng-template>

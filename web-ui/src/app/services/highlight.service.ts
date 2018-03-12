@@ -143,7 +143,7 @@ export class HighlightService {
      * Convert the query to a regular expression matching any hit in a string.
      * @param query
      */
-    private getQueryExpression(query: string): RegExp {
+    public getQueryExpression(query: string): RegExp {
         let quoted: RegExpExecArray;
         let lastIndex = 0;
 
@@ -160,7 +160,6 @@ export class HighlightService {
         }
 
         patterns.push(...this.getQueryWords(query.substring(lastIndex)));
-
         // also look for whitespace as separator: word boundaries don't work properly for non-ASCII characters
         return new RegExp(`(^|\\b|[\\.,]|\\s)(${patterns.map(pattern => `${pattern}`).join('|')})($|\\b|[\\.,]|\\s)`, 'gui');
     }
@@ -170,6 +169,13 @@ export class HighlightService {
      * @param query
      */
     private getQueryWords(query: string): string[] {
-        return query.replace('.', '\\.').replace('*', '.*?\\b').split(/[ \|\+]/g).filter(word => !!word);
+        return query.split(/[ \|\+]/g)
+            .filter(word => !!word).map(part =>
+                part.replace(/\./g, '\\.')
+                    // wildcards at the beginning of a term
+                    // these are not allowed by the search index, but they are when searching the manual
+                    .replace(/\*(?=([^ +\-]))/g, '\\b[^ ]*')
+                    // wildcards at the end of a term
+                    .replace(/\*(?=($|[ \[\]+\-]))/g, '.*?\\b'));
     }
 }
