@@ -96,7 +96,12 @@ export class UserService implements OnDestroy {
     public login(username: string, password: string): Promise<User | false> {
         return this.apiService.login({ username, password }).then(result => {
             if (result.success) {
-                this.currentUser = new User(result.id, result.username, result.roles, result.downloadLimit, result.queries);
+                this.currentUser = new User(
+                    result.id,
+                    result.username,
+                    result.roles,
+                    result.downloadLimit == null ? 0 : result.downloadLimit,
+                    result.queries);
                 return this.currentUser;
             }
 

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService } from '../services/index';
+import { ApiService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { ManualServiceMock } from '../services/manual.service.mock';
@@ -49,6 +49,7 @@ describe('SearchComponent', () => {
                 {
                     provide: ManualService, useClass: ManualServiceMock
                 },
+                NotificationService,
                 QueryService,
                 SearchService,
                 {
