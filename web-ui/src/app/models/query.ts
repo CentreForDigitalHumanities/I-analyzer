@@ -50,5 +50,6 @@ export class Query {
 /** This is the client's representation of the query by the user, shared between components */
 export type QueryModel = {
     queryText: string,
+    fields?: string[],
     filters?: SearchFilterData [];
-}
+};
