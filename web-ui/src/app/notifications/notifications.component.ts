@@ -6,7 +6,8 @@ import { Notification, NotificationService } from '../services/notification.serv
 const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['class']} = {
     info: 'is-info',
     warning: 'is-warning',
-    danger: 'is-danger'
+    danger: 'is-danger',
+    success: 'is-success'
 }
 
 @Component({
