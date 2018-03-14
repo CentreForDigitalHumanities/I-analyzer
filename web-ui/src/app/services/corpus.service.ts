@@ -69,6 +69,7 @@ export class CorpusService {
             prominentField: data.prominent_field,
             termFrequency: data.term_frequency,
             hidden: data.hidden,
+            sortable: data.sortable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
         }

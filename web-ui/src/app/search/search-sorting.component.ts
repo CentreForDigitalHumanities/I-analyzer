@@ -13,7 +13,9 @@ export class SearchSortingComponent {
     public ascending = true;
 
     @Input()
-    public fields: CorpusField[];
+    public set fields(fields: CorpusField[]) {
+        this.sortableFields = fields.filter(field => field.sortable);
+    }
 
     @Input()
     public sortField: CorpusField | undefined;
@@ -22,6 +24,7 @@ export class SearchSortingComponent {
     public onChange = new EventEmitter<SortEvent>();
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
+    public sortableFields: CorpusField[];
     public showFields = false;
 
     public get sortType(): SortType {
