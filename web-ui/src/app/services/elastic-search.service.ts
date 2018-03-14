@@ -32,7 +32,7 @@ export class ElasticSearchService {
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    private makeEsQuery(queryModel: QueryModel): EsQuery {
+    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause = queryModel.queryText ? {
             'simple_query_string': {
                 'query': queryModel.queryText,
@@ -43,8 +43,9 @@ export class ElasticSearchService {
                 'match_all': {}
             };
 
+        let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
-            return {
+            query = {
                 'query': {
                     'bool': {
                         'must': clause,
@@ -53,10 +54,18 @@ export class ElasticSearchService {
                 }
             }
         } else {
-            return {
+            query = {
                 'query': clause
             }
         }
+
+        if (queryModel.sortBy) {
+            (query as EsQuerySorted).sort = [{
+                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
+            }];
+        }
+
+        return query;
     }
 
     /**
@@ -268,7 +277,9 @@ type Connection = {
         scrollTimeout: string
     }
 };
-
+type EsQuerySorted = EsQuery & {
+    sort: { [fieldName: string]: 'desc' | 'asc' }[]
+};
 type EsQuery = {
     aborted?: boolean,
     completed?: Date,

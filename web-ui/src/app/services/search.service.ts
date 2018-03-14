@@ -29,10 +29,12 @@ export class SearchService {
         return this.limitResults(results);
     }
 
-    public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
+    public createQueryModel(queryText: string = '', filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
         return <QueryModel>{
             queryText: queryText,
-            filters: filters
+            filters: filters,
+            sortBy: sortField ? sortField.name : undefined,
+            sortAscending: sortAscending
         }
     }
 
@@ -48,6 +50,12 @@ export class SearchService {
             };
         })) {
             route[filter.param] = filter.value;
+        }
+
+        if (queryModel.sortBy) {
+            route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
+        } else {
+            delete route['sort'];
         }
 
         return route;

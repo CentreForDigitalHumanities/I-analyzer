@@ -7,11 +7,11 @@ import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
-    selector: 'app-search',
+    selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
@@ -63,6 +63,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchQueryText: string;
     public results: SearchResults;
 
+    public sortAscending: boolean;
+    public sortField: CorpusField | undefined;
+
     public searchResults: { [fieldName: string]: any }[];
     private selectedAll: boolean = true;
 
@@ -92,9 +95,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
-                let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
+                let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
+                this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
@@ -122,13 +126,18 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
-
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
 
+    public changeSorting(event: SortEvent) {
+        this.sortField = event.field;
+        this.sortAscending = event.ascending;
+        this.search();
+    }
+
     public search() {
-        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        let queryModel = this.createQueryModel();
         let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
@@ -187,7 +196,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
-        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
@@ -218,6 +227,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
         return data;
+    }
+
+    private createQueryModel() {
+        return this.searchService.createQueryModel(this.queryText, this.getFilterData(), this.sortField, this.sortAscending);
     }
 
     /**
@@ -258,6 +271,16 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
 
         return fieldsSet;
+    }
+
+    private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
+        if (params.has('sort')) {
+            let [sortField, sortAscending] = params.get('sort').split(',');
+            this.sortField = corpusFields.find(field => field.name == sortField);
+            this.sortAscending = sortAscending == 'asc';
+        } else {
+            this.sortField = undefined;
+        }
     }
 }
 

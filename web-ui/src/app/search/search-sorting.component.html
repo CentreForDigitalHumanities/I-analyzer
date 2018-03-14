@@ -1,0 +1,15 @@
+<div class="control">
+    <ia-dropdown placeholder="Default" canDeselect="true" [value]="sortField" [options]="fields" optionLabel="displayName" (onChange)="changeField($event)"></ia-dropdown>
+</div>
+<div class="control">
+    <a class="button" (click)="toggleSortType()" [ngClass]="{ 'is-static': !sortField }">
+        <span class="icon is-small" [ngSwitch]="sortType">
+            <i *ngSwitchCase="'alphaDesc'" class="fa fa-sort-alpha-desc"></i>
+            <i *ngSwitchCase="'alphaAsc'" class="fa fa-sort-alpha-asc"></i>
+            <i *ngSwitchCase="'numericDesc'" class="fa fa-sort-numeric-desc"></i>
+            <i *ngSwitchCase="'numericAsc'" class="fa fa-sort-numeric-asc"></i>
+        </span>
+        <span *ngIf="ascending">Ascending</span>
+        <span *ngIf="!ascending">Descending</span>
+    </a>
+</div>
