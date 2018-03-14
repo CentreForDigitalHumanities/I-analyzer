@@ -29,19 +29,33 @@ export class SearchService {
         return this.limitResults(results);
     }
 
-    public createQueryModel(queryText: string = '', filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
-        return <QueryModel>{
+    /**
+     * Construct a dictionary representing an ES query.
+     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
+     * @param fields Optional list of fields to restrict the queryString to.
+     * @param filters A list of dictionaries representing the ES DSL.
+     */
+    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
+        let model: QueryModel = {
             queryText: queryText,
             filters: filters,
             sortBy: sortField ? sortField.name : undefined,
             sortAscending: sortAscending
+        };
+        if (fields) {
+            model.fields = fields;
         }
+        return model;
     }
 
     public queryModelToRoute(queryModel: QueryModel): any {
         let route = {
             query: queryModel.queryText || ''
         };
+
+        if (queryModel.fields) {
+            route['fields'] = queryModel.fields.join(',');
+        }
 
         for (let filter of queryModel.filters.map(data => {
             return {

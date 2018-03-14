@@ -27,29 +27,33 @@ export class ElasticSearchService {
         });
     }
 
-    /**
-     * Construct a dictionary representing an ES query.
-     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
-     * @param filters A list of dictionaries representing the ES DSL.
-     */
     private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
-        let clause: EsSearchClause = queryModel.queryText ? {
-            'simple_query_string': {
-                'query': queryModel.queryText,
-                'lenient': true,
-                'default_operator': 'or'
-            }
-        } : {
-                'match_all': {}
+        let clause: EsSearchClause;
+
+        if (queryModel.queryText) {
+            clause = {
+                simple_query_string: {
+                    query: queryModel.queryText,
+                    lenient: true,
+                    default_operator: 'or'
+                }
             };
+            if (queryModel.fields) {
+                clause.simple_query_string.fields = queryModel.fields;
+            }
+        } else {
+            clause = {
+                match_all: {}
+            };
+        }
 
         let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
             query = {
                 'query': {
                     'bool': {
-                        'must': clause,
-                        'filter': this.mapFilters(queryModel.filters),
+                        must: clause,
+                        filter: this.mapFilters(queryModel.filters),
                     }
                 }
             }
@@ -285,19 +289,21 @@ type EsQuery = {
     completed?: Date,
     query: EsSearchClause | {
         'bool': {
-            'must': EsSearchClause,
-            'filter': any[],
+            must: EsSearchClause,
+            filter: any[],
         }
     },
     transferred?: Number
-}
+};
+
 type EsSearchClause = {
-    'simple_query_string': {
-        'query': string,
-        'lenient': true,
-        'default_operator': 'or'
+    simple_query_string: {
+        query: string,
+        fields?: string[],
+        lenient: true,
+        default_operator: 'or'
     }
 } | {
-        'match_all': {}
+        match_all: {}
     };
 
