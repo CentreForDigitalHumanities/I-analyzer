@@ -4,6 +4,7 @@
 export const MockCorpusResponse = {
     "test1": {
         "name": "test1",
+        "server_name": "default",
         "es_doctype": "article",
         "es_index": "test1",
         "es_settings": null,
@@ -14,6 +15,7 @@ export const MockCorpusResponse = {
     },
     "test2": {
         "name": "test2",
+        "server_name": "default",
         "es_doctype": "article",
         "es_index": "test2",
         "es_settings": null,

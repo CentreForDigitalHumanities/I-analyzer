@@ -23,9 +23,9 @@ export class SearchService {
     /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
-    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+    public async loadMore(corpus: Corpus, existingResults: SearchResults): Promise<SearchResults> {
         this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
-        return this.elasticSearchService.loadMore(existingResults);
+        return this.elasticSearchService.loadMore(corpus, existingResults);
     }
 
     /**
@@ -155,7 +155,7 @@ export class SearchService {
         return String(value);
     }
 
-  
+
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
     }

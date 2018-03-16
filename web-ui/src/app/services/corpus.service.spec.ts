@@ -66,6 +66,7 @@ describe('CorpusService', () => {
     it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "times": {
+                "server_name": "default",
                 "title": "Times",
                 "description": "This is a description.",
                 "es_doctype": "article",
@@ -136,6 +137,7 @@ describe('CorpusService', () => {
                 }
             }];
             expect(items).toEqual([new Corpus(
+                'default',
                 'times',
                 'Times',
                 'This is a description.',

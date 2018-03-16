@@ -46,6 +46,7 @@ export class CorpusService {
         let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
 
         return new Corpus(
+            data.server_name,
             name,
             data.title,
             data.description,
