@@ -8,7 +8,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
-import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
+import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
     selector: 'app-search',
@@ -31,6 +31,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     public isSearching: boolean;
     public isDownloading: boolean;
     public hasSearched: boolean;
+    /**
+     * Whether the total number of hits exceeds the download limit.
+     */
+    public hasLimitedResults: boolean = false;
     /**
      * Whether a document has been selected to be shown.
      */
@@ -76,6 +80,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private searchService: SearchService,
         private userService: UserService,
         private manualService: ManualService,
+        private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private title: Title) {
@@ -84,7 +89,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
         this.user = this.userService.getCurrentUserOrFail();
-
         // the search to perform is specified in the query parameters
         Observable.combineLatest(
             this.corpusService.currentCorpus,
@@ -163,6 +167,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.queryModel,
             fields);
 
+        if (this.hasLimitedResults) {
+            this.notificationService.showMessage(`The download has been limited to the first ${rows.length} results!`);
+        }
+
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
         let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
@@ -210,6 +218,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.results = results;
                 this.isSearching = false;
                 this.hasSearched = true;
+                this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
                 this.searchQueryText = currentQueryText;
             });
         this.showFilters = true;

@@ -25,7 +25,8 @@ export class SearchService {
      */
     public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
         this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
-        return this.elasticSearchService.loadMore(existingResults);
+        let results = await this.elasticSearchService.loadMore(existingResults);
+        return this.limitResults(results);
     }
 
     /**
@@ -66,26 +67,27 @@ export class SearchService {
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let user = this.userService.getCurrentUserOrFail();
+        let query = new Query(queryModel, corpus.name, user.id);
         let querySave = this.queryService.save(query, true);
-        let result = await this.elasticSearchService.search(corpus, queryModel);
+        let results = this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
             // update the last saved query object, it might have changed on the server
-            if (!result.completed) {
+            if (!results.completed) {
                 savedQuery.aborted = true;
             }
-            savedQuery.transferred = result.total;
-            this.queryService.save(savedQuery, undefined, result.completed);
+            savedQuery.transferred = results.total;
+            this.queryService.save(savedQuery, undefined, results.completed);
         });
 
         return <SearchResults>{
-            completed: result.completed,
+            completed: results.completed,
             fields: corpus.fields.filter(field => field.prominentField),
-            total: result.total,
-            documents: result.documents,
+            total: results.total,
+            documents: results.documents,
             queryModel: queryModel,
-            retrieved: result.retrieved,
-            scrollId: result.scrollId
+            retrieved: results.retrieved,
+            scrollId: results.scrollId
         };
     }
 
@@ -155,7 +157,15 @@ export class SearchService {
         return String(value);
     }
 
-  
+    private limitResults(results: SearchResults) {
+        let downloadLimit = this.userService.getCurrentUserOrFail().downloadLimit;
+        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
+            // download limit exceeded
+            results.completed = true;
+        }
+        return results;
+    }
+
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;
     }

@@ -114,12 +114,21 @@ export class ElasticSearchService {
         return new Observable((observer) => {
             let retrieved = 0;
             let esQuery = this.makeEsQuery(queryModel);
-            this.connection.then((connection) => {
-                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result = this.parseResponse(response, queryModel, retrieved);
-                    retrieved += result.retrieved;
 
-                    if (!result.completed && retrieved < size) {
+            this.connection.then((connection) => {
+                let getPageSize = () => {
+                    let pageSize = connection.config.scrollPagesize;
+                    let left = Math.min(size, retrieved + pageSize) - retrieved;
+                    return Math.min(left, pageSize);
+                }
+
+                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
+                    // only get the number of results specified in the configuration
+                    let pageSize = getPageSize();
+                    let result = this.parseResponse(response, queryModel, retrieved, pageSize);
+                    retrieved = result.retrieved;
+
+                    if (getPageSize() > 0 && !result.completed && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -137,7 +146,7 @@ export class ElasticSearchService {
                     body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
-                    size: connection.config.scrollPagesize,
+                    size: getPageSize(),
                     scroll: connection.config.scrollTimeout
                 }, getMoreUntilDone);
             });
@@ -165,8 +174,8 @@ export class ElasticSearchService {
         let connection = await this.connection;
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize)
-            .then(result => this.parseResponse(result, queryModel, 0));
+        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        return this.parseResponse(response, queryModel, 0);
     }
 
     /**
@@ -196,11 +205,12 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0): SearchResults {
-        let retrieved = alreadyRetrieved += response.hits.hits.length;
+    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
+        let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
+        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
-            documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
+            documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
             retrieved,
             total: response.hits.total,
             queryModel,

@@ -57,7 +57,7 @@
                     </div>
                     <div class="level-item">
                         <div class="field has-addons">
-                            <p class="control">
+                            <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
                                 <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
                                     <span class="icon is-small">
                                         <i class="fa fa-download"></i>

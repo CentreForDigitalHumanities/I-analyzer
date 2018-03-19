@@ -11,7 +11,7 @@ import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModu
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -21,6 +21,7 @@ import { ManualComponent } from './manual/manual.component';
 import { ManualDialogComponent } from './manual/manual-dialog.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 import { CorpusGuard } from './corpus.guard';
 import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
@@ -75,6 +76,7 @@ const appRoutes: Routes = [
         ManualDialogComponent,
         ManualNavigationComponent,
         MenuComponent,
+        NotificationsComponent,
         LoginComponent,
         ScrollToDirective,
         BarChartComponent,
@@ -104,7 +106,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
+    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

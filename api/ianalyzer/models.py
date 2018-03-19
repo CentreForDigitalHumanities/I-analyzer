@@ -38,7 +38,7 @@ class User(db.Model):
     Whether the user has provided the correct credentials.
     '''
 
-    download_limit = db.Column(db.Integer)
+    download_limit = db.Column(db.Integer, default=DOWNLOAD_LIMIT)
     '''
     How high the download limit for the user is.
     '''
