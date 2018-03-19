@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 
@@ -13,7 +13,7 @@ export class CorpusService {
 
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
-    constructor(private apiService: ApiService, private userService: UserService) {
+    constructor(private apiRetryService: ApiRetryService, private userService: UserService) {
     }
 
     /**
@@ -33,11 +33,11 @@ export class CorpusService {
     }
 
     public get(): Promise<Corpus[]> {
-        return this.apiService.corpus().then(data => this.parseCorpusList(data));
+        return this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
     }
 
-    private parseCorpusList(data: any): Corpus[] {
-        let currentUser = this.userService.getCurrentUserOrFail();
+    private async parseCorpusList(data: any): Promise<Corpus[]> {
+        let currentUser = await this.userService.getCurrentUser();
         let availableCorpora = Object.keys(data).filter(name => currentUser.hasRole(name));
         return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }

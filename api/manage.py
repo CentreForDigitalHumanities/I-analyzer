@@ -30,33 +30,43 @@ def admin(name, pwd):
     If an admin role does not exist yet, it will be created.
     If roles for the defined corpora do not exist yet, they will be created.
     '''
-    if User.query.filter_by(username=name).all():
+    user = create_user(name, pwd)
+    if user == None:
         logging.critical('Superuser with this name already exists.')
         return None
 
-    user = User(name, generate_password_hash(pwd))
-
-    role_admin = Role.query.filter_by(name='admin').all()[0]
-    if not role_admin:
-        role_admin = Role('admin', 'Administrator role.')
-        db.session.add(role_admin)
-    user.roles.append(role_admin)
+    append_role(user, 'admin', 'Administration role.')
 
     for corpus in list(config.CORPORA.keys()):
-        role_corpus = Role.query.filter_by(name=corpus).all()
-        if not role_corpus:
-            role_corpus = Role(
-                corpus,
-                'Role for users who may access {0} data'.format(corpus)
-            )
-            db.session.add(role_corpus)
-        else:
-            role_corpus = role_corpus[0]
-        user.roles.append(role_corpus)
+        append_corpus_role(user, corpus)
 
-    db.session.add(user)
     return db.session.commit()
 
+
+
+@app.cli.command()
+@click.option('--corpora', '-c', help='Corpus to be accessible without login (can be defined multiple times)', multiple=True, required=False)
+def guest(corpora):
+    ''' Create a guest account and role without access to any corpus.
+    '''
+    user = create_user("guest")
+    user.authenticated = True
+    user.download_limit = 0
+    if user == None:
+        logging.critical('Guest user already exists.')
+        return None
+
+    append_role(user, 'guest', 'Guest access')
+
+    existing_corpora = list(config.CORPORA.keys())
+
+    for corpus in corpora:
+        if corpus not in existing_corpora:
+            logging.critical(f'Corpus {corpus} does not exist.')
+            return None
+        append_corpus_role(user, corpus)
+
+    return db.session.commit()
 
 @app.cli.command()
 @click.option(
@@ -100,6 +110,32 @@ def es(corpus, start, end):
 
     perform_indexing(corpus, this_corpus, start_index, end_index)
 
+def create_user(name, password = None):
+    if User.query.filter_by(username=name).first():
+        return None
+
+    password_hash = None if password == None else generate_password_hash(password)
+    user = User(name, password_hash)
+    db.session.add(user)
+    return user
+
+def append_role(user, name, description):
+    role = Role.query.filter_by(name=name).first()
+    if not role:
+        role = Role(name, description)
+        db.session.add(role)
+    user.roles.append(role)
+    return role
+
+def append_corpus_role(user, corpus):
+    role_corpus = Role.query.filter_by(name=corpus).first()
+    if not role_corpus:
+        role_corpus = Role(
+            corpus,
+            'Role for users who may access {0} data'.format(corpus)
+        )
+        db.session.add(role_corpus)
+    user.roles.append(role_corpus)
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)

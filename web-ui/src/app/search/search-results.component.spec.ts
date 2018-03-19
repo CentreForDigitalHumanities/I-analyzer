@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import * as corpus from '../../mock-data/corpus';
 
 import { CorpusField, QueryModel } from '../models/index';
-import { ApiService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
+import { ApiService, ApiRetryService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
@@ -26,6 +26,7 @@ describe('Search Results Component', () => {
                         ['corpus']: corpus.MockCorpusResponse
                     })
                 },
+                ApiRetryService,
                 {
                     provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
                 },

@@ -7,7 +7,7 @@
         </h1>
     </div>
 </section>
-<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}">
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
     <div class="container is-fluid">
         <nav class="level is-mobile">
             <div class="level-left search-controls">

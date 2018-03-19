@@ -4,7 +4,6 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
-import { SessionService } from './session.service';
 import { SearchFilterData, UserRole, Query } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -21,12 +20,13 @@ type QueryDb<TDateType> = {
     aborted: boolean,
     transferred: number
 }
+
 @Injectable()
 @RestParams()
 export class ApiService extends Rest {
     private apiUrl: Promise<string> | null = null;
 
-    constructor(private config: ConfigService, private sessionService: SessionService, restHandler: RestHandler) {
+    constructor(private config: ConfigService, restHandler: RestHandler) {
         super(restHandler);
     }
 
