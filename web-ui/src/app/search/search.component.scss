@@ -30,3 +30,8 @@
         align-items: flex-start;
     }
 }
+
+.control[data-balloon] p-multiSelect {
+    position: relative;
+    z-index: 20;
+}

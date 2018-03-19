@@ -25,20 +25,33 @@ export class SearchService {
      */
     public async loadMore(corpus: Corpus, existingResults: SearchResults): Promise<SearchResults> {
         this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
-        return this.elasticSearchService.loadMore(corpus, existingResults);
+        let results = await this.elasticSearchService.loadMore(corpus, existingResults);
+        return this.limitResults(results);
     }
 
-    public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
-        return <QueryModel>{
+    /**
+     * Construct a dictionary representing an ES query.
+     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
+     * @param fields Optional list of fields to restrict the queryString to.
+     * @param filters A list of dictionaries representing the ES DSL.
+     */
+    public makeQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = []): QueryModel {
+        let model: QueryModel = {
             queryText: queryText,
             filters: filters
-        }
+        };
+        if (fields) model.fields = fields;
+        return model;
     }
 
     public queryModelToRoute(queryModel: QueryModel): any {
         let route = {
             query: queryModel.queryText || ''
         };
+
+        if (queryModel.fields) {
+            route['fields'] = queryModel.fields.join(',');
+        }
 
         for (let filter of queryModel.filters.map(data => {
             return {
@@ -54,26 +67,27 @@ export class SearchService {
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let user = this.userService.getCurrentUserOrFail();
+        let query = new Query(queryModel, corpus.name, user.id);
         let querySave = this.queryService.save(query, true);
-        let result = await this.elasticSearchService.search(corpus, queryModel);
+        let results = this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
             // update the last saved query object, it might have changed on the server
-            if (!result.completed) {
+            if (!results.completed) {
                 savedQuery.aborted = true;
             }
-            savedQuery.transferred = result.total;
-            this.queryService.save(savedQuery, undefined, result.completed);
+            savedQuery.transferred = results.total;
+            this.queryService.save(savedQuery, undefined, results.completed);
         });
 
         return <SearchResults>{
-            completed: result.completed,
+            completed: results.completed,
             fields: corpus.fields.filter(field => field.prominentField),
-            total: result.total,
-            documents: result.documents,
+            total: results.total,
+            documents: results.documents,
             queryModel: queryModel,
-            retrieved: result.retrieved,
-            scrollId: result.scrollId
+            retrieved: results.retrieved,
+            scrollId: results.scrollId
         };
     }
 
@@ -143,6 +157,14 @@ export class SearchService {
         return String(value);
     }
 
+    private limitResults(results: SearchResults) {
+        let downloadLimit = this.userService.getCurrentUserOrFail().downloadLimit;
+        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
+            // download limit exceeded
+            results.completed = true;
+        }
+        return results;
+    }
 
     public getParamForFieldName(fieldName: string) {
         return `$${fieldName}`;

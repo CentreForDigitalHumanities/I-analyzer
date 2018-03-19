@@ -80,7 +80,7 @@ export class ApiService extends Rest {
     })
     public login: RestMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number, queries: Query[] }>;
+        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

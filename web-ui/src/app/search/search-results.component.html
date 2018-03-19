@@ -11,7 +11,11 @@
         {results.total, plural, =1 {1 hit} other {{{results.total}} hits}}
     </h2>
     <h2 class="subtitle" *ngIf="results.total > 5">
-        {{results.total}} hits. Your download limit is {{user.downloadLimit}}. This is a subset of {{results.documents.length}} results:
+        {{results.total}} hits.
+        <ng-container *ngIf="user.downloadLimit">
+            Your download limit is {{user.downloadLimit}}.
+        </ng-container>
+        This is a subset of {{results.documents.length}} results:
     </h2>
     <div class="hits">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">

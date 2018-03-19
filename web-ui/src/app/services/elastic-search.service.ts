@@ -27,34 +27,38 @@ export class ElasticSearchService {
         });
     }
 
-    /**
-     * Construct a dictionary representing an ES query.
-     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
-     * @param filters A list of dictionaries representing the ES DSL.
-     */
     private makeEsQuery(queryModel: QueryModel): EsQuery {
-        let clause: EsSearchClause = queryModel.queryText ? {
-            'simple_query_string': {
-                'query': queryModel.queryText,
-                'lenient': true,
-                'default_operator': 'or'
-            }
-        } : {
-                'match_all': {}
+        let clause: EsSearchClause;
+
+        if (queryModel.queryText) {
+            clause = {
+                simple_query_string: {
+                    query: queryModel.queryText,
+                    lenient: true,
+                    default_operator: 'or'
+                }
             };
+            if (queryModel.fields) {
+                clause.simple_query_string.fields = queryModel.fields;
+            }
+        } else {
+            clause = {
+                match_all: {}
+            };
+        }
 
         if (queryModel.filters) {
             return {
-                'query': {
+                query: {
                     'bool': {
-                        'must': clause,
-                        'filter': this.mapFilters(queryModel.filters),
+                        must: clause,
+                        filter: this.mapFilters(queryModel.filters),
                     }
                 }
             }
         } else {
             return {
-                'query': clause
+                query: clause
             }
         }
     }
@@ -119,11 +123,20 @@ export class ElasticSearchService {
             let esQuery = this.makeEsQuery(queryModel);
             this.connections.then((connections) => {
                 let connection = connections[corpusDefinition.serverName];
-                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result = this.parseResponse(response, queryModel, retrieved);
-                    retrieved += result.retrieved;
 
-                    if (!result.completed && retrieved < size) {
+                let getPageSize = () => {
+                    let pageSize = connection.config.scrollPagesize;
+                    let left = Math.min(size, retrieved + pageSize) - retrieved;
+                    return Math.min(left, pageSize);
+                }
+
+                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
+                    // only get the number of results specified in the configuration
+                    let pageSize = getPageSize();
+                    let result = this.parseResponse(response, queryModel, retrieved, pageSize);
+                    retrieved = result.retrieved;
+
+                    if (getPageSize() > 0 && !result.completed && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -141,7 +154,7 @@ export class ElasticSearchService {
                     body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
-                    size: connection.config.scrollPagesize,
+                    size: getPageSize(),
                     scroll: connection.config.scrollTimeout
                 }, getMoreUntilDone);
             });
@@ -169,8 +182,8 @@ export class ElasticSearchService {
         let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize)
-            .then(result => this.parseResponse(result, queryModel, 0));
+        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        return this.parseResponse(response, queryModel, 0);
     }
 
     /**
@@ -200,11 +213,12 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0): SearchResults {
-        let retrieved = alreadyRetrieved += response.hits.hits.length;
+    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
+        let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
+        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
-            documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
+            documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
             retrieved,
             total: response.hits.total,
             queryModel,
@@ -265,19 +279,21 @@ type EsQuery = {
     completed?: Date,
     query: EsSearchClause | {
         'bool': {
-            'must': EsSearchClause,
-            'filter': any[],
+            must: EsSearchClause,
+            filter: any[],
         }
     },
     transferred?: Number
-}
+};
+
 type EsSearchClause = {
-    'simple_query_string': {
-        'query': string,
-        'lenient': true,
-        'default_operator': 'or'
+    simple_query_string: {
+        query: string,
+        fields?: string[],
+        lenient: true,
+        default_operator: 'or'
     }
 } | {
-        'match_all': {}
-    };
+    match_all: {}
+};
 
