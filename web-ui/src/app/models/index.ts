@@ -3,5 +3,6 @@ export * from './found-document';
 export * from './query';
 export * from './search-filter-data';
 export * from './search-results';
+export * from './sort-event';
 export * from './user';
 export * from './user-role';

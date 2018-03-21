@@ -51,5 +51,7 @@ export class Query {
 export type QueryModel = {
     queryText: string,
     fields?: string[],
-    filters?: SearchFilterData [];
+    filters?: SearchFilterData[],
+    sortBy?: string,
+    sortAscending?: boolean
 };

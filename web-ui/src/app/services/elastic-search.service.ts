@@ -6,22 +6,28 @@ import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilte
 
 import { ApiService } from './api.service';
 
+type Connections = { [serverName: string]: Connection };
+
 @Injectable()
 export class ElasticSearchService {
-    private connection: Promise<Connection>;
+    private connections: Promise<Connections>;
 
     constructor(apiService: ApiService) {
-        this.connection = apiService.esConfig().then(config => {
-            return {
-                config,
-                client: new Client({
-                    host: config.host + (config.port ? `:${config.port}` : ''),
-                })
-            };
+        this.connections = apiService.esConfig().then(configs => {
+            let connections: Connections = {};
+            for (let config of configs) {
+                connections[config.name] = {
+                    config,
+                    client: new Client({
+                        host: config.host + (config.port ? `:${config.port}` : ''),
+                    })
+                }
+            }
+            return connections;
         });
     }
 
-    private makeEsQuery(queryModel: QueryModel): EsQuery {
+    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
 
         if (queryModel.queryText) {
@@ -41,9 +47,10 @@ export class ElasticSearchService {
             };
         }
 
+        let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
-            return {
-                query: {
+            query = {
+                'query': {
                     'bool': {
                         must: clause,
                         filter: this.mapFilters(queryModel.filters),
@@ -51,10 +58,18 @@ export class ElasticSearchService {
                 }
             }
         } else {
-            return {
-                query: clause
+            query = {
+                'query': clause
             }
         }
+
+        if (queryModel.sortBy) {
+            (query as EsQuerySorted).sort = [{
+                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
+            }];
+        }
+
+        return query;
     }
 
     /**
@@ -83,7 +98,7 @@ export class ElasticSearchService {
     }
 
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
-        return this.connection.then((connection) => connection.client.search({
+        return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
             type: index.doctype,
             size: 0,
@@ -94,14 +109,15 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
-        return this.connection.then((connection) => connection.client.search<T>({
+    private async execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
+        let connection = (await this.connections)[index.serverName];
+        return connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
             body: esQuery,
             scroll: connection.config.scrollTimeout
-        }));
+        });
     }
 
     /**
@@ -114,8 +130,8 @@ export class ElasticSearchService {
         return new Observable((observer) => {
             let retrieved = 0;
             let esQuery = this.makeEsQuery(queryModel);
-
-            this.connection.then((connection) => {
+            this.connections.then((connections) => {
+                let connection = connections[corpusDefinition.serverName];
                 let getPageSize = () => {
                     let pageSize = connection.config.scrollPagesize;
                     let left = Math.min(size, retrieved + pageSize) - retrieved;
@@ -156,7 +172,7 @@ export class ElasticSearchService {
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
         let esQuery = this.makeEsQuery(queryModel);
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
@@ -171,7 +187,7 @@ export class ElasticSearchService {
     }
 
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
@@ -181,12 +197,12 @@ export class ElasticSearchService {
     /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
-    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+    public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {
         if (!existingResults.scrollId) {
             throw 'No scroll ID found.';
         }
 
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let response = await connection.client.scroll({
             scrollId: existingResults.scrollId,
             scroll: connection.config.scrollTimeout
@@ -265,7 +281,9 @@ type Connection = {
         scrollTimeout: string
     }
 };
-
+type EsQuerySorted = EsQuery & {
+    sort: { [fieldName: string]: 'desc' | 'asc' }[]
+};
 type EsQuery = {
     aborted?: boolean,
     completed?: Date,
@@ -286,6 +304,6 @@ type EsSearchClause = {
         default_operator: 'or'
     }
 } | {
-    match_all: {}
-};
+        match_all: {}
+    };
 

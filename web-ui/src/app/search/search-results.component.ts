@@ -3,7 +3,7 @@ import { User, Corpus, SearchResults, FoundDocument } from '../models/index';
 import { SearchService } from '../services';
 
 @Component({
-    selector: 'search-results',
+    selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
@@ -23,6 +23,9 @@ export class SearchResultsComponent implements OnInit {
     @Input()
     public corpus: Corpus;
 
+    @Input()
+    public isLoading: boolean = false;
+
     @Output('download')
     public downloadEvent = new EventEmitter();
 
@@ -38,7 +41,7 @@ export class SearchResultsComponent implements OnInit {
 
     public async loadMore() {
         this.isLoadingMore = true;
-        this.results = await this.searchService.loadMore(this.results);
+        this.results = await this.searchService.loadMore(this.corpus, this.results);
         this.isLoadingMore = false;
     }
 

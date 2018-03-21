@@ -54,7 +54,8 @@ export class ApiService extends Rest {
         method: RestRequestMethod.Get,
         path: '/es_config'
     })
-    public esConfig: RestMethod<void, {
+    public esConfig: RestMethod<void, [{
+        'name': string,
         'host': string,
         'port': number,
         'chunkSize': number,
@@ -63,7 +64,7 @@ export class ApiService extends Rest {
         'overviewQuerySize': number,
         'scrollTimeout': string,
         'scrollPagesize': number
-    }>;
+    }]>;
 
     @RestAction({
         method: RestRequestMethod.Post,

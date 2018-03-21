@@ -15,8 +15,9 @@ import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearc
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
+import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualDialogComponent } from './manual/manual-dialog.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
@@ -66,12 +67,15 @@ const appRoutes: Routes = [
     declarations: [
         AppComponent,
         BalloonDirective,
+        DropdownComponent,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
         SearchComponent,
         SearchFilterComponent,
+        SearchRelevanceComponent,
         SearchResultsComponent,
+        SearchSortingComponent,
         ManualComponent,
         ManualDialogComponent,
         ManualNavigationComponent,
@@ -82,7 +86,6 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         WordcloudComponent,
-        SearchRelevanceComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent
