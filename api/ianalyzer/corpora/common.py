@@ -331,7 +331,11 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
-        # sortable fields
+        
+        # We need fields which can be easily mapped to an actual sortable
+        # field in Elastic Search. Sorting on XML, or combined fields
+        # is also possible but requires that this behavior is defined when
+        # performing a sorted search.
         self.sortable = sortable if sortable != None else indexed and not hidden and \
             not (isinstance(extractor, (
                     extract.Choice,
@@ -339,6 +343,7 @@ class Field(object):
                     extract.XML,
                     extract.Constant
                 )))
+
         # Add back reference to field in filter
         if self.search_filter:
             self.search_filter.field = self
