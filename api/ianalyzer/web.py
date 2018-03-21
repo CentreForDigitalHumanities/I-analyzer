@@ -135,7 +135,7 @@ def api_es_config():
 def api_corpus_list():
     response = jsonify(dict(
         (key, {
-            **{'server_name': config.get_corpus_server_name(key)},
+            **{'server_name': config.CORPUS_SERVER_NAMES[key]},
             **corpora.DEFINITIONS[key].serialize()
         }) for key in
         corpora.DEFINITIONS.keys()

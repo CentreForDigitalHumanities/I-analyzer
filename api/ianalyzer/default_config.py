@@ -23,34 +23,27 @@ CORPORA = {
    'times': 'ianalyzer/corpora/times.py'
 }
 
-# Specify additional servers here
+# Specify indexing servers here
 SERVERS = {
-    # ['server_name']: {
-    #'corpora': [],
-    #'host': ES_HOST,
-    #'port': ES_PORT,
-    #'username': ES_USERNAME,
-    #'password': ES_PASSWORD,
-    #'chunk_size': ES_CHUNK_SIZE,
-    #'max_chunk_bytes': ES_MAX_CHUNK_BYTES,
-    #'bulk_timeout': ES_BULK_TIMEOUT,
-    #'overview_query_size': ES_OVERVIEW_QUERY_SIZE,
-    #'scroll_timeout': ES_SCROLL_TIMEOUT,
-    #'scroll_page_size': ES_SCROLL_PAGESIZE
-    # }
+    # Default ElasticSearch server
+    'default': {
+        'host': 'localhost',
+        'port': 9200,
+        'username': '',
+        'password': '',
+        'chunk_size': 900, # Maximum number of documents sent during ES bulk operation
+        'max_chunk_bytes': 1*1024*1024, # Maximum size of ES chunk during bulk operation
+        'bulk_timeout': '60s', # Timeout of ES bulk operation
+        'overview_query_size': 20, # Number of results to appear in the overview query
+        'scroll_timeout': '3m', # Time before scroll results time out
+        'scroll_page_size': 5000 # Number of results per scroll page
+    }
 }
 
-# Default ElasticSearch server
-ES_HOST='localhost'
-ES_PORT=9200
-ES_USERNAME=''
-ES_PASSWORD=''
-ES_CHUNK_SIZE=900 # Maximum number of documents sent during ES bulk operation
-ES_MAX_CHUNK_BYTES=1*1024*1024 # Maximum size of ES chunk during bulk operation
-ES_BULK_TIMEOUT='60s' # Timeout of ES bulk operation
-ES_OVERVIEW_QUERY_SIZE=20 # Number of results to appear in the overview query
-ES_SCROLL_TIMEOUT='3m' # Time before scroll results time out
-ES_SCROLL_PAGESIZE=5000 # Number of results per scroll page
+# Specify which corpora are not using the default server
+CORPUS_SERVER_NAMES = {
+    # 'times': 'default',
+}
 
 # Index configurations
 TIMES_TITLE = "Times"

@@ -13,18 +13,16 @@ export class ElasticSearchService {
     private connections: Promise<Connections>;
 
     constructor(apiService: ApiService) {
-        this.connections = apiService.esConfig().then(configs => {
-            let connections: Connections = {};
-            for (let config of configs) {
+        this.connections = apiService.esConfig().then(configs =>
+            configs.reduce((connections: Connections, config) => {
                 connections[config.name] = {
                     config,
                     client: new Client({
                         host: config.host + (config.port ? `:${config.port}` : ''),
                     })
                 }
-            }
-            return connections;
-        });
+                return connections;
+            }, {}));
     }
 
     private makeEsQuery(queryModel: QueryModel): EsQuery {
@@ -294,6 +292,6 @@ type EsSearchClause = {
         default_operator: 'or'
     }
 } | {
-    match_all: {}
-};
+        match_all: {}
+    };
 
