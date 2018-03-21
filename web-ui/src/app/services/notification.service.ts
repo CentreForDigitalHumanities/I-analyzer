@@ -18,5 +18,5 @@ export interface Notification {
     /**
      * Notification type
      */
-    type: 'info' | 'warning' | 'danger'
+    type: 'info' | 'warning' | 'danger' | 'success'
 }
