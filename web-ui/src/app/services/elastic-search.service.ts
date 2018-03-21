@@ -25,7 +25,7 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    private makeEsQuery(queryModel: QueryModel): EsQuery {
+    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
 
         if (queryModel.queryText) {
@@ -45,9 +45,10 @@ export class ElasticSearchService {
             };
         }
 
+        let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
-            return {
-                query: {
+            query = {
+                'query': {
                     'bool': {
                         must: clause,
                         filter: this.mapFilters(queryModel.filters),
@@ -55,10 +56,18 @@ export class ElasticSearchService {
                 }
             }
         } else {
-            return {
-                query: clause
+            query = {
+                'query': clause
             }
         }
+
+        if (queryModel.sortBy) {
+            (query as EsQuerySorted).sort = [{
+                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
+            }];
+        }
+
+        return query;
     }
 
     /**
@@ -121,7 +130,6 @@ export class ElasticSearchService {
             let esQuery = this.makeEsQuery(queryModel);
             this.connections.then((connections) => {
                 let connection = connections[corpusDefinition.serverName];
-
                 let getPageSize = () => {
                     let pageSize = connection.config.scrollPagesize;
                     let left = Math.min(size, retrieved + pageSize) - retrieved;
@@ -271,7 +279,9 @@ type Connection = {
         scrollTimeout: string
     }
 };
-
+type EsQuerySorted = EsQuery & {
+    sort: { [fieldName: string]: 'desc' | 'asc' }[]
+};
 type EsQuery = {
     aborted?: boolean,
     completed?: Date,

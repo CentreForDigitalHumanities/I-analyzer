@@ -17,7 +17,8 @@
         </ng-container>
         This is a subset of {{results.documents.length}} results:
     </h2>
-    <div class="hits">
+    <ng-content></ng-content>
+    <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
                 <table class=" column table is-fullwidth">
@@ -30,7 +31,7 @@
                         </tr>
                     </ng-container>
                 </table>
-                <div class="column is-one-quarter is-centered">
+                <div class="column is-one-quarter is-centered" *ngIf="document.relevance">
                     <div class="relevance-score">
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>

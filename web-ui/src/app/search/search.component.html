@@ -102,7 +102,12 @@
             <!-- search results, on right -->
             <div class="tile is-vertical is-parent" [ngClass]="{'is-8': showFilters}" *ngIf="results">
                 <div class="tile is-child">
-                    <search-results [results]="results" [corpus]="corpus" [query]="searchQueryText" [user]="user" (view)="onViewDocument($event)"></search-results>
+                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user" (view)="onViewDocument($event)">
+                        <div class="field">
+                            <label class="label">Sort By</label>
+                        </div>
+                        <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                    </ia-search-results>
                 </div>
             </div>
 
