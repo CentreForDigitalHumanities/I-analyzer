@@ -11,7 +11,7 @@ from datetime import datetime
 import elasticsearch as es
 import elasticsearch.helpers as es_helpers
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 from ianalyzer import factories
 
 
@@ -32,7 +32,7 @@ def create(client, corpus_definition, clear=False):
     )
 
 
-def populate(client, corpus_definition, start=None, end=None):
+def populate(client, corpus_name, corpus_definition, start=None, end=None):
     '''
     Populate an ElasticSearch index from the corpus' source files.
     '''
@@ -57,13 +57,14 @@ def populate(client, corpus_definition, start=None, end=None):
         } for doc in docs
     )
 
+    corpus_server = config.SERVERS[config.CORPUS_SERVERS[corpus_name]]
     # Do bulk operation
     for result in es_helpers.bulk(
         client,
         actions,
-        chunk_size=config.ES_CHUNK_SIZE,
-        max_chunk_bytes=config.ES_MAX_CHUNK_BYTES,
-        timeout=config.ES_BULK_TIMEOUT,
+        chunk_size=corpus_server['chunk_size'],
+        max_chunk_bytes=corpus_server['max_chunk_bytes'],
+        timeout=corpus_server['bulk_timeout'],
         stats_only=True, # We want to know how many documents were added
     ):
         logging.info('Indexed documents ({}).'.format(result))
@@ -87,6 +88,6 @@ def perform_indexing(corpus_name, corpus_definition, start, end):
     client = factories.elasticsearch(corpus_name)
     create(client, corpus_definition, clear=False)
     client.cluster.health(wait_for_status='yellow')
-    populate(client, corpus_definition, start=start, end=end)
+    populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logging.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
