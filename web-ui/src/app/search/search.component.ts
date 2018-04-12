@@ -96,8 +96,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
-
-                if (corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
                     this.showVisualizationButton = true;
                 }
 

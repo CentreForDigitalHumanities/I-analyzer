@@ -31,6 +31,8 @@ import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { TimelineComponent } from './visualization/timeline.component';
 
 const appRoutes: Routes = [
     {
@@ -83,7 +85,9 @@ const appRoutes: Routes = [
         SearchRelevanceComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent
+        HistoryQueryDisplayComponent,
+        TermFrequencyComponent,
+        TimelineComponent
     ],
     imports: [
         BrowserAnimationsModule,

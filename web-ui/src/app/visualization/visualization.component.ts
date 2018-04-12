@@ -35,7 +35,7 @@ export class VisualizationComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         this.termFrequencyFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.termFrequency).map(field => field.name)
+            ? this.corpus.fields.filter(field => field.visualizationType=='term_frequency').map(field => field.name)
             : [];
 
         if (this.termFrequencyFields.length) {

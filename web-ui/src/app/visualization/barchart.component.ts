@@ -25,34 +25,30 @@ export class BarChartComponent implements OnChanges {
     private visualizingDate: boolean = false;
     private yTicks: number = 10;
     private xTickValues: string[];
-    private margin = { top: 10, bottom: 120, left: 70, right: 10 };
-    private svg: any;
-    private chart: any;
-    private width: number;
-    private height: number;
-    private xScale: any; // can be either categorical or continuous
-    private yScale: d3.ScaleLinear<number, number>;
-    private xAxis: d3.Selection<any, any, any, any>;
+    margin = { top: 10, bottom: 120, left: 70, right: 10 };
+    svg: any;
+    chart: any;
+    width: number;
+    height: number;
+    xScale: any; // can be either categorical or continuous
+    yScale: d3.ScaleLinear<number, number>;
+    xAxis: d3.Selection<any, any, any, any>;
     private yAxis: d3.Selection<any, any, any, any>;
-    private xAxisClass: any;
+    xAxisClass: any;
     private yMax: number;
-    private xDomain: Array<string>;
-    private yDomain: Array<number>;
+    private totalCount: number;
+    xDomain: Array<string>;
+    yDomain: Array<number>;
     private yAxisLabel: any;
-    private update: any;
-    private zoom: any;
-    private view: any;
-    private selectedData: Array<KeyFrequencyPair>;
-    private years: Array<KeyFrequencyPair>;
-    private months: Array<KeyFrequencyPair>;
-    private weeks: Array<KeyFrequencyPair>;
-    private currentTimeCategory: string;
+    selectedData: Array<KeyFrequencyPair>;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
             // date fields are returned with keys containing identifiers by elasticsearch
             // replace with string representation, contained in 'key_as_string' field
+            this.selectedData = this.searchData;
             this.calculateDomains();
+            this.prepareTermFrequency();
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
@@ -66,40 +62,17 @@ export class BarChartComponent implements OnChanges {
         /**
          adjust the x and y ranges
          */
-        this.visualizingDate = false;
 
-        if ('key_as_string' in this.searchData[0]) {
-                this.searchData.forEach(cat => cat.key = new Date(cat.key_as_string));
-                this.years = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeYear(item.key)));
-                this.months = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeMonth(item.key)));
-                this.weeks = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeWeek(item.key)));
-                if (this.months.length>30) {
-                    this.selectedData = this.years;
-                    this.currentTimeCategory = 'years';
-                }
-                else if (this.weeks.length>30) {
-                    this.selectedData = this.months;
-                    this.currentTimeCategory = 'months';
-                }
-                else if (this.searchData.length>30) {
-                    this.selectedData = this.weeks;
-                    this.currentTimeCategory = 'weeks'
-                }
-                else {
-                    this.selectedData = this.searchData;
-                }
-
-                this.visualizingDate = true;
-        }
-        else {
-            this.selectedData = this.searchData;
-        }
-
-        this.xDomain = this.searchData.map(d => d.key);
+        this.xDomain = this.selectedData.map(d => d.key);
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
-        this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
+        this.yDomain = [0, this.yMax];
+        this.totalCount = _.sumBy(this.selectedData, d => d.doc_count);
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
-        this.xTickValues = this.xDomain.length > 30 ? this.xDomain.filter((d, i) => i % 10 == 0) : this.xDomain;
+        this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
+    }
+
+    prepareTermFrequency() {
+        this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
     }
 
     setScaleY() {
@@ -108,11 +81,10 @@ export class BarChartComponent implements OnChanges {
         * - rescale y values & axis
         * - change axis label and ticks
         */
-        this.calculateDomains();
+        this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
         this.yScale.domain(this.yDomain);
 
-        let totalCount = _.sumBy(this.selectedData, d => d.doc_count);
-        let preScale = this.yAsPercent ? d3.scaleLinear().domain([0, totalCount]).range([0, 1]) : d3.scaleLinear();
+        let preScale = this.yAsPercent ? d3.scaleLinear().domain([0, this.totalCount]).range([0, 1]) : d3.scaleLinear();
 
         this.chart.selectAll('.bar')
             .transition()
@@ -127,13 +99,9 @@ export class BarChartComponent implements OnChanges {
         this.yAxisLabel.text(yLabelText);
     }
 
-    setScaleX() {
-
-    }
-
     /**
      * Creates the chart to draw the data on (including axes and labels).
-     * @param forceRedraw Erases the current chart and create a new one.
+     * @param forceRedraw: erase the current chart and create a new one.
      */
     createChart(forceRedraw: boolean) {
         /**
@@ -157,21 +125,7 @@ export class BarChartComponent implements OnChanges {
             .attr('class', 'bars')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
-        if (this.visualizingDate==true) {
-            // dealing with date data, use scaleTime for x axis instead
-            this.xScale = d3.scaleTime()
-                .domain(d3.extent(this.xDomain, d => new Date(d)))
-                .range([0, this.width]);
-        }
-        else {
-            this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
-        }
-
-        this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
-
-        //this.xAxisClass = d3.axisBottom(this.xScale).tickValues(this.xTickValues);
         this.xAxisClass = d3.axisBottom(this.xScale);
-
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis x')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
@@ -207,90 +161,6 @@ export class BarChartComponent implements OnChanges {
             .attr("x", this.margin.left / 2)
             .attr("transform", `rotate(${-90} ${this.margin.left / 3} ${this.margin.top + this.height / 2})`)
             .text(yLabelText);
-
-
-        this.zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [this.width, this.height]])
-            .extent([[0, 0], [this.width, this.height]])
-            .on("zoom", this.zoomed.bind(this));
-
-        this.view = this.svg.append("g").append("rect")
-            .attr("class", "zoom")
-            .attr("width", this.width)
-            .attr("height", this.height)
-            .style("fill", "none")
-            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-        
-        this.svg.call(this.zoom);
-    }
-
-    zoomed() {
-            let t = d3.event.transform;
-            let xExtent = t.rescaleX(this.xScale).domain();
-            // if there are more than 10 categories within the current x extent,
-            // group into next highest time level
-            let selection = this.selectedData.filter( d => d.key >= xExtent[0] && d.key <= xExtent[1] );
-            if (selection.length > 30) {
-                this.biggerTimeCategory(xExtent[0], xExtent[1]);
-                this.drawChartData();
-            }
-            else if (selection.length < 10) {
-                this.smallerTimeCategory(xExtent[0], xExtent[1]);
-                this.drawChartData();
-            }            
-            this.xAxis.call(this.xAxisClass.scale(t.rescaleX(this.xScale)));
-            this.chart.selectAll('.bar').attr("transform", t);
-    }
-
-    rearrangeDates(grouping) {
-        if (grouping) {
-            let newData = _.map( grouping, (value, key) => {
-                    let item = <KeyFrequencyPair>{};
-                    item.key = key;
-                    item.doc_count = _.sumBy(value, d => d.doc_count);
-                    return item;
-            });       
-            return newData;
-        }
-    }
-
-    smallerTimeCategory(lowerBound, upperBound) {
-        switch(this.currentTimeCategory) {
-            case 'years':
-                this.selectedData = this.months.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'months';
-                break;
-            case 'months':
-                this.selectedData = this.weeks.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'weeks';
-                break;
-            case 'weeks':
-                this.selectedData = this.searchData.filter( d => d.key >= lowerBound && d.key <= upperBound )
-                this.currentTimeCategory = 'days';
-                break;
-            case 'days':
-                break;
-        }
-    }
-        
-    biggerTimeCategory(lowerBound, upperBound) {
-        switch(this.currentTimeCategory) {
-            case 'days':
-                this.selectedData = this.weeks.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'weeks';
-                break;
-            case 'weeks':
-                this.selectedData = this.months.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'months';
-                break;
-            case 'months':
-                this.selectedData = this.years.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'years';
-                break;
-            case 'years':
-                break;
-        }
     }
 
     drawChartData() {
@@ -304,7 +174,9 @@ export class BarChartComponent implements OnChanges {
         // remove exiting bars
         update.exit().remove();
 
-        let xBarWidth = this.visualizingDate? this.width/this.selectedData.length : this.xScale.bandwidth();
+        //let numberofItems = this.selectedData.length | 1;
+        let xBarWidth = this.xScale.bandwidth();
+        //console.log(numberofItems);
 
         // update existing bars
         this.chart.selectAll('.bar').transition()

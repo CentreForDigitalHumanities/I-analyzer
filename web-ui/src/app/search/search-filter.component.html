@@ -11,9 +11,9 @@
         <span>{{data[0]}} : {{data[1]}}</span>
     </div>
     <div class="daterange" *ngIf="filter.name == 'DateFilter'">
-        <p-calendar [disabled]="!enabled" [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" (onSelect)="update()"
+        <p-calendar [disabled]="!enabled" [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" (onSelect)="update()"
             (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
-        <p-calendar [disabled]="!enabled" [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" (onSelect)="update()"
+        <p-calendar [disabled]="!enabled" [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" (onSelect)="update()"
             (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
     </div>
 </ng-container>
