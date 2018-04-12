@@ -62,7 +62,7 @@ class DutchBanking(XMLCorpus):
             name='bank',
             display_name='Bank',
             description='Banking concern to which the report belongs.',
-            term_frequency=True,
+            term_frequency=False,
             prominent_field=True,
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
