@@ -134,10 +134,10 @@ def api_es_config():
 @login_required
 def api_corpus_list():
     response = jsonify(dict(
-        (key, {
-            **{'server_name': config.CORPUS_SERVER_NAMES[key]},
+        (key, dict(
+            server_name=config.CORPUS_SERVER_NAMES[key],
             **corpora.DEFINITIONS[key].serialize()
-        }) for key in
+        )) for key in
         corpora.DEFINITIONS.keys()
     ))
     return response
