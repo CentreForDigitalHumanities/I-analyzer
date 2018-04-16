@@ -3,9 +3,9 @@
             <span>{{field | titlecase}}</span>
         </button>
 </ng-container>
-<button class="button is-info" (click)="showWordcloud()">
+<!-- <button class="button is-info" (click)="showWordcloud()">
 	<span>Wordcloud</span>
-</button>
+</button> -->
 <div class="d3-chart" #chart>
 <barchart *ngIf="aggResults" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
 <!-- <wordcloud *ngIf="wordCloud" [chartElement]="chartElement"></wordcloud> -->
