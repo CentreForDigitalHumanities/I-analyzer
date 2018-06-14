@@ -42,7 +42,7 @@ SERVERS = {
 
 # Specify which corpora are not using the default server
 CORPUS_SERVER_NAMES = {
-    # 'times': 'default',
+    'times': 'default',
 }
 
 # Index configurations

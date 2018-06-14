@@ -57,7 +57,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         } for doc in docs
     )
 
-    corpus_server = config.SERVERS[config.CORPUS_SERVERS[corpus_name]]
+    corpus_server = config.SERVERS[config.CORPUS_SERVER_NAMES[corpus_name]]
     # Do bulk operation
     for result in es_helpers.bulk(
         client,
