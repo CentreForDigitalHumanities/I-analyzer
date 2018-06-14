@@ -26,8 +26,8 @@ blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 admin_instance.add_view(views.CorpusView(
-    corpus_name=config.CORPUS, name='Return to search',
-    endpoint=config.CORPUS_ENDPOINT))
+    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
+    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(
