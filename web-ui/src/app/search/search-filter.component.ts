@@ -92,7 +92,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 }
                 break;
             case 'DateFilter':
-                this.data = { min: new Date(this.filterData.data.gte), max: new Date(this.filterData.data.lte) };
+                this.data = { min: new Date(this.filterData.data.gte), max: new Date(this.filterData.data.lte), minYear: new Date(this.filterData.data.gte).getFullYear(), maxYear: new Date(this.filterData.data.lte).getFullYear() };
         }
     }
 
