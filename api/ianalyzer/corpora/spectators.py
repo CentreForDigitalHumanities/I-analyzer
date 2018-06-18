@@ -36,7 +36,7 @@ class Spectators(XMLCorpus):
     xml_tag_entry = 'content' 
 
     # New data members
-    filename_pattern = re.compile('([a-zA-z]+)\/[a-zA-z]+(\d+)')
+    filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
@@ -54,12 +54,12 @@ class Spectators(XMLCorpus):
                     logger.warning(self.non_match_msg.format(full_path))
                     continue
 
-                magazine, year = match.groups()
+                issue, year = match.groups()
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
                     'year': year,
-                    'magazine': magazine
+                    'issue': issue
                 }
 
     overview_fields = ['magazine', 'issue', 'date' ,'title', 'editor']
@@ -81,19 +81,19 @@ class Spectators(XMLCorpus):
             ),
             extractor = extract.XML(tag='date', toplevel=True)
         ),
+        # Field(
+        #     name='id',
+        #     display_name='ID',
+        #     description='Unique identifier of the entry.',
+        #     extractor=Combined(
+        #         XML(attribute='magazine'),
+        #         XML(attribute='year'),
+        #         XML(attribute='issue'),
+        #         transform=lambda x: '_'.join(x),
+        #     ),
+        # ),
         Field(
             name='id',
-            display_name='ID',
-            description='Unique identifier of the entry.',
-            extractor=Combined(
-                XML(attribute='magazine'),
-                XML(attribute='year'),
-                XML(attribute='issue'),
-                transform=lambda x: '_'.join(x),
-            ),
-        ),
-        Field(
-            name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
             description='Source issue number.',
@@ -109,8 +109,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='magazine', toplevel=True)
         ),
         Field(
-            indexed=False,
-            name='editor',
+            name='editors',
             description='Magazine editor.',
             extractor= extract.XML(tag='editor', multiple=True)
         ),
