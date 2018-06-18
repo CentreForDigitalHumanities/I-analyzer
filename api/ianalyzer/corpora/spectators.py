@@ -33,16 +33,15 @@ class Spectators(XMLCorpus):
     es_settings = None
 
     xml_tag_toplevel = 'article'
-    xml_tag_entry = 'content'
+    xml_tag_entry = 'content' 
 
     # New data members
-    filename_pattern = re.compile('HOLSPEC\d+')
+    filename_pattern = re.compile('([a-zA-z]+)\/[a-zA-z]+(\d+)')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
-        # filenames = [f for f in os.listdir(self.data_directory) if isfile(join(self.data_directory, f))]
         for directory, _, filenames in os.walk(self.data_directory):
             for filename in filenames:
                 name, extension = splitext(filename)
@@ -55,11 +54,12 @@ class Spectators(XMLCorpus):
                     logger.warning(self.non_match_msg.format(full_path))
                     continue
 
-                year = os.path.basename(directory)
+                magazine, year = match.groups()
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
-                    'year': year
+                    'year': year,
+                    'magazine': magazine
                 }
 
     overview_fields = ['magazine', 'issue', 'date' ,'title', 'editor']
@@ -83,6 +83,17 @@ class Spectators(XMLCorpus):
         ),
         Field(
             name='id',
+            display_name='ID',
+            description='Unique identifier of the entry.',
+            extractor=Combined(
+                XML(attribute='magazine'),
+                XML(attribute='year'),
+                XML(attribute='issue'),
+                transform=lambda x: '_'.join(x),
+            ),
+        ),
+        Field(
+            name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
             description='Source issue number.',
