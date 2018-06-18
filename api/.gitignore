@@ -3,3 +3,4 @@ ianalyzer/config.py
 indexing*
 *.pyc
 .cache
+.env/
