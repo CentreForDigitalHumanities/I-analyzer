@@ -33,7 +33,7 @@ class Spectators(XMLCorpus):
     es_settings = None
 
     xml_tag_toplevel = 'article'
-    xml_tag_entry = 'content' 
+    xml_tag_entry = 'content'
 
     # New data members
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
@@ -98,14 +98,19 @@ class Spectators(XMLCorpus):
             es_mapping={'type': 'integer'},
             description='Source issue number.',
             prominent_field=True,
-            term_frequency=True,
             extractor=extract.XML(tag='issue', toplevel=True)
         ),
         Field(
             name='magazine',
             display_name = 'Magazine name',
-            prominent_field = True,
+            term_frequency=True,
+            prominent_field=True,
+            es_mapping={'type': 'keyword'},
             description='Magazine name.',
+            search_filter=filters.MultipleChoiceFilter(
+                description='Search only within these magazines.',
+                options=sorted(['De Hollandsche Spectator', 'De Denker']),
+            ),
             extractor=extract.XML(tag='magazine', toplevel=True)
         ),
         Field(
