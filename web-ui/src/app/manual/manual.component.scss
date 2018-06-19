@@ -1,0 +1,5 @@
+@import "../../shared";
+
+.content.is-loading {
+    @extend %content-loader;
+}

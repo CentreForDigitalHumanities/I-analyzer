@@ -5,13 +5,13 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
-import "rxjs/add/observable/zip";
+import "rxjs/add/observable/combineLatest";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
-import { CorpusService, SearchService, DownloadService, UserService, ManualService } from '../services/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
-    selector: 'app-search',
+    selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
@@ -32,6 +32,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     public isDownloading: boolean;
     public hasSearched: boolean;
     /**
+     * Whether the total number of hits exceeds the download limit.
+     */
+    public hasLimitedResults: boolean = false;
+    /**
      * Whether a document has been selected to be shown.
      */
     public showDocument: boolean = false;
@@ -46,7 +50,14 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public showFilters: boolean | undefined;
     public user: User;
-    public queryField: { [name: string]: (CorpusField & { data: any, useAsFilter: boolean, visible: boolean }) };
+    public queryField: {
+        [name: string]: QueryField
+    };
+    /**
+     * The next two members facilitate a p-multiSelect in the template.
+     */
+    public availableQueryFields: QueryField[];
+    public selectedQueryFields: QueryField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -58,6 +69,9 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public searchQueryText: string;
     public results: SearchResults;
+
+    public sortAscending: boolean;
+    public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
 
@@ -79,6 +93,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private searchService: SearchService,
         private userService: UserService,
         private manualService: ManualService,
+        private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private title: Title) {
@@ -87,9 +102,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.availableCorpora = this.corpusService.get();
         this.user = this.userService.getCurrentUserOrFail();
-
         // the search to perform is specified in the query parameters
-        Observable.zip(
+        Observable.combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
             (corpus, params) => {
@@ -98,9 +112,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
-                let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
+                let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
+                this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
@@ -123,18 +138,38 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
-        if (!this.queryField[name].useAsFilter) {
-            this.queryField[name].useAsFilter = true;
-        }
+        let field = this.queryField[name];
+        field.useAsFilter = true;
+        this.toggleFilterFields();
     }
 
+    public toggleFilterFields() {
+        this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
+        // (De)selecting filters also yields different results.
+        this.hasModifiedFilters = true;
+    }
+
+    public toggleQueryFields(event) {
+        // We don't allow searching and filtering by the same field.
+        for (let field of event.value) {
+            field.useAsFilter = false;
+        }
+        // Searching in different fields also yields different results.
+        this.hasModifiedFilters = true;
+    }
 
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
 
+    public changeSorting(event: SortEvent) {
+        this.sortField = event.field;
+        this.sortAscending = event.ascending;
+        this.search();
+    }
+
     public search() {
-        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        let queryModel = this.createQueryModel();
         let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
@@ -151,6 +186,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.queryModel,
             fields);
 
+        if (this.hasLimitedResults) {
+            this.notificationService.showMessage(`The download has been limited to the first ${rows.length} results!`);
+        }
+
         let minDate = this.corpus.minDate.toISOString().split('T')[0];
         let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
         let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
@@ -161,10 +200,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        if (this.hasSearched) {
-            // no need to bother the user that the filters have been modified if no search has been applied yet
-            this.hasModifiedFilters = true;
-        }
+        this.hasModifiedFilters = true;
         this.queryField[name].data = data;
     }
 
@@ -189,7 +225,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
-        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getFilterData());
+        this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
@@ -204,6 +240,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
+            this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
             this.showError = {
@@ -221,6 +258,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
     }
 
+    private getQueryFields(): string[] | null {
+        let fields = this.selectedQueryFields.map(field => field.name);
+        if (!fields.length) return null;
+        return fields;
+    }
+
     private getFilterData(): SearchFilterData[] {
         let data: SearchFilterData[] = [];
         for (let fieldName of Object.keys(this.queryField)) {
@@ -232,6 +275,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         return data;
     }
 
+    private createQueryModel() {
+        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.getFilterData(), this.sortField, this.sortAscending);
+    }
+
     /**
      * Escape field names these so they won't interfere with any other parameter (e.g. query)
      */
@@ -240,6 +287,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (!this.corpus || this.corpus.name != corpus.name) {
             if (!this.queryField || !this.corpus || corpus.name != this.corpus.name) {
                 this.queryField = {};
+                this.selectedQueryFields = [];
             }
             this.corpus = corpus;
             this.title.setTitle(this.corpus.name);
@@ -251,6 +299,11 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
         let fieldsSet = false;
+        let queryRestriction: string[] = [];
+        if (params.has('fields')) {
+            queryRestriction = params.get('fields').split(',');
+            this.selectedQueryFields = [];
+        }
 
         for (let field of corpusFields) {
             let param = this.searchService.getParamForFieldName(field.name);
@@ -265,12 +318,35 @@ export class SearchComponent implements OnInit, OnDestroy {
                     visible: true
                 }, field);
             } else {
-                this.queryField[field.name] = Object.assign({ data: null, useAsFilter: false, visible: true }, field);
+                let auxField = this.queryField[field.name] = Object.assign({
+                    data: null,
+                    useAsFilter: false,
+                    visible: true
+                }, field);
+                if (queryRestriction.includes(field.name)) {
+                    this.selectedQueryFields.push(auxField);
+                }
             }
         }
 
+        this.availableQueryFields = Object.values(this.queryField);
         return fieldsSet;
+    }
+
+    private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
+        if (params.has('sort')) {
+            let [sortField, sortAscending] = params.get('sort').split(',');
+            this.sortField = corpusFields.find(field => field.name == sortField);
+            this.sortAscending = sortAscending == 'asc';
+        } else {
+            this.sortField = undefined;
+        }
     }
 }
 
 type Tab = "search" | "columns";
+type QueryField = CorpusField & {
+    data: SearchFilterData,
+    useAsFilter: boolean,
+    visible: boolean
+};

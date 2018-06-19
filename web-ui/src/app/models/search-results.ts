@@ -10,7 +10,12 @@ export type SearchResults = {
      * Total number of retrieved documents for this search.
      */
     retrieved: number,
-    total: number
+    total: number,
+    queryModel: QueryModel,
+    /**
+     * Id identifying this search, to be able to get more results
+     */
+    scrollId?: string
 }
 
 export type AggregateResults<TKey> = {

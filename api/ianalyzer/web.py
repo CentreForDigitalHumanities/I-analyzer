@@ -26,8 +26,8 @@ blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 admin_instance.add_view(views.CorpusView(
-    corpus_name=config.CORPUS, name='Return to search', 
-    endpoint=config.CORPUS_ENDPOINT))
+    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
+    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
 admin_instance.add_view(views.RoleView(
@@ -117,23 +117,27 @@ def init():
 @blueprint.route('/api/es_config', methods=['GET'])
 @login_required
 def api_es_config():
-    return jsonify({
-        'host': config.ES_HOST,
-        'port': config.ES_PORT,
-        'chunkSize': config.ES_CHUNK_SIZE,
-        'maxChunkBytes': config.ES_MAX_CHUNK_BYTES,
-        'bulkTimeout': config.ES_BULK_TIMEOUT,
-        'overviewQuerySize': config.ES_OVERVIEW_QUERY_SIZE,
-        'scrollTimeout': config.ES_SCROLL_TIMEOUT,
-        'scrollPagesize': config.ES_SCROLL_PAGESIZE
-    })
+    return jsonify([{
+        'name': server_name,
+        'host': server_config['host'],
+        'port': server_config['port'],
+        'chunkSize': server_config['chunk_size'],
+        'maxChunkBytes': server_config['max_chunk_bytes'],
+        'bulkTimeout': server_config['bulk_timeout'],
+        'overviewQuerySize': server_config['overview_query_size'],
+        'scrollTimeout': server_config['scroll_timeout'],
+        'scrollPagesize': server_config['scroll_page_size']
+    } for server_name, server_config in config.SERVERS.items()])
 
 
 @blueprint.route('/api/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
     response = jsonify(dict(
-        (key, corpora.DEFINITIONS[key].serialize()) for key in
+        (key, dict(
+            server_name=config.CORPUS_SERVER_NAMES[key],
+            **corpora.DEFINITIONS[key].serialize()
+        )) for key in
         corpora.DEFINITIONS.keys()
     ))
     return response
@@ -155,12 +159,12 @@ def api_login():
             'id': user.id,
             'username': user.username,
             'roles': [{
-                'name': role.name, 
+                'name': role.name,
                 'description': role.description
             } for role in user.roles],
             'downloadLimit': user.download_limit,
             'queries': [{
-                'query': query.query_json, 
+                'query': query.query_json,
                 'corpusName': query.corpus_name
             } for query in user.queries]
         })
@@ -221,7 +225,6 @@ def api_query():
         query = models.Query(
             query=query_json, corpus_name=corpus_name, user=current_user)
 
-
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
         else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)
@@ -253,11 +256,10 @@ def api_search_history():
     queries = user.queries
     return jsonify({
         'queries': [{
-            'query': query.query_json, 
+            'query': query.query_json,
             'corpusName': query.corpus_name,
             'started': query.started,
             'completed': query.completed,
-            'transferred': query.transferred 
-            } for query in user.queries]
-        })
-    
+            'transferred': query.transferred
+        } for query in user.queries]
+    })

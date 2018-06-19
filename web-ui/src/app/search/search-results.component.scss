@@ -1,6 +1,18 @@
 @import "~bulma/bulma.sass";
 @import "../../shared";
 
+.hits {
+    &.is-loading {
+        @extend %content-loader;
+
+        &:after {
+            // normally the spinner is placed in the middle, but this component is generally
+            // really long so it wouldn't be visible to the user changing the sorting then
+            top: 50px;
+        }
+    }
+}
+
 .document {
     .table {
         td, th {
@@ -24,4 +36,12 @@
         box-shadow: $boxShadowHover;
         cursor: pointer;
     }
+}
+
+.hits {
+    margin-bottom: 15px;
+}
+
+.load-more .buttons {
+    padding: 0 15px 15px 15px;
 }

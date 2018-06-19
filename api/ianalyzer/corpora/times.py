@@ -6,7 +6,8 @@ Until 1985, the XML structure of Times-data is described by `LTO_issue.dtd`.
 After 1985, it is described by `GALENP.dtd`.
 '''
 
-import logging; logger = logging.getLogger(__name__)
+import logging
+logger = logging.getLogger(__name__)
 import os
 import os.path
 from datetime import datetime, timedelta
@@ -15,7 +16,6 @@ from ianalyzer import config_fallback as config
 from ianalyzer import extract
 from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
-
 
 
 # Source files ################################################################
@@ -58,7 +58,7 @@ class Times(XMLCorpus):
             end = self.max_date
 
         date = start
-        delta = timedelta(days = 1)
+        delta = timedelta(days=1)
         while date <= end:
 
             # Construct the tag to the correct directory
@@ -67,41 +67,42 @@ class Times(XMLCorpus):
                 'TDA_GDA'
             ] + (
                 ['TDA_2010']
-                    if date.year == 2010 else
+                if date.year == 2010 else
                 ['TDA_GDA_1785-2009', date.strftime('%Y')]
             ))
 
             # Skip this year if its directory doesn't exist
             if not os.path.isdir(xmldir):
                 logger.warning('Directory {} does not exist'.format(xmldir))
-                date = datetime(year=date.year+1, month=1, day=1)
+                date = datetime(year=date.year + 1, month=1, day=1)
                 continue
 
             # Construct the full tag
             xmlfile = os.path.join(
                 xmldir,
                 date.strftime('%Y%m%d'),
-                date.strftime('0FFO-%Y-%m%d.xml') \
-                    if date.year > 1985 else \
+                date.strftime('0FFO-%Y-%m%d.xml')
+                if date.year > 1985 else
                 date.strftime('0FFO-%Y-%b%d').upper() + '.xml'
             )
 
             # Yield file and metadata if the desired file is present
             if os.path.isfile(xmlfile):
-                yield (xmlfile, { 'date' : date })
+                yield (xmlfile, {'date': date})
             else:
                 logger.warning('XML file {} does not exist'.format(xmlfile))
 
             date += delta
 
-    overview_fields = ['title', 'author', 'publication-date', 'journal', 'edition']
+    overview_fields = ['title', 'author',
+                       'publication-date', 'journal', 'edition']
 
     fields = [
         Field(
             name='date',
             display_name='Date',
             description='Publication date, programmatically generated.',
-            es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
             prominent_field=True,
             search_filter=filters.DateFilter(
@@ -112,38 +113,39 @@ class Times(XMLCorpus):
                 )
             ),
             extractor=extract.Metadata('date',
-                transform=lambda x: x.strftime('%Y-%m-%d')
-            )
+                                       transform=lambda x: x.strftime(
+                                           '%Y-%m-%d')
+                                       )
         ),
         Field(indexed=False,
-            name='issue-id',
-            description='Issue identifier.',
-            extractor=extract.XML(tag='id', toplevel=True)
-        ),
+              name='issue-id',
+              description='Issue identifier.',
+              extractor=extract.XML(tag='id', toplevel=True)
+              ),
         Field(indexed=False,
-            name='journal',
-            description='Journal name.',
-            extractor=extract.XML(
-                tag='jn', toplevel=True,
-                applicable=until(1985)
-            )
-        ),
+              name='journal',
+              description='Journal name.',
+              extractor=extract.XML(
+                  tag='jn', toplevel=True,
+                  applicable=until(1985)
+              )
+              ),
         Field(
             name='source',
             description='Library where the microfilm is sourced',
             extractor=extract.XML(
-                tag=['metadatainfo','sourceLibrary'], toplevel=True,
+                tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
                 applicable=after(1985)
             )
         ),
         Field(indexed=False,
-            name='newspaperID',
-            description='Publication code',
-            extractor=extract.XML(
-                tag=['metadatainfo','newspaperID'], toplevel=True,
-                applicable=after(1985)
-            )
-        ),
+              name='newspaperID',
+              description='Publication code',
+              extractor=extract.XML(
+                  tag=['metadatainfo', 'newspaperID'], toplevel=True,
+                  applicable=after(1985)
+              )
+              ),
         Field(
             name='edition',
             extractor=extract.Choice(
@@ -159,13 +161,15 @@ class Times(XMLCorpus):
         ),
         Field(
             name='issue',
-            es_mapping={ 'type' : 'integer' },
+            display_name='Issue number',
+            es_mapping={'type': 'integer'},
             description='Source issue number.',
             extractor=extract.XML(
                 tag='is', toplevel=True,
                 # Hardcoded to ignore one particular issue with source data
-                transform=lambda x: (62226 if x=="6222662226" else int(x))
-            )
+                transform=lambda x: (62226 if x == "6222662226" else int(x))
+            ),
+            sortable=True
         ),
         Field(
             name='volume',
@@ -194,49 +198,52 @@ class Times(XMLCorpus):
             )
         ),
         Field(indexed=False,
-            name='weekday',
-            description='Day of the week.',
-            extractor=extract.XML(
-                tag='dw', toplevel=True,
-                applicable=after(1985)
-            )
-        ),
+              name='weekday',
+              description='Day of the week.',
+              extractor=extract.XML(
+                  tag='dw', toplevel=True,
+                  applicable=after(1985)
+              )
+              ),
         Field(indexed=False,
-            name='publication-date',
-            description=(
-                'Fixed publication date. Logically generated from date, '
-                'e.g. yyyymmdd'
-            ),
-            extractor=extract.XML(
-                tag='pf', toplevel=True,
-            )
-        ),
+              name='publication-date',
+              description=(
+                  'Fixed publication date. Logically generated from date, '
+                  'e.g. yyyymmdd'
+              ),
+              extractor=extract.XML(
+                  tag='pf', toplevel=True,
+              )
+              ),
         Field(
             name='page-count',
+            display_name='Image count',
             description='Page count: number of images present in the issue.',
-            es_mapping={ 'type' : 'integer' },
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(
                 tag='ip', toplevel=True, transform=int
-            )
+            ),
+            sortable=True
         ),
         Field(indexed=False,
-            name='copyright',
-            description='Copyright holder and year.',
-            extractor=extract.Choice(
-                extract.XML(
-                    tag='cp', toplevel=True,
-                    applicable=until(1985)
-                ),
-                extract.XML(
-                    tag='copyright', toplevel=True,
-                    applicable=after(1985)
-                )
-            )
-        ),
+              name='copyright',
+              description='Copyright holder and year.',
+              extractor=extract.Choice(
+                  extract.XML(
+                      tag='cp', toplevel=True,
+                      applicable=until(1985)
+                  ),
+                  extract.XML(
+                      tag='copyright', toplevel=True,
+                      applicable=after(1985)
+                  )
+              )
+              ),
         Field(
             name='page-type',
+            display_name='Page type',
             description='Supplement in which article occurs.',
-            es_mapping={ 'type' : 'keyword' },
+            es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles that occur in the relevant '
@@ -249,15 +256,16 @@ class Times(XMLCorpus):
                 ]
             ),
             extractor=extract.XML(
-                tag=['..','pageid'], attribute='isPartOf',
+                tag=['..', 'pageid'], attribute='isPartOf',
                 applicable=after(1985)
-            )
+            ),
+            sortable=True
         ),
         Field(
             name='supplement-title',
             description='Supplement title.',
             extractor=extract.XML(
-                tag=['..','pageid','supptitle'], multiple=True,
+                tag=['..', 'pageid', 'supptitle'], multiple=True,
                 applicable=after(1985)
             )
         ),
@@ -265,14 +273,15 @@ class Times(XMLCorpus):
             name='supplement-subtitle',
             description='Supplement subtitle.',
             extractor=extract.XML(
-                tag=['..','pageid','suppsubtitle'], multiple=True,
+                tag=['..', 'pageid', 'suppsubtitle'], multiple=True,
                 applicable=after(1985)
             )
         ),
         Field(
             name='cover',
+            display_name='On cover',
             description='Whether the article is on the cover page.',
-            es_mapping={ 'type' : 'boolean' },
+            es_mapping={'type': 'boolean'},
             search_filter=filters.BooleanFilter(
                 true='Cover page',
                 false='Other',
@@ -282,10 +291,11 @@ class Times(XMLCorpus):
                 )
             ),
             extractor=extract.XML(
-                tag=['..','pageid'], attribute='pageType',
+                tag=['..', 'pageid'], attribute='pageType',
                 transform=string_contains("cover"),
                 applicable=after(1985)
-            )
+            ),
+            sortable=True
         ),
         Field(
             name='id',
@@ -294,20 +304,22 @@ class Times(XMLCorpus):
         ),
         Field(
             name='ocr',
+            display_name='OCR confidence',
             description='OCR confidence level.',
-            es_mapping={ 'type' : 'float' },
+            es_mapping={'type': 'float'},
             search_filter=filters.RangeFilter(0, 100,
-                description=(
-                    'Accept only articles for which the OCR confidence '
-                    'indicator is in this range.'
-                )
-            ),
-            extractor=extract.XML(tag='ocr', transform=float)
+                                              description=(
+                                                  'Accept only articles for which the OCR confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=extract.XML(tag='ocr', transform=float),
+            sortable=True
         ),
         Field(
             name='ocr-relevant',
             description='Whether OCR confidence level is relevant.',
-            es_mapping={ 'type' : 'boolean' },
+            es_mapping={'type': 'boolean'},
             extractor=extract.XML(
                 tag='ocr', attribute='relevant',
                 transform=string_contains("yes"),
@@ -326,24 +338,26 @@ class Times(XMLCorpus):
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.Choice(
                 extract.XML(tag='pa', applicable=until(1985)),
-                extract.XML(tag=['..','pa'], applicable=after(1985))
+                extract.XML(tag=['..', 'pa'], applicable=after(1985))
             )
         ),
         Field(
             name='pages',
-            es_mapping={ 'type' : 'integer' },
+            display_name='Page count',
+            es_mapping={'type': 'integer'},
             description=(
                 'Page count: total number of pages containing sections '
                 'of the article.'
             ),
             extractor=extract.XML(
                 tag='pc', transform=int
-            )
+            ),
+            sortable=True
         ),
         Field(
             name='title',
             display_name='Title',
-            prominent_field = True,
+            prominent_field=True,
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
@@ -383,9 +397,10 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
-            term_frequency = True,
+            display_name='Category',
+            term_frequency=True,
             description='Article subject categories.',
-            es_mapping={ 'type' : 'keyword' },
+            es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
                 options=[
@@ -417,14 +432,16 @@ class Times(XMLCorpus):
                     'Weather'
                 ]
             ),
-            extractor=extract.XML(tag='ct', multiple=True)
+            extractor=extract.XML(tag='ct', multiple=True),
+            sortable=True
         ),
         Field(
             name='illustration',
+            display_name='Illustration',
             description=(
                 'Tables and other illustrations associated with the article.'
             ),
-            es_mapping={ 'type' : 'keyword' },
+            es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
@@ -451,13 +468,14 @@ class Times(XMLCorpus):
                     tag='il', attribute='type', multiple=True,
                     applicable=after(1985)
                 )
-            )
+            ),
+            sortable=True
         ),
         Field(
             name='content-preamble',
             description='Raw OCR\'ed text (preamble).',
             extractor=extract.XML(
-                tag=['text','text.preamble'],
+                tag=['text', 'text.preamble'],
                 flatten=True
             )
         ),
@@ -465,7 +483,7 @@ class Times(XMLCorpus):
             name='content-heading',
             description='Raw OCR\'ed text (header).',
             extractor=extract.XML(
-                tag=['text','text.title'],
+                tag=['text', 'text.title'],
                 flatten=True
             )
         ),
@@ -474,9 +492,9 @@ class Times(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Raw OCR\'ed text (content).',
-            prominent_field = True,
+            prominent_field=True,
             extractor=extract.XML(
-                tag=['text','text.cr'], multiple=True,
+                tag=['text', 'text.cr'], multiple=True,
                 flatten=True
             )
         ),
