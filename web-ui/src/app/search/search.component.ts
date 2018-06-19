@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -85,6 +85,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private manualService: ManualService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
+        private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
         private title: Title) {
     }
@@ -192,6 +193,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         this.hasModifiedFilters = true;
         this.queryField[name].data = data;
+        this.changeDetectorRef.detectChanges();
     }
 
     public onViewDocument(document: FoundDocument) {

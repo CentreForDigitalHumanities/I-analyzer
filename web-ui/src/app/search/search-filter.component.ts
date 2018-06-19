@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { CorpusField, SearchFilterData } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 
 @Component({
     selector: 'search-filter',
@@ -23,6 +23,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         return this.field.searchFilter;
     }
 
+    /**
+     * The data of the applied filter transformed to use as input for the value editors.
+     */
     public data: any;
 
     constructor() { }
@@ -30,118 +33,130 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     ngOnChanges(changes: SimpleChanges) {
         if (changes['field'] || changes['filterData']) {
             if (changes['field'] && !changes['filterData']) {
-                // reset the filter data if the field changed
-                this.filterData = null;
+                // make sure the filter data is reset if only the field was changed
+                this.update(true);
             }
-            this.fillFilterData();
-            if (!changes['filterData']) {
-                this.update();
+            if (changes['filterData']) {
+                this.data = this.getDisplayData(this.filter, this.filterData);
             }
         }
     }
 
     ngOnInit() {
         if (this.field) {
-            this.fillFilterData();
+            this.data = this.getDisplayData(this.filter, this.filterData);
 
-            if (!this.filterData) {
-                // default values should also work
-                this.update();
-            }
+            // default values should also work as a filter: notify the parent
+            this.update();
         }
     }
 
-    fillFilterData() {
-        if (!this.filterData) {
-            // unfortunately this isn't typed, so be careful here
-            let filterData: any = {
-                fieldName: this.field.name,
-                filterName: this.filter.name
-            };
+    defaultFilterData(filter: SearchFilter): SearchFilterData {
+        // unfortunately this isn't typed, so be careful here
+        let fieldName = this.field.name;
 
-            switch (this.filter.name) {
-                case 'BooleanFilter':
-                    filterData.data = false;
-                    break;
-                case 'MultipleChoiceFilter':
-                    filterData.data = [] as string[];
-                    break;
-                case 'RangeFilter':
-                    filterData.data = { gte: this.filter.lower, lte: this.filter.upper };
-                    break;
-                case 'DateFilter':
-                    let padLeft = (n: number) => `0${n}`.slice(-2);
-                    let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
-                    filterData.data = { gte: toString(this.filter.lower), lte: toString(this.filter.upper) };
-                    break;
-            }
-
-            this.filterData = filterData;
-        }
-
-        switch (this.filterData.filterName) {
+        switch (filter.name) {
             case 'BooleanFilter':
-                this.data = this.filterData.data;
-                break;
-            case 'RangeFilter':
-                this.data = [this.filterData.data.gte, this.filterData.data.lte];
-                break;
+                return {
+                    fieldName,
+                    filterName: filter.name,
+                    data: false
+                };
             case 'MultipleChoiceFilter':
-                if (this.filter.name == this.filterData.filterName) {
-                    this.data = { options: this.filter.options.map(x => { return { 'label': x, 'value': x } }), selected: this.filterData.data };
+                return {
+                    fieldName,
+                    filterName: filter.name,
+                    data: []
+                };
+            case 'RangeFilter':
+                return {
+                    fieldName,
+                    filterName: filter.name,
+                    data: { gte: filter.lower, lte: filter.upper }
+                };
+            case 'DateFilter':
+                let padLeft = (n: number) => `0${n}`.slice(-2);
+                let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
+                return {
+                    fieldName,
+                    filterName: filter.name,
+                    data: {
+                        gte: toString(filter.lower),
+                        lte: toString(filter.upper)
+                    }
+                };
+        }
+    }
+
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null) {
+        if (filterData == null) {
+            filterData = this.defaultFilterData(filter);
+        }
+        switch (filterData.filterName) {
+            case 'BooleanFilter':
+                return filterData.data;
+            case 'RangeFilter':
+                return [filterData.data.gte, filterData.data.lte];
+            case 'MultipleChoiceFilter':
+                if (filter.name == filterData.filterName) {
+                    return { options: filter.options.map(x => { return { 'label': x, 'value': x } }), selected: filterData.data };
                 }
                 break;
             case 'DateFilter':
-                this.data = { min: new Date(this.filterData.data.gte), max: new Date(this.filterData.data.lte), minYear: new Date(this.filter.lower).getFullYear(), maxYear: new Date(this.filter.upper).getFullYear() };
+                if (filter.name == filterData.filterName) {
+                    return {
+                        min: new Date(filterData.data.gte),
+                        max: new Date(filterData.data.lte),
+                        minYear: new Date(filter.lower).getFullYear(),
+                        maxYear: new Date(filter.upper).getFullYear()
+                    };
+                }
+                break;
         }
+
+        console.error(['Unexpected combination of filter and filterData', filter, filterData]);
     }
 
     /**
-     * Update the filter data from the user input and trigger a change event.
+     * Create a new version of the filter data from the user input.
      */
-    update() {
+    getFilterData() {
         switch (this.filter.name) {
             case 'BooleanFilter':
-                this.filterData = {
+                return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: this.data
                 };
-                break;
             case 'RangeFilter':
-                this.filterData = {
+                return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: { gte: this.data[0], lte: this.data[1] }
                 };
-                break;
             case 'MultipleChoiceFilter':
-                this.filterData = {
+                return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: this.data.selected
                 };
-                break;
             case 'DateFilter':
-                if (!this.data.min) {
-                    this.data.min = this.filter.lower;
-                }
-
-                if (!this.data.max) {
-                    this.data.max = this.filter.upper;
-                }
-
                 let formatData = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-                this.filterData = {
+                return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: {
-                        gte: formatData(this.data.min),
-                        lte: formatData(this.data.max)
+                        gte: formatData(this.data.min || this.filter.lower),
+                        lte: formatData(this.data.max || this.filter.upper)
                     }
                 };
-                break;
         }
-        this.updateEmitter.emit(this.filterData);
+    }
+
+    /**
+     * Trigger a change event.
+     */
+    update(reset = false) {
+        this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
     }
 }
