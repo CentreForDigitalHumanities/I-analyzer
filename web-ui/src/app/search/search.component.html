@@ -85,9 +85,11 @@
         <div class="tile is-ancestor">
             <!-- Filters, on left -->
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
+                <div class="field">
+                <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
-                    <div class="box" *ngIf="field.searchFilter" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}">
-                        <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
+                    <!-- <div class="box" *ngIf="field.searchFilter">
+                        <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                         <label>
                             <div class="checkbox">
                                 <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name" type="checkbox" (change)="toggleFilterFields()">
@@ -95,8 +97,19 @@
                         </label>
                         <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                             (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    </div> -->
+                    <div *ngIf="field.searchFilter">
+                    <a class="button is-fullwidth" role="button" aria-pressed="false" style="height:7em;" [name]="'searchByField' + field.name" [id]="'filter' + field.name" (click)="enableFilter(field.name)" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
+                        <div class="field is-grouped-centered">
+                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
+                                (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                        </div>
+                    </a>
+                    <br>
                     </div>
                 </ng-container>
+            </div>
             </div>
 
             <!-- search results, on right -->

@@ -129,7 +129,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public enableFilter(name: string) {
         let field = this.queryField[name];
-        field.useAsFilter = true;
+        field.useAsFilter = !field.useAsFilter; 
         this.toggleFilterFields();
     }
 
@@ -326,6 +326,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean,
+    useAsFilter: boolean, 
     visible: boolean
 };
