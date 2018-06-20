@@ -139,7 +139,7 @@ class XML(Extractor):
         toplevel=False, # Tag to select for search: top-level or entry tag
         recursive=False, # Whether to search all descendants
         multiple=False, # Whether to abandon the search after the first element
-        external_file_type=None, # Whether to search other xml files for this field 
+        external_file={'enabled':False, 'file_tag':None}, # Whether to search other xml files for this field, and the file tag these files should have
         *nargs,
         **kwargs
         ):
@@ -150,6 +150,7 @@ class XML(Extractor):
         self.toplevel = toplevel
         self.recursive = recursive
         self.multiple = multiple
+        self.external_file = external_file
         super().__init__(*nargs, **kwargs)
 
 

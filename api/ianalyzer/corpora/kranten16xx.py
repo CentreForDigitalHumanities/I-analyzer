@@ -43,9 +43,9 @@ class Kranten16xx(XMLCorpus):
     definition_pattern = re.compile(r'didl')
     page_pattern = re.compile(r'.*_(\d+)_alto')
     article_pattern = re.compile(r'.*_(\d+)_articletext')
-    
+
     filename_pattern = re.compile(r'[a-zA-z]+_(\d+)_(\d+)')
-    
+
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
@@ -62,12 +62,41 @@ class Kranten16xx(XMLCorpus):
                 def_match = self.definition_pattern.match(name)
                 page_match = self.page_pattern.match(name)
                 article_match = self.article_pattern.match(name)
-                if def_match:                    d.append((full_path, 'definition'))
+                if def_match:
+                    d.append((full_path, {'file_tag': 'definition'}))
                 if page_match:
-                    d.append((full_path, 'page'))
+                    d.append((full_path, {'file_tag': 'page'}))
                 if article_match:
-                    d.append((full_path, 'article'))
+                    d.append((full_path, {'file_tag': 'article'}))
             yield d
+
+    fields = [
+        Field(
+            name='date',
+            display_name='Date',
+            description='Publication date.',
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            term_frequency=True,
+            prominent_field=True,
+            search_filter=filters.DateFilter(
+                config.SPECTATORS_MIN_DATE,
+                config.SPECTATORS_MAX_DATE,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+            extractor=extract.XML(tag='date', toplevel=True, external_file={'enabled': True, 'file_tag': 'definition'})
+        ),
+        Field(
+            name='content',
+            display_name='Content',
+            display_type='text_content',
+            description='Text content.',
+            prominent_field=True,
+            extractor=extract.XML(tag='text', multiple=True, flatten=True)
+        ),
+    ]
+
 
 if __name__ == '__main__':
     k = Kranten16xx()

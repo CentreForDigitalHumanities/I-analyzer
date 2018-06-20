@@ -207,6 +207,7 @@ class Corpus(object):
 
         if any(isinstance(s, list) for s in sources):
             print('Multiple sources per document')
+            self.multiple_source2dicts(sources)
         else:
             return (document
                 for filename, metadata in sources
@@ -239,7 +240,68 @@ class XMLCorpus(Corpus):
         '''
         raise NotImplementedError()
 
+    def multiple_source2dicts(self, sources):
+        '''
+        Generate a document dictionaries from a given XML file. This is the
+        default implementation for XML layouts; may be subclassed if more
+        '''
+        # Make sure that extractors are sensible
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                    extract.Choice,
+                    extract.Combined,
+                    extract.XML,
+                    extract.Metadata,
+                    extract.Constant
+                )):
+                raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
+        
+        # Separate the fields that should be collected from external files from regular fields
+        external_fields = {}
+        regular_fields = list()
+        for field in self.fields:
+            if field.extractor.external_file['enabled']:
+                tag = field.extractor.external_file['file_tag']
+                if tag in external_fields.keys():
+                    external_fields[tag].append(field.name)
+                else:
+                    external_fields[tag] = [field.name]
+            else:
+                regular_fields.append(field.name)
 
+        # Extract data from external files 
+        for file_tag in external_fields.keys():
+            print(file_tag)
+            files =  [filename for filename, metadata in sources if metadata['file_tag']==file_tag]
+            print(files)
+        
+        # # Loading XML
+        # logger.info('Reading XML file {} ...'.format(filename))
+        # with open(filename, 'rb') as f:
+        #     data = f.read()
+
+        # # Parsing XML
+        # soup = bs4.BeautifulSoup(data, 'lxml-xml')
+
+        # logger.info('Loaded {} into memory ...'.format(filename))
+
+        # # Extract fields from soup
+        # tag0 = self.xml_tag_toplevel
+        # tag  = self.xml_tag_entry
+        # bowl = soup.find(tag0) if tag0 else soup
+        # if bowl:
+        #     for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find direct descendants of the top-level tag
+        #         yield {
+        #             field.name : field.extractor.apply(
+        #                 # The extractor is put to work by simply throwing at it
+        #                 # any and all information it might need
+        #                 soup_top=bowl,
+        #                 soup_entry=spoon,
+        #                 metadata=metadata
+        #             ) for field in self.fields if field.indexed
+        #         }
+        # else:
+        #     logger.warning('Top-level tag not found in `{}`'.format(filename))
 
     def source2dicts(self, filename, metadata={}):
         '''
