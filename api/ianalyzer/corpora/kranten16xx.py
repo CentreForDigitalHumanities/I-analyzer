@@ -15,6 +15,8 @@ from ianalyzer import extract
 from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
 
+from pprint import pprint
+
 # Source files ################################################################
 
 
@@ -28,49 +30,49 @@ class Kranten16xx(XMLCorpus):
     es_doctype = config.KRANTEN16XX_ES_DOCTYPE
     es_settings = None
 
-    xml_tag_toplevel = 'text'
-    xml_tag_entry = 'p'
+    def_tag_toplevel = 'text'
+    def_tag_entry = 'p'
+
+    page_tag_toplevel = 'alto'
+    page_tag_entry = 'article'
+
+    art_tag_toplevel = 'text'
+    art_tag_entry = 'p'
 
     # New data members
-    filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
+    definition_pattern = re.compile(r'didl')
+    page_pattern = re.compile(r'.*_(\d+)_alto')
+    article_pattern = re.compile(r'.*_(\d+)_articletext')
+    
+    filename_pattern = re.compile(r'[a-zA-z]+_(\d+)_(\d+)')
+    
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            for filename in filenames:
-                print(directory)
-                name, extension = splitext(filename)
-                full_path = join(directory, filename)
-                # print(name)
-                if extension != '.xml':
-                    logger.debug(self.non_xml_msg.format(full_path))
-                    # print(self.non_xml_msg.format(full_path))
-
-    def sources_old(self, start=min_date, end=max_date):
-        logger = logging.getLogger(__name__)
-        for directory, _, filenames in os.walk(self.data_directory):
+            d = tuple()
             for filename in filenames:
                 name, extension = splitext(filename)
                 full_path = join(directory, filename)
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
-                match = self.filename_pattern.match(name)
-                if not match:
-                    logger.warning(self.non_match_msg.format(full_path))
-                    continue
+                def_match = self.definition_pattern.match(name)
+                page_match = self.page_pattern.match(name)
+                article_match = self.article_pattern.match(name)
 
-                issue, year = match.groups()
-                if int(year) < start.year or end.year < int(year):
-                    continue
-                yield full_path, {
-                    'year': year,
-                    'issue': issue
-                }
+                if def_match:
+                    d += (full_path, 'definition')
+                if page_match:
+                    d += (full_path, 'page')
+                if article_match:
+                    d += (full_path, 'article')
+            yield d
 
 if __name__ == '__main__':
     k = Kranten16xx()
-    print(k.sources())
+    for s in k.sources():
+        pprint(s)
 
