@@ -52,7 +52,7 @@ class Kranten16xx(XMLCorpus):
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            d = tuple()
+            d = []
             for filename in filenames:
                 name, extension = splitext(filename)
                 full_path = join(directory, filename)
@@ -62,17 +62,14 @@ class Kranten16xx(XMLCorpus):
                 def_match = self.definition_pattern.match(name)
                 page_match = self.page_pattern.match(name)
                 article_match = self.article_pattern.match(name)
-
-                if def_match:
-                    d += (full_path, 'definition')
+                if def_match:                    d.append((full_path, 'definition'))
                 if page_match:
-                    d += (full_path, 'page')
+                    d.append((full_path, 'page'))
                 if article_match:
-                    d += (full_path, 'article')
+                    d.append((full_path, 'article'))
             yield d
 
 if __name__ == '__main__':
     k = Kranten16xx()
-    for s in k.sources():
-        pprint(s)
-
+    s = k.sources()
+    d = k.documents()

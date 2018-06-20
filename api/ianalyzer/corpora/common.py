@@ -205,13 +205,16 @@ class Corpus(object):
         '''
         sources = sources or self.sources()
 
-        return (document
-            for filename, metadata in sources
-                for document in self.source2dicts(
-                    filename=filename,
-                    metadata=metadata,
-                )
-        )
+        if any(isinstance(s, list) for s in sources):
+            print('Multiple sources per document')
+        else:
+            return (document
+                for filename, metadata in sources
+                    for document in self.source2dicts(
+                        filename=filename,
+                        metadata=metadata,
+                    )
+            )
 
 
 

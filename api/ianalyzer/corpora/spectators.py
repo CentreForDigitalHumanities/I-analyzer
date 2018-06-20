@@ -134,3 +134,8 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='text', multiple=True, flatten=True)
         ),
     ]
+
+if __name__ == '__main__':
+    k = Spectators()
+    s = k.sources()
+    d = k.documents()

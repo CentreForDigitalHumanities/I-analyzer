@@ -38,7 +38,7 @@ class Extractor(object):
                     return self.transform(result)
             except Exception:
                 logging.critical("Value {v} could not be converted."\
-                    .format(v=result, k=key))
+                    .format(v=result))
                 return None
             else:
                 return result
@@ -139,6 +139,7 @@ class XML(Extractor):
         toplevel=False, # Tag to select for search: top-level or entry tag
         recursive=False, # Whether to search all descendants
         multiple=False, # Whether to abandon the search after the first element
+        external_file_type=None, # Whether to search other xml files for this field 
         *nargs,
         **kwargs
         ):
