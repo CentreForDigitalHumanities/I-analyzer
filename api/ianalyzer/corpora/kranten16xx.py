@@ -15,9 +15,6 @@ from ianalyzer import extract
 from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
 
-
-
-
 # Source files ################################################################
 
 
@@ -43,6 +40,18 @@ class Kranten16xx(XMLCorpus):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             for filename in filenames:
+                print(directory)
+                name, extension = splitext(filename)
+                full_path = join(directory, filename)
+                # print(name)
+                if extension != '.xml':
+                    logger.debug(self.non_xml_msg.format(full_path))
+                    # print(self.non_xml_msg.format(full_path))
+
+    def sources_old(self, start=min_date, end=max_date):
+        logger = logging.getLogger(__name__)
+        for directory, _, filenames in os.walk(self.data_directory):
+            for filename in filenames:
                 name, extension = splitext(filename)
                 full_path = join(directory, filename)
                 if extension != '.xml':
@@ -63,5 +72,5 @@ class Kranten16xx(XMLCorpus):
 
 if __name__ == '__main__':
     k = Kranten16xx()
-    print(*k.sources())
+    print(k.sources())
 
