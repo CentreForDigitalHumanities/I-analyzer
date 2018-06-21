@@ -81,19 +81,19 @@ class Spectators(XMLCorpus):
             ),
             extractor = extract.XML(tag='date', toplevel=True)
         ),
-        # Field(
-        #     name='id',
-        #     display_name='ID',
-        #     description='Unique identifier of the entry.',
-        #     extractor=Combined(
-        #         XML(attribute='magazine'),
-        #         XML(attribute='year'),
-        #         XML(attribute='issue'),
-        #         transform=lambda x: '_'.join(x),
-        #     ),
-        # ),
         Field(
             name='id',
+            display_name='ID',
+            description='Unique identifier of the entry.',
+            extractor=extract.Combined(
+                extract.XML(attribute='magazine'),
+                extract.XML(attribute='year'),
+                extract.XML(attribute='issue'),
+                transform=lambda x: '_'.join(x),
+            ),
+        ),
+        Field(
+            name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
             description='Source issue number.',
@@ -116,14 +116,14 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             description='Magazine editor.',
-            extractor= extract.XML(tag='editor', multiple=True)
+            extractor= extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
         Field(
             name='title',
             display_name='Title',
             prominent_field=True,
             description='Article title.',
-            extractor=extract.XML(tag='title')
+            extractor=extract.XML(tag='title', toplevel=True)
         ),
         Field(
             name='content',
