@@ -30,14 +30,8 @@ class Kranten16xx(XMLCorpus):
     es_doctype = config.KRANTEN16XX_ES_DOCTYPE
     es_settings = None
 
-    def_tag_toplevel = 'text'
-    def_tag_entry = 'p'
-
-    page_tag_toplevel = 'alto'
-    page_tag_entry = 'article'
-
-    art_tag_toplevel = 'text'
-    art_tag_entry = 'p'
+    xml_tag_toplevel = 'text'
+    xml_tag_entry ='p'
 
     # New data members
     definition_pattern = re.compile(r'didl')
@@ -52,23 +46,27 @@ class Kranten16xx(XMLCorpus):
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            # print(directory, filenames)
             d = []
             for filename in filenames:
-                name, extension = splitext(filename)
-                full_path = join(directory, filename)
-                if extension != '.xml':
-                    logger.debug(self.non_xml_msg.format(full_path))
-                    continue
-                def_match = self.definition_pattern.match(name)
-                page_match = self.page_pattern.match(name)
-                article_match = self.article_pattern.match(name)
-                if def_match:
-                    d.append((full_path, {'file_tag': 'definition'}))
-                if page_match:
-                    d.append((full_path, {'file_tag': 'page'}))
-                if article_match:
-                    d.append((full_path, {'file_tag': 'article'}))
-            yield d
+                if filename != '.DS_Store':
+                    name, extension = splitext(filename)
+                    full_path = join(directory, filename)
+                    if extension != '.xml':
+                        logger.debug(self.non_xml_msg.format(full_path))
+                        continue
+                    def_match = self.definition_pattern.match(name)
+                    # page_match = self.page_pattern.match(name)
+                    article_match = self.article_pattern.match(name)
+                    if def_match:
+                        d.append((full_path, {'file_tag': 'definition'}))
+                    # if page_match:
+                        # d.append((full_path, {'file_tag': 'page'}))
+                    if article_match:
+                        d.append((full_path, {'file_tag': 'article'}))
+            if d != []:
+                # print('Pushing list of source files\tItems: {}\tDirectory:{}'.format(len(d), directory))
+                yield d
 
     fields = [
         Field(
@@ -78,23 +76,41 @@ class Kranten16xx(XMLCorpus):
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
             prominent_field=True,
-            search_filter=filters.DateFilter(
-                config.SPECTATORS_MIN_DATE,
-                config.SPECTATORS_MAX_DATE,
-                description=(
-                    'Accept only articles with publication date in this range.'
-                )
-            ),
-            extractor=extract.XML(tag='date', toplevel=True, external_file={'enabled': True, 'file_tag': 'definition'})
+            extractor=extract.XML(  tag='date',
+                                    toplevel=True,
+                                    recursive=True, 
+                                    external_file={
+                                        'enabled': True, 
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
         ),
         Field(
-            name='content',
-            display_name='Content',
-            display_type='text_content',
-            description='Text content.',
+            name='newspaper_title',
+            display_name='Newspaper title',
+            description='Title of the newspaper',
             prominent_field=True,
-            extractor=extract.XML(tag='text', multiple=True, flatten=True)
+            extractor=extract.XML(  tag='title',
+                                    toplevel=True,
+                                    recursive=True, 
+                                    external_file={
+                                        'enabled': True, 
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
         ),
+        # Field(
+        #     name='content',
+        #     display_name='Content',
+        #     display_type='text_content',
+        #     description='Text content.',
+        #     prominent_field=True,
+        #     extractor=extract.XML(tag='text', multiple=True, flatten=True)
+        # ),
     ]
 
 

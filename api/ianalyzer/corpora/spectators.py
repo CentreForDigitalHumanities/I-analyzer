@@ -62,14 +62,14 @@ class Spectators(XMLCorpus):
                     'issue': issue
                 }
 
-    overview_fields = ['magazine', 'issue', 'date', 'title', 'editor']
+    overview_fields = ['magazine', 'issue', 'date' ,'title', 'editor']
 
     fields = [
         Field(
             name='date',
             display_name='Date',
             description='Publication date.',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            es_mapping={'type':'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
             prominent_field=True,
             search_filter=filters.DateFilter(
@@ -79,21 +79,21 @@ class Spectators(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.XML(tag='date', toplevel=True)
+            extractor = extract.XML(tag='date', toplevel=True)
         ),
-        # Field(
-        #     name='id',
-        #     display_name='ID',
-        #     description='Unique identifier of the entry.',
-        #     extractor=Combined(
-        #         XML(attribute='magazine'),
-        #         XML(attribute='year'),
-        #         XML(attribute='issue'),
-        #         transform=lambda x: '_'.join(x),
-        #     ),
-        # ),
         Field(
             name='id',
+            display_name='ID',
+            description='Unique identifier of the entry.',
+            extractor=extract.Combined(
+                extract.XML(attribute='magazine'),
+                extract.XML(attribute='year'),
+                extract.XML(attribute='issue'),
+                transform=lambda x: '_'.join(x),
+            ),
+        ),
+        Field(
+            name='issue',
             display_name='Issue number',
             es_mapping={'type': 'integer'},
             description='Source issue number.',
@@ -102,7 +102,7 @@ class Spectators(XMLCorpus):
         ),
         Field(
             name='magazine',
-            display_name='Magazine name',
+            display_name = 'Magazine name',
             term_frequency=True,
             prominent_field=True,
             es_mapping={'type': 'keyword'},
@@ -116,14 +116,14 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             description='Magazine editor.',
-            extractor=extract.XML(tag='editor', multiple=True)
+            extractor= extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
         Field(
             name='title',
             display_name='Title',
             prominent_field=True,
             description='Article title.',
-            extractor=extract.XML(tag='title')
+            extractor=extract.XML(tag='title', toplevel=True)
         ),
         Field(
             name='content',
@@ -134,7 +134,6 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='text', multiple=True, flatten=True)
         ),
     ]
-
 
 if __name__ == '__main__':
     k = Spectators()

@@ -8,6 +8,7 @@ import logging; logger = logging.getLogger(__name__)
 import bs4
 import json
 import inspect
+import itertools
 
 from ianalyzer import extract
 
@@ -195,6 +196,14 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    def multiple_source2dicts(self, filename, metadata={}):
+        '''
+        Generate an iterator of document dictionaries from a collection of source files.
+
+        The dictionaries are created from this corpus' `Field`s.
+        '''
+        raise NotImplementedError()
+
 
 
     def documents(self, sources=None):
@@ -204,10 +213,13 @@ class Corpus(object):
         `sources` is specified, those source/metadata tuples are used instead.
         '''
         sources = sources or self.sources()
+        sources, sources_copy = itertools.tee(sources)
 
-        if any(isinstance(s, list) for s in sources):
-            print('Multiple sources per document')
+        if all(isinstance(s, list) for s in list(sources_copy)):
+            print('multiple source files')
+
             self.multiple_source2dicts(sources)
+
         else:
             return (document
                 for filename, metadata in sources
@@ -216,6 +228,7 @@ class Corpus(object):
                         metadata=metadata,
                     )
             )
+
 
 
 
@@ -242,8 +255,10 @@ class XMLCorpus(Corpus):
 
     def multiple_source2dicts(self, sources):
         '''
-        Generate a document dictionaries from a given XML file. This is the
-        default implementation for XML layouts; may be subclassed if more
+        Generate document dictonaries from a collection of XML files.
+        Takes a list of entry source files (one entry is one indexed document in elasticsearch) and external files.
+        First extract any fields from external files (which should be applied to ALL entry source files)
+        Then extract fields from the entry source files.
         '''
         # Make sure that extractors are sensible
         for field in self.fields:
@@ -263,27 +278,43 @@ class XMLCorpus(Corpus):
             if field.extractor.external_file['enabled']:
                 tag = field.extractor.external_file['file_tag']
                 if tag in external_fields.keys():
-                    external_fields[tag].append(field.name)
+                    external_fields[tag].append(field)
                 else:
-                    external_fields[tag] = [field.name]
+                    external_fields[tag] = [field]
             else:
-                regular_fields.append(field.name)
+                regular_fields.append(field)
 
-        # Extract data from external files 
+        # Extract data from external files
+        # This results in a dictionary with fields and their values that should be added to every entry source file 
+        external_dict = {}
         for file_tag in external_fields.keys():
-            print(file_tag)
-            files =  [filename for filename, metadata in sources if metadata['file_tag']==file_tag]
-            print(files)
-        
-        # # Loading XML
-        # logger.info('Reading XML file {} ...'.format(filename))
-        # with open(filename, 'rb') as f:
-        #     data = f.read()
+            # for s in sources:
+            s = next(sources)
+            external_files = [(filename, metadata) for filename, metadata in s if metadata['file_tag']==file_tag]
+            for filename,metadata in external_files:
+                # Loading XML
+                logger.info('Reading XML file {}...'.format(filename))
+                with open(filename, 'rb') as f:
+                    data = f.read()
 
-        # # Parsing XML
-        # soup = bs4.BeautifulSoup(data, 'lxml-xml')
+                # Parsing XML
+                soup = bs4.BeautifulSoup(data, 'lxml-xml')
+                logger.info('Loaded {} into memory ...'.format(filename))
 
-        # logger.info('Loaded {} into memory ...'.format(filename))
+                for field in external_fields[file_tag]:
+                    # Extract fields from soup
+                    tag0 = field.extractor.external_file['xml_tag_toplevel']
+                    tag  = field.extractor.external_file['xml_tag_entry']
+                    bowl = soup.find(tag0) if tag0 else soup
+                    if bowl:
+                        for spoon in bowl.find_all(tag):
+                            external_dict[field.name] = field.extractor.apply(
+                                soup_top=bowl,
+                                soup_entry=spoon
+                            )
+                    else:
+                        logger.warning('Top-level tag not found in `{}`'.format(filename))
+        print(external_dict) 
 
         # # Extract fields from soup
         # tag0 = self.xml_tag_toplevel

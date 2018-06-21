@@ -188,7 +188,6 @@ class XML(Extractor):
 
         # Select appropriate BeautifulSoup element
         soup = self._select(soup_top if self.toplevel else soup_entry)
-
         if not soup:
             return None
 
