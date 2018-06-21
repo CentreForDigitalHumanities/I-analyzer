@@ -218,7 +218,12 @@ class Corpus(object):
         if all(isinstance(s, list) for s in list(sources_copy)):
             print('multiple source files')
 
-            self.multiple_source2dicts(next(sources))
+            # self.multiple_source2dicts(next(sources))
+
+            return (document
+                for source_block in sources
+                    for document in self.multiple_source2dicts(source_block)
+            )
 
         else:
             return (document
@@ -275,14 +280,17 @@ class XMLCorpus(Corpus):
         external_fields = {}
         regular_fields = list()
         for field in self.fields:
-            tag = field.extractor.external_file['file_tag']
-            if tag:
+            try:
                 tag = field.extractor.external_file['file_tag']
-                if tag in external_fields.keys():
-                    external_fields[tag].append(field)
+                if tag:
+                    tag = field.extractor.external_file['file_tag']
+                    if tag in external_fields.keys():
+                        external_fields[tag].append(field)
+                    else:
+                        external_fields[tag] = [field]
                 else:
-                    external_fields[tag] = [field]
-            else:
+                    regular_fields.append(field)
+            except AttributeError:
                 regular_fields.append(field)
 
         # Extract data from external files
@@ -313,7 +321,7 @@ class XMLCorpus(Corpus):
                             )
                     else:
                         logger.warning('Top-level tag not found in `{}`'.format(filename))
-        print(external_dict) 
+        # print(external_dict) 
         
         external_files = [(filename, metadata) for filename, metadata in source if metadata['file_tag']=='article']
         for filename, metadata in external_files:
@@ -341,8 +349,9 @@ class XMLCorpus(Corpus):
                     }
                     # print('doc_dict: {}'.format(doc_dict))
                     # print('external_dict: {}'.format(external_dict))
-                    print(dict(itertools.chain(external_dict.items(), doc_dict.items())))
-                    print('=========================================')
+                    # print(dict(itertools.chain(external_dict.items(), doc_dict.items())))
+                    # print('=========================================')
+                yield dict(itertools.chain(external_dict.items(), doc_dict.items()))
             else:
                 logger.warning('Top-level tag not found in `{}`'.format(filename))
             

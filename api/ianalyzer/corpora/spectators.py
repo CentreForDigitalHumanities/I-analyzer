@@ -81,17 +81,17 @@ class Spectators(XMLCorpus):
             ),
             extractor = extract.XML(tag='date', toplevel=True)
         ),
-        Field(
-            name='id',
-            display_name='ID',
-            description='Unique identifier of the entry.',
-            extractor=extract.Combined(
-                extract.XML(attribute='magazine'),
-                extract.XML(attribute='year'),
-                extract.XML(attribute='issue'),
-                transform=lambda x: '_'.join(x),
-            ),
-        ),
+        # Field(
+        #     name='id',
+        #     display_name='ID',
+        #     description='Unique identifier of the entry.',
+        #     extractor=extract.Combined(
+        #         extract.XML(attribute='magazine'),
+        #         extract.XML(attribute='year'),
+        #         extract.XML(attribute='issue'),
+        #         transform=lambda x: '_'.join(x),
+        #     ),
+        # ),
         Field(
             name='issue',
             display_name='Issue number',
@@ -139,3 +139,4 @@ if __name__ == '__main__':
     k = Spectators()
     s = k.sources()
     d = k.documents()
+    print(next(d))

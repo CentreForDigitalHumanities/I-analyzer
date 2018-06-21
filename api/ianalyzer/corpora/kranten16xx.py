@@ -9,6 +9,7 @@ import os
 from os.path import join, isfile, splitext
 from datetime import datetime, timedelta
 import re
+import random
 
 from ianalyzer import config_fallback as config
 from ianalyzer import extract
@@ -62,9 +63,11 @@ class Kranten16xx(XMLCorpus):
                     # if page_match:
                         # d.append((full_path, {'file_tag': 'page'}))
                     if article_match:
-                        d.append((full_path, {'file_tag': 'article'}))
+                        d.append((full_path, {'file_tag': 'article', 'id': full_path}))
             if d != []:
                 yield d
+
+    overview_fields = ['title', 'content']
 
     fields = [
         Field(
@@ -103,7 +106,6 @@ class Kranten16xx(XMLCorpus):
             name='publisher',
             display_name='Publisher',
             description='Publisher',
-            prominent_field=True,
             extractor=extract.XML(  tag='publisher',
                                     toplevel=True,
                                     multiple=True,
@@ -131,6 +133,12 @@ class Kranten16xx(XMLCorpus):
             prominent_field=True,
             extractor=extract.XML(tag='title', flatten=True, toplevel=True)
         ),
+        Field(
+            name='id',
+            display_name='ID',
+            description='Unique identifier of the entry.',
+            extractor=extract.Metadata('id')
+        ),
     ]
 
 
@@ -138,3 +146,9 @@ if __name__ == '__main__':
     k = Kranten16xx()
     s = k.sources()
     d = k.documents()
+    c = 0
+    for i in d:
+        print(i)
+        print('---')
+        c+=1
+    print(c)
