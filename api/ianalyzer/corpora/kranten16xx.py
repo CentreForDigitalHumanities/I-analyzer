@@ -31,7 +31,7 @@ class Kranten16xx(XMLCorpus):
     es_settings = None
 
     xml_tag_toplevel = 'text'
-    xml_tag_entry ='p'
+    xml_tag_entry = 'p'
 
     # New data members
     definition_pattern = re.compile(r'didl')
@@ -46,7 +46,6 @@ class Kranten16xx(XMLCorpus):
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            # print(directory, filenames)
             d = []
             for filename in filenames:
                 if filename != '.DS_Store':
@@ -65,7 +64,6 @@ class Kranten16xx(XMLCorpus):
                     if article_match:
                         d.append((full_path, {'file_tag': 'article'}))
             if d != []:
-                # print('Pushing list of source files\tItems: {}\tDirectory:{}'.format(len(d), directory))
                 yield d
 
     fields = [
@@ -80,7 +78,6 @@ class Kranten16xx(XMLCorpus):
                                     toplevel=True,
                                     recursive=True, 
                                     external_file={
-                                        'enabled': True, 
                                         'file_tag': 'definition',
                                         'xml_tag_toplevel': 'DIDL', 
                                         'xml_tag_entry': 'Item'
@@ -96,21 +93,44 @@ class Kranten16xx(XMLCorpus):
                                     toplevel=True,
                                     recursive=True, 
                                     external_file={
-                                        'enabled': True, 
                                         'file_tag': 'definition',
                                         'xml_tag_toplevel': 'DIDL', 
                                         'xml_tag_entry': 'Item'
                                         }
                                     )
         ),
-        # Field(
-        #     name='content',
-        #     display_name='Content',
-        #     display_type='text_content',
-        #     description='Text content.',
-        #     prominent_field=True,
-        #     extractor=extract.XML(tag='text', multiple=True, flatten=True)
-        # ),
+        Field(
+            name='publisher',
+            display_name='Publisher',
+            description='Publisher',
+            prominent_field=True,
+            extractor=extract.XML(  tag='publisher',
+                                    toplevel=True,
+                                    multiple=True,
+                                    flatten=True,
+                                    recursive=True, 
+                                    external_file={ 
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
+        ),
+        Field(
+            name='content',
+            display_name='Content',
+            display_type='text_content',
+            description='Text content.',
+            prominent_field=True,
+            extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
+        ),
+        Field(
+            name='article_title',
+            display_name='Article title',
+            description='Article title',
+            prominent_field=True,
+            extractor=extract.XML(tag='title', flatten=True, toplevel=True)
+        ),
     ]
 
 

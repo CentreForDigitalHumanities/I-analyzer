@@ -139,7 +139,10 @@ class XML(Extractor):
         toplevel=False, # Tag to select for search: top-level or entry tag
         recursive=False, # Whether to search all descendants
         multiple=False, # Whether to abandon the search after the first element
-        external_file={'enabled':False, 'file_tag':None}, # Whether to search other xml files for this field, and the file tag these files should have
+        external_file={ # Whether to search other xml files for this field, and the file tag these files should have
+            'file_tag':None,
+            'xml_tag_toplevel': None,
+            'xml_tag_entry': None}, 
         *nargs,
         **kwargs
         ):
