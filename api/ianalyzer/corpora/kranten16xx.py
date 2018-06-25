@@ -67,8 +67,6 @@ class Kranten16xx(XMLCorpus):
             if d != []:
                 yield d
 
-    overview_fields = ['title', 'content']
-
     fields = [
         Field(
             name='date',
@@ -77,6 +75,13 @@ class Kranten16xx(XMLCorpus):
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
             prominent_field=True,
+            search_filter=filters.DateFilter(
+                config.TIMES_MIN_DATE,
+                config.TIMES_MAX_DATE,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
             extractor=extract.XML(  tag='date',
                                     toplevel=True,
                                     recursive=True, 
@@ -103,6 +108,21 @@ class Kranten16xx(XMLCorpus):
                                     )
         ),
         Field(
+            name='issue_number',
+            display_name='Issue number',
+            description='Issue number of the newspaper',
+            prominent_field=True,
+            extractor=extract.XML(  tag='issuenumber',
+                                    toplevel=True,
+                                    recursive=True, 
+                                    external_file={
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
+        ),
+        Field(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
@@ -119,12 +139,18 @@ class Kranten16xx(XMLCorpus):
                                     )
         ),
         Field(
-            name='content',
-            display_name='Content',
-            display_type='text_content',
-            description='Text content.',
-            prominent_field=True,
-            extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
+            name='language',
+            display_name='Language',
+            description='language',
+            extractor=extract.XML(  tag='language',
+                                    toplevel=True,
+                                    recursive=True, 
+                                    external_file={ 
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
         ),
         Field(
             name='article_title',
@@ -138,6 +164,29 @@ class Kranten16xx(XMLCorpus):
             display_name='ID',
             description='Unique identifier of the entry.',
             extractor=extract.Metadata('id')
+        ),
+        Field(
+            name='source',
+            display_name='Source',
+            description='Source.',
+            prominent_field=True,
+            extractor=extract.XML(  tag='source',
+                                    toplevel=True,
+                                    recursive=True, 
+                                    external_file={
+                                        'file_tag': 'definition',
+                                        'xml_tag_toplevel': 'DIDL', 
+                                        'xml_tag_entry': 'Item'
+                                        }
+                                    )
+        ),
+        Field(
+            name='content',
+            display_name='Content',
+            display_type='text_content',
+            description='Text content.',
+            prominent_field=True,
+            extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
         ),
     ]
 
