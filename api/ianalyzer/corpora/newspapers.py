@@ -22,13 +22,13 @@ from pprint import pprint
 
 
 class Kranten16xx(XMLCorpus):
-    title = config.KRANTEN16XX_TITLE
-    description = config.KRANTEN16XX_DESCRIPTION
-    data_directory = config.KRANTEN16XX_DATA
-    min_date = config.KRANTEN16XX_MIN_DATE
-    max_date = config.KRANTEN16XX_MAX_DATE
-    es_index = config.KRANTEN16XX_ES_INDEX
-    es_doctype = config.KRANTEN16XX_ES_DOCTYPE
+    title = config.NEWSPAPERS_TITLE
+    description = config.NEWSPAPERS_DESCRIPTION
+    data_directory = config.NEWSPAPERS_DATA
+    min_date = config.NEWSPAPERS_MIN_DATE
+    max_date = config.NEWSPAPERS_MAX_DATE
+    es_index = config.NEWSPAPERS_ES_INDEX
+    es_doctype = config.NEWSPAPERS_ES_DOCTYPE
     es_settings = None
 
     xml_tag_toplevel = 'text'
@@ -60,7 +60,9 @@ class Kranten16xx(XMLCorpus):
                     if def_match:
                         d.append((full_path, {'file_tag': 'definition'}))
                     if article_match:
-                        d.append((full_path, {'file_tag': 'article', 'id': full_path}))
+                        id = os.path.basename(os.path.dirname(full_path)) + article_match.group(1)
+                        print(id)
+                        d.append((full_path, {'file_tag': 'article', 'id': id}))
             if d != []:
                 yield d
 
@@ -193,7 +195,7 @@ if __name__ == '__main__':
     d = k.documents()
     c = 0
     for i in d:
-        print(i)
-        print('---')
+        # print(i)
+        # print('---')
         c+=1
-    print(c)
+    # print(c)
