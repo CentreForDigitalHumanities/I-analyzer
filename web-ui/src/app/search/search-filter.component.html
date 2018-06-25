@@ -7,8 +7,8 @@
         <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'">
+        <span>{{data[0]}} - {{data[1]}}</span>
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>
-        <span>{{data[0]}} : {{data[1]}}</span>
     </div>
     <div class="daterange" *ngIf="filter.name == 'DateFilter'">
         <p-calendar [disabled]="!enabled" [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" (onSelect)="update()"

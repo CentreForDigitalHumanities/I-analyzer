@@ -99,14 +99,16 @@
                             (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
                     </div> -->
                     <div *ngIf="field.searchFilter">
-                    <a class="button is-fullwidth" role="button" aria-pressed="false" style="height:7em;" [name]="'searchByField' + field.name" [id]="'filter' + field.name" (click)="enableFilter(field.name)" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
-                        <div class="field is-grouped-centered">
-                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
-                                (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
-                            <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
-                        </div>
-                    </a>
-                    <br>
+                        <a class="button is-fullwidth" role="button" aria-pressed="false" style="height:7em;" [name]="'searchByField' + field.name" [id]="'filter' + field.name" (click)="toggleFilterFields()" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
+                            <div class="filter-container">
+                                <div class="control" iaBalloon="{{ field.searchFilter.description }}">
+                                <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
+                                    (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                                <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                                </div>
+                            </div>
+                        </a>
+                        <br>
                     </div>
                 </ng-container>
             </div>
