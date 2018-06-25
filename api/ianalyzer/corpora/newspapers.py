@@ -187,15 +187,3 @@ class Kranten16xx(XMLCorpus):
             extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
         ),
     ]
-
-
-if __name__ == '__main__':
-    k = Kranten16xx()
-    s = k.sources()
-    d = k.documents()
-    c = 0
-    for i in d:
-        # print(i)
-        # print('---')
-        c+=1
-    # print(c)
