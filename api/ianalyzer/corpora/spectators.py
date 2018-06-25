@@ -1,9 +1,6 @@
 '''
 Collect corpus-specific information, that is, data structures and file
 locations.
-
-Until 1985, the XML structure of Times-data is described by `LTO_issue.dtd`.
-After 1985, it is described by `GALENP.dtd`.
 '''
 
 import logging
@@ -81,17 +78,17 @@ class Spectators(XMLCorpus):
             ),
             extractor = extract.XML(tag='date', toplevel=True)
         ),
-        # Field(
-        #     name='id',
-        #     display_name='ID',
-        #     description='Unique identifier of the entry.',
-        #     extractor=extract.Combined(
-        #         extract.XML(attribute='magazine'),
-        #         extract.XML(attribute='year'),
-        #         extract.XML(attribute='issue'),
-        #         transform=lambda x: '_'.join(x),
-        #     ),
-        # ),
+        Field(
+            name='id',
+            display_name='ID',
+            description='Unique identifier of the entry.',
+            extractor=extract.Combined(
+                extract.XML(attribute='magazine'),
+                extract.XML(attribute='year'),
+                extract.XML(attribute='issue'),
+                transform=lambda x: '_'.join(x),
+            ),
+        ),
         Field(
             name='issue',
             display_name='Issue number',
@@ -116,7 +113,7 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             description='Magazine editor.',
-            extractor= extract.XML(tag='editor', toplevel=True, multiple=True, flatten=True)
+            extractor= extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
         Field(
             name='title',
@@ -134,9 +131,3 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='text', multiple=True, flatten=True)
         ),
     ]
-
-if __name__ == '__main__':
-    k = Spectators()
-    s = k.sources()
-    d = k.documents()
-    print(next(d))
