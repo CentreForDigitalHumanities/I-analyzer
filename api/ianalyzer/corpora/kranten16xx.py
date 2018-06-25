@@ -56,12 +56,9 @@ class Kranten16xx(XMLCorpus):
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
                     def_match = self.definition_pattern.match(name)
-                    # page_match = self.page_pattern.match(name)
                     article_match = self.article_pattern.match(name)
                     if def_match:
                         d.append((full_path, {'file_tag': 'definition'}))
-                    # if page_match:
-                        # d.append((full_path, {'file_tag': 'page'}))
                     if article_match:
                         d.append((full_path, {'file_tag': 'article', 'id': full_path}))
             if d != []:

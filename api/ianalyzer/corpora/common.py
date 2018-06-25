@@ -213,13 +213,10 @@ class Corpus(object):
         `sources` is specified, those source/metadata tuples are used instead.
         '''
         sources = sources or self.sources()
-        sources, sources_copy = itertools.tee(sources)
+        sources, sources_copy = itertools.tee(sources) # copy the generator to take a look inside without using up the original
 
+        # handling of multiple xml files
         if all(isinstance(s, list) for s in list(sources_copy)):
-            print('multiple source files')
-
-            # self.multiple_source2dicts(next(sources))
-
             return (document
                 for source_block in sources
                     for document in self.multiple_source2dicts(source_block)
@@ -283,7 +280,6 @@ class XMLCorpus(Corpus):
             try:
                 tag = field.extractor.external_file['file_tag']
                 if tag:
-                    tag = field.extractor.external_file['file_tag']
                     if tag in external_fields.keys():
                         external_fields[tag].append(field)
                     else:
@@ -321,10 +317,9 @@ class XMLCorpus(Corpus):
                             )
                     else:
                         logger.warning('Top-level tag not found in `{}`'.format(filename))
-        # print(external_dict) 
         
-        external_files = [(filename, metadata) for filename, metadata in source if metadata['file_tag']=='article']
-        for filename, metadata in external_files:
+        article_files = [(filename, metadata) for filename, metadata in source if metadata['file_tag']=='article']
+        for filename, metadata in article_files:
             # Loading XML
             logger.info('Reading XML file {}...'.format(filename))
             with open(filename, 'rb') as f:
@@ -347,32 +342,10 @@ class XMLCorpus(Corpus):
                             metadata=metadata
                         ) for field in regular_fields if field.indexed
                     }
-                    # print('doc_dict: {}'.format(doc_dict))
-                    # print('external_dict: {}'.format(external_dict))
-                    # print(dict(itertools.chain(external_dict.items(), doc_dict.items())))
-                    # print('=========================================')
                 yield dict(itertools.chain(external_dict.items(), doc_dict.items()))
             else:
                 logger.warning('Top-level tag not found in `{}`'.format(filename))
-            
 
-        # # Extract fields from soup
-        # tag0 = self.xml_tag_toplevel
-        # tag  = self.xml_tag_entry
-        # bowl = soup.find(tag0) if tag0 else soup
-        # if bowl:
-        #     for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find direct descendants of the top-level tag
-        #         yield {
-        #             field.name : field.extractor.apply(
-        #                 # The extractor is put to work by simply throwing at it
-        #                 # any and all information it might need
-        #                 soup_top=bowl,
-        #                 soup_entry=spoon,
-        #                 metadata=metadata
-        #             ) for field in self.fields if field.indexed
-        #         }
-        # else:
-        #     logger.warning('Top-level tag not found in `{}`'.format(filename))
 
     def source2dicts(self, filename, metadata={}):
         '''
