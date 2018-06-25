@@ -1,9 +1,6 @@
 '''
 Collect corpus-specific information, that is, data structures and file
 locations.
-
-Until 1985, the XML structure of Times-data is described by `LTO_issue.dtd`.
-After 1985, it is described by `GALENP.dtd`.
 '''
 
 import logging
