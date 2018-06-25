@@ -166,7 +166,6 @@ class Kranten16xx(XMLCorpus):
             name='source',
             display_name='Source',
             description='Source.',
-            prominent_field=True,
             extractor=extract.XML(  tag='source',
                                     toplevel=True,
                                     recursive=True, 
