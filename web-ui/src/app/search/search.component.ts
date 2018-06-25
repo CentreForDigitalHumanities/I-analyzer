@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -74,6 +74,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
+
+    /**
+     * For failed searches.
+     */
+    public showError: false | undefined | {
+        date: string,
+        href: string,
+        message: string
+    };
+
     private selectedAll: boolean = true;
 
     private subscription: Subscription | undefined;
@@ -85,6 +95,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private manualService: ManualService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
+        private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
         private title: Title) {
     }
@@ -192,6 +203,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         this.hasModifiedFilters = true;
         this.queryField[name].data = data;
+        this.changeDetectorRef.detectChanges();
     }
 
     public onViewDocument(document: FoundDocument) {
@@ -220,16 +232,27 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isSearching = true;
         // store it, the user might change it in the meantime
         let currentQueryText = this.queryText;
+        let finallyReset = () => {
+            this.isSearching = false;
+            this.hasSearched = true;
+            this.searchQueryText = currentQueryText;
+        };
         this.searchService.search(
             this.queryModel,
-            this.corpus)
-            .then(results => {
-                this.results = results;
-                this.isSearching = false;
-                this.hasSearched = true;
-                this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
-                this.searchQueryText = currentQueryText;
-            });
+            this.corpus
+        ).then(results => {
+            this.results = results;
+            this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
+            finallyReset();
+        }, error => {
+            this.showError = {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
+            console.trace(error);
+            finallyReset();
+        });
         this.showFilters = true;
     }
 
