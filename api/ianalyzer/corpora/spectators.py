@@ -9,6 +9,7 @@ import os
 from os.path import join, isfile, splitext
 from datetime import datetime, timedelta
 import re
+from pprint import pprint
 
 from ianalyzer import config_fallback as config
 from ianalyzer import extract
@@ -83,9 +84,9 @@ class Spectators(XMLCorpus):
             display_name='ID',
             description='Unique identifier of the entry.',
             extractor=extract.Combined(
-                extract.XML(attribute='magazine'),
-                extract.XML(attribute='year'),
-                extract.XML(attribute='issue'),
+                extract.XML(tag='magazine', toplevel=True),
+                extract.Metadata('year'),
+                extract.Metadata('issue'),
                 transform=lambda x: '_'.join(x),
             ),
         ),
@@ -136,3 +137,6 @@ if __name__ == '__main__':
     corpus = Spectators()
     sources = corpus.sources()
     docs = corpus.documents()
+
+    pprint(next(docs))
+    # next(docs)
