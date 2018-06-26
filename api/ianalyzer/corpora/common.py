@@ -338,6 +338,7 @@ class XMLCorpus(Corpus):
                 regular_fields.append(field)
         return regular_fields, external_fields
 
+
 # Fields ######################################################################
 
 class Field(object):
