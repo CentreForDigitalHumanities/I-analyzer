@@ -185,7 +185,7 @@ class Corpus(object):
         raise NotImplementedError()
 
 
-    def source2dicts(self, sources, multiple):
+    def source2dicts(self, sources):
         '''
         Generate an iterator of document dictionaries from a given source file.
 
@@ -201,9 +201,6 @@ class Corpus(object):
         `sources` is specified, those source/metadata tuples are used instead.
         '''
         sources = sources or self.sources()
-        # determine if sources contains multiple files 
-        # sources, sources_copy = itertools.tee(sources) # copy the generator to take a look inside without using up the original
-        # multiple_sources_per_doc = all(isinstance(s, list) for s in list(sources_copy))
 
         return (document
             for source in sources
@@ -240,8 +237,6 @@ class XMLCorpus(Corpus):
         Generate a document dictionaries from a given XML file. This is the
         default implementation for XML layouts; may be subclassed if more
         '''
-        multiple = isinstance(source,list)
-        
         # Make sure that extractors are sensible
         for field in self.fields:
             if not isinstance(field.extractor, (
@@ -254,7 +249,7 @@ class XMLCorpus(Corpus):
                 raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
 
         # determine if the source contains multiple files
-        
+        multiple = isinstance(source,list)
 
         # split fields by external xml or document xml
         (regular_fields, external_fields) = self.split_document_sources(source) if multiple else (self.fields, {})
@@ -266,10 +261,8 @@ class XMLCorpus(Corpus):
         if multiple: 
             # document files are files with either no tag, or a tag that is not required for any external xml extraction
             document_files = [(f, meta) for (f, meta) in source if ('file_tag' not in meta) or (meta['file_tag'] not in external_fields)]
-            print(document_files)
         else:
             document_files = [source]
-            print(document_files)
         for filename, metadata in document_files:
             # Loading XML
             logger.info('Reading document XML file {} ...'.format(filename))
