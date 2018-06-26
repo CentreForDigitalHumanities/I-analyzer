@@ -222,7 +222,7 @@ class Corpus(object):
         #     )
         # return (document
             # for document in self.source2dicts(sources, multiple_sources_per_doc))
-        self.source2dicts(sources, multiple_sources_per_doc)
+        self.source2dicts(next(sources), multiple_sources_per_doc)
     
 
     def documents_bu(self, sources=None):
@@ -273,7 +273,7 @@ class XMLCorpus(Corpus):
         raise NotImplementedError()
 
 
-    def source2dicts(self, sources, multiple):
+    def source2dicts(self, source, multiple):
         '''
         Generate a document dictionaries from a given XML file. This is the
         default implementation for XML layouts; may be subclassed if more
@@ -291,43 +291,73 @@ class XMLCorpus(Corpus):
                 raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
  
 
-        # In the case of multiple sources per documents, split external xmls and document xmls
-        if multiple:
-            external_fields = {}
-            regular_fields = list()
-            for field in self.fields:
-                try:
-                    tag = field.extractor.external_file['file_tag']
-                    if tag:
-                        if tag in external_fields.keys():
-                            external_fields[tag].append(field)
-                        else:
-                            external_fields[tag] = [field]
+        # split fields by external xml or document xml
+        external_fields = {}
+        regular_fields = list()
+        for field in self.fields:
+            try:
+                tag = field.extractor.external_file['file_tag']
+                if tag:
+                    if tag in external_fields.keys():
+                        external_fields[tag].append(field)
                     else:
-                        regular_fields.append(field)
-                except AttributeError:
+                        external_fields[tag] = [field]
+                else:
                     regular_fields.append(field)
+            except AttributeError:
+                regular_fields.append(field)
         
-        for k,v in external_fields.items():
-            print(k, v)
+        # external fields: {file_tag: [field, field, field, field]}
+        # regular fields: [field, field,field]
+
+        # extract information from external xml files first
+        if multiple:
+            external_dict = {}
+            for file_tag in external_fields.keys():
+                files_by_tag = [(filename, metadata) for filename, metadata in source if metadata['file_tag']==file_tag]
+                for filename, metadata in files_by_tag:
+                    # Loading XML
+                    logger.info('Reading external XML file {}...'.format(filename))
+                    with open(filename, 'rb') as f:
+                        data = f.read()
+                    # Parsing xml
+                    soup = bs4.BeautifulSoup(data, 'lxml-xml')
+                    logger.info('Loaded {} into memory ...'.format(filename))
+                    # Extract fields from soup
+                    for field in external_fields[file_tag]:
+                        tag0 = field.extractor.external_file['xml_tag_toplevel']
+                        tag  = field.extractor.external_file['xml_tag_entry']
+                        bowl = soup.find(tag0) if tag0 else soup
+                        if bowl:
+                            for spoon in bowl.find_all(tag):
+                                external_dict[field.name] = field.extractor.apply(
+                                    soup_top=bowl,
+                                    soup_entry=spoon
+                                )
+                        else:
+                            logger.warning('Top-level tag not found in `{}`'.format(filename))
             
+        # next, the regular fields
+        if multiple: 
+            document_files = [(f, meta) for (f, meta) in source if meta['file_tag'] not in external_fields]
+        else:
+            document_files = [source]
+        for filename, metadata in document_files:
+            # Loading XML
+            logger.info('Reading document XML file {} ...'.format(filename))
+            with open(filename, 'rb') as f:
+                data = f.read()
+            # Parsing XML
+            soup = bs4.BeautifulSoup(data, 'lxml-xml')
+            logger.info('Loaded {} into memory ...'. format(filename))
+            #Extract fields from the soup
+            tag0 = self.xml_tag_toplevel
+            tag = self.xml_tag_entry
+            bowl = soup.find(tag0) if tag0 else soup
+            if bowl:
+                for spoon in bowl.find_all(tag):
+                    pass
 
-        # # Loading XML
-        # logger.info('Reading XML file {} ...'.format(filename))
-        # with open(filename, 'rb') as f:
-        #     data = f.read()
-
-        # # Parsing XML
-        # soup = bs4.BeautifulSoup(data, 'lxml-xml')
-
-        # logger.info('Loaded {} into memory ...'.format(filename))
-
-        # # Extract fields from soup
-        # tag0 = self.xml_tag_toplevel
-        # tag  = self.xml_tag_entry
-        # bowl = soup.find(tag0) if tag0 else soup
-        # if bowl:
-        #     for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find direct descendants of the top-level tag
         #         yield {
         #             field.name : field.extractor.apply(
         #                 # The extractor is put to work by simply throwing at it
