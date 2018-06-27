@@ -437,7 +437,6 @@ def until(year):
     return f
 
 
-
 def after(year):
     '''
     Returns a predicate to determine from metadata whether its 'date' field
