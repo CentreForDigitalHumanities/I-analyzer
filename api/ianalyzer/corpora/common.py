@@ -264,17 +264,10 @@ class XMLCorpus(Corpus):
         else:
             document_files = [source]
         for filename, metadata in document_files:
-            # Loading XML
-            logger.info('Reading document XML file {} ...'.format(filename))
-            with open(filename, 'rb') as f:
-                data = f.read()
-            # Parsing XML
-            soup = bs4.BeautifulSoup(data, 'lxml-xml')
-            logger.info('Loaded {} into memory ...'. format(filename))
+            soup = self.soup_from_xml(filename)
             #Extract fields from the soup
-            tag0 = self.xml_tag_toplevel
             tag = self.xml_tag_entry
-            bowl = soup.find(tag0) if tag0 else soup
+            bowl = self.bowl_from_soup(soup)
             if bowl:
                 for spoon in bowl.find_all(tag):
                     # yield the union of external fields and document fields
@@ -297,25 +290,18 @@ class XMLCorpus(Corpus):
         for file_tag in external_fields.keys():
                 files_by_tag = [(filename, metadata) for filename, metadata in source if ('file_tag' in metadata) and (metadata['file_tag']==file_tag)]
                 for filename, metadata in files_by_tag:
-                    # Loading XML
-                    logger.info('Reading external XML file {}...'.format(filename))
-                    with open(filename, 'rb') as f:
-                        data = f.read()
-                    # Parsing xml
-                    soup = bs4.BeautifulSoup(data, 'lxml-xml')
-                    logger.info('Loaded {} into memory ...'.format(filename))
+                    soup = self.soup_from_xml(filename)
                     # Extract fields from soup
                     for field in external_fields[file_tag]:
-                        tag0 = field.extractor.external_file['xml_tag_toplevel']
                         tag  = field.extractor.external_file['xml_tag_entry']
-                        bowl = soup.find(tag0) if tag0 else soup
+                        bowl = self.bowl_from_soup(soup, field.extractor.external_file['xml_tag_toplevel'])
                         if bowl:
                             for spoon in bowl.find_all(tag):
                                 external_dict[field.name] = field.extractor.apply(
                                     soup_top=bowl,
-                                    soup_entry=spoon
+                                    soup_entry=spoon,
+                                    metadata=metadata
                                 )
-                    
                         else:
                             logger.warning('Top-level tag not found in `{}`'.format(filename))
         return external_dict
@@ -337,6 +323,33 @@ class XMLCorpus(Corpus):
             except AttributeError:
                 regular_fields.append(field)
         return regular_fields, external_fields
+
+
+    def soup_from_xml(self, filename):
+        '''
+        Returns beatifulsoup soup object for a given xml file
+        '''
+        # Loading XML
+        logger.info('Reading XML file {} ...'.format(filename))
+        with open(filename, 'rb') as f:
+            data = f.read()
+        # Parsing XML
+        logger.info('Loaded {} into memory...'.format(filename))
+
+        return bs4.BeautifulSoup(data, 'lxml-xml')
+
+        
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
+        '''
+        Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
+        If no such tag is present, it contains the entire soup.
+        '''
+        if toplevel_tag == None:
+            toplevel_tag = self.xml_tag_toplevel
+        if entry_tag == None:
+            entry_tag = self.xml_tag_entry
+
+        return soup.find(toplevel_tag) if toplevel_tag else soup
 
 
 # Fields ######################################################################
@@ -422,6 +435,7 @@ def until(year):
         date = metadata.get('date')
         return date and date.year <= year
     return f
+
 
 
 def after(year):

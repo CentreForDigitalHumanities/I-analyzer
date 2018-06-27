@@ -185,3 +185,9 @@ class DutchNewspapers(XMLCorpus):
             extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
         ),
     ]
+
+if __name__ == '__main__':
+    c = DutchNewspapers()
+    d = c.documents()
+
+    print(next(d))
