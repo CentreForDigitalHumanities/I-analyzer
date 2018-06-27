@@ -50,7 +50,7 @@ export class UserService implements OnDestroy {
      * Get the current user or fallback to guest
      */
     private async getCurrentUserOrFallback() {
-        return this.currentUser || (this.supportGuest ? await this.loginAsGuest() : false);
+        return this.currentUser || this.supportGuest && await this.loginAsGuest() || false;
     }
 
     private get currentUser(): User | false {

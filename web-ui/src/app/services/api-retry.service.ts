@@ -37,6 +37,6 @@ export class ApiRetryService {
                     this.logService.error(`${response.status}: ${response.statusText}`);
                     throw response;
                 }
-            }))
+            }));
     }
 }
