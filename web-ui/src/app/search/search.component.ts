@@ -139,11 +139,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
+        console.log("filter enabled!")
         let field = this.queryField[name];
         field.useAsFilter = !field.useAsFilter; 
         this.toggleFilterFields();
     }
 
+    /*** three scenarios:
+    * user interacts with the widgets on the button -> every action should 
+    */
     public toggleFilterFields() {
         this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
