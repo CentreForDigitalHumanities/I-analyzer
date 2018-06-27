@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -7,11 +7,11 @@ import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam } from '../models/index';
+import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
-    selector: 'app-search',
+    selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
@@ -70,7 +70,20 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchQueryText: string;
     public results: SearchResults;
 
+    public sortAscending: boolean;
+    public sortField: CorpusField | undefined;
+
     public searchResults: { [fieldName: string]: any }[];
+
+    /**
+     * For failed searches.
+     */
+    public showError: false | undefined | {
+        date: string,
+        href: string,
+        message: string
+    };
+
     private selectedAll: boolean = true;
 
     private subscription: Subscription | undefined;
@@ -82,6 +95,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private manualService: ManualService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
+        private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
         private title: Title) {
     }
@@ -99,9 +113,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
-                let fieldsSet = this.setFieldsFromParams(corpus.fields, params);
+                let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
+                this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
@@ -144,13 +159,18 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
-
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
 
+    public changeSorting(event: SortEvent) {
+        this.sortField = event.field;
+        this.sortAscending = event.ascending;
+        this.search();
+    }
+
     public search() {
-        let queryModel = this.searchService.makeQueryModel(this.queryText, this.getQueryFields(), this.getFilterData());
+        let queryModel = this.createQueryModel();
         let route = this.searchService.queryModelToRoute(queryModel);
         this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
     }
@@ -183,6 +203,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         this.hasModifiedFilters = true;
         this.queryField[name].data = data;
+        this.changeDetectorRef.detectChanges();
     }
 
     public onViewDocument(document: FoundDocument) {
@@ -206,21 +227,32 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private performSearch() {
-        this.queryModel = this.searchService.makeQueryModel(this.queryText, this.getQueryFields(), this.getFilterData());
+        this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
         // store it, the user might change it in the meantime
         let currentQueryText = this.queryText;
+        let finallyReset = () => {
+            this.isSearching = false;
+            this.hasSearched = true;
+            this.searchQueryText = currentQueryText;
+        };
         this.searchService.search(
             this.queryModel,
-            this.corpus)
-            .then(results => {
-                this.results = results;
-                this.isSearching = false;
-                this.hasSearched = true;
-                this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
-                this.searchQueryText = currentQueryText;
-            });
+            this.corpus
+        ).then(results => {
+            this.results = results;
+            this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
+            finallyReset();
+        }, error => {
+            this.showError = {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
+            console.trace(error);
+            finallyReset();
+        });
         this.showFilters = true;
     }
 
@@ -243,6 +275,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
         return data;
+    }
+
+    private createQueryModel() {
+        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.getFilterData(), this.sortField, this.sortAscending);
     }
 
     /**
@@ -297,6 +333,16 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.availableQueryFields = Object.values(this.queryField);
         return fieldsSet;
+    }
+
+    private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
+        if (params.has('sort')) {
+            let [sortField, sortAscending] = params.get('sort').split(',');
+            this.sortField = corpusFields.find(field => field.name == sortField);
+            this.sortAscending = sortAscending == 'asc';
+        } else {
+            this.sortField = undefined;
+        }
     }
 }
 

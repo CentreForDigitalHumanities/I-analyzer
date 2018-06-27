@@ -13,7 +13,7 @@ def elasticsearch(corpus_name, cfg=config):
     '''
     Create ElasticSearch instance with default configuration.
     '''
-    server_name = config.get_corpus_server_name(corpus_name)
+    server_name = config.CORPUS_SERVER_NAMES[corpus_name]
     server_config = config.SERVERS[server_name]
     node = {'host': server_config['host'],
             'port': server_config['port']}

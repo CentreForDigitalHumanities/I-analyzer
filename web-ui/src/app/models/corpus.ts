@@ -39,6 +39,7 @@ export type CorpusField = {
     prominentField?: boolean,
     termFrequency?: boolean,
     hidden: boolean,
+    sortable: boolean,
     name: string,
     searchFilter: SearchFilter | null
 }

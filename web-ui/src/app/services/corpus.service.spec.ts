@@ -82,6 +82,7 @@ describe('CorpusService', () => {
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
                     "hidden": true,
+                    "sortable": false,
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
@@ -97,6 +98,7 @@ describe('CorpusService', () => {
                     "description": "Year of the financial report.",
                     "es_mapping": { "type": "integer" },
                     "hidden": false,
+                    "sortable": true,
                     "indexed": true,
                     "name": "year",
                     "prominent_field": true,
@@ -115,6 +117,7 @@ describe('CorpusService', () => {
             let allFields: CorpusField[] = [{
                 description: "Banking concern to which the report belongs.",
                 hidden: true,
+                sortable: false,
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
@@ -128,6 +131,7 @@ describe('CorpusService', () => {
             }, {
                 description: "Year of the financial report.",
                 hidden: false,
+                sortable: true,
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',

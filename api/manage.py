@@ -88,7 +88,8 @@ def guest(corpora):
 def es(corpus, start, end):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
-        this_corpus = corpora.DEFINITIONS[corpus]
+    
+    this_corpus = corpora.DEFINITIONS[corpus]
 
     try:
         if start:

@@ -4,7 +4,7 @@ from importlib import reload
 
 import pytest
 
-from ianalyzer import config, corpora
+from ianalyzer import config_fallback as config, corpora
 
 
 @pytest.fixture(scope="module")

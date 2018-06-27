@@ -33,6 +33,7 @@ describe('DocumentViewComponent', () => {
             displayType: 'text',
             description: 'Description',
             hidden: false,
+            sortable: false,
             searchFilter: null
         }];
         component.document = {

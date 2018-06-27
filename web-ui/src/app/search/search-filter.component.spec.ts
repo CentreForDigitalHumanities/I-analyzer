@@ -30,6 +30,7 @@ describe('SearchFilterComponent', () => {
             displayName: 'Test',
             displayType: 'boolean',
             hidden: false,
+            sortable: true,
             name: 'name',
             searchFilter: {
                 description: 'description',

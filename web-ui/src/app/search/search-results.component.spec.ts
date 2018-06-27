@@ -79,7 +79,8 @@ describe('Search Results Component', () => {
             description: 'Description',
             displayType: 'text',
             searchFilter: null,
-            hidden: false
+            hidden: false,
+            sortable: true
         };
     }
 
