@@ -62,7 +62,7 @@ def guest(corpora):
 
     for corpus in corpora:
         if corpus not in existing_corpora:
-            logging.critical(f'Corpus {corpus} does not exist.')
+            logging.critical('Corpus {0} does not exist.'.format(corpus))
             return None
         append_corpus_role(user, corpus)
 
@@ -88,7 +88,7 @@ def guest(corpora):
 def es(corpus, start, end):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
-    
+
     this_corpus = corpora.DEFINITIONS[corpus]
 
     try:
