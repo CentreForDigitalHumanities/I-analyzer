@@ -139,9 +139,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
-        console.log("filter enabled!")
         let field = this.queryField[name];
         field.useAsFilter = !field.useAsFilter; 
+        console.log(name, field.useAsFilter);
         this.toggleFilterFields();
     }
 

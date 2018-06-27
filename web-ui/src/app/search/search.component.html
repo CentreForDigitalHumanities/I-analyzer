@@ -89,7 +89,7 @@
                 <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
                     <div *ngIf="field.searchFilter">
-                        <a class="button is-fullwidth" role="button" aria-pressed="false" [name]="'searchByField' + field.name" [id]="'filter' + field.name" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
+                        <a class="button is-fullwidth" role="button" [name]="'searchByField' + field.name" [id]="'filter' + field.name" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" (click)="queryField[field.name].useAsFilter=!queryField[field.name].useAsFilter" ngDefaultControl>
                             <div class="filter-container">
                                 <div class="control" iaBalloon="{{ field.searchFilter.description }}">
                                     <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
