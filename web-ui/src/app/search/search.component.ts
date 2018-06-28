@@ -172,7 +172,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     public search() {
         let queryModel = this.createQueryModel();
         let route = this.searchService.queryModelToRoute(queryModel);
-        this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
+        let url = this.router.serializeUrl(this.router.createUrlTree(
+            ['.', route],
+            { relativeTo: this.activatedRoute },
+        ));
+        if (this.router.url === url) {
+            this.performSearch();
+        } else {
+            this.router.navigateByUrl(url);
+        }
     }
 
     public visualize() {
