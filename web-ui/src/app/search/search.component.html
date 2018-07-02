@@ -85,23 +85,18 @@
         <div class="tile is-ancestor">
             <!-- Filters, on left -->
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
-                <div class="field">
                 <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
                     <div *ngIf="field.searchFilter">
                         <div class="tile is-child notification box is-white" (click)="toggleFilter(field.name, $event)" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
-                       <!--  <a class="button is-fullwidth" role="button" [name]="'searchByField' + field.name" [id]="'filter' + field.name" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)" ngDefaultControl> -->
-                            <div class="filter-container">
-                                <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
-                                <div class="control" iaBalloon="{{ field.searchFilter.description }}"
-                                iaBalloonPosition="down-left">                                        
-                                    <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>                                    </div>
-                                </div>
+                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
+                            <div class="control" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
+                                <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                             </div>
-                            <br>
                         </div>
+                        <br>
+                    </div>
                 </ng-container>
-            </div>
             </div>
 
             <!-- search results, on right -->
