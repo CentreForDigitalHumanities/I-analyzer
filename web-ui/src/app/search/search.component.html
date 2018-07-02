@@ -89,12 +89,12 @@
                 <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
                     <div *ngIf="field.searchFilter">
-                        <div class="tile is-child notification box is-white" (click)="toggleFilter(field.name);" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
+                        <div class="tile is-child notification box is-white" (click)="toggleFilter(field.name, $event)" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
                        <!--  <a class="button is-fullwidth" role="button" [name]="'searchByField' + field.name" [id]="'filter' + field.name" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)" ngDefaultControl> -->
                             <div class="filter-container">
-                                <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="$event.stopPropagation()"                                        (change)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>             
+                                <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
                                 <div class="control" iaBalloon="{{ field.searchFilter.description }}"
-                                iaBalloonPosition="right">                                        
+                                iaBalloonPosition="down-left">                                        
                                     <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>                                    </div>
                                 </div>
                             </div>

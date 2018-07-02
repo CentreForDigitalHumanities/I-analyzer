@@ -140,20 +140,18 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public enableFilter(name: string) {
         let field = this.queryField[name];
-        field.useAsFilter = true; 
-        console.log(name, field.useAsFilter);
-        this.toggleFilterFields();
+        field.useAsFilter = true;
+        //this.toggleFilterFields();
     }
 
-    public toggleFilter(name:string) {
-        let field = this.queryField[name];
-        field.useAsFilter = !field.useAsFilter;
-        console.log("clicked", field.useAsFilter);
+    public toggleFilter(name:string, event) {
+        // allow switching a single filter on and off by clicking on its tile or label
+        if (event.target.classList.contains("tile") || event.target.nodeName==="LABEL") {
+            let field = this.queryField[name];
+            field.useAsFilter = !field.useAsFilter;
+        }
     }
 
-    /*** three scenarios:
-    * user interacts with the widgets on the button -> every action should 
-    */
     public toggleFilterFields() {
         this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
