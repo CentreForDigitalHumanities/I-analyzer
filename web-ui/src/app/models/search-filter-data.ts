@@ -27,7 +27,7 @@ export type SearchFilterName = SearchFilterData["filterName"];
 export function searchFilterDataToParam(data: SearchFilterData): string | string[] {
     switch (data.filterName) {
         case "BooleanFilter":
-            return `${data}`;
+            return `${data.data}`;
         case "MultipleChoiceFilter":
             return data.data as string[];
         case "RangeFilter": {
