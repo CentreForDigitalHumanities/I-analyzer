@@ -21,6 +21,10 @@ export class CorpusService {
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
+        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name == corpusName) {
+            // no need to retrieve the corpus again if nothing changed
+            return Promise.resolve(true);
+        }
         return this.get().then(all => {
             let corpus = all.find(c => c.name == corpusName);
             if (!corpus) {
@@ -46,6 +50,7 @@ export class CorpusService {
         let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
 
         return new Corpus(
+            data.server_name,
             name,
             data.title,
             data.description,
@@ -64,6 +69,7 @@ export class CorpusService {
             prominentField: data.prominent_field,
             visualizationType: data.visualization_type,
             hidden: data.hidden,
+            sortable: data.sortable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
         }

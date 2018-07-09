@@ -6,22 +6,26 @@ import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilte
 
 import { ApiService } from './api.service';
 
+type Connections = { [serverName: string]: Connection };
+
 @Injectable()
 export class ElasticSearchService {
-    private connection: Promise<Connection>;
+    private connections: Promise<Connections>;
 
     constructor(apiService: ApiService) {
-        this.connection = apiService.esConfig().then(config => {
-            return {
-                config,
-                client: new Client({
-                    host: config.host + (config.port ? `:${config.port}` : ''),
-                })
-            };
-        });
+        this.connections = apiService.esConfig().then(configs =>
+            configs.reduce((connections: Connections, config) => {
+                connections[config.name] = {
+                    config,
+                    client: new Client({
+                        host: config.host + (config.port ? `:${config.port}` : ''),
+                    })
+                }
+                return connections;
+            }, {}));
     }
 
-    private makeEsQuery(queryModel: QueryModel): EsQuery {
+    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
 
         if (queryModel.queryText) {
@@ -41,9 +45,10 @@ export class ElasticSearchService {
             };
         }
 
+        let query: EsQuery | EsQuerySorted;
         if (queryModel.filters) {
-            return {
-                query: {
+            query = {
+                'query': {
                     'bool': {
                         must: clause,
                         filter: this.mapFilters(queryModel.filters),
@@ -51,10 +56,18 @@ export class ElasticSearchService {
                 }
             }
         } else {
-            return {
-                query: clause
+            query = {
+                'query': clause
             }
         }
+
+        if (queryModel.sortBy) {
+            (query as EsQuerySorted).sort = [{
+                [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
+            }];
+        }
+
+        return query;
     }
 
     /**
@@ -71,7 +84,7 @@ export class ElasticSearchService {
     }
 
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
-        return this.connection.then((connection) => connection.client.search({
+        return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
             type: index.doctype,
             size: 0,
@@ -82,14 +95,15 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
-        return this.connection.then((connection) => connection.client.search<T>({
+    private async execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number) {
+        let connection = (await this.connections)[index.serverName];
+        return connection.client.search<T>({
             index: index.index,
             type: index.doctype,
             size: size,
             body: esQuery,
             scroll: connection.config.scrollTimeout
-        }));
+        });
     }
 
     /**
@@ -102,12 +116,21 @@ export class ElasticSearchService {
         return new Observable((observer) => {
             let retrieved = 0;
             let esQuery = this.makeEsQuery(queryModel);
-            this.connection.then((connection) => {
-                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
-                    let result = this.parseResponse(response, queryModel, retrieved);
-                    retrieved += result.retrieved;
+            this.connections.then((connections) => {
+                let connection = connections[corpusDefinition.serverName];
+                let getPageSize = () => {
+                    let pageSize = connection.config.scrollPagesize;
+                    let left = Math.min(size, retrieved + pageSize) - retrieved;
+                    return Math.min(left, pageSize);
+                }
 
-                    if (!result.completed && retrieved < size) {
+                let getMoreUntilDone = (error: any, response: SearchResponse<{}>) => {
+                    // only get the number of results specified in the configuration
+                    let pageSize = getPageSize();
+                    let result = this.parseResponse(response, queryModel, retrieved, pageSize);
+                    retrieved = result.retrieved;
+
+                    if (getPageSize() > 0 && !result.completed && retrieved < size) {
                         // now we can call scroll over and over
                         observer.next(result);
                         connection.client.scroll({
@@ -125,7 +148,7 @@ export class ElasticSearchService {
                     body: esQuery,
                     index: corpusDefinition.index,
                     type: corpusDefinition.doctype,
-                    size: connection.config.scrollPagesize,
+                    size: getPageSize(),
                     scroll: connection.config.scrollTimeout
                 }, getMoreUntilDone);
             });
@@ -135,7 +158,7 @@ export class ElasticSearchService {
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         let aggregation = this.makeAggregation(aggregator);
         let esQuery = this.makeEsQuery(queryModel);
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
 
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
@@ -150,22 +173,22 @@ export class ElasticSearchService {
     }
 
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        return this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize)
-            .then(result => this.parseResponse(result, queryModel, 0));
+        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        return this.parseResponse(response, queryModel, 0);
     }
 
     /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
-    public async loadMore(existingResults: SearchResults): Promise<SearchResults> {
+    public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {
         if (!existingResults.scrollId) {
             throw 'No scroll ID found.';
         }
 
-        let connection = await this.connection;
+        let connection = (await this.connections)[corpusDefinition.serverName];
         let response = await connection.client.scroll({
             scrollId: existingResults.scrollId,
             scroll: connection.config.scrollTimeout
@@ -184,11 +207,12 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0): SearchResults {
-        let retrieved = alreadyRetrieved += response.hits.hits.length;
+    private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
+        let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
+        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
-            documents: response.hits.hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
+            documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
             retrieved,
             total: response.hits.total,
             queryModel,
@@ -243,7 +267,9 @@ type Connection = {
         scrollTimeout: string
     }
 };
-
+type EsQuerySorted = EsQuery & {
+    sort: { [fieldName: string]: 'desc' | 'asc' }[]
+};
 type EsQuery = {
     aborted?: boolean,
     completed?: Date,
@@ -264,6 +290,6 @@ type EsSearchClause = {
         default_operator: 'or'
     }
 } | {
-    match_all: {}
-};
+        match_all: {}
+    };
 

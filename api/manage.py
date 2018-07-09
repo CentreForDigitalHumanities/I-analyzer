@@ -26,7 +26,7 @@ migrate = Migrate(app, db)
 @click.option('--pwd', prompt='Please enter password', hide_input=True,
               confirmation_prompt=True, help='Password for superuser.')
 def admin(name, pwd):
-    ''' Create a superuser with admin rights and access to all corpora. 
+    ''' Create a superuser with admin rights and access to all corpora.
     If an admin role does not exist yet, it will be created.
     If roles for the defined corpora do not exist yet, they will be created.
     '''
@@ -41,12 +41,12 @@ def admin(name, pwd):
         role_admin = Role('admin', 'Administrator role.')
         db.session.add(role_admin)
     user.roles.append(role_admin)
-    
+
     for corpus in list(config.CORPORA.keys()):
         role_corpus = Role.query.filter_by(name=corpus).all()
         if not role_corpus:
             role_corpus = Role(
-                corpus, 
+                corpus,
                 'Role for users who may access {0} data'.format(corpus)
             )
             db.session.add(role_corpus)
@@ -64,28 +64,29 @@ def admin(name, pwd):
     'If not set, first corpus of CORPORA in config.py will be indexed'
 )
 @click.option(
-    '--start', '-s', 
-    help='Set the date where indexing should start.' + 
-    'The input format is YYYY-MM-DD.' + 
+    '--start', '-s',
+    help='Set the date where indexing should start.' +
+    'The input format is YYYY-MM-DD.' +
     'If not set, indexing will start from corpus minimum date.'
 )
 @click.option(
-    '--end', '-e', 
-    help='Set the date where indexing should end' + 
+    '--end', '-e',
+    help='Set the date where indexing should end' +
     'The input format is YYYY-MM-DD.' +
     'If not set, indexing will start from corpus maximum date.'
-)        
+)
 def es(corpus, start, end):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
-        this_corpus = corpora.DEFINITIONS[corpus]
+    
+    this_corpus = corpora.DEFINITIONS[corpus]
 
     try:
         if start:
             start_index = datetime.strptime(start, '%Y-%m-%d')
         else:
-            start_index = this_corpus.min_date            
-            
+            start_index = this_corpus.min_date
+
         if end:
             end_index = datetime.strptime(end, '%Y-%m-%d')
         else:
@@ -97,8 +98,8 @@ def es(corpus, start, end):
             'Example call: flask es -c times -s 1785-01-01 -e 2010-12-31'
         )
         raise
-        
-    perform_indexing(this_corpus, start_index, end_index)
+
+    perform_indexing(corpus, this_corpus, start_index, end_index)
 
 
 if __name__ == '__main__':
