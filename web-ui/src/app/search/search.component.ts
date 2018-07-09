@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -146,10 +146,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public toggleFilter(name:string, event) {
         // allow switching a single filter on and off by clicking on its tile or label
-        if (event.target.classList.contains("tile") || event.target.nodeName==="LABEL") {
-            let field = this.queryField[name];
-            field.useAsFilter = !field.useAsFilter;
-        }
+        //if (event.target.classList.contains("tile") || event.target.nodeName==="LABEL") {
+        let field = this.queryField[name]
+        field.useAsFilter = !field.useAsFilter;
+        //}
     }
 
     public toggleFilterFields() {

@@ -87,14 +87,21 @@
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
                 <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
-                    <div *ngIf="field.searchFilter">
-                        <div class="tile is-child notification box is-white" (click)="toggleFilter(field.name, $event)" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}" ngDefaultControl>
-                            <div class="control" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
-                                <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                    <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
+                        <!-- <div class="tile is-child notification box is-white filter-container" (click)="toggleFilter(field.name, $event)" ngDefaultControl> -->
+                            <div class="field has-addons">
+                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
+                                    <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                                </div>
+                                <p class="control">
+                                    <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
+                                        <i class="fa fa-filter"></i>
+                                     </span>
+                                 </p>
                             </div>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
-                        </div>
-                        <br>
+                        <!-- </div>
+                        <br> -->
                     </div>
                 </ng-container>
             </div>
