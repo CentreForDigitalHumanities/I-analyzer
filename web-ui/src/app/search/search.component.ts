@@ -141,23 +141,23 @@ export class SearchComponent implements OnInit, OnDestroy {
     public enableFilter(name: string) {
         let field = this.queryField[name];
         field.useAsFilter = true;
-        //this.toggleFilterFields();
+        this.toggleFilterFields();
     }
 
+    // control whether a given filter is applied or not
     public toggleFilter(name:string, event) {
-        // allow switching a single filter on and off by clicking on its tile or label
-        //if (event.target.classList.contains("tile") || event.target.nodeName==="LABEL") {
         let field = this.queryField[name]
         field.useAsFilter = !field.useAsFilter;
-        //}
     }
 
+    // fields that are used as filters aren't searched in
     public toggleFilterFields() {
         this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
 
+    // fields that are searched in aren't used as filters
     public toggleQueryFields(event) {
         // We don't allow searching and filtering by the same field.
         for (let field of event.value) {
@@ -167,6 +167,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
+    // control whether the filters are hidden
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
