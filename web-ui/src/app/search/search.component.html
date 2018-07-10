@@ -93,7 +93,7 @@
                                 <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                             </div>
                             <p class="control">
-                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
+                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
                                     <i class="fa fa-filter"></i>
                                  </span>
                              </p>
