@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -144,12 +144,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.toggleFilterFields();
     }
 
+    // control whether a given filter is applied or not
+    public toggleFilter(name:string, event) {
+        let field = this.queryField[name]
+        field.useAsFilter = !field.useAsFilter;
+    }
+
+    // fields that are used as filters aren't searched in
     public toggleFilterFields() {
         this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
 
+    // fields that are searched in aren't used as filters
     public toggleQueryFields(event) {
         // We don't allow searching and filtering by the same field.
         for (let field of event.value) {
@@ -159,6 +167,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
+    // control whether the filters are hidden
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
@@ -357,6 +366,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean,
+    useAsFilter: boolean, 
     visible: boolean
 };

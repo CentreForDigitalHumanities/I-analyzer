@@ -85,16 +85,20 @@
         <div class="tile is-ancestor">
             <!-- Filters, on left -->
             <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
+                <h4 class="title is-4">Filters</h4>
                 <ng-container *ngFor="let field of corpus.fields">
-                    <div class="box" *ngIf="field.searchFilter" [ngClass]="{'is-primary':queryField[field.name].useAsFilter}">
-                        <label class="label" [for]="'filter' + field.name">Filter ({{ field.name }})</label>
-                        <label>
-                            <div class="checkbox">
-                                <input [(ngModel)]="queryField[field.name].useAsFilter" [name]="'searchByField' + field.name" [id]="'filter' + field.name" type="checkbox" (change)="toggleFilterFields()">
-                            </div> {{ field.searchFilter.description }}
-                        </label>
-                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
-                            (click)="enableFilter(field.name)" (update)="updateFilterData(field.name, $event)"></search-filter>
+                    <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
+                        <div class="field has-addons">
+                            <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
+                                <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                            </div>
+                            <p class="control">
+                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
+                                    <i class="fa fa-filter"></i>
+                                 </span>
+                             </p>
+                        </div>
+                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
                     </div>
                 </ng-container>
             </div>
