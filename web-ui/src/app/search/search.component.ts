@@ -115,7 +115,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
-                console.log(this.queryField);
                 this.setSortFromParams(this.corpus.fields, params);
 
                 if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
@@ -276,7 +275,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                 data.push(field.data);
             }
         }
-        this.searchFilterData = data;
         return data;
     }
 
@@ -318,18 +316,24 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
                 fieldsSet = true;
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.getAll(param)),
                     useAsFilter: true,
                     visible: true
                 }, field);
             } else {
-                console.log(this.queryField[field.name])
-                let auxField = this.queryField[field.name] = Object.assign({
+                // this field is not found in the route
+                let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
                     visible: true
                 }, field);
-                console.log(this.queryField[field.name]);
+                // in case there have been some settings before (i.e., from a deactivated filter), retain them
+                if (this.queryField[field.name]) {
+                    this.queryField[field.name].useAsFilter = false;
+                }
+                else {
+                    this.queryField[field.name] = auxField;
+                }
                 if (queryRestriction.includes(field.name)) {
                     this.selectedQueryFields.push(auxField);
                 }
