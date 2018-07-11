@@ -13,6 +13,7 @@ import { ConfigService, UserService } from '../services/index';
 export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
+    public isGuest: boolean = true;
 
     private routerSubscription: Subscription;
     private menuItems: MenuItem[];
@@ -35,22 +36,28 @@ export class MenuComponent implements OnDestroy, OnInit {
         });
     }
 
-    public logout() {
-        this.currentUser = undefined;
-        this.userService.logout();
+    public async logout() {
+        let user = await this.userService.logout();
+        this.currentUser = user;
+    }
+
+    public async login() {
+        this.userService.showLogin(this.router.url);
     }
 
     private checkCurrentUser() {
-        this.userService.checkSession().then(success => {
-            if (success && this.userService.currentUser) {
-                if (this.userService.currentUser == this.currentUser) {
+        this.userService.getCurrentUser().catch(() => false).then(currentUser => {
+            if (currentUser) {
+                if (currentUser == this.currentUser) {
                     // nothing changed
                     return;
                 }
-                this.currentUser = this.userService.currentUser;
+                this.currentUser = currentUser as User;
                 this.isAdmin = this.currentUser.hasRole('admin');
+                this.isGuest = this.currentUser.hasRole('guest');
             } else {
                 this.isAdmin = false;
+                this.isGuest = true;
             }
 
             this.setMenuItems();
@@ -66,17 +73,23 @@ export class MenuComponent implements OnDestroy, OnInit {
                     this.router.navigate(['search-history'])
                 }
             },
-            ...this.isAdmin ? [
-                {
-                    label: 'Administration',
-                    icon: 'fa-cogs',
-                    command: (click) => this.gotoAdmin(),
-                }] : [],
-            {
-                label: 'Exit',
-                icon: 'fa-sign-out',
-                command: (onclick) => this.logout()
-            }
+            ...this.isAdmin
+                ? [
+                    {
+                        label: 'Administration',
+                        icon: 'fa-cogs',
+                        command: (click) => this.gotoAdmin(),
+                    }] : [],
+            this.isGuest
+                ? {
+                    label: 'Sign in',
+                    icon: 'fa-sign-in',
+                    command: (onclick) => this.login()
+                } : {
+                    label: 'Exit',
+                    icon: 'fa-sign-out',
+                    command: (onclick) => this.logout()
+                }
         ];
     }
 }

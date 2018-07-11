@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ButtonModule, MenuModule } from 'primeng/primeng';
 
 import { ConfigService, UserService } from '../services/index';
+import { UserServiceMock } from '../services/user.service.mock';
 import { MenuComponent } from './menu.component';
 
 describe('MenuComponent', () => {
@@ -19,11 +20,7 @@ describe('MenuComponent', () => {
                 { provide: Router, useValue: { events: Observable.of({}) } },
                 { provide: ConfigService, useValue: {} },
                 {
-                    provide: UserService, useValue: {
-                        checkSession: () => {
-                            return Promise.resolve(true)
-                        }
-                    }
+                    provide: UserService, useValue: new UserServiceMock()
                 }
             ]
         }).compileComponents();

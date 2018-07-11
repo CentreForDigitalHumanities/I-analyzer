@@ -11,12 +11,12 @@ export class LoggedOnGuard implements CanActivate {
 
     canActivate(
         next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.userService.currentUser) {
-            return true;
-        }
-
-        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-        return false;
+        state: RouterStateSnapshot): Promise<boolean> {
+        return this.userService.getCurrentUser()
+            .then(user => !!user)
+            .catch(() => {
+                this.userService.showLogin(state.url);
+                return false;
+            });
     }
 }

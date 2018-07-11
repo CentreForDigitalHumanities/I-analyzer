@@ -2,7 +2,9 @@ import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 
 import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
+import { LogService } from './log.service';
 import { UserService } from './user.service';
 import { UserServiceMock } from './user.service.mock';
 
@@ -22,8 +24,10 @@ describe('CorpusService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
+                ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
+                LogService,
                 { provide: UserService, useValue: userServiceMock }]
         });
         service = TestBed.get(CorpusService);
@@ -66,6 +70,7 @@ describe('CorpusService', () => {
     it('should parse filters', () => {
         apiServiceMock.fakeResult['corpus'] = {
             "times": {
+                "server_name": "default",
                 "title": "Times",
                 "description": "This is a description.",
                 "es_doctype": "article",
@@ -77,6 +82,7 @@ describe('CorpusService', () => {
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
                     "hidden": true,
+                    "sortable": false,
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
@@ -92,6 +98,7 @@ describe('CorpusService', () => {
                     "description": "Year of the financial report.",
                     "es_mapping": { "type": "integer" },
                     "hidden": false,
+                    "sortable": true,
                     "indexed": true,
                     "name": "year",
                     "prominent_field": true,
@@ -110,6 +117,7 @@ describe('CorpusService', () => {
             let allFields: CorpusField[] = [{
                 description: "Banking concern to which the report belongs.",
                 hidden: true,
+                sortable: false,
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
@@ -123,6 +131,7 @@ describe('CorpusService', () => {
             }, {
                 description: "Year of the financial report.",
                 hidden: false,
+                sortable: true,
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
@@ -136,6 +145,7 @@ describe('CorpusService', () => {
                 }
             }];
             expect(items).toEqual([new Corpus(
+                'default',
                 'times',
                 'Times',
                 'This is a description.',

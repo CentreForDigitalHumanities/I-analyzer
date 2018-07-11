@@ -9,7 +9,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -20,38 +20,88 @@ export class SearchService {
         private logService: LogService) {
     }
 
-    public makeQueryModel(queryText: string = '', filters: SearchFilterData[] = []): QueryModel {
-        return <QueryModel> {
-            queryText: queryText,
-            filters: filters
-        }
+    /**
+     * Loads more results and returns an object containing the existing and newly found documents.
+     */
+    public async loadMore(corpus: Corpus, existingResults: SearchResults): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
+        let results = await this.elasticSearchService.loadMore(corpus, existingResults);
+        return this.limitResults(results);
     }
 
-    // fields: CorpusField[] = [],
+    /**
+     * Construct a dictionary representing an ES query.
+     * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
+     * @param fields Optional list of fields to restrict the queryString to.
+     * @param filters A list of dictionaries representing the ES DSL.
+     */
+    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
+        let model: QueryModel = {
+            queryText: queryText,
+            filters: filters,
+            sortBy: sortField ? sortField.name : undefined,
+            sortAscending: sortAscending
+        };
+        if (fields) {
+            model.fields = fields;
+        }
+        return model;
+    }
+
+    public queryModelToRoute(queryModel: QueryModel): any {
+        let route = {
+            query: queryModel.queryText || ''
+        };
+
+        if (queryModel.fields) {
+            route['fields'] = queryModel.fields.join(',');
+        }
+
+        for (let filter of queryModel.filters.map(data => {
+            return {
+                param: this.getParamForFieldName(data.fieldName),
+                value: searchFilterDataToParam(data)
+            };
+        })) {
+            route[filter.param] = filter.value;
+        }
+
+        if (queryModel.sortBy) {
+            route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
+        } else {
+            delete route['sort'];
+        }
+
+        return route;
+    }
+
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let query = new Query(queryModel, corpus.name, this.userService.getCurrentUserOrFail().id);
+        let user = await this.userService.getCurrentUser();
+        let query = new Query(queryModel, corpus.name, user.id);
         let querySave = this.queryService.save(query, true);
-        let result = await this.elasticSearchService.search(corpus, queryModel);
+        let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
-                    // update the last saved query object, it might have changed on the server
-                    
-                if (!result.completed) {
-                    savedQuery.aborted = true;
-                }
-                savedQuery.transferred = result.total;
-                this.queryService.save(savedQuery, undefined, result.completed);
+            // update the last saved query object, it might have changed on the server
+            if (!results.completed) {
+                savedQuery.aborted = true;
+            }
+            savedQuery.transferred = results.total;
+            this.queryService.save(savedQuery, undefined, results.completed);
         });
 
         return <SearchResults>{
-            completed: true,
+            completed: results.completed,
             fields: corpus.fields.filter(field => field.prominentField),
-            total: result.total,
-            documents: result.documents
+            total: results.total,
+            documents: results.documents,
+            queryModel: queryModel,
+            retrieved: results.retrieved,
+            scrollId: results.scrollId
         };
     }
 
-    public searchObservable(corpus: Corpus, queryModel: QueryModel): Observable<SearchResults> {
+    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
         let completed = false;
         let totalTransferred = 0;
 
@@ -60,7 +110,7 @@ export class SearchService {
 
         // Perform the search and obtain output stream
         return this.elasticSearchService.searchObservable(
-            corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit);
+            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
     }
 
     public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
@@ -75,21 +125,21 @@ export class SearchService {
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
-        return new Promise<string[][]>((resolve, reject) => {
+        return new Promise<string[][]>(async (resolve, reject) => {
             let rows: string[][] = [];
-            this.searchObservable(corpus, queryModel)
+            (await this.searchObservable(corpus, queryModel))
                 .subscribe(
-                result => {
-                    rows.push(...
-                        result.documents.map(document =>
-                            this.documentRow(document, fields.map(field => field.name))
-                        )
-                    );
+                    result => {
+                        rows.push(...
+                            result.documents.map(document =>
+                                this.documentRow(document, fields.map(field => field.name))
+                            )
+                        );
 
-                    totalTransferred = result.retrieved;
-                },
-                (error) => reject(error),
-                () => resolve(rows));
+                        totalTransferred = result.retrieved;
+                    },
+                    (error) => reject(error),
+                    () => resolve(rows));
         });
     }
 
@@ -117,4 +167,16 @@ export class SearchService {
         return String(value);
     }
 
-};
+    private async limitResults(results: SearchResults) {
+        let downloadLimit = (await this.userService.getCurrentUser()).downloadLimit;
+        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
+            // download limit exceeded
+            results.completed = true;
+        }
+        return results;
+    }
+
+    public getParamForFieldName(fieldName: string) {
+        return `$${fieldName}`;
+    }
+}

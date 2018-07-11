@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { Query } from '../models/query';
 
 @Injectable()
 export class QueryService {
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiRetryService: ApiRetryService) { }
 
     async save(query: Query, started = false, completed = false): Promise<Query> {
         let queryCommand = {
@@ -20,7 +20,7 @@ export class QueryService {
             transferred: query.transferred
         };
 
-        let response = await this.apiService.query(queryCommand);
+        let response = await this.apiRetryService.requireLogin(api => api.query(queryCommand));
 
         return {
             id: response.id,
@@ -50,7 +50,7 @@ export class QueryService {
     */
 
     async retrieveQueries(): Promise<Query[]> {
-        let response = await this.apiService.search_history();
-        return response.queries
+        let response = await this.apiRetryService.requireLogin(api => api.search_history());
+        return response.queries;
     }
 }

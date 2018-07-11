@@ -1,3 +1,6 @@
 __pycache__/
 ianalyzer/config.py
+indexing*
 *.pyc
+.cache
+*.egg-info

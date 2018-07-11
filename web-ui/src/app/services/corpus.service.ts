@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
 
@@ -13,7 +13,7 @@ export class CorpusService {
 
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
-    constructor(private apiService: ApiService, private userService: UserService) {
+    constructor(private apiRetryService: ApiRetryService, private userService: UserService) {
     }
 
     /**
@@ -21,6 +21,10 @@ export class CorpusService {
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
+        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name == corpusName) {
+            // no need to retrieve the corpus again if nothing changed
+            return Promise.resolve(true);
+        }
         return this.get().then(all => {
             let corpus = all.find(c => c.name == corpusName);
             if (!corpus) {
@@ -33,11 +37,11 @@ export class CorpusService {
     }
 
     public get(): Promise<Corpus[]> {
-        return this.apiService.corpus().then(data => this.parseCorpusList(data));
+        return this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
     }
 
-    private parseCorpusList(data: any): Corpus[] {
-        let currentUser = this.userService.getCurrentUserOrFail();
+    private async parseCorpusList(data: any): Promise<Corpus[]> {
+        let currentUser = await this.userService.getCurrentUser();
         let availableCorpora = Object.keys(data).filter(name => currentUser.hasRole(name));
         return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
@@ -46,6 +50,7 @@ export class CorpusService {
         let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
 
         return new Corpus(
+            data.server_name,
             name,
             data.title,
             data.description,
@@ -64,6 +69,7 @@ export class CorpusService {
             prominentField: data.prominent_field,
             termFrequency: data.term_frequency,
             hidden: data.hidden,
+            sortable: data.sortable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
         }

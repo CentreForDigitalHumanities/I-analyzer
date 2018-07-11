@@ -1,3 +1,2 @@
-export * from './display-filter.pipe'
-export * from './display-query-text.pipe'
+export * from './history-query-display.component'
 export * from './search-history.component'

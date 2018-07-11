@@ -293,9 +293,9 @@ class Field(object):
     '''
     Fields hold data about the name of their columns in CSV files, how the
     corresponding content is to be extracted from the source, how they are
-    described in user interfaces, whether the field lends itself to term 
-    frequency queries, whether it has prominent information 
-    for the user interface, 
+    described in user interfaces, whether the field lends itself to term
+    frequency queries, whether it has prominent information
+    for the user interface,
     what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
 
@@ -311,11 +311,12 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
-            term_frequency=False,
+            visualization_type=False,
             prominent_field=False,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
             extractor=extract.Constant(None),
+            sortable=None,
             **kwargs
             ):
 
@@ -330,6 +331,18 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
+        
+        # We need fields which can be easily mapped to an actual sortable
+        # field in Elastic Search. Sorting on XML, or combined fields
+        # is also possible but requires that this behavior is defined when
+        # performing a sorted search.
+        self.sortable = sortable if sortable != None else indexed and not hidden and \
+            not (isinstance(extractor, (
+                    extract.Choice,
+                    extract.Combined,
+                    extract.XML,
+                    extract.Constant
+                )))
 
         # Add back reference to field in filter
         if self.search_filter:

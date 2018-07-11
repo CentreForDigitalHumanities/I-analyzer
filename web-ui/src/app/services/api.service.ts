@@ -4,7 +4,6 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
-import { SessionService } from './session.service';
 import { SearchFilterData, UserRole, Query } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -21,12 +20,13 @@ type QueryDb<TDateType> = {
     aborted: boolean,
     transferred: number
 }
+
 @Injectable()
 @RestParams()
 export class ApiService extends Rest {
     private apiUrl: Promise<string> | null = null;
 
-    constructor(private config: ConfigService, private sessionService: SessionService, restHandler: RestHandler) {
+    constructor(private config: ConfigService, restHandler: RestHandler) {
         super(restHandler);
     }
 
@@ -54,7 +54,8 @@ export class ApiService extends Rest {
         method: RestRequestMethod.Get,
         path: '/es_config'
     })
-    public esConfig: RestMethod<void, {
+    public esConfig: RestMethod<void, [{
+        'name': string,
         'host': string,
         'port': number,
         'chunkSize': number,
@@ -63,7 +64,7 @@ export class ApiService extends Rest {
         'overviewQuerySize': number,
         'scrollTimeout': string,
         'scrollPagesize': number
-    }>;
+    }]>;
 
     @RestAction({
         method: RestRequestMethod.Post,
@@ -79,7 +80,7 @@ export class ApiService extends Rest {
     })
     public login: RestMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number, queries: Query[] }>;
+        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

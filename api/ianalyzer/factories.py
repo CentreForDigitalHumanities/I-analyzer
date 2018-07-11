@@ -3,21 +3,22 @@ For creation of Flask and ElasticSearch objects.
 '''
 
 from flask import Flask
-from flask_scss import Scss
 
 from elasticsearch import Elasticsearch
 
-from . import config
+from . import config_fallback as config
 from .models import db
 
-def elasticsearch(cfg=config):
+def elasticsearch(corpus_name, cfg=config):
     '''
     Create ElasticSearch instance with default configuration.
     '''
-    node = {'host': cfg.ES_HOST,
-            'port': cfg.ES_PORT}
-    if cfg.ES_USERNAME:
-        node['http_auth'] = (cfg.ES_USERNAME, cfg.ES_PASSWORD)
+    server_name = config.CORPUS_SERVER_NAMES[corpus_name]
+    server_config = config.SERVERS[server_name]
+    node = {'host': server_config['host'],
+            'port': server_config['port']}
+    if server_config['username']:
+        node['http_auth'] = (server_config['username'], server_config['password'])
     return Elasticsearch([node])
 
 
@@ -34,8 +35,5 @@ def flask_app(blueprint, admin_instance, login_manager, cfg=config):
     db.init_app(app)
     login_manager.init_app(app)
     admin_instance.init_app(app)
-
-
-    Scss(app)
 
     return app
