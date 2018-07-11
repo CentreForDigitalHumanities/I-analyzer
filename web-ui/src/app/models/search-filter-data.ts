@@ -44,9 +44,6 @@ export function searchFilterDataFromParam(fieldName: string, filterName: SearchF
         case "BooleanFilter":
             return { fieldName, filterName, data: value[0] === 'true' };
         case "MultipleChoiceFilter":
-            if (value===undefined) {
-                return { fieldName, filterName, data: [] };
-            }
             return { fieldName, filterName, data: value };
         case "RangeFilter": {
             let [gte, lte] = value[0].split(':');
