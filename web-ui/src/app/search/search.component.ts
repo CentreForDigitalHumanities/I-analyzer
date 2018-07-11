@@ -115,7 +115,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
-
                 if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
                     this.showVisualizationButton = true;
                 }

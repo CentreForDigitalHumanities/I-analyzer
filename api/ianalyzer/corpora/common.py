@@ -311,7 +311,7 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
-            visualization_type=False,
+            term_frequency=False,
             prominent_field=False,
             es_mapping={ 'type' : 'text' },
             search_filter=None,

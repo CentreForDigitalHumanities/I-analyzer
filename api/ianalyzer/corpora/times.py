@@ -442,6 +442,7 @@ class Times(XMLCorpus):
                 'Tables and other illustrations associated with the article.'
             ),
             es_mapping={'type': 'keyword'},
+            term_frequency=True,
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
