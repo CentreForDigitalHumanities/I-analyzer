@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { ApiService } from './api.service';
 import { ApiServiceMock } from './api.service.mock';
+import { ApiRetryService } from './api-retry.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { ElasticSearchServiceMock } from './elastic-search.service.mock';
 import { LogService } from './log.service';
@@ -17,6 +18,7 @@ describe('SearchService', () => {
             imports: [RouterTestingModule.withRoutes([])],
             providers: [
                 SearchService,
+                ApiRetryService,
                 { provide: ApiService, useValue: new ApiServiceMock() },
                 { provide: ElasticSearchService, useValue: new ElasticSearchServiceMock() },
                 LogService,

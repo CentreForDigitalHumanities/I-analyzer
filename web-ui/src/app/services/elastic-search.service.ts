@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
 import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
-import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 
 type Connections = { [serverName: string]: Connection };
 
@@ -12,8 +12,8 @@ type Connections = { [serverName: string]: Connection };
 export class ElasticSearchService {
     private connections: Promise<Connections>;
 
-    constructor(apiService: ApiService) {
-        this.connections = apiService.esConfig().then(configs =>
+    constructor(apiRetryService: ApiRetryService) {
+        this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
                 connections[config.name] = {
                     config,
@@ -302,6 +302,6 @@ type EsSearchClause = {
         default_operator: 'or'
     }
 } | {
-        match_all: {}
-    };
+    match_all: {}
+};
 

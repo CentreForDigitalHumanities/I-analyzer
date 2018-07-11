@@ -2,7 +2,9 @@ import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 
 import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
+import { LogService } from './log.service';
 import { UserService } from './user.service';
 import { UserServiceMock } from './user.service.mock';
 
@@ -22,8 +24,10 @@ describe('CorpusService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
+                ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
+                LogService,
                 { provide: UserService, useValue: userServiceMock }]
         });
         service = TestBed.get(CorpusService);

@@ -77,10 +77,10 @@ export class SearchService {
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let user = this.userService.getCurrentUserOrFail();
+        let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
         let querySave = this.queryService.save(query, true);
-        let results = this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
+        let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
             // update the last saved query object, it might have changed on the server
             if (!results.completed) {
@@ -101,7 +101,7 @@ export class SearchService {
         };
     }
 
-    public searchObservable(corpus: Corpus, queryModel: QueryModel): Observable<SearchResults> {
+    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
         let completed = false;
         let totalTransferred = 0;
 
@@ -110,7 +110,7 @@ export class SearchService {
 
         // Perform the search and obtain output stream
         return this.elasticSearchService.searchObservable(
-            corpus, queryModel, this.userService.getCurrentUserOrFail().downloadLimit);
+            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
     }
 
     public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
@@ -125,9 +125,9 @@ export class SearchService {
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
-        return new Promise<string[][]>((resolve, reject) => {
+        return new Promise<string[][]>(async (resolve, reject) => {
             let rows: string[][] = [];
-            this.searchObservable(corpus, queryModel)
+            (await this.searchObservable(corpus, queryModel))
                 .subscribe(
                     result => {
                         rows.push(...
@@ -167,8 +167,8 @@ export class SearchService {
         return String(value);
     }
 
-    private limitResults(results: SearchResults) {
-        let downloadLimit = this.userService.getCurrentUserOrFail().downloadLimit;
+    private async limitResults(results: SearchResults) {
+        let downloadLimit = (await this.userService.getCurrentUser()).downloadLimit;
         if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
             // download limit exceeded
             results.completed = true;
