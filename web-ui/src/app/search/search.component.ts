@@ -20,7 +20,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -86,6 +85,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private selectedAll: boolean = true;
 
+    public searchFilterData: SearchFilterData[] = [];
+
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService,
@@ -114,6 +115,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
+                console.log(this.queryField);
                 this.setSortFromParams(this.corpus.fields, params);
 
                 if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
@@ -274,6 +276,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 data.push(field.data);
             }
         }
+        this.searchFilterData = data;
         return data;
     }
 
@@ -320,11 +323,13 @@ export class SearchComponent implements OnInit, OnDestroy {
                     visible: true
                 }, field);
             } else {
+                console.log(this.queryField[field.name])
                 let auxField = this.queryField[field.name] = Object.assign({
                     data: null,
                     useAsFilter: false,
                     visible: true
                 }, field);
+                console.log(this.queryField[field.name]);
                 if (queryRestriction.includes(field.name)) {
                     this.selectedQueryFields.push(auxField);
                 }

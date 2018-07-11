@@ -36,6 +36,7 @@ export class SearchService {
      * @param filters A list of dictionaries representing the ES DSL.
      */
     public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
+        console.log(filters);
         let model: QueryModel = {
             queryText: queryText,
             filters: filters,
@@ -71,7 +72,6 @@ export class SearchService {
         } else {
             delete route['sort'];
         }
-
         return route;
     }
 
