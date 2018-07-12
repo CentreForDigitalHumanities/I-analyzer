@@ -20,7 +20,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -85,6 +84,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     };
 
     private selectedAll: boolean = true;
+
+    public searchFilterData: SearchFilterData[] = [];
 
     private subscription: Subscription | undefined;
 
@@ -332,16 +333,24 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
                 fieldsSet = true;
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.getAll(param)),
                     useAsFilter: true,
                     visible: true
                 }, field);
             } else {
-                let auxField = this.queryField[field.name] = Object.assign({
+                // this field is not found in the route
+                let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
                     visible: true
                 }, field);
+                // in case there have been some settings before (i.e., from a deactivated filter), retain them
+                if (this.queryField[field.name]) {
+                    this.queryField[field.name].useAsFilter = false;
+                }
+                else {
+                    this.queryField[field.name] = auxField;
+                }
                 if (queryRestriction.includes(field.name)) {
                     this.selectedQueryFields.push(auxField);
                 }

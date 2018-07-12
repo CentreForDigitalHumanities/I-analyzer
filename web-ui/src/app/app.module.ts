@@ -31,8 +31,10 @@ import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
+import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+
 
 const appRoutes: Routes = [
     {
@@ -88,7 +90,8 @@ const appRoutes: Routes = [
         WordcloudComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent
+        HistoryQueryDisplayComponent,
+        FreqtableComponent
     ],
     imports: [
         BrowserAnimationsModule,

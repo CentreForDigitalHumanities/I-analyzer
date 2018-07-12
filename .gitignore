@@ -3,3 +3,5 @@
 /.idea
 env/
 .vscode/
+web-ui/package.json
+web-ui/package-lock.json
