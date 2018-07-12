@@ -99,7 +99,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 return [filterData.data.gte, filterData.data.lte];
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
-                    return { options: filter.options.map(x => { return { 'label': x, 'value': x } }), selected: filterData.data };
+                    let options = filter.options.map(x => { return { 'label': x, 'value': x } });
+                    return { options: options, selected: filterData.data };
                 }
                 break;
             case 'DateFilter':
