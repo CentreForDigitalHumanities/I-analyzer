@@ -5,42 +5,43 @@ import * as _ from "lodash";
 
 
 @Component({
-    selector: 'barchart',
+    selector: 'ia-barchart',
     templateUrl: './barchart.component.html',
     styleUrls: ['./barchart.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
 
 export class BarChartComponent implements OnChanges {
-    @Input('searchData')
-    public searchData: {
+    @Input('searchData') searchData: {
         key: any,
         doc_count: number,
         key_as_string?: string
     }[];
-    @Input() public visualizedField;
-    @Input() public chartElement;
+    @Input() visualizedField;
+    @Input() chartElement;
 
-    private yAsPercent: boolean = false;
-    private visualizingDate: boolean = false;
-    private yTicks: number = 10;
-    private xTickValues: string[];
-    margin = { top: 10, bottom: 120, left: 70, right: 10 };
-    svg: any;
-    chart: any;
-    width: number;
-    height: number;
-    xScale: any; // can be either categorical or continuous
-    yScale: d3.ScaleLinear<number, number>;
-    xAxis: d3.Selection<any, any, any, any>;
-    private yAxis: d3.Selection<any, any, any, any>;
-    xAxisClass: any;
+    public yAsPercent: boolean = false;
+    //public visualizingDate: boolean = false;
+    public yTicks: number = 10;
+    public xTickValues: string[];
+    public margin = { top: 10, bottom: 120, left: 70, right: 10 };
+    public svg: any;
+    public chart: any;
+    public width: number;
+    public height: number;
+    public xScale: any; // can be either categorical or continuous
+    public yScale: d3.ScaleLinear<number, number>;
+    public xAxis: d3.Selection<any, any, any, any>;
+    public yAxis: d3.Selection<any, any, any, any>;
+    public xAxisClass: any;
     private yMax: number;
     private totalCount: number;
-    xDomain: Array<string>;
-    yDomain: Array<number>;
-    private yAxisLabel: any;
-    selectedData: Array<KeyFrequencyPair>;
+    public xDomain: Array<any>;
+    public yDomain: Array<number>;
+    public yAxisLabel: any;
+    public selectedData: Array<KeyFrequencyPair>;
+
+    private xBarWidth: number;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -63,7 +64,6 @@ export class BarChartComponent implements OnChanges {
          adjust the x and y ranges
          */
 
-        this.xDomain = this.selectedData.map(d => d.key);
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
         this.yDomain = [0, this.yMax];
         this.totalCount = _.sumBy(this.selectedData, d => d.doc_count);
@@ -72,7 +72,9 @@ export class BarChartComponent implements OnChanges {
     }
 
     prepareTermFrequency() {
+        this.xDomain = this.selectedData.map(d => d.key);
         this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
+        this.xBarWidth = this.xScale.bandwidth();
     }
 
     setScaleY() {
@@ -107,13 +109,11 @@ export class BarChartComponent implements OnChanges {
         /**
         * select DOM elements, set up scales and axes
         */
-        if (this.svg) {
-            this.svg.remove();
-        }
+        d3.select('svg').remove();
 
         this.svg = d3.select(this.chartElement).append('svg')
-            .attr('width', this.chartElement.offsetWidth)
-            .attr('height', this.chartElement.offsetHeight);
+          .attr('width', this.chartElement.offsetWidth)
+          .attr('height', this.chartElement.offsetHeight);
 
         this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
@@ -122,45 +122,45 @@ export class BarChartComponent implements OnChanges {
         this.svg.selectAll('text').remove();
         // chart plot area
         this.chart = this.svg.append('g')
-            .attr('class', 'bars')
-            .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+          .attr('class', 'bars')
+          .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
         this.xAxisClass = d3.axisBottom(this.xScale);
         this.xAxis = this.svg.append('g')
-            .attr('class', 'axis x')
-            .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-            .call(this.xAxisClass);
+          .attr('class', 'axis x')
+          .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+          .call(this.xAxisClass);
 
         // set style of x tick marks
         this.xAxis.selectAll('text')
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-35)");
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", ".15em")
+          .attr("transform", "rotate(-35)");
 
         this.yAxis = this.svg.append('g')
-            .attr('class', 'axis y')
-            .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
-            .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
+          .attr('class', 'axis y')
+          .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
+          .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
         // adding axis labels
         let xLabelText = this.visualizedField.replace(/\b\w/g, l => l.toUpperCase());
         let yLabelText = "Frequency";
 
         this.svg.append("text")
-            .attr("class", "xlabel")
-            .attr("text-anchor", "middle")
-            .attr("x", this.width / 2)
-            .attr("y", this.height + this.margin.bottom)
-            .text(xLabelText);
+          .attr("class", "xlabel")
+          .attr("text-anchor", "middle")
+          .attr("x", this.width / 2)
+          .attr("y", this.height + this.margin.bottom)
+          .text(xLabelText);
 
         this.yAxisLabel = this.svg.append("text")
-            .attr("class", "ylabel")
-            .attr("text-anchor", "middle")
-            .attr("y", this.margin.top + this.height / 2)
-            .attr("x", this.margin.left / 2)
-            .attr("transform", `rotate(${-90} ${this.margin.left / 3} ${this.margin.top + this.height / 2})`)
-            .text(yLabelText);
+          .attr("class", "ylabel")
+          .attr("text-anchor", "middle")
+          .attr("y", this.margin.top + this.height / 2)
+          .attr("x", this.margin.left / 2)
+          .attr("transform", `rotate(${-90} ${this.margin.left / 3} ${this.margin.top + this.height / 2})`)
+          .text(yLabelText);
     }
 
     drawChartData() {
@@ -174,31 +174,26 @@ export class BarChartComponent implements OnChanges {
         // remove exiting bars
         update.exit().remove();
 
-        //let numberofItems = this.selectedData.length | 1;
-        let xBarWidth = this.xScale.bandwidth();
-        //console.log(numberofItems);
-
         // update existing bars
         this.chart.selectAll('.bar').transition()
-            .attr('x', d => this.xScale(d.key))
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('width', xBarWidth)
-            .attr('height', d => this.height - this.yScale(d.doc_count));
+          .attr('x', d => this.xScale(d.key))
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('width', this.xBarWidth)
+          .attr('height', d => this.height - this.yScale(d.doc_count));
 
         // add new bars
         update
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', d => this.xScale(d.key))
-            .attr('width', xBarWidth)
-            .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
-            .attr('height', 0)
-            .transition()
-            .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('height', d => this.height - this.yScale(d.doc_count));
-
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.xScale(d.key))
+          .attr('width', this.xBarWidth)
+          .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
+          .attr('height', 0)
+          .transition()
+          .delay((d, i) => i * 10)
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('height', d => this.height - this.yScale(d.doc_count));
     }
 
 }

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import { TimelineComponent } from './timeline.component';
 
@@ -8,6 +9,7 @@ describe('TimelineComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [FormsModule],
       declarations: [ TimelineComponent ]
     })
     .compileComponents();

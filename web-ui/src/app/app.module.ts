@@ -29,12 +29,11 @@ import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
-import { TermFrequencyComponent } from './visualization/term-frequency.component';
-import { TimelineComponent } from './visualization/timeline.component';
 
 const appRoutes: Routes = [
     {
@@ -88,11 +87,10 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         WordcloudComponent,
+        TimelineComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
-        TermFrequencyComponent,
-        TimelineComponent
     ],
     imports: [
         BrowserAnimationsModule,

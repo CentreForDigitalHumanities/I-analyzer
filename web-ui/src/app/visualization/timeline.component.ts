@@ -1,4 +1,4 @@
-import { Component, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -8,106 +8,118 @@ import { BarChartComponent } from './barchart.component';
 @Component({
   selector: 'ia-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss']
+  styleUrls: ['./timeline.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges {
-	//private xScale: d3.ScaleTime; 
+    @Input('searchData') searchData: {
+        key: any,
+        doc_count: number,
+        key_as_string?: string
+    }[];
+    @Input() visualizedField;
+    @Input() chartElement;
+
+    public xScale: d3.ScaleTime<any, any>;
+    //private xDomain: [Date, Date];
 	private zoom: any;
     private view: any;
     private years: Array<KeyFrequencyPair>;
     private months: Array<KeyFrequencyPair>;
     private weeks: Array<KeyFrequencyPair>;
     private currentTimeCategory: string;
-  constructor() {
-        super();
-   }
+    
 
-  ngOnChanges(changes: SimpleChanges) {
-  	if (this.searchData && this.visualizedField) {
+    ngOnChanges(changes: SimpleChanges) {  
+    	if (this.searchData && this.visualizedField) {
             // date fields are returned with keys containing identifiers by elasticsearch
             // replace with string representation, contained in 'key_as_string' field
+            this.selectedData = this.searchData;
             this.calculateDomains();
             this.prepareTimeline();
-            this.setupTimeData();
-            this.setupZoomBehaviour();
-            this.drawChartData();
+            //this.setupTimeData();
+            //this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+            //this.drawChartData();
+            //this.setupZoomBehaviour();
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.setScaleY();
                 this.drawChartData();
+                this.setupZoomBehaviour();
+                this.setScaleY();
             }
         }
-    }
+    }               
 
     prepareTimeline() {
-    	this.xScale = d3.scaleTime()
-            .domain(d3.extent(this.xDomain, d => new Date(d)))
-            .range([0, this.width]);
-    }
+        this.xDomain = d3.extent(this.selectedData, d => new Date(d.key_as_string));
+      	this.xScale = d3.scaleTime()
+          .domain(this.xDomain)
+          .range([0, this.width]);
+        console.log(this.xScale(new Date('1987-01-01')));
+        console.log(this.yScale(0));
+    }               
 
-    setupTimeData() {
-  		this.searchData.forEach(cat => cat.key = new Date(cat.key_as_string));
-	    this.years = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeYear(item.key)));
-	    this.months = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeMonth(item.key)));
-	    this.weeks = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeWeek(item.key)));
-	    if (this.months.length>30) {
-	        this.selectedData = this.years;
-	        this.currentTimeCategory = 'years';
-	    }
-	    else if (this.weeks.length>30) {
-	        this.selectedData = this.months;
-	        this.currentTimeCategory = 'months';
-	    }
-	    else if (this.searchData.length>30) {
-	        this.selectedData = this.weeks;
-	        this.currentTimeCategory = 'weeks';
-	    }
-	    else {
-	        this.selectedData = this.searchData;
-	        this.currentTimeCategory = 'days';
-	    }
-  	}
-
-  	setupZoomBehaviour() {
-  		this.zoom = d3.zoom()
-            .scaleExtent([1, Infinity])
-            .translateExtent([[0, 0], [this.width, this.height]])
-            .extent([[0, 0], [this.width, this.height]])
-            .on("zoom", this.zoomed.bind(this));
-
-    	this.view = this.svg.append("g").append("rect")
-            .attr("class", "zoom")
-            .attr("width", this.width)
-            .attr("height", this.height)
-            .style("fill", "none")
-            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
-        
-    	this.svg.call(this.zoom);
-  	}
-
-  	zoomed() {
-            let t = d3.event.transform;
-            let newScale = t.rescaleX(this.xScale);
-            let xExtent = newScale.domain();
-            // if there are more than 30 categories within the current x extent,
-            // group into bigger time level (e.g. days -> weeks)
-            let selection = this.selectedData.filter( d => d.key >= xExtent[0] && d.key <= xExtent[1] );
-            if (selection.length > 5) {
-                this.biggerTimeCategory(xExtent[0], xExtent[1]);
-                this.drawChartData();
-                console.log(this.currentTimeCategory);
+    /*setupTimeData() {
+    	this.searchData.forEach(cat => cat.date = new Date(cat.key_as_string));
+            this.years = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeYear(item.key)));
+            this.months = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeMonth(item.key)));
+            this.weeks = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeWeek(item.key)));
+            if (this.months.length>30) {
+                this.selectedData = this.years;
+                this.currentTimeCategory = 'years';
             }
-            // if there are less than 10 categories within the current x extent,
-            // group into smaller time level (e.g. months -> weeks)
-            else if (selection.length < 2) {
-                this.smallerTimeCategory(xExtent[0], xExtent[1]);
-                this.drawChartData();
-            }            
-            this.xAxis.call(this.xAxisClass.scale(newScale));
-            //console.log(t.toString());
-            this.chart.selectAll('.bar').attr("transform", "translate(" + t.x + "," + t.y + ") scale(" + t.k + ")");
-    }
+            else if (this.weeks.length>30) {
+                this.selectedData = this.months;
+                this.currentTimeCategory = 'months';
+            }
+            else if (this.searchData.length>30) {
+                this.selectedData = this.weeks;
+                this.currentTimeCategory = 'weeks';
+            }
+            else {
+                this.selectedData = this.searchData;
+                this.currentTimeCategory = 'days';
+            }
+       	}*/
+
+    setupZoomBehaviour() {
+    	this.zoom = d3.zoom()
+          .scaleExtent([1, Infinity])
+          .translateExtent([[0, 0], [this.width, this.height]])
+          .extent([[0, 0], [this.width, this.height]])
+          .on("zoom", this.zoomed.bind(this));
+        this.view = this.svg.append("g").append("rect")
+          .attr("class", "zoom")
+          .attr("width", this.width)
+          .attr("height", this.height)
+          .style("fill", "none")
+          .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+     	this.svg.call(this.zoom);
+    }              	
+
+    zoomed() {
+        var t = d3.event.transform;
+        var newScale = t.rescaleX(this.xScale);
+        /*var xExtent = newScale.domain();
+        // if there are more than 30 categories within the current x extent,
+        // group into bigger time level (e.g. days -> weeks)
+        var selection = this.selectedData.filter( d => d.key >= xExtent[0] && d.key <= xExtent[1] );
+        if (selection.length > 5) {
+            this.biggerTimeCategory(xExtent[0], xExtent[1]);
+            this.drawChartData();
+            console.log(this.currentTimeCategory);
+        }
+        // if there are less than 10 categories within the current x extent,
+        // group into smaller time level (e.g. months -> weeks)
+        else if (selection.length < 2) {
+            this.smallerTimeCategory(xExtent[0], xExtent[1]);
+            this.drawChartData();
+        }         */   
+        this.xAxis.call(this.xAxisClass.scale(newScale));
+        //console.log(t.toString());
+        this.chart.selectAll('.bar').attr("transform", "translate(" + t.x + "," + t.y + ") scale(" + t.k + ")");
+    }               
 
     rearrangeDates(grouping) {
         if (grouping) {
@@ -119,7 +131,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             });       
             return newData;
         }
-    }
+    }               
 
     smallerTimeCategory(lowerBound, upperBound) {
         switch(this.currentTimeCategory) {
@@ -160,7 +172,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 break;
         }
     }
-
 }
 
 type KeyFrequencyPair = {

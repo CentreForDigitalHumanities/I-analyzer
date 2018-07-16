@@ -24,6 +24,7 @@ import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
