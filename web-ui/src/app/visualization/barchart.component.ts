@@ -39,15 +39,11 @@ export class BarChartComponent implements OnChanges {
     public xDomain: Array<any>;
     public yDomain: Array<number>;
     public yAxisLabel: any;
-    public selectedData: Array<KeyFrequencyPair>;
 
     private xBarWidth: number;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            // date fields are returned with keys containing identifiers by elasticsearch
-            // replace with string representation, contained in 'key_as_string' field
-            this.selectedData = this.searchData;
             this.calculateDomains();
             this.prepareTermFrequency();
             
@@ -63,16 +59,17 @@ export class BarChartComponent implements OnChanges {
         /**
          adjust the x and y ranges
          */
-
-        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
+        this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
+        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
         this.yDomain = [0, this.yMax];
-        this.totalCount = _.sumBy(this.selectedData, d => d.doc_count);
+        this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
     }
 
     prepareTermFrequency() {
-        this.xDomain = this.selectedData.map(d => d.key);
+        this.xDomain = this.searchData.map(d => d.key);
         this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
         this.xBarWidth = this.xScale.bandwidth();
     }
@@ -114,9 +111,6 @@ export class BarChartComponent implements OnChanges {
         this.svg = d3.select(this.chartElement).append('svg')
           .attr('width', this.chartElement.offsetWidth)
           .attr('height', this.chartElement.offsetHeight);
-
-        this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
-        this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
 
         this.svg.selectAll('g').remove();
         this.svg.selectAll('text').remove();
@@ -169,7 +163,7 @@ export class BarChartComponent implements OnChanges {
         */
 
         const update = this.chart.selectAll('.bar')
-            .data(this.selectedData);
+            .data(this.searchData);
 
         // remove exiting bars
         update.exit().remove();
