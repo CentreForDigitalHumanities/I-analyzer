@@ -24,11 +24,17 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     //private xDomain: [Date, Date];
 	private zoom: any;
     private view: any;
+
+    private brush: any;
+    idleTimeout: number;
+    idleDelay: number;
+
     private years: Array<KeyFrequencyPair>;
     private months: Array<KeyFrequencyPair>;
     private weeks: Array<KeyFrequencyPair>;
     private currentTimeCategory: string;
     private selectedData: Array<KeyFrequencyPair>;
+
     
 
     ngOnChanges(changes: SimpleChanges) {  
@@ -39,15 +45,15 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             this.calculateDomains();
             this.prepareTimeline();
             this.setupTimeData();
-            console.log(this.selectedData);
             //this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
             //this.drawChartData();
             //this.setupZoomBehaviour();
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.drawChartData();
-                this.setupZoomBehaviour();
+                this.drawChartData(this.selectedData);
+                //this.setupZoomBehaviour();
+                this.setupBrushBehaviour();
                 this.setScaleY();
             }
         }
@@ -58,7 +64,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
       	this.xScale = d3.scaleTime()
           .domain(this.xDomain)
           .range([0, this.width]);
-        this.xBarWidth = 5;
+        this.xBarWidth = 5; //this.width/this.selectedData.length;
     }               
 
     setupTimeData() {
@@ -117,6 +123,47 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
           .delay((d, i) => i * 10)
           .attr('y', d => this.yScale(d.doc_count))
           .attr('height', d => this.height - this.yScale(d.doc_count));
+    }
+
+    setupBrushBehaviour() {
+        this.brush = d3.brushX().on("end", this.brushended.bind(this));
+        this.idleDelay = 350;
+
+        this.svg.append("g")
+          .attr("class", "brush")
+          .call(this.brush);
+    }
+  
+    brushended() {
+        let s = d3.event.selection;
+        if (!s) {
+            if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
+            this.xScale.domain(this.xDomain);
+        } else {
+            this.xScale.domain([s[0], s[1]].map(this.xScale.invert, this.xScale));
+            this.svg.select(".brush").call(this.brush.move, null);
+        }
+        this.zoomBrush();
+    }
+
+    idled() {
+        this.idleTimeout = null;
+    }
+
+    zoomBrush() {
+        let t = this.svg.transition().duration(750);
+        this.xAxis.transition(t).call(this.xAxisClass);
+        let xExtent = this.xScale.domain()
+        let selection = this.selectedData.filter( d => d.date >= xExtent[0] && d.key <= xExtent[1] );
+        if (selection.length < 10) {
+            this.smallerTimeCategory(xExtent[0], xExtent[1]);
+            this.drawChartData(this.selectedData);
+        } 
+        this.chart.selectAll('.bar').transition(t)
+          .attr('x', d => this.xScale(d.key));
+/*        svg.selectAll("circle").transition(t)*/
+/*          .attr("cx", function(d) { return x(d[0]); })*/
+/*          .attr("cy", function(d) { return y(d[1]); });*/
     }
 
     setupZoomBehaviour() {

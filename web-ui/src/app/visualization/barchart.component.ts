@@ -49,7 +49,7 @@ export class BarChartComponent implements OnChanges {
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.drawChartData();
+                this.drawChartData(this.searchData);
                 this.setScaleY();
             }
         }
@@ -121,7 +121,7 @@ export class BarChartComponent implements OnChanges {
 
         this.xAxisClass = d3.axisBottom(this.xScale);
         this.xAxis = this.svg.append('g')
-          .attr('class', 'axis x')
+          .attr('class', 'axis-x')
           .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
           .call(this.xAxisClass);
 
@@ -133,7 +133,7 @@ export class BarChartComponent implements OnChanges {
           .attr("transform", "rotate(-35)");
 
         this.yAxis = this.svg.append('g')
-          .attr('class', 'axis y')
+          .attr('class', 'axis-y')
           .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
           .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
@@ -157,13 +157,13 @@ export class BarChartComponent implements OnChanges {
           .text(yLabelText);
     }
 
-    drawChartData() {
+    drawChartData(data) {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
 
         const update = this.chart.selectAll('.bar')
-            .data(this.searchData);
+            .data(data);
 
         // remove exiting bars
         update.exit().remove();
@@ -184,7 +184,7 @@ export class BarChartComponent implements OnChanges {
           .attr('width', this.xBarWidth)
           .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
           .attr('height', 0)
-          .transition()
+          .transition().duration(750)
           .delay((d, i) => i * 10)
           .attr('y', d => this.yScale(d.doc_count))
           .attr('height', d => this.height - this.yScale(d.doc_count));
