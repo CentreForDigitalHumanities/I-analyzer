@@ -38,9 +38,9 @@ export class BarChartComponent implements OnChanges {
     private yDomain: Array<number>;
     private yAxisLabel: any;
     private update: any;
-    selectedData: Array<KeyFrequencyPair>;
-    continuousData: boolean;
+    private selectedData: Array<KeyFrequencyPair>;
     private formatTime = d3.timeParse("%B %d, %Y");
+    private totalCount: number;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -49,7 +49,7 @@ export class BarChartComponent implements OnChanges {
             if ('key_as_string' in this.searchData[0]) {
                 this.searchData.forEach(cat => cat.key = cat.key_as_string)
             }
-            
+
             this.selectedData = this.searchData;
             this.calculateDomains();
             this.setScaleX();
@@ -58,9 +58,6 @@ export class BarChartComponent implements OnChanges {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.drawChartData();
                 this.setScaleY();
-                if (this.continuousData) {
-                    this.prepareZoom;
-                }
             }
         }
     }  
@@ -78,15 +75,10 @@ export class BarChartComponent implements OnChanges {
     }
 
     setScaleX() {
-        if (this.continuousData) {
-            this.xScale = d3.scaleTime().domain(this.xDomain).range([this.width, 0]);
-        }
-        else {
-            this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
-        }
+      this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
     }
 
-    setScale() {
+    setScaleY() {
         /**
         * if the user selects percentage / count display,
         * - rescale y values & axis
@@ -205,39 +197,6 @@ export class BarChartComponent implements OnChanges {
             .attr('height', d => this.height - this.yScale(d.doc_count));
 
     }
-
-    /*prepareZoom() {
-        svg.append("g")
-            .attr("class", "brush")
-            .call(brush);
-
-        const brushended() {
-            var s = d3.event.selection;
-            if (!s) {
-                if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-                    x.domain(x0);
-                    y.domain(y0);
-                } else {
-                    x.domain([s[0][0], s[1][0]].map(x.invert, x));
-                    y.domain([s[1][1], s[0][1]].map(y.invert, y));
-                    svg.select(".brush").call(brush.move, null);
-                }
-            zoom();
-
-        const idled() {
-                idleTimeout = null;
-            }       
-
-        const zoom() {
-            var t = svg.transition().duration(750);
-            svg.select(".axis--x").transition(t).call(xAxis);
-            svg.select(".axis--y").transition(t).call(yAxis);
-            svg.selectAll("circle").transition(t)
-                .attr("cx", function(d) { return x(d[0]); })
-                .attr("cy", function(d) { return y(d[1]); });
-        }
-    }*/
-
 }
 
 
