@@ -62,7 +62,6 @@ export class CorpusService {
     }
 
     private parseField(data: any): CorpusField {
-        console.log(data);
         return {
             description: data.description,
             displayName: data.display_name || data.name,

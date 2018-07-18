@@ -38,6 +38,9 @@ export class BarChartComponent implements OnChanges {
     private yDomain: Array<number>;
     private yAxisLabel: any;
     private update: any;
+    selectedData: Array<KeyFrequencyPair>;
+    continuousData: boolean;
+    private formatTime = d3.timeParse("%B %d, %Y");
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -46,24 +49,41 @@ export class BarChartComponent implements OnChanges {
             if ('key_as_string' in this.searchData[0]) {
                 this.searchData.forEach(cat => cat.key = cat.key_as_string)
             }
+            
+            this.selectedData = this.searchData;
             this.calculateDomains();
+            this.setScaleX();
+            
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.drawChartData();
-                this.setScale();
+                this.setScaleY();
+                if (this.continuousData) {
+                    this.prepareZoom;
+                }
             }
         }
-    }
+    }  
 
     calculateDomains() {
         /**
          adjust the x and y ranges
          */
-        this.xDomain = this.searchData.map(d => d.key);
-        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
-        this.yDomain = this.yAsPercent ? [0, 1] : [0, this.yMax];
+        this.xDomain = this.selectedData.map(d => d.key);
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.yDomain = [0, this.yMax];
+        this.totalCount = _.sumBy(this.selectedData, d => d.doc_count);
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
-        this.xTickValues = this.xDomain.length > 30 ? this.xDomain.filter((d, i) => i % 10 == 0) : this.xDomain;
+        this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
+    }
+
+    setScaleX() {
+        if (this.continuousData) {
+            this.xScale = d3.scaleTime().domain(this.xDomain).range([this.width, 0]);
+        }
+        else {
+            this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
+        }
     }
 
     setScale() {
@@ -185,6 +205,38 @@ export class BarChartComponent implements OnChanges {
             .attr('height', d => this.height - this.yScale(d.doc_count));
 
     }
+
+    /*prepareZoom() {
+        svg.append("g")
+            .attr("class", "brush")
+            .call(brush);
+
+        const brushended() {
+            var s = d3.event.selection;
+            if (!s) {
+                if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+                    x.domain(x0);
+                    y.domain(y0);
+                } else {
+                    x.domain([s[0][0], s[1][0]].map(x.invert, x));
+                    y.domain([s[1][1], s[0][1]].map(y.invert, y));
+                    svg.select(".brush").call(brush.move, null);
+                }
+            zoom();
+
+        const idled() {
+                idleTimeout = null;
+            }       
+
+        const zoom() {
+            var t = svg.transition().duration(750);
+            svg.select(".axis--x").transition(t).call(xAxis);
+            svg.select(".axis--y").transition(t).call(yAxis);
+            svg.selectAll("circle").transition(t)
+                .attr("cx", function(d) { return x(d[0]); })
+                .attr("cy", function(d) { return y(d[1]); });
+        }
+    }*/
 
 }
 
