@@ -56,7 +56,6 @@ export class VisualizationComponent implements OnChanges {
 
     showWordcloud() {
         this.searchService.searchForVisualization(this.corpus, this.queryModel, "wordcloud").then(results => {
-            console.log(results.aggregations);
             this.significantText = results.aggregations;
         });
         this.wordCloud = true;
