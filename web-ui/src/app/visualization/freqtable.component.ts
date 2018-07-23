@@ -1,4 +1,4 @@
-import { Input, Component, OnChanges, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnInit, OnChanges, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
