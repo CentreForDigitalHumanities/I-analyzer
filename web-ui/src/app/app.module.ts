@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
@@ -112,7 +112,7 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
+    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard, TitleCasePipe],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
