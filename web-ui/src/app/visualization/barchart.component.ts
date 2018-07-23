@@ -29,18 +29,19 @@ export class BarChartComponent implements OnChanges {
     public chart: any;
     public width: number;
     public height: number;
-    public xScale: any; // can be either categorical or continuous
+    public xScale: any; // can be either ordinal or time scale
     public yScale: d3.ScaleLinear<number, number>;
     public xAxis: d3.Selection<any, any, any, any>;
     public yAxis: d3.Selection<any, any, any, any>;
     public xAxisClass: any;
+    public yAxisClass: any;
     private yMax: number;
     private totalCount: number;
     public xDomain: Array<any>;
     public yDomain: Array<number>;
     public yAxisLabel: any;
 
-    private xBarWidth: number;
+    public xBarWidth: number;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -91,8 +92,8 @@ export class BarChartComponent implements OnChanges {
             .attr('height', d => this.height - this.yScale(preScale(d.doc_count)));
 
         let tickFormat = this.yAsPercent ? d3.format(".0%") : d3.format("d");
-        let yAxis = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
-        this.yAxis.call(yAxis);
+        this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
+        this.yAxis.call(this.yAxisClass);
 
         let yLabelText = this.yAsPercent ? "Percent" : "Frequency";
         this.yAxisLabel.text(yLabelText);
@@ -157,13 +158,13 @@ export class BarChartComponent implements OnChanges {
           .text(yLabelText);
     }
 
-    drawChartData(data) {
+    drawChartData(inputData) {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
 
         const update = this.chart.selectAll('.bar')
-            .data(data);
+            .data(inputData);
 
         // remove exiting bars
         update.exit().remove();

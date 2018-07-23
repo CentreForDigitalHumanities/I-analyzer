@@ -15,7 +15,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
-        key_as_string?: string
+        key_as_string: string
     }[];
     @Input() visualizedField;
     @Input() chartElement;
@@ -29,11 +29,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     idleTimeout: number;
     idleDelay: number;
 
-    private years: Array<KeyFrequencyPair>;
-    private months: Array<KeyFrequencyPair>;
-    private weeks: Array<KeyFrequencyPair>;
+    private years: Array<DateFrequencyPair>;
+    private months: Array<DateFrequencyPair>;
+    private weeks: Array<DateFrequencyPair>;
+    private days: Array<DateFrequencyPair>;
     private currentTimeCategory: string;
-    private selectedData: Array<KeyFrequencyPair>;
+    private selectedData: Array<DateFrequencyPair>;
+    private histogram: any;
 
     
 
@@ -41,39 +43,60 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     	if (this.searchData && this.visualizedField) {
             // date fields are returned with keys containing identifiers by elasticsearch
             // replace with string representation, contained in 'key_as_string' field
-            this.selectedData = this.searchData;
+            //this.selectedData = this.searchData;
+            //this.setupTimeData();
             this.calculateDomains();
             this.prepareTimeline();
-            this.setupTimeData();
+            
             //this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
             //this.drawChartData();
             //this.setupZoomBehaviour();
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+                this.setScaleY();
                 this.drawChartData(this.selectedData);
                 //this.setupZoomBehaviour();
                 this.setupBrushBehaviour();
-                this.setScaleY();
             }
         }
     }               
 
     prepareTimeline() {
-        this.xDomain = d3.extent(this.selectedData, d => new Date(d.key_as_string));
+        this.selectedData = this.formatTimeData();
+        console.log(this.selectedData);
+
+        this.xDomain = d3.extent(this.selectedData, d => d.date);
       	this.xScale = d3.scaleTime()
           .domain(this.xDomain)
-          .range([0, this.width]);
-        this.xBarWidth = 5; //this.width/this.selectedData.length;
+          .rangeRound([0, this.width])
+          .nice();
+
+        this.histogram = d3.histogram()
+          .value( d => d.date )
+          .domain(this.xScale.domain())
+          .thresholds(this.xScale.ticks(d3.timeWeek));
+
+        this.currentTimeCategory = 'weeks'
+
+    }
+
+    formatTimeData() {
+        let outData = this.searchData.map(cat => {
+            let out: DateFrequencyPair = {};
+            out.date = new Date(cat.key_as_string);
+            out.doc_count = cat.doc_count;
+            return out;
+        });
+        return outData;
     }               
 
     setupTimeData() {
-    	this.searchData.forEach(cat => {
-            return cat.date = new Date(cat.key_as_string)
-        });
-        this.years = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeYear(item.date)));
-        this.months = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeMonth(item.date)));
-        this.weeks = this.rearrangeDates(_.groupBy(this.searchData, item => d3.timeWeek(item.date)));
+    	this.selectedData = this.formatTimeData()
+        this.years = this.rearrangeDates(_.groupBy(this.selectedData, item => d3.timeYear(item.date)));
+        this.months = this.rearrangeDates(_.groupBy(this.selectedData, item => d3.timeMonth(item.date)));
+        this.weeks = this.rearrangeDates(_.groupBy(this.selectedData, item => d3.timeWeek(item.date)));
+        this.days = this.selectedData;
         if (this.months.length>30) {
             this.selectedData = this.years;
             this.currentTimeCategory = 'years';
@@ -87,24 +110,41 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             this.currentTimeCategory = 'weeks';
         }
         else {
-            this.selectedData = this.searchData;
+            this.selectedData = this.days;
             this.currentTimeCategory = 'days';
         }
     }
 
-    drawChartData() {
+    drawChartData(inputData) {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
 
+        let bins = this.histogram(inputData);
+        bins.forEach( d => {
+            if (d.length!=0) {
+                d.doc_count = _.sumBy(d, item => item.doc_count);
+            }
+            else {
+                d.doc_count = 0;
+            }
+        });
+
+        console.log(bins);
+
         const update = this.chart.selectAll('.bar')
-            .data(this.selectedData);
+            .data(bins);
 
         // remove exiting bars
         update.exit().remove();
 
+        this.yDomain = [0, d3.max(bins.map( d => d.doc_count ))];
+        console.log(this.yDomain);
+        this.yScale.domain(this.yDomain);
+        this.yAxis.call(this.yAxisClass);
+
         // update existing bars
-        this.chart.selectAll('.bar').transition()
+/*        this.chart.selectAll('.bar').transition()
           .attr('x', d => this.xScale(d.date))
           .attr('y', d => this.yScale(d.doc_count))
           .attr('width', this.xBarWidth)
@@ -119,7 +159,27 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
           .attr('width', this.xBarWidth)
           .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
           .attr('height', 0)
-          .transition()
+          .transition().duration(750)
+          .delay((d, i) => i * 10)
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('height', d => this.height - this.yScale(d.doc_count));*/
+
+          this.chart.selectAll('.bar').transition()
+          .attr('x', d => this.xScale(d.x0))
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('width', d => this.xScale(d.x1) - this.xScale(d.x0) -1)
+          .attr('height', d => this.height - this.yScale(d.doc_count));
+
+        // add new bars
+        update
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.xScale(d.x0))
+          .attr('width', d => this.xScale(d.x1) - this.xScale(d.x0) -1)
+          .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
+          .attr('height', 0)
+          .transition().duration(750)
           .delay((d, i) => i * 10)
           .attr('y', d => this.yScale(d.doc_count))
           .attr('height', d => this.height - this.yScale(d.doc_count));
@@ -137,8 +197,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     brushended() {
         let s = d3.event.selection;
         if (!s) {
-            if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
-            this.xScale.domain(this.xDomain);
+            if (!d3.event.sourceEvent.selection) {
+                if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
+                this.xScale.domain(this.xDomain);
+                this.prepareTimeline();
+                this.drawChartData(this.selectedData);
+            }
+                      
         } else {
             this.xScale.domain([s[0], s[1]].map(this.xScale.invert, this.xScale));
             this.svg.select(".brush").call(this.brush.move, null);
@@ -153,112 +218,63 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     zoomBrush() {
         let t = this.svg.transition().duration(750);
         this.xAxis.transition(t).call(this.xAxisClass);
-        let xExtent = this.xScale.domain()
-        let selection = this.selectedData.filter( d => d.date >= xExtent[0] && d.key <= xExtent[1] );
-        if (selection.length < 10) {
-            this.smallerTimeCategory(xExtent[0], xExtent[1]);
-            this.drawChartData(this.selectedData);
-        } 
-        this.chart.selectAll('.bar').transition(t)
-          .attr('x', d => this.xScale(d.key));
-/*        svg.selectAll("circle").transition(t)*/
-/*          .attr("cx", function(d) { return x(d[0]); })*/
-/*          .attr("cy", function(d) { return y(d[1]); });*/
+
+        let xExtent = this.xScale.domain();
+        let selection = this.selectedData.filter( d => d.date >= xExtent[0] && d.date <= xExtent[1] );
+        if (selection.length < 10 && this.currentTimeCategory!='days') {
+            // rearrange data to look at a smaller time category
+            this.adjustTimeCategory();
+            this.drawChartData(selection);
+        }
+        else {
+            this.chart.selectAll('.bar')
+              .transition().duration(750)
+              .attr('x', d => this.xScale(d.x0))
+              .attr('width', d => this.xScale(d.x1) - this.xScale(d.x0) -1);
+              //.attr('y', d => this.yScale(d.doc_count));
+        }
     }
 
-    setupZoomBehaviour() {
-    	this.zoom = d3.zoom()
-          .scaleExtent([1, Infinity])
-          .translateExtent([[0, 0], [this.width, this.height]])
-          .extent([[0, 0], [this.width, this.height]])
-          .on("zoom", this.zoomed.bind(this));
-        this.view = this.svg.append("g").append("rect")
-          .attr("class", "zoom")
-          .attr("width", this.width)
-          .attr("height", this.height)
-          .style("fill", "none")
-          .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-     	this.svg.call(this.zoom);
-    }              	
-
-    zoomed() {
-        var t = d3.event.transform;
-        var newScale = t.rescaleX(this.xScale);
-        var xExtent = newScale.domain();
-        // if there are more than 30 categories within the current x extent,
-        // group into bigger time level (e.g. days -> weeks)
-        var selection = this.selectedData.filter( d => d.date >= xExtent[0] && d.date <= xExtent[1] );
-        if (selection.length > 5) {
-            this.biggerTimeCategory(xExtent[0], xExtent[1]);
-            this.drawChartData();
-            console.log(this.currentTimeCategory);
-        }
-        // if there are less than 10 categories within the current x extent,
-        // group into smaller time level (e.g. months -> weeks)
-        else if (selection.length < 2) {
-            this.smallerTimeCategory(xExtent[0], xExtent[1]);
-            this.drawChartData();
-        }  
-        this.xAxis.call(this.xAxisClass.scale(newScale));
-        //console.log(t.toString());
-        this.chart.selectAll('.bar').attr("transform", "translate(" + t.x + "," + t.y + ") scale(" + t.k + ")");
-    }               
+    zoomOut() {
+        this.prepareTimeline();
+        this.drawChartData();
+    }
 
     rearrangeDates(grouping) {
         if (grouping) {
-            let newData = _.map( grouping, (value, key) => {
-                    let item = <KeyFrequencyPair>{};
-                    item.key = key;
-                    item.doc_count = _.sumBy(value, d => d.doc_count);
-                    return item;
+            let newData = _.map( grouping, (value, date) => {
+                let item: DateFrequencyPair = {};
+                item.date = new Date(date);
+                item.doc_count = _.sumBy(value, d => d.doc_count);
+                return item;
             });       
             return newData;
         }
     }               
 
-    smallerTimeCategory(lowerBound, upperBound) {
+    adjustTimeCategory() {
         switch(this.currentTimeCategory) {
             case 'years':
-                this.selectedData = this.months.filter( d => d.key >= lowerBound && d.key <= upperBound );
+                //this.selectedData = this.months.filter( d => d.date >= lowerBound && d.date <= upperBound );
                 this.currentTimeCategory = 'months';
                 break;
             case 'months':
-                this.selectedData = this.weeks.filter( d => d.key >= lowerBound && d.key <= upperBound );
+                //this.selectedData = this.weeks.filter( d => d.date >= lowerBound && d.date <= upperBound );
                 this.currentTimeCategory = 'weeks';
                 break;
             case 'weeks':
-                this.selectedData = this.searchData.filter( d => d.key >= lowerBound && d.key <= upperBound )
+                //this.selectedData = this.days.filter( d => d.date >= lowerBound && d.date <= upperBound )
+                this.histogram.thresholds(this.xScale.ticks(d3.timeDay));
                 this.currentTimeCategory = 'days';
                 break;
             case 'days':
-                //this.selectedData = this.searchData.filter( d => d.key >= lowerBound && d.key <= upperBound );
                 break;
         }
     }
         
-    biggerTimeCategory(lowerBound, upperBound) {
-        switch(this.currentTimeCategory) {
-            case 'days':
-                this.selectedData = this.weeks.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'weeks';
-                break;
-            case 'weeks':
-                this.selectedData = this.months.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'months';
-                break;
-            case 'months':
-                this.selectedData = this.years.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                this.currentTimeCategory = 'years';
-                break;
-            case 'years':
-                //this.selectedData = this.years.filter( d => d.key >= lowerBound && d.key <= upperBound );
-                break;
-        }
-    }
 }
 
-type KeyFrequencyPair = {
-    key: string;
+type DateFrequencyPair = {
+    date: Date;
     doc_count: number;
-    key_as_string?: string;
 }
