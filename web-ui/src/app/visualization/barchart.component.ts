@@ -5,10 +5,10 @@ import * as _ from "lodash";
 
 
 @Component({
-    selector: 'ia-barchart',
-    templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss'],
-    encapsulation: ViewEncapsulation.None
+        selector: 'ia-barchart',
+        templateUrl: './barchart.component.html',
+        styleUrls: ['./barchart.component.scss'],
+        encapsulation: ViewEncapsulation.None
 })
 
 export class BarChartComponent implements OnChanges {
@@ -41,12 +41,13 @@ export class BarChartComponent implements OnChanges {
     public yDomain: Array<number>;
     public yAxisLabel: any;
 
-    public xBarWidth: number;
+    private xBarWidth: number;
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            this.calculateDomains();
+            this.calculateCanvas();
             this.prepareTermFrequency();
+            this.calculateDomains();
             
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
@@ -56,13 +57,15 @@ export class BarChartComponent implements OnChanges {
         }
     }
 
+    calculateCanvas() {
+        this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
+        this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
+    }
+
     calculateDomains() {
         /**
          adjust the x and y ranges
          */
-        this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
-        this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
-        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
         this.yDomain = [0, this.yMax];
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
@@ -73,6 +76,7 @@ export class BarChartComponent implements OnChanges {
         this.xDomain = this.searchData.map(d => d.key);
         this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
         this.xBarWidth = this.xScale.bandwidth();
+        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
     }
 
     setScaleY() {
@@ -87,9 +91,9 @@ export class BarChartComponent implements OnChanges {
         let preScale = this.yAsPercent ? d3.scaleLinear().domain([0, this.totalCount]).range([0, 1]) : d3.scaleLinear();
 
         this.chart.selectAll('.bar')
-            .transition()
-            .attr('y', d => this.yScale(preScale(d.doc_count)))
-            .attr('height', d => this.height - this.yScale(preScale(d.doc_count)));
+                .transition()
+                .attr('y', d => this.yScale(preScale(d.doc_count)))
+                .attr('height', d => this.height - this.yScale(preScale(d.doc_count)));
 
         let tickFormat = this.yAsPercent ? d3.format(".0%") : d3.format("d");
         this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
@@ -164,7 +168,7 @@ export class BarChartComponent implements OnChanges {
         */
 
         const update = this.chart.selectAll('.bar')
-            .data(inputData);
+                .data(inputData);
 
         // remove exiting bars
         update.exit().remove();
@@ -195,7 +199,7 @@ export class BarChartComponent implements OnChanges {
 
 
 type KeyFrequencyPair = {
-    key: string;
-    doc_count: number;
-    key_as_string?: string;
+        key: string;
+        doc_count: number;
+        key_as_string?: string;
 }
