@@ -61,8 +61,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.xDomain = d3.extent(this.selectedData, d => d.date);
       	this.xScale = d3.scaleTime()
           .domain(this.xDomain)
-          .rangeRound([0, this.width])
-          .nice()
+          .range([0, this.width])
           .clamp(true);
 
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
@@ -120,7 +119,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.chart.selectAll('.bar').transition()
           .attr('x', d => this.xScale(d.x0))
           .attr('y', d => this.yScale(d.doc_count))
-          .attr('width', d => this.xScale(d.x1) - this.xScale(d.x0) -1)
+          .attr('width', d => this.calculateWidth(d))
           .attr('height', d => this.height - this.yScale(d.doc_count));
 
         // add new bars
@@ -129,7 +128,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
           .append('rect')
           .attr('class', 'bar')
           .attr('x', d => this.xScale(d.x0))
-          .attr('width', d => this.xScale(d.x1) - this.xScale(d.x0) -1)
+          .attr('width', d => this.calculateWidth(d))
           .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
           .attr('height', 0)
           .transition().duration(750)
@@ -174,7 +173,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     zoomIn() {
         this.rescaleX();
         let xExtent = this.xScale.domain();
-        let selection = this.bins.filter( d => d.x0 >= xExtent[0] && d.x1 <= xExtent[1] );
+        let selection = this.bins.filter( d => d.x1 >= xExtent[0] && d.x0 <= xExtent[1] );
         if (selection.length < 10 && this.currentTimeCategory!='days') {
             // rearrange data to look at a smaller time category
             this.adjustTimeCategory();
@@ -183,12 +182,20 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         }
         else {
             // zoom in without rearranging underlying data
-            let width = this.xScale(selection[0].x1) - this.xScale(selection[0].x0) - 1;
             this.chart.selectAll('.bar')
               .transition().duration(750)
               .attr('x', d => this.xScale(d.x0))
-              .attr('width', width);
+              .attr('y', d => this.yScale(d.doc_count))
+              .attr('width', d => this.calculateWidth(d));
         }
+    }
+
+    calculateWidth(bin) {
+        let width = this.xScale(bin.x1) - this.xScale(bin.x0) - 1;
+        if (width > 0) {
+            return width
+        }
+        else return 0;
     }           
 
     adjustTimeCategory() {
