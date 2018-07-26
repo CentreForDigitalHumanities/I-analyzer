@@ -50,7 +50,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.setScaleY();
                 this.drawChartData(this.selectedData);
-                //this.setupZoomBehaviour();
                 this.setupBrushBehaviour();
             }
         }
@@ -203,7 +202,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 this.currentTimeCategory = 'weeks';
                 break;
             case 'weeks':
-                //this.selectedData = this.days.filter( d => d.date >= lowerBound && d.date <= upperBound )
                 this.histogram.thresholds(this.xScale.ticks(d3.timeDay));
                 this.currentTimeCategory = 'days';
                 break;

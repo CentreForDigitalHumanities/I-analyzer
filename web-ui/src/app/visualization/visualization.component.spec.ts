@@ -16,7 +16,7 @@ describe('VisualizationComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, SharedModule],
+            imports: [ FormsModule, SharedModule ],
             declarations: [BarChartComponent, WordcloudComponent, TimelineComponent, VisualizationComponent],
             providers: [{
                 provide: SearchService,
