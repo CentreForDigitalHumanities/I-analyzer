@@ -4,3 +4,6 @@ indexing*
 *.pyc
 .cache
 *.egg-info
+*.egg
+.env/
+build/

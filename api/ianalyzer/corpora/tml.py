@@ -36,7 +36,6 @@ class Tml(HTMLCorpus):
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
     foldername_pattern = re.compile('^.*th$')
 
-
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
@@ -45,18 +44,18 @@ class Tml(HTMLCorpus):
         for directory, _, filenames in os.walk(self.data_directory):
             # we hebben nu 2 variabelen per folder: de folder, en de bestanden erin (lijst)
             dir_match = self.foldername_pattern.match(directory)
-
             if dir_match:
                 for filename in filenames:
-                    # we spitten nu losse betanden door
-                    full_path = join(directory, filename)
-                    yield full_path, {
+                    if filename != '.DS_Store':
+                        # we spitten nu losse betanden door
+                        full_path = join(directory, filename)
+                        yield full_path, {
 
-                    }
+                        }
 
     fields = [
 
-      Field(
+        Field(
             name='title',
             display_name='Title',
             prominent_field=True,
@@ -66,9 +65,9 @@ class Tml(HTMLCorpus):
 
     ]
 
+
 if __name__ == '__main__':
     t = Tml()
     s = t.sources()
-    d = t.documents()
-    print(next(d))
 
+    # print(next(d))
