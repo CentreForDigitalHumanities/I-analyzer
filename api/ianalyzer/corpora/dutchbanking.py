@@ -63,7 +63,7 @@ class DutchBanking(XMLCorpus):
             display_name='Bank',
             description='Banking concern to which the report belongs.',
             term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these banks.',
@@ -79,7 +79,7 @@ class DutchBanking(XMLCorpus):
             display_name='Year',
             description='Year of the financial report.',
             term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
                 description='Restrict the years from which search results will be returned.',
@@ -118,7 +118,7 @@ class DutchBanking(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content of the block.',
-            prominent_field=True,
+            results_overview=True,
             extractor=XML(
                 tag='String',
                 attribute='CONTENT',

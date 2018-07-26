@@ -86,7 +86,8 @@ describe('CorpusService', () => {
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
-                    "prominent_field": false,
+                    "results_overview": false,
+                    "preselected": false,
                     "term_frequency": true,
                     "search_filter": {
                         "description": "Search only within these banks.",
@@ -101,7 +102,8 @@ describe('CorpusService', () => {
                     "sortable": true,
                     "indexed": true,
                     "name": "year",
-                    "prominent_field": true,
+                    "results_overview": true,
+                    "preselected": true,
                     "term_frequency": false,
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
@@ -121,7 +123,8 @@ describe('CorpusService', () => {
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
-                prominentField: false,
+                resultsOverview: false,
+                preselected: false,
                 termFrequency: true,
                 searchFilter: {
                     description: "Search only within these banks.",
@@ -135,7 +138,8 @@ describe('CorpusService', () => {
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
-                prominentField: true,
+                resultsOverview: true,
+                preselected: true,
                 termFrequency: false,
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
