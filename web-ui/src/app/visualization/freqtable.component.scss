@@ -14,6 +14,20 @@
 	fill: #999;		
 }
 
-.table th{
-	margin: 50px;
+.box {
+	padding: .5em .75em;
+	// width: 80%;
+	margin: .5em 0;
+}
+
+.table {
+	padding: .5em .75em;
+}
+
+.table thead {
+	background-color: $turquoise;
+}
+
+.table thead th {
+	color: white;
 }

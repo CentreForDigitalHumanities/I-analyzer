@@ -1,0 +1,22 @@
+<!-- <form>
+    <input type="checkbox" name="yunits" [(ngModel)]="yAsPercent" (change)="setScale()">
+    <label>Display as Percentage</label>
+</form> -->
+<div class=box>
+    <table id="freq-table" class="table us-fullwidth">
+        <thead>
+            <tr>
+                <th>{{visualizedField|titlecase}}</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let entry of searchData">
+                <td>{{entry.key}}</td>
+                <td>{{entry.doc_count}}</td>
+            </tr>
+        </tbody>
+
+    </table>
+</div>

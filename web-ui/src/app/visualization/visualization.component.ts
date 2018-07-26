@@ -18,6 +18,8 @@ export class VisualizationComponent implements OnChanges {
     public visualizedField: string;
     public termFrequencyFields: string[];
     public wordCloud: boolean = false;
+    public barChart: boolean = false;
+    public freqTable: boolean = false;
 
     public chartElement: any;
 
@@ -51,7 +53,21 @@ export class VisualizationComponent implements OnChanges {
     }
 
     showWordcloud() {
+        this.barChart = false;
         this.wordCloud = true;
+        this.freqTable = false;
+    }
+
+    showBarchart() {
+        this.barChart = true;
+        this.wordCloud = false;
+        this.freqTable = false;
+    }
+
+    showFreqtable() {
+        this.barChart = false;
+        this.wordCloud = false;
+        this.freqTable = true;
     }
 
 }
