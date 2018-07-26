@@ -39,18 +39,18 @@ export function searchFilterDataToParam(data: SearchFilterData): string | string
     }
 }
 
-export function searchFilterDataFromParam(fieldName: string, filterName: SearchFilterName, value: string): SearchFilterData {
+export function searchFilterDataFromParam(fieldName: string, filterName: SearchFilterName, value: string[]): SearchFilterData {
     switch (filterName) {
         case "BooleanFilter":
-            return { fieldName, filterName, data: value === 'true' };
+            return { fieldName, filterName, data: value[0] === 'true' };
         case "MultipleChoiceFilter":
-            return { fieldName, filterName, data: value.split(',') };
+            return { fieldName, filterName, data: value };
         case "RangeFilter": {
-            let [gte, lte] = value.split(':');
+            let [gte, lte] = value[0].split(':');
             return { fieldName, filterName, data: { lte: parseFloat(lte), gte: parseFloat(gte) } };
         }
         case "DateFilter": {
-            let [gte, lte] = value.split(':');
+            let [gte, lte] = value[0].split(':');
             return { fieldName, filterName, data: { lte, gte } };
         }
     }

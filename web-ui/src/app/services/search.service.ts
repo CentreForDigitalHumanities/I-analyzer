@@ -71,7 +71,6 @@ export class SearchService {
         } else {
             delete route['sort'];
         }
-
         return route;
     }
 
