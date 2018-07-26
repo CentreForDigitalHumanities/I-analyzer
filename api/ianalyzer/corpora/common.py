@@ -286,6 +286,75 @@ class XMLCorpus(Corpus):
 
 
 
+class HTMLCorpus(Corpus):
+    '''
+    An XMLCorpus is any corpus that extracts its data from XML sources.
+    '''
+
+    @property
+    def xml_tag_toplevel(self):
+        '''
+        The top-level tag in the XML source documents.
+        '''
+        raise NotImplementedError()
+
+
+
+    @property
+    def xml_tag_entry(self):
+        '''
+        The XML tag that corresponds to a single document entry.
+        '''
+        raise NotImplementedError()
+
+
+
+    def source2dicts(self, filename, metadata={}):
+        '''
+        Generate a document dictionaries from a given XML file. This is the
+        default implementation for XML layouts; may be subclassed if more
+        '''
+
+        # Make sure that extractors are sensible
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                    extract.Choice,
+                    extract.Combined,
+                    extract.XML,
+                    extract.Metadata,
+                    extract.Constant
+                )):
+                raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
+
+
+        # Loading XML
+        logger.info('Reading XML file {} ...'.format(filename))
+        with open(filename, 'rb') as f:
+            data = f.read()
+
+        # Parsing XML
+        soup = bs4.BeautifulSoup(data, 'html.parser')
+
+        logger.info('Loaded {} into memory ...'.format(filename))
+
+        # Extract fields from soup
+        tag0 = self.xml_tag_toplevel
+        tag  = self.xml_tag_entry
+        bowl = soup.find(tag0) if tag0 else soup
+        if bowl:
+            for spoon in bowl.find_all(tag): # Note that this is non-recursive: will only find direct descendants of the top-level tag
+                yield {
+                    field.name : field.extractor.apply(
+                        # The extractor is put to work by simply throwing at it
+                        # any and all information it might need
+                        soup_top=bowl,
+                        soup_entry=spoon,
+                        metadata=metadata
+                    ) for field in self.fields if field.indexed
+                }
+        else:
+            logger.warning('Top-level tag not found in `{}`'.format(filename))
+
 # Fields ######################################################################
 
 
