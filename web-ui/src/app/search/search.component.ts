@@ -140,6 +140,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = true;
         this.toggleFilterFields();
@@ -147,6 +148,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // control whether a given filter is applied or not
     public toggleFilter(name:string, event) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name]
         field.useAsFilter = !field.useAsFilter;
     }
@@ -219,7 +221,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        this.hasModifiedFilters = true;
         this.queryField[name].data = data;
         this.changeDetectorRef.detectChanges();
     }
