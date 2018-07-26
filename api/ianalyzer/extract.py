@@ -38,7 +38,7 @@ class Extractor(object):
                     return self.transform(result)
             except Exception:
                 logging.critical("Value {v} could not be converted."\
-                    .format(v=result, k=key))
+                    .format(v=result))
                 return None
             else:
                 return result

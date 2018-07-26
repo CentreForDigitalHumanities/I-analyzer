@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 
@@ -20,7 +20,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -86,6 +85,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private selectedAll: boolean = true;
 
+    public searchFilterData: SearchFilterData[] = [];
+
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService,
@@ -100,9 +101,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         private title: Title) {
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.availableCorpora = this.corpusService.get();
-        this.user = this.userService.getCurrentUserOrFail();
+        this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
         Observable.combineLatest(
             this.corpusService.currentCorpus,
@@ -144,12 +145,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.toggleFilterFields();
     }
 
+    // control whether a given filter is applied or not
+    public toggleFilter(name:string, event) {
+        let field = this.queryField[name]
+        field.useAsFilter = !field.useAsFilter;
+    }
+
+    // fields that are used as filters aren't searched in
     public toggleFilterFields() {
         this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
 
+    // fields that are searched in aren't used as filters
     public toggleQueryFields(event) {
         // We don't allow searching and filtering by the same field.
         for (let field of event.value) {
@@ -159,6 +168,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
+    // control whether the filters are hidden
     public toggleFilters() {
         this.showFilters = !this.showFilters;
     }
@@ -172,7 +182,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     public search() {
         let queryModel = this.createQueryModel();
         let route = this.searchService.queryModelToRoute(queryModel);
-        this.router.navigate(['.', route], { relativeTo: this.activatedRoute });
+        let url = this.router.serializeUrl(this.router.createUrlTree(
+            ['.', route],
+            { relativeTo: this.activatedRoute },
+        ));
+        if (this.router.url === url) {
+            this.performSearch();
+        } else {
+            this.router.navigateByUrl(url);
+        }
     }
 
     public visualize() {
@@ -315,16 +333,24 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
                 fieldsSet = true;
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.getAll(param)),
                     useAsFilter: true,
                     visible: true
                 }, field);
             } else {
-                let auxField = this.queryField[field.name] = Object.assign({
+                // this field is not found in the route
+                let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
                     visible: true
                 }, field);
+                // in case there have been some settings before (i.e., from a deactivated filter), retain them
+                if (this.queryField[field.name]) {
+                    this.queryField[field.name].useAsFilter = false;
+                }
+                else {
+                    this.queryField[field.name] = auxField;
+                }
                 if (queryRestriction.includes(field.name)) {
                     this.selectedQueryFields.push(auxField);
                 }
@@ -349,6 +375,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean,
+    useAsFilter: boolean, 
     visible: boolean
 };

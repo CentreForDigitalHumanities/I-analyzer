@@ -1,19 +1,19 @@
 <ng-container *ngIf="filter">
     <div class="bool" *ngIf="filter.name == 'BooleanFilter'">
         <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
-        {{data? filter.trueText : filter.falseText}}
+        {{data | json | titlecase }}
     </div>
     <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'">
         <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'">
+        <span>{{data[0]}} - {{data[1]}}</span>
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>
-        <span>{{data[0]}} : {{data[1]}}</span>
     </div>
     <div class="daterange" *ngIf="filter.name == 'DateFilter'">
-        <p-calendar [disabled]="!enabled" [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+        <p-calendar [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
             (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
-        <p-calendar [disabled]="!enabled" [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+        <p-calendar [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
             (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
     </div>
 </ng-container>
