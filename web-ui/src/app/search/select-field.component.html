@@ -1,5 +1,5 @@
 <div class="control" iaBalloon="Choose which fields should be included in the CSV download" [iaBalloonVisible]="showBalloon">	
-	<p-multiSelect styleClass="button is-outlined is-info" defaultLabel="{{label}}" [options]="optionsFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" [displaySelectedLabel]="showSelectedFields" (onChange)="showBalloon=false; toggleField()" (onFocus)="showBalloon=false" (onBlur)="showBalloon=undefined" [ngModelOptions]="{standalone: true}">
+	<p-multiSelect styleClass="button is-light" defaultLabel="{{label}}" [options]="optionsFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" [displaySelectedLabel]="showSelectedFields" (onChange)="showBalloon=false; toggleField()" (onFocus)="showBalloon=false" (onBlur)="showBalloon=undefined" [ngModelOptions]="{standalone: true}">
 	    <p-footer>
 	        <a class="button is-primary" (click)="toggleAllFields()">{{allVisible? 'Show default fields' : 'Show all fields'}}</a>
 	    </p-footer>
