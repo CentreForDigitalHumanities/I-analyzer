@@ -30,7 +30,7 @@ class Tml(HTMLCorpus):
     es_settings = None
 
     xml_tag_toplevel = 'html'
-    xml_tag_entry = 'content'
+    xml_tag_entry = 'head'
 
     # New data members
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
@@ -60,7 +60,7 @@ class Tml(HTMLCorpus):
             display_name='Title',
             prominent_field=True,
             description='Article title.',
-            extractor=extract.XML(tag='title', toplevel=True)
+            extractor=extract.XML(tag='title')
         )
 
     ]
@@ -68,6 +68,10 @@ class Tml(HTMLCorpus):
 
 if __name__ == '__main__':
     t = Tml()
+    # d = t.documents()
     s = t.sources()
+    d = t.documents()
 
+    for si in d:
+        print(si)
     # print(next(d))
