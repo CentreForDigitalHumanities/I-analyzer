@@ -100,10 +100,10 @@ class Times(XMLCorpus):
     fields = [
         Field(
             name='date',
-            display_name='Date',
+            display_name='Publication date',
             description='Publication date, programmatically generated.',
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            term_frequency=True,
+            es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            visualization_type='timeline',
             prominent_field=True,
             search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
@@ -397,6 +397,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
+            visualization_type='term_frequency',
             display_name='Category',
             term_frequency=True,
             description='Article subject categories.',

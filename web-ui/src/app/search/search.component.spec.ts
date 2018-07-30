@@ -24,6 +24,7 @@ import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
@@ -34,7 +35,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, VisualizationComponent, WordcloudComponent, BarChartComponent],
+            declarations: [BalloonDirective, BarChartComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [FormsModule, CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,

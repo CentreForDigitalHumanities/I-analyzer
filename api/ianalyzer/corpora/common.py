@@ -311,7 +311,7 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
-            term_frequency=False,
+            visualization_type=None,
             prominent_field=False,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
@@ -325,7 +325,7 @@ class Field(object):
         self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
-        self.term_frequency = term_frequency
+        self.visualization_type = visualization_type
         self.prominent_field = prominent_field
         self.es_mapping = es_mapping
         self.indexed = indexed

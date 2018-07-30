@@ -29,6 +29,7 @@ import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
@@ -86,9 +87,10 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         WordcloudComponent,
+        TimelineComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent
+        HistoryQueryDisplayComponent,
     ],
     imports: [
         BrowserAnimationsModule,

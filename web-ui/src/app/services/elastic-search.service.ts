@@ -75,21 +75,9 @@ export class ElasticSearchService {
     * Date fields are aggregated in year intervals
     */
     makeAggregation(aggregator: string) {
-        let aggregation: any;
-        if (aggregator == "date") {
-            aggregation = {
-                date_histogram: {
-                    field: aggregator,
-                    interval: "year",
-                    format: "yyyy"
-                }
-            }
-        }
-        else {
-            aggregation = {
-                terms: {
-                    field: aggregator
-                }
+        let aggregation = {
+            terms: {
+                field: aggregator
             }
         }
         return aggregation;
