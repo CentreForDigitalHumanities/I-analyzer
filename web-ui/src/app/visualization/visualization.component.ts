@@ -1,5 +1,7 @@
 import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
+import { SelectItem, SelectItemGroup } from 'primeng/api';
+
 import { Corpus, AggregateResults, QueryModel } from '../models/index';
 import { SearchService } from '../services/index';
 
@@ -17,6 +19,8 @@ export class VisualizationComponent implements OnChanges {
 
     public visualizedField: string;
     public termFrequencyFields: string[];
+    public groupedVisualizations: SelectItemGroup[];
+
     public wordCloud: boolean = false;
     public barChart: boolean = false;
     public freqTable: boolean = false;
@@ -29,6 +33,21 @@ export class VisualizationComponent implements OnChanges {
     }[];
 
     constructor(private searchService: SearchService) {
+        this.groupedVisualizations = [
+            {
+                label: 'Histograms',
+                items: [
+                    { label: 'Date', value: 'date' },
+                    { label: 'Category', value: 'category' },
+                ]
+            },
+            {
+                label: 'Other',
+                items: [
+                    { label: 'Word Cloud', value: 'wordcloud' }
+                ]
+            }
+        ]
     }
 
     ngOnInit() {
