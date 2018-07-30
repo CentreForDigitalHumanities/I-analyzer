@@ -64,9 +64,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
           .range([0, this.width])
           .clamp(true);
 
+        let [min, max] = this.xScale.domain();
+
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
           .value( d => d.date )
-          .domain(this.xScale.domain())
+          .domain([min, max])
           .thresholds(this.xScale.ticks(d3.timeWeek));
 
         this.currentTimeCategory = 'weeks';
