@@ -1,5 +1,8 @@
-@import '../../variables.scss';
+.control[data-balloon] p-multiSelect {
+    position: relative;
+    z-index: 20;
+}
 
-.ui-multiselect {
-	color: $info;
+.topmenu .ui-multiselect {
+	color: blue;
 }

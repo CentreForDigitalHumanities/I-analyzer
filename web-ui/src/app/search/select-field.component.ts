@@ -4,7 +4,7 @@ import { QueryField } from '../models/index';
 @Component({
     selector: 'ia-select-field',
     templateUrl: './select-field.component.html',
-    styleUrls: ['./select-field.component.scss']
+    styleUrls: ['./select-field.component.scss'],
 })
 export class SelectFieldComponent implements OnInit {
     @Input() public availableFields: QueryField[];
