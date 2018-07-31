@@ -1,12 +1,14 @@
-<ng-container *ngFor="let field of termFrequencyFields">
-        <button class="button is-info" (click)="setVisualizedField(field)">
-            <span>{{field | titlecase}}</span>
-        </button>
+<ng-container *ngFor="let field of visualizedFields">
+    <button class="button is-info" (click)="setVisualizedField(field)">
+        <span>{{field | titlecase}}</span>
+    </button>
 </ng-container>
-<!-- <button class="button is-info" (click)="showWordcloud()">
-	<span>Wordcloud</span>
-</button> -->
+
 <div class="d3-chart" #chart>
-<barchart *ngIf="aggResults" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
-<!-- <wordcloud *ngIf="wordCloud" [chartElement]="chartElement"></wordcloud> -->
+	<ng-container *ngIf="aggResults" [ngSwitch]="visualizationType">
+		<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></ia-barchart>
+		<ia-timeline *ngSwitchCase="'timeline'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+		[chartElement]="chartElement"></ia-timeline>
+		<!-- <wordcloud *ngIf="wordCloud" [chartElement]="chartElement"></wordcloud> -->
+	</ng-container>
 </div>

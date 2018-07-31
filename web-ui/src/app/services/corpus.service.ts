@@ -68,7 +68,7 @@ export class CorpusService {
             displayType: data.display_type || data['es_mapping'].type,
             resultsOverview: data.results_overview,
             preselected: data.preselected,
-            termFrequency: data.term_frequency,
+            visualizationType: data.visualization_type,
             hidden: data.hidden,
             sortable: data.sortable,
             name: data.name,

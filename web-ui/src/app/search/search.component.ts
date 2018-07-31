@@ -114,14 +114,14 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
-            });
+        });
     }
 
     ngOnDestroy() {
@@ -137,6 +137,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = true;
         this.toggleFilterFields();
@@ -144,6 +145,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // control whether a given filter is applied or not
     public toggleFilter(name:string, event) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name]
         field.useAsFilter = !field.useAsFilter;
     }
@@ -215,7 +217,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        this.hasModifiedFilters = true;
         this.queryField[name].data = data;
         this.changeDetectorRef.detectChanges();
     }
@@ -318,7 +319,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
                 fieldsSet = true;
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.getAll(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param).split(',')),
                     useAsFilter: true,
                     downloadInCsv: true
                 }, field);

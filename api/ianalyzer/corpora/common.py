@@ -311,9 +311,9 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
-            term_frequency=False,
             results_overview=False,
             preselected=False,
+            visualization_type=None,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
             extractor=extract.Constant(None),
@@ -326,9 +326,9 @@ class Field(object):
         self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
-        self.term_frequency = term_frequency
         self.results_overview = results_overview
         self.preselected = preselected
+        self.visualization_type = visualization_type
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden
