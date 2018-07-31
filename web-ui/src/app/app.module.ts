@@ -34,6 +34,7 @@ import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+import { SelectFieldComponent } from './search/select-field.component';
 
 const appRoutes: Routes = [
     {
@@ -91,6 +92,7 @@ const appRoutes: Routes = [
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
+        SelectFieldComponent
     ],
     imports: [
         BrowserAnimationsModule,

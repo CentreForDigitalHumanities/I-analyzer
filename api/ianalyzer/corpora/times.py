@@ -102,9 +102,10 @@ class Times(XMLCorpus):
             name='date',
             display_name='Publication date',
             description='Publication date, programmatically generated.',
-            es_mapping={ 'type' : 'date', 'format': 'yyyy-MM-dd' },
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            results_overview=True,
+            preselected=True,
             visualization_type='timeline',
-            prominent_field=True,
             search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
                 config.TIMES_MAX_DATE,
@@ -357,7 +358,8 @@ class Times(XMLCorpus):
         Field(
             name='title',
             display_name='Title',
-            prominent_field=True,
+            results_overview=True,
+            preselected=True,
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
@@ -493,7 +495,8 @@ class Times(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Raw OCR\'ed text (content).',
-            prominent_field=True,
+            results_overview=True,
+            preselected=True,
             extractor=extract.XML(
                 tag=['text', 'text.cr'], multiple=True,
                 flatten=True

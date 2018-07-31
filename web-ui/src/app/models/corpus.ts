@@ -1,3 +1,5 @@
+import { SearchFilterData } from './search-filter-data';
+
 export class Corpus implements ElasticSearchIndex {
     constructor(
         public serverName,
@@ -36,13 +38,20 @@ export type CorpusField = {
      * text_content: Main text content of the document
      */
     displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
-    prominentField?: boolean,
+    resultsOverview?: boolean,
+    preselected?: boolean,
     visualizationType?: string,
     hidden: boolean,
     sortable: boolean,
     name: string,
     searchFilter: SearchFilter | null
 }
+
+export type QueryField = CorpusField & {
+    data: SearchFilterData,
+    useAsFilter: boolean, 
+    visible: boolean
+};
 
 export type SearchFilter = BooleanFilter | MultipleChoiceFilter | RangeFilter | DateFilter;
 

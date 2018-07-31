@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
+import * as _ from "lodash";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
@@ -83,10 +84,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         message: string
     };
 
-    private selectedAll: boolean = true;
-
-    public searchFilterData: SearchFilterData[] = [];
-
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService,
@@ -155,7 +152,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // fields that are used as filters aren't searched in
     public toggleFilterFields() {
-        this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
@@ -230,17 +226,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.viewDocument = document;
     }
 
-    public selectAllCsvFields() {
-        for (let field of this.corpus.fields) {
-            this.queryField[field.name].visible = this.selectedAll;
-        }
-    }
-
-    public checkIfAllSelected() {
-        let fields = Object.values(this.queryField).filter(field => !field.hidden);
-        this.selectedAll = fields.every(field => field.visible);
-    }
-
     public showQueryDocumentation() {
         this.manualService.showPage('query');
     }
@@ -276,7 +261,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private getCsvFields(): CorpusField[] {
-        return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
+        return Object.values(this.queryField).filter(field => !field.hidden && field.downloadInCsv);
     }
 
     private getQueryFields(): string[] | null {
@@ -336,14 +321,14 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryField[field.name] = Object.assign({
                     data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param).split(',')),
                     useAsFilter: true,
-                    visible: true
+                    downloadInCsv: true
                 }, field);
             } else {
                 // this field is not found in the route
                 let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
-                    visible: true
+                    downloadInCsv: true
                 }, field);
                 // in case there have been some settings before (i.e., from a deactivated filter), retain them
                 if (this.queryField[field.name]) {
@@ -358,7 +343,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.availableQueryFields = Object.values(this.queryField);
+        this.availableQueryFields = Object.values(this.queryField).filter(field => !field.hidden);
         return fieldsSet;
     }
 
@@ -371,11 +356,25 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.sortField = undefined;
         }
     }
+
+    private selectSearchFieldsEvent(selection: QueryField[]) {
+        this.selectedQueryFields = selection;
+        this.hasModifiedFilters = true;
+    }
+
+    private selectCsvFieldsEvent(selection: QueryField[]) {
+        let fields = selection.map( field => field.name );
+        // set first that no fields are downloaded, then set only the selected ones to download
+        Object.values(this.queryField).forEach( field => field.downloadInCsv = false );
+        Object.values(this.queryField).filter( 
+            field => _.indexOf(fields, field.name) != -1 ).forEach( 
+            field => field.downloadInCsv = true );
+    }
 }
 
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
     useAsFilter: boolean, 
-    visible: boolean
+    downloadInCsv: boolean
 };
