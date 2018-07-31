@@ -334,7 +334,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
                 fieldsSet = true;
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.getAll(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param).split(',')),
                     useAsFilter: true,
                     visible: true
                 }, field);
