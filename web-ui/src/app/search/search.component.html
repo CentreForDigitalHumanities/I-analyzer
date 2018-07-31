@@ -40,7 +40,9 @@
                                     <span>Search</span>
                                 </button>
                             </div>
-                            <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)" [showSelectedFields]="true"> </ia-select-field>
+                            <div class="control" iaBalloon="Restrict your query to specific fields">
+                                <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)" [showSelectedFields]="true"> </ia-select-field>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -63,7 +65,7 @@
                                     <span>Download csv</span>
                                 </button>
                             </p>
-                            <p class="control">
+                            <p class="control" iaBalloon="Restrict your query to specific fields">
                                 <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false" (selectedFields)="selectCsvFieldsEvent($event)">
                                 </ia-select-field>
                             </p>

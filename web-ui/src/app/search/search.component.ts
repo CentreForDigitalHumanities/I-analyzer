@@ -150,7 +150,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // fields that are used as filters aren't searched in
     public toggleFilterFields() {
-        //this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
