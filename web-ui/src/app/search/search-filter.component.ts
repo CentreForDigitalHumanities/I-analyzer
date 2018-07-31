@@ -31,14 +31,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['field'] || changes['filterData']) {
-            if (changes['field'] && !changes['filterData']) {
-                // make sure the filter data is reset if only the field was changed
-                this.update(true);
-            }
-            if (changes['filterData']) {
-                this.data = this.getDisplayData(this.filter, this.filterData);
-            }
+        if (changes['filterData']) {
+            this.data = this.getDisplayData(this.filter, this.filterData);
+        }
+        else if (changes['field']) {
+            // make sure the filter data is reset if only the field was changed
+            this.update(true);
         }
     }
 
