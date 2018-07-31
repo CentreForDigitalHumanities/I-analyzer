@@ -117,14 +117,14 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
+                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
-            });
+        });
     }
 
     ngOnDestroy() {

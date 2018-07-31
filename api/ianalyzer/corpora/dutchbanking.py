@@ -62,7 +62,7 @@ class DutchBanking(XMLCorpus):
             name='bank',
             display_name='Bank',
             description='Banking concern to which the report belongs.',
-            term_frequency=True,
+            visualization_type='term_frequency',
             prominent_field=True,
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -78,7 +78,7 @@ class DutchBanking(XMLCorpus):
             name='year',
             display_name='Year',
             description='Year of the financial report.',
-            term_frequency=True,
+            visualization_type='term_frequency',
             prominent_field=True,
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(

@@ -37,7 +37,7 @@ export type CorpusField = {
      */
     displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
     prominentField?: boolean,
-    termFrequency?: boolean,
+    visualizationType?: string,
     hidden: boolean,
     sortable: boolean,
     name: string,
