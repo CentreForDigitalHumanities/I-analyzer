@@ -29,10 +29,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     idleTimeout: any;
     idleDelay: number;
 
-    private years: Array<DateFrequencyPair>;
-    private months: Array<DateFrequencyPair>;
-    private weeks: Array<DateFrequencyPair>;
-    private days: Array<DateFrequencyPair>;
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
     private histogram: any;
@@ -49,6 +45,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.setScaleY();
+                console.log(this.selectedData);
                 this.drawChartData(this.selectedData);
                 this.setupBrushBehaviour();
             }
@@ -69,9 +66,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
           .value( d => d.date )
           .domain([min, max])
-          .thresholds(this.xScale.ticks(d3.timeWeek));
+          .thresholds(this.xScale.ticks(d3.timeYear));
 
-        this.currentTimeCategory = 'weeks';
+        this.currentTimeCategory = 'years';
 
     }
 
@@ -107,6 +104,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 d.doc_count = 0;
             }
         });
+
+        console.log(this.bins);
 
         const update = this.chart.selectAll('.bar')
           .data(this.bins);
@@ -156,8 +155,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 // resetting everything to first view
                 this.xScale.domain(this.xDomain);
                 this.rescaleX();
-                this.histogram.thresholds(this.xScale.ticks(d3.timeWeek));
-                this.currentTimeCategory = 'weeks';
+                this.histogram.thresholds(this.xScale.ticks(d3.timeYear));
+                this.currentTimeCategory = 'years';
                 this.drawChartData(this.selectedData);
             }
                       
