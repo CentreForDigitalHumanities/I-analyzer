@@ -89,10 +89,15 @@ export class ElasticSearchService {
             }
             case "wordcloud": {
                 aggregation = {
-                    significant_text: {
-                    field: "content"
+                        sampler : {
+                            shard_size : 100
+                        },
+                        aggs: {
+                            keywords : {
+                                significant_text : { field : "content" }
+                            }
+                        }
                     }
-                }
                 break;
             }
             default: {
@@ -187,8 +192,8 @@ export class ElasticSearchService {
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
         // Extract relevant information from dictionary returned by ES
-        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number, key_as_string?: string }[] } } = result.aggregations;
-        let buckets = aggregations[aggregator].buckets;
+        let aggregations = result.aggregations;
+        let buckets = aggregator=="wordcloud"? aggregations[aggregator].keywords.buckets : aggregations[aggregator].buckets;
         return {
             completed: true,
             aggregations: buckets
