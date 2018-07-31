@@ -1,27 +1,35 @@
-<ng-container *ngFor="let field of termFrequencyFields">
+<!-- <ng-container *ngFor="let field of termFrequencyFields">
     <button class="button is-info" (click)="setVisualizedField(field)">
         <span>{{field | titlecase}}</span>
     </button>
-
 </ng-container>
-<!-- <button class="button is-info" (click)="showWordcloud()">
-	<span>Wordcloud</span>
+<button class="button is-info" (click)="showWordcloud()">
+    <span>Wordcloud</span>
 </button> -->
 
-<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualizedField" placeholder="Visualization" [group]="true"></p-dropdown>
-
-
-<!-- Control which visualization is shown -->
-<div class="btn-group" role="group" aria-label="Basic example" style="float:right">
-    <button type="button" class="button is-info btn-secondary" (click)="showBarchart()">Barchart</button>
-    <button type="button" class="button is-info btn-secondary" (click)="showWordcloud()">Wordcloud</button>
-    <button type="button" class="button is-info btn-secondary" (click)="showFreqtable()">Frequency Table</button>
+<div #viscontrol>
+    <p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization" [group]="true" (onChange)="setVisualizationType($event)"></p-dropdown>
+    <button *ngIf="freqTable" [class.button]="true" [class.is-primary]="visualizationType==='barchart'" (click)="showChart()"
+        style="float:right">
+        <i [hidden]="!freqtable" class="fa fa-bar-chart" aria-hidden="true"></i>
+    </button>
+    <button *ngIf="freqTable" [class.button]="true" [class.is-primary]="visualizationType==='freqtable'" (click)="showTable()"
+        style="float:right">
+        <i [hidden]="!freqtable" class="fa fa-table" aria-hidden="true"></i>
+    </button>
 </div>
 
 
+<!-- Control which visualization is shown -->
+<!-- <div class="btn-group" role="group" aria-label="Basic example" style="float:right">
+    <button type="button" class="button is-info btn-secondary" (click)="showBarchart()">Barchart</button>
+    <button type="button" class="button is-info btn-secondary" (click)="showWordcloud()">Wordcloud</button>
+    <button type="button" class="button is-info btn-secondary" (click)="showFreqtable()">Frequency Table</button>
+</div> -->
 
-<div class="d3-chart" #chart>
-    <barchart *ngIf="barChart" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
-    <wordcloud *ngIf="wordCloud" [chartElement]="chartElement"></wordcloud>
-    <freqtable *ngIf="freqTable" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></freqtable>
+
+<div class="d3-chart" [ngSwitch]="visualizationType" #chart>
+    <barchart *ngSwitchCase="'barchart'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
+    <wordcloud *ngSwitchCase="'wordcloud'" [chartElement]="chartElement"></wordcloud>
+    <freqtable *ngSwitchCase="'freqtable'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></freqtable>
 </div>

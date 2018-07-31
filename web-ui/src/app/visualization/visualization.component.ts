@@ -17,6 +17,8 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
 
+    public visualization: object;
+    public visualizationType: string;
     public visualizedField: string;
     public termFrequencyFields: string[];
     public groupedVisualizations: SelectItemGroup[];
@@ -37,17 +39,20 @@ export class VisualizationComponent implements OnChanges {
             {
                 label: 'Histograms',
                 items: [
-                    { label: 'Date', value: 'date' },
-                    { label: 'Category', value: 'category' },
+                    { label: 'Date', value: { type: 'barchart', field: 'date' } },
+                    { label: 'Category', value: { type: 'barchart', field: 'category' } },
                 ]
             },
             {
                 label: 'Other',
                 items: [
-                    { label: 'Word Cloud', value: 'wordcloud' }
+                    { label: 'Word Cloud', value: { type: 'wordcloud', field: 'none' } }
                 ]
             }
         ]
+
+        this.visualizationType = "barchart";
+        this.freqTable = true;
     }
 
     ngOnInit() {
@@ -69,24 +74,38 @@ export class VisualizationComponent implements OnChanges {
             this.visualizedField = visualizedField;
             this.aggResults = visual.aggregations;
         });
+
+
     }
 
-    showWordcloud() {
-        this.barChart = false;
-        this.wordCloud = true;
-        this.freqTable = false;
+    setVisualizationType(event) {
+        if (event.value.type == 'barchart') {
+            this.setVisualizedField(event.value.field.toLowerCase())
+            this.freqTable = true;
+        }
+        else {
+            this.freqTable = false;
+        }
+        this.visualizationType = event.value.type;
     }
 
-    showBarchart() {
-        this.barChart = true;
-        this.wordCloud = false;
-        this.freqTable = false;
+    toggleTable() {
+        if (this.visualizationType == 'barchart') {
+            this.visualizationType = 'freqtable';
+        }
+        else {
+            this.visualizationType = 'barchart';
+        }
     }
 
-    showFreqtable() {
-        this.barChart = false;
-        this.wordCloud = false;
-        this.freqTable = true;
+    showTable() {
+        this.visualizationType = 'freqtable';
+
+    }
+
+    showChart() {
+        this.visualizationType = 'barchart';
+
     }
 
 }
