@@ -1,10 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { SharedModule } from 'primeng/primeng';
+import { SharedModule, DropdownModule } from 'primeng/primeng';
 
 import { BarChartComponent } from './barchart.component';
 import { WordcloudComponent } from './wordcloud.component';
+import { FreqtableComponent } from './freqtable.component'
 import { VisualizationComponent } from './visualization.component';
 import { SearchService } from '../services/index';
 import { AggregateResults, Corpus, QueryModel } from '../models/index';
@@ -15,8 +16,8 @@ describe('VisualizationComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, SharedModule],
-            declarations: [BarChartComponent, WordcloudComponent, VisualizationComponent],
+            imports: [FormsModule, SharedModule, DropdownModule],
+            declarations: [BarChartComponent, FreqtableComponent, WordcloudComponent, VisualizationComponent],
             providers: [{
                 provide: SearchService,
                 useValue: new MockSearchService()

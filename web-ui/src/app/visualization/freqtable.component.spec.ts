@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { TitleCasePipe } from '@angular/common';
 
 import { FreqtableComponent } from './freqtable.component';
 
@@ -8,9 +9,10 @@ describe('FreqtableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FreqtableComponent ]
+      providers: [TitleCasePipe],
+      declarations: [FreqtableComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
