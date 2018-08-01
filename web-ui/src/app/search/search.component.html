@@ -41,7 +41,8 @@
                                 </button>
                             </div>
                             <div class="control" iaBalloon="Choose to which fields the query should be applied">
-                                <p-multiSelect styleClass="button is-primary is-outlined" defaultLabel="All fields" [options]="availableQueryFields" [(ngModel)]="selectedQueryFields" optionLabel="displayName" (onChange)="toggleQueryFields($event)" [ngModelOptions]="{standalone: true}"></p-multiSelect>
+                                <p-multiSelect styleClass="button is-primary is-outlined" defaultLabel="All fields" [options]="availableQueryFields" [(ngModel)]="selectedQueryFields"
+                                    optionLabel="displayName" (onChange)="toggleQueryFields($event)" [ngModelOptions]="{standalone: true}"></p-multiSelect>
                             </div>
                         </div>
                     </form>
@@ -93,12 +94,14 @@
                                 <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                             </div>
                             <p class="control">
-                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
+                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
+                                    (click)="toggleFilter(field.name)">
                                     <i class="fa fa-filter"></i>
-                                 </span>
-                             </p>
+                                </span>
+                            </p>
                         </div>
-                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
+                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
+                            (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
                     </div>
                 </ng-container>
             </div>
@@ -106,7 +109,8 @@
             <!-- search results, on right -->
             <div class="tile is-vertical is-parent" [ngClass]="{'is-8': showFilters}" *ngIf="results">
                 <div class="tile is-child">
-                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user" (view)="onViewDocument($event)">
+                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                        (view)="onViewDocument($event)">
                         <div class="field">
                             <label class="label">Sort By</label>
                         </div>
@@ -147,7 +151,7 @@
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
+<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800" height="100%">
     <p-header>Select a data column for visualization</p-header>
     <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>
@@ -155,12 +159,28 @@
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">
     <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>
     <div class="content">
-        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the following information when seeking support:</p>
+        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the
+            following information when seeking support:</p>
         <table>
             <tbody>
-                <tr><th>Date</th><td><code>{{showError.date}}</code></td></tr>
-                <tr><th>URL</th><td><code>{{showError.href}}</code></td></tr>
-                <tr><th>Error</th><td><code>{{showError.message}}</code></td></tr>
+                <tr>
+                    <th>Date</th>
+                    <td>
+                        <code>{{showError.date}}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <th>URL</th>
+                    <td>
+                        <code>{{showError.href}}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Error</th>
+                    <td>
+                        <code>{{showError.message}}</code>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
