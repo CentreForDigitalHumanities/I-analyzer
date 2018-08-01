@@ -45,6 +45,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.setScaleY();
+                console.log(this.selectedData);
                 this.drawChartData(this.selectedData);
                 this.setupBrushBehaviour();
             }

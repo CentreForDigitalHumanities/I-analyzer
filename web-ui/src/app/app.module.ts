@@ -94,7 +94,7 @@ const appRoutes: Routes = [
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
-        FreqtableComponent
+        FreqtableComponent,
         SelectFieldComponent
     ],
     imports: [

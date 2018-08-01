@@ -1,13 +1,4 @@
-<!-- <ng-container *ngFor="let field of visualizedFields">
-	<button class="button is-info" (click)="setVisualizedField(field)">
-		<span>{{field | titlecase}}</span>
-	</button>
-</ng-container>
-<button class="button is-info" (click)="showWordcloud()">
-	<span>Wordcloud</span>
-</button> -->
-
-<ng-container #viscontrol>
+<div #viscontrol>
 	<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization" [group]="true" (onChange)="setSelectedVisualization($event)"></p-dropdown>
 	<button *ngIf="freqTable" [class.button]="true" [class.is-primary]="selectedVisualization==='barchart'" (click)="showChart()"
 	 style="float:right">
@@ -17,7 +8,7 @@
 	 style="float:right">
 		<i [hidden]="!freqtable" class="fa fa-table" aria-hidden="true"></i>
 	</button>
-</ng-container>
+</div>
 
 <div class="d3-chart" [ngSwitch]="selectedVisualization" #chart>
 	<ia-timeline *ngSwitchCase="'barchart'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement">
