@@ -20,7 +20,7 @@ export class FreqtableComponent implements OnChanges {
   }[];
   @Input() public visualizedField;
   @Input() public chartElement;
-  @Input() public asPercent: boolean = true;
+  @Input() public asPercent: boolean;
 
   constructor(private titlecasepipe: TitleCasePipe) { }
 
@@ -46,8 +46,17 @@ export class FreqtableComponent implements OnChanges {
     /**
     * select DOM elements, set up scales and axes
     */
+
+    // Convert values to percentages
     if (this.asPercent) {
-      console.log(this.searchData);
+      var total = 0;
+      for (let bin of this.searchData) {
+        total += bin.doc_count;
+      }
+      this.searchData.map(function (e) {
+        e.doc_count = (e.doc_count / total);
+        return e;
+      })
     }
 
     d3.selectAll('svg').remove();
