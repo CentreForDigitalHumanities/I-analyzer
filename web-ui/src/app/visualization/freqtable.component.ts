@@ -6,7 +6,7 @@ import * as _ from "lodash";
 import { TableBody } from '../../../node_modules/primeng/primeng';
 
 @Component({
-  selector: 'freqtable',
+  selector: 'ia-freqtable',
   templateUrl: './freqtable.component.html',
   styleUrls: ['./freqtable.component.scss'],
   encapsulation: ViewEncapsulation.None

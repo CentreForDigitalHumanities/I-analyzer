@@ -1,4 +1,4 @@
-<ng-container *ngFor="let field of visualizedFields">
+<!-- <ng-container *ngFor="let field of visualizedFields">
 	<button class="button is-info" (click)="setVisualizedField(field)">
 		<span>{{field | titlecase}}</span>
 	</button>
@@ -8,24 +8,27 @@
 </button> -->
 
 <ng-container #viscontrol>
-	<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization" [group]="true" (onChange)="setVisualizationType($event)"></p-dropdown>
-	<button *ngIf="freqTable" [class.button]="true" [class.is-primary]="visualizationType==='barchart'" (click)="showChart()"
+	<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization" [group]="true" (onChange)="setSelectedVisualization($event)"></p-dropdown>
+	<button *ngIf="freqTable" [class.button]="true" [class.is-primary]="selectedVisualization==='barchart'" (click)="showChart()"
 	 style="float:right">
 		<i [hidden]="!freqtable" class="fa fa-bar-chart" aria-hidden="true"></i>
 	</button>
-	<button *ngIf="freqTable" [class.button]="true" [class.is-primary]="visualizationType==='freqtable'" (click)="showTable()"
+	<button *ngIf="freqTable" [class.button]="true" [class.is-primary]="selectedVisualization==='freqtable'" (click)="showTable()"
 	 style="float:right">
 		<i [hidden]="!freqtable" class="fa fa-table" aria-hidden="true"></i>
 	</button>
 </ng-container>
 
 <div class="d3-chart" [ngSwitch]="selectedVisualization" #chart>
-	<barchart *ngSwitchCase="'barchart'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></barchart>
-	<wordcloud *ngSwitchCase="'wordcloud'" [chartElement]="chartElement"></wordcloud>
-	<freqtable *ngSwitchCase="'freqtable'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></freqtable>
+	<ia-timeline *ngSwitchCase="'barchart'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement">
+	</ia-timeline>
+	<!-- <ia-timeline *ngSwitchCase="'timeline'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></ia-timeline> -->
+	<!-- <ia-wordcloud *ngSwitchCase="'wordcloud'" [chartElement]="chartElement"></wordcloud> -->
+	<ia-freqtable *ngSwitchCase="'freqtable'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement">
+	</ia-freqtable>
 
 	<!-- <div class="d3-chart" #chart>
-	<ng-container *ngIf="aggResults" [ngSwitch]="visualizationType">
+	<ng-container *ngIf="aggResults" [ngSwitch]="selectedVisualization">
 		<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"></ia-barchart>
 		<ia-timeline *ngSwitchCase="'timeline'" [searchData]="aggResults" [visualizedField]="visualizedField" 
 		[chartElement]="chartElement"></ia-timeline>
