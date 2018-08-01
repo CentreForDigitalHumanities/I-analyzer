@@ -20,9 +20,9 @@ export class VisualizationComponent implements OnChanges {
     public visualization: object;
     public SelectedVisualization: string;
     public visualizedField: string;
-    public termFrequencyFields: string[];
     public groupedVisualizations: SelectItemGroup[];
 
+    public visualizedFields: string[];
     public wordCloud: boolean = false;
     public barChart: boolean = false;
     public freqTable: boolean = false;
@@ -30,9 +30,12 @@ export class VisualizationComponent implements OnChanges {
     public chartElement: any;
 
     public aggResults: {
-        key: any,
-        doc_count: number
+        key: {};
+        doc_count: number;
+        key_as_string?: string;
     }[];
+
+    private visualizationType: string;
 
     constructor(private searchService: SearchService) {
         this.groupedVisualizations = [
@@ -60,18 +63,19 @@ export class VisualizationComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.termFrequencyFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.termFrequency).map(field => field.name)
+        this.visualizedFields = this.corpus && this.corpus.fields
+            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field => field.name)
             : [];
 
-        if (this.termFrequencyFields.length) {
-            this.setVisualizedField(this.termFrequencyFields[0]);
+        if (this.visualizedFields.length) {
+            this.setVisualizedField(this.visualizedFields[0]);
         }
     }
 
     setVisualizedField(visualizedField: string) {
         this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
             this.visualizedField = visualizedField;
+            this.visualizationType = this.corpus.fields.find(field => field.name == this.visualizedField).visualizationType;
             this.aggResults = visual.aggregations;
         });
 

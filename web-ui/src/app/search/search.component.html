@@ -40,9 +40,9 @@
                                     <span>Search</span>
                                 </button>
                             </div>
-                            <div class="control" iaBalloon="Choose to which fields the query should be applied">
-                                <p-multiSelect styleClass="button is-primary is-outlined" defaultLabel="All fields" [options]="availableQueryFields" [(ngModel)]="selectedQueryFields"
-                                    optionLabel="displayName" (onChange)="toggleQueryFields($event)" [ngModelOptions]="{standalone: true}"></p-multiSelect>
+                            <div class="control" iaBalloon="Restrict your query to specific fields">
+                                <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
+                                    [showSelectedFields]="true"> </ia-select-field>
                             </div>
                         </div>
                     </form>
@@ -66,12 +66,10 @@
                                     <span>Download csv</span>
                                 </button>
                             </p>
-                            <p class="control">
-                                <button class="button is-info is-outlined" type="downloadSettings" (click)="showCsvFields=true" [disabled]="!results">
-                                    <span class="icon is-small">
-                                        <i class="fa fa-cog"></i>
-                                    </span>
-                                </button>
+                            <p class="control" iaBalloon="Restrict your query to specific fields">
+                                <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
+                                    (selectedFields)="selectCsvFieldsEvent($event)">
+                                </ia-select-field>
                             </p>
                         </div>
                     </div>

@@ -91,7 +91,7 @@ export class SearchService {
 
         return <SearchResults>{
             completed: results.completed,
-            fields: corpus.fields.filter(field => field.prominentField),
+            fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
             documents: results.documents,
             queryModel: queryModel,

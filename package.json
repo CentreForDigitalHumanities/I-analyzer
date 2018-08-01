@@ -16,5 +16,6 @@
     "private": true,
     "devDependencies": {
         "pre-commit": "^1.2.2"
-    }
+    },
+    "dependencies": {}
 }
