@@ -20,19 +20,7 @@ export class FreqtableComponent implements OnChanges {
   }[];
   @Input() public visualizedField;
   @Input() public chartElement;
-
-
-  private margin = { top: 10, bottom: 120, left: 70, right: 10 };
-  private width: number;
-  private height: number;
-
-
-  private svg: any;
-  private table: any;
-  private header: any;
-  private tablebody: any;
-  private rows: any;
-  private cells: any;
+  @Input() public asPercent: boolean = true;
 
   constructor(private titlecasepipe: TitleCasePipe) { }
 
@@ -58,6 +46,9 @@ export class FreqtableComponent implements OnChanges {
     /**
     * select DOM elements, set up scales and axes
     */
+    if (this.asPercent) {
+      console.log(this.searchData);
+    }
 
     d3.selectAll('svg').remove();
 

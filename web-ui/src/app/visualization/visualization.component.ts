@@ -17,15 +17,14 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
 
-    public visualization: object;
+    public showTableButtons: boolean;
+
     public selectedVisualization: string;
     public visualizedField: string;
-    public groupedVisualizations: SelectItemGroup[];
 
+    public groupedVisualizations: SelectItemGroup[];
     public visualizedFields: string[];
-    public wordCloud: boolean = false;
-    public barChart: boolean = false;
-    public freqTable: boolean = false;
+    public visualizationType: string;
 
     public chartElement: any;
 
@@ -35,27 +34,27 @@ export class VisualizationComponent implements OnChanges {
         key_as_string?: string;
     }[];
 
-    private visualizationType: string;
+
 
     constructor(private searchService: SearchService) {
         this.groupedVisualizations = [
             {
                 label: 'Histograms',
                 items: [
-                    { label: 'Date', value: { type: 'barchart', field: 'date' } },
-                    { label: 'Category', value: { type: 'barchart', field: 'category' } },
+                    { label: 'Date', value: { type: 'timeline', field: 'date' } },
+                    { label: 'Category', value: { type: 'term_frequency', field: 'category' } },
                 ]
             },
-            {
-                label: 'Other',
-                items: [
-                    { label: 'Word Cloud', value: { type: 'wordcloud', field: 'none' } }
-                ]
-            }
+            // {
+            //     label: 'Other',
+            //     items: [
+            //         { label: 'Word Cloud', value: { type: 'wordcloud', field: 'none' } }
+            //     ]
+            // }
         ]
 
-        this.selectedVisualization = "barchart";
-        this.freqTable = true;
+        this.selectedVisualization = 'timeline';
+        this.showTableButtons = true;
     }
 
     ngOnInit() {
@@ -82,25 +81,11 @@ export class VisualizationComponent implements OnChanges {
 
     }
 
-    setSelectedVisualization(event) {
-        if (event.value.type == 'barchart' || event.value.type == 'timeline') {
-            this.setVisualizedField(event.value.field.toLowerCase())
-            this.freqTable = true;
-        }
-        else {
-            this.freqTable = false;
-        }
-        this.selectedVisualization = event.value.type;
-    }
-
     showTable() {
-        this.selectedVisualization = 'freqtable';
-
+        this.visualizationType = 'freqtable';
     }
 
     showChart() {
-        this.selectedVisualization = 'barchart';
-
+        this.setVisualizedField(this.visualizedField);
     }
-
 }
