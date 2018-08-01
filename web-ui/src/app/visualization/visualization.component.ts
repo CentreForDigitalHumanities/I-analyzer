@@ -18,7 +18,7 @@ export class VisualizationComponent implements OnChanges {
     @Input() public corpus: Corpus;
 
     public visualization: object;
-    public visualizationType: string;
+    public SelectedVisualization: string;
     public visualizedField: string;
     public termFrequencyFields: string[];
     public groupedVisualizations: SelectItemGroup[];
@@ -51,7 +51,7 @@ export class VisualizationComponent implements OnChanges {
             }
         ]
 
-        this.visualizationType = "barchart";
+        this.SelectedVisualization = "barchart";
         this.freqTable = true;
     }
 
@@ -78,7 +78,7 @@ export class VisualizationComponent implements OnChanges {
 
     }
 
-    setVisualizationType(event) {
+    setSelectedVisualization(event) {
         if (event.value.type == 'barchart') {
             this.setVisualizedField(event.value.field.toLowerCase())
             this.freqTable = true;
@@ -86,25 +86,25 @@ export class VisualizationComponent implements OnChanges {
         else {
             this.freqTable = false;
         }
-        this.visualizationType = event.value.type;
+        this.SelectedVisualization = event.value.type;
     }
 
     toggleTable() {
-        if (this.visualizationType == 'barchart') {
-            this.visualizationType = 'freqtable';
+        if (this.SelectedVisualization == 'barchart') {
+            this.SelectedVisualization = 'freqtable';
         }
         else {
-            this.visualizationType = 'barchart';
+            this.SelectedVisualization = 'barchart';
         }
     }
 
     showTable() {
-        this.visualizationType = 'freqtable';
+        this.SelectedVisualization = 'freqtable';
 
     }
 
     showChart() {
-        this.visualizationType = 'barchart';
+        this.SelectedVisualization = 'barchart';
 
     }
 
