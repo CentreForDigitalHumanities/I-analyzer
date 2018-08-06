@@ -8,6 +8,7 @@
 	<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization"
 	 [group]="true" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
 
+	<!-- Buttons for switching between table and graphical representation -->
 	<button [class.button]="true" [class.is-primary]="visualizationType==='freqtable'"
 	 (click)="showTable()" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
@@ -20,14 +21,14 @@
 </div>
 
 <div class="d3-chart" [ngSwitch]="visualizationType" #chart>
-	<ia-barchart *ngSwitchCase=" 'term_frequency' " [searchData]="aggResults " [visualizedField]="visualizedField
- " [chartElement]="chartElement ">
+	<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField
+ " [chartElement]="chartElement">
 	</ia-barchart>
-	<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults " [visualizedField]="visualizedField
- " [chartElement]="chartElement "></ia-timeline>
+	<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField
+ " [chartElement]="chartElement"></ia-timeline>
 	<!-- <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [chartElement]="chartElement ">
 	</ia-wordcloud> -->
-	<ia-freqtable *ngSwitchCase=" 'freqtable' " [searchData]="aggResults " [visualizedField]="visualizedField
- " [chartElement]="chartElement ">
+	<ia-freqtable *ngSwitchCase="'freqtable'" [searchData]="aggResults" [visualizedField]="visualizedField
+ " [chartElement]="chartElement">
 	</ia-freqtable>
 </div>

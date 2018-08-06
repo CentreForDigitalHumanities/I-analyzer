@@ -22,10 +22,13 @@ export class FreqtableComponent implements OnChanges {
   @Input() public chartElement;
   @Input() public asPercent: boolean;
 
-  constructor(private titlecasepipe: TitleCasePipe) { }
+  public percentData: any;
+
+  constructor(private titlecasepipe: TitleCasePipe) {
+
+  }
 
   ngOnChanges(changes: SimpleChanges) {
-
     if (this.searchData && this.visualizedField) {
       // date fields are returned with keys containing identifiers by elasticsearch
       // replace with string representation, contained in 'key_as_string' field
@@ -33,88 +36,26 @@ export class FreqtableComponent implements OnChanges {
         this.searchData.forEach(cat => cat.key = cat.key_as_string)
       }
       this.createTable();
-      // if (changes['visualizedField'] != undefined) {
-      //   this.createTable(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-      // }
     }
   }
 
-  /**
-   * Creates the chart to draw the data on (including axes and labels).
-   */
   createTable() {
-    /**
-    * select DOM elements, set up scales and axes
-    */
-
-    // Convert values to percentages
-    if (this.asPercent) {
-      var total = 0;
-      for (let bin of this.searchData) {
-        total += bin.doc_count;
-      }
-      this.searchData.map(function (e) {
-        e.doc_count = (e.doc_count / total);
-        return e;
-      })
-    }
-
     d3.selectAll('svg').remove();
 
+    // calculate percentage data
+    this.percentData = _.cloneDeep(this.searchData);
 
-    //   this.svg = d3.select(this.chartElement).append('div')
-    //     .attr("id", "table-div")
-    //     .attr('width', this.chartElement.offsetWidth)
-    //     .attr('height', this.chartElement.offsetHeight);
-    //   this.width = this.chartElement.offsetWidth - this.margin.left - this.margin.right;
-    //   this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
+    var total = 0;
+    for (let bin of this.percentData) {
+      total += bin.doc_count;
+    }
+    this.percentData.map(function (e) {
+      e.doc_count = (e.doc_count / total);
+      return e;
+    })
 
-
-
-    //   this.table = d3.select("#table-div").append("table")
-    //     .attr("class", "table table-hover")
-    //   this.header = this.table.append('thead').append('tr')
-
-    //   var rowsArray = [];
-
-    //   for (var field of this.searchData) {
-    //     if (field.key_as_string != undefined) {
-    //       rowsArray.push([field.key_as_string, field.doc_count]);
-    //     }
-    //     else {
-    //       rowsArray.push([field.key, field.doc_count]);
-    //     }
-    //   }
-
-    //   this.header
-    //     .selectAll('th')
-    //     .data([this.titlecasepipe.transform(this.visualizedField), 'Frequency'])
-    //     .enter()
-    //     .append('th')
-    //     .text(function (d) { return d })
-
-    //   this.tablebody = this.table.append("tbody");
-    //   this.rows = this.tablebody
-    //     .selectAll("tr")
-    //     .data(rowsArray)
-    //     .enter()
-    //     .append("tr");
-
-    //   this.cells = this.rows.selectAll("td")
-    //     // each row has data associated; we get it and enter it for the cells.
-    //     .data(function (d) {
-    //       // console.log(d);
-    //       return d;
-    //     })
-    //     .enter()
-    //     .append("td")
-    //     .text(function (d) {
-    //       return d;
-    //     });
-    // }
   }
 }
-
 
 type KeyFrequencyPair = {
   key: string;

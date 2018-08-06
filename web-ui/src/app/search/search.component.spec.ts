@@ -37,7 +37,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,

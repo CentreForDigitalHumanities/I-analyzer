@@ -34,30 +34,23 @@ export class VisualizationComponent implements OnChanges {
         key_as_string?: string;
     }[];
 
-
-
     constructor(private searchService: SearchService) {
+        // Holds options for the dropdown menu of visualizations
         this.groupedVisualizations = [
             {
                 label: 'Histograms',
                 items: [
-                    { label: 'Date', value: { type: 'timeline', field: 'date' } },
-                    { label: 'Category', value: { type: 'term_frequency', field: 'category' } },
+                    { label: 'Date', value: { field: 'date' } },
+                    { label: 'Category', value: { field: 'category' } },
                 ]
-            },
-            // {
-            //     label: 'Other',
-            //     items: [
-            //         { label: 'Word Cloud', value: { type: 'wordcloud', field: 'none' } }
-            //     ]
-            // }
+            }
         ]
-
-        this.selectedVisualization = 'timeline';
-        this.showTableButtons = true;
     }
 
     ngOnInit() {
+        // Initial values 
+        this.selectedVisualization = 'timeline';
+        this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
     }
 
@@ -77,8 +70,6 @@ export class VisualizationComponent implements OnChanges {
             this.visualizationType = this.corpus.fields.find(field => field.name == this.visualizedField).visualizationType;
             this.aggResults = visual.aggregations;
         });
-
-
     }
 
     showTable() {

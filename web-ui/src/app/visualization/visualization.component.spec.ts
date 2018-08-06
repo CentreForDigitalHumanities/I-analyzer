@@ -17,8 +17,8 @@ describe('VisualizationComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, SharedModule],
-            declarations: [BarChartComponent, WordcloudComponent, FreqtableCOmponent, TimelineComponent, VisualizationComponent],
+            imports: [FormsModule, SharedModule, DropdownModule],
+            declarations: [BarChartComponent, WordcloudComponent, FreqtableComponent, TimelineComponent, VisualizationComponent],
             providers: [{
                 provide: SearchService,
                 useValue: new MockSearchService()
