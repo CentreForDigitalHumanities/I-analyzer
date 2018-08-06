@@ -68,7 +68,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         this.menuItems = [
             {
                 label: 'Search history',
-                icon: 'fa-history',
+                icon: 'fa fa-history',
                 command: (click) => {
                     this.router.navigate(['search-history'])
                 }
@@ -77,17 +77,17 @@ export class MenuComponent implements OnDestroy, OnInit {
                 ? [
                     {
                         label: 'Administration',
-                        icon: 'fa-cogs',
+                        icon: 'fa fa-cogs',
                         command: (click) => this.gotoAdmin(),
                     }] : [],
             this.isGuest
                 ? {
                     label: 'Sign in',
-                    icon: 'fa-sign-in',
+                    icon: 'fa fa-sign-in',
                     command: (onclick) => this.login()
                 } : {
                     label: 'Exit',
-                    icon: 'fa-sign-out',
+                    icon: 'fa fa-sign-out',
                     command: (onclick) => this.logout()
                 }
         ];

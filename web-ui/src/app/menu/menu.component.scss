@@ -1,0 +1,20 @@
+ @import "../../shared";
+
+.navbar {
+    background-color: $primary;
+  }
+
+
+a.navbar-item, .navbar-link{
+    
+    color: #ffffff;
+}
+
+a.navbar-item:hover, a.navbar-item.is-active, a.navbar-link:hover, a.navbar-link.is-active, .navbar-dropdown:hover, .navbar-item.has-dropdown:hover .navbar-link, .navbar-item.has-dropdown.is-active {
+    background-color: #3F51B5;
+    color: #ffffff;
+}
+
+.panel-icon {
+    color: #ffffff;
+}
