@@ -11,7 +11,7 @@ import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModu
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -29,10 +29,12 @@ import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+import { SelectFieldComponent } from './search/select-field.component';
 
 const appRoutes: Routes = [
     {
@@ -86,9 +88,11 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         WordcloudComponent,
+        TimelineComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent
+        HistoryQueryDisplayComponent,
+        SelectFieldComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -109,29 +113,12 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
+    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
 
 // AoT requires an exported function for factories
 export function restHandlerFactory(http: Http) {
-    return new RestHandlerSession(http);
-}
-
-/**
- * Rest handler which will emit an event when the session expired.
- */
-class RestHandlerSession extends RestHandlerHttp {
-    constructor(http: Http) {
-        super(http);
-    }
-
-    public handleResponse(req: IRestRequest, response: Response): IRestResponse {
-        if (!response.ok && response.status == 401) {
-            SessionService.markExpired();
-        }
-
-        return super.handleResponse(req, response);
-    }
+    return new RestHandlerHttp(http);
 }

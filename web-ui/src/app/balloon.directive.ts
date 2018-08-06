@@ -26,6 +26,7 @@ export class BalloonDirective implements OnChanges {
         let element: HTMLElement = this.el.nativeElement;
         element.setAttribute('data-balloon', this.text);
         element.setAttribute('data-balloon-pos', this.position);
+        element.setAttribute('data-balloon-length', 'fit');
         if (this.visible) {
             element.setAttribute('data-balloon-visible', '');
             return;
@@ -33,6 +34,7 @@ export class BalloonDirective implements OnChanges {
         else if (this.visible != undefined) {
             element.removeAttribute('data-balloon');
             element.removeAttribute('data-balloon-pos');
+            element.removeAttribute('data-balloon-length');
         }
 
         element.removeAttribute('data-balloon-visible');

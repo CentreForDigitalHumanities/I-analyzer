@@ -60,14 +60,14 @@ class Spectators(XMLCorpus):
                     'issue': issue
                 }
 
-    overview_fields = ['magazine', 'issue', 'date' ,'title', 'editor']
+    overview_fields = ['magazine', 'issue', 'date', 'title', 'editor']
 
     fields = [
         Field(
             name='date',
             display_name='Date',
             description='Publication date.',
-            es_mapping={'type':'date', 'format': 'yyyy-MM-dd'},
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
             prominent_field=True,
             search_filter=filters.DateFilter(
@@ -77,7 +77,7 @@ class Spectators(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor = extract.XML(tag='date', toplevel=True)
+            extractor=extract.XML(tag='date', toplevel=True)
         ),
         Field(
             name='id',
@@ -100,7 +100,7 @@ class Spectators(XMLCorpus):
         ),
         Field(
             name='magazine',
-            display_name = 'Magazine name',
+            display_name='Magazine name',
             term_frequency=True,
             prominent_field=True,
             es_mapping={'type': 'keyword'},
@@ -114,7 +114,7 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             description='Magazine editor.',
-            extractor= extract.XML(tag='editor', toplevel=True, multiple=True)
+            extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
         Field(
             name='title',
@@ -132,6 +132,7 @@ class Spectators(XMLCorpus):
             extractor=extract.XML(tag='text', multiple=True, flatten=True)
         ),
     ]
+
 
 if __name__ == '__main__':
     c = Spectators()

@@ -20,8 +20,8 @@ export class SearchHistoryComponent implements OnInit {
     private selectedCorpora: string[] = [];
     constructor(private searchService: SearchService, private userService: UserService, private queryService: QueryService, private router: Router) { }
 
-    ngOnInit() {
-        this.user = this.userService.getCurrentUserOrFail();
+    async ngOnInit() {
+        this.user = await this.userService.getCurrentUser();
         if (this.user.hasRole("admin")) {
             if (this.user.roles.length > 2) {
                 this.displayCorpora = true;
@@ -30,8 +30,7 @@ export class SearchHistoryComponent implements OnInit {
                         return { 'label': role.name, 'value': role.name };
                     });
             }
-        }
-        else {
+        } else {
             if (this.user.roles.length > 1) {
                 this.displayCorpora = true;
                 this.corpora = this.user.roles.map(role => {

@@ -2,7 +2,9 @@ import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 
 import { ApiServiceMock } from './api.service.mock';
 import { ApiService } from './api.service';
+import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
+import { LogService } from './log.service';
 import { UserService } from './user.service';
 import { UserServiceMock } from './user.service.mock';
 
@@ -22,8 +24,10 @@ describe('CorpusService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
+                ApiRetryService,
                 { provide: ApiService, useValue: apiServiceMock },
                 CorpusService,
+                LogService,
                 { provide: UserService, useValue: userServiceMock }]
         });
         service = TestBed.get(CorpusService);
@@ -82,8 +86,9 @@ describe('CorpusService', () => {
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
-                    "prominent_field": false,
-                    "term_frequency": true,
+                    "results_overview": false,
+                    "preselected": false,
+                    "visualization_type": "term_frequency",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -97,8 +102,10 @@ describe('CorpusService', () => {
                     "sortable": true,
                     "indexed": true,
                     "name": "year",
-                    "prominent_field": true,
+                    "results_overview": true,
+                    "preselected": true,
                     "term_frequency": false,
+                    "visualization_type": "term_frequency",
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
@@ -117,8 +124,9 @@ describe('CorpusService', () => {
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
-                prominentField: false,
-                termFrequency: true,
+                resultsOverview: false,
+                preselected: false,
+                visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -131,8 +139,9 @@ describe('CorpusService', () => {
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
-                prominentField: true,
-                termFrequency: false,
+                resultsOverview: true,
+                preselected: true,
+                visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",

@@ -35,3 +35,16 @@
     position: relative;
     z-index: 20;
 }
+
+.control[data-balloon] ia-select-field {
+    position: relative;
+    z-index: 20;
+}
+
+.filter-container.on {
+  box-shadow: 0 0 0 2px $primary;
+}
+
+.filter-icon {
+    border: none;
+}

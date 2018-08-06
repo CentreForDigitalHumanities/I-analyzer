@@ -359,8 +359,8 @@ class Field(object):
     Fields hold data about the name of their columns in CSV files, how the
     corresponding content is to be extracted from the source, how they are
     described in user interfaces, whether the field lends itself to term
-    frequency queries, whether it has prominent information
-    for the user interface,
+    frequency queries, whether it appears in the results overview
+    of the user interface, whether it is preselected to search in / download
     what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
 
@@ -375,8 +375,9 @@ class Field(object):
             description=None,
             indexed=True,
             hidden=False,
-            term_frequency=False,
-            prominent_field=False,
+            results_overview=False,
+            preselected=False,
+            visualization_type=None,
             es_mapping={ 'type' : 'text' },
             search_filter=None,
             extractor=extract.Constant(None),
@@ -389,8 +390,9 @@ class Field(object):
         self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
-        self.term_frequency = term_frequency
-        self.prominent_field = prominent_field
+        self.results_overview = results_overview
+        self.preselected = preselected
+        self.visualization_type = visualization_type
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden

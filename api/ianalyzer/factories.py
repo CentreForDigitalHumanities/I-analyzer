@@ -15,9 +15,8 @@ def elasticsearch(corpus_name, cfg=config):
     '''
     server_name = config.CORPUS_SERVER_NAMES[corpus_name]
     server_config = config.SERVERS[server_name]
-    node = {'host': server_config['host'], 'scheme':'https'}
-    if server_config['port']!='':
-        node['port'] = server_config['port']
+    node = {'host': server_config['host'],
+            'port': server_config['port']}
     if server_config['username']:
         node['http_auth'] = (server_config['username'], server_config['password'])
     return Elasticsearch([node])

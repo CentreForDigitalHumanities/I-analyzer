@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { ManualServiceMock } from '../services/manual.service.mock';
@@ -19,11 +19,13 @@ import { SearchFilterComponent } from './search-filter.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
 import { SearchSortingComponent } from './search-sorting.component';
+import { SelectFieldComponent } from './select-field.component';
 
 import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
@@ -34,9 +36,10 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, VisualizationComponent, WordcloudComponent, BarChartComponent],
+            declarations: [BalloonDirective, BarChartComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [FormsModule, CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
+                ApiRetryService,
                 CorpusService,
                 {
                     provide: ApiService, useValue: new ApiServiceMock({

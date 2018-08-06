@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, SearchService, QueryService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, LogService, SearchService, QueryService, UserService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { SearchServiceMock } from '../services/search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
@@ -25,6 +25,8 @@ describe('SearchHistoryComponent', () => {
                         'search_history': { queries: [] }
                     })
                 },
+                ApiRetryService,
+                LogService,
                 QueryService,
                 {
                     provide: SearchService, useValue: new SearchServiceMock()
