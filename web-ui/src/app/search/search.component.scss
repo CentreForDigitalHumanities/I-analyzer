@@ -48,3 +48,15 @@
 .filter-icon {
     border: none;
 }
+
+.button.is-info, {
+    background-color: $primary;
+    border-color: transparent;
+    color: #fff;
+}
+
+.button.is-info:hover, .is-info.ui-button:hover, .button.is-info.is-hovered, .is-info.is-hovered.ui-button {
+    background-color: $default-primary-color;
+    border-color: transparent;
+    color: #fff;
+}

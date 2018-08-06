@@ -38,8 +38,8 @@ $stateErrorBgColor: $danger;
 $stateErrorTextColor: $danger-invert;
 
 //Hover State
-$stateHoverBorderColor: $primary;
-$stateHoverBgColor: $primary;
+$stateHoverBorderColor: $default-primary-color;
+$stateHoverBgColor: $default-primary-color;
 $stateHoverTextColor: $primary-invert;
 
 //Forms
@@ -54,9 +54,9 @@ $inputGroupTextColor: $text;
     @extend .button;
 
     &:hover {
-        background: $primary;
-        border-color: $primary;
-        color: $primary-invert;
+        background: $default-primary-color;
+        border-color: $default-primary-color;
+        color: $default-primary-color;
     }
 }
 
@@ -70,7 +70,9 @@ $inputGroupTextColor: $text;
     margin-bottom: 5px;
 
     &:hover {
-        @extend .is-primary;
+        background: $default-primary-color;
+        border-color: $default-primary-color;
+        color: $default-primary-color;
     }
 }
 
@@ -89,3 +91,21 @@ $inputGroupTextColor: $text;
 .highlight {
     background: $stateHighlightBgColor;
 }
+
+
+.ui-widget-header {
+    border: 1px solid #303F9F;
+    background-color:  $default-primary-color;
+    color: #fff;
+    font-weight: bold;
+}
+
+// .ui-widget-content {
+//     border: 1px solid #dbdbdb;
+//     background-color: $primary;
+//     color: #ffffff;
+// }
+
+// .ui-menuitem .ui-menuitem-link {
+//     color: #ffffff;
+// }
