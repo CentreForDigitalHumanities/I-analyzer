@@ -1,9 +1,3 @@
-<!-- <ng-container *ngFor="let field of visualizedFields">
-	<button class="button is-info" (click)="setVisualizedField(field)">
-		<span>{{field | titlecase}}</span>
-	</button>
-</ng-container> -->
-
 <div #viscontrol>
 	<p-dropdown [options]="groupedVisualizations" [(ngModel)]="visualized" placeholder="Visualization"
 	 [group]="true" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
