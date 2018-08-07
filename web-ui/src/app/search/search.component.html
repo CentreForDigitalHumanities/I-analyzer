@@ -33,7 +33,7 @@
                                 <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query" />
                             </div>
                             <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters">
-                                <button class="button is-info" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
                                     <span class="icon is-small">
                                         <i class="fa fa-search"></i>
                                     </span>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="level-right">
                     <div class="level-item">
-                        <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
+                        <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
                             <span class="icon is-small">
                                 <i class="fa fa-bar-chart"></i>
                             </span>
@@ -58,7 +58,7 @@
                     <div class="level-item">
                         <div class="field has-addons">
                             <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
-                                <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                                <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
                                     <span class="icon is-small">
                                         <i class="fa fa-download"></i>
                                     </span>
@@ -90,7 +90,7 @@
                                 <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                             </div>
                             <p class="control">
-                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-info is-medium': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
+                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}" (click)="toggleFilter(field.name)">
                                     <i class="fa fa-filter"></i>
                                  </span>
                              </p>

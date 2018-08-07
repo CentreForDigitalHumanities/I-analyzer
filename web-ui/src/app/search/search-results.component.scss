@@ -45,3 +45,15 @@
 .load-more .buttons {
     padding: 0 15px 15px 15px;
 }
+
+.button.is-primary, {
+    background-color: $primary;
+    border-color: transparent;
+    color: #fff;
+}
+
+.button.is-primary:hover,  .button.is-primary.is-hovered{
+    background-color: $default-primary-color;
+    border-color: transparent;
+    color: #fff;
+}

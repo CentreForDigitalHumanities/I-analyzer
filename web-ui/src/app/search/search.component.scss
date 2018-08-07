@@ -49,13 +49,13 @@
     border: none;
 }
 
-.button.is-info, {
+.button.is-primary, {
     background-color: $primary;
     border-color: transparent;
     color: #fff;
 }
 
-.button.is-info:hover, .is-info.ui-button:hover, .button.is-info.is-hovered, .is-info.is-hovered.ui-button {
+.button.is-primary:hover, .is-primary.ui-button:hover, .button.is-primary.is-hovered, .is-primary.is-hovered.ui-button {
     background-color: $default-primary-color;
     border-color: transparent;
     color: #fff;
