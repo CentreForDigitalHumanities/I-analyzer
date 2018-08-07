@@ -17,7 +17,7 @@
             <div class="navbar-item has-dropdown">
                 <a class="navbar-link is-hoverable" (click)="menu.toggle($event)">
                     <span class="icon"><i class="fa fa-user-circle"></i></span>
-                    {{currentUser.name}}            
+                    {{currentUser.name | titlecase}}            
                     <!-- drop down menu to log out, or see previous queries-->
                 </a>
                 <div class="navbar-dropdown is-right">
