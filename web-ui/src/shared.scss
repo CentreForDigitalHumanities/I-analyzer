@@ -4,8 +4,8 @@
     border-radius: 0;
 }
 
-$primary: #303F9F;
 $dark-primary-color: #303F9F; 
+$primary: $dark-primary-color;
 $default-primary-color: #3F51B5; 
 $light-primary-color: #C5CAE9; 
 $text-primary-color: #FFFFFF; 
@@ -62,4 +62,15 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
     to {
         transform: rotate(359deg);
     }
+}
+
+// Margin and padding are set to 0, so that the navbar has the width of the screen and it begins at the top. 
+menu {
+    margin: 0;
+    padding: 0;
+
+}
+
+.section {
+    padding: 2rem 22.5rem;
 }
