@@ -95,7 +95,7 @@
                                  </span>
                              </p>
                         </div>
-                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>             
+                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data" [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0" (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
                     </div>
                 </ng-container>
             </div>
