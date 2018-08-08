@@ -20,13 +20,15 @@ export class FreqtableComponent implements OnChanges {
   }[];
   @Input() public visualizedField;
   @Input() public chartElement;
-  @Input() public asPercent: boolean;
 
-  public percentData: any;
+  public asPercent: boolean;
+  public percentData: {
+    key: any,
+    doc_count: number,
+    key_as_string?: string
+  }[];
 
-  constructor(private titlecasepipe: TitleCasePipe) {
-
-  }
+  constructor(private titlecasepipe: TitleCasePipe) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.searchData && this.visualizedField) {
@@ -52,7 +54,7 @@ export class FreqtableComponent implements OnChanges {
     this.percentData.map(function (e) {
       e.doc_count = (e.doc_count / total);
       return e;
-    })
+    });
 
   }
 }

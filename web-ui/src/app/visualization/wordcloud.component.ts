@@ -47,16 +47,6 @@ export class WordcloudComponent implements OnInit {
 				.selectAll("text")
 				.data(words)
 				.enter().append("text");
-			// console.log(wordcloud);
-			/*
-			.style("font-size", function(d) { console.log(d.size); return 1; })//return d.size + "px"; })
-			.style("font-family", "Impact")
-			//.style("fill", function(d, i) { return fill(i); })
-			.attr("text-anchor", "middle");
-			//.attr("transform", function(d) {
-			//  return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-			//})
-			//.text(function(d) { return d.text; });*/
 		}
 	}
 

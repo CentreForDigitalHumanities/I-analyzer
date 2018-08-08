@@ -1,6 +1,3 @@
-@import "~bulma/bulma.sass";
-// to do: define colours on application level (now bulma is imported double here for the colour variables)
-
 .box {
 	padding: .5em .75em;
 	// width: 80%;
@@ -10,12 +7,3 @@
 .table {
 	padding: .5em .75em;
 }
-
-.table thead {
-	background-color: $turquoise;
-}
-
-.table thead th {
-	color: white;
-}
-
