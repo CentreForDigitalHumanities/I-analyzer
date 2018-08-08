@@ -18,3 +18,17 @@ a.navbar-item:hover, a.navbar-item.is-active, a.navbar-link:hover, a.navbar-link
 .panel-icon {
     color: #ffffff;
 }
+
+// Makes the user dropdown in the same theme as the rest of the application.
+
+::ng-deep .menu-dropdown {
+    &.ui-widget-content {
+        border: 1px solid #dbdbdb;
+        background-color: $primary;
+        color: #ffffff;
+    }
+
+    .ui-menuitem .ui-menuitem-link {
+        color: #ffffff;
+    }
+}
