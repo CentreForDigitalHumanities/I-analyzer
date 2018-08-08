@@ -19,12 +19,15 @@ export class VisualizationComponent implements OnChanges {
 
     public showTableButtons: boolean;
 
-    public selectedVisualization: string;
     public visualizedField: string;
 
     public groupedVisualizations: SelectItemGroup[];
-    public visualizedFields: string[];
+    public visualizedFields: {
+        name: string;
+        displayName: string;
+    }[];
     public visualizationType: string;
+    public freqtable: boolean = false;
 
     public chartElement: any;
 
@@ -35,33 +38,46 @@ export class VisualizationComponent implements OnChanges {
     }[];
 
     constructor(private searchService: SearchService) {
-        // Holds options for the dropdown menu of visualizations
-        this.groupedVisualizations = [
-            {
-                label: 'Histograms',
-                items: [
-                    { label: 'Date', value: { field: 'date' } },
-                    { label: 'Category', value: { field: 'category' } },
-                ]
-            }
-        ]
     }
 
     ngOnInit() {
         // Initial values 
-        this.selectedVisualization = 'timeline';
         this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
     }
 
     ngOnChanges(changes: SimpleChanges) {
         this.visualizedFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field => field.name)
+            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field =>
+                (field.displayName != undefined) ?
+                    ({
+                        name: field.name,
+                        displayName: field.displayName
+                    }) :
+                    // in case display name is not provided in the corpus definition
+                    ({
+                        name: field.name,
+                        displayName: field.name
+                    })
+
+            )
             : [];
 
         if (this.visualizedFields.length) {
-            this.setVisualizedField(this.visualizedFields[0]);
+            this.setVisualizedField(this.visualizedFields[0].name);
         }
+
+        this.groupedVisualizations = [
+            {
+                label: 'Histograms',
+                items: this.visualizedFields.map(field => ({
+                    label: field.displayName,
+                    value: {
+                        field: field.name
+                    }
+                }))
+            }
+        ]
     }
 
     setVisualizedField(visualizedField: string) {
@@ -73,10 +89,11 @@ export class VisualizationComponent implements OnChanges {
     }
 
     showTable() {
-        this.visualizationType = 'freqtable';
+        this.freqtable = true;
     }
 
     showChart() {
+        this.freqtable = false;
         this.setVisualizedField(this.visualizedField);
     }
 }

@@ -52,7 +52,7 @@ export class FreqtableComponent implements OnChanges {
     this.percentData.map(function (e) {
       e.doc_count = (e.doc_count / total);
       return e;
-    })
+    });
 
   }
 }
