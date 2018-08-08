@@ -59,7 +59,8 @@ class DutchNewspapers(XMLCorpus):
                     if def_match:
                         d.append((full_path, {'file_tag': 'definition'}))
                     if article_match:
-                        id = os.path.basename(os.path.dirname(full_path)) + article_match.group(1)
+                        id = os.path.basename(os.path.dirname(
+                            full_path)) + article_match.group(1)
                         d.append((full_path, {'id': id}))
             if d != []:
                 yield d
@@ -70,90 +71,99 @@ class DutchNewspapers(XMLCorpus):
             display_name='Date',
             description='Publication date.',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            term_frequency=True,
+            results_overview=True,
+            preselected=True,
+            visualization_type='timeline',
             prominent_field=True,
             search_filter=filters.DateFilter(
-                config.TIMES_MIN_DATE,
-                config.TIMES_MAX_DATE,
+                config.DUTCHNEWSPAPERS_MIN_DATE,
+                config.DUTCHNEWSPAPERS_MAX_DATE,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.XML(  tag='date',
-                                    toplevel=True,
-                                    recursive=True, 
-                                    external_file={
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            extractor=extract.XML(tag='date',
+                                  toplevel=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  },
+                                  #   transform=lambda x: x.strptime(
+                                  #       '%Y-%m-%d')
+                                  transform=lambda x: datetime.strptime(
+                                      x, '%Y-%m-%d')
+                                  )
         ),
         Field(
             name='newspaper_title',
             display_name='Newspaper title',
             description='Title of the newspaper',
-            prominent_field=True,
-            extractor=extract.XML(  tag='title',
-                                    toplevel=True,
-                                    recursive=True, 
-                                    external_file={
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            results_overview=True,
+            preselected=True,
+            extractor=extract.XML(tag='title',
+                                  toplevel=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  }
+                                  )
         ),
         Field(
             name='issue_number',
             display_name='Issue number',
             description='Issue number of the newspaper',
-            prominent_field=True,
-            extractor=extract.XML(  tag='issuenumber',
-                                    toplevel=True,
-                                    recursive=True, 
-                                    external_file={
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            results_overview=True,
+            preselected=True,
+            extractor=extract.XML(tag='issuenumber',
+                                  toplevel=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  }
+                                  )
         ),
         Field(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
-            extractor=extract.XML(  tag='publisher',
-                                    toplevel=True,
-                                    multiple=True,
-                                    flatten=True,
-                                    recursive=True, 
-                                    external_file={ 
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            extractor=extract.XML(tag='publisher',
+                                  toplevel=True,
+                                  multiple=True,
+                                  flatten=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  }
+                                  )
         ),
         Field(
             name='language',
             display_name='Language',
             description='language',
-            extractor=extract.XML(  tag='language',
-                                    toplevel=True,
-                                    recursive=True, 
-                                    external_file={ 
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            extractor=extract.XML(tag='language',
+                                  toplevel=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  }
+                                  )
         ),
         Field(
             name='article_title',
             display_name='Article title',
             description='Article title',
-            prominent_field=True,
+            results_overview=True,
+            preselected=True,
             extractor=extract.XML(tag='title', flatten=True, toplevel=True)
         ),
         Field(
@@ -166,28 +176,33 @@ class DutchNewspapers(XMLCorpus):
             name='source',
             display_name='Source',
             description='Source.',
-            extractor=extract.XML(  tag='source',
-                                    toplevel=True,
-                                    recursive=True, 
-                                    external_file={
-                                        'file_tag': 'definition',
-                                        'xml_tag_toplevel': 'DIDL', 
-                                        'xml_tag_entry': 'Item'
-                                        }
-                                    )
+            extractor=extract.XML(tag='source',
+                                  toplevel=True,
+                                  recursive=True,
+                                  external_file={
+                                      'file_tag': 'definition',
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'Item'
+                                  }
+                                  )
         ),
         Field(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            prominent_field=True,
-            extractor=extract.XML(tag='p', multiple=True, flatten=True, toplevel=True)
+            results_overview=True,
+            preselected=True,
+            extractor=extract.XML(tag='p', multiple=True,
+                                  flatten=True, toplevel=True)
         ),
     ]
+
 
 if __name__ == '__main__':
     c = DutchNewspapers()
     d = c.documents()
-
-    print(next(d))
+    b = next(d)
+    print(b['date'])
+    print(type(b['date']))
+    # print(type(str(b['date'])))

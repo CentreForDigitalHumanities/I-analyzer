@@ -3,7 +3,8 @@ Module contains the base classes from which corpora can derive;
 '''
 
 from datetime import datetime, timedelta
-import logging; logger = logging.getLogger(__name__)
+import logging
+logger = logging.getLogger(__name__)
 
 import bs4
 import json
@@ -30,14 +31,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     @property
     def description(self):
         '''
         Minimum timestamp for data files.
         '''
         raise NotImplementedError()
-
 
     @property
     def data_directory(self):
@@ -46,14 +45,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     @property
     def min_date(self):
         '''
         Minimum timestamp for data files.
         '''
         raise NotImplementedError()
-
 
     @property
     def max_date(self):
@@ -62,14 +59,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     @property
     def es_index(self):
         '''
         ElasticSearch index name.
         '''
         raise NotImplementedError()
-
 
     @property
     def es_doctype(self):
@@ -78,14 +73,12 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     @property
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
         '''
         raise NotImplementedError()
-
 
     @property
     def fields(self):
@@ -96,19 +89,18 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     def es_mapping(self):
         '''
         Create the ElasticSearch mapping for the fields of this corpus. May be
         passed to the body of an ElasticSearch index creation request.
         '''
         result = {
-            'mappings' : {
-                self.es_doctype : {
+            'mappings': {
+                self.es_doctype: {
                     'properties': {
-                        field.name : field.es_mapping
+                        field.name: field.es_mapping
                         for field in self.fields
-                            if field.es_mapping and field.indexed
+                        if field.es_mapping and field.indexed
                     }
                 }
             }
@@ -118,7 +110,6 @@ class Corpus(object):
             result['settings'] = self.es_settings
 
         return result
-
 
     def json(self):
         '''
@@ -130,7 +121,6 @@ class Corpus(object):
         json_dict = json.dumps(corpus_dict)
         return json_dict
 
-
     def serialize(self):
         corpus_dict = {}
         # inspect.getmembers returns tuples for every Class attribute:
@@ -141,37 +131,37 @@ class Corpus(object):
             a for a in inspect.getmembers(self)
             if not a[0].startswith('__') and not inspect.ismethod(a[1])
             and a[0] in dir(Corpus)
-            ]
+        ]
         for ca in corpus_attributes:
-            if ca[0]=='data_directory':
+            if ca[0] == 'data_directory':
                 continue
-            elif ca[0]=='fields':
+            elif ca[0] == 'fields':
                 field_list = []
                 for field in self.fields:
                     field_dict = {}
                     for key, value in field.__dict__.items():
                         if key == 'search_filter' and value != None:
-                            filter_name = str(type(value)).split(sep = '.')[-1][:-2]
+                            filter_name = str(type(value)).split(
+                                sep='.')[-1][:-2]
                             search_dict = {'name': filter_name}
                             for search_key, search_value in value.__dict__.items():
-                                if search_key =='search_filter' or search_key != 'field':
+                                if search_key == 'search_filter' or search_key != 'field':
                                     search_dict[search_key] = search_value
                             field_dict['search_filter'] = search_dict
                         elif key != 'extractor':
                             field_dict[key] = value
                     field_list.append(field_dict)
                 corpus_dict[ca[0]] = field_list
-            elif type(ca[1])==datetime:
+            elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
-                    'month': ca[1].month,
-                    'day': ca[1].day,
-                    'hour': ca[1].hour,
-                    'minute': ca[1].minute}
+                            'month': ca[1].month,
+                            'day': ca[1].day,
+                            'hour': ca[1].hour,
+                            'minute': ca[1].minute}
                 corpus_dict[ca[0]] = timedict
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
-
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
@@ -184,7 +174,6 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-
     def source2dicts(self, sources):
         '''
         Generate an iterator of document dictionaries from a given source file.
@@ -192,7 +181,6 @@ class Corpus(object):
         The dictionaries are created from this corpus' `Field`s.
         '''
         raise NotImplementedError()
-
 
     def documents(self, sources=None):
         '''
@@ -203,14 +191,13 @@ class Corpus(object):
         sources = sources or self.sources()
 
         return (document
-            for source in sources
+                for source in sources
                 for document in self.source2dicts(
                     source
                 )
-        )
+                )
 
 
-        
 class XMLCorpus(Corpus):
     '''
     An XMLCorpus is any corpus that extracts its data from XML sources.
@@ -223,14 +210,12 @@ class XMLCorpus(Corpus):
         '''
         raise NotImplementedError()
 
-
     @property
     def xml_tag_entry(self):
         '''
         The XML tag that corresponds to a single document entry.
         '''
         raise NotImplementedError()
-
 
     def source2dicts(self, source):
         '''
@@ -240,39 +225,43 @@ class XMLCorpus(Corpus):
         # Make sure that extractors are sensible
         for field in self.fields:
             if not isinstance(field.extractor, (
-                    extract.Choice,
-                    extract.Combined,
-                    extract.XML,
-                    extract.Metadata,
-                    extract.Constant
-                )):
-                raise RuntimeError("Specified extractor method cannot be used with an XML corpus")
+                extract.Choice,
+                extract.Combined,
+                extract.XML,
+                extract.Metadata,
+                extract.Constant
+            )):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with an XML corpus")
 
         # determine if the source contains multiple files
-        multiple = isinstance(source,list)
+        multiple = isinstance(source, list)
 
         # split fields by external xml or document xml
-        (regular_fields, external_fields) = self.split_document_sources(source) if multiple else (self.fields, {})
-        
+        (regular_fields, external_fields) = self.split_document_sources(
+            source) if multiple else (self.fields, {})
+
         # extract information from external xml files first
-        external_dict = self.external_source2dict(source, external_fields) if multiple else {}
-            
+        external_dict = self.external_source2dict(
+            source, external_fields) if multiple else {}
+
         # regular fields extraction
-        if multiple: 
+        if multiple:
             # document files are files with either no tag, or a tag that is not required for any external xml extraction
-            document_files = [(f, meta) for (f, meta) in source if ('file_tag' not in meta) or (meta['file_tag'] not in external_fields)]
+            document_files = [(f, meta) for (f, meta) in source if (
+                'file_tag' not in meta) or (meta['file_tag'] not in external_fields)]
         else:
             document_files = [source]
         for filename, metadata in document_files:
             soup = self.soup_from_xml(filename)
-            #Extract fields from the soup
+            # Extract fields from the soup
             tag = self.xml_tag_entry
             bowl = self.bowl_from_soup(soup)
             if bowl:
                 for spoon in bowl.find_all(tag):
                     # yield the union of external fields and document fields
                     yield dict(itertools.chain(external_dict.items(),  {
-                        field.name : field.extractor.apply(
+                        field.name: field.extractor.apply(
                             # The extractor is put to work by simply throwing at it
                             # any and all information it might need
                             soup_top=bowl,
@@ -282,30 +271,32 @@ class XMLCorpus(Corpus):
                     }.items()
                     ))
             else:
-                logger.warning('Top-level tag not found in `{}`'.format(filename))
-
+                logger.warning(
+                    'Top-level tag not found in `{}`'.format(filename))
 
     def external_source2dict(self, source, external_fields):
         external_dict = {}
         for file_tag in external_fields.keys():
-                files_by_tag = [(filename, metadata) for filename, metadata in source if ('file_tag' in metadata) and (metadata['file_tag']==file_tag)]
-                for filename, metadata in files_by_tag:
-                    soup = self.soup_from_xml(filename)
-                    # Extract fields from soup
-                    for field in external_fields[file_tag]:
-                        tag  = field.extractor.external_file['xml_tag_entry']
-                        bowl = self.bowl_from_soup(soup, field.extractor.external_file['xml_tag_toplevel'])
-                        if bowl:
-                            for spoon in bowl.find_all(tag):
-                                external_dict[field.name] = field.extractor.apply(
-                                    soup_top=bowl,
-                                    soup_entry=spoon,
-                                    metadata=metadata
-                                )
-                        else:
-                            logger.warning('Top-level tag not found in `{}`'.format(filename))
+            files_by_tag = [(filename, metadata) for filename, metadata in source if (
+                'file_tag' in metadata) and (metadata['file_tag'] == file_tag)]
+            for filename, metadata in files_by_tag:
+                soup = self.soup_from_xml(filename)
+                # Extract fields from soup
+                for field in external_fields[file_tag]:
+                    tag = field.extractor.external_file['xml_tag_entry']
+                    bowl = self.bowl_from_soup(
+                        soup, field.extractor.external_file['xml_tag_toplevel'])
+                    if bowl:
+                        for spoon in bowl.find_all(tag):
+                            external_dict[field.name] = field.extractor.apply(
+                                soup_top=bowl,
+                                soup_entry=spoon,
+                                metadata=metadata
+                            )
+                    else:
+                        logger.warning(
+                            'Top-level tag not found in `{}`'.format(filename))
         return external_dict
-
 
     def split_document_sources(self, source):
         regular_fields = list()
@@ -324,7 +315,6 @@ class XMLCorpus(Corpus):
                 regular_fields.append(field)
         return regular_fields, external_fields
 
-
     def soup_from_xml(self, filename):
         '''
         Returns beatifulsoup soup object for a given xml file
@@ -338,7 +328,6 @@ class XMLCorpus(Corpus):
 
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
-        
     def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
         '''
         Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
@@ -369,21 +358,21 @@ class Field(object):
     '''
 
     def __init__(self,
-            name=None,
-            display_name=None,
-            display_type=None,
-            description=None,
-            indexed=True,
-            hidden=False,
-            results_overview=False,
-            preselected=False,
-            visualization_type=None,
-            es_mapping={ 'type' : 'text' },
-            search_filter=None,
-            extractor=extract.Constant(None),
-            sortable=None,
-            **kwargs
-            ):
+                 name=None,
+                 display_name=None,
+                 display_type=None,
+                 description=None,
+                 indexed=True,
+                 hidden=False,
+                 results_overview=False,
+                 preselected=False,
+                 visualization_type=None,
+                 es_mapping={'type': 'text'},
+                 search_filter=None,
+                 extractor=extract.Constant(None),
+                 sortable=None,
+                 **kwargs
+                 ):
 
         self.name = name
         self.display_name = display_name
@@ -397,23 +386,22 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
-        
+
         # We need fields which can be easily mapped to an actual sortable
         # field in Elastic Search. Sorting on XML, or combined fields
         # is also possible but requires that this behavior is defined when
         # performing a sorted search.
         self.sortable = sortable if sortable != None else indexed and not hidden and \
             not (isinstance(extractor, (
-                    extract.Choice,
-                    extract.Combined,
-                    extract.XML,
-                    extract.Constant
-                )))
+                extract.Choice,
+                extract.Combined,
+                extract.XML,
+                extract.Constant
+            )))
 
         # Add back reference to field in filter
         if self.search_filter:
             self.search_filter.field = self
-
 
 
 # Helper functions ############################################################
