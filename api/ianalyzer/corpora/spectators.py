@@ -113,7 +113,8 @@ class Spectators(XMLCorpus):
         ),
         Field(
             name='editors',
-            description='Magazine editor.',
+            display_name='Editors',
+            description='Magazine editor(s).',
             extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
         Field(

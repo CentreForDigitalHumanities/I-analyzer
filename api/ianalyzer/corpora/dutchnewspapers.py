@@ -74,7 +74,6 @@ class DutchNewspapers(XMLCorpus):
             results_overview=True,
             preselected=True,
             visualization_type='timeline',
-            prominent_field=True,
             search_filter=filters.DateFilter(
                 config.DUTCHNEWSPAPERS_MIN_DATE,
                 config.DUTCHNEWSPAPERS_MAX_DATE,
@@ -90,10 +89,11 @@ class DutchNewspapers(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'Item'
                                   },
+                                  transform=lambda x: str(x)
                                   #   transform=lambda x: x.strptime(
                                   #       '%Y-%m-%d')
-                                  transform=lambda x: datetime.strptime(
-                                      x, '%Y-%m-%d')
+                                  #   transform=lambda x: datetime.strptime(
+                                  #   x, '%Y-%m-%d')
                                   )
         ),
         Field(
