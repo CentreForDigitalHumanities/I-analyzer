@@ -22,9 +22,9 @@ $disabledOpacity: 0.35;
 $spacing: 1rem;
 
 //Highlight State
-$stateHighlightBorderColor: #fed22f;
-$stateHighlightBgColor: #ffe45c;
-$stateHighlightTextColor: #363636;
+$stateHighlightBorderColor: $primary;
+$stateHighlightBgColor: $default-primary-color;
+$stateHighlightTextColor: $text-primary-color;
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
@@ -68,7 +68,6 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
 menu {
     margin: 0;
     padding: 0;
-
 }
 
 .section {

@@ -52,11 +52,11 @@
 .button.is-primary, {
     background-color: $primary;
     border-color: transparent;
-    color: #fff;
-}
+    color: $text-primary-color;
 
-.button.is-primary:hover, .is-primary.ui-button:hover, .button.is-primary.is-hovered, .is-primary.is-hovered.ui-button {
-    background-color: $default-primary-color;
-    border-color: transparent;
-    color: #fff;
+    &:hover{
+        background-color: $default-primary-color;
+        border-color: transparent;
+        color: $text-primary-color;
+    }
 }

@@ -5,18 +5,46 @@
   }
 
 
-a.navbar-item, .navbar-link{
+.navbar-item{ 
+    color: $text-primary-color;
+    &:hover{
+        background-color: $default-primary-color;
+        color: $text-primary-color;
+    }
     
-    color: #ffffff;
+    &.is-active, .has-dropdown.is-active{
+        background-color: $default-primary-color;
+        color: $text-primary-color;
+    }
 }
 
-a.navbar-item:hover, a.navbar-item.is-active, a.navbar-link:hover, a.navbar-link.is-active, .navbar-dropdown:hover, .navbar-item.has-dropdown:hover .navbar-link, .navbar-item.has-dropdown.is-active {
-    background-color: #3F51B5;
-    color: #ffffff;
+.navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active{
+    background-color: $default-primary-color;
+    color: $text-primary-color;
+}
+
+.navbar-link{
+    color: $text-primary-color;
+    &::after {
+        border: 1px solid $text-primary-color;
+        border-right: 0;
+        border-top: 0;
+        content: " ";
+        display: block;
+        height: 0.5em;
+        pointer-events: none;
+        position: absolute;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        width: 0.5em;
+        margin-top: -0.375em;
+        right: 1.125em;
+        top: 50%;
+    }
 }
 
 .panel-icon {
-    color: #ffffff;
+    color: $text-primary-color;
 }
 
 // Makes the user dropdown in the same theme as the rest of the application.
@@ -25,10 +53,10 @@ a.navbar-item:hover, a.navbar-item.is-active, a.navbar-link:hover, a.navbar-link
     &.ui-widget-content {
         border: 1px solid #dbdbdb;
         background-color: $primary;
-        color: #ffffff;
+        color: $text-primary-color;
     }
 
     .ui-menuitem .ui-menuitem-link {
-        color: #ffffff;
+        color: $text-primary-color;
     }
 }

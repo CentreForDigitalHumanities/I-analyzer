@@ -96,6 +96,6 @@ $inputGroupTextColor: $text;
 .ui-widget-header {
     border: 1px solid $primary;
     background-color:  $default-primary-color;
-    color: #fff;
+    color: $text-primary-color;
     font-weight: bold;
 }

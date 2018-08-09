@@ -49,11 +49,11 @@
 .button.is-primary, {
     background-color: $primary;
     border-color: transparent;
-    color: #fff;
-}
+    color: $text-primary-color;
 
-.button.is-primary:hover,  .button.is-primary.is-hovered{
-    background-color: $default-primary-color;
-    border-color: transparent;
-    color: #fff;
+    &:hover{
+        background-color: $default-primary-color;
+        border-color: transparent;
+        color: $text-primary-color;
+    }
 }
