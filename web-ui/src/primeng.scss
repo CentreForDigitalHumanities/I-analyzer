@@ -90,8 +90,8 @@ $inputGroupTextColor: $text;
 
 .highlight {
     background: $stateHighlightBgColor;
+    color: $stateHighlightTextColor;
 }
-
 
 .ui-widget-header {
     border: 1px solid $primary;

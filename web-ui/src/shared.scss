@@ -9,7 +9,7 @@ $primary: $dark-primary-color;
 $default-primary-color: #3F51B5; 
 $light-primary-color: #C5CAE9; 
 $text-primary-color: #FFFFFF; 
-$accent-color: #03A9F4; 
+$accent-color: #9E9E9E; 
 $primary-text-color: #212121; 
 $secondary-text-color: #757575; 
 $divider-color: #BDBDBD;
@@ -23,7 +23,7 @@ $spacing: 1rem;
 
 //Highlight State
 $stateHighlightBorderColor: $primary;
-$stateHighlightBgColor: $default-primary-color;
+$stateHighlightBgColor: $primary;
 $stateHighlightTextColor: $text-primary-color;
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
