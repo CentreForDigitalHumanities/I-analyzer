@@ -3,3 +3,7 @@
 .content.is-loading {
     @extend %content-loader;
 }
+
+.columns {
+    margin-top: 2rem;
+}

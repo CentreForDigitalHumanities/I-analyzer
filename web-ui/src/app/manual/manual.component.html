@@ -1,9 +1,11 @@
-<div class="columns section">
-    <div class="column is-2 is-offset-1">
-        <ia-manual-navigation></ia-manual-navigation>
-    </div>
-    <div class="column is-6">
-        <h1 class="title">{{title}}</h1>
-        <div class="content" [ngClass]="{'is-loading':isLoading}" [innerHTML]="manualHtml"></div>
+<div class="container is-readable">
+    <div class="columns">
+        <div class="column is-3">
+            <ia-manual-navigation></ia-manual-navigation>
+        </div>
+        <div class="column is-9">
+            <h1 class="title">{{title}}</h1>
+            <div class="content" [ngClass]="{'is-loading':isLoading}" [innerHTML]="manualHtml"></div>
+        </div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 <nav class="navbar is-fixed-top" *ngIf="currentUser">
-    <div class="container">
+    <div class="container is-fluid">
         <div class="navbar-brand">
             <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
         </div>
@@ -8,18 +8,20 @@
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
                     <a class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
-                        <span class="icon"><i class="fa fa-database"></i></span>
-                        Corpora         
+                        <span class="icon">
+                            <i class="fa fa-database"></i>
+                        </span>
+                        Corpora
                     </a>
                     <div class="navbar-dropdown is-right">
-                    <a class="navbar-item">
-                        <p-menu #corpora popup="popup" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
+                        <a class="navbar-item">
+                            <p-menu #corpora popup="popup" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
                         </a>
                     </div>
                 </div>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
                     <span class="panel-icon">
-                    <i class="fa fa-book"></i>
+                        <i class="fa fa-book"></i>
                     </span>
                     Manual
                 </a>
@@ -28,12 +30,16 @@
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
                     <a class="navbar-link is-hoverable" (click)="admin.toggle($event)">
-                        <span class="icon"><i class="fa fa-user-circle"></i></span>
-                        {{currentUser.name | titlecase}}            
+                        <span class="icon">
+                            <i class="fa fa-user-circle"></i>
+                        </span>
+                        {{currentUser.name | titlecase}}
                         <!-- drop down menu to log out, or see previous queries-->
                     </a>
                     <div class="navbar-dropdown is-right" #hierzo>
-                    <a class="navbar-item"><p-menu #admin popup="popup" [model]="menuAdminItems" appendTo="body" styleClass="menu-dropdown"></p-menu></a>
+                        <a class="navbar-item">
+                            <p-menu #admin popup="popup" [model]="menuAdminItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
+                        </a>
                     </div>
                 </div>
             </div>
