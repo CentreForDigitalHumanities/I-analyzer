@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MenuItem } from 'primeng/primeng';
 import { User } from '../models/index';
-import { Corpus } from '../models/corpus';
 import { CorpusService } from '../services/index';
 import { ConfigService, UserService } from '../services/index';
 
@@ -12,8 +11,7 @@ import { ConfigService, UserService } from '../services/index';
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnDestroy, OnInit {
-    public corporaItems: Corpus[];
+export class MenuComponent implements OnDestroy, OnInit { 
     public menuCorporaItems: MenuItem[];
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
@@ -33,14 +31,13 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
-        this.corpusService.get().then((corporaItems) => {
-            this.corporaItems = corporaItems;
-            this.menuCorporaItems = corporaItems.map(corpus => { return {
+        this.corpusService.get().then((corpora) => {        
+            this.menuCorporaItems = corpora.map(corpus => ({
                 label: corpus.title,
-                command: (click) => {
-                    this.router.navigate(['/search', corpus.name]);
-                }
-            }; });
+                command: (click) => 
+                    this.router.navigate(['/search', corpus.name])
+                
+            }));
         });
     }
 
