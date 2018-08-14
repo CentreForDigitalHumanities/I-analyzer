@@ -3,3 +3,33 @@
 .box {
     cursor: pointer;
 }
+
+.card-content[_ngcontent-c7] {
+    padding: 1.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #303F9F;
+}
+
+.card-footer{
+    border-top: 1px solid #3F51B5;
+}
+
+.card-footer [_ngcontent-c7] {
+    border-top: 1px solid #3F51B5;
+    color: #ffffff;
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #3F51B5;
+
+    &:hover{
+        color: #ffffff;
+        cursor: pointer;
+        text-decoration: none;
+        background-color: #3F51B5;
+    }
+}
+
+.title-content{
+    font-size: 1.5em;
+}

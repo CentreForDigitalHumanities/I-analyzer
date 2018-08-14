@@ -5,18 +5,31 @@
     <h2 class="subtitle">
         Select a corpus to search
     </h2>
-    <label *ngFor="let item of items" class="box">
-        <div class="content">
-            <p>
-                <strong>{{item.title}}</strong>
-                <br> {{item.description}}
-            </p>
-            <button class="button is-primary" role="link" [routerLink]="['/search', item.name]">
-                <span class="icon is-small">
-                  <i class="fa fa-search"></i>
-                </span>
-                <span>Search</span>
-            </button>
+    <label *ngFor="let item of items">
+        <div class="columns">
+            <div class="column is-4">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img src="https://images.unsplash.com/reserve/BSM39tNSzeAO7ppb6Yek_ThomasBormans.jpg?ixlib=rb-0.3.5&s=43c5f99beed6dfb3d87c951b91ac7372&auto=format&fit=crop&w=1411&q=80" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="title-content">
+                            {{item.title}}
+                            <hr>
+                        </div>
+                        <div class="content">
+                            {{item.description}}
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a role="link" [routerLink]="['/search', item.name]" class="card-footer-item">
+                            <span>Search</span>
+                        </a>
+                    </footer>
+                </div>
+            </div>
         </div>
     </label>
 </section>
