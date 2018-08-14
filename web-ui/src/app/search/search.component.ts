@@ -166,11 +166,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
-    // control whether the filters are hidden
-    public toggleFilters() {
-        this.showFilters = !this.showFilters;
-    }
-
     public changeSorting(event: SortEvent) {
         this.sortField = event.field;
         this.sortAscending = event.ascending;

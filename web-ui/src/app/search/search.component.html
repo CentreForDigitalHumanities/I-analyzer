@@ -14,14 +14,6 @@
                 <nav class="level is-mobile">
                     <div class="level-left search-controls">
                         <div class="level-item">
-                            <button class="button" (click)="toggleFilters()">
-                                <span class="icon is-small">
-                                    <i class="fa fa-bars"></i>
-                                </span>
-                                <span>Filters</span>
-                            </button>
-                        </div>
-                        <div class="level-item">
                             <form (ngSubmit)="search()" *ngIf="corpus">
                                 <div class="field has-addons">
                                     <div class="control" iaBalloon="View query documentation">
@@ -49,31 +41,29 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="level-right">
-                            <div class="level-item">
-                                <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
-                                    <span class="icon is-small">
-                                        <i class="fa fa-bar-chart"></i>
-                                    </span>
-                                    <span>Visualize</span>
-                                </button>
-                            </div>
-                            <div class="level-item">
-                                <div class="field has-addons">
-                                    <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
-                                        <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
-                                            <span class="icon is-small">
-                                                <i class="fa fa-download"></i>
-                                            </span>
-                                            <span>Download csv</span>
-                                        </button>
-                                    </p>
-                                    <p class="control" iaBalloon="Restrict your query to specific fields">
-                                        <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
-                                            (selectedFields)="selectCsvFieldsEvent($event)">
-                                        </ia-select-field>
-                                    </p>
-                                </div>
+                        <div class="level-item">
+                            <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
+                                <span class="icon is-small">
+                                    <i class="fa fa-bar-chart"></i>
+                                </span>
+                                <span>Visualize</span>
+                            </button>
+                        </div>
+                        <div class="level-item">
+                            <div class="field has-addons">
+                                <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
+                                    <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                                        <span class="icon is-small">
+                                            <i class="fa fa-download"></i>
+                                        </span>
+                                        <span>Download csv</span>
+                                    </button>
+                                </p>
+                                <p class="control" iaBalloon="Restrict your query to specific fields">
+                                    <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
+                                        (selectedFields)="selectCsvFieldsEvent($event)">
+                                    </ia-select-field>
+                                </p>
                             </div>
                         </div>
                     </div>
