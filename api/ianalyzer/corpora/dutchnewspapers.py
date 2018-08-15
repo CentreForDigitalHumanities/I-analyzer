@@ -90,10 +90,6 @@ class DutchNewspapers(XMLCorpus):
                                       'xml_tag_entry': 'Item'
                                   },
                                   transform=lambda x: str(x)
-                                  #   transform=lambda x: x.strptime(
-                                  #       '%Y-%m-%d')
-                                  #   transform=lambda x: datetime.strptime(
-                                  #   x, '%Y-%m-%d')
                                   )
         ),
         Field(
@@ -197,12 +193,3 @@ class DutchNewspapers(XMLCorpus):
                                   flatten=True, toplevel=True)
         ),
     ]
-
-
-if __name__ == '__main__':
-    c = DutchNewspapers()
-    d = c.documents()
-    b = next(d)
-    print(b['date'])
-    print(type(b['date']))
-    # print(type(str(b['date'])))

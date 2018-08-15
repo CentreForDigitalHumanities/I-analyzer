@@ -526,11 +526,3 @@ class Times(XMLCorpus):
             )
         ),
     ]
-
-
-if __name__ == '__main__':
-    c = Times()
-    d = c.documents()
-    b = next(d)
-    print(b['date'])
-    print(type(b['date']))
