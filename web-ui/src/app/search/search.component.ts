@@ -291,7 +291,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
-            if (!this.queryField || !this.corpus || corpus.name != this.corpus.name) {
+            if (!this.queryField) {
                 this.queryField = {};
                 this.selectedQueryFields = [];
             }
@@ -366,8 +366,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         let fields = selection.map( field => field.name );
         // set first that no fields are downloaded, then set only the selected ones to download
         Object.values(this.queryField).forEach( field => field.downloadInCsv = false );
-        Object.values(this.queryField).filter( 
-            field => _.indexOf(fields, field.name) != -1 ).forEach( 
+        Object.values(this.queryField).filter(
+            field => _.indexOf(fields, field.name) != -1 ).forEach(
             field => field.downloadInCsv = true );
     }
 }
@@ -375,6 +375,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean, 
+    useAsFilter: boolean,
     downloadInCsv: boolean
 };
