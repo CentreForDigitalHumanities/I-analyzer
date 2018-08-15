@@ -64,12 +64,6 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
     }
 }
 
-// Margin and padding are set to 0, so that the navbar has the width of the screen and it begins at the top. 
-menu {
-    margin: 0;
-    padding: 0;
-}
-
 .container.is-readable {
     max-width: 1024px;
 }

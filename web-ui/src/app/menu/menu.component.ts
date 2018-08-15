@@ -7,7 +7,7 @@ import { CorpusService } from '../services/index';
 import { ConfigService, UserService } from '../services/index';
 
 @Component({
-    selector: 'menu',
+    selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
