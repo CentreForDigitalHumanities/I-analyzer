@@ -49,7 +49,7 @@
     border: none;
 }
 
-.button.is-primary, {
+.button.is-primary {
     background-color: $primary;
     border-color: transparent;
     color: $text-primary-color;
@@ -58,5 +58,17 @@
         background-color: $default-primary-color;
         border-color: transparent;
         color: $text-primary-color;
+    }
+}
+
+//Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted. 
+::ng-deep ia-select-field {
+
+    .ui-multiselect-label-container {
+    display: none;
+    }
+
+    .ui-multiselect  .ui-multiselect-trigger {
+        padding: 0px 0.9em;
     }
 }
