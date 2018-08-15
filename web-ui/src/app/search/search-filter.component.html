@@ -11,9 +11,9 @@
         <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>
     </div>
     <div class="daterange" *ngIf="filter.name == 'DateFilter'" iaBalloon="This filter is preventing your query from returning any results. Please ensure that the first date in the range is not after the last date." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right">
-        <p-calendar [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
-            (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
-        <p-calendar [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
-            (onInput)="update()" dateFormat="yy-mm-dd"></p-calendar>
+        <p-calendar [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+            (onBlur)="update()" dateFormat="yy-mm-dd"></p-calendar>
+        <p-calendar [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+            (onBlur)="update()" dateFormat="yy-mm-dd"></p-calendar>
     </div>
 </ng-container>
