@@ -251,7 +251,6 @@ class Times(XMLCorpus):
                     'supplement. Only after 1985.'
                 ),
                 options=[
-                    'Special',
                     'Supplement',
                     'Standard'
                 ]
@@ -427,7 +426,6 @@ class Times(XMLCorpus):
                     'Official Appointments and Notices',
                     'Editorials/Leaders',
                     'Feature Articles (aka Opinion)',
-                    'Opinion',
                     'Letters to the Editor',
                     'Arts and Entertainment',
                     'Reviews',
@@ -456,10 +454,6 @@ class Times(XMLCorpus):
                     'Photograph',
                     'Graph',
                     'Table',
-                    'Chart',
-                    'Engraving',
-                    'Fine-Art-Reproduction',
-                    'Illustration'
                 ]
             ),
             extractor=extract.Choice(
