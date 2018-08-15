@@ -209,7 +209,7 @@ export class ElasticSearchService {
      */
     private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
         let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
-        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
+        let retrieved = alreadyRetrieved + (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
             documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),
