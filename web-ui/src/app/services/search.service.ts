@@ -117,6 +117,10 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
     }
 
+    public async searchForWordcloud(corpus: Corpus, documentIds: string[], fields: string[]): Promise<any> {
+        return this.elasticSearchService.termVectors(corpus, documentIds, fields);
+    }
+
     /**
      * Search and return a simple two-dimensional string array containing the values.
      */

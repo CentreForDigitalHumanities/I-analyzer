@@ -494,6 +494,7 @@ class Times(XMLCorpus):
             display_type='text_content',
             description='Raw OCR\'ed text (content).',
             prominent_field=True,
+            es_mapping={'type': 'text', 'term_vector': 'yes'},
             extractor=extract.XML(
                 tag=['text', 'text.cr'], multiple=True,
                 flatten=True

@@ -1,6 +1,6 @@
 import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
-import { Corpus, AggregateResults, QueryModel } from '../models/index';
+import { Corpus, AggregateResults, FoundDocument, QueryModel } from '../models/index';
 import { SearchService } from '../services/index';
 
 
@@ -14,6 +14,7 @@ export class VisualizationComponent implements OnChanges {
 
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
+    @Input() public ids: string[];
 
     public visualizedField: string;
     public termFrequencyFields: string[];
@@ -22,11 +23,7 @@ export class VisualizationComponent implements OnChanges {
     public barChart: boolean = false;
 
     public chartElement: any;
-
-    public aggResults: {
-        key: any,
-        doc_count: number
-    }[];
+    public aggResults: AggregateResult[];
 
     constructor(private searchService: SearchService) {
     }
@@ -55,11 +52,26 @@ export class VisualizationComponent implements OnChanges {
     }
 
     showWordcloud() {
-        this.searchService.searchForVisualization(this.corpus, this.queryModel, "wordcloud").then(results => {
-            this.significantText = results.aggregations;
+        let fields = ["content"];
+        this.searchService.searchForWordcloud(this.corpus, this.ids, fields).then(results => {
+            this.significantText = Object.keys(results).map( key => {
+                let newObj: AggregateResult = {
+                    key: key,
+                    doc_count: results[key].term_freq
+                };
+                return newObj;
+            });
         });
+/*        this.searchService.searchForVisualization(this.corpus, this.queryModel, "wordcloud").then(results => {
+            this.significantText = results.aggregations;
+        });*/
         this.wordCloud = true;
         this.barChart = false;
     }
 
+}
+
+type AggregateResult = {
+    key: any,
+    doc_count: number
 }

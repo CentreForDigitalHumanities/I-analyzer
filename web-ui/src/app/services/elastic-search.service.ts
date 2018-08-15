@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
+import * as _ from 'lodash';
 import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
@@ -74,7 +75,7 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string) {
+    private makeAggregation(aggregator: string) {
         let aggregation: any;
         switch(aggregator) {
             case "date": {
@@ -112,12 +113,35 @@ export class ElasticSearchService {
         return aggregation;
     }
 
+    private makeTermVectorQuery(ids: string[], fields: string[], max_num_terms, min_term_freq, max_doc_freq, min_word_length) {
+        return {
+            ids: ids,
+            parameters: {
+                fields: fields,
+                filter: {
+                    "max_num_terms": max_num_terms,
+                    "min_term_freq" : min_term_freq,
+                    "max_doc_freq" : max_doc_freq,
+                    "min_word_length": min_word_length
+                }
+            }
+        }
+    }
+
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
             type: index.doctype,
             size: 0,
             body: aggregationModel
+        }));
+    }
+
+    private executeTermVectorQuery(index: ElasticSearchIndex, termVectorQuery) {
+        return this.connections.then((connections) => connections[index.serverName].client.mtermvectors({
+            index: index.index,
+            type: index.doctype,
+            body: termVectorQuery
         }));
     }
 
@@ -206,6 +230,21 @@ export class ElasticSearchService {
         // Perform the search
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response, queryModel, 0);
+    }
+
+    public async termVectors(corpusDefinition: ElasticSearchIndex, documentIds: string[], fields: string[]): Promise<any> {
+        let connection = (await this.connections)[corpusDefinition.serverName];
+        let tvQuery = this.makeTermVectorQuery(documentIds, fields, 8, 2, 100, 4);
+        let response = await this.executeTermVectorQuery(corpusDefinition, tvQuery);
+        let tvs = _.assignWith( ...response.docs.map( d => d.term_vectors.content.terms ), this.mergeTermVectors);
+        return tvs;
+    }
+
+    private mergeTermVectors(objValue, srcValue) {
+        if (objValue) {
+            objValue.term_freq += srcValue.term_freq;
+            return objValue;
+        }
     }
 
     /**
