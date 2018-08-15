@@ -78,14 +78,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     data: { gte: filter.lower, lte: filter.upper }
                 };
             case 'DateFilter':
-                let padLeft = (n: number) => `0${n}`.slice(-2);
-                let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
                 return {
                     fieldName,
                     filterName: filter.name,
                     data: {
-                        gte: toString(filter.lower),
-                        lte: toString(filter.upper)
+                        gte: this.formatDate(filter.lower),
+                        lte: this.formatDate(filter.upper)
                     }
                 };
         }
@@ -148,7 +146,6 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     data: this.data.selected
                 };
             case 'DateFilter':
-                let formatData = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
                 let lower = this.filter.lower.valueOf(),
                     upper = this.filter.upper.valueOf(),
                     min = this.data.min && this.data.min.valueOf() || lower,
@@ -160,8 +157,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: {
-                        gte: formatData(this.data.min || this.filter.lower),
-                        lte: formatData(this.data.max || this.filter.upper)
+                        gte: this.formatDate(this.data.min || this.filter.lower),
+                        lte: this.formatDate(this.data.max || this.filter.upper)
                     }
                 };
         }
@@ -172,5 +169,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      */
     update(reset = false) {
         this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
+    }
+
+    /**
+     * Return a string of the form 0123-04-25.
+     */
+    formatDate(date: Date): string {
+        return date.toISOString().slice(0, 10);
     }
 }
