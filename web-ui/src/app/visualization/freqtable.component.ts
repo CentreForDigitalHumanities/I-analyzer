@@ -20,8 +20,8 @@ export class FreqtableComponent implements OnChanges {
   }[];
   @Input() public visualizedField;
   @Input() public chartElement;
+  @Input() public asPercent;
 
-  public asPercent: boolean;
   public percentData: {
     key: any,
     doc_count: number,
