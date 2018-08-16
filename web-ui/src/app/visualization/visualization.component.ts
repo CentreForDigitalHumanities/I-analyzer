@@ -17,10 +17,13 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
 
+    public asPercentage: boolean;
+
     public showTableButtons: boolean;
 
     public visualizedField: string;
 
+    public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
     public visualizedFields: {
         name: string;
@@ -67,17 +70,27 @@ export class VisualizationComponent implements OnChanges {
             this.setVisualizedField(this.visualizedFields[0].name);
         }
 
-        this.groupedVisualizations = [
-            {
-                label: 'Histograms',
-                items: this.visualizedFields.map(field => ({
-                    label: field.displayName,
-                    value: {
-                        field: field.name
-                    }
-                }))
-            }
-        ]
+        //SelectItem representations of visualized fields
+        this.visDropdown =
+            this.visualizedFields.map(field => ({
+                label: field.displayName,
+                value: {
+                    field: field.name
+                }
+            }))
+
+        //Grouped visualizations. Keeping this here for future use.
+        // this.groupedVisualizations = [
+        //     {
+        //         label: 'Histograms',
+        //         items: this.visualizedFields.map(field => ({
+        //             label: field.displayName,
+        //             value: {
+        //                 field: field.name
+        //             }
+        //         }))
+        //     }
+        // ]
     }
 
     setVisualizedField(visualizedField: string) {

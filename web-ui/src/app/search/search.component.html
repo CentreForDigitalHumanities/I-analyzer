@@ -98,7 +98,7 @@
                             <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
                                 iaBalloonPosition="down-left">
                                 <label class="label" [for]="'filter' + field.name">{{
-                                    field.name |titlecase }}</label>
+                                    field.displayName |titlecase }}</label>
                             </div>
                             <p class="control">
                                 <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
@@ -174,7 +174,8 @@
     <div class="content">
         <p>Please try again later, or seek support if the problem persists. In order
             to help us help you, please provide the following information when seeking
-            support:</p>
+            support:
+        </p>
         <table>
             <tbody>
                 <tr>
