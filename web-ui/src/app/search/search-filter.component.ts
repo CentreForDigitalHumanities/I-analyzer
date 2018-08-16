@@ -16,8 +16,13 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     @Input()
     public filterData: SearchFilterData;
 
+    @Input()
+    public warnBottleneck: boolean;
+
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilterData>();
+
+    public isBottleneck: boolean = false;
 
     public get filter() {
         return this.field.searchFilter;
@@ -31,14 +36,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['field'] || changes['filterData']) {
-            if (changes['field'] && !changes['filterData']) {
-                // make sure the filter data is reset if only the field was changed
-                this.update(true);
-            }
-            if (changes['filterData']) {
-                this.data = this.getDisplayData(this.filter, this.filterData);
-            }
+        if (changes['filterData']) {
+            this.data = this.getDisplayData(this.filter, this.filterData);
+        }
+        else if (changes['field']) {
+            // make sure the filter data is reset if only the field was changed
+            this.update(true);
         }
     }
 
@@ -75,14 +78,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     data: { gte: filter.lower, lte: filter.upper }
                 };
             case 'DateFilter':
-                let padLeft = (n: number) => `0${n}`.slice(-2);
-                let toString = (date: Date) => `${date.getFullYear()}-${padLeft(date.getMonth() + 1)}-${padLeft(date.getDate())}`;
                 return {
                     fieldName,
                     filterName: filter.name,
                     data: {
-                        gte: toString(filter.lower),
-                        lte: toString(filter.upper)
+                        gte: this.formatDate(filter.lower),
+                        lte: this.formatDate(filter.upper)
                     }
                 };
         }
@@ -122,6 +123,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      * Create a new version of the filter data from the user input.
      */
     getFilterData() {
+        this.isBottleneck = false;
         switch (this.filter.name) {
             case 'BooleanFilter':
                 return {
@@ -130,25 +132,33 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                     data: this.data
                 };
             case 'RangeFilter':
+                if (this.data[0] > this.data[1]) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: { gte: this.data[0], lte: this.data[1] }
                 };
             case 'MultipleChoiceFilter':
+                if (this.data.selected.length === 0) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: this.data.selected
                 };
             case 'DateFilter':
-                let formatData = (date: Date) => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                let lower = this.filter.lower.valueOf(),
+                    upper = this.filter.upper.valueOf(),
+                    min = this.data.min && this.data.min.valueOf() || lower,
+                    max = this.data.max && this.data.max.valueOf() || upper;
+                let localMin = Math.max(min, lower);
+                let localMax = Math.min(max, upper);
+                if (localMin > localMax) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: {
-                        gte: formatData(this.data.min || this.filter.lower),
-                        lte: formatData(this.data.max || this.filter.upper)
+                        gte: this.formatDate(this.data.min || this.filter.lower),
+                        lte: this.formatDate(this.data.max || this.filter.upper)
                     }
                 };
         }
@@ -159,5 +169,12 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      */
     update(reset = false) {
         this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
+    }
+
+    /**
+     * Return a string of the form 0123-04-25.
+     */
+    formatDate(date: Date): string {
+        return date.toISOString().slice(0, 10);
     }
 }
