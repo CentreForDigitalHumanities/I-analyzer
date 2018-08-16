@@ -1,4 +1,5 @@
 @import "../../variables";
+@import "../../shared";
 
 table {
 	margin-left: 100px;
@@ -16,7 +17,12 @@ tr {
 }
 
 tr:hover {
-	background-color: $turquoise;
+	background-color: $default-primary-color;
 	cursor: pointer;
+	color: $text-primary-color;
+}
+
+.section{
+    padding: 3rem 0rem;
 }
 
