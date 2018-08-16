@@ -8,18 +8,18 @@
 .navbar-item{ 
     color: $text-primary-color;
     &:hover{
-        background-color: $default-primary-color;
+        background-color: $contrast-primary-color;
         color: $text-primary-color;
     }
     
     &.is-active, .has-dropdown.is-active{
-        background-color: $default-primary-color;
+        background-color: $contrast-primary-color;
         color: $text-primary-color;
     }
 }
 
 .navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active{
-    background-color: $default-primary-color;
+    background-color: $contrast-primary-color;
     color: $text-primary-color;
 }
 

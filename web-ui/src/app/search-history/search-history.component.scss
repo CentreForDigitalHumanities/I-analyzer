@@ -17,12 +17,7 @@ tr {
 }
 
 tr:hover {
-	background-color: $default-primary-color;
+	background-color: $contrast-primary-color;
 	cursor: pointer;
 	color: $text-primary-color;
 }
-
-.section{
-    padding: 3rem 0rem;
-}
-
