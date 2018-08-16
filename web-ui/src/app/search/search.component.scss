@@ -72,3 +72,10 @@
         padding: 0px 0.9em;
     }
 }
+
+.field.has-addons .control:last-child .button {
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+}
