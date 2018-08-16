@@ -120,11 +120,13 @@ class Times(XMLCorpus):
         ),
         Field(indexed=False,
               name='issue-id',
+              display_name='Issue ID',
               description='Issue identifier.',
               extractor=extract.XML(tag='id', toplevel=True)
               ),
         Field(indexed=False,
               name='journal',
+              display_name='Journal',
               description='Journal name.',
               extractor=extract.XML(
                   tag='jn', toplevel=True,
@@ -133,6 +135,7 @@ class Times(XMLCorpus):
               ),
         Field(
             name='source',
+            display_name='Source',
             description='Library where the microfilm is sourced',
             extractor=extract.XML(
                 tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
@@ -141,6 +144,7 @@ class Times(XMLCorpus):
         ),
         Field(indexed=False,
               name='newspaperID',
+              display_name='Newspaper ID',
               description='Publication code',
               extractor=extract.XML(
                   tag=['metadatainfo', 'newspaperID'], toplevel=True,
@@ -149,6 +153,7 @@ class Times(XMLCorpus):
               ),
         Field(
             name='edition',
+            display_name='Edition',
             extractor=extract.Choice(
                 extract.XML(
                     tag='ed', toplevel=True,
@@ -174,6 +179,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='volume',
+            display_name='Volume',
             description='Volume number.',
             extractor=extract.XML(
                 tag='volNum', toplevel=True,
@@ -182,6 +188,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='date-pub',
+            display_name='Publication date',
             description='Date of publication.',
             extractor=extract.XML(
                 tag='da', toplevel=True
@@ -189,6 +196,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='date-end',
+            display_name='Ending date',
             description=(
                 'Ending date of publication. '
                 'For issues that span more than 1 day.'
@@ -200,6 +208,7 @@ class Times(XMLCorpus):
         ),
         Field(indexed=False,
               name='weekday',
+              display_name='Weekday',
               description='Day of the week.',
               extractor=extract.XML(
                   tag='dw', toplevel=True,
@@ -208,6 +217,7 @@ class Times(XMLCorpus):
               ),
         Field(indexed=False,
               name='publication-date',
+              display_name='Publication date (fixed)',
               description=(
                   'Fixed publication date. Logically generated from date, '
                   'e.g. yyyymmdd'
@@ -228,6 +238,7 @@ class Times(XMLCorpus):
         ),
         Field(indexed=False,
               name='copyright',
+              display_name='Copyright',
               description='Copyright holder and year.',
               extractor=extract.Choice(
                   extract.XML(
@@ -251,7 +262,6 @@ class Times(XMLCorpus):
                     'supplement. Only after 1985.'
                 ),
                 options=[
-                    'Special',
                     'Supplement',
                     'Standard'
                 ]
@@ -264,6 +274,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='supplement-title',
+            display_name='Supplement title',
             description='Supplement title.',
             extractor=extract.XML(
                 tag=['..', 'pageid', 'supptitle'], multiple=True,
@@ -272,6 +283,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='supplement-subtitle',
+            display_name='Supplement subtitle',
             description='Supplement subtitle.',
             extractor=extract.XML(
                 tag=['..', 'pageid', 'suppsubtitle'], multiple=True,
@@ -300,6 +312,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='id',
+            display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='id')
         ),
@@ -319,6 +332,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='ocr-relevant',
+            display_name='OCR relevant',
             description='Whether OCR confidence level is relevant.',
             es_mapping={'type': 'boolean'},
             extractor=extract.XML(
@@ -328,6 +342,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='column',
+            display_name='Column',
             description=(
                 'Starting column: a string to label the column'
                 'where article starts.'
@@ -336,6 +351,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='page',
+            display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.Choice(
                 extract.XML(tag='pa', applicable=until(1985)),
@@ -365,11 +381,13 @@ class Times(XMLCorpus):
         ),
         Field(
             name='subtitle',
+            display_name='Subtitle',
             description='Article subtitle.',
             extractor=extract.XML(tag='ta', multiple=True)
         ),
         Field(
             name='subheader',
+            display_name='Subheader',
             description='Article subheader (product dependent field).',
             extractor=extract.XML(
                 tag='subheader', multiple=True,
@@ -378,6 +396,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='author',
+            display_name='Author',
             description='Article author.',
             extractor=extract.Choice(
                 extract.XML(
@@ -392,6 +411,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='source-paper',
+            display_name='Source paper',
             description='Credited as source.',
             extractor=extract.XML(
                 tag='altSource', multiple=True
@@ -427,7 +447,6 @@ class Times(XMLCorpus):
                     'Official Appointments and Notices',
                     'Editorials/Leaders',
                     'Feature Articles (aka Opinion)',
-                    'Opinion',
                     'Letters to the Editor',
                     'Arts and Entertainment',
                     'Reviews',
@@ -456,10 +475,6 @@ class Times(XMLCorpus):
                     'Photograph',
                     'Graph',
                     'Table',
-                    'Chart',
-                    'Engraving',
-                    'Fine-Art-Reproduction',
-                    'Illustration'
                 ]
             ),
             extractor=extract.Choice(
@@ -476,6 +491,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content-preamble',
+            display_name='Content preamble',
             description='Raw OCR\'ed text (preamble).',
             extractor=extract.XML(
                 tag=['text', 'text.preamble'],
@@ -484,6 +500,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='content-heading',
+            display_name='Content heading',
             description='Raw OCR\'ed text (header).',
             extractor=extract.XML(
                 tag=['text', 'text.title'],
