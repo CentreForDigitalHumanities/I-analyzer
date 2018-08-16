@@ -3,6 +3,7 @@ ianalyzer/config.py
 indexing*
 *.pyc
 .cache
-*.egg-info/
+*.egg-info
 .env/
 build/
+dist/

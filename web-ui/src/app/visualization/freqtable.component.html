@@ -1,0 +1,25 @@
+<div class=box>
+    <table id="freq-table" class="table is-fullwidth">
+        <thead>
+            <tr class="is-selected">
+                <th>{{visualizedField|titlecase}}</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <ng-container *ngIf="!asPercent">
+                <tr *ngFor="let entry of searchData">
+                    <td>{{entry.key}}</td>
+                    <td>{{entry.doc_count}}</td>
+                </tr>
+            </ng-container>
+            <ng-container *ngIf="asPercent">
+                <tr *ngFor="let entry of percentData">
+                    <td>{{entry.key}}</td>
+                    <td>{{entry.doc_count | percent:'1.0-2'}}</td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>
