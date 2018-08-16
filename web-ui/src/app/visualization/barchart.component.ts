@@ -56,7 +56,7 @@ export class BarChartComponent implements OnChanges {
             }
 
             //listen for changes in 'asPercent'
-            if (changes['aPercent'] != undefined) {
+            if (changes['asPercent'] != undefined) {
                 if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
                     this.drawChartData(this.searchData);
                     this.setScaleY();
