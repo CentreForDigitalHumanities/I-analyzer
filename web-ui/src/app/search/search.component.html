@@ -94,7 +94,8 @@
                                 </p>
                             </div>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
-                                (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
+                            (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
@@ -126,7 +127,9 @@
     <ng-container *ngFor="let field of corpus.fields">
         <div class="csv-column" *ngIf="!field.hidden">
             <label class="checkbox">
-                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="visibleField" (change)="checkIfAllSelected()"> {{ field.displayName }}
+                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="visibleField"
+                    (change)="checkIfAllSelected()"> {{ field.displayName
+                }}
             </label>
             <div class="description" *ngIf="field.description">
                 {{ field.description }}
@@ -137,11 +140,13 @@
     </ng-container>
 </p-dialog>
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument" width="800" *ngIf="viewDocument">
+<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument"
+    width="800" *ngIf="viewDocument">
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
 </p-dialog>
 <!-- bring up visualization when the button has been clicked -->
-<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
+<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150"
+    width="800" height="100%">
     <p-header>Select a data column for visualization</p-header>
     <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>
