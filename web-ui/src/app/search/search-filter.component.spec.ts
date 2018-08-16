@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule, CheckboxModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import { SearchFilterComponent } from './search-filter.component';
+import { BalloonDirective } from '../balloon.directive';
 
 describe('SearchFilterComponent', () => {
     let component: SearchFilterComponent;
@@ -18,7 +19,7 @@ describe('SearchFilterComponent', () => {
                 SliderModule,
                 MultiSelectModule
             ],
-            declarations: [SearchFilterComponent],
+            declarations: [SearchFilterComponent, BalloonDirective],
         }).compileComponents();
     }));
 

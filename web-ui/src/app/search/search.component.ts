@@ -318,8 +318,10 @@ export class SearchComponent implements OnInit, OnDestroy {
                     this.showFilters = true;
                 }
                 fieldsSet = true;
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] == "") filterSettings = [];
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param).split(',')),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
                     useAsFilter: true,
                     downloadInCsv: true
                 }, field);
