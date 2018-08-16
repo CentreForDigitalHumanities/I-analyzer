@@ -2,13 +2,13 @@
     <div class="container is-fluid">
         <div class="navbar-brand">
             <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
             </a>
         </div>
-        <div class="navbar-menu">
+        <div [ngClass]="{'navbar-menu': true, 'is-active': menuOpen}">
             <div class="navbar-start">
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">

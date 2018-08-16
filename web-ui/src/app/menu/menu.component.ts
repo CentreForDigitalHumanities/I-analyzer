@@ -17,8 +17,10 @@ export class MenuComponent implements OnDestroy, OnInit {
     public isAdmin: boolean = false;
     public isGuest: boolean = true;
     public menuAdminItems: MenuItem[];
+    menuOpen: boolean = false;
     
     private routerSubscription: Subscription;
+
     
 
     constructor(private corpusService: CorpusService, private configService: ConfigService, private userService: UserService, private router: Router) {
@@ -41,7 +43,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         });
     }
 
-    public gotoAdmin() {
+     public gotoAdmin() {
         this.configService.get().then(config => {
             window.location.href = config.adminUrl;
         });
@@ -103,5 +105,9 @@ export class MenuComponent implements OnDestroy, OnInit {
                 }
         ];
 
-    }  
+    }
+
+    toggleMenu(event: any) {     
+       this.menuOpen = !this.menuOpen;
+    }
 }
