@@ -1,5 +1,7 @@
 import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
+import { SelectItem, SelectItemGroup } from 'primeng/api';
+
 import { Corpus, AggregateResults, QueryModel } from '../models/index';
 import { SearchService } from '../services/index';
 
@@ -15,9 +17,20 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
 
+    public asPercentage: boolean;
+
+    public showTableButtons: boolean;
+
     public visualizedField: string;
-    public visualizedFields: string[];
-    public wordCloud: boolean = false;
+
+    public visDropdown: SelectItem[];
+    public groupedVisualizations: SelectItemGroup[];
+    public visualizedFields: {
+        name: string;
+        displayName: string;
+    }[];
+    public visualizationType: string;
+    public freqtable: boolean = false;
 
     public chartElement: any;
 
@@ -27,35 +40,73 @@ export class VisualizationComponent implements OnChanges {
         key_as_string?: string;
     }[];
 
-    private visualizationType: string;
-
     constructor(private searchService: SearchService) {
     }
 
     ngOnInit() {
+        // Initial values 
+        this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
     }
 
     ngOnChanges(changes: SimpleChanges) {
         this.visualizedFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.visualizationType!=undefined).map(field => field.name)
+            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field =>
+                (field.displayName != undefined) ?
+                    ({
+                        name: field.name,
+                        displayName: field.displayName
+                    }) :
+                    // in case display name is not provided in the corpus definition
+                    ({
+                        name: field.name,
+                        displayName: field.name
+                    })
+
+            )
             : [];
 
         if (this.visualizedFields.length) {
-            this.setVisualizedField(this.visualizedFields[0]);
+            this.setVisualizedField(this.visualizedFields[0].name);
         }
+
+        //SelectItem representations of visualized fields
+        this.visDropdown =
+            this.visualizedFields.map(field => ({
+                label: field.displayName,
+                value: {
+                    field: field.name
+                }
+            }))
+
+        //Grouped visualizations. Keeping this here for future use.
+        // this.groupedVisualizations = [
+        //     {
+        //         label: 'Histograms',
+        //         items: this.visualizedFields.map(field => ({
+        //             label: field.displayName,
+        //             value: {
+        //                 field: field.name
+        //             }
+        //         }))
+        //     }
+        // ]
     }
 
     setVisualizedField(visualizedField: string) {
         this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
             this.visualizedField = visualizedField;
-            this.visualizationType = this.corpus.fields.find(field => field.name==this.visualizedField).visualizationType;
+            this.visualizationType = this.corpus.fields.find(field => field.name == this.visualizedField).visualizationType;
             this.aggResults = visual.aggregations;
         });
     }
 
-    showWordcloud() {
-        this.wordCloud = true;
+    showTable() {
+        this.freqtable = true;
     }
 
+    showChart() {
+        this.freqtable = false;
+        this.setVisualizedField(this.visualizedField);
+    }
 }
