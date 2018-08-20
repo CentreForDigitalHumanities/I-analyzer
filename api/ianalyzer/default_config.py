@@ -53,6 +53,7 @@ TIMES_ES_DOCTYPE='article'
 TIMES_DATA='/mnt/times'
 TIMES_MIN_DATE=datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE=datetime(year=2010, month=12, day=31)
+TIMES_IMAGE='/static/images/times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Description about this corpus"
