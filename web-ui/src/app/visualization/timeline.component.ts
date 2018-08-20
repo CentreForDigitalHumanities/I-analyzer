@@ -20,6 +20,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     }[];
     @Input() visualizedField;
     @Input() chartElement;
+    @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;
     //private xDomain: [Date, Date];
@@ -38,16 +39,25 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            this.calculateCanvas();
-            this.prepareTimeline();
-            this.calculateDomains();
-
+            //do these calculations only if they haven't been done before
+            if (!this.selectedData) {
+                this.calculateCanvas();
+                this.prepareTimeline();
+                this.calculateDomains();
+            }
 
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.setScaleY();
+                this.rescaleY();
                 this.drawChartData(this.selectedData);
                 this.setupBrushBehaviour();
+            }
+
+            //listen for changes in 'asPercent'
+            if (changes['asPercent'] != undefined) {
+                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+                    this.rescaleY();
+                }
             }
         }
     }
@@ -64,7 +74,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         let ticks = this.xScale.ticks(10);
         let date = ticks[0];
 
-        console.log(d3.timeYear.offset(date,0), date, d3.timeMinute(date) < date);
+        console.log(d3.timeMinute(date), date, d3.timeMinute(date) < date);
 
         let [min, max] = this.xScale.domain();
 
@@ -74,27 +84,27 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             .thresholds(this.xScale.ticks(d3.timeYear));
 
         this.currentTimeCategory = 'years';
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
 
     }
 
     rescaleX() {
         let t = this.svg.transition().duration(750);
-        //this.xAxis.selectAll('text').each(this.parseXaxis);
         this.xAxis.transition(t).call(this.xAxisClass);
+        this.xAxis.selectAll('text')
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", ".15em")
+          .attr("transform", "rotate(-35)");
     }
 
     formatTimeData() {
         /* date fields are returned with keys containing identifiers by elasticsearch
          replace with string representation, contained in 'key_as_string' field
         */
-        //console.log(moment("1660-01-01").utcOffset(0).toDate());
         let outData = this.searchData.map(cat => {
-            let event = new Date(cat.key_as_string).setHours(0,0,0);
-            console.log(event);
             return {
-                //date: moment(cat.key_as_string).utcOffset(0).toDate(),
                 date: new Date(cat.key_as_string),
-                //date: moment(cat.key_as_string).startOf('day').toDate(),
                 doc_count: cat.doc_count
             };
         });
@@ -102,11 +112,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     }
 
     formatDate(date_string) {
-        let d = new Date(date_string);
-        return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()));
+        let date = new Date(date_string);
+        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
     }
 
-    parseXaxis(d) {
+    /*parseXaxis(d) {
     var el = d3.select(this);
     var dtFormat = d3.timeFormat('%Y %m %d');
     console.log(dtFormat(d))
@@ -120,7 +131,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     else {
         el.append('tspan').text(words[1]);        
     }    
-    };           
+    };           */
 
     drawChartData(inputData) {
         /**
@@ -187,6 +198,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 this.histogram.thresholds(this.xScale.ticks(d3.timeYear));
                 this.currentTimeCategory = 'years';
                 this.drawChartData(this.selectedData);
+                this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+                this.rescaleY();
             }
 
         } else {
@@ -209,6 +222,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             this.adjustTimeCategory();
             this.drawChartData(this.selectedData.filter(
                 d => d.date >= xExtent[0] && d.date <= xExtent[1]));
+            this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+            this.rescaleY();
         }
         else {
             // zoom in without rearranging underlying data

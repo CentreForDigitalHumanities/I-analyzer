@@ -13,11 +13,9 @@
 	</button>
 </div>
 
-<form *ngIf="visualizationType!='timeline' || freqtable">
 	<label>
 		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
 		as Percentage</label>
-</form>
 
 <div class="d3-chart" #chart>
 	<ng-container [ngSwitch]="visualizationType">
@@ -26,7 +24,7 @@
 			 [chartElement]="chartElement" [asPercent]="asPercentage">
 			</ia-barchart>
 			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
-			 [chartElement]="chartElement"></ia-timeline>
+			 [chartElement]="chartElement" [asPercent]="asPercentage"></ia-timeline>
 		</ng-container>
 	</ng-container>
 
