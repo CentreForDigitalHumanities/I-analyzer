@@ -1,133 +1,115 @@
 <!-- Toggle filter button, search bar, visualize and download buttons -->
 <section class="section title-section">
-    <div class="container is-fluid">
+    <div class="container is-readable">
         <h1 class="title">
             Search
             <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
         </h1>
     </div>
 </section>
-<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}"
-    *ngIf="user">
-    <div class="container is-fluid">
-        <nav class="level is-mobile">
-            <div class="level-left search-controls">
-                <div class="level-item">
-                    <button class="button" (click)="toggleFilters()">
-                        <span class="icon is-small">
-                            <i class="fa fa-bars"></i>
-                        </span>
-                        <span>Filters</span>
-                    </button>
-                </div>
-                <div class="level-item">
-                    <form (ngSubmit)="search()" *ngIf="corpus">
-                        <div class="field has-addons">
-                            <div class="control" iaBalloon="View query documentation">
-                                <a class="button" (click)="showQueryDocumentation()">
-                                    <span class="icon is-small">
-                                        <i class="fa fa-question-circle"></i>
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="control">
-                                <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text"
-                                    placeholder="Query" />
-                            </div>
-                            <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters">
-                                <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
-                                    <span class="icon is-small">
-                                        <i class="fa fa-search"></i>
-                                    </span>
-                                    <span>Search</span>
-                                </button>
-                            </div>
-                            <div class="control" iaBalloon="Restrict your query to specific fields">
-                                <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'"
-                                    (selectedFields)="selectSearchFieldsEvent($event)"
-                                    [showSelectedFields]="true"> </ia-select-field>
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
+    <div class="container is-readable">
+        <div class="columns">
+            <div class="column is-6">
+                <nav class="level">
+                    <div class="level-left search-controls">
+                        <div class="level-item">
+                            <form (ngSubmit)="search()" *ngIf="corpus">
+                                <div class="field has-addons">
+                                    <div class="control" iaBalloon="View query documentation">
+                                        <a class="button" (click)="showQueryDocumentation()">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-question-circle"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <div class="control">
+                                        <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query" />
+                                    </div>
+                                    <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters">
+                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-search"></i>
+                                            </span>
+                                            <span>Search</span>
+                                        </button>
+                                    </div>
+                                    <div class="control" iaBalloon="Restrict your query to specific fields">
+                                        <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [showSelectedFields]="true"> </ia-select-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="level-item">
+                            <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
+                                <span class="icon is-small">
+                                    <i class="fa fa-bar-chart"></i>
+                                </span>
+                                <span>Visualize</span>
+                            </button>
+                        </div>
+                        <div class="level-item">
+                            <div class="field has-addons">
+                                <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
+                                    <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                                        <span class="icon is-small">
+                                            <i class="fa fa-download"></i>
+                                        </span>
+                                        <span>Download csv</span>
+                                    </button>
+                                </p>
+                                <p class="control" iaBalloon="Restrict your query to specific fields">
+                                    <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
+                                        (selectedFields)="selectCsvFieldsEvent($event)">
+                                    </ia-select-field>
+                                </p>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="level-right">
-                    <div class="level-item">
-                        <button class="button is-info" type="submit" (click)="visualize()" [disabled]="!results"
-                            *ngIf=showVisualizationButton>
-                            <span class="icon is-small">
-                                <i class="fa fa-bar-chart"></i>
-                            </span>
-                            <span>Visualize</span>
-                        </button>
                     </div>
-                    <div class="level-item">
-                        <div class="field has-addons">
-                            <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!"
-                                [iaBalloonVisible]="hasLimitedResults ? undefined : false">
-                                <button class="button is-info" [ngClass]="{'is-loading':isDownloading}" type="download"
-                                    (click)="download()" [disabled]="!results">
-                                    <span class="icon is-small">
-                                        <i class="fa fa-download"></i>
-                                    </span>
-                                    <span>Download csv</span>
-                                </button>
-                            </p>
-                            <p class="control" iaBalloon="Restrict your query to specific fields">
-                                <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' "
-                                    [selectAll]=" 'true' " [showSelectedFields]="false"
-                                    (selectedFields)="selectCsvFieldsEvent($event)">
-                                </ia-select-field>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                </nav>
             </div>
-        </nav>
+        </div>
     </div>
 </section>
 <section class="section search-results">
-    <div class="container is-fluid">
+    <div class="container is-readable">
         <!-- filters and search results -->
-        <div class="tile is-ancestor">
+        <div class="columns">
             <!-- Filters, on left -->
-            <div *ngIf="corpus && showFilters" class="tile is-vertical is-4 is-parent">
-                <h4 class="title is-4">Filters</h4>
-                <ng-container *ngFor="let field of corpus.fields">
-                    <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
-                        <div class="field has-addons">
-                            <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
-                                iaBalloonPosition="down-left">
-                                <label class="label" [for]="'filter' + field.name">{{
-                                    field.displayName |titlecase }}</label>
+            <div class="column is-3">
+                <div *ngIf="corpus && showFilters">
+                    <h4 class="title is-4">Filters</h4>
+                    <ng-container *ngFor="let field of corpus.fields">
+                        <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
+                            <div class="field has-addons">
+                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
+                                    <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                                </div>
+                                <p class="control">
+                                    <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
+                                        (click)="toggleFilter(field.name)">
+                                        <i class="fa fa-filter"></i>
+                                    </span>
+                                </p>
                             </div>
-                            <p class="control">
-                                <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
-                                    (click)="toggleFilter(field.name)">
-                                    <i class="fa fa-filter"></i>
-                                </span>
-                            </p>
-                        </div>
-                        <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
+                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                             [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
                             (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
-                    </div>
-                </ng-container>
-            </div>
-
-            <!-- search results, on right -->
-            <div class="tile is-vertical is-parent" [ngClass]="{'is-8': showFilters}" *ngIf="results">
-                <div class="tile is-child">
-                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching"
-                        [query]="searchQueryText" [user]="user" (view)="onViewDocument($event)">
-                        <div class="field">
-                            <label class="label">Sort By</label>
                         </div>
-                        <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
-                            (onChange)="changeSorting($event)"></ia-search-sorting>
-                    </ia-search-results>
+                    </ng-container>
                 </div>
             </div>
-
+            <!-- search results, on right -->
+            <div class="column is-9" *ngIf="results">
+                <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                    (view)="onViewDocument($event)">
+                    <div class="field">
+                        <label class="label">Sort By</label>
+                    </div>
+                    <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                </ia-search-results>
+            </div>
         </div>
     </div>
 </section>
@@ -172,10 +154,8 @@
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">
     <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>
     <div class="content">
-        <p>Please try again later, or seek support if the problem persists. In order
-            to help us help you, please provide the following information when seeking
-            support:
-        </p>
+        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the
+            following information when seeking support:</p>
         <table>
             <tbody>
                 <tr>

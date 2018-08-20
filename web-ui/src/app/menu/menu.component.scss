@@ -1,0 +1,72 @@
+ @import "../../shared";
+
+.navbar {
+    background-color: $primary;
+  }
+
+
+.navbar-item{ 
+    color: $text-primary-color;
+    &:hover{
+        background-color: $contrast-primary-color;
+        color: $text-primary-color;
+    }
+    
+    &.is-active, .has-dropdown.is-active{
+        background-color: $contrast-primary-color;
+        color: $text-primary-color;
+    }
+}
+
+.navbar-item.has-dropdown:hover .navbar-link, a.navbar-item.is-active{
+    background-color: $contrast-primary-color;
+    color: $text-primary-color;
+}
+
+.navbar-link{
+    color: $text-primary-color;
+    &::after {
+        border: 1px solid $text-primary-color;
+        border-right: 0;
+        border-top: 0;
+        content: " ";
+        display: block;
+        height: 0.5em;
+        pointer-events: none;
+        position: absolute;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        width: 0.5em;
+        margin-top: -0.375em;
+        right: 1.125em;
+        top: 50%;
+    }
+}
+
+.navbar-menu {
+    background-color: $primary;
+}
+
+.navbar-burger {
+    background-color: $primary;
+    color: $text-primary-color;
+}
+
+
+.panel-icon {
+    color: $text-primary-color;
+}
+
+// Makes the user dropdown in the same theme as the rest of the application. This only affects the dropdown and not the other widget contents like visualizations. 
+
+::ng-deep .menu-dropdown {
+    &.ui-widget-content {
+        border: 1px solid #dbdbdb;
+        background-color: $primary;
+        color: $text-primary-color;
+    }
+
+    .ui-menuitem .ui-menuitem-link {
+        color: $text-primary-color;
+    }
+}

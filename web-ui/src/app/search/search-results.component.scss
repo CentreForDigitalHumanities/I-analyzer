@@ -45,3 +45,22 @@
 .load-more .buttons {
     padding: 0 15px 15px 15px;
 }
+
+.button.is-primary {
+    background-color: $primary;
+    border-color: transparent;
+    color: $text-primary-color;
+
+    &:hover{
+        background-color: $contrast-primary-color;
+        border-color: transparent;
+        color: $text-primary-color;
+    }
+}
+.title {
+    font-size: 1.5rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+}

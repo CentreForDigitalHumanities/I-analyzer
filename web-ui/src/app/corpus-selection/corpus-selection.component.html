@@ -5,7 +5,7 @@
     <h2 class="subtitle">
         Select a corpus to search
     </h2>
-    <label *ngFor="let item of items" class="box">
+    <article *ngFor="let item of items" class="box" role="link" [routerLink]="['/search', item.name]">
         <div class="content">
             <p>
                 <strong>{{item.title}}</strong>
@@ -18,5 +18,5 @@
                 <span>Search</span>
             </button>
         </div>
-    </label>
+    </article>
 </section>
