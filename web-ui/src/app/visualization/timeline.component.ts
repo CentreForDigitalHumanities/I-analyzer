@@ -46,10 +46,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.setScaleY();
-<<<<<<< HEAD
-                //this.xAxis.selectAll('text').each(this.parseXaxis);
-=======
->>>>>>> b0f06d7a989ce5abdf89c48da436446d538abf91
                 this.drawChartData(this.selectedData);
                 this.setupBrushBehaviour();
             }
@@ -96,13 +92,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             let event = new Date(cat.key_as_string).setHours(0,0,0);
             console.log(event);
             return {
-<<<<<<< HEAD
                 //date: moment(cat.key_as_string).utcOffset(0).toDate(),
                 date: new Date(cat.key_as_string),
                 //date: moment(cat.key_as_string).startOf('day').toDate(),
-=======
-                date: new Date(cat.key_as_string),
->>>>>>> b0f06d7a989ce5abdf89c48da436446d538abf91
                 doc_count: cat.doc_count
             };
         });
