@@ -107,7 +107,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     }
 
-    toggleMenu(event: any) {     
+    toggleMenu() {     
        this.menuOpen = !this.menuOpen;
     }
 }
