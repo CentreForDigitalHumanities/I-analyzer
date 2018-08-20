@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation }
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
+import * as moment from 'moment';
 
 import { BarChartComponent } from './barchart.component';
 
@@ -45,7 +46,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.setScaleY();
-                console.log(this.selectedData);
+                //this.xAxis.selectAll('text').each(this.parseXaxis);
                 this.drawChartData(this.selectedData);
                 this.setupBrushBehaviour();
             }
@@ -61,6 +62,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
           .range([0, this.width])
           .clamp(true);
 
+        let ticks = this.xScale.ticks(10);
+        let date = ticks[0];
+
+        console.log(d3.timeYear.offset(date,0), date, d3.timeMinute(date) < date);
+
         let [min, max] = this.xScale.domain();
 
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
@@ -74,6 +80,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
     rescaleX() {
         let t = this.svg.transition().duration(750);
+        //this.xAxis.selectAll('text').each(this.parseXaxis);
         this.xAxis.transition(t).call(this.xAxisClass);
     }
 
@@ -81,15 +88,40 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         /* date fields are returned with keys containing identifiers by elasticsearch
          replace with string representation, contained in 'key_as_string' field
         */
+        //console.log(moment("1660-01-01").utcOffset(0).toDate());
         let outData = this.searchData.map(cat => {
+            let event = new Date(cat.key_as_string).setHours(0,0,0);
+            console.log(event);
             return {
-                date: new Date(cat.key_as_string), 
+                //date: moment(cat.key_as_string).utcOffset(0).toDate(),
+                date: new Date(cat.key_as_string),
+                //date: moment(cat.key_as_string).startOf('day').toDate(),
                 doc_count: cat.doc_count
             };
         });
         return outData;
-    }               
+    }
 
+    formatDate(date_string) {
+        let d = new Date(date_string);
+        return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()));
+    }
+
+    parseXaxis(d) {
+    var el = d3.select(this);
+    var dtFormat = d3.timeFormat('%Y %m %d');
+    console.log(dtFormat(d))
+    var words = dtFormat(d).split(' ');
+    console.log(words);
+    el.text('');
+
+    if (words[1] == "00:00") {
+        el.append('tspan').text(words[0]);        
+    }
+    else {
+        el.append('tspan').text(words[1]);        
+    }    
+    };           
 
     drawChartData(inputData) {
         /**
@@ -104,8 +136,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 d.doc_count = 0;
             }
         });
-
-        console.log(this.bins);
 
         const update = this.chart.selectAll('.bar')
           .data(this.bins);

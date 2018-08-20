@@ -23,7 +23,6 @@ export class BarChartComponent implements OnChanges {
     public yAsPercent: boolean = false;
     //public visualizingDate: boolean = false;
     public yTicks: number = 10;
-    public xTickValues: string[];
     public margin = { top: 10, bottom: 120, left: 70, right: 10 };
     public svg: any;
     public chart: any;
