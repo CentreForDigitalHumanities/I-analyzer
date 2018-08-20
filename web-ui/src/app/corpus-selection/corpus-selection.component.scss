@@ -1,35 +1,32 @@
 @import "../../styles";
 
-.box {
+.card {
     cursor: pointer;
 }
 
-.card-content[_ngcontent-c7] {
+.card-content {
     padding: 1.5rem;
-    color: #ffffff;
+    color: $text-primary-color;
     text-decoration: none;
-    background-color: #303F9F;
+    background-color: $primary;
 }
 
-.card-footer{
-    border-top: 1px solid #3F51B5;
+.card-footer {
+    border-top: 1px solid $contrast-primary-color;
 }
 
-.card-footer [_ngcontent-c7] {
-    border-top: 1px solid #3F51B5;
-    color: #ffffff;
+.card-footer-item {
+    border-top: 1px solid $contrast-primary-color;
+    color: $text-primary-color;
     cursor: pointer;
     text-decoration: none;
-    background-color: #3F51B5;
+    background-color: $contrast-primary-color;
 
     &:hover{
-        color: #ffffff;
-        cursor: pointer;
-        text-decoration: none;
-        background-color: #3F51B5;
+        color: $text-primary-color;
     }
 }
 
-.title-content{
+.title-content {
     font-size: 1.5em;
 }
