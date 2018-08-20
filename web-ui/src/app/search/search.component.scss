@@ -6,7 +6,7 @@
 }
 
 .search-section {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 1);
     position: -webkit-sticky;
     position: sticky;
     z-index: 1000;
@@ -19,7 +19,7 @@
     padding-bottom: $spacing;
 
     &.is-scrolled-down {
-        box-shadow: $boxShadow;
+        box-shadow: $boxShadow; 
     }
 
     + section {
@@ -47,4 +47,32 @@
 
 .filter-icon {
     border: none;
+}
+
+.button.is-primary {
+    background-color: $primary;
+    border-color: transparent;
+    color: $text-primary-color;
+
+    &:hover{
+        background-color: $contrast-primary-color;
+        border-color: transparent;
+        color: $text-primary-color;
+    }
+}
+
+//Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted. 
+::ng-deep ia-select-field {
+
+    .ui-multiselect-label-container {
+    display: none;
+    }
+
+    .ui-multiselect  .ui-multiselect-trigger {
+        padding: 0px 0.9em;
+    }
+}
+
+.field.has-addons .control:last-child .button {
+    border-radius: 2px;
 }

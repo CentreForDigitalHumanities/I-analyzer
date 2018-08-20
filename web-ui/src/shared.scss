@@ -4,18 +4,27 @@
     border-radius: 0;
 }
 
-$primary: #00d1b2;
+$primary: #303F9F; 
+$contrast-primary-color: #3F51B5; 
+$light-primary-color: #C5CAE9; 
+$text-primary-color: #FFFFFF;
+$accent-color: #9E9E9E;
 
 $borderWidth: 1px;
 
 $disabledOpacity: 0.35;
 
+
 $spacing: 1rem;
 
 //Highlight State
-$stateHighlightBorderColor: #fed22f;
-$stateHighlightBgColor: #ffe45c;
-$stateHighlightTextColor: #363636;
+$stateHighlightBorderColor: $primary;
+$stateHighlightBgColor: $primary;
+$stateHighlightTextColor: $text-primary-color;
+
+//Section padding
+$section-padding:	3rem 1.5rem;
+
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
@@ -53,4 +62,8 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
     to {
         transform: rotate(359deg);
     }
+}
+
+.container.is-readable {
+    max-width: 1024px !important;
 }

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
 
-import { CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
+import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
 import { ApiService, ApiRetryService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
@@ -27,6 +27,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 import { BarChartComponent } from '../visualization/barchart.component';
 import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
+import { FreqtableComponent } from '../visualization/freqtable.component';
 import { VisualizationComponent } from '../visualization/visualization.component'
 import { UserServiceMock } from '../services/user.service.mock';
 
@@ -36,8 +37,8 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
-            imports: [FormsModule, CalendarModule, CheckboxModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
+            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            imports: [FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
                 CorpusService,
