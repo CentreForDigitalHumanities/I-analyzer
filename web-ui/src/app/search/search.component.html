@@ -16,7 +16,7 @@
                         <div class="level-item">
                             <form (ngSubmit)="search()" *ngIf="corpus">
                                 <div class="field has-addons">
-                                    <div class="control" iaBalloon="View query documentation">
+                                    <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
                                         <a class="button" (click)="showQueryDocumentation()">
                                             <span class="icon is-small">
                                                 <i class="fa fa-question-circle"></i>
@@ -26,15 +26,15 @@
                                     <div class="control">
                                         <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query" />
                                     </div>
-                                    <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters">
-                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                                    <div class="control">
+                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched}">
                                             <span class="icon is-small">
                                                 <i class="fa fa-search"></i>
                                             </span>
                                             <span>Search</span>
                                         </button>
                                     </div>
-                                    <div class="control" iaBalloon="Restrict your query to specific fields">
+                                    <div class="control" iaBalloon="Restrict your query to specific fields" iaBalloonLength="medium">
                                         <ia-select-field [availableFields]="availableQueryFields" [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
                                             [showSelectedFields]="true"> </ia-select-field>
                                     </div>
@@ -51,7 +51,7 @@
                         </div>
                         <div class="level-item">
                             <div class="field has-addons">
-                                <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false">
+                                <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
                                     <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
                                         <span class="icon is-small">
                                             <i class="fa fa-download"></i>
@@ -59,7 +59,7 @@
                                         <span>Download csv</span>
                                     </button>
                                 </p>
-                                <p class="control" iaBalloon="Restrict your query to specific fields">
+                                <p class="control" iaBalloon="Restrict your query to specific fields" iaBalloonLength="medium">
                                     <ia-select-field [availableFields]="availableQueryFields" [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
                                         (selectedFields)="selectCsvFieldsEvent($event)">
                                     </ia-select-field>
@@ -83,7 +83,7 @@
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
                             <div class="field has-addons">
-                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left">
+                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left" iaBalloonLength="fit">
                                     <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
                                 </div>
                                 <p class="control">
