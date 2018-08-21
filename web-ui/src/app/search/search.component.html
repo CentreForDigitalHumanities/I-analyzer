@@ -75,7 +75,7 @@
 <section class="section search-results">
     <div class="container is-readable">
         <!-- filters and search results -->
-        <div class="columns">
+        <div class="columns is-multiline">
             <!-- Filters, on left -->
             <div class="column is-3">
                 <div *ngIf="corpus && showFilters">
@@ -101,15 +101,38 @@
                 </div>
             </div>
             <!-- search results, on right -->
-            <div class="column is-9" *ngIf="results">
-                <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
-                    (view)="onViewDocument($event)">
-                    <div class="field">
-                        <label class="label">Sort By</label>
-                    </div>
-                    <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
-                </ia-search-results>
+            <div class="tabs is-boxed column is-9">
+                    <ul>
+                      <li class="is-active">
+                        <a>
+                          <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
+                          <span>Search results</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a>
+                          <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                          <span>Visualizations</span>
+                        </a>
+                      </li>
+                    </ul>
+
+                    
+                    <div class="column is-12" *ngIf="results">
+                            <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                                (view)="onViewDocument($event)">
+                                <div class="field">
+                                    <label class="label">Sort By</label>
+                                </div>
+                                <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                            </ia-search-results>
+                        </div>
             </div>
+                    
+                  
+               
+
+            
         </div>
     </div>
 </section>
