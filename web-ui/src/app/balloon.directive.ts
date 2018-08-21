@@ -13,6 +13,9 @@ export class BalloonDirective implements OnChanges {
     @Input("iaBalloonPosition")
     public position: "up" | "left" | "right" | "down" | "up-left" | "up-right" | "down-left" | "down-right" = "down";
 
+    @Input("iaBalloonLength")
+    public length: "small" | "medium" | "large" | "fit";
+
     /**
      * Show or hide the balloon, or show it on hover.
      */
@@ -26,7 +29,7 @@ export class BalloonDirective implements OnChanges {
         let element: HTMLElement = this.el.nativeElement;
         element.setAttribute('data-balloon', this.text);
         element.setAttribute('data-balloon-pos', this.position);
-        element.setAttribute('data-balloon-length', 'fit');
+        element.setAttribute('data-balloon-length', this.length);
         if (this.visible) {
             element.setAttribute('data-balloon-visible', '');
             return;
