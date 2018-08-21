@@ -26,8 +26,8 @@
                                     <div class="control">
                                         <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text" placeholder="Query" />
                                     </div>
-                                    <div class="control">
-                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched}">
+                                    <div class="control" iaBalloon="Perform a search to apply the changed filters" [iaBalloonVisible]="hasSearched && hasModifiedFilters" iaBalloonLength="medium">
+                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
                                             <span class="icon is-small">
                                                 <i class="fa fa-search"></i>
                                             </span>
