@@ -253,7 +253,7 @@ class Times(XMLCorpus):
               ),
         Field(
             name='page-type',
-            display_name='Page type',
+            display_name='Page Type',
             description='Supplement in which article occurs.',
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
@@ -321,12 +321,12 @@ class Times(XMLCorpus):
             display_name='OCR confidence',
             description='OCR confidence level.',
             es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the OCR confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
+            # search_filter=filters.RangeFilter(0, 100,
+            #                                   description=(
+            #                                       'Accept only articles for which the Opitical Character Recognition confidence '
+            #                                       'indicator is in this range.'
+            #                                   )
+            #                                   ),
             extractor=extract.XML(tag='ocr', transform=float),
             sortable=True
         ),
