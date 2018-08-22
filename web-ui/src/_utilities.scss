@@ -1,18 +1,20 @@
-@import "~balloon-css";
+//
+//
+// This partial defines all the shared variables and mixins which can
+// be re-used throughout the application. *Do not include actual
+// selectors*, those should be either in the component's stylesheet
+// or in the global styles.scss!
+//
+//
 
-[data-balloon]:after {
-    border-radius: 0;
-}
-
-$primary: #303F9F; 
-$contrast-primary-color: #3F51B5; 
+$primary: #303F9F;
+$contrast-primary-color: #3F51B5;
 $text-primary-color: #FFFFFF;
 $highlight-color: #D6D6D6;
 
 $borderWidth: 1px;
 
 $disabledOpacity: 0.35;
-
 
 $spacing: 1rem;
 
@@ -23,7 +25,6 @@ $stateHighlightTextColor: #000000;
 
 //Section padding
 $section-padding:	3rem 1.5rem;
-
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
@@ -61,8 +62,4 @@ $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
     to {
         transform: rotate(359deg);
     }
-}
-
-.container.is-readable {
-    max-width: 1024px !important;
 }
