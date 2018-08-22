@@ -41,14 +41,14 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="level-item">
+                        <!-- <div class="level-item">
                             <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
                                 <span class="icon is-small">
                                     <i class="fa fa-bar-chart"></i>
                                 </span>
                                 <span>Visualize</span>
                             </button>
-                        </div>
+                        </div> -->
                         <div class="level-item">
                             <div class="field has-addons">
                                 <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
@@ -116,7 +116,7 @@
                     </a>
                     </li>
                 </ul>
-                <div class="column">
+                <!-- <div class="column">
                     <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
                         (view)="onViewDocument($event)">
                         <div class="field">
@@ -124,6 +124,9 @@
                         </div>
                         <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
                     </ia-search-results>
+                </div> -->
+                <div class="column">
+                <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
                 </div>
             </div>            
         </div>
