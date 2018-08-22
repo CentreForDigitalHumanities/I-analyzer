@@ -2,7 +2,7 @@
 
 .hits {
     &.is-loading {
-        @extend %content-loader;
+        @include loader;
 
         &:after {
             // normally the spinner is placed in the middle, but this component is generally

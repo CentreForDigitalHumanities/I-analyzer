@@ -7,6 +7,8 @@
 //
 //
 
+@import "~bulma/sass/utilities/_all";
+
 $primary: #303F9F;
 $contrast-primary-color: #3F51B5;
 $text-primary-color: #FFFFFF;
@@ -28,38 +30,3 @@ $section-padding:	3rem 1.5rem;
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
-
-// based on the Bulma loader
-%content-loader {
-    min-height: 10em;
-    opacity: 0.5;
-    pointer-events: none;
-    position: relative;
-
-    &:after {
-        animation: spinAround 500ms infinite linear;
-        border-color: transparent transparent $primary $primary !important;
-        border-radius: 290486px;
-        border-right-color: transparent;
-        border-style: solid;
-        border-top-color: transparent;
-        border-width: 0.25em;
-        content: "";
-        display: block;
-        height: 5em;
-        left: calc(50% - 2.5em);
-        top: calc(50% - 2.5em);
-        width: 5em;
-        position: absolute;
-    }
-}
-
-@keyframes spinAround {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(359deg);
-    }
-}
