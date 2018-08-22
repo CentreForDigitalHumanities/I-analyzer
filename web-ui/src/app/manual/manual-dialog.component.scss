@@ -1,4 +1,4 @@
-@import "../../shared";
+@import "../../_utilities";
 
 .content {
     ::ng-deep a {
@@ -8,6 +8,6 @@
     max-height: 80vh;
 
     &.is-loading {
-        @extend %content-loader;
+        @include loader;
     }
 }

@@ -1,3 +1,12 @@
-@import "shared";
+@import "_utilities";
 @import "~bulma/bulma.sass";
-@import "primeng";
+@import "_primeng";
+@import "~balloon-css";
+
+[data-balloon]:after {
+    border-radius: 0;
+}
+
+.container.is-readable {
+    max-width: 1024px !important;
+}

@@ -1,17 +1,17 @@
- @import "../../shared";
+ @import "../../_utilities";
 
 .navbar {
     background-color: $primary;
   }
 
 
-.navbar-item{ 
+.navbar-item{
     color: $text-primary-color;
     &:hover{
         background-color: $contrast-primary-color;
         color: $text-primary-color;
     }
-    
+
     &.is-active, .has-dropdown.is-active{
         background-color: $contrast-primary-color;
         color: $text-primary-color;
@@ -57,7 +57,7 @@
     color: $text-primary-color;
 }
 
-// Makes the user dropdown in the same theme as the rest of the application. This only affects the dropdown and not the other widget contents like visualizations. 
+// Makes the user dropdown in the same theme as the rest of the application. This only affects the dropdown and not the other widget contents like visualizations.
 
 ::ng-deep .menu-dropdown {
     &.ui-widget-content {

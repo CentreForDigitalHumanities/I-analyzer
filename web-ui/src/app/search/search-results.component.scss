@@ -1,9 +1,8 @@
-@import "~bulma/bulma.sass";
-@import "../../shared";
+@import "../../_utilities";
 
 .hits {
     &.is-loading {
-        @extend %content-loader;
+        @include loader;
 
         &:after {
             // normally the spinner is placed in the middle, but this component is generally
