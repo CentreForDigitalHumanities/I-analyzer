@@ -2,7 +2,6 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation }
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
-import * as moment from 'moment';
 
 import { BarChartComponent } from './barchart.component';
 
@@ -23,7 +22,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;
-    //private xDomain: [Date, Date];
     private zoom: any;
     private view: any;
 
@@ -49,7 +47,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.rescaleY();
-                this.drawChartData(this.selectedData);
+                this.calculateY(this.selectedData);
+                this.drawChartData();
                 this.setupBrushBehaviour();
             }
 
@@ -73,8 +72,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
         let ticks = this.xScale.ticks(10);
         let date = ticks[0];
-
-        console.log(d3.timeMinute(date), date, d3.timeMinute(date) < date);
 
         let [min, max] = this.xScale.domain();
 
@@ -111,32 +108,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         return outData;
     }
 
-    formatDate(date_string) {
-        let date = new Date(date_string);
-        return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
-    }
-
-    /*parseXaxis(d) {
-    var el = d3.select(this);
-    var dtFormat = d3.timeFormat('%Y %m %d');
-    console.log(dtFormat(d))
-    var words = dtFormat(d).split(' ');
-    console.log(words);
-    el.text('');
-
-    if (words[1] == "00:00") {
-        el.append('tspan').text(words[0]);        
-    }
-    else {
-        el.append('tspan').text(words[1]);        
-    }    
-    };           */
-
-    drawChartData(inputData) {
+    calculateY(inputData) {
         /**
-        * bind data to chart, remove or update existing bars, add new bars
+        * calculate bins and y dimensions
         */
+
         this.bins = this.histogram(inputData);
         this.bins.forEach(d => {
             if (d.length != 0) {
@@ -147,15 +123,21 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             }
         });
 
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.yDomain = [0, this.yMax];
+        this.yScale.domain(this.yDomain);
+        this.yAxis.call(this.yAxisClass);
+    }
+
+    drawChartData() {
+        /**
+        * bind data to chart, remove or update existing bars, add new bars
+        */
         const update = this.chart.selectAll('.bar')
             .data(this.bins);
 
         // remove exiting bars
         update.exit().remove();
-
-        this.yDomain = [0, Number(d3.max(this.bins.map(d => d.doc_count)))];
-        this.yScale.domain(this.yDomain);
-        this.yAxis.call(this.yAxisClass);
 
         this.chart.selectAll('.bar').transition()
             .attr('x', d => this.xScale(d.x0))
@@ -197,8 +179,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 this.rescaleX();
                 this.histogram.thresholds(this.xScale.ticks(d3.timeYear));
                 this.currentTimeCategory = 'years';
-                this.drawChartData(this.selectedData);
-                this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+                this.calculateY(this.selectedData);
+                this.drawChartData();
                 this.rescaleY();
             }
 
@@ -220,9 +202,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         if (selection.length < 10 && this.currentTimeCategory != 'days') {
             // rearrange data to look at a smaller time category
             this.adjustTimeCategory();
-            this.drawChartData(this.selectedData.filter(
+            this.calculateY(this.selectedData.filter(
                 d => d.date >= xExtent[0] && d.date <= xExtent[1]));
-            this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+            this.drawChartData();
             this.rescaleY();
         }
         else {

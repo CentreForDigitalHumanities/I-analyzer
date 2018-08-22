@@ -75,6 +75,7 @@ export class BarChartComponent implements OnChanges {
         this.yDomain = [0, this.yMax];
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
+        this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
 
     prepareTermFrequency() {
@@ -90,13 +91,16 @@ export class BarChartComponent implements OnChanges {
         * - rescale y values & axis
         * - change axis label and ticks
         */
-        this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
+
         this.yDomain = this.asPercent ? [0, this.yMax/this.totalCount] : [0, this.yMax];
         this.yScale.domain(this.yDomain);
 
         let tickFormat = this.asPercent ? d3.format(".0%") : d3.format("d");
         this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
         this.yAxis.call(this.yAxisClass);
+
+        // setting yScale back to counts so drawing bars makes sense
+        this.yScale.domain([0, this.yMax]);
 
         let yLabelText = this.asPercent ? "Percent" : "Frequency";
         this.yAxisLabel.text(yLabelText);
