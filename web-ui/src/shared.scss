@@ -6,9 +6,8 @@
 
 $primary: #303F9F; 
 $contrast-primary-color: #3F51B5; 
-$light-primary-color: #C5CAE9; 
 $text-primary-color: #FFFFFF;
-$accent-color: #9E9E9E;
+$highlight-color: #D6D6D6;
 
 $borderWidth: 1px;
 
@@ -18,9 +17,9 @@ $disabledOpacity: 0.35;
 $spacing: 1rem;
 
 //Highlight State
-$stateHighlightBorderColor: $primary;
-$stateHighlightBgColor: $primary;
-$stateHighlightTextColor: $text-primary-color;
+$stateHighlightBorderColor: $highlight-color;
+$stateHighlightBgColor: $highlight-color;
+$stateHighlightTextColor: #000000;
 
 //Section padding
 $section-padding:	3rem 1.5rem;
