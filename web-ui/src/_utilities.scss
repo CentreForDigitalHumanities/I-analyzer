@@ -7,8 +7,6 @@
 //
 //
 
-@import "~bulma/sass/utilities/_all";
-
 $primary: #303F9F;
 $contrast-primary-color: #3F51B5;
 $text-primary-color: #FFFFFF;
@@ -30,3 +28,5 @@ $section-padding:	3rem 1.5rem;
 
 $boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
 $boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
+
+@import "~bulma/sass/utilities/_all";
