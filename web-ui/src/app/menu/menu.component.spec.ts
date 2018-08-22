@@ -27,6 +27,8 @@ describe('MenuComponent', () => {
                     provide: UserService, useValue: new UserServiceMock()
                 },
                 CorpusService,
+                ApiRetryService,
+                LogService,
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
                         ['corpus']: MockCorpusResponse
@@ -34,8 +36,6 @@ describe('MenuComponent', () => {
                 },
                 LogService
             ]
-
-
         }).compileComponents();
     }));
 

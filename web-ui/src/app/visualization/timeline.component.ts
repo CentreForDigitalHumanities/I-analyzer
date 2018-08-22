@@ -21,7 +21,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     @Input() chartElement;
 
     public xScale: d3.ScaleTime<any, any>;
-    //private xDomain: [Date, Date];
     private zoom: any;
     private view: any;
 
@@ -60,6 +59,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             .range([0, this.width])
             .clamp(true);
 
+        let ticks = this.xScale.ticks(10);
+        let date = ticks[0];
+
         let [min, max] = this.xScale.domain();
 
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
@@ -73,6 +75,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
     rescaleX() {
         let t = this.svg.transition().duration(750);
+        //this.xAxis.selectAll('text').each(this.parseXaxis);
         this.xAxis.transition(t).call(this.xAxisClass);
     }
 
@@ -88,7 +91,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         });
         return outData;
     }
-
 
     drawChartData(inputData) {
         /**
