@@ -8,14 +8,13 @@
         </h2>
         <hr>
         <article>
-            <div class="columns is-multiline" >
+            <div class="columns is-multiline">
                 <div class="column is-4" *ngFor="let item of items">
                     <a role="link" [routerLink]="['/search', item.name]">
                         <div class="card">
                             <div class="card-image">
                                 <figure class="image is-4by3">
-                                    <img src="{{item.image}}"
-                                        alt="Placeholder image">
+                                    <img src="{{item.image}}" alt="{{item.title}}">
                                 </figure>
                             </div>
                             <div class="card-content">
@@ -29,7 +28,7 @@
                             </div>
                             <footer class="card-footer">
                                 <a class="card-footer-item">
-                                    <span>Examine</span>
+                                    <span>Explore</span>
                                 </a>
                             </footer>
                         </div>
