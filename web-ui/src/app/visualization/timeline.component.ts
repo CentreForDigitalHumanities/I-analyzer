@@ -54,7 +54,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.selectedData = this.formatTimeData();
 
         this.xDomain = d3.extent(this.selectedData, d => d.date);
-        console.log(this.xDomain);
         this.xScale = d3.scaleTime()
             .domain(this.xDomain)
             .range([0, this.width])

@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ButtonModule, MenuModule } from 'primeng/primeng';
 
-import { ConfigService, CorpusService, UserService, ApiService } from '../services/index';
+import { ConfigService, CorpusService, UserService, ApiService, ApiRetryService, LogService } from '../services/index';
 import { UserServiceMock } from '../services/user.service.mock';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { MenuComponent } from './menu.component';
@@ -27,6 +27,8 @@ describe('MenuComponent', () => {
                     provide: UserService, useValue: new UserServiceMock()
                 },
                 CorpusService,
+                ApiRetryService,
+                LogService,
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
                       ['corpus']: MockCorpusResponse
