@@ -18,6 +18,7 @@
             "testTsconfig": "tsconfig.spec.json",
             "prefix": "ia",
             "styles": [
+                "../node_modules/primeicons/primeicons.css",
                 "../node_modules/primeng/resources/primeng.css",
                 "styles.scss",
                 "../node_modules/font-awesome/css/font-awesome.min.css"

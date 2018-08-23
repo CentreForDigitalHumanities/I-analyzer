@@ -16,8 +16,9 @@ setup(
     license = "MIT",
     keywords = "newspaper times elasticsearch database index download csv",
     url = "",
-    packages=['ianalyzer', 'tests'],
-    long_description=read('README.md'),
+    # packages=['ianalyzer', 'tests'],
+    packages=['ianalyzer'],
+    # long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Text Processing :: Indexing",

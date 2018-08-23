@@ -4,7 +4,7 @@ import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 @Component({
-    selector: 'wordcloud',
+    selector: 'ia-wordcloud',
     templateUrl: './wordcloud.component.html',
     styleUrls: ['./wordcloud.component.scss'],
     encapsulation: ViewEncapsulation.None
@@ -13,11 +13,8 @@ import * as d3 from 'd3';
 export class WordcloudComponent implements OnChanges {
     @Input() public chartElement;
     @Input('significantText') public significantText: {
-        key: any,
-        doc_count: number,
-        //doc_count: number,
-        score?: number
-        //bg_count: number
+        key: string,
+        doc_count: number
     }
 
     private width: number = 600;
@@ -30,10 +27,10 @@ export class WordcloudComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         let significantText = changes.significantText.currentValue;
-        console.log(significantText);
         if (significantText==undefined) {
             return undefined;
         }
+        console.log(significantText);
 
         d3.selectAll('svg').remove();
 

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
+import * as _ from "lodash";
 
 import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
@@ -20,7 +21,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    public selectedFields: string[] = [];
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -85,8 +85,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         message: string
     };
 
-    private selectedAll: boolean = true;
-
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService,
@@ -116,14 +114,15 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
-                if (this.corpus.fields.filter(field => field.termFrequency).length > 0) {
+
+                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
-            });
+        });
     }
 
     ngOnDestroy() {
@@ -139,6 +138,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public enableFilter(name: string) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = true;
         this.toggleFilterFields();
@@ -146,13 +146,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     // control whether a given filter is applied or not
     public toggleFilter(name:string, event) {
+        this.hasModifiedFilters = true;
         let field = this.queryField[name]
         field.useAsFilter = !field.useAsFilter;
     }
 
     // fields that are used as filters aren't searched in
     public toggleFilterFields() {
-        this.selectedQueryFields = this.selectedQueryFields.filter(f => !f.useAsFilter);
         // (De)selecting filters also yields different results.
         this.hasModifiedFilters = true;
     }
@@ -165,11 +165,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
         // Searching in different fields also yields different results.
         this.hasModifiedFilters = true;
-    }
-
-    // control whether the filters are hidden
-    public toggleFilters() {
-        this.showFilters = !this.showFilters;
     }
 
     public changeSorting(event: SortEvent) {
@@ -218,7 +213,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        this.hasModifiedFilters = true;
         this.queryField[name].data = data;
         this.changeDetectorRef.detectChanges();
     }
@@ -226,17 +220,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public onViewDocument(document: FoundDocument) {
         this.showDocument = true;
         this.viewDocument = document;
-    }
-
-    public selectAllCsvFields() {
-        for (let field of this.corpus.fields) {
-            this.queryField[field.name].visible = this.selectedAll;
-        }
-    }
-
-    public checkIfAllSelected() {
-        let fields = Object.values(this.queryField).filter(field => !field.hidden);
-        this.selectedAll = fields.every(field => field.visible);
     }
 
     public showQueryDocumentation() {
@@ -276,7 +259,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private getCsvFields(): CorpusField[] {
-        return Object.values(this.queryField).filter(field => !field.hidden && field.visible);
+        return Object.values(this.queryField).filter(field => !field.hidden && field.downloadInCsv);
     }
 
     private getQueryFields(): string[] | null {
@@ -306,7 +289,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
-            if (!this.queryField || !this.corpus || corpus.name != this.corpus.name) {
+            if (!this.queryField) {
                 this.queryField = {};
                 this.selectedQueryFields = [];
             }
@@ -333,24 +316,34 @@ export class SearchComponent implements OnInit, OnDestroy {
                     this.showFilters = true;
                 }
                 fieldsSet = true;
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] == "") filterSettings = [];
                 this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, params.get(param)),
+                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
                     useAsFilter: true,
-                    visible: true
+                    downloadInCsv: true
                 }, field);
             } else {
-                let auxField = this.queryField[field.name] = Object.assign({
+                // this field is not found in the route
+                let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
-                    visible: true
+                    downloadInCsv: true
                 }, field);
+                // in case there have been some settings before (i.e., from a deactivated filter), retain them
+                if (this.queryField[field.name]) {
+                    this.queryField[field.name].useAsFilter = false;
+                }
+                else {
+                    this.queryField[field.name] = auxField;
+                }
                 if (queryRestriction.includes(field.name)) {
                     this.selectedQueryFields.push(auxField);
                 }
             }
         }
 
-        this.availableQueryFields = Object.values(this.queryField);
+        this.availableQueryFields = Object.values(this.queryField).filter(field => !field.hidden);
         return fieldsSet;
     }
 
@@ -363,11 +356,25 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.sortField = undefined;
         }
     }
+
+    private selectSearchFieldsEvent(selection: QueryField[]) {
+        this.selectedQueryFields = selection;
+        this.hasModifiedFilters = true;
+    }
+
+    private selectCsvFieldsEvent(selection: QueryField[]) {
+        let fields = selection.map( field => field.name );
+        // set first that no fields are downloaded, then set only the selected ones to download
+        Object.values(this.queryField).forEach( field => field.downloadInCsv = false );
+        Object.values(this.queryField).filter(
+            field => _.indexOf(fields, field.name) != -1 ).forEach(
+            field => field.downloadInCsv = true );
+    }
 }
 
 type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean, 
-    visible: boolean
+    useAsFilter: boolean,
+    downloadInCsv: boolean
 };

@@ -71,7 +71,6 @@ export class SearchService {
         } else {
             delete route['sort'];
         }
-
         return route;
     }
 
@@ -92,7 +91,7 @@ export class SearchService {
 
         return <SearchResults>{
             completed: results.completed,
-            fields: corpus.fields.filter(field => field.prominentField),
+            fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
             documents: results.documents,
             queryModel: queryModel,
@@ -115,10 +114,6 @@ export class SearchService {
 
     public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
-    }
-
-    public async searchForWordcloud(corpus: Corpus, documentIds: string[], fields: string[]): Promise<any> {
-        return this.elasticSearchService.termVectors(corpus, documentIds, fields);
     }
 
     /**

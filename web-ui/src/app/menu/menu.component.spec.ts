@@ -4,9 +4,11 @@ import { RouterModule, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ButtonModule, MenuModule } from 'primeng/primeng';
 
-import { ConfigService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, LogService, UserService, } from '../services/index';
 import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../services/api.service.mock';
 import { MenuComponent } from './menu.component';
+import { MockCorpusResponse } from '../../mock-data/corpus';
 
 describe('MenuComponent', () => {
     let component: MenuComponent;
@@ -16,12 +18,23 @@ describe('MenuComponent', () => {
         TestBed.configureTestingModule({
             declarations: [MenuComponent],
             imports: [RouterModule, ButtonModule, MenuModule],
+
             providers: [
+                ApiRetryService,
                 { provide: Router, useValue: { events: Observable.of({}) } },
                 { provide: ConfigService, useValue: {} },
                 {
                     provide: UserService, useValue: new UserServiceMock()
-                }
+                },
+                CorpusService,
+                ApiRetryService,
+                LogService,
+                {
+                    provide: ApiService, useValue: new ApiServiceMock({
+                        ['corpus']: MockCorpusResponse
+                    })
+                },
+                LogService
             ]
         }).compileComponents();
     }));

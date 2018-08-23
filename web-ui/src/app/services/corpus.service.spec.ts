@@ -86,8 +86,9 @@ describe('CorpusService', () => {
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
-                    "prominent_field": false,
-                    "term_frequency": true,
+                    "results_overview": false,
+                    "preselected": false,
+                    "visualization_type": "term_frequency",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -101,15 +102,18 @@ describe('CorpusService', () => {
                     "sortable": true,
                     "indexed": true,
                     "name": "year",
-                    "prominent_field": true,
+                    "results_overview": true,
+                    "preselected": true,
                     "term_frequency": false,
+                    "visualization_type": "term_frequency",
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
                         "name": "RangeFilter",
                         "upper": 2010
                     }
-                }]
+                }],
+                'image': 'url'
             },
         };
 
@@ -121,8 +125,9 @@ describe('CorpusService', () => {
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
-                prominentField: false,
-                termFrequency: true,
+                resultsOverview: false,
+                preselected: false,
+                visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -135,8 +140,9 @@ describe('CorpusService', () => {
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
-                prominentField: true,
-                termFrequency: false,
+                resultsOverview: true,
+                preselected: true,
+                visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",
@@ -153,7 +159,8 @@ describe('CorpusService', () => {
                 'times',
                 allFields,
                 new Date(1785, 0, 1, 0, 0),
-                new Date(2010, 11, 31, 0, 0))
+                new Date(2010, 11, 31, 0, 0),
+                'url')
             ]);
         });
     });

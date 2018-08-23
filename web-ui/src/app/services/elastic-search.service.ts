@@ -75,57 +75,13 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    private makeAggregation(aggregator: string) {
-        let aggregation: any;
-        switch(aggregator) {
-            case "date": {
-                aggregation = {
-                    date_histogram: {
-                        field: aggregator,
-                        interval: "year",
-                        format: "yyyy"
-                    }
-                }
-                break;
-            }
-            case "wordcloud": {
-                aggregation = {
-                        sampler : {
-                            shard_size : 100
-                        },
-                        aggs: {
-                            keywords : {
-                                significant_text : { field : "content" }
-                            }
-                        }
-                    }
-                break;
-            }
-            default: {
-                aggregation = {
-                    terms: {
-                        field: aggregator
-                    }
-                }
-                break;
+    makeAggregation(aggregator: string) {
+        let aggregation = {
+            terms: {
+                field: aggregator
             }
         }
         return aggregation;
-    }
-
-    private makeTermVectorQuery(ids: string[], fields: string[], max_num_terms, min_term_freq, max_doc_freq, min_word_length) {
-        return {
-            ids: ids,
-            parameters: {
-                fields: fields,
-                filter: {
-                    "max_num_terms": max_num_terms,
-                    "min_term_freq" : min_term_freq,
-                    "max_doc_freq" : max_doc_freq,
-                    "min_word_length": min_word_length
-                }
-            }
-        }
     }
 
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
@@ -134,14 +90,6 @@ export class ElasticSearchService {
             type: index.doctype,
             size: 0,
             body: aggregationModel
-        }));
-    }
-
-    private executeTermVectorQuery(index: ElasticSearchIndex, termVectorQuery) {
-        return this.connections.then((connections) => connections[index.serverName].client.mtermvectors({
-            index: index.index,
-            type: index.doctype,
-            body: termVectorQuery
         }));
     }
 
@@ -232,21 +180,6 @@ export class ElasticSearchService {
         return this.parseResponse(response, queryModel, 0);
     }
 
-    public async termVectors(corpusDefinition: ElasticSearchIndex, documentIds: string[], fields: string[]): Promise<any> {
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let tvQuery = this.makeTermVectorQuery(documentIds, fields, 8, 2, 100, 4);
-        let response = await this.executeTermVectorQuery(corpusDefinition, tvQuery);
-        let tvs = _.assignWith( ...response.docs.map( d => d.term_vectors.content.terms ), this.mergeTermVectors);
-        return tvs;
-    }
-
-    private mergeTermVectors(objValue, srcValue) {
-        if (objValue) {
-            objValue.term_freq += srcValue.term_freq;
-            return objValue;
-        }
-    }
-
     /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
@@ -276,7 +209,7 @@ export class ElasticSearchService {
      */
     private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
         let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
-        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
+        let retrieved = alreadyRetrieved + (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
             documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),

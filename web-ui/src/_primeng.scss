@@ -1,7 +1,12 @@
+//
+// This partial defines a primeng theme using the same variables as used
+// to theme Bulma.
+//
+@import "_utilities";
+
 $fontFamily: $family-primary;
 $fontSize: $size-normal;
 $borderRadius: $radius;
-// Define a primeng theme using the same variables as Bulma
 //Header
 $headerBorderWidth: $borderWidth;
 $headerBorderColor: $primary;
@@ -38,8 +43,8 @@ $stateErrorBgColor: $danger;
 $stateErrorTextColor: $danger-invert;
 
 //Hover State
-$stateHoverBorderColor: $primary;
-$stateHoverBgColor: $primary;
+$stateHoverBorderColor: $contrast-primary-color;
+$stateHoverBgColor: $contrast-primary-color;
 $stateHoverTextColor: $primary-invert;
 
 //Forms
@@ -54,9 +59,9 @@ $inputGroupTextColor: $text;
     @extend .button;
 
     &:hover {
-        background: $primary;
-        border-color: $primary;
-        color: $primary-invert;
+        background: $contrast-primary-color;
+        border-color: $contrast-primary-color;
+        color: $contrast-primary-color;
     }
 }
 
@@ -70,7 +75,9 @@ $inputGroupTextColor: $text;
     margin-bottom: 5px;
 
     &:hover {
-        @extend .is-primary;
+        background: $contrast-primary-color;
+        border-color: $contrast-primary-color;
+        color: $contrast-primary-color;
     }
 }
 
@@ -88,4 +95,12 @@ $inputGroupTextColor: $text;
 
 .highlight {
     background: $stateHighlightBgColor;
+    color: $stateHighlightTextColor;
+}
+
+.ui-widget-header {
+    border: 1px solid $primary;
+    background-color:  $contrast-primary-color;
+    color: $text-primary-color;
+    font-weight: bold;
 }
