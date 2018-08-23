@@ -149,7 +149,7 @@
 <!-- bring up visualization when the button has been clicked -->
 <p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150" width="800">
     <p-header>Select a data column for visualization</p-header>
-    <visualization [queryModel]="queryModel" [corpus]="corpus" [ids]="ids"></visualization>
+    <visualization [queryModel]="queryModel" [corpus]="corpus" [contents]="contents"></visualization>
 </p-dialog>
 <!-- inform the user about a failed search -->
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">

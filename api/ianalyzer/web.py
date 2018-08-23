@@ -20,6 +20,7 @@ from . import views
 from . import security
 from . import streaming
 from . import corpora
+from . import analyze
 
 
 blueprint = Blueprint('blueprint', __name__)
@@ -263,3 +264,11 @@ def api_search_history():
             'transferred': query.transferred
         } for query in user.queries]
     })
+
+@blueprint.route('/api/get_wordcloud_data', methods=['POST'])
+@login_required
+def api_get_wordcloud_data():
+    if not request.json:
+        abort(400)
+    word_counts = analyze.make_wordcloud_data(request.json['content_list'])
+    return jsonify({'data': word_counts})

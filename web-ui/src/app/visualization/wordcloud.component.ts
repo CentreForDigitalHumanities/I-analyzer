@@ -14,7 +14,7 @@ export class WordcloudComponent implements OnChanges {
     @Input() public chartElement;
     @Input('significantText') public significantText: {
         key: any,
-        term_freq: number,
+        doc_count: number,
         //doc_count: number,
         score?: number
         //bg_count: number
@@ -30,6 +30,7 @@ export class WordcloudComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         let significantText = changes.significantText.currentValue;
+        console.log(significantText);
         if (significantText==undefined) {
             return undefined;
         }
@@ -53,7 +54,7 @@ export class WordcloudComponent implements OnChanges {
           .padding(5)
           .rotate(function() { return ~~(Math.random() * 2) * 90; })
           .font("Impact")
-          .fontSize(function(d) { return d.doc_count * 5; })
+          .fontSize(function(d) { return d.doc_count * 20; })
           .on("end", function(words) {
                 // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
             chart

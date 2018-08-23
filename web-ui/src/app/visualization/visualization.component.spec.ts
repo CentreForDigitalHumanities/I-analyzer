@@ -6,7 +6,8 @@ import { SharedModule } from 'primeng/primeng';
 import { BarChartComponent } from './barchart.component';
 import { WordcloudComponent } from './wordcloud.component';
 import { VisualizationComponent } from './visualization.component';
-import { SearchService } from '../services/index';
+import { ApiService, SearchService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
 import { AggregateResults, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
@@ -17,10 +18,12 @@ describe('VisualizationComponent', () => {
         TestBed.configureTestingModule({
             imports: [FormsModule, SharedModule],
             declarations: [BarChartComponent, WordcloudComponent, VisualizationComponent],
-            providers: [{
-                provide: SearchService,
-                useValue: new MockSearchService()
-            }]
+            providers: [
+                {
+                    provide: SearchService,
+                    useValue: new MockSearchService()
+                }, 
+                { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
 

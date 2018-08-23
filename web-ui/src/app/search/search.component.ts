@@ -69,7 +69,7 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public searchQueryText: string;
     public results: SearchResults;
-    public ids: string[];
+    public contents: string[];
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
@@ -259,7 +259,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.ids = results.documents.map( d => d.id );
+            console.log(results);
+            this.contents = results.documents.map( d => d.fieldValues['content'] );
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
