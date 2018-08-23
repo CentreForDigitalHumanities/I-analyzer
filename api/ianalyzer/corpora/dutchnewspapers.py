@@ -29,6 +29,7 @@ class DutchNewspapers(XMLCorpus):
     es_index = config.DUTCHNEWSPAPERS_ES_INDEX
     es_doctype = config.DUTCHNEWSPAPERS_ES_DOCTYPE
     es_settings = None
+    image = config.DUTCHNEWSPAPERS_IMAGE
 
     xml_tag_toplevel = 'text'
     xml_tag_entry = 'p'

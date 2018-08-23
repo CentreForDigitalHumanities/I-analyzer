@@ -30,6 +30,7 @@ class Times(XMLCorpus):
     es_index = config.TIMES_ES_INDEX
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
+    image = config.TIMES_IMAGE
 
     xml_tag_toplevel = 'issue'
     xml_tag_entry = 'article'

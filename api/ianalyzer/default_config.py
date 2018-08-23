@@ -53,6 +53,7 @@ TIMES_ES_DOCTYPE='article'
 TIMES_DATA='/mnt/times'
 TIMES_MIN_DATE=datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE=datetime(year=2010, month=12, day=31)
+TIMES_IMAGE='/static/images/times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Description about this corpus"
@@ -61,6 +62,7 @@ DUTCHBANK_ES_DOCTYPE='article'
 DUTCHBANK_DATA='/mnt/dutchbank'
 DUTCHBANK_MIN_DATE=datetime(year=1785, month=1, day=1)
 DUTCHBANK_MAX_DATE=datetime(year=2010, month=12, day=31)
+DUTCHBANK_IMAGE='/static/images/dutchbanking.jpg'
 DUTCHBANK_MAP = {
     'AA':       'ABN AMRO',
     'AB':       'Amsterdamsche Bank',
@@ -99,3 +101,6 @@ DUTCHBANK_MAP = {
     'TB':       'Twentsche Bank',
     'TRIODOS':  'Triodos Bank',
 }
+
+DUTCHNEWSPAPERS_IMAGE='/static/images/dutchnewspapers.jpg'
+JEWISH_INSCRIPTIONS_IMAGE='/static/images/jewish_inscriptions.jpg'
