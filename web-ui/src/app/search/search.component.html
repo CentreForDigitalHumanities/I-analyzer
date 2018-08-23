@@ -102,32 +102,24 @@
             </div>
             <!-- search results, on right -->
             <div class="tabs is-boxed column is-9" *ngIf="results">
-                <ul>
-                    <li class="is-active">
-                    <a>
-                        <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
-                        <span>Search results</span>
-                    </a>
-                    </li>
-                    <li>
-                    <a>
-                        <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
-                        <span>Visualizations</span>
-                    </a>
-                    </li>
-                </ul>
-                <!-- <div class="column">
-                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
-                        (view)="onViewDocument($event)">
-                        <div class="field">
-                            <label class="label">Sort By</label>
-                        </div>
-                        <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
-                    </ia-search-results>
-                </div> -->
-                <div class="column">
-                <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
-                </div>
+                    <p-tabView styleClass="is-content">
+                            <p-tabPanel header="Search Results" leftIcon="fa fa-list">
+                                    <div class="column">
+                                            <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                                                (view)="onViewDocument($event)">
+                                                <div class="field">
+                                                    <label class="label">Sort By</label>
+                                                </div>
+                                                <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                                            </ia-search-results>
+                                        </div>
+                            </p-tabPanel>
+                            <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
+                                    <div class="column">
+                                            <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
+                                        </div>
+                            </p-tabPanel>
+                        </p-tabView>
             </div>            
         </div>
     </div>

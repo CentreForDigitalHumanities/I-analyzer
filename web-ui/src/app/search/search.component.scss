@@ -80,3 +80,48 @@
 .tabs {
     white-space: normal;
 }
+
+::ng-deep .ui-tabview-panels{
+
+    &.ui-widget-content {
+    background-color: #FFFFFF !important;
+    }
+
+}
+
+::ng-deep .ui-tabview.ui-widget.ui-widget-content.ui-corner-all.ui-tabview-top {
+    background-color: #FFFFFF;
+    border: 0px;
+}
+
+::ng-deep .ui-tabview-nav.ui-helper-reset.ui-helper-clearfix.ui-widget-header.ui-corner-all.ng-star-inserted {
+    padding: 0em 0em 0;
+    border: 0px solid #303F9F;
+    background-color: #FFFFFF;
+    border-bottom-color: #dbdbdb;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+
+::ng-deep .ui-state-default a {
+    color: #FFFFFF;
+    background-color: #303F9F;
+}
+
+::ng-deep .ui-state-active a {
+    color: #303F9F;
+    background-color: #FFFFFF;
+}
+
+// ::ng-deep .ui-state-active a {
+//     color: #303F9F;
+//     background-color: #FFFFFF;
+// }
+
+::ng-deep .tabs a:hover {
+    background-color: #FFFFFF !important;
+    border-bottom-color: #FFFFFF !important;
+    color: #303F9F;
+    
+}
