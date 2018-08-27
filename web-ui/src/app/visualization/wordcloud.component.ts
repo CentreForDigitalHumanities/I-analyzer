@@ -30,7 +30,6 @@ export class WordcloudComponent implements OnChanges {
         if (significantText==undefined) {
             return undefined;
         }
-        console.log(significantText);
 
         d3.selectAll('svg').remove();
 
@@ -64,7 +63,7 @@ export class WordcloudComponent implements OnChanges {
                 .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
-                .text(function(d) { return d.key; });
+                .text(d => d.key);
           });   
 
         layout.start();
