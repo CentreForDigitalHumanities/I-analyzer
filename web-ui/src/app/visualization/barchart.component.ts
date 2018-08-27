@@ -17,7 +17,6 @@ export class BarChartComponent implements OnChanges {
         doc_count: number,
         key_as_string?: string
     }[];
-
     @Input() visualizedField;
     @Input() chartElement;
     @Input() asPercent;
@@ -36,46 +35,22 @@ export class BarChartComponent implements OnChanges {
     public xAxisClass: any;
     public yAxisClass: any;
     public yMax: number;
-    public totalCount: number;
+    private totalCount: number;
     public xDomain: Array<any>;
     public yDomain: Array<number>;
     public yAxisLabel: any;
 
     private xBarWidth: number;
 
-    /*ngOnChanges(changes: SimpleChanges) {
-        if (this.searchData && this.visualizedField) {
-            
-            //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
-                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.calculateDomains();
-                    this.rescaleY();
-                }
-            }
-
-            else {
-                this.calculateCanvas();
-                this.prepareTermFrequency();
-                this.calculateDomains();
-                this.createChart(true);
-                this.drawChartData(this.searchData);
-                this.rescaleY();
-            }
-
-            
-        }
-    }  */
-
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
             this.calculateCanvas();
             this.prepareTermFrequency();
+            this.calculateDomains();
 
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.drawChartData(this.searchData);
-                this.calculateDomains();
                 this.rescaleY();
             }
 
@@ -98,7 +73,7 @@ export class BarChartComponent implements OnChanges {
          adjust the x and y ranges
          */
         this.yDomain = [0, this.yMax];
-        //this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
+        this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
@@ -121,7 +96,7 @@ export class BarChartComponent implements OnChanges {
         this.yScale.domain(this.yDomain);
 
         let tickFormat = this.asPercent ? d3.format(".0%") : d3.format("d");
-        this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat);
+        this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
         this.yAxis.call(this.yAxisClass);
 
         // setting yScale back to counts so drawing bars makes sense
@@ -145,6 +120,8 @@ export class BarChartComponent implements OnChanges {
             .attr('width', this.chartElement.offsetWidth)
             .attr('height', this.chartElement.offsetHeight);
 
+        this.svg.selectAll('g').remove();
+        this.svg.selectAll('text').remove();
         // chart plot area
         this.chart = this.svg.append('g')
             .attr('class', 'bars')
@@ -220,6 +197,7 @@ export class BarChartComponent implements OnChanges {
             .attr('y', d => this.yScale(d.doc_count))
             .attr('height', d => this.height - this.yScale(d.doc_count));
     }
+
 }
 
 

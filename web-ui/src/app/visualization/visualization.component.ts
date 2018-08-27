@@ -91,17 +91,18 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        console.log(visualizedField);
-        this.visualizedField = visualizedField;
         this.visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
         if (this.visualizationType == 'wordcloud') {
             this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
+            this.visualizedField = visualizedField;
             this.significantText = result['data'];
         });
         }
         else {
             this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
+                this.visualizedField = visualizedField;
                 this.aggResults = visual.aggregations;
+                console.log(this.aggResults);
             });
         };
     }
