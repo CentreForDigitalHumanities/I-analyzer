@@ -12,13 +12,13 @@
 		<i class="fa fa-bar-chart" aria-hidden="true"></i>
 	</button>
 </div>
-
-<form *ngIf="visualizationType!='timeline' || freqtable">
-	<label>
-		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
-		as Percentage</label>
-</form>
-
+<div class="checkbox">
+	<form *ngIf="visualizationType!='timeline' || freqtable">
+		<label>
+			<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
+			as Percentage</label>
+	</form>
+</div>
 <div class="d3-chart" #chart>
 	<ng-container [ngSwitch]="visualizationType">
 		<ng-container *ngIf="!freqtable">
