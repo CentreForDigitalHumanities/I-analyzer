@@ -98,7 +98,7 @@
     padding: 0em 0em 0;
     border: 0px solid $primary;
     background-color: #FFFFFF;
-    border-bottom-color: #dbdbdb;
+    border-bottom-color: $primary !important;
     border-bottom-style: solid;
     border-bottom-width: 1px;
 
