@@ -91,6 +91,7 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
+        console.log(visualizedField);
         this.visualizedField = visualizedField;
         this.visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
         if (this.visualizationType == 'wordcloud') {

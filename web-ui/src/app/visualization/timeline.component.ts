@@ -35,25 +35,47 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     private bins: any;
 
 
+    /*ngOnChanges(changes: SimpleChanges) {
+        if (this.searchData && this.visualizedField) {
+            //listen for changes in 'asPercent'
+            if (changes['asPercent'] != undefined) {
+                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+                    this.calculateDomains();
+                    this.rescaleY();
+                }
+            }
+
+            else {
+                this.calculateCanvas();
+                this.prepareTimeline();
+                this.calculateDomains();
+                this.createChart(true);
+                this.calculateY(this.selectedData);
+                this.rescaleY();
+                this.drawChartData();
+                this.setupBrushBehaviour();
+            }
+        }
+    }*/
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
             //do these calculations only if they haven't been done before
             if (!this.selectedData) {
                 this.calculateCanvas();
                 this.prepareTimeline();
-                this.calculateDomains();
+                this.calculateY(this.selectedData);
             }
 
-            if (changes['visualizedField'] != undefined) {
+            else if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.rescaleY();
-                this.calculateY(this.selectedData);
                 this.drawChartData();
+                this.calculateY(this.selectedData);
+                this.rescaleY();
                 this.setupBrushBehaviour();
             }
 
             //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
+            else if (changes['asPercent'] != undefined) {
                 if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
                     this.rescaleY();
                 }
@@ -125,8 +147,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
         this.yDomain = [0, this.yMax];
-        this.yScale.domain(this.yDomain);
+        this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
+        this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
         this.yAxis.call(this.yAxisClass);
+        this.totalCount = _.sumBy(this.bins, d => d.doc_count);
     }
 
     drawChartData() {

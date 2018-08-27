@@ -12,7 +12,7 @@ import * as d3 from 'd3';
 
 export class WordcloudComponent implements OnChanges {
     @Input() public chartElement;
-    @Input('significantText') public significantText: {
+    @Input('searchData') public significantText: {
         key: string,
         doc_count: number
     }
