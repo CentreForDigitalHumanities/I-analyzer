@@ -41,14 +41,6 @@
                                 </div>
                             </form>
                         </div>
-                        <!-- <div class="level-item">
-                            <button class="button is-primary" type="submit" (click)="visualize()" [disabled]="!results" *ngIf=showVisualizationButton>
-                                <span class="icon is-small">
-                                    <i class="fa fa-bar-chart"></i>
-                                </span>
-                                <span>Visualize</span>
-                            </button>
-                        </div> -->
                         <div class="level-item">
                             <div class="field has-addons">
                                 <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
@@ -101,25 +93,27 @@
                 </div>
             </div>
             <!-- search results, on right -->
-            <div class="tabs is-boxed column is-9" *ngIf="results">
-                    <p-tabView styleClass="is-content">
-                            <p-tabPanel header="Search Results" leftIcon="fa fa-list">
-                                    <div class="column">
-                                            <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
-                                                (view)="onViewDocument($event)">
-                                                <div class="field">
-                                                    <label class="label">Sort By</label>
-                                                </div>
-                                                <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
-                                            </ia-search-results>
+            <div class="is-boxed column is-9" *ngIf="results">
+                <p-tabView styleClass="is-content">
+                    <p-tabPanel header="Search Results" leftIcon="fa fa-list">
+                            <div class="column">
+                                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                                        (view)="onViewDocument($event)">
+                                        <div class="field">
+                                            <label class="label">Sort By</label>
                                         </div>
-                            </p-tabPanel>
-                            <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
-                                    <div class="column">
-                                            <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
-                                        </div>
-                            </p-tabPanel>
-                        </p-tabView>
+                                        <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                                    </ia-search-results>
+                                </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
+                            <ng-template pTemplate="content">
+                                <div class="column">
+                                    <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
+                                </div>
+                            </ng-template>
+                    </p-tabPanel>
+                </p-tabView>
             </div>            
         </div>
     </div>
