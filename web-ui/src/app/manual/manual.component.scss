@@ -1,5 +1,5 @@
 @import "../../_utilities";
 
 .content.is-loading {
-    @include loader;
+    @extend %content-loader;
 }
