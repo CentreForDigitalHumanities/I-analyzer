@@ -23,7 +23,6 @@ export class BarChartComponent implements OnChanges {
 
     //public visualizingDate: boolean = false;
     public yTicks: number = 10;
-    public xTickValues: string[];
     public margin = { top: 10, bottom: 120, left: 70, right: 10 };
     public svg: any;
     public chart: any;
@@ -35,7 +34,7 @@ export class BarChartComponent implements OnChanges {
     public yAxis: d3.Selection<any, any, any, any>;
     public xAxisClass: any;
     public yAxisClass: any;
-    private yMax: number;
+    public yMax: number;
     private totalCount: number;
     public xDomain: Array<any>;
     public yDomain: Array<number>;
@@ -52,14 +51,13 @@ export class BarChartComponent implements OnChanges {
             if (changes['visualizedField'] != undefined) {
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
                 this.drawChartData(this.searchData);
-                this.setScaleY();
+                this.rescaleY();
             }
 
             //listen for changes in 'asPercent'
             if (changes['asPercent'] != undefined) {
                 if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.drawChartData(this.searchData);
-                    this.setScaleY();
+                    this.rescaleY();
                 }
             }
         }
@@ -75,9 +73,9 @@ export class BarChartComponent implements OnChanges {
          adjust the x and y ranges
          */
         this.yDomain = [0, this.yMax];
-        this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
         this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
+        this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
 
     prepareTermFrequency() {
@@ -87,25 +85,22 @@ export class BarChartComponent implements OnChanges {
         this.yMax = d3.max(this.searchData.map(d => d.doc_count));
     }
 
-    setScaleY() {
+    rescaleY() {
         /**
         * if the user selects percentage / count display,
         * - rescale y values & axis
         * - change axis label and ticks
         */
-        this.yDomain = this.asPercent ? [0, 1] : [0, this.yMax];
+
+        this.yDomain = this.asPercent ? [0, this.yMax/this.totalCount] : [0, this.yMax];
         this.yScale.domain(this.yDomain);
-
-        let preScale = this.asPercent ? d3.scaleLinear().domain([0, this.totalCount]).range([0, 1]) : d3.scaleLinear();
-
-        this.chart.selectAll('.bar')
-            .transition()
-            .attr('y', d => this.yScale(preScale(d.doc_count)))
-            .attr('height', d => this.height - this.yScale(preScale(d.doc_count)));
 
         let tickFormat = this.asPercent ? d3.format(".0%") : d3.format("d");
         this.yAxisClass = d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat)
         this.yAxis.call(this.yAxisClass);
+
+        // setting yScale back to counts so drawing bars makes sense
+        this.yScale.domain([0, this.yMax]);
 
         let yLabelText = this.asPercent ? "Percent" : "Frequency";
         this.yAxisLabel.text(yLabelText);

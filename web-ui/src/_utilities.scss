@@ -1,0 +1,32 @@
+//
+//
+// This partial defines all the shared variables and mixins which can
+// be re-used throughout the application. *Do not include actual
+// selectors*, those should be either in the component's stylesheet
+// or in the global styles.scss!
+//
+//
+
+$primary: #303F9F;
+$contrast-primary-color: #3F51B5;
+$text-primary-color: #FFFFFF;
+$highlight-color: #D6D6D6;
+
+$borderWidth: 1px;
+
+$disabledOpacity: 0.35;
+
+$spacing: 1rem;
+
+//Highlight State
+$stateHighlightBorderColor: $highlight-color;
+$stateHighlightBgColor: $highlight-color;
+$stateHighlightTextColor: #000000;
+
+//Section padding
+$section-padding:	3rem 1.5rem;
+
+$boxShadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+$boxShadowHover: 0px 5px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px $primary;
+
+@import "~bulma/sass/utilities/_all";

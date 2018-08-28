@@ -58,7 +58,8 @@ export class CorpusService {
             data.es_index,
             allFields,
             this.parseDate(data.min_date),
-            this.parseDate(data.max_date));
+            this.parseDate(data.max_date),
+            data.image);
     }
 
     private parseField(data: any): CorpusField {
