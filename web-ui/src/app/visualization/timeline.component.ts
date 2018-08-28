@@ -5,13 +5,17 @@ import * as _ from "lodash";
 
 import { BarChartComponent } from './barchart.component';
 
+const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
+const hintHidingMinDelay = 500;       // milliseconds
+const hintHidingDebounceTime = 1000;  // milliseconds
+
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class TimelineComponent extends BarChartComponent implements OnChanges {
+export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
@@ -28,12 +32,16 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     private brush: any;
     idleTimeout: any;
     idleDelay: number;
+    showHint: boolean;
 
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
     private histogram: any;
     private bins: any;
 
+    ngOnInit() {
+        this.setupZoomHint();
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -241,6 +249,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 break;
             case 'days':
                 break;
+        }
+    }
+
+    /**
+     * Show the zooming hint once per session, hide automatically with a delay
+     * when the user moves the mouse.
+     */
+    setupZoomHint() {
+        if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
+            sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
+            this.showHint = true;
+            const hider = _.debounce(() => {
+                this.showHint = false;
+                document.body.removeEventListener('mousemove', hider);
+            }, hintHidingDebounceTime);
+            _.delay(() => {
+                document.body.addEventListener('mousemove', hider);
+            }, hintHidingMinDelay);
         }
     }
 
