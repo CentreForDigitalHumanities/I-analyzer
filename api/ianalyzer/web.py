@@ -47,7 +47,6 @@ def corpus_required(method):
     @functools.wraps(method)
     def f(corpus_name, *nargs, **kwargs):
         corpus_definition = corpora.corpus_obj
-        print(corpus_definition)
         if not corpus_definition:
             return abort(404)
         if not current_user.has_role(corpus_name):
@@ -268,7 +267,6 @@ def api_search_history():
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required
 def api_get_wordcloud_data():
-    print(request.json);
     if not request.json:
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
