@@ -79,7 +79,8 @@ export class ElasticSearchService {
         let aggregation = {
             terms: {
                 field: aggregator,
-                size: 1000
+                size: 1000,
+                min_doc_count: 5
             }
         }
         return aggregation;

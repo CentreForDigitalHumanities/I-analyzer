@@ -126,8 +126,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 d.doc_count = 0;
             }
         });
-
-        this.yMax = d3.max(this.bins.map(d => d.doc_count));
+        this.yMax = parseInt(d3.max(this.bins.map(d => d.doc_count)));
         this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
         this.yAxis.call(this.yAxisClass);
