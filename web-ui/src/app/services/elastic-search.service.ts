@@ -78,7 +78,8 @@ export class ElasticSearchService {
     makeAggregation(aggregator: string) {
         let aggregation = {
             terms: {
-                field: aggregator
+                field: aggregator,
+                size: 1000
             }
         }
         return aggregation;

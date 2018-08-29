@@ -10,7 +10,7 @@
 	</button>
 </div>
 
-<div class="checkbox" >
+<div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
 	<label>
 		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
 		as Percentage
