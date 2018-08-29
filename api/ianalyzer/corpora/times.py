@@ -422,7 +422,6 @@ class Times(XMLCorpus):
             name='category',
             visualization_type='term_frequency',
             display_name='Category',
-            term_frequency=True,
             description='Article subject categories.',
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
@@ -465,6 +464,7 @@ class Times(XMLCorpus):
                 'Tables and other illustrations associated with the article.'
             ),
             es_mapping={'type': 'keyword'},
+            visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
@@ -512,6 +512,7 @@ class Times(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            visualization_type='wordcloud',
             description='Raw OCR\'ed text (content).',
             results_overview=True,
             preselected=True,

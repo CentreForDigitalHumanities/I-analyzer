@@ -10,10 +10,11 @@
 	</button>
 </div>
 
-<div class="checkbox">
-		<label>
-			<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display as Percentage
-		</label>
+<div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
+	<label>
+		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
+		as Percentage
+	</label>
 </div>
 
 <div class="d3-chart" #chart>
@@ -24,6 +25,7 @@
 			</ia-barchart>
 			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
 			 [chartElement]="chartElement" [asPercent]="asPercentage"></ia-timeline>
+			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [chartElement]="chartElement"></ia-wordcloud>
 		</ng-container>
 	</ng-container>
 	<ng-container *ngIf="freqtable">

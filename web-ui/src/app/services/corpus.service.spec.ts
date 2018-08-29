@@ -113,7 +113,8 @@ describe('CorpusService', () => {
                         "name": "RangeFilter",
                         "upper": 2010
                     }
-                }]
+                }],
+                'image': 'url'
             },
         };
 

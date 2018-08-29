@@ -109,7 +109,7 @@
                     <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
                             <ng-template pTemplate="content">
                                 <div class="column">
-                                    <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
+                                    <visualization [queryModel]="queryModel" [corpus]="corpus" [contents]="contents"></visualization>
                                 </div>
                             </ng-template>
                     </p-tabPanel>
@@ -148,12 +148,6 @@
 <p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument"
     width="800" *ngIf="viewDocument">
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
-</p-dialog>
-<!-- bring up visualization when the button has been clicked -->
-<p-dialog [(visible)]="showVisualization" *ngIf="showVisualization" positionTop="150"
-    width="800" height="100%">
-    <p-header>Select a data column for visualization</p-header>
-    <visualization [queryModel]="queryModel" [corpus]="corpus"></visualization>
 </p-dialog>
 <!-- inform the user about a failed search -->
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">

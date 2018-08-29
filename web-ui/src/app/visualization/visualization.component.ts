@@ -1,9 +1,8 @@
 import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-
 import { SelectItem, SelectItemGroup } from 'primeng/api';
+import { Corpus, AggregateResults, FoundDocument, QueryModel } from '../models/index';
+import { SearchService, ApiService } from '../services/index';
 
-import { Corpus, AggregateResults, QueryModel } from '../models/index';
-import { SearchService } from '../services/index';
 
 
 @Component({
@@ -16,6 +15,7 @@ export class VisualizationComponent implements OnChanges {
 
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
+    @Input() public contents: string[];
 
     public asPercentage: boolean;
 
@@ -33,14 +33,10 @@ export class VisualizationComponent implements OnChanges {
     public freqtable: boolean = false;
 
     public chartElement: any;
+    public aggResults: AggregateResult[];
 
-    public aggResults: {
-        key: {};
-        doc_count: number;
-        key_as_string?: string;
-    }[];
+    constructor(private searchService: SearchService, private apiService: ApiService) {
 
-    constructor(private searchService: SearchService) {
     }
 
     ngOnInit() {
@@ -94,13 +90,23 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
+        let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
+        if (visualizationType == 'wordcloud') {
+            this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
             this.visualizedField = visualizedField;
-            this.visualizationType = this.corpus.fields.find(field => field.name == this.visualizedField).visualizationType;
-            this.aggResults = visual.aggregations;
+            this.visualizationType = visualizationType;
+            this.aggResults = result['data'];
         });
+        }
+        else {
+            this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
+                this.visualizedField = visualizedField;
+                this.visualizationType = visualizationType;
+                this.aggResults = visual.aggregations;
+            });
+        };
     }
-
+    
     showTable() {
         this.freqtable = true;
     }
@@ -109,4 +115,9 @@ export class VisualizationComponent implements OnChanges {
         this.freqtable = false;
         this.setVisualizedField(this.visualizedField);
     }
+}
+
+type AggregateResult = {
+    key: any,
+    doc_count: number
 }
