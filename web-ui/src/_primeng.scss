@@ -100,13 +100,13 @@ $inputGroupTextColor: $text;
 
 .ui-widget-header {
     border: 1px solid $primary;
-    background-color:  $contrast-primary-color;
+    background-color: $contrast-primary-color;
     color: $text-primary-color;
     font-weight: bold;
 }
 
 // All styling for the tabview
-.ui-tabview{
+.ui-tabview {
     background-color: $primary-invert;
     border: 0px;
 }
@@ -121,7 +121,7 @@ $inputGroupTextColor: $text;
     border-radius: 0;
 
     li {
-        top:2px !important;
+        top: 2px !important;
     }
 
     .ui-state-default a {
