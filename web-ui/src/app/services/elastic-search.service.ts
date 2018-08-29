@@ -79,7 +79,7 @@ export class ElasticSearchService {
         let aggregation = {
             terms: {
                 field: aggregator,
-                size: 1000000
+                size: 1000
             }
         }
         return aggregation;

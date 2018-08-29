@@ -47,7 +47,7 @@ CORPUS_SERVER_NAMES = {
 
 # Index configurations
 TIMES_TITLE = "Times"
-TIMES_DESCRIPTION = "Description about this corpus"
+TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
 TIMES_ES_INDEX='times'
 TIMES_ES_DOCTYPE='article'
 TIMES_DATA='/mnt/times'
@@ -56,7 +56,7 @@ TIMES_MAX_DATE=datetime(year=2010, month=12, day=31)
 TIMES_IMAGE='/static/images/times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
-DUTCHBANK_DESCRIPTION = "Description about this corpus"
+DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
 DUTCHBANK_ES_INDEX='dutchbank'
 DUTCHBANK_ES_DOCTYPE='article'
 DUTCHBANK_DATA='/mnt/dutchbank'
