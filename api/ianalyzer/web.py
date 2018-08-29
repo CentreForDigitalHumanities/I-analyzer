@@ -268,6 +268,7 @@ def api_search_history():
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required
 def api_get_wordcloud_data():
+    print(request.json);
     if not request.json:
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
