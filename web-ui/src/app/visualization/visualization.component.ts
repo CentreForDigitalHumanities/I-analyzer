@@ -22,7 +22,6 @@ export class VisualizationComponent implements OnChanges {
     public showTableButtons: boolean;
 
     public visualizedField: string;
-    public significantText: any[];
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
@@ -91,26 +90,21 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        this.visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
-        if (this.visualizationType == 'wordcloud') {
+        let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
+        if (visualizationType == 'wordcloud') {
             this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
             this.visualizedField = visualizedField;
-            this.significantText = result['data'];
+            this.visualizationType = visualizationType;
+            this.aggResults = result['data'];
         });
         }
         else {
             this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
                 this.visualizedField = visualizedField;
+                this.visualizationType = visualizationType;
                 this.aggResults = visual.aggregations;
-                console.log(this.aggResults);
             });
         };
-    }
-
-    showWordcloud() {
-        this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
-            this.significantText = result['data'];
-        });
     }
     
     showTable() {

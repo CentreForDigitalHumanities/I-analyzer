@@ -242,7 +242,6 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
-            console.log(results);
             this.contents = results.documents.map( d => d.fieldValues['content'] );
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();

@@ -37,13 +37,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-
             if (changes['visualizedField'] != undefined) {
                 this.calculateCanvas();
                 this.prepareTimeline();
                 this.calculateDomains();
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                //this.rescaleY();
+                this.rescaleY();
                 this.calculateY(this.selectedData);
                 this.drawChartData();
                 this.setupBrushBehaviour();
@@ -63,9 +62,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
 
         this.xDomain = d3.extent(this.selectedData, d => d.date);
         this.xScale = d3.scaleTime()
-            .domain(this.xDomain)
-            .range([0, this.width])
-            .clamp(true);
+          .domain(this.xDomain)
+          .range([0, this.width])
+          .clamp(true);
 
         let ticks = this.xScale.ticks(10);
         let date = ticks[0];
@@ -73,9 +72,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         let [min, max] = this.xScale.domain();
 
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
-            .value(d => d.date)
-            .domain([min, max])
-            .thresholds(this.xScale.ticks(d3.timeYear));
+          .value(d => d.date)
+          .domain([min, max])
+          .thresholds(this.xScale.ticks(d3.timeYear));
 
         this.currentTimeCategory = 'years';
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
@@ -137,24 +136,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         update.exit().remove();
 
         this.chart.selectAll('.bar').transition()
-            .attr('x', d => this.xScale(d.x0))
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('width', d => this.calculateWidth(d))
-            .attr('height', d => this.height - this.yScale(d.doc_count));
+          .attr('x', d => this.xScale(d.x0))
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('width', d => this.calculateWidth(d))
+          .attr('height', d => this.height - this.yScale(d.doc_count));
 
         // add new bars
         update
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', d => this.xScale(d.x0))
-            .attr('width', d => this.calculateWidth(d))
-            .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
-            .attr('height', 0)
-            .transition().duration(750)
-            .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('height', d => this.height - this.yScale(d.doc_count));
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.xScale(d.x0))
+          .attr('width', d => this.calculateWidth(d))
+          .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
+          .attr('height', 0)
+          .transition().duration(750)
+          .delay((d, i) => i * 10)
+          .attr('y', d => this.yScale(d.doc_count))
+          .attr('height', d => this.height - this.yScale(d.doc_count));
     }
 
     setupBrushBehaviour() {
@@ -162,8 +161,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.idleDelay = 350;
 
         this.svg.append("g")
-            .attr("class", "brush")
-            .call(this.brush);
+          .attr("class", "brush")
+          .call(this.brush);
     }
 
     brushended() {
@@ -207,10 +206,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         else {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
-                .transition().duration(750)
-                .attr('x', d => this.xScale(d.x0))
-                .attr('y', d => this.yScale(d.doc_count))
-                .attr('width', d => this.calculateWidth(d));
+              .transition().duration(750)
+              .attr('x', d => this.xScale(d.x0))
+              .attr('y', d => this.yScale(d.doc_count))
+              .attr('width', d => this.calculateWidth(d));
         }
     }
 

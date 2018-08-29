@@ -46,6 +46,7 @@ export class FreqtableComponent implements OnChanges {
 
     // calculate percentage data
     this.percentData = _.cloneDeep(this.searchData);
+    console.log(this.percentData);
 
     var total = 0;
     for (let bin of this.percentData) {
