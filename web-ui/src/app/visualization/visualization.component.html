@@ -10,7 +10,7 @@
 	</button>
 </div>
 
-<div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
+<div class="checkbox" >
 	<label>
 		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
 		as Percentage
@@ -27,9 +27,9 @@
 			 [chartElement]="chartElement" [asPercent]="asPercentage"></ia-timeline>
 			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [chartElement]="chartElement"></ia-wordcloud>
 		</ng-container>
-	</ng-container>
-	<ng-container *ngIf="freqtable">
-		<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement" [asPercent]="asPercentage">
-		</ia-freqtable>
+		<ng-container *ngIf="freqtable">
+			<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement" [asPercent]="asPercentage">
+			</ia-freqtable>
+		</ng-container>
 	</ng-container>
 </div>
