@@ -104,3 +104,41 @@ $inputGroupTextColor: $text;
     color: $text-primary-color;
     font-weight: bold;
 }
+
+// All styling for the tabview
+.ui-tabview{
+    background-color: $primary-invert;
+    border: 0px;
+}
+
+.ui-tabview-nav {
+    padding: 0em 0em 0 !important;
+    border: 0px solid $primary;
+    background-color: $primary-invert;
+    border-bottom-color: $primary;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-radius: 0;
+
+    li {
+        top:2px !important;
+    }
+
+    .ui-state-default a {
+        color: $primary-invert;
+        background-color: $primary;
+    }
+
+    .ui-state-default a:hover {
+        background: $contrast-primary-color;
+        color: $primary-invert;
+        cursor: pointer;
+    }
+
+    .ui-state-active a,
+    .ui-state-active a:hover {
+        background-color: $primary-invert;
+        color: $primary;
+        cursor: default !important;
+    }
+}

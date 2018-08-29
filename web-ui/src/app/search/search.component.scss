@@ -69,10 +69,14 @@
     }
 
     .ui-multiselect  .ui-multiselect-trigger {
-        padding: 0px 0.9em;
+        padding: 0px 0.75em;
     }
 }
 
 .field.has-addons .control:last-child .button {
     border-radius: 2px;
+}
+
+.tabs {
+    white-space: normal;
 }

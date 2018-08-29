@@ -8,6 +8,6 @@
     max-height: 80vh;
 
     &.is-loading {
-        @include loader;
+        @extend %content-loader;
     }
 }

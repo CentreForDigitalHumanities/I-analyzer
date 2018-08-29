@@ -1,9 +1,13 @@
-.box {
-	padding: .5em .75em;
-	// width: 80%;
-	margin: .5em 0;
+.table {
+	margin-top: .5rem;
 }
 
-.table {
-	padding: .5em .75em;
+.table tr.is-selected {
+    background-color: #FFFFFF;
+	color: #000000;
+
+	th {
+		border: 1px solid #000000;
+		border-width: 0px 0px 3px;
+	}
 }

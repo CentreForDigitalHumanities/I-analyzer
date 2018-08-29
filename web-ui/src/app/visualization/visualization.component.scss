@@ -11,3 +11,12 @@
 .d3-chart .axis text {		  
 	fill: #999;		
 }
+
+.checkbox {
+	margin-top: 1rem;
+	
+	input {
+		cursor: pointer;
+		margin-right: 0.25em;
+	}
+}
