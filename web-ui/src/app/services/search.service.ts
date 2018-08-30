@@ -112,8 +112,8 @@ export class SearchService {
             corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
     }
 
-    public async searchForVisualization<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
-        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator);
+    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string, size: number): Promise<AggregateResults<TKey>> {
+        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator, size);
     }
 
     /**

@@ -99,7 +99,7 @@ export class VisualizationComponent implements OnChanges {
         });
         }
         else {
-            this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
                 this.visualizedField = visualizedField;
                 this.visualizationType = visualizationType;
                 this.aggResults = visual.aggregations;

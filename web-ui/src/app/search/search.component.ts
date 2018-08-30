@@ -253,7 +253,35 @@ export class SearchComponent implements OnInit, OnDestroy {
             console.trace(error);
             finallyReset();
         });
+        this.aggregateSearches();
         this.showFilters = true;
+        /** 
+        To do:
+        - remove/grey out filters which don't have options with current selection
+        */
+    }
+
+    private aggregateSearches() {
+        let multipleChoiceFilters = this.corpus.fields
+          .filter( field => field.searchFilter )
+          .filter( field => field.searchFilter.name=="MultipleChoiceFilter" );
+        let allAggResults = {};
+        multipleChoiceFilters.forEach( filter => {
+            // querying as many parameters from keyword field as defined in corpus definition
+            let size = filter.searchFilter.options.length;
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, filter.name, size).then( aggResults => {
+                allAggResults[filter.name] = aggResults.aggregations;
+                let thisField = this.corpus.fields.find( field => field.name==filter.name );
+                thisField.searchFilter.counts = aggResults.aggregations;              
+            }, error => {
+                this.showError = {
+                    date: (new Date()).toISOString(),
+                    href: location.href,
+                    message: error.message || 'An unknown error occurred'
+                };
+            console.trace(error);
+            });
+        });
     }
 
     private getCsvFields(): CorpusField[] {

@@ -471,6 +471,7 @@ class Times(XMLCorpus):
                     'of illustrations.'),
                 options=[
                     'Cartoon',
+                    'Cartoons',
                     'Map',
                     'Drawing-Painting',
                     'Photograph',

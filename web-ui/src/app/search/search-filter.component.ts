@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 
+import * as _ from "lodash";
+
 @Component({
     selector: 'search-filter',
     templateUrl: './search-filter.component.html',
@@ -36,10 +38,13 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['filterData']) {
+        console.log(JSON.stringify(this.filter));
+        this.data = this.getDisplayData(this.filter, this.filterData);
+        //console.log(JSON.stringify(this.field), JSON.stringify(this.filter));
+        /*if (changes['filterData']) {
             this.data = this.getDisplayData(this.filter, this.filterData);
-        }
-        else if (changes['field']) {
+        }*/
+        if (changes['field']) {
             // make sure the filter data is reset if only the field was changed
             this.update(true);
         }
@@ -48,7 +53,6 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     ngOnInit() {
         if (this.field) {
             this.data = this.getDisplayData(this.filter, this.filterData);
-
             // default values should also work as a filter: notify the parent
             this.update();
         }
@@ -100,7 +104,14 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 return [filterData.data.gte, filterData.data.lte];
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
-                    let options = filter.options.map(x => { return { 'label': x, 'value': x } });
+                    let options = [];
+                    if (filter.counts!=undefined) {
+                        options = _.sortBy( filter.counts, x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
+                    }
+                    else {
+                        options = filter.options.map(x => {return { 'label': x, 'value': x }});
+                    }
+                    
                     return { options: options, selected: filterData.data };
                 }
                 break;

@@ -75,11 +75,11 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string) {
+    makeAggregation(aggregator: string, size: number) {
         let aggregation = {
             terms: {
                 field: aggregator,
-                size: 1000,
+                size: size,
                 min_doc_count: 5
             }
         }
@@ -158,8 +158,8 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
-        let aggregation = this.makeAggregation(aggregator);
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string, size: number): Promise<AggregateResults<TKey>> {
+        let aggregation = this.makeAggregation(aggregator, size);
         let esQuery = this.makeEsQuery(queryModel);
         let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
