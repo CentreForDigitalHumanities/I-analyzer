@@ -45,6 +45,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
+            console.log(this.searchData);
             if (changes['visualizedField'] != undefined) {
                 this.calculateCanvas();
                 this.prepareTimeline();
@@ -202,21 +203,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.rescaleX();
         let xExtent = this.xScale.domain();
         let selection = this.bins.filter(d => d.x1 >= xExtent[0] && d.x0 <= xExtent[1]);
-        if (selection.length < 10 && this.currentTimeCategory != 'days') {
-            // rearrange data to look at a smaller time category
-            this.adjustTimeCategory();
-            this.calculateY(this.selectedData.filter(
-                d => d.date >= xExtent[0] && d.date <= xExtent[1]));
-            this.drawChartData();
-            this.rescaleY();
-        }
-        else {
+        if (selection.length >= 10 {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
               .transition().duration(750)
               .attr('x', d => this.xScale(d.x0))
               .attr('y', d => this.yScale(d.doc_count))
               .attr('width', d => this.calculateWidth(d));
+        }
+        else {
+            while (selection.length < 10 && this.currentTimeCategory != 'days') {
+            // rearrange data to look at a smaller time category
+                this.adjustTimeCategory();
+            }
+            this.calculateY(this.selectedData.filter(
+                d => d.date >= xExtent[0] && d.date <= xExtent[1]
+            ));
+            this.drawChartData();
+            this.rescaleY();
         }
     }
 
