@@ -64,7 +64,7 @@ type BooleanFilter = {
     trueText: string
 }
 
-type MultipleChoiceFilter = {
+export type MultipleChoiceFilter = {
     description: string
     name: 'MultipleChoiceFilter',
     options: string[],

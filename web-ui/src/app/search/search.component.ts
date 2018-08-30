@@ -7,7 +7,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
@@ -265,9 +265,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         let multipleChoiceFilters = this.corpus.fields
           .filter( field => field.searchFilter )
           .filter( field => field.searchFilter.name=="MultipleChoiceFilter" );
+        console.log(multipleChoiceFilters);
         let allAggResults = {};
         multipleChoiceFilters.forEach( filter => {
             // querying as many parameters from keyword field as defined in corpus definition
+            if ((<MultipleChoiceFilter>filter.searchFilter).options){
             let size = filter.searchFilter.options.length;
             this.searchService.aggregateSearch(this.corpus, this.queryModel, filter.name, size).then( aggResults => {
                 allAggResults[filter.name] = aggResults.aggregations;
@@ -281,6 +283,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 };
             console.trace(error);
             });
+        }
         });
     }
 
