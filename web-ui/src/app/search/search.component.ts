@@ -264,17 +264,17 @@ export class SearchComponent implements OnInit, OnDestroy {
     private aggregateSearches() {
         let multipleChoiceFilters = this.corpus.fields
           .filter( field => field.searchFilter )
-          .filter( field => field.searchFilter.name=="MultipleChoiceFilter" );
-        console.log(multipleChoiceFilters);
+          .filter( field => field.searchFilter.name=="MultipleChoiceFilter" )
+          .map ( d => ({filter: d, searchFilter: d.searchFilter as MultipleChoiceFilter}) );
+        console.log(typeof multipleChoiceFilters[0]);
         let allAggResults = {};
-        multipleChoiceFilters.forEach( filter => {
+        multipleChoiceFilters.forEach( ({filter, searchFilter}) => {
             // querying as many parameters from keyword field as defined in corpus definition
-            if ((<MultipleChoiceFilter>filter.searchFilter).options){
-            let size = filter.searchFilter.options.length;
+            //if (filter.searchFilter).options {
+            let size = searchFilter.options.length;
             this.searchService.aggregateSearch(this.corpus, this.queryModel, filter.name, size).then( aggResults => {
                 allAggResults[filter.name] = aggResults.aggregations;
-                let thisField = this.corpus.fields.find( field => field.name==filter.name );
-                thisField.searchFilter.counts = aggResults.aggregations;              
+                searchFilter.counts = aggResults.aggregations;              
             }, error => {
                 this.showError = {
                     date: (new Date()).toISOString(),
@@ -283,7 +283,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 };
             console.trace(error);
             });
-        }
+        //}
         });
     }
 
