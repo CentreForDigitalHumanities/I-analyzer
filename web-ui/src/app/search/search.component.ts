@@ -212,6 +212,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
+        if (this.hasSearched!=undefined && this.queryField[name].data != data) {
+            this.enableFilter(name);
+        }
         this.queryField[name].data = data;
         this.changeDetectorRef.detectChanges();
     }

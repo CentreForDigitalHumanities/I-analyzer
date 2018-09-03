@@ -75,8 +75,8 @@
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
                             <div class="field has-addons">
-                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="down-left" iaBalloonLength="fit">
-                                    <label class="label" [for]="'filter' + field.name">{{ field.name |titlecase }}</label>
+                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}" iaBalloonPosition="up-left" iaBalloonLength="fit">
+                                    <label class="label" [for]="'filter' + field.name">{{ field.displayName |titlecase }}</label>
                                 </div>
                                 <p class="control">
                                     <span class="button icon filter-icon is-inverted" [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
@@ -87,7 +87,7 @@
                             </div>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                             [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
-                            (click)="enableFilter(field.name);" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
@@ -96,15 +96,15 @@
             <div class="is-boxed column is-9" *ngIf="results">
                 <p-tabView styleClass="is-content">
                     <p-tabPanel header="Search Results" leftIcon="fa fa-list">
-                            <div class="column">
-                                    <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
-                                        (view)="onViewDocument($event)">
-                                        <div class="field">
-                                            <label class="label">Sort By</label>
-                                        </div>
-                                        <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
-                                    </ia-search-results>
-                                </div>
+                        <div class="column">
+                                <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
+                                    (view)="onViewDocument($event)">
+                                    <div class="field">
+                                        <label class="label">Sort By</label>
+                                    </div>
+                                    <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields" (onChange)="changeSorting($event)"></ia-search-sorting>
+                                </ia-search-results>
+                            </div>
                     </p-tabPanel>
                     <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
                             <ng-template pTemplate="content">

@@ -4,7 +4,7 @@
         {{data | json | titlecase }}
     </div>
     <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'" iaBalloon="This filter is preventing your query from returning any results. Please choose at least one option." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
-        <p-multiSelect [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
+        <p-multiSelect [filter]="data.options.length>=6" [options]="data.options" [(ngModel)]="data.selected" (onChange)="update()" ></p-multiSelect>
     </div>
     <div class="range" *ngIf="filter.name == 'RangeFilter'" iaBalloon="This filter is preventing your query from returning any results. Please ensure that the minimum is not larger than the maximum." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
         <span>{{data[0]}} - {{data[1]}}</span>
