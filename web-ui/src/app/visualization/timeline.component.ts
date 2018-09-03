@@ -203,7 +203,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.rescaleX();
         let xExtent = this.xScale.domain();
         let selection = this.bins.filter(d => d.x1 >= xExtent[0] && d.x0 <= xExtent[1]);
-        if (selection.length >= 10 {
+        if (selection.length >= 10) {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
               .transition().duration(750)
