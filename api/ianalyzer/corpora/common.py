@@ -89,6 +89,13 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    @property
+    def image(self):
+        '''
+        Absolute url to static image.
+        '''
+        raise NotImplementedError()
+
     def es_mapping(self):
         '''
         Create the ElasticSearch mapping for the fields of this corpus. May be

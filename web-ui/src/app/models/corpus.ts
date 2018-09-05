@@ -19,7 +19,9 @@ export class Corpus implements ElasticSearchIndex {
         public index: string,
         public fields: CorpusField[],
         public minDate: Date,
-        public maxDate: Date) { }
+        public maxDate: Date,
+        public image: string ) { }
+        
 }
 
 export type ElasticSearchIndex = {

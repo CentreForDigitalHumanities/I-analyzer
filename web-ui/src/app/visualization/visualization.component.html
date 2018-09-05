@@ -1,38 +1,35 @@
 <div #viscontrol>
 	<p-dropdown [options]="visDropdown" [(ngModel)]="visualized" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
-
 	<!-- Buttons for switching between table and graphical representation -->
-	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()"
-	 style="float:right">
+	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
 	</button>
 
-	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="showChart()"
-	 style="float:right">
+	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="showChart()" style="float:right">
 		<i class="fa fa-bar-chart" aria-hidden="true"></i>
 	</button>
 </div>
 
-<form *ngIf="visualizationType!='timeline' || freqtable">
+<div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
 	<label>
 		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
-		as Percentage</label>
-</form>
+		as Percentage
+	</label>
+</div>
 
 <div class="d3-chart" #chart>
 	<ng-container [ngSwitch]="visualizationType">
 		<ng-container *ngIf="!freqtable">
-			<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField"
-			 [chartElement]="chartElement" [asPercent]="asPercentage">
+			<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"
+			 [asPercent]="asPercentage">
 			</ia-barchart>
 			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
-			 [chartElement]="chartElement"></ia-timeline>
+			 [chartElement]="chartElement" [asPercent]="asPercentage"></ia-timeline>
+			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [chartElement]="chartElement"></ia-wordcloud>
 		</ng-container>
-	</ng-container>
-
-	<ng-container *ngIf="freqtable">
-		<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"
-		 [asPercent]="asPercentage">
-		</ia-freqtable>
+		<ng-container *ngIf="freqtable">
+			<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement" [asPercent]="asPercentage">
+			</ia-freqtable>
+		</ng-container>
 	</ng-container>
 </div>

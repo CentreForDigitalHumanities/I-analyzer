@@ -1,15 +1,15 @@
-@import "../../variables.scss";
+@import "../../_utilities";
 // to do: define colours on application level (now bulma is imported double here for the colour variables)
 
 .d3-chart .bar {
-	fill: $turquoise;
+	fill: $primary;
 }
 
-.d3-chart .axis path,		
-.d3-chart .axis line {		  
-	stroke: #999;		
+.d3-chart .axis path,
+.d3-chart .axis line {
+	stroke: #999;
 }
 
-.d3-chart .axis text {		  
-	fill: #999;		
+.d3-chart .axis text {
+	fill: #999;
 }

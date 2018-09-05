@@ -1,7 +1,6 @@
 import { Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
@@ -69,6 +68,7 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public searchQueryText: string;
     public results: SearchResults;
+    public contents: string[];
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
@@ -166,11 +166,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasModifiedFilters = true;
     }
 
-    // control whether the filters are hidden
-    public toggleFilters() {
-        this.showFilters = !this.showFilters;
-    }
-
     public changeSorting(event: SortEvent) {
         this.sortField = event.field;
         this.sortAscending = event.ascending;
@@ -217,6 +212,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
+        if (this.hasSearched!=undefined && this.queryField[name].data != data) {
+            this.enableFilter(name);
+        }
         this.queryField[name].data = data;
         this.changeDetectorRef.detectChanges();
     }
@@ -246,6 +244,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
+            this.contents = results.documents.map( d => d.fieldValues['content'] );
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {

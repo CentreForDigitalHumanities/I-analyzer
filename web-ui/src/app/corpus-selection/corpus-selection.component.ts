@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Corpus } from '../models/corpus';
 
 @Component({
-    selector: 'corpus-selection',
+    selector: 'ia-corpus-selection',
     templateUrl: './corpus-selection.component.html',
     styleUrls: ['./corpus-selection.component.scss']
 })

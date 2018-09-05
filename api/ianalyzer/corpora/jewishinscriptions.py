@@ -5,7 +5,7 @@ import logging
 
 from flask import current_app
 
-from ianalyzer import config
+from ianalyzer import config_fallback as config
 from ianalyzer.extract import XML, Metadata, Combined
 from ianalyzer.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
 from ianalyzer.corpora.common import XMLCorpus, Field
@@ -23,6 +23,7 @@ class JewishInscriptions(XMLCorpus):
     es_index = config.JEWISH_INSCRIPTIONS_ES_INDEX
     es_doctype = config.JEWISH_INSCRIPTIONS_ES_DOCTYPE
     es_settings = None
+    image = config.JEWISH_INSCRIPTIONS_IMAGE
     visualize = []
 
     # Data overrides from .common.XMLCorpus

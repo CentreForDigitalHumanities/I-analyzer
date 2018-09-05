@@ -5,13 +5,17 @@ import * as _ from "lodash";
 
 import { BarChartComponent } from './barchart.component';
 
+const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
+const hintHidingMinDelay = 500;       // milliseconds
+const hintHidingDebounceTime = 1000;  // milliseconds
+
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class TimelineComponent extends BarChartComponent implements OnChanges {
+export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
@@ -19,34 +23,46 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
     }[];
     @Input() visualizedField;
     @Input() chartElement;
+    @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;
-    //private xDomain: [Date, Date];
     private zoom: any;
     private view: any;
 
     private brush: any;
     idleTimeout: any;
     idleDelay: number;
+    showHint: boolean;
 
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
     private histogram: any;
     private bins: any;
+    private scaleDownThreshold: number = 10;
 
+    ngOnInit() {
+        this.setupZoomHint();
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            this.calculateCanvas();
-            this.prepareTimeline();
-            this.calculateDomains();
-
-
+            console.log(this.searchData);
             if (changes['visualizedField'] != undefined) {
+                this.calculateCanvas();
+                this.prepareTimeline();
+                this.calculateDomains();
                 this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.setScaleY();
-                this.drawChartData(this.selectedData);
+                this.rescaleY();
+                this.calculateY(this.selectedData);
+                this.drawChartData();
                 this.setupBrushBehaviour();
+            }
+
+            //listen for changes in 'asPercent'
+            if (changes['asPercent'] != undefined) {
+                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+                    this.rescaleY();
+                }
             }
         }
     }
@@ -60,6 +76,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             .range([0, this.width])
             .clamp(true);
 
+        let ticks = this.xScale.ticks(10);
+        let date = ticks[0];
+
         let [min, max] = this.xScale.domain();
 
         this.histogram = d3.histogram<DateFrequencyPair, Date>()
@@ -68,12 +87,18 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
             .thresholds(this.xScale.ticks(d3.timeYear));
 
         this.currentTimeCategory = 'years';
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
 
     }
 
     rescaleX() {
         let t = this.svg.transition().duration(750);
         this.xAxis.transition(t).call(this.xAxisClass);
+        this.xAxis.selectAll('text')
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-35)");
     }
 
     formatTimeData() {
@@ -89,11 +114,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         return outData;
     }
 
-
-    drawChartData(inputData) {
+    calculateY(inputData) {
         /**
-        * bind data to chart, remove or update existing bars, add new bars
+        * calculate bins and y dimensions
         */
+
         this.bins = this.histogram(inputData);
         this.bins.forEach(d => {
             if (d.length != 0) {
@@ -103,16 +128,21 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 d.doc_count = 0;
             }
         });
+        this.yMax = parseInt(d3.max(this.bins.map(d => d.doc_count)));
+        this.yDomain = [0, this.yMax];
+        this.yScale.domain(this.yDomain);
+        this.yAxis.call(this.yAxisClass);
+    }
 
+    drawChartData() {
+        /**
+        * bind data to chart, remove or update existing bars, add new bars
+        */
         const update = this.chart.selectAll('.bar')
             .data(this.bins);
 
         // remove exiting bars
         update.exit().remove();
-
-        this.yDomain = [0, Number(d3.max(this.bins.map(d => d.doc_count)))];
-        this.yScale.domain(this.yDomain);
-        this.yAxis.call(this.yAxisClass);
 
         this.chart.selectAll('.bar').transition()
             .attr('x', d => this.xScale(d.x0))
@@ -154,7 +184,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 this.rescaleX();
                 this.histogram.thresholds(this.xScale.ticks(d3.timeYear));
                 this.currentTimeCategory = 'years';
-                this.drawChartData(this.selectedData);
+                this.calculateY(this.selectedData);
+                this.drawChartData();
+                this.rescaleY();
             }
 
         } else {
@@ -172,19 +204,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
         this.rescaleX();
         let xExtent = this.xScale.domain();
         let selection = this.bins.filter(d => d.x1 >= xExtent[0] && d.x0 <= xExtent[1]);
-        if (selection.length < 10 && this.currentTimeCategory != 'days') {
-            // rearrange data to look at a smaller time category
-            this.adjustTimeCategory();
-            this.drawChartData(this.selectedData.filter(
-                d => d.date >= xExtent[0] && d.date <= xExtent[1]));
-        }
-        else {
+        if (selection.length >= 10) {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
                 .transition().duration(750)
                 .attr('x', d => this.xScale(d.x0))
                 .attr('y', d => this.yScale(d.doc_count))
                 .attr('width', d => this.calculateWidth(d));
+        }
+        else {
+            while (selection.length < this.scaleDownThreshold && this.currentTimeCategory != 'days') {
+                // rearrange data to look at a smaller time category
+                this.adjustTimeCategory();
+            }
+            this.calculateY(this.selectedData.filter(
+                d => d.date >= xExtent[0] && d.date <= xExtent[1]
+            ));
+            this.drawChartData();
+            this.rescaleY();
         }
     }
 
@@ -212,6 +249,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges {
                 break;
             case 'days':
                 break;
+        }
+    }
+
+    /**
+     * Show the zooming hint once per session, hide automatically with a delay
+     * when the user moves the mouse.
+     */
+    setupZoomHint() {
+        if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
+            sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
+            this.showHint = true;
+            const hider = _.debounce(() => {
+                this.showHint = false;
+                document.body.removeEventListener('mousemove', hider);
+            }, hintHidingDebounceTime);
+            _.delay(() => {
+                document.body.addEventListener('mousemove', hider);
+            }, hintHidingMinDelay);
         }
     }
 

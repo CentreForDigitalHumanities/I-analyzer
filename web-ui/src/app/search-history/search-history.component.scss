@@ -1,4 +1,4 @@
-@import "../../variables";
+@import "../../_utilities";
 
 table {
 	margin-left: 100px;
@@ -16,7 +16,7 @@ tr {
 }
 
 tr:hover {
-	background-color: $turquoise;
+	background-color: $contrast-primary-color;
 	cursor: pointer;
+	color: $text-primary-color;
 }
-

@@ -6,5 +6,9 @@
     "/admin": {
         "target": "http://localhost:5000",
         "secure": false
+    },
+    "/static": {
+        "target": "http://localhost:5000",
+        "secure": false
     }
 }

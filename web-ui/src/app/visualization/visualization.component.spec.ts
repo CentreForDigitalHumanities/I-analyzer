@@ -8,7 +8,8 @@ import { WordcloudComponent } from './wordcloud.component';
 import { FreqtableComponent } from './freqtable.component'
 import { TimelineComponent } from './timeline.component';
 import { VisualizationComponent } from './visualization.component';
-import { SearchService } from '../services/index';
+import { ApiService, SearchService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
 import { AggregateResults, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
@@ -18,11 +19,13 @@ describe('VisualizationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, SharedModule, DropdownModule],
-            declarations: [BarChartComponent, WordcloudComponent, FreqtableComponent, TimelineComponent, VisualizationComponent],
-            providers: [{
-                provide: SearchService,
-                useValue: new MockSearchService()
-            }]
+            declarations: [BarChartComponent, FreqtableComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
+            providers: [
+                {
+                    provide: SearchService,
+                    useValue: new MockSearchService()
+                }, 
+                { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
 

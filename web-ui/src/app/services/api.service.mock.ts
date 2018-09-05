@@ -20,4 +20,8 @@ export class ApiServiceMock {
     public search_history() {
         return this.get('search_history');
     };
+
+    public getWordcloudData(){
+        return this.get('get_wordcloud_data');
+    }
 }
