@@ -3,7 +3,8 @@ This module is a tool to define how to extract specific information from an
 object such as a dictionary or a BeautifulSoup XML node.
 '''
 
-import logging; logger = logging.getLogger(__name__)
+import logging
+logger = logging.getLogger(__name__)
 import re
 import html
 import bs4
@@ -16,14 +17,14 @@ class Extractor(object):
     '''
 
     def __init__(self,
-        applicable=None, # Predicate that takes metadata and decides whether
-                         # this extractor is applicable. None means always.
-        transform=None   # Optional function to postprocess extracted value
-        ):
+                 applicable=None,  # Predicate that takes metadata and decides whether
+                 # this extractor is applicable. None means always.
+                 transform=None,   # Optional function to postprocess extracted value
+                 translate=None  # Optional dictionary to use for translation of field values
+                 ):
         self.transform = transform
         self.applicable = applicable
-
-
+        self.translate = translate
 
     def apply(self, *nargs, **kwargs):
         '''
@@ -37,14 +38,22 @@ class Extractor(object):
                 if self.transform:
                     return self.transform(result)
             except Exception:
-                logging.critical("Value {v} could not be converted."\
-                    .format(v=result))
+                logging.critical("Value {v} could not be converted."
+                                 .format(v=result))
                 return None
+
+            # try to translate. if no translation is found return the original result
+            try:
+                if self.translate:
+                    return self.translate[result]
+            except Exception:
+                logging.warning("Value {v} not in translation dictionary."
+                                .format(v=result))
+                return result
             else:
                 return result
         else:
             return None
-
 
     def _apply(self, *nargs, **kwargs):
         '''
@@ -52,7 +61,6 @@ class Extractor(object):
         testing for applicability and post-processing is taken care of).
         '''
         raise NotImplementedError()
-
 
 
 class Choice(Extractor):
@@ -64,14 +72,11 @@ class Choice(Extractor):
         self.extractors = list(nargs)
         super().__init__(**kwargs)
 
-
-
     def _apply(self, metadata, *nargs, **kwargs):
         for extractor in self.extractors:
             if extractor.applicable is None or extractor.applicable(metadata):
                 return extractor.apply(metadata=metadata, *nargs, **kwargs)
         return None
-
 
 
 class Combined(Extractor):
@@ -83,13 +88,10 @@ class Combined(Extractor):
         self.extractors = list(nargs)
         super().__init__(**kwargs)
 
-
-
     def _apply(self, *nargs, **kwargs):
         return tuple(
             extractor.apply(*nargs, **kwargs) for extractor in self.extractors
         )
-
 
 
 class Constant(Extractor):
@@ -101,11 +103,8 @@ class Constant(Extractor):
         self.value = value
         super().__init__(*nargs, **kwargs)
 
-
     def _apply(self, *nargs, **kwargs):
         return self.value
-
-
 
 
 class Metadata(Extractor):
@@ -113,17 +112,12 @@ class Metadata(Extractor):
     This extractor extracts a value from provided metadata.
     '''
 
-
     def __init__(self, key, *nargs, **kwargs):
         self.key = key
         super().__init__(*nargs, **kwargs)
 
-
-
     def _apply(self, metadata, *nargs, **kwargs):
         return metadata.get(self.key)
-
-
 
 
 class XML(Extractor):
@@ -132,20 +126,21 @@ class XML(Extractor):
     '''
 
     def __init__(self,
-        tag=[], # Tag to select. When this is a list, read as a path (e.g.
-                # select successive children; makes sense when recursive=False)
-        attribute=None, # Which attribute, if any, to select
-        flatten=False, # Flatten the text content of a non-text children?
-        toplevel=False, # Tag to select for search: top-level or entry tag
-        recursive=False, # Whether to search all descendants
-        multiple=False, # Whether to abandon the search after the first element
-        external_file={ # Whether to search other xml files for this field, and the file tag these files should have
-            'file_tag':None,
+                 # Tag to select. When this is a list, read as a path (e.g.
+                 tag=[],
+                 # select successive children; makes sense when recursive=False)
+                 attribute=None,  # Which attribute, if any, to select
+                 flatten=False,  # Flatten the text content of a non-text children?
+                 toplevel=False,  # Tag to select for search: top-level or entry tag
+                 recursive=False,  # Whether to search all descendants
+                 multiple=False,  # Whether to abandon the search after the first element
+                 external_file={  # Whether to search other xml files for this field, and the file tag these files should have
+            'file_tag': None,
             'xml_tag_toplevel': None,
-            'xml_tag_entry': None}, 
+            'xml_tag_entry': None},
         *nargs,
         **kwargs
-        ):
+    ):
 
         self.tag = tag
         self.attribute = attribute
@@ -155,8 +150,6 @@ class XML(Extractor):
         self.multiple = multiple
         self.external_file = external_file
         super().__init__(*nargs, **kwargs)
-
-
 
     def _select(self, soup):
         '''
@@ -185,8 +178,6 @@ class XML(Extractor):
         else:
             return soup.find(tag, recursive=self.recursive)
 
-
-
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
 
         # Select appropriate BeautifulSoup element
@@ -203,8 +194,6 @@ class XML(Extractor):
             else:
                 return self._string(soup)
 
-
-
     def _string(self, soup):
         '''
         Output direct text contents of a node.
@@ -213,10 +202,7 @@ class XML(Extractor):
         if isinstance(soup, bs4.element.Tag):
             return soup.string
         else:
-            return [ node.string for node in soup ]
-
-
-
+            return [node.string for node in soup]
 
     def _flatten(self, soup):
         '''
@@ -230,15 +216,13 @@ class XML(Extractor):
             text = '\n\n'.join(node.get_text() for node in soup)
 
         _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
-        _newlines  = re.compile('\n+')
+        _newlines = re.compile('\n+')
 
         return html.unescape(
             _newlines.sub('\n',
-                _softbreak.sub(' ', text)
-            ).strip()
+                          _softbreak.sub(' ', text)
+                          ).strip()
         )
-
-
 
     def _attr(self, soup):
         '''
