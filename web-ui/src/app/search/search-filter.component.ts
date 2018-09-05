@@ -38,9 +38,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log(JSON.stringify(this.filter));
         this.data = this.getDisplayData(this.filter, this.filterData);
-        //console.log(JSON.stringify(this.field), JSON.stringify(this.filter));
+        console.log(JSON.stringify(this.filterData));
         /*if (changes['filterData']) {
             this.data = this.getDisplayData(this.filter, this.filterData);
         }*/

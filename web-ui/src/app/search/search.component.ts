@@ -146,8 +146,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     // control whether a given filter is applied or not
     public toggleFilter(name:string, event) {
         this.hasModifiedFilters = true;
-        let field = this.queryField[name]
+        let field = this.queryField[name];
         field.useAsFilter = !field.useAsFilter;
+        this.performSearch();
     }
 
     // fields that are used as filters aren't searched in
@@ -212,10 +213,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        if (this.hasSearched!=undefined && this.queryField[name].data != data) {
-            this.enableFilter(name);
-        }
+        let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
+        if (this.hasSearched!=undefined && previousData != data) {
+            this.enableFilter(name);         
+            this.search();
+        }
         this.changeDetectorRef.detectChanges();
     }
 
@@ -265,19 +268,19 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private aggregateSearches() {
+        console.log(this.queryField);
         let multipleChoiceFilters = this.corpus.fields
-          .filter( field => field.searchFilter )
-          .filter( field => field.searchFilter.name=="MultipleChoiceFilter" )
-          .map ( d => ({filter: d, searchFilter: d.searchFilter as MultipleChoiceFilter}) );
-        console.log(typeof multipleChoiceFilters[0]);
+          .filter( field => field.searchFilter && field.searchFilter.name=="MultipleChoiceFilter")
+          .map ( d => ({name: d.name, searchFilter: d.searchFilter as MultipleChoiceFilter}) );
         let allAggResults = {};
-        multipleChoiceFilters.forEach( ({filter, searchFilter}) => {
+        multipleChoiceFilters.forEach( ({name, searchFilter}) => {
             // querying as many parameters from keyword field as defined in corpus definition
             //if (filter.searchFilter).options {
             let size = searchFilter.options.length;
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, filter.name, size).then( aggResults => {
-                allAggResults[filter.name] = aggResults.aggregations;
-                searchFilter.counts = aggResults.aggregations;              
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, name, size).then( aggResults => {
+                allAggResults[name] = aggResults.aggregations;
+                searchFilter.counts = aggResults.aggregations;
+
             }, error => {
                 this.showError = {
                     date: (new Date()).toISOString(),
