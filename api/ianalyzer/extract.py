@@ -31,8 +31,18 @@ class Extractor(object):
         Test if the extractor is applicable to the given arguments and if so,
         try to extract the information.
         '''
+
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
+
+            # try to translate. if no translation is found keep the original result
+            # translated results can be transformed
+            if self.translate:
+                try:
+                    result = self.translate[result]
+                except Exception:
+                    logging.warning("No translation found for value '{v}'."
+                                    .format(v=result))
 
             try:
                 if self.transform:
@@ -41,17 +51,9 @@ class Extractor(object):
                 logging.critical("Value {v} could not be converted."
                                  .format(v=result))
                 return None
-
-            # try to translate. if no translation is found return the original result
-            try:
-                if self.translate:
-                    return self.translate[result]
-            except Exception:
-                logging.warning("Value {v} not in translation dictionary."
-                                .format(v=result))
-                return result
             else:
                 return result
+
         else:
             return None
 

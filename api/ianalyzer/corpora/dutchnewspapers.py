@@ -247,10 +247,10 @@ class DutchNewspapers(XMLCorpus):
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             sortable=True,
-            # search_filter=filters.MultipleChoiceFilter(
-            #     description='Accept only articles in newspapers with this publication frequency.',
-            #     options=list(distribution.keys())
-            # ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in newspapers with this publication frequency.',
+                options=list(distribution.keys())
+            ),
             extractor=extract.XML(tag='temporal',
                                   toplevel=True,
                                   recursive=True,
@@ -273,11 +273,3 @@ class DutchNewspapers(XMLCorpus):
                                   flatten=True, toplevel=True)
         ),
     ]
-
-
-if __name__ == '__main__':
-    c = DutchNewspapers()
-    d = c.documents()
-
-    n = next(d)
-    print(n['spatial'])
