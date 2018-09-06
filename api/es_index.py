@@ -86,7 +86,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end):
 
     # Create and populate the ES index
     client = factories.elasticsearch(corpus_name)
-    create(client, corpus_definition, clear=False)
+    create(client, corpus_definition, clear=True)
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
