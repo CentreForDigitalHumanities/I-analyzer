@@ -266,6 +266,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         /** 
         To do:
         - remove/grey out filters which don't have options with current selection
+        - when a filter doesn't have data, disable it
         */
     }
 

@@ -107,7 +107,6 @@ export class VisualizationComponent implements OnChanges {
             });
         }
         else {
-            console.log(visualizedField);
             this.aggResults = this.aggregations[visualizedField].buckets;
         }
     }
