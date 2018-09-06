@@ -3,4 +3,5 @@
 /.idea
 env/
 .vscode/
-elasticsearch-6.3.2/
+.env/
+elasticsearch-*/

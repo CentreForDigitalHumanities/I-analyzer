@@ -1,28 +1,30 @@
 <section class="section">
-    <form (ngSubmit)="login()" class="container">
-        <h1 class="title">I-Analyzer</h1>
-        <div class="field">
-            <label for="username">Username</label>
-            <p class="control has-icons-left has-icons-right">
-                <input class="input" type="text" [(ngModel)]="username" name="username" />
-                <span class="icon is-small is-left">
-                <i class="fa fa-user"></i>
-            </span>
-            </p>
-        </div>
-        <div class="field">
-            <label for="password">Password</label>
-            <p class="control has-icons-left">
-                <input class="input" type="password" [(ngModel)]="password" name="password" />
-                <span class="icon is-small is-left">
-                <i class="fa fa-lock"></i>
-            </span>
-            </p>
-        </div>
-        <div class="field">
-            <p class="control">
-                <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Login</button>
-            </p>
+    <form (ngSubmit)="login()" class="container is-readable">
+        <div class="container is-login">
+                <h1 class="title">I-Analyzer</h1>
+            <div class="field">
+                <label for="username">Username</label>
+                <p class="control has-icons-left has-icons-right">
+                    <input class="input" type="text" [(ngModel)]="username" name="username" />
+                    <span class="icon is-small is-left">
+                    <i class="fa fa-user"></i>
+                </span>
+                </p>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <p class="control has-icons-left">
+                    <input class="input" type="password" [(ngModel)]="password" name="password" />
+                    <span class="icon is-small is-left">
+                    <i class="fa fa-lock"></i>
+                </span>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                    <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Login</button>
+                </p>
+            </div>
         </div>
     </form>
 </section>

@@ -23,6 +23,7 @@ class DutchBanking(XMLCorpus):
     es_index = config.DUTCHBANK_ES_INDEX
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
+    image = config.DUTCHBANK_IMAGE
 
     # Data overrides from .common.XMLCorpus
     xml_tag_toplevel = 'alto'
@@ -62,8 +63,8 @@ class DutchBanking(XMLCorpus):
             name='bank',
             display_name='Bank',
             description='Banking concern to which the report belongs.',
-            term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
+            visualization_type='term_frequency',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these banks.',
@@ -78,8 +79,8 @@ class DutchBanking(XMLCorpus):
             name='year',
             display_name='Year',
             description='Year of the financial report.',
-            term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
+            visualization_type='term_frequency',
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
                 description='Restrict the years from which search results will be returned.',
@@ -118,7 +119,7 @@ class DutchBanking(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content of the block.',
-            prominent_field=True,
+            results_overview=True,
             extractor=XML(
                 tag='String',
                 attribute='CONTENT',

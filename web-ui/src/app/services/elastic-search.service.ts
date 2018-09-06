@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
+import * as _ from 'lodash';
 import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
@@ -75,21 +76,10 @@ export class ElasticSearchService {
     * Date fields are aggregated in year intervals
     */
     makeAggregation(aggregator: string) {
-        let aggregation: any;
-        if (aggregator == "date") {
-            aggregation = {
-                date_histogram: {
-                    field: aggregator,
-                    interval: "year",
-                    format: "yyyy"
-                }
-            }
-        }
-        else {
-            aggregation = {
-                terms: {
-                    field: aggregator
-                }
+        let aggregation = {
+            terms: {
+                field: aggregator,
+                size: 1000
             }
         }
         return aggregation;
@@ -172,12 +162,11 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
-
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
 
         // Extract relevant information from dictionary returned by ES
-        let aggregations: { [key: string]: { buckets: { key: TKey, doc_count: number, key_as_string?: string }[] } } = result.aggregations;
-        let buckets = aggregations[aggregator].buckets;
+        let aggregations = result.aggregations;
+        let buckets = aggregator=="wordcloud"? aggregations[aggregator].keywords.buckets : aggregations[aggregator].buckets;
         return {
             completed: true,
             aggregations: buckets
@@ -221,7 +210,7 @@ export class ElasticSearchService {
      */
     private parseResponse(response: SearchResponse<{}>, queryModel: QueryModel, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
         let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
-        let retrieved = alreadyRetrieved += (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
+        let retrieved = alreadyRetrieved + (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
         return {
             completed: response.hits.total <= retrieved,
             documents: hits.map((hit, index) => this.hitToDocument(hit, response.hits.max_score, alreadyRetrieved + index)),

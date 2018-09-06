@@ -1,12 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { SharedModule } from 'primeng/primeng';
+import { SharedModule, DropdownModule } from 'primeng/primeng';
 
 import { BarChartComponent } from './barchart.component';
 import { WordcloudComponent } from './wordcloud.component';
+import { FreqtableComponent } from './freqtable.component'
+import { TimelineComponent } from './timeline.component';
 import { VisualizationComponent } from './visualization.component';
-import { SearchService } from '../services/index';
+import { ApiService, SearchService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
 import { AggregateResults, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
@@ -15,12 +18,14 @@ describe('VisualizationComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, SharedModule],
-            declarations: [BarChartComponent, WordcloudComponent, VisualizationComponent],
-            providers: [{
-                provide: SearchService,
-                useValue: new MockSearchService()
-            }]
+            imports: [FormsModule, SharedModule, DropdownModule],
+            declarations: [BarChartComponent, FreqtableComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
+            providers: [
+                {
+                    provide: SearchService,
+                    useValue: new MockSearchService()
+                }, 
+                { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
 

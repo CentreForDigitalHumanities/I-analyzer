@@ -46,6 +46,14 @@ export class ApiService extends Rest {
     public checkSession: RestMethod<{ username: string }, { success: boolean }>;
 
     @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_wordcloud_data'
+    })
+    public getWordcloudData: RestMethod<
+        { content_list: string[] }, 
+        { data: any[] }>;
+
+    @RestAction({
         path: '/corpus'
     })
     public corpus: RestMethod<void, any>;

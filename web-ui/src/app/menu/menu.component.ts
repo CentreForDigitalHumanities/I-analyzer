@@ -3,22 +3,27 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MenuItem } from 'primeng/primeng';
 import { User } from '../models/index';
+import { CorpusService } from '../services/index';
 import { ConfigService, UserService } from '../services/index';
 
 @Component({
-    selector: 'menu',
+    selector: 'ia-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnDestroy, OnInit {
+export class MenuComponent implements OnDestroy, OnInit { 
+    public menuCorporaItems: MenuItem[];
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
     public isGuest: boolean = true;
-
+    public menuAdminItems: MenuItem[];
+    menuOpen: boolean = false;
+    
     private routerSubscription: Subscription;
-    private menuItems: MenuItem[];
 
-    constructor(private configService: ConfigService, private userService: UserService, private router: Router) {
+    
+
+    constructor(private corpusService: CorpusService, private configService: ConfigService, private userService: UserService, private router: Router) {
         this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
     }
 
@@ -28,9 +33,17 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
+        this.corpusService.get().then((corpora) => {        
+            this.menuCorporaItems = corpora.map(corpus => ({
+                label: corpus.title,
+                command: (click) => 
+                    this.router.navigate(['/search', corpus.name])
+                
+            }));
+        });
     }
 
-    public gotoAdmin() {
+     public gotoAdmin() {
         this.configService.get().then(config => {
             window.location.href = config.adminUrl;
         });
@@ -65,10 +78,10 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     private setMenuItems() {
-        this.menuItems = [
+        this.menuAdminItems = [
             {
                 label: 'Search history',
-                icon: 'fa-history',
+                icon: 'fa fa-history',
                 command: (click) => {
                     this.router.navigate(['search-history'])
                 }
@@ -77,19 +90,24 @@ export class MenuComponent implements OnDestroy, OnInit {
                 ? [
                     {
                         label: 'Administration',
-                        icon: 'fa-cogs',
+                        icon: 'fa fa-cogs',
                         command: (click) => this.gotoAdmin(),
                     }] : [],
             this.isGuest
                 ? {
                     label: 'Sign in',
-                    icon: 'fa-sign-in',
+                    icon: 'fa fa-sign-in',
                     command: (onclick) => this.login()
                 } : {
                     label: 'Exit',
-                    icon: 'fa-sign-out',
+                    icon: 'fa fa-sign-out',
                     command: (onclick) => this.logout()
                 }
         ];
+
+    }
+
+    toggleMenu() {     
+       this.menuOpen = !this.menuOpen;
     }
 }

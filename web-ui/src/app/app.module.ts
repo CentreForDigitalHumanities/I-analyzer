@@ -1,13 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, Response } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule } from 'primeng/primeng';
+import { ButtonModule, CalendarModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
@@ -29,10 +29,14 @@ import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart.component';
+import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
+import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+import { SelectFieldComponent } from './search/select-field.component';
+
 
 const appRoutes: Routes = [
     {
@@ -86,15 +90,19 @@ const appRoutes: Routes = [
         BarChartComponent,
         VisualizationComponent,
         WordcloudComponent,
+        TimelineComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent
+        HistoryQueryDisplayComponent,
+        FreqtableComponent,
+        SelectFieldComponent
     ],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CalendarModule,
         CommonModule,
+        DropdownModule,
         FormsModule,
         HttpModule,
         RouterModule.forRoot(appRoutes),
@@ -105,11 +113,12 @@ const appRoutes: Routes = [
         DialogModule,
         CheckboxModule,
         SharedModule,
+        TabViewModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard],
+    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard, TitleCasePipe],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

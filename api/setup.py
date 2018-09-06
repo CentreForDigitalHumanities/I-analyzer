@@ -10,15 +10,15 @@ def read(fname):
 
 
 setup(
-    name="I-analyzer",
-    version="0.0.1",
-    author="Niels Steenbergen",
-    author_email="n.steenbergen@uu.nl",
-    description=(
-        "ElasticSearch indexing of text corpora and Flask web application to retrieve them."),
-    license="MIT",
-    keywords="newspaper times elasticsearch database index download csv",
-    url="",
+    name = "I-analyzer",
+    version = "0.0.1",
+    author = "Niels Steenbergen",
+    author_email = "n.steenbergen@uu.nl",
+    description = ("ElasticSearch indexing of text corpora and Flask web application to retrieve them."),
+    license = "MIT",
+    keywords = "newspaper times elasticsearch database index download csv",
+    url = "",
+    # packages=['ianalyzer', 'tests'],
     packages=['ianalyzer'],
     # long_description=read('README.md'),
     classifiers=[

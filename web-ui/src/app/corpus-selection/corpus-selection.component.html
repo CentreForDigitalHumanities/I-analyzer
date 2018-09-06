@@ -1,22 +1,40 @@
 <section class="section">
-    <h1 class="title">
-        Welcome
-    </h1>
-    <h2 class="subtitle">
-        Select a corpus to search
-    </h2>
-    <label *ngFor="let item of items" class="box">
-        <div class="content">
-            <p>
-                <strong>{{item.title}}</strong>
-                <br> {{item.description}}
-            </p>
-            <button class="button is-primary" role="link" [routerLink]="['/search', item.name]">
-                <span class="icon is-small">
-                  <i class="fa fa-search"></i>
-                </span>
-                <span>Search</span>
-            </button>
-        </div>
-    </label>
+    <div class="container is-readable">
+        <h1 class="title">
+            Welcome
+        </h1>
+        <h2 class="subtitle">
+            Select a corpus to search through
+        </h2>
+        <hr>
+        <article>
+            <div class="columns is-multiline">
+                <div class="column is-4" *ngFor="let item of items">
+                    <a role="link" [routerLink]="['/search', item.name]">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-4by3">
+                                    <img src="{{item.image}}" alt="{{item.title}}">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="title-content">
+                                    {{item.title}}
+                                    <hr>
+                                </div>
+                                <div class="content">
+                                    {{item.description}}
+                                </div>
+                            </div>
+                            <footer class="card-footer">
+                                <a class="card-footer-item">
+                                    <span>Explore</span>
+                                </a>
+                            </footer>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </article>
+    </div>
 </section>

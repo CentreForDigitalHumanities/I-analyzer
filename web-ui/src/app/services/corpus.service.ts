@@ -58,7 +58,8 @@ export class CorpusService {
             data.es_index,
             allFields,
             this.parseDate(data.min_date),
-            this.parseDate(data.max_date));
+            this.parseDate(data.max_date),
+            data.image);
     }
 
     private parseField(data: any): CorpusField {
@@ -66,8 +67,9 @@ export class CorpusService {
             description: data.description,
             displayName: data.display_name || data.name,
             displayType: data.display_type || data['es_mapping'].type,
-            prominentField: data.prominent_field,
-            termFrequency: data.term_frequency,
+            resultsOverview: data.results_overview,
+            preselected: data.preselected,
+            visualizationType: data.visualization_type,
             hidden: data.hidden,
             sortable: data.sortable,
             name: data.name,

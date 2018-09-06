@@ -5,5 +5,5 @@ indexing*
 .cache
 *.egg-info
 *.egg
-.env/
 build/
+dist/

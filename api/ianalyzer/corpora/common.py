@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 import bs4
 import json
 import inspect
+import itertools
 
 from ianalyzer import extract
 
@@ -85,6 +86,13 @@ class Corpus(object):
         Each corpus should implement a list of fields, that is, instances of
         the `Field` class, containing information about each attribute.
         MUST include a field with `name='id'`.
+        '''
+        raise NotImplementedError()
+
+    @property
+    def image(self):
+        '''
+        Absolute url to static image.
         '''
         raise NotImplementedError()
 
@@ -173,7 +181,7 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    def source2dicts(self, filename, metadata={}):
+    def source2dicts(self, sources):
         '''
         Generate an iterator of document dictionaries from a given source file.
 
@@ -190,10 +198,9 @@ class Corpus(object):
         sources = sources or self.sources()
 
         return (document
-                for filename, metadata in sources
+                for source in sources
                 for document in self.source2dicts(
-                    filename=filename,
-                    metadata=metadata,
+                    source
                 )
                 )
 
@@ -217,12 +224,11 @@ class XMLCorpus(Corpus):
         '''
         raise NotImplementedError()
 
-    def source2dicts(self, filename, metadata={}):
+    def source2dicts(self, source):
         '''
         Generate a document dictionaries from a given XML file. This is the
         default implementation for XML layouts; may be subclassed if more
         '''
-
         # Make sure that extractors are sensible
         for field in self.fields:
             if not isinstance(field.extractor, (
@@ -235,35 +241,111 @@ class XMLCorpus(Corpus):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
 
+        # determine if the source contains multiple files
+        multiple = isinstance(source, list)
+
+        # split fields by external xml or document xml
+        (regular_fields, external_fields) = self.split_document_sources(
+            source) if multiple else (self.fields, {})
+
+        # extract information from external xml files first
+        external_dict = self.external_source2dict(
+            source, external_fields) if multiple else {}
+
+        # regular fields extraction
+        if multiple:
+            # document files are files with either no tag, or a tag that is not required for any external xml extraction
+            document_files = [(f, meta) for (f, meta) in source if (
+                'file_tag' not in meta) or (meta['file_tag'] not in external_fields)]
+        else:
+            document_files = [source]
+        for filename, metadata in document_files:
+            soup = self.soup_from_xml(filename)
+            # Extract fields from the soup
+            tag = self.xml_tag_entry
+            bowl = self.bowl_from_soup(soup)
+            if bowl:
+                for spoon in bowl.find_all(tag):
+                    # yield the union of external fields and document fields
+                    yield dict(itertools.chain(external_dict.items(),  {
+                        field.name: field.extractor.apply(
+                            # The extractor is put to work by simply throwing at it
+                            # any and all information it might need
+                            soup_top=bowl,
+                            soup_entry=spoon,
+                            metadata=metadata
+                        ) for field in regular_fields if field.indexed
+                    }.items()
+                    ))
+            else:
+                logger.warning(
+                    'Top-level tag not found in `{}`'.format(filename))
+
+    def external_source2dict(self, source, external_fields):
+        external_dict = {}
+        for file_tag in external_fields.keys():
+            files_by_tag = [(filename, metadata) for filename, metadata in source if (
+                'file_tag' in metadata) and (metadata['file_tag'] == file_tag)]
+            for filename, metadata in files_by_tag:
+                soup = self.soup_from_xml(filename)
+                # Extract fields from soup
+                for field in external_fields[file_tag]:
+                    tag = field.extractor.external_file['xml_tag_entry']
+                    bowl = self.bowl_from_soup(
+                        soup, field.extractor.external_file['xml_tag_toplevel'])
+                    if bowl:
+                        for spoon in bowl.find_all(tag):
+                            external_dict[field.name] = field.extractor.apply(
+                                soup_top=bowl,
+                                soup_entry=spoon,
+                                metadata=metadata
+                            )
+                    else:
+                        logger.warning(
+                            'Top-level tag not found in `{}`'.format(filename))
+        return external_dict
+
+    def split_document_sources(self, source):
+        regular_fields = list()
+        external_fields = {}
+        for field in self.fields:
+            try:
+                tag = field.extractor.external_file['file_tag']
+                if tag:
+                    if tag in external_fields.keys():
+                        external_fields[tag].append(field)
+                    else:
+                        external_fields[tag] = [field]
+                else:
+                    regular_fields.append(field)
+            except AttributeError:
+                regular_fields.append(field)
+        return regular_fields, external_fields
+
+    def soup_from_xml(self, filename):
+        '''
+        Returns beatifulsoup soup object for a given xml file
+        '''
         # Loading XML
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
             data = f.read()
-
         # Parsing XML
-        soup = bs4.BeautifulSoup(data, 'lxml-xml')
+        logger.info('Loaded {} into memory...'.format(filename))
 
-        logger.info('Loaded {} into memory ...'.format(filename))
+        return bs4.BeautifulSoup(data, 'lxml-xml')
 
-        # Extract fields from soup
-        tag0 = self.xml_tag_toplevel
-        tag = self.xml_tag_entry
-        bowl = soup.find(tag0) if tag0 else soup
-        if bowl:
-            # Note that this is non-recursive: will only find direct descendants of the top-level tag
-            for spoon in bowl.find_all(tag):
-                yield {
-                    field.name: field.extractor.apply(
-                        # The extractor is put to work by simply throwing at it
-                        # any and all information it might need
-                        soup_top=bowl,
-                        soup_entry=spoon,
-                        metadata=metadata
-                    ) for field in self.fields if field.indexed
-                }
-        else:
-            logger.warning('Top-level tag not found in `{}`'.format(filename))
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
+        '''
+        Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
+        If no such tag is present, it contains the entire soup.
+        '''
+        if toplevel_tag == None:
+            toplevel_tag = self.xml_tag_toplevel
+        if entry_tag == None:
+            entry_tag = self.xml_tag_entry
 
+        return soup.find(toplevel_tag) if toplevel_tag else soup
 
 class HTMLCorpus(Corpus):
     '''
@@ -332,14 +414,13 @@ class HTMLCorpus(Corpus):
 
 # Fields ######################################################################
 
-
 class Field(object):
     '''
     Fields hold data about the name of their columns in CSV files, how the
     corresponding content is to be extracted from the source, how they are
     described in user interfaces, whether the field lends itself to term
-    frequency queries, whether it has prominent information
-    for the user interface,
+    frequency queries, whether it appears in the results overview
+    of the user interface, whether it is preselected to search in / download
     what ElasticSearch filters are associated
     with them, how they are mapped in the index, etcetera.
 
@@ -354,8 +435,9 @@ class Field(object):
                  description=None,
                  indexed=True,
                  hidden=False,
-                 term_frequency=False,
-                 prominent_field=False,
+                 results_overview=False,
+                 preselected=False,
+                 visualization_type=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
                  extractor=extract.Constant(None),
@@ -368,8 +450,9 @@ class Field(object):
         self.display_type = display_type
         self.description = description
         self.search_filter = search_filter
-        self.term_frequency = term_frequency
-        self.prominent_field = prominent_field
+        self.results_overview = results_overview
+        self.preselected = preselected
+        self.visualization_type = visualization_type
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden
