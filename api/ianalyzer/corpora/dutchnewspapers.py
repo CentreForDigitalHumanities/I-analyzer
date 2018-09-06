@@ -325,7 +325,7 @@ class DutchNewspapers(XMLCorpus):
             sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this distribution area.',
-                options=list(distribution_translation.keys())
+                options=list(distribution_translation.values())
             ),
             extractor=extract.XML(tag='spatial',
                                   toplevel=True,
@@ -349,7 +349,8 @@ class DutchNewspapers(XMLCorpus):
             sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this publication frequency.',
-                options=frequency_translation.values()),
+                options=list(frequency_translation.values())
+            ),
             extractor=extract.XML(tag='temporal',
                                   toplevel=True,
                                   recursive=True,
