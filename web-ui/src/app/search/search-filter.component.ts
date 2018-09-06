@@ -19,6 +19,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     public filterData: SearchFilterData;
 
     @Input()
+    public aggregations: any;
+
+    @Input()
     public warnBottleneck: boolean;
 
     @Output('update')
@@ -38,8 +41,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.data = this.getDisplayData(this.filter, this.filterData);
-        console.log(JSON.stringify(this.filterData));
+        console.log(changes);
+        this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
         /*if (changes['filterData']) {
             this.data = this.getDisplayData(this.filter, this.filterData);
         }*/
@@ -92,7 +95,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null) {
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregations: any = null) {
         if (filterData == null) {
             filterData = this.defaultFilterData(filter);
         }
@@ -104,8 +107,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (filter.counts!=undefined) {
-                        options = _.sortBy( filter.counts, x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
+                    if (aggregations) {
+                        options = _.sortBy( aggregations[filterData.fieldName], x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
                     }
                     else {
                         options = filter.options.map(x => {return { 'label': x, 'value': x }});

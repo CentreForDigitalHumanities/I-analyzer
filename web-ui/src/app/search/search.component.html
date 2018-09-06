@@ -87,7 +87,7 @@
                             </div>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                             [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
-                            (update)="updateFilterData(field.name, $event)"></search-filter>
+                            [aggregations]="allAggResults" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
