@@ -3,3 +3,7 @@
 ::ng-deep .ui-multiselect-panel {
     max-width: 300px;
 }
+
+::ng-deep .ui-inputtext {
+    border: 1px solid $primary;
+}
