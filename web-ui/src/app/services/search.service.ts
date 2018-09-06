@@ -116,6 +116,10 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator, size);
     }
 
+    public async aggregateSearches(corpus: Corpus, queryModel: QueryModel, aggregators: any){
+        return this.elasticSearchService.aggregateSearches(corpus, queryModel, aggregators);
+    }
+
     /**
      * Search and return a simple two-dimensional string array containing the values.
      */

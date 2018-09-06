@@ -16,6 +16,7 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
     @Input() public contents: string[];
+    @Input() public aggregations: any[];
 
     public asPercentage: boolean;
 
@@ -98,13 +99,17 @@ export class VisualizationComponent implements OnChanges {
             this.aggResults = result['data'];
         });
         }
-        else {
+        else if (visualizationType == 'timeline') {
             this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
                 this.visualizedField = visualizedField;
                 this.visualizationType = visualizationType;
                 this.aggResults = visual.aggregations;
             });
-        };
+        }
+        else {
+            console.log(visualizedField);
+            this.aggResults = this.aggregations[visualizedField].buckets;
+        }
     }
     
     showTable() {

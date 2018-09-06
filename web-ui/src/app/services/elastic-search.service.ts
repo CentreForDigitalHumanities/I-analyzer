@@ -75,12 +75,12 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string, size: number) {
+    makeAggregation(aggregator: string, size: number, min_doc_count: number) {
         let aggregation = {
             terms: {
                 field: aggregator,
                 size: size,
-                min_doc_count: 5
+                min_doc_count: min_doc_count
             }
         }
         return aggregation;
@@ -159,7 +159,7 @@ export class ElasticSearchService {
     }
 
     public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string, size: number): Promise<AggregateResults<TKey>> {
-        let aggregation = this.makeAggregation(aggregator, size);
+        let aggregation = this.makeAggregation(aggregator, size, 1);
         let esQuery = this.makeEsQuery(queryModel);
         let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
@@ -167,10 +167,25 @@ export class ElasticSearchService {
 
         // Extract relevant information from dictionary returned by ES
         let aggregations = result.aggregations;
-        let buckets = aggregator=="wordcloud"? aggregations[aggregator].keywords.buckets : aggregations[aggregator].buckets;
+        let buckets = aggregations[aggregator].buckets;
         return {
             completed: true,
             aggregations: buckets
+        };
+    }
+
+    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: any[]): Promise<AggregateResults<TKey>> {
+        let aggregations = {}
+        aggregators.forEach(d => {
+            aggregations[d.name] =  this.makeAggregation(d.name, d.size, 1);
+        });
+        let esQuery = this.makeEsQuery(queryModel);
+        let connection = (await this.connections)[corpusDefinition.serverName];
+        let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
+        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        return {
+            completed: true,
+            aggregations: result.aggregations
         };
     }
 

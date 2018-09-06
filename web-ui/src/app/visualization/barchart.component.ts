@@ -43,6 +43,7 @@ export class BarChartComponent implements OnChanges {
     private xBarWidth: number;
 
     ngOnChanges(changes: SimpleChanges) {
+        console.log(changes);
         if (this.searchData && this.visualizedField) {
             this.calculateCanvas();
             this.prepareTermFrequency();

@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public results: SearchResults;
     public contents: string[];
 
-    public allAggResults = {};
+    public allAggResults: any;
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
@@ -272,25 +272,17 @@ export class SearchComponent implements OnInit, OnDestroy {
     private aggregateSearches() {
         let multipleChoiceFilters = this.corpus.fields
           .filter( field => field.searchFilter && field.searchFilter.name=="MultipleChoiceFilter")
-          .map ( d => ({name: d.name, searchFilter: d.searchFilter as MultipleChoiceFilter}) );
-        multipleChoiceFilters.forEach( ({name, searchFilter}) => {
-            // querying as many parameters from keyword field as defined in corpus definition
-            //if (filter.searchFilter).options {
-            let size = searchFilter.options.length;
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, name, size).then( aggResults => {
-                this.allAggResults[name] = aggResults.aggregations;
-                //searchFilter.counts = aggResults.aggregations;
-                console.log("agg search!");
-            }, error => {
-                this.showError = {
-                    date: (new Date()).toISOString(),
-                    href: location.href,
-                    message: error.message || 'An unknown error occurred'
-                };
+          .map ( d => ({name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length}) );
+        this.searchService.aggregateSearches(this.corpus, this.queryModel, multipleChoiceFilters).then( results => {
+            this.allAggResults = results.aggregations;
+        }, error => {
+            this.showError = {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
             console.trace(error);
-            });
-        //}
-        });
+        })
     }
 
     private getCsvFields(): CorpusField[] {

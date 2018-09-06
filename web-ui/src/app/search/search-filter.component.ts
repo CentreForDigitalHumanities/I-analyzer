@@ -41,11 +41,10 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log(changes);
-        this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
-        /*if (changes['filterData']) {
-            this.data = this.getDisplayData(this.filter, this.filterData);
-        }*/
+        //this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
+        if (changes['aggregations'] && changes['aggregations'].currentValue!=undefined) {
+            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
+        }
         if (changes['field']) {
             // make sure the filter data is reset if only the field was changed
             this.update(true);
@@ -107,8 +106,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (aggregations) {
-                        options = _.sortBy( aggregations[filterData.fieldName], x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
+                    if (aggregations!=null) {
+                        options = _.sortBy( aggregations[filterData.fieldName].buckets, x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
                     }
                     else {
                         options = filter.options.map(x => {return { 'label': x, 'value': x }});
