@@ -104,7 +104,7 @@ class DutchNewspapers(XMLCorpus):
             preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
-            sortable=True,
+            # sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
                 options=papers
@@ -125,6 +125,7 @@ class DutchNewspapers(XMLCorpus):
             description='Issue number of the newspaper',
             results_overview=True,
             preselected=True,
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='issuenumber',
                                   toplevel=True,
                                   recursive=True,
