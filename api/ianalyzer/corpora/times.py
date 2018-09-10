@@ -95,8 +95,6 @@ class Times(XMLCorpus):
 
             date += delta
 
-    # overview_fields = ['title', 'author',
-    #                    'publication-date', 'journal', 'edition']
 
     fields = [
         Field(
