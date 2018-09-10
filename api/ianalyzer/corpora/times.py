@@ -95,8 +95,8 @@ class Times(XMLCorpus):
 
             date += delta
 
-    overview_fields = ['title', 'author',
-                       'publication-date', 'journal', 'edition']
+    # overview_fields = ['title', 'author',
+    #                    'publication-date', 'journal', 'edition']
 
     fields = [
         Field(
@@ -377,6 +377,7 @@ class Times(XMLCorpus):
             display_name='Title',
             results_overview=True,
             preselected=True,
+            visualization_type='wordcloud',
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),

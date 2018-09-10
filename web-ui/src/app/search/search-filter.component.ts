@@ -55,7 +55,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         if (this.field) {
             this.data = this.getDisplayData(this.filter, this.filterData);
             // default values should also work as a filter: notify the parent
-            this.update();
+            // !!!!! Commented this out as this will cause each filter to trigger a search on page load
+            // -> cannot conceive of a situation where this would be necessary though?
+            //this.update();
         }
     }
 

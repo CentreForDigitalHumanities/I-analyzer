@@ -94,21 +94,25 @@ export class VisualizationComponent implements OnChanges {
         let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
         if (visualizationType == 'wordcloud') {
             this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
-            this.visualizedField = visualizedField;
-            this.visualizationType = visualizationType;
-            this.aggResults = result['data'];
-        });
+                this.visualizedField = visualizedField;
+                this.visualizationType = visualizationType; 
+                this.aggResults = result['data'];
+            });
         }
-        else if (visualizationType == 'timeline') {
+        else {
             this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
                 this.visualizedField = visualizedField;
                 this.visualizationType = visualizationType;
                 this.aggResults = visual.aggregations;
             });
         }
-        else {
-            this.aggResults = this.aggregations[visualizedField].buckets;
-        }
+        /* to do : use the results which were already fetched for the multiplechoice filters
+        * we will probably need to use Observables for this to notify bar chart component of changes
+        * the code below does *not* trigger the change
+        */
+        // else {
+        //     this.aggResults = this.aggregations[visualizedField].buckets;
+        // }
     }
     
     showTable() {

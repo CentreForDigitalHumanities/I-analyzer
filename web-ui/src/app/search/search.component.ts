@@ -68,7 +68,7 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public searchQueryText: string;
     public results: SearchResults;
-    public contents: string[];
+    public wordCloudData: string[];
 
     public allAggResults: any;
 
@@ -76,6 +76,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
+
+    private wordCloudFields: string[];
 
     /**
      * For failed searches.
@@ -118,6 +120,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
                 if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
                     this.showVisualizationButton = true;
+                    this.wordCloudFields = this.corpus.fields.filter(field => 
+                        field.visualizationType && field.visualizationType=='wordcloud'
+                    ).map( field =>
+                        field.name
+                    );
                 }
 
                 if (fieldsSet || params.has('query')) {
@@ -138,35 +145,18 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
 
-    public enableFilter(name: string) {
+    // turn a filter on/off via the filter icon
+    public toggleFilter(name:string) {
+        let field = this.queryField[name];
+        let activated = !field.useAsFilter;
+        this.applyFilter(name, activated)
+    }
+
+    public applyFilter(name:string, activated:boolean) {
         this.hasModifiedFilters = true;
         let field = this.queryField[name];
-        field.useAsFilter = true;
-        this.toggleFilterFields();
-    }
-
-    // control whether a given filter is applied or not
-    public toggleFilter(name:string, event) {
-        this.hasModifiedFilters = true;
-        let field = this.queryField[name];
-        field.useAsFilter = !field.useAsFilter;
-        this.performSearch();
-    }
-
-    // fields that are used as filters aren't searched in
-    public toggleFilterFields() {
-        // (De)selecting filters also yields different results.
-        this.hasModifiedFilters = true;
-    }
-
-    // fields that are searched in aren't used as filters
-    public toggleQueryFields(event) {
-        // We don't allow searching and filtering by the same field.
-        for (let field of event.value) {
-            field.useAsFilter = false;
-        }
-        // Searching in different fields also yields different results.
-        this.hasModifiedFilters = true;
+        field.useAsFilter = activated;
+        this.search();
     }
 
     public changeSorting(event: SortEvent) {
@@ -217,9 +207,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
-        if (this.hasSearched!=undefined && previousData != data) {
-            this.enableFilter(name);         
-            this.search();
+        if ((<string[]>data.data).length == 0) {
+            // empty multiple choice filters are automatically deactivated
+            this.applyFilter(name, false);
+        }
+        else if (previousData != undefined && previousData != data ) {
+            this.applyFilter(name, true);
         }
         this.changeDetectorRef.detectChanges();
     }
@@ -249,7 +242,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.contents = results.documents.map( d => d.fieldValues['content'] );
+            this.wordCloudData = _.flatten(this.wordCloudFields.map(name => results.documents.map(d => d.fieldValues[name])));
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
@@ -263,11 +256,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         });
         this.aggregateSearches();
         this.showFilters = true;
-        /** 
-        To do:
-        - remove/grey out filters which don't have options with current selection
-        - when a filter doesn't have data, disable it
-        */
     }
 
     private aggregateSearches() {
