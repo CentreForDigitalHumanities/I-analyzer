@@ -400,8 +400,11 @@ class Field(object):
             es_mapping['type'] in ['integer', 'float', 'date']
 
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
-        self.searchable = searchable if searchable != None else not hidden and \
-            self.es_mapping['type'] in ['text']
+        # Keyword fields without a filter are also searchable.
+        self.searchable = searchable if searchable != None else \
+            not hidden and indexed and \
+            ((self.es_mapping['type'] == 'text') or
+             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
 
         # Add back reference to field in filter
         if self.search_filter:
