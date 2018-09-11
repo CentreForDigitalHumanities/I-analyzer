@@ -326,6 +326,7 @@ class XMLCorpus(Corpus):
         '''
         Returns beatifulsoup soup object for a given xml file
         '''
+        print ('soup_from_xml')
         # Loading XML
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
@@ -349,7 +350,7 @@ class XMLCorpus(Corpus):
 
 class HTMLCorpus(Corpus):
     '''
-    An XMLCorpus is any corpus that extracts its data from XML sources.
+    An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
 
     @property
@@ -366,37 +367,41 @@ class HTMLCorpus(Corpus):
         '''
         raise NotImplementedError()
 
-    def source2dicts(self, filename, metadata={}):
+    def source2dicts(self, source):
         '''
-        Generate a document dictionaries from a given XML file. This is the
-        default implementation for XML layouts; may be subclassed if more
+        Generate a document dictionaries from a given HTML file. This is the
+        default implementation for HTML layouts; may be subclassed if more
         '''
+        (filename, metadata) = source
 
         # Make sure that extractors are sensible
         for field in self.fields:
             if not isinstance(field.extractor, (
                 extract.Choice,
                 extract.Combined,
-                extract.XML,
+                extract.HTML,
                 extract.Metadata,
                 extract.Constant
             )):
                 raise RuntimeError(
-                    "Specified extractor method cannot be used with an XML corpus")
+                    "Specified extractor method cannot be used with an HTML corpus")
 
-        # Loading XML
-        logger.info('Reading XML file {} ...'.format(filename))
+        # Loading HTML
+        logger.info('Reading HTML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
             data = f.read()
-        # Parsing XML
+        # Parsing HTML
         soup = bs4.BeautifulSoup(data, 'html.parser')
         logger.info('Loaded {} into memory ...'.format(filename))
 
         # Extract fields from soup
         tag0 = self.xml_tag_toplevel
         tag = self.xml_tag_entry
+
         bowl = soup.find(tag0) if tag0 else soup
-        if bowl:
+
+        # if there is a entry level tag, with html this is not always the case
+        if bowl and tag:
             # Note that this is non-recursive: will only find direct descendants of the top-level tag
             for spoon in bowl.find_all(tag):
                 # yield
@@ -410,8 +415,20 @@ class HTMLCorpus(Corpus):
                     ) for field in self.fields if field.indexed
                 }
         else:
-            logger.warning('Top-level tag not found in `{}`'.format(filename))
+            # yield all page content
+            yield {
+                field.name: field.extractor.apply(
+                    # The extractor is put to work by simply throwing at it
+                    # any and all information it might need
+                    soup_top='',
+                    soup_entry=soup,
+                    metadata=metadata
+                ) for field in self.fields if field.indexed
+             }
 
+
+
+        
 # Fields ######################################################################
 
 class Field(object):

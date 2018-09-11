@@ -252,3 +252,139 @@ class XML(Extractor):
                 node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
             ]
+
+
+class HTML(Extractor):
+    '''
+    This extractor extracts attributes or contents from a BeautifulSoup node.
+    '''
+
+
+    def __init__(self,
+        tag=[], # Tag to select. When this is a list, read as a path (e.g.
+                # select successive children; makes sense when recursive=False)
+        attribute=None, # Which attribute, if any, to select
+        flatten=False, # Flatten the text content of a non-text children?
+        toplevel=False, # Tag to select for search: top-level or entry tag
+        recursive=False, # Whether to search all descendants
+        multiple=False, # Whether to abandon the search after the first element
+        external_file={ # Whether to search other xml files for this field, and the file tag these files should have
+            'file_tag':None,
+            'xml_tag_toplevel': None,
+            'xml_tag_entry': None},
+        attribute_filter={ # Whether to search other xml files for this field, and the file tag these files should have
+            'attribute':None,
+            'value': None}, 
+        *nargs,
+        **kwargs
+        ):
+
+        self.tag = tag
+        self.attribute = attribute
+        self.flatten = flatten
+        self.toplevel = toplevel
+        self.recursive = recursive
+        self.multiple = multiple
+        self.external_file = external_file
+        self.attribute_filter = attribute_filter
+        super().__init__(*nargs, **kwargs)
+
+
+
+    def _select(self, soup):
+        '''
+        Return the BeautifulSoup element that matches the constraints of this
+        extractor.
+        '''
+        # If the tag was a path, walk through it before continuing
+        tag = self.tag
+        
+        if isinstance(self.tag, list):
+            if len(tag) == 0:
+                return soup
+            for i in range(0, len(self.tag)-1):
+                if self.tag[i] == '..':
+                    soup = soup.parent
+                elif self.tag[i] == '.':
+                    pass
+                else:
+                    soup = soup.find(self.tag[i], recursive=self.recursive)
+
+                if not soup:
+                    return None
+            tag = self.tag[-1]
+
+        # Find and return (all) relevant BeautifulSoup element(s)
+        if self.multiple:
+            return soup.find_all(tag, recursive=self.recursive)
+        else: 
+            return( soup.find(tag, { self.attribute_filter['attribute'] : self.attribute_filter['value'] }))
+          
+
+
+    def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
+
+        # Select appropriate BeautifulSoup element
+        soup = self._select(soup_top if self.toplevel else soup_entry)
+        if not soup:
+            return None
+       
+        # Use appropriate extractor
+        if self.attribute:
+            return self._attr(soup)
+        else:
+            if self.flatten:
+                return self._flatten(soup)
+            else:
+                return self._string(soup)
+
+       
+       
+
+    def _string(self, soup):
+        '''
+        Output direct text contents of a node.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            return soup.string
+        else:
+            return [ node.string for node in soup ]
+
+
+
+
+    def _flatten(self, soup):
+        '''
+        Output text content of node and descendant nodes, disregarding
+        underlying XML structure.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            text = soup.get_text()
+        else:
+            text = '\n\n'.join(node.get_text() for node in soup)
+
+        _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
+        _newlines  = re.compile('\n+')
+
+        return html.unescape(
+            _newlines.sub('\n',
+                _softbreak.sub(' ', text)
+            ).strip()
+        )
+
+
+
+    def _attr(self, soup):
+        '''
+        Output content of nodes' attribute.
+        '''
+
+        if isinstance(soup, bs4.element.Tag):
+            return soup.attrs.get(self.attribute)
+        else:
+            return [
+                node.attrs.get(self.attribute)
+                for node in soup if node.attrs.get(self.attribute) is not None
+            ]

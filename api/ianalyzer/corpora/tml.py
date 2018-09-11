@@ -13,7 +13,7 @@ import re
 from ianalyzer import config_fallback as config
 from ianalyzer import extract
 from ianalyzer import filters
-from ianalyzer.corpora.common import HTMLCorpus, Field, until, after, string_contains
+from ianalyzer.corpora.common import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
 
 
 # Source files ################################################################
@@ -29,8 +29,8 @@ class Tml(HTMLCorpus):
     es_doctype = config.TML_ES_DOCTYPE
     es_settings = None
 
-    xml_tag_toplevel = 'html'
-    xml_tag_entry = 'head'
+    xml_tag_toplevel = '' # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
+    xml_tag_entry = ''
 
     # New data members
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
@@ -50,28 +50,92 @@ class Tml(HTMLCorpus):
                         # we spitten nu losse betanden door
                         full_path = join(directory, filename)
                         yield full_path, {
-
                         }
 
     fields = [
 
+         Field(
+            name='author',
+            display_name='author',
+            prominent_field=True,
+            description='Author.',
+            extractor=extract.HTML(tag='p', attribute_filter={
+                                        'attribute': 'class',
+                                        'value': 'author',
+                                  })
+        ),
+
         Field(
             name='title',
-            display_name='Title',
+            display_name='title',
             prominent_field=True,
-            description='Article title.',
-            extractor=extract.XML(tag='title')
-        )
+            description='Title.',
+            extractor=extract.HTML(tag='p', attribute_filter={
+                                        'attribute': 'class',
+                                        'value': 'title',
+                                  })
+        ),
 
+        Field(
+            name='source',
+            display_name='source',
+            prominent_field=True,
+            description='Source.',
+            extractor=extract.HTML(tag='p', flatten=True,
+                                    attribute_filter={
+                                        'attribute': 'class',
+                                        'value': 'tmlSource',
+                                  })
+        ),
+        
+         Field(
+            name='Prepared_by',
+            display_name='prepared by',
+            display_type='text_content',
+            description='Electronic version prepared by.',
+            prominent_field=True,
+            extractor=extract.HTML(tag='span', flatten=True,
+                                 attribute_filter={
+                                        'attribute': 'class',
+                                        'value': 'eca-span',
+                                  })
+        ),
+
+        Field(
+            name='content',
+            display_name='Content',
+            display_type='text_content',
+            description='Text content.',
+            prominent_field=True,
+            extractor=extract.HTML(tag='div', flatten=True,
+                                 attribute_filter={
+                                        'attribute': 'id',
+                                        'value': 'tml-text',
+                                  })
+        ),
+
+        Field(
+            name='copy statement',
+            display_name='copy statement',
+            display_type='text_content',
+            description='Copy statement.',
+            prominent_field=True,
+            extractor=extract.HTML(tag='div', flatten=True,
+                                 attribute_filter={
+                                        'attribute': 'id',
+                                        'value': 'cc-copy-statement',
+                                  })
+        ),
+               
     ]
 
 
 if __name__ == '__main__':
-    t = Tml()
+    corpus_object = Tml()
     # d = t.documents()
-    s = t.sources()
-    d = t.documents()
+    # s = t.sources()
+    alle_documenten = corpus_object.documents()
 
-    for si in d:
-        print(si)
+    for document in alle_documenten:
+        print(document)
     # print(next(d))
