@@ -114,14 +114,14 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
+                if (corpus.fields.filter(field => field.visualizationType != undefined).length > 0) {
                     this.showVisualizationButton = true;
                 }
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
-        });
+            });
     }
 
     ngOnDestroy() {
@@ -144,7 +144,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     // control whether a given filter is applied or not
-    public toggleFilter(name:string, event) {
+    public toggleFilter(name: string, event) {
         this.hasModifiedFilters = true;
         let field = this.queryField[name]
         field.useAsFilter = !field.useAsFilter;
@@ -212,7 +212,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public updateFilterData(name: string, data: SearchFilterData) {
-        if (this.hasSearched!=undefined && this.queryField[name].data != data) {
+        if (this.hasSearched != undefined && this.queryField[name].data != data) {
             this.enableFilter(name);
         }
         this.queryField[name].data = data;
@@ -244,7 +244,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.contents = results.documents.map( d => d.fieldValues['content'] );
+            this.contents = results.documents.map(d => d.fieldValues['content']);
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
@@ -344,7 +344,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.availableQueryFields = Object.values(this.queryField).filter(field => !field.hidden);
+        this.availableQueryFields = Object.values(this.queryField).filter(field => field.searchable);
         return fieldsSet;
     }
 
@@ -364,12 +364,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private selectCsvFieldsEvent(selection: QueryField[]) {
-        let fields = selection.map( field => field.name );
+        let fields = selection.map(field => field.name);
         // set first that no fields are downloaded, then set only the selected ones to download
-        Object.values(this.queryField).forEach( field => field.downloadInCsv = false );
+        Object.values(this.queryField).forEach(field => field.downloadInCsv = false);
         Object.values(this.queryField).filter(
-            field => _.indexOf(fields, field.name) != -1 ).forEach(
-            field => field.downloadInCsv = true );
+            field => _.indexOf(fields, field.name) != -1).forEach(
+                field => field.downloadInCsv = true);
     }
 }
 

@@ -72,6 +72,7 @@ export class CorpusService {
             visualizationType: data.visualization_type,
             hidden: data.hidden,
             sortable: data.sortable,
+            searchable: data.searchable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
         }

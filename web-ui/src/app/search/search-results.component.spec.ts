@@ -80,7 +80,8 @@ describe('Search Results Component', () => {
             displayType: 'text',
             searchFilter: null,
             hidden: false,
-            sortable: true
+            sortable: true,
+            searchable: false,
         };
     }
 

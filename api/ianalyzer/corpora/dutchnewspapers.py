@@ -166,7 +166,6 @@ class DutchNewspapers(XMLCorpus):
             preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
-            sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
                 options=papers
@@ -200,6 +199,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Issue number',
             description='Issue number of the newspaper',
             preselected=True,
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='issuenumber',
                                   toplevel=True,
                                   recursive=True,
@@ -317,7 +317,6 @@ class DutchNewspapers(XMLCorpus):
             preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
-            sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this distribution area.',
                 options=list(distribution.keys())
@@ -340,7 +339,6 @@ class DutchNewspapers(XMLCorpus):
             preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
-            sortable=True,
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this publication frequency.',
                 options=['Dag', 'Week', 'Maand'],
