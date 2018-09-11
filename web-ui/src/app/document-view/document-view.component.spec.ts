@@ -34,6 +34,7 @@ describe('DocumentViewComponent', () => {
             description: 'Description',
             hidden: false,
             sortable: false,
+            searchable: false,
             searchFilter: null
         }];
         component.document = {
