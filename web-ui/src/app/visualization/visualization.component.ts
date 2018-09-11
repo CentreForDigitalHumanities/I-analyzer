@@ -3,8 +3,6 @@ import { SelectItem, SelectItemGroup } from 'primeng/api';
 import { Corpus, AggregateResults, FoundDocument, QueryModel } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
 
-
-
 @Component({
     selector: 'visualization',
     templateUrl: './visualization.component.html',
@@ -41,7 +39,7 @@ export class VisualizationComponent implements OnChanges {
     }
 
     ngOnInit() {
-        // Initial values 
+        // Initial values
         this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
     }
@@ -93,9 +91,9 @@ export class VisualizationComponent implements OnChanges {
     setVisualizedField(visualizedField: string) {
         let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
         if (visualizationType == 'wordcloud') {
-            this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
+            this.apiService.getWordcloudData({ 'content_list': this.contents }).then(result => {
                 this.visualizedField = visualizedField;
-                this.visualizationType = visualizationType; 
+                this.visualizationType = visualizationType;
                 this.aggResults = result['data'];
             });
         }
@@ -114,7 +112,7 @@ export class VisualizationComponent implements OnChanges {
         //     this.aggResults = this.aggregations[visualizedField].buckets;
         // }
     }
-    
+
     showTable() {
         this.freqtable = true;
     }

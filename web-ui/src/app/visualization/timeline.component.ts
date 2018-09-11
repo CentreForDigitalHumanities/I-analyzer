@@ -120,7 +120,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.bins = this.histogram(inputData);
         this.bins.forEach(d => {
             if (d.length != 0) {
-                d.doc_count = _.sumBy(d, item => item.doc_count);
+                d.doc_count = _.sumBy(d, (item: any) => item.doc_count);
             }
             else {
                 d.doc_count = 0;

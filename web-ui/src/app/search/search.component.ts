@@ -118,11 +118,11 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.visualizationType!=undefined).length > 0) {
+                if (corpus.fields.filter(field => field.visualizationType != undefined).length > 0) {
                     this.showVisualizationButton = true;
-                    this.wordCloudFields = this.corpus.fields.filter(field => 
-                        field.visualizationType && field.visualizationType=='wordcloud'
-                    ).map( field =>
+                    this.wordCloudFields = this.corpus.fields.filter(field =>
+                        field.visualizationType && field.visualizationType == 'wordcloud'
+                    ).map(field =>
                         field.name
                     );
                 }
@@ -130,7 +130,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
-        });
+            });
     }
 
     ngOnDestroy() {
@@ -146,13 +146,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     // turn a filter on/off via the filter icon
-    public toggleFilter(name:string) {
+    public toggleFilter(name: string) {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
         this.applyFilter(name, activated)
     }
 
-    public applyFilter(name:string, activated:boolean) {
+    public applyFilter(name: string, activated: boolean) {
         this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = activated;
@@ -211,7 +211,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
         }
-        else if (previousData != undefined && previousData != data ) {
+        else if (previousData != undefined && previousData != data) {
             this.applyFilter(name, true);
         }
         this.changeDetectorRef.detectChanges();
@@ -260,9 +260,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private aggregateSearches() {
         let multipleChoiceFilters = this.corpus.fields
-          .filter( field => field.searchFilter && field.searchFilter.name=="MultipleChoiceFilter")
-          .map ( d => ({name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length}) );
-        this.searchService.aggregateSearches(this.corpus, this.queryModel, multipleChoiceFilters).then( results => {
+            .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
+            .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
+        this.searchService.aggregateSearches(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
             this.allAggResults = results.aggregations;
         }, error => {
             this.showError = {
@@ -379,12 +379,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private selectCsvFieldsEvent(selection: QueryField[]) {
-        let fields = selection.map( field => field.name );
+        let fields = selection.map(field => field.name);
         // set first that no fields are downloaded, then set only the selected ones to download
-        Object.values(this.queryField).forEach( field => field.downloadInCsv = false );
+        Object.values(this.queryField).forEach(field => field.downloadInCsv = false);
         Object.values(this.queryField).filter(
-            field => _.indexOf(fields, field.name) != -1 ).forEach(
-            field => field.downloadInCsv = true );
+            field => _.indexOf(fields, field.name) != -1).forEach(
+                field => field.downloadInCsv = true);
     }
 }
 
