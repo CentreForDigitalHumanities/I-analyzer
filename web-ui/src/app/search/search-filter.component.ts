@@ -54,10 +54,6 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     ngOnInit() {
         if (this.field) {
             this.data = this.getDisplayData(this.filter, this.filterData);
-            // default values should also work as a filter: notify the parent
-            // !!!!! Commented this out as this will cause each filter to trigger a search on page load
-            // -> cannot conceive of a situation where this would be necessary though?
-            //this.update();
         }
     }
 
@@ -109,7 +105,14 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 if (filter.name == filterData.filterName) {
                     let options = [];
                     if (aggregations!=null) {
-                        options = _.sortBy( aggregations[filterData.fieldName].buckets, x => x.key ).map(x => { return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } });
+                        // sort options of multiple choice filter by name
+                        // add counts of available results to labels
+                        options = _.sortBy(
+                            aggregations[filterData.fieldName].buckets, x => x.key
+                        ).map(
+                            x => { 
+                                return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
+                        });
                     }
                     else {
                         options = filter.options.map(x => {return { 'label': x, 'value': x }});
