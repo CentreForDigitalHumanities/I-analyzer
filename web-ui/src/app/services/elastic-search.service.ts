@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import * as _ from 'lodash';
 import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
@@ -177,7 +176,7 @@ export class ElasticSearchService {
     public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: any[]): Promise<AggregateResults<TKey>> {
         let aggregations = {}
         aggregators.forEach(d => {
-            aggregations[d.name] =  this.makeAggregation(d.name, d.size, 1);
+            aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
         let esQuery = this.makeEsQuery(queryModel);
         let connection = (await this.connections)[corpusDefinition.serverName];

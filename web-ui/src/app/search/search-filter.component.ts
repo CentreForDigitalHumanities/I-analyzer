@@ -42,7 +42,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges) {
         //this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
-        if (changes['aggregations'] && changes['aggregations'].currentValue!=undefined) {
+        if (changes['aggregations'] && changes['aggregations'].currentValue != undefined) {
             this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
         }
         if (changes['field']) {
@@ -115,9 +115,9 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                         });
                     }
                     else {
-                        options = filter.options.map(x => {return { 'label': x, 'value': x }});
+                        options = filter.options.map(x => { return { 'label': x, 'value': x } });
                     }
-                    
+
                     return { options: options, selected: filterData.data };
                 }
                 break;
