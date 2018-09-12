@@ -216,7 +216,6 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.enableFilter(name);
         }
         this.queryField[name].data = data;
-        console.log(data);
         this.changeDetectorRef.detectChanges();
     }
 
