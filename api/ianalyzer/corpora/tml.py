@@ -28,8 +28,9 @@ class Tml(HTMLCorpus):
     es_index = config.TML_ES_INDEX
     es_doctype = config.TML_ES_DOCTYPE
     es_settings = None
+    image = config.TML_IMAGE
 
-    xml_tag_toplevel = '' # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
+    xml_tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
     xml_tag_entry = ''
 
     # New data members
@@ -49,31 +50,41 @@ class Tml(HTMLCorpus):
                     if filename != '.DS_Store':
                         # we spitten nu losse betanden door
                         full_path = join(directory, filename)
-                        yield full_path, {
-                        }
+                        yield full_path, {'id': filename
+                                          }
 
     fields = [
 
-         Field(
+        Field(
+            name='id',
+            display_name='ID',
+            description='Article identifier.',
+            extractor=extract.Metadata('id',
+                                       transform=lambda x: x.lower()
+                                       )
+        ),
+        Field(
             name='author',
             display_name='author',
             prominent_field=True,
+            results_overview=True,
             description='Author.',
             extractor=extract.HTML(tag='p', attribute_filter={
-                                        'attribute': 'class',
-                                        'value': 'author',
-                                  })
+                'attribute': 'class',
+                'value': 'author',
+            })
         ),
 
         Field(
             name='title',
             display_name='title',
             prominent_field=True,
+            results_overview=True,
             description='Title.',
             extractor=extract.HTML(tag='p', attribute_filter={
-                                        'attribute': 'class',
-                                        'value': 'title',
-                                  })
+                'attribute': 'class',
+                'value': 'title',
+            })
         ),
 
         Field(
@@ -82,23 +93,22 @@ class Tml(HTMLCorpus):
             prominent_field=True,
             description='Source.',
             extractor=extract.HTML(tag='p', flatten=True,
-                                    attribute_filter={
-                                        'attribute': 'class',
-                                        'value': 'tmlSource',
-                                  })
+                                   attribute_filter={
+                                       'attribute': 'class',
+                                       'value': 'tmlSource',
+                                   })
         ),
-        
-         Field(
+
+        Field(
             name='Prepared_by',
             display_name='prepared by',
-            display_type='text_content',
             description='Electronic version prepared by.',
             prominent_field=True,
             extractor=extract.HTML(tag='span', flatten=True,
-                                 attribute_filter={
-                                        'attribute': 'class',
-                                        'value': 'eca-span',
-                                  })
+                                   attribute_filter={
+                                       'attribute': 'class',
+                                       'value': 'eca-span',
+                                   })
         ),
 
         Field(
@@ -108,34 +118,22 @@ class Tml(HTMLCorpus):
             description='Text content.',
             prominent_field=True,
             extractor=extract.HTML(tag='div', flatten=True,
-                                 attribute_filter={
-                                        'attribute': 'id',
-                                        'value': 'tml-text',
-                                  })
+                                   attribute_filter={
+                                       'attribute': 'id',
+                                       'value': 'tml-text',
+                                   })
         ),
 
         Field(
             name='copy statement',
             display_name='copy statement',
-            display_type='text_content',
             description='Copy statement.',
             prominent_field=True,
             extractor=extract.HTML(tag='div', flatten=True,
-                                 attribute_filter={
-                                        'attribute': 'id',
-                                        'value': 'cc-copy-statement',
-                                  })
+                                   attribute_filter={
+                                       'attribute': 'id',
+                                       'value': 'cc-copy-statement',
+                                   })
         ),
-               
+
     ]
-
-
-if __name__ == '__main__':
-    corpus_object = Tml()
-    # d = t.documents()
-    # s = t.sources()
-    alle_documenten = corpus_object.documents()
-
-    for document in alle_documenten:
-        print(document)
-    # print(next(d))

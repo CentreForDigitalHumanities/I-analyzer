@@ -326,7 +326,7 @@ class XMLCorpus(Corpus):
         '''
         Returns beatifulsoup soup object for a given xml file
         '''
-        print ('soup_from_xml')
+        print('soup_from_xml')
         # Loading XML
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
@@ -347,6 +347,7 @@ class XMLCorpus(Corpus):
             entry_tag = self.xml_tag_entry
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
+
 
 class HTMLCorpus(Corpus):
     '''
@@ -424,11 +425,9 @@ class HTMLCorpus(Corpus):
                     soup_entry=soup,
                     metadata=metadata
                 ) for field in self.fields if field.indexed
-             }
+            }
 
 
-
-        
 # Fields ######################################################################
 
 class Field(object):
