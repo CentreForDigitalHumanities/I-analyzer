@@ -104,7 +104,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (aggregations!=null) {
+                    if (aggregations != null) {
                         // sort options of multiple choice filter by name
                         // add counts of available results to labels
                         options = _.sortBy(
