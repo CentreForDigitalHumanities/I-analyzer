@@ -326,7 +326,6 @@ class XMLCorpus(Corpus):
         '''
         Returns beatifulsoup soup object for a given xml file
         '''
-        print('soup_from_xml')
         # Loading XML
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
