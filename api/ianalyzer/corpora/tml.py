@@ -30,8 +30,8 @@ class Tml(HTMLCorpus):
     es_settings = None
     image = config.TML_IMAGE
 
-    xml_tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
-    xml_tag_entry = ''
+    html_tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
+    html_tag_entry = ''
 
     # New data members
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
@@ -137,3 +137,19 @@ class Tml(HTMLCorpus):
         ),
 
     ]
+
+
+
+# if __name__ == '__main__':
+#     t = Tml()
+#     corpus_object = Tml()
+#     # d = t.documents()
+#     s = t.sources()
+#     d = t.documents()
+#     # s = t.sources()
+#     alle_documenten = corpus_object.documents()
+#     for si in d:
+#         print(si)
+#     for document in alle_documenten:
+#         print(document)
+#     # print(next(d))

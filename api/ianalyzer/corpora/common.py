@@ -348,20 +348,19 @@ class XMLCorpus(Corpus):
         return soup.find(toplevel_tag) if toplevel_tag else soup
 
 
-class HTMLCorpus(Corpus):
+class HTMLCorpus(XMLCorpus):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
-
     @property
-    def xml_tag_toplevel(self):
+    def html_tag_toplevel(self):
         '''
         The top-level tag in the XML source documents.
         '''
         raise NotImplementedError()
 
     @property
-    def xml_tag_entry(self):
+    def html_tag_entry(self):
         '''
         The XML tag that corresponds to a single document entry.
         '''
@@ -395,8 +394,8 @@ class HTMLCorpus(Corpus):
         logger.info('Loaded {} into memory ...'.format(filename))
 
         # Extract fields from soup
-        tag0 = self.xml_tag_toplevel
-        tag = self.xml_tag_entry
+        tag0 = self.html_tag_toplevel
+        tag = self.html_tag_entry
 
         bowl = soup.find(tag0) if tag0 else soup
 
