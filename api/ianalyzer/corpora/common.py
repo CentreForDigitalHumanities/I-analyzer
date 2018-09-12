@@ -378,6 +378,7 @@ class Field(object):
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
+                 searchable=None,
                  **kwargs
                  ):
 
@@ -394,17 +395,16 @@ class Field(object):
         self.hidden = not indexed or hidden
         self.extractor = extractor
 
-        # We need fields which can be easily mapped to an actual sortable
-        # field in Elastic Search. Sorting on XML, or combined fields
-        # is also possible but requires that this behavior is defined when
-        # performing a sorted search.
-        self.sortable = sortable if sortable != None else indexed and not hidden and \
-            not (isinstance(extractor, (
-                extract.Choice,
-                extract.Combined,
-                extract.XML,
-                extract.Constant
-            )))
+        self.sortable = sortable if sortable != None else \
+            not hidden and indexed and \
+            es_mapping['type'] in ['integer', 'float', 'date']
+
+        # Fields are searchable if they are not hidden and if they are mapped as 'text'.
+        # Keyword fields without a filter are also searchable.
+        self.searchable = searchable if searchable != None else \
+            not hidden and indexed and \
+            ((self.es_mapping['type'] == 'text') or
+             (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
 
         # Add back reference to field in filter
         if self.search_filter:
@@ -412,6 +412,7 @@ class Field(object):
 
 
 # Helper functions ############################################################
+
 
 def string_contains(target):
     '''

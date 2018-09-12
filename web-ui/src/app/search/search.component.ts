@@ -359,7 +359,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.availableQueryFields = Object.values(this.queryField).filter(field => !field.hidden);
+        this.availableQueryFields = Object.values(this.queryField).filter(field => field.searchable);
         return fieldsSet;
     }
 

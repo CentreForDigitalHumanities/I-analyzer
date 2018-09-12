@@ -3,9 +3,9 @@ import { SearchFilterData } from './search-filter-data';
 export class Corpus implements ElasticSearchIndex {
     constructor(
         public serverName,
-    /**
-     * Internal name for referring to this corpus e.g. in URLs.
-     */
+        /**
+         * Internal name for referring to this corpus e.g. in URLs.
+         */
         public name: string,
         /**
          * Human readable title of this corpus.
@@ -20,8 +20,8 @@ export class Corpus implements ElasticSearchIndex {
         public fields: CorpusField[],
         public minDate: Date,
         public maxDate: Date,
-        public image: string ) { }
-        
+        public image: string) { }
+
 }
 
 export type ElasticSearchIndex = {
@@ -45,13 +45,14 @@ export type CorpusField = {
     visualizationType?: string,
     hidden: boolean,
     sortable: boolean,
+    searchable: boolean,
     name: string,
     searchFilter: SearchFilter | null
 }
 
 export type QueryField = CorpusField & {
     data: SearchFilterData,
-    useAsFilter: boolean, 
+    useAsFilter: boolean,
     visible: boolean
 };
 
