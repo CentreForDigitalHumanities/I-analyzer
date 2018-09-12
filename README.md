@@ -33,7 +33,7 @@ To get an instance running, do the following. Ideally run using a `virtualenv`:
 npm install
 ```
 4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module.
-5. Go to `/api`, start a virtual environment with Python 3.
+5. Go to `/api`, start a virtual environment with Python 3. See instructions below for Python package installation and dependency management.
 6. Define that the startup code for the Flask application is located within. manage.py by exporting / setting the environment variable:
 - Mac/Linux:
 ```
@@ -49,6 +49,16 @@ set FLASK_APP=manage.py
 10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
 12. Go to `/web-ui` and follow the instructions in the README to start it.
+
+### Python package management
+
+Install `pip-tools` in your virtualenv. Run `pip-sync` or `pip install -r api/requirements.txt` in order to install all Python package dependencies. If you want to add a new package dependency, take the following steps:
+
+ 1. Add the package *without version number* to `api/requirements.in`,
+ 2. Run `pip-compile api/requirements.in` (you can just `pip-compile` if you `cd api` first). This will update the `api/requirements.txt` with a pinned version that cooperates well with the other packages.
+ 3. Commit the changes to `api/requirements.{in,txt}` at the same time.
+
+The above steps do not actually install the package; you can do this at any stage using `pip install` or afterwards using `pip-sync`.
 
 ### Testing
 
