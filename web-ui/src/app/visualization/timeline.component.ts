@@ -46,7 +46,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            console.log(this.searchData);
             if (changes['visualizedField'] != undefined) {
                 this.calculateCanvas();
                 this.prepareTimeline();

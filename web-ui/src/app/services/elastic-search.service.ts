@@ -173,13 +173,12 @@ export class ElasticSearchService {
         };
     }
 
-    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: any[]): Promise<AggregateResults<TKey>> {
+    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateResults<TKey>> {
         let aggregations = {}
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
         let esQuery = this.makeEsQuery(queryModel);
-        let connection = (await this.connections)[corpusDefinition.serverName];
         let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
         return {
@@ -309,3 +308,7 @@ type EsSearchClause = {
     match_all: {}
 };
 
+type Aggregator = {
+    name: string,
+    size: number
+};

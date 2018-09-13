@@ -61,7 +61,7 @@ export class VisualizationComponent implements OnChanges {
             )
             : [];
 
-        if (this.visualizedFields.length) {
+        if (!this.visualizedField) {
             this.setVisualizedField(this.visualizedFields[0].name);
         }
 
