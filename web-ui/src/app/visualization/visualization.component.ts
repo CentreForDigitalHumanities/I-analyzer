@@ -1,7 +1,8 @@
-import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { ElementRef, Input, Component, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, AggregateResults, FoundDocument, QueryModel } from '../models/index';
-import { SearchService, ApiService } from '../services/index';
+import { Corpus, AggregateResult, AggregateData, QueryModel } from '../models/index';
+import { SearchService, ApiService, DataService } from '../services/index';
 
 @Component({
     selector: 'visualization',
@@ -14,7 +15,7 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
     @Input() public contents: string[];
-    @Input() public aggregations: any[];
+    //@Input() public aggregateData: AggregateData;
 
     public asPercentage: boolean;
 
@@ -34,14 +35,25 @@ export class VisualizationComponent implements OnChanges {
     public chartElement: any;
     public aggResults: AggregateResult[];
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    public subscription: Subscription;
+    public aggregateData: AggregateData;
 
+    constructor(private searchService: SearchService, private dataService: DataService, private apiService: ApiService) {
+        this.subscription = this.dataService.searchData$.subscribe(
+            data => {
+                this.aggregateData = data;
+        });
     }
 
     ngOnInit() {
         // Initial values
+        console.log(this.aggregateData);
         this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -97,12 +109,21 @@ export class VisualizationComponent implements OnChanges {
                 this.aggResults = result['data'];
             });
         }
-        else {
+        else if (visualizationType == 'timeline') {
             this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
                 this.visualizedField = visualizedField;
                 this.visualizationType = visualizationType;
                 this.aggResults = visual.aggregations;
             });
+        }
+        else {
+            console.log(this.aggregateData);
+            this.aggResults = this.aggregateData[visualizedField];
+            // this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
+            //     this.visualizedField = visualizedField;
+            //     this.visualizationType = visualizationType;
+            //     this.aggResults = visual.aggregations;
+            // });
         }
         /* to do : use the results which were already fetched for the multiplechoice filters
         * we will probably need to use Observables for this to notify bar chart component of changes
@@ -121,9 +142,4 @@ export class VisualizationComponent implements OnChanges {
         this.freqtable = false;
         this.setVisualizedField(this.visualizedField);
     }
-}
-
-type AggregateResult = {
-    key: any,
-    doc_count: number
 }

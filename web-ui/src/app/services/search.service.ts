@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/map';
 
@@ -9,7 +8,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResults } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, SingleAggregateResults, MultipleAggregateResults } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -112,11 +111,11 @@ export class SearchService {
             corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
     }
 
-    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string, size: number): Promise<AggregateResults<TKey>> {
+    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string, size: number): Promise<SingleAggregateResults> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator, size);
     }
 
-    public async aggregateSearches(corpus: Corpus, queryModel: QueryModel, aggregators: any){
+    public async aggregateSearches(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<MultipleAggregateResults>{
         return this.elasticSearchService.aggregateSearches(corpus, queryModel, aggregators);
     }
 

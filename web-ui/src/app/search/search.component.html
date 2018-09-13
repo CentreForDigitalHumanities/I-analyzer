@@ -87,7 +87,7 @@
                             </div>
                             <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
                             [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
-                            [aggregations]="allAggResults" (update)="updateFilterData(field.name, $event)"></search-filter>
+                            [aggregateData]="aggregateData" (update)="updateFilterData(field.name, $event)"></search-filter>
                         </div>
                     </ng-container>
                 </div>
@@ -109,7 +109,7 @@
                     <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
                             <ng-template pTemplate="content">
                                 <div class="column">
-                                    <visualization [aggregations]="allAggResults" [queryModel]="queryModel" [corpus]="corpus" [contents]="wordCloudData"></visualization>
+                                    <visualization [queryModel]="queryModel" [corpus]="corpus" [contents]="wordCloudData"></visualization>
                                 </div>
                             </ng-template>
                     </p-tabPanel>

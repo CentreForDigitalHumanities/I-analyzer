@@ -18,11 +18,22 @@ export type SearchResults = {
     scrollId?: string
 }
 
-export type AggregateResults<TKey> = {
+export type MultipleAggregateResults = {
     completed: boolean,
-    aggregations: {
-        key: TKey,
-        doc_count: number,
-        key_as_string?: string
-    }[]
+    aggregations: AggregateData
+}
+
+export type SingleAggregateResults = {
+    completed: boolean,
+    aggregations: AggregateResult[]
+}
+
+export type AggregateResult = {
+    key: string,
+    doc_count: number,
+    key_as_string?: string
+}
+
+export type AggregateData = {
+    [fieldName: string]: AggregateResult[]
 }

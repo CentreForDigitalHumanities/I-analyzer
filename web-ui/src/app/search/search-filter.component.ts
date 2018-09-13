@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData, AggregateResult, AggregateData } from '../models/index';
 
 import * as _ from "lodash";
 
@@ -19,7 +19,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     public filterData: SearchFilterData;
 
     @Input()
-    public aggregations: any;
+    public aggregateData: AggregateData;
 
     @Input()
     public warnBottleneck: boolean;
@@ -42,8 +42,8 @@ export class SearchFilterComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges) {
         //this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
-        if (changes['aggregations'] && changes['aggregations'].currentValue != undefined) {
-            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
+        if (changes['aggregateData'] && changes['aggregateData'].currentValue != undefined) {
+            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
         }
         if (changes['field']) {
             // make sure the filter data is reset if only the field was changed
@@ -92,7 +92,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregations: any = null) {
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
         if (filterData == null) {
             filterData = this.defaultFilterData(filter);
         }
@@ -104,11 +104,11 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (aggregations != null) {
+                    if (aggregateData != null) {
                         // sort options of multiple choice filter by name
                         // add counts of available results to labels
                         options = _.sortBy(
-                            aggregations[filterData.fieldName].buckets, x => x.key
+                            aggregateData[filterData.fieldName], x => x.key
                         ).map(
                             x => { 
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 

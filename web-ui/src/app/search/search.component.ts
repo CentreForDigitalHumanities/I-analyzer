@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -7,8 +7,8 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
+import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, AggregateResult, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
     selector: 'ia-search',
@@ -70,7 +70,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public results: SearchResults;
     public wordCloudData: string[];
 
-    public allAggResults: any;
+    public aggregateData: AggregateData;
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
@@ -91,6 +91,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private subscription: Subscription | undefined;
 
     constructor(private corpusService: CorpusService,
+        private dataService: DataService,
         private downloadService: DownloadService,
         private searchService: SearchService,
         private userService: UserService,
@@ -263,7 +264,8 @@ export class SearchComponent implements OnInit, OnDestroy {
             .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
             .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
         this.searchService.aggregateSearches(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
-            this.allAggResults = results.aggregations;
+            this.aggregateData = results.aggregations;
+            this.dataService.pushNewSearchData(results.aggregations);
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),

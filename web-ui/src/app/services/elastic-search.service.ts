@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+import { Client, SearchResponse } from 'elasticsearch';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, SingleAggregateResults, MultipleAggregateResults } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -157,7 +157,7 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string, size: number): Promise<AggregateResults<TKey>> {
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string, size: number): Promise<SingleAggregateResults> {
         let aggregation = this.makeAggregation(aggregator, size, 1);
         let esQuery = this.makeEsQuery(queryModel);
         let connection = (await this.connections)[corpusDefinition.serverName];
@@ -173,7 +173,7 @@ export class ElasticSearchService {
         };
     }
 
-    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateResults<TKey>> {
+    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<MultipleAggregateResults> {
         let aggregations = {}
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
@@ -181,10 +181,14 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        let aggregateData = {}
+        Object.keys(result.aggregations).forEach(fieldName => {
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+        })
         return {
             completed: true,
-            aggregations: result.aggregations
-        };
+            aggregations: aggregateData
+        }
     }
 
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
@@ -312,3 +316,11 @@ type Aggregator = {
     name: string,
     size: number
 };
+
+type EsAggregateResult = {
+    [fieldName: string]: {
+        doc_count_error_upper_bound: number,
+        sum_other_doc_count: number,
+        buckets: AggregateResult[]
+    }
+}
