@@ -8,3 +8,7 @@
     border: 1px solid $primary;
     width: 80%;
 }
+
+::ng-deep .ui-calendar {
+    margin: 1px 0;
+}

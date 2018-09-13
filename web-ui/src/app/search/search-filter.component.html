@@ -13,6 +13,7 @@
     <div class="daterange" *ngIf="filter.name == 'DateFilter'" iaBalloon="This filter is preventing your query from returning any results. Please ensure that the first date in the range is not after the last date." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
         <p-calendar [(ngModel)]="data.min" [showIcon]="true" [minDate]="filter.lower" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
             (onBlur)="update()" dateFormat="yy-mm-dd"></p-calendar>
+        <br>
         <p-calendar [(ngModel)]="data.max" [showIcon]="true" [maxDate]="filter.upper" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
             (onBlur)="update()" dateFormat="yy-mm-dd"></p-calendar>
     </div>
