@@ -13,7 +13,7 @@ import "rxjs/add/observable/combineLatest";
 export class ManualNavigationComponent implements OnInit {
     private manifest = new Subject<ManualPageMetaData[]>();
     private filterTextSubject = new BehaviorSubject<string>('');
-    private filtered = Observable.combineLatest(
+    public filtered = Observable.combineLatest(
         this.manifest,
         this.filterTextSubject,
         (manifest, filterText) => {

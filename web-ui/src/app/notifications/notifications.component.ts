@@ -19,7 +19,7 @@ export class NotificationsComponent implements OnDestroy {
     defaultTimeout = 10000;
 
     subscription: Subscription;
-    private notifications: NotificationDisplay[] = [];
+    public notifications: NotificationDisplay[] = [];
 
     constructor(notificationService: NotificationService) {
         this.subscription = notificationService.observable.subscribe(notification => this.showNotification(notification));
