@@ -121,7 +121,7 @@ class DutchNewspapers(XMLCorpus):
         "Zentralbibliothek, Zürich"
     ]
 
-    distribution = {
+    distribution_translation = {
         'Landelijk': 'National',
         'Nederlands-Indië / Indonesië': 'Dutch East Indies/Indonesia',
         'Nederlandse Antillen': 'Netherlands Antilles',
@@ -129,6 +129,11 @@ class DutchNewspapers(XMLCorpus):
         'Suriname': 'Surinam',
         'Verenigde Staten': 'United States of America',
         'onbekend': 'unknown',
+    }
+
+    frequency_translation = {
+        'Dag': 'Daily',
+        'Week': 'Weekly',
     }
 
     fields = [
@@ -319,7 +324,7 @@ class DutchNewspapers(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this distribution area.',
-                options=list(distribution.keys())
+                options=list(distribution_translation.values())
             ),
             extractor=extract.XML(tag='spatial',
                                   toplevel=True,
@@ -329,6 +334,7 @@ class DutchNewspapers(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'Item'
                                   },
+                                  translate=distribution_translation,
                                   )
         ),
         Field(
@@ -341,7 +347,7 @@ class DutchNewspapers(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers with this publication frequency.',
-                options=['Dag', 'Week', 'Maand'],
+                options=list(frequency_translation.values())
             ),
             extractor=extract.XML(tag='temporal',
                                   toplevel=True,
@@ -351,6 +357,7 @@ class DutchNewspapers(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'Item'
                                   },
+                                  translate=frequency_translation,
                                   )
         ),
         Field(
