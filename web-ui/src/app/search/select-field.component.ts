@@ -12,9 +12,9 @@ export class SelectFieldComponent implements OnInit {
     @Input() public selectAll: boolean;
     @Input() public showSelectedFields: boolean;
     @Output() selectedFields = new EventEmitter<QueryField[]>();
-    private allVisible: boolean = false;
-    private selectedQueryFields: QueryField[];
-    private optionsFields: QueryField[];
+    public allVisible: boolean = false;
+    public selectedQueryFields: QueryField[];
+    public optionsFields: QueryField[];
 
     constructor() { }
 
@@ -27,12 +27,12 @@ export class SelectFieldComponent implements OnInit {
         }
     }
 
-    private toggleAllFields() {       
+    public toggleAllFields() {
         if (this.allVisible) {
             this.optionsFields = this.availableFields.filter(field => field.preselected);
         }
         else {
-            this.optionsFields = this.availableFields; 
+            this.optionsFields = this.availableFields;
         }
         this.allVisible = !this.allVisible;
     }

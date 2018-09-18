@@ -14,8 +14,8 @@ import { SearchService, UserService, QueryService } from '../services/index';
 export class SearchHistoryComponent implements OnInit {
     private user: User;
     private backupQueries: Query[];
-    private queries: Query[];
-    private displayCorpora: boolean = false;
+    public queries: Query[];
+    public displayCorpora: boolean = false;
     private corpora: SelectItem[];
     private selectedCorpora: string[] = [];
     constructor(private searchService: SearchService, private userService: UserService, private queryService: QueryService, private router: Router) { }
