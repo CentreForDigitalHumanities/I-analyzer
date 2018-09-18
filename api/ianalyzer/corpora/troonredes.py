@@ -131,16 +131,3 @@ class Troonredes(XMLCorpus):
             extractor=extract.XML(tag='content')
         ),
     ]
-
-
-if __name__ == '__main__':
-    corpus_object = Troonredes()
-    alle_documenten = corpus_object.documents()
-    # for document in alle_documenten:
-    # print(document)
-    print(next(alle_documenten))
-    # print(next(alle_documenten, 'einde'))
-    # s = corpus_object.sources()
-    # for ss in s:
-    #     print(ss)
-    # print(next(d))
