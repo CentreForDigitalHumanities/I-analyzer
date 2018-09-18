@@ -18,6 +18,10 @@ from ianalyzer import filters
 from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
 
 # Source files ################################################################
+MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
+            'Wilhelmina', 'Juliana', 'Beatrix', 'Willem-Alexander']
+
+SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
 
 
 class Troonredes(XMLCorpus):
@@ -32,7 +36,7 @@ class Troonredes(XMLCorpus):
     image = config.TROONREDES_IMAGE
 
     xml_tag_toplevel = 'doc'
-    xml_tag_entry = 'doc'
+    xml_tag_entry = 'entry'
 
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
@@ -61,7 +65,61 @@ class Troonredes(XMLCorpus):
             name='title',
             display_name='Title',
             description='title.',
-            extractor=extract.XML(tag='title', toplevel=True, recursive=True)
+            extractor=extract.XML(tag='title'),
+            results_overview=True,
+            preselected=True,
+        ),
+        Field(
+            name='monarch',
+            display_name='Monarch',
+            description='Monarch that gave the speech.',
+            extractor=extract.XML(tag='monarch'),
+            es_mapping={'type': 'keyword'},
+            results_overview=True,
+            preselected=True,
+            visualization_type='term_frequency',
+            search_filter=filters.MultipleChoiceFilter(
+                description=(
+                    'Accept only speeches given by '
+                    'the relevant monarch.'
+                ),
+                options=MONARCHS
+            ),
+        ),
+        Field(
+            name='speech_type',
+            display_name='Speech type',
+            description='Type of speech.',
+            extractor=extract.XML(tag='speech_type'),
+            es_mapping={'type': 'keyword'},
+            results_overview=True,
+            preselected=True,
+            visualization_type='term_frequency',
+            search_filter=filters.MultipleChoiceFilter(
+                description=(
+                    'Accept only speeches of'
+                    'the relevant type.'
+                ),
+                options=SPEECH_TYPES
+            ),
+        ),
+        Field(
+            name='date',
+            display_name='Date',
+            description='Date of the speech',
+            extractor=extract.XML(tag='date'),
+            es_mapping={'type': 'date', 'format': 'dd-MM-yyyy'},
+            results_overview=True,
+            preselected=True,
+            visualization_type='timeline',
+            search_filter=filters.DateFilter(
+                config.TROONREDES_MIN_DATE,
+                config.TROONREDES_MAX_DATE,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+
         ),
         Field(
             name='content',
@@ -70,7 +128,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             preselected=True,
-            extractor=extract.XML(tag='content', toplevel=True, recursive=True)
+            extractor=extract.XML(tag='content')
         ),
     ]
 
@@ -78,9 +136,11 @@ class Troonredes(XMLCorpus):
 if __name__ == '__main__':
     corpus_object = Troonredes()
     alle_documenten = corpus_object.documents()
-    for document in alle_documenten:
-        print(document)
-    s = corpus_object.sources()
-    for ss in s:
-        print(ss)
+    # for document in alle_documenten:
+    # print(document)
+    print(next(alle_documenten))
+    # print(next(alle_documenten, 'einde'))
+    # s = corpus_object.sources()
+    # for ss in s:
+    #     print(ss)
     # print(next(d))
