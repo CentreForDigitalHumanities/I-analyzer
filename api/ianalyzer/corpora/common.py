@@ -355,14 +355,14 @@ class HTMLCorpus(XMLCorpus):
     @property
     def html_tag_toplevel(self):
         '''
-        The top-level tag in the XML source documents.
+        The top-level tag in the HTML source documents.
         '''
         raise NotImplementedError()
 
     @property
     def html_tag_entry(self):
         '''
-        The XML tag that corresponds to a single document entry.
+        The HTML tag that corresponds to a single document entry.
         '''
         raise NotImplementedError()
 

@@ -66,8 +66,8 @@ class Tml(HTMLCorpus):
         Field(
             name='author',
             display_name='author',
-            prominent_field=True,
             results_overview=True,
+            preselected=True,
             description='Author.',
             extractor=extract.HTML(tag='p', attribute_filter={
                 'attribute': 'class',
@@ -78,13 +78,16 @@ class Tml(HTMLCorpus):
         Field(
             name='title',
             display_name='title',
-            prominent_field=True,
             results_overview=True,
+            preselected=True,
             description='Title.',
-            extractor=extract.HTML(tag='p', attribute_filter={
-                'attribute': 'class',
-                'value': 'title',
-            })
+            extractor=extract.HTML(
+                tag='p',
+                attribute_filter={
+                    'attribute': 'class',
+                    'value': 'title',
+                },
+                transform=lambda x: x.lstrip('[').rstrip(']'))
         ),
 
         Field(
@@ -92,23 +95,29 @@ class Tml(HTMLCorpus):
             display_name='source',
             prominent_field=True,
             description='Source.',
-            extractor=extract.HTML(tag='p', flatten=True,
+            extractor=extract.HTML(tag='p',
+                                   flatten=True,
                                    attribute_filter={
                                        'attribute': 'class',
                                        'value': 'tmlSource',
-                                   })
+                                   },
+                                   transform=lambda x: x.replace(
+                                       'Source: ', '')
+                                   )
         ),
 
         Field(
             name='Prepared_by',
             display_name='prepared by',
             description='Electronic version prepared by.',
-            prominent_field=True,
             extractor=extract.HTML(tag='span', flatten=True,
                                    attribute_filter={
                                        'attribute': 'class',
                                        'value': 'eca-span',
-                                   })
+                                   },
+                                   transform=lambda x: x.replace(
+                                       'Electronic version prepared by ', '')
+                                   )
         ),
 
         Field(
@@ -128,7 +137,6 @@ class Tml(HTMLCorpus):
             name='copy statement',
             display_name='copy statement',
             description='Copy statement.',
-            prominent_field=True,
             extractor=extract.HTML(tag='div', flatten=True,
                                    attribute_filter={
                                        'attribute': 'id',
@@ -139,15 +147,15 @@ class Tml(HTMLCorpus):
     ]
 
 
-
 # if __name__ == '__main__':
-#     t = Tml()
-#     corpus_object = Tml()
+    #     t = Tml()
+    # corpus_object = Tml()
 #     # d = t.documents()
 #     s = t.sources()
 #     d = t.documents()
 #     # s = t.sources()
-#     alle_documenten = corpus_object.documents()
+    # alle_documenten = corpus_object.documents()
+    # print(next(alle_documenten))
 #     for si in d:
 #         print(si)
 #     for document in alle_documenten:
