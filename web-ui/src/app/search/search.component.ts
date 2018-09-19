@@ -78,6 +78,8 @@ export class SearchComponent implements OnInit {
 
     private wordCloudFields: string[];
 
+    private currentTrigger: string;
+
     /**
      * For failed searches.
      */
@@ -147,6 +149,7 @@ export class SearchComponent implements OnInit {
     }
 
     public applyFilter(name: string, activated: boolean) {
+        this.currentTrigger = name;
         this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = activated;
@@ -257,7 +260,7 @@ export class SearchComponent implements OnInit {
             .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
         this.searchService.aggregateSearch(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
             this.aggregateData = results.aggregations;
-            this.dataService.pushNewSearchData(results.aggregations);
+            this.dataService.pushNewSearchData({trigger: this.currentTrigger, aggregations: results.aggregations});
             this.showFilters = true;
         }, error => {
             this.showError = {

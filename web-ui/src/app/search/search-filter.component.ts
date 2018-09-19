@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, OnDestroy, Output, S
 import { Subscription }   from 'rxjs';
 import * as _ from "lodash";
 
-import { AggregateData, Corpus, CorpusField, SearchFilter, SearchFilterData, QueryModel } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
 import { DataService } from '../services/index';
 
 @Component({
@@ -19,12 +19,6 @@ export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
 
     @Input()
     public filterData: SearchFilterData;
-
-    @Input()
-    public queryModel: QueryModel;
-
-    @Input()
-    public corpus: Corpus;
 
     @Input()
     public warnBottleneck: boolean;
@@ -50,16 +44,20 @@ export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.searchData$.subscribe(
             data => {
-                this.aggregateData = data;
-                if (this.field) {
+                if (this.aggregateData == undefined && this.data != undefined) {
+                    this.aggregateData = data.aggregations;
+                }
+                else if (this.field) {
+                    // update filter choices if aggregate search was triggered by another field
+                    if (data.trigger != this.filterData.fieldName) {
+                        this.aggregateData = data.aggregations;
+                    }
+                    // or update filter choices if aggregate search was triggered by deselecting the current filter
+                    else if (data.trigger == this.filterData.fieldName && data.aggregations[this.filterData.fieldName].length > this.aggregateData[this.filterData.fieldName].length) {
+                        this.aggregateData = data.aggregations;
+                    }                   
                     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
                 }
-                // if (!this.aggregateData) {
-                //     this.aggregateData = data;
-                // }
-                // else if (data[this.filterData.fieldName].length > this.aggregateData[this.filterData.fieldName].length) {
-                //     this.aggregateData = data;
-                // }
         });
     }
 

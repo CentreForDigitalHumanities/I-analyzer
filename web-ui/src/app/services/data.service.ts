@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject }    from 'rxjs';
 
-import { AggregateData } from '../models/index';
+import { AggregateDataTriggered } from '../models/index';
 
-const searchDataSource = new BehaviorSubject<AggregateData>(undefined);
+const searchDataSource = new BehaviorSubject<AggregateDataTriggered>(undefined);
 
 @Injectable()
 export class DataService {
     public searchData$ = searchDataSource.asObservable();
 
-    pushNewSearchData(data: AggregateData) {
+    pushNewSearchData(data: AggregateDataTriggered) {
         searchDataSource.next(data);
     }
 }
