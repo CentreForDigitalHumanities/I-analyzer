@@ -26,8 +26,8 @@ class DutchBanking(XMLCorpus):
     image = config.DUTCHBANK_IMAGE
 
     # Data overrides from .common.XMLCorpus
-    xml_tag_toplevel = 'alto'
-    xml_tag_entry = 'TextBlock'
+    tag_toplevel = 'alto'
+    tag_entry = 'TextBlock'
 
     # New data members
     filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
