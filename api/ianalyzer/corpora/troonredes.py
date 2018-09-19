@@ -108,7 +108,7 @@ class Troonredes(XMLCorpus):
             display_name='Date',
             description='Date of the speech',
             extractor=extract.XML(tag='date'),
-            es_mapping={'type': 'date', 'format': 'dd-MM-yyyy'},
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
             preselected=True,
             visualization_type='timeline',
