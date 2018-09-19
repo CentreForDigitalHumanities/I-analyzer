@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { AggregateData, Corpus, CorpusField, SearchFilter, SearchFilterData, QueryModel } from '../models/index';
-import { SearchService } from '../services/index';
-
+import { Component, EventEmitter, Input, OnChanges, OnInit, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Subscription }   from 'rxjs';
 import * as _ from "lodash";
+
+import { AggregateData, Corpus, CorpusField, SearchFilter, SearchFilterData, QueryModel } from '../models/index';
+import { DataService } from '../services/index';
 
 @Component({
     selector: 'search-filter',
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnChanges, OnInit {
+export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
     @Input()
     public field: CorpusField;
 
@@ -42,18 +43,36 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      */
     public data: any;
 
+    public subscription: Subscription;
+
     public aggregateData: AggregateData;
 
-    constructor(private searchService: SearchService) { }
+    constructor(private dataService: DataService) {
+        this.subscription = this.dataService.searchData$.subscribe(
+            data => {
+                this.aggregateData = data;
+                if (this.field) {
+                    this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+                }
+                // if (!this.aggregateData) {
+                //     this.aggregateData = data;
+                // }
+                // else if (data[this.filterData.fieldName].length > this.aggregateData[this.filterData.fieldName].length) {
+                //     this.aggregateData = data;
+                // }
+        });
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         // if (changes['aggregateData'] && changes['aggregateData'].currentValue != undefined) {
         //     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
         // }
-        if (changes['filterData'] && changes['filterData'].previousValue != changes['filterData'].currentValue) {
-            this.data = this.getDisplayData(this.filter, this.filterData);
-            console.log("triggered getDisplayData", changes['filterData']);
-        }
+                 
+        
+        // if (changes['filterData'] && changes['filterData'].previousValue != changes['filterData'].currentValue) {
+        //     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+        //     console.log("triggered getDisplayData", this.aggregateData);
+        // }
         // if (changes['field']) {
         //     // make sure the filter data is reset if only the field was changed
         //     this.update(true);
@@ -62,11 +81,15 @@ export class SearchFilterComponent implements OnChanges, OnInit {
 
     ngOnInit() {
         if (this.field) {
-            this.data = this.getDisplayData(this.filter, this.filterData);
+            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
         }
 
         // default values should also work as a filter: notify the parent
         this.update();
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     defaultFilterData(filter: SearchFilter): SearchFilterData {
@@ -104,7 +127,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null) {
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
         if (filterData == null) {
             filterData = this.defaultFilterData(filter);
         }
@@ -116,22 +139,17 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    let newQueryModel =  _.cloneDeep(this.queryModel);
-                    if (this.queryModel.filters.length>0) {
-                        let filters = this.queryModel.filters.filter(f => f.fieldName!=filterData.fieldName);
-                        newQueryModel.filters = filters;
-                    }
-                    let aggregator = [{name: this.field.name, size: filter.options.length}];
-                    this.searchService.aggregateSearch(this.corpus, newQueryModel, aggregator).then(results => {
-                        this.aggregateData = results.aggregations;
-                        console.log(this.aggregateData);                    
+                    if (aggregateData != null) {                    
                         options = _.sortBy(
-                            this.aggregateData[filterData.fieldName], x => x.key
+                            aggregateData[filterData.fieldName], x => x.key
                         ).map(
                             x => { 
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
                         });
-                    });
+                    }
+                    else {
+                        options = filter.options.map(x => { return { 'label': x, 'value': x } }); 
+                    };
                     return { options: options, selected: filterData.data };
                 }
                 break;

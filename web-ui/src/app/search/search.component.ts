@@ -127,7 +127,6 @@ export class SearchComponent implements OnInit {
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
-                    this.aggregateSearch();
                 }
             });
     }
@@ -202,11 +201,11 @@ export class SearchComponent implements OnInit {
     public updateFilterData(name: string, data: SearchFilterData) {
         let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
-        if (data.filterName == 'MultipleChoiceFilter' && data.data.length) {
+        if (data.filterName == 'MultipleChoiceFilter' && data.data.length==0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
         }
-        else if (previousData != undefined && previousData != data) {
+        else if (previousData != null && previousData != data) {
             this.applyFilter(name, true);
         }
         this.changeDetectorRef.detectChanges();
@@ -249,8 +248,7 @@ export class SearchComponent implements OnInit {
             console.trace(error);
             finallyReset();
         });
-        //this.aggregateSearch();
-        this.showFilters = true;
+        this.aggregateSearch();
     }
 
     private aggregateSearch() {
@@ -260,6 +258,7 @@ export class SearchComponent implements OnInit {
         this.searchService.aggregateSearch(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
             this.aggregateData = results.aggregations;
             this.dataService.pushNewSearchData(results.aggregations);
+            this.showFilters = true;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
