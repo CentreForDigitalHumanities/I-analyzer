@@ -1,13 +1,12 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, AggregateResult, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
@@ -15,7 +14,7 @@ import { CorpusService, DataService, SearchService, DownloadService, UserService
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit, OnDestroy {
+export class SearchComponent implements OnInit {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -88,8 +87,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         message: string
     };
 
-    private subscription: Subscription | undefined;
-
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
         private downloadService: DownloadService,
@@ -130,14 +127,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
+                    this.aggregateSearch();
                 }
             });
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
     }
 
     @HostListener("window:scroll", [])
@@ -146,7 +138,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
 
-    // turn a filter on/off via the filter icon
+    /**
+     * turn a filter on/off via the filter icon
+     */ 
     public toggleFilter(name: string) {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
@@ -208,7 +202,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
-        if ((<string[]>data.data).length == 0) {
+        if (data.filterName == 'MultipleChoiceFilter' && data.data.length) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
         }
@@ -255,15 +249,15 @@ export class SearchComponent implements OnInit, OnDestroy {
             console.trace(error);
             finallyReset();
         });
-        this.aggregateSearches();
+        //this.aggregateSearch();
         this.showFilters = true;
     }
 
-    private aggregateSearches() {
+    private aggregateSearch() {
         let multipleChoiceFilters = this.corpus.fields
             .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
             .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
-        this.searchService.aggregateSearches(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
+        this.searchService.aggregateSearch(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
             this.aggregateData = results.aggregations;
             this.dataService.pushNewSearchData(results.aggregations);
         }, error => {

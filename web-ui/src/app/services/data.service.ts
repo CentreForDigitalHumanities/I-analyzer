@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Subject }    from 'rxjs';
+import { BehaviorSubject }    from 'rxjs';
 
 import { AggregateData } from '../models/index';
 
+const searchDataSource = new BehaviorSubject<AggregateData>(undefined);
 
 @Injectable()
 export class DataService {
-    private searchDataSource = new Subject<AggregateData>();
-
-    public searchData$ = this.searchDataSource.asObservable();
+    public searchData$ = searchDataSource.asObservable();
 
     pushNewSearchData(data: AggregateData) {
-        this.searchDataSource.next(data);
-        console.log(this.searchDataSource, data);
+        searchDataSource.next(data);
     }
 }

@@ -47,7 +47,6 @@ export class VisualizationComponent implements OnChanges {
 
     ngOnInit() {
         // Initial values
-        console.log(this.aggregateData);
         this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
     }
@@ -110,10 +109,11 @@ export class VisualizationComponent implements OnChanges {
             });
         }
         else if (visualizationType == 'timeline') {
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
+            let aggregator = [{name: visualizedField, size: 10000}];
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.visualizedField = visualizedField;
                 this.visualizationType = visualizationType;
-                this.aggResults = visual.aggregations;
+                this.aggResults = visual.aggregations[visualizedField];
             });
         }
         else {
@@ -125,13 +125,6 @@ export class VisualizationComponent implements OnChanges {
             //     this.aggResults = visual.aggregations;
             // });
         }
-        /* to do : use the results which were already fetched for the multiplechoice filters
-        * we will probably need to use Observables for this to notify bar chart component of changes
-        * the code below does *not* trigger the change
-        */
-        // else {
-        //     this.aggResults = this.aggregations[visualizedField].buckets;
-        // }
     }
 
     showTable() {

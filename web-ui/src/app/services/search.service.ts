@@ -8,7 +8,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, SingleAggregateResults, MultipleAggregateResults } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateQueryFeedback } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -111,12 +111,9 @@ export class SearchService {
             corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
     }
 
-    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregator: string, size: number): Promise<SingleAggregateResults> {
-        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregator, size);
-    }
 
-    public async aggregateSearches(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<MultipleAggregateResults>{
-        return this.elasticSearchService.aggregateSearches(corpus, queryModel, aggregators);
+    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback>{
+        return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
     /**

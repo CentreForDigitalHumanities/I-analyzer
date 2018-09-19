@@ -18,14 +18,9 @@ export type SearchResults = {
     scrollId?: string
 }
 
-export type MultipleAggregateResults = {
+export type AggregateQueryFeedback = {
     completed: boolean,
     aggregations: AggregateData
-}
-
-export type SingleAggregateResults = {
-    completed: boolean,
-    aggregations: AggregateResult[]
 }
 
 export type AggregateResult = {

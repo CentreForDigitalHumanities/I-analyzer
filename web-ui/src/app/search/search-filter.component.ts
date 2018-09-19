@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { CorpusField, SearchFilter, SearchFilterData, AggregateResult, AggregateData } from '../models/index';
+import { AggregateData, Corpus, CorpusField, SearchFilter, SearchFilterData, QueryModel } from '../models/index';
+import { SearchService } from '../services/index';
 
 import * as _ from "lodash";
 
@@ -19,7 +20,10 @@ export class SearchFilterComponent implements OnChanges, OnInit {
     public filterData: SearchFilterData;
 
     @Input()
-    public aggregateData: AggregateData;
+    public queryModel: QueryModel;
+
+    @Input()
+    public corpus: Corpus;
 
     @Input()
     public warnBottleneck: boolean;
@@ -38,23 +42,31 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      */
     public data: any;
 
-    constructor() { }
+    public aggregateData: AggregateData;
+
+    constructor(private searchService: SearchService) { }
 
     ngOnChanges(changes: SimpleChanges) {
-        //this.data = this.getDisplayData(this.filter, this.filterData, this.aggregations);
-        if (changes['aggregateData'] && changes['aggregateData'].currentValue != undefined) {
-            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+        // if (changes['aggregateData'] && changes['aggregateData'].currentValue != undefined) {
+        //     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+        // }
+        if (changes['filterData'] && changes['filterData'].previousValue != changes['filterData'].currentValue) {
+            this.data = this.getDisplayData(this.filter, this.filterData);
+            console.log("triggered getDisplayData", changes['filterData']);
         }
-        if (changes['field']) {
-            // make sure the filter data is reset if only the field was changed
-            this.update(true);
-        }
+        // if (changes['field']) {
+        //     // make sure the filter data is reset if only the field was changed
+        //     this.update(true);
+        // }
     }
 
     ngOnInit() {
         if (this.field) {
             this.data = this.getDisplayData(this.filter, this.filterData);
         }
+
+        // default values should also work as a filter: notify the parent
+        this.update();
     }
 
     defaultFilterData(filter: SearchFilter): SearchFilterData {
@@ -92,7 +104,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null) {
         if (filterData == null) {
             filterData = this.defaultFilterData(filter);
         }
@@ -104,20 +116,22 @@ export class SearchFilterComponent implements OnChanges, OnInit {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (aggregateData != null) {
-                        // sort options of multiple choice filter by name
-                        // add counts of available results to labels
+                    let newQueryModel =  _.cloneDeep(this.queryModel);
+                    if (this.queryModel.filters.length>0) {
+                        let filters = this.queryModel.filters.filter(f => f.fieldName!=filterData.fieldName);
+                        newQueryModel.filters = filters;
+                    }
+                    let aggregator = [{name: this.field.name, size: filter.options.length}];
+                    this.searchService.aggregateSearch(this.corpus, newQueryModel, aggregator).then(results => {
+                        this.aggregateData = results.aggregations;
+                        console.log(this.aggregateData);                    
                         options = _.sortBy(
-                            aggregateData[filterData.fieldName], x => x.key
+                            this.aggregateData[filterData.fieldName], x => x.key
                         ).map(
                             x => { 
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
                         });
-                    }
-                    else {
-                        options = filter.options.map(x => { return { 'label': x, 'value': x } });
-                    }
-
+                    });
                     return { options: options, selected: filterData.data };
                 }
                 break;
@@ -180,6 +194,13 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 };
         }
     }
+
+    // getOptions() {
+    //     let aggregator = {name: this.field.name, size: this.filter.options.length}
+    //         this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results =>
+    //             this.aggregateData = results.aggregations
+    //         );
+    // }
 
     /**
      * Trigger a change event.

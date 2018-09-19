@@ -10,7 +10,7 @@ import { TimelineComponent } from './timeline.component';
 import { VisualizationComponent } from './visualization.component';
 import { ApiService, DataService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
-import { SingleAggregateResults, Corpus, QueryModel } from '../models/index';
+import { AggregateQueryFeedback, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
@@ -47,10 +47,10 @@ describe('VisualizationComponent', () => {
 });
 
 class MockSearchService {
-    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<SingleAggregateResults> {
+    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
         return {
             completed: false,
-            aggregations: [{
+            aggregations: { aggregator: [{
                 key: '1999',
                 doc_count: 200
             }, {
@@ -59,7 +59,7 @@ class MockSearchService {
             }, {
                 key: '2001',
                 doc_count: 400
-            }]
+            }]}
         };
     }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, SearchResponse } from 'elasticsearch';
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, SingleAggregateResults, MultipleAggregateResults } from '../models/index';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -157,23 +157,7 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string, size: number): Promise<SingleAggregateResults> {
-        let aggregation = this.makeAggregation(aggregator, size, 1);
-        let esQuery = this.makeEsQuery(queryModel);
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
-        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-
-        // Extract relevant information from dictionary returned by ES
-        let aggregations = result.aggregations;
-        let buckets = aggregations[aggregator].buckets;
-        return {
-            completed: true,
-            aggregations: buckets
-        };
-    }
-
-    public async aggregateSearches<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<MultipleAggregateResults> {
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
         let aggregations = {}
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
