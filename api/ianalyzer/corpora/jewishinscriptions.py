@@ -27,8 +27,8 @@ class JewishInscriptions(XMLCorpus):
     visualize = []
 
     # Data overrides from .common.XMLCorpus
-    xml_tag_toplevel = ''
-    xml_tag_entry = 'TEI'
+    tag_toplevel = ''
+    tag_entry = 'TEI'
 
     # New data members
     filename_pattern = re.compile('\d+')

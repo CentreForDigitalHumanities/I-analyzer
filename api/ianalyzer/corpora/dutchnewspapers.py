@@ -31,8 +31,8 @@ class DutchNewspapers(XMLCorpus):
     es_settings = None
     image = config.DUTCHNEWSPAPERS_IMAGE
 
-    xml_tag_toplevel = 'text'
-    xml_tag_entry = 'p'
+    tag_toplevel = 'text'
+    tag_entry = 'p'
 
     # New data members
     definition_pattern = re.compile(r'didl')

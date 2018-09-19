@@ -32,8 +32,8 @@ class Times(XMLCorpus):
     es_settings = None
     image = config.TIMES_IMAGE
 
-    xml_tag_toplevel = 'issue'
-    xml_tag_entry = 'article'
+    tag_toplevel = 'issue'
+    tag_entry = 'article'
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''

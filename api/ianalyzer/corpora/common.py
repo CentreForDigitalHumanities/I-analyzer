@@ -211,18 +211,18 @@ class XMLCorpus(Corpus):
     '''
 
     @property
-    def xml_tag_toplevel(self):
+    def tag_toplevel(self):
         '''
-        The top-level tag in the XML source documents.
+        The top-level tag in the source documents.
         '''
-        raise NotImplementedError()
+    
 
     @property
-    def xml_tag_entry(self):
+    def tag_entry(self):
         '''
-        The XML tag that corresponds to a single document entry.
+        The tag that corresponds to a single document entry.
         '''
-        raise NotImplementedError()
+        
 
     def source2dicts(self, source):
         '''
@@ -262,7 +262,7 @@ class XMLCorpus(Corpus):
         for filename, metadata in document_files:
             soup = self.soup_from_xml(filename)
             # Extract fields from the soup
-            tag = self.xml_tag_entry
+            tag = self.tag_entry
             bowl = self.bowl_from_soup(soup)
             if bowl:
                 for spoon in bowl.find_all(tag):
@@ -341,9 +341,9 @@ class XMLCorpus(Corpus):
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.xml_tag_toplevel
+            toplevel_tag = self.tag_toplevel
         if entry_tag == None:
-            entry_tag = self.xml_tag_entry
+            entry_tag = self.tag_entry
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
 
@@ -352,20 +352,6 @@ class HTMLCorpus(XMLCorpus):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
-    @property
-    def html_tag_toplevel(self):
-        '''
-        The top-level tag in the HTML source documents.
-        '''
-        raise NotImplementedError()
-
-    @property
-    def html_tag_entry(self):
-        '''
-        The HTML tag that corresponds to a single document entry.
-        '''
-        raise NotImplementedError()
-
     def source2dicts(self, source):
         '''
         Generate a document dictionaries from a given HTML file. This is the
@@ -394,8 +380,8 @@ class HTMLCorpus(XMLCorpus):
         logger.info('Loaded {} into memory ...'.format(filename))
 
         # Extract fields from soup
-        tag0 = self.html_tag_toplevel
-        tag = self.html_tag_entry
+        tag0 = self.tag_toplevel
+        tag = self.tag_entry
 
         bowl = soup.find(tag0) if tag0 else soup
 
