@@ -30,8 +30,8 @@ class Spectators(XMLCorpus):
     es_doctype = config.SPECTATORS_ES_DOCTYPE
     es_settings = None
 
-    xml_tag_toplevel = 'article'
-    xml_tag_entry = 'content'
+    tag_toplevel = 'article'
+    tag_entry = 'content'
 
     # New data members
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')

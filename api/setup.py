@@ -4,8 +4,10 @@ import os
 import os.path
 from setuptools import setup
 
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 
 setup(
     name = "I-analyzer",
@@ -22,8 +24,8 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Text Processing :: Indexing",
-	"Intended Audience :: Science/Research",
+        "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
-	"Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     ],
 )
