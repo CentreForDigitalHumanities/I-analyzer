@@ -7,7 +7,6 @@
 
 .search-section {
     background: rgba(255, 255, 255, 1);
-    position: -webkit-sticky;
     position: sticky;
     z-index: 1000;
     top: 0;
@@ -41,8 +40,14 @@
     z-index: 20;
 }
 
-.filter-container.on {
-  box-shadow: 0 0 0 2px $primary;
+.filter-container{
+    &:hover{
+        box-shadow: 0 0 0 1px $primary;
+    }
+}
+
+.filter-container.on{
+    box-shadow: 0 0 0 2px $primary;
 }
 
 .filter-icon {

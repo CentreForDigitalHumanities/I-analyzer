@@ -1,4 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+
+import * as moment from 'moment';
+
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 
 @Component({
@@ -175,6 +178,6 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      * Return a string of the form 0123-04-25.
      */
     formatDate(date: Date): string {
-        return date.toISOString().slice(0, 10);
+        return moment(date).format().slice(0, 10);
     }
 }

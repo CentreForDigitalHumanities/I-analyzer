@@ -14,7 +14,7 @@ export class HistoryQueryDisplayComponent implements OnInit {
     @Input() public displayCorpora: boolean;
     @Input() public corpus: string;
 
-    private formattedFilters: string;
+    public formattedFilters: string;
 
     constructor() { }
 
@@ -26,7 +26,7 @@ export class HistoryQueryDisplayComponent implements OnInit {
 
         if (this.queryModel.filters.length>0) {
             this.queryModel.filters.forEach(filter => {
-                this.formattedFilters += filter.filterName + ": <b>" + filter.fieldName + "</b>: " + 
+                this.formattedFilters += filter.filterName + ": <b>" + filter.fieldName + "</b>: " +
                 searchFilterDataToParam(filter) + "<br>"
             });
         }
