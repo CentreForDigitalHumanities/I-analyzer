@@ -4,6 +4,7 @@ import { CalendarModule, CheckboxModule, SelectButtonModule, SliderModule, Multi
 
 import { SearchFilterComponent } from './search-filter.component';
 import { BalloonDirective } from '../balloon.directive';
+import { DataService } from '../services/index';
 
 describe('SearchFilterComponent', () => {
     let component: SearchFilterComponent;
@@ -19,6 +20,7 @@ describe('SearchFilterComponent', () => {
                 SliderModule,
                 MultiSelectModule
             ],
+            providers: [DataService],
             declarations: [SearchFilterComponent, BalloonDirective],
         }).compileComponents();
     }));
