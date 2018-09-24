@@ -3,11 +3,11 @@ import { TitleCasePipe } from '@angular/common';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
-import { TableBody } from '../../../node_modules/primeng/primeng';
+
 
 @Component({
     selector: 'ia-freqtable',
-    templateUrl: './freqtable.component.html',
+    templateUrl: './freqtable2.component.html',
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
@@ -43,7 +43,6 @@ export class FreqtableComponent implements OnChanges {
 
     createTable() {
         d3.selectAll('svg').remove();
-
         // calculate percentage data
         this.percentData = _.cloneDeep(this.searchData);
 
