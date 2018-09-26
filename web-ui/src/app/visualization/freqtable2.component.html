@@ -1,4 +1,4 @@
-<p-table class="freqtable" [value]="tableData" [paginator]="true" [rows]="15" sortField="doc_count" sortOrder="-1">
+<p-table class="freqtable" [value]="tableData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
     <ng-template pTemplate="header">
         <tr class="is-selected">
             <th [pSortableColumn]="'key'">

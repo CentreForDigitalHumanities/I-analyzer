@@ -22,6 +22,9 @@ export class FreqtableComponent implements OnChanges {
     @Input() public chartElement;
     @Input() public asPercent;
 
+    public defaultSort: string = "doc_count";
+    public defaultSortOrder: string = "-1"
+
     public tableData: FreqtableComponent['searchData'] & {
         doc_count_fraction: number
     }[];
@@ -40,7 +43,14 @@ export class FreqtableComponent implements OnChanges {
     }
 
     createTable() {
+        //clear the canvas
         d3.selectAll('svg').remove();
+        //set default sort to key for date-type fields, frequency for all others
+        if ('key_as_string' in this.searchData[0]) {
+            this.defaultSort = "key";
+        } else {
+            this.defaultSort = "doc_count";
+        }
         // calculate percentage data
         let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
         this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }))
