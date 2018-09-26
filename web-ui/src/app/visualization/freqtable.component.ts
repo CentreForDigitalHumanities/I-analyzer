@@ -22,10 +22,8 @@ export class FreqtableComponent implements OnChanges {
     @Input() public chartElement;
     @Input() public asPercent;
 
-    public percentData: {
-        key: any,
-        doc_count: number,
-        key_as_string?: string
+    public tableData: FreqtableComponent['searchData'] & {
+        doc_count_fraction: number
     }[];
 
     constructor(private titlecasepipe: TitleCasePipe) { }
@@ -44,17 +42,8 @@ export class FreqtableComponent implements OnChanges {
     createTable() {
         d3.selectAll('svg').remove();
         // calculate percentage data
-        this.percentData = _.cloneDeep(this.searchData);
-
-        var total = 0;
-        for (let bin of this.percentData) {
-            total += bin.doc_count;
-        }
-        this.percentData.map(function (e) {
-            e.doc_count = (e.doc_count / total);
-            return e;
-        });
-
+        let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
+        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }))
     }
 }
 
