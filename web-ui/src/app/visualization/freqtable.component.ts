@@ -7,7 +7,7 @@ import * as _ from "lodash";
 
 @Component({
     selector: 'ia-freqtable',
-    templateUrl: './freqtable2.component.html',
+    templateUrl: './freqtable.component.html',
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
