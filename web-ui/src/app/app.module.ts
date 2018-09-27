@@ -8,6 +8,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
 import { ButtonModule, CalendarModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
@@ -36,7 +37,6 @@ import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
-
 
 const appRoutes: Routes = [
     {
@@ -113,6 +113,7 @@ const appRoutes: Routes = [
         DialogModule,
         CheckboxModule,
         SharedModule,
+        TableModule,
         TabViewModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }

@@ -3,7 +3,7 @@ import { TitleCasePipe } from '@angular/common';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
-import { TableBody } from '../../../node_modules/primeng/primeng';
+
 
 @Component({
     selector: 'ia-freqtable',
@@ -22,10 +22,11 @@ export class FreqtableComponent implements OnChanges {
     @Input() public chartElement;
     @Input() public asPercent;
 
-    public percentData: {
-        key: any,
-        doc_count: number,
-        key_as_string?: string
+    public defaultSort: string = "doc_count";
+    public defaultSortOrder: string = "-1"
+
+    public tableData: FreqtableComponent['searchData'] & {
+        doc_count_fraction: number
     }[];
 
     constructor(private titlecasepipe: TitleCasePipe) { }
@@ -42,20 +43,17 @@ export class FreqtableComponent implements OnChanges {
     }
 
     createTable() {
+        //clear the canvas
         d3.selectAll('svg').remove();
-
-        // calculate percentage data
-        this.percentData = _.cloneDeep(this.searchData);
-
-        var total = 0;
-        for (let bin of this.percentData) {
-            total += bin.doc_count;
+        //set default sort to key for date-type fields, frequency for all others
+        if ('key_as_string' in this.searchData[0]) {
+            this.defaultSort = "key";
+        } else {
+            this.defaultSort = "doc_count";
         }
-        this.percentData.map(function (e) {
-            e.doc_count = (e.doc_count / total);
-            return e;
-        });
-
+        // calculate percentage data
+        let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
+        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }))
     }
 }
 
