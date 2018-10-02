@@ -36,9 +36,13 @@
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
+                    <img class="src-thumbnail" src="/static/images/a4test.png "/>
                 </div>
+                
             </div>
+            
         </div>
+        
     </div>
     <div class="levels load-more" *ngIf="results.total > 5">
         <div class="level-item buttons" *ngIf="!results.completed">
