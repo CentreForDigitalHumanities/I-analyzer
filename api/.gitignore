@@ -7,3 +7,5 @@ indexing*
 *.egg
 build/
 dist/
+lib/
+set
