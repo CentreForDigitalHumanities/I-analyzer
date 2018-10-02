@@ -15,9 +15,28 @@
             </ng-container>
         </table>
     </div>
+    <div>
+       
+    </div>
     <div class="column">
-        <ng-container *ngFor="let field of contentFields">
-            <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+        <div class="content-control">
+            <button [class.button]="true" [class.is-primary]="contentMode=='text'" (click)="toggleContentMode()">
+                <i class="fa fa-book" aria-hidden="true"></i>
+            </button>
+            <button [class.button]="true" [class.is-primary]="contentMode=='image'" (click)="toggleContentMode()">
+                <i class="fa fa-image" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <ng-container *ngIf="contentMode=='text'">
+            <ng-container *ngFor="let field of contentFields">
+                <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+            </ng-container>
+        </ng-container>
+        <ng-container *ngIf="contentMode=='image'">
+            <div class="box">
+                <img src="/static/images/a4test.png"/>
+            </div>
         </ng-container>
     </div>
 </div>

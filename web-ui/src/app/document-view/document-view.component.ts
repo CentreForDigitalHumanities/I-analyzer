@@ -24,8 +24,14 @@ export class DocumentViewComponent implements OnInit {
     @Input()
     public query: string;
 
+    public contentMode: string = 'text';
+
     constructor() { }
 
     ngOnInit() {
+    }
+
+    toggleContentMode() {
+        this.contentMode = this.contentMode == 'text' ? 'image' : 'text';
     }
 }
