@@ -1,15 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-//import { NgForm } from '@angular/forms';  
-
+import { Component, OnInit, OnDestroy } from '@angular/core'; 
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import {NgForm} from '@angular/Forms';
 
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-//http://www.advancesharp.com/blog/1225/angular-5-form-validation-easiest-way
-//https://angular.io/guide/forms
-
-
+//https://code.tutsplus.com/tutorials/introduction-to-forms-in-angular-4-template-driven-forms--cms-29766
 
 @Component({
   selector: 'ia-registration',
@@ -18,10 +13,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
   private returnUrl: string;
-  public firstname: string;
-  public lastname: string;
-  public email: string;
-  public password: string;
+  //public firstname: string;
+  //public lastname: string;
+  //public email: string;
+  //public password: string;
   public isLoading: boolean;
   public isWrong: boolean;
   private success:boolean;
@@ -29,45 +24,49 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   private firstname_result;
   private lastname_result;
   private email_result;
-  
 
-  constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
-    console.log(this);
+  constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title ) {
     this.title.setTitle('I-Analyzer');
     UserService.loginActivated = true;
 
   }
 
   ngOnInit() {
-    // get return url from route parameters or default to '/'
-    //this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
+    
   }
   ngOnDestroy(){  
     UserService.loginActivated = false;
   }
 
   //op scherm in template object tonen: {{object | json}}
-  register(){
-  this.userService.register(this.firstname, this.lastname, this.email, this.password ).then(result => {
-          //als result leeg is, bv als 500 error in de api, foutmelding in html template tonen
-          if (!result) {
-            this.success=false;
-            this.error=true;
-                  }
-          else {
-              if(result.success) {
-                  this.success=true;
-                  this.firstname_result=result.firstname;
-                  this.lastname_result=result.lastname;
-                  this.email_result=result.email;
 
-                }
-                else{
-                  this.error=true;
-                }
-          }
 
-    });
-  }
+
+  register(signupForm:NgForm){
+
+      this.userService.register(signupForm.value.firstname, signupForm.value.lastname, signupForm.value.email, signupForm.value.password).then(result => {
+            
+              if (!result) {
+                this.success=false;
+                this.error=true;
+                console.log(this.error);
+                      }
+              else {
+                  if(result.success) {
+                      this.success=true;
+                      this.firstname_result=result.firstname;
+                      this.lastname_result=result.lastname;
+                      this.email_result=result.email;
+                      console.log(this.error);
+                    }
+                    else{
+                      this.error=true;
+                    }
+              }
+        });
+      }
+
+
+
 
 }

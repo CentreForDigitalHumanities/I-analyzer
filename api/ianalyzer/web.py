@@ -125,9 +125,11 @@ def api_register():
     if not request.json:
         abort(400)
     
-    print(request.json['password'])
+    #print(request.json['password'])
+
     #lastname opzoeken in db als controle, of email adres gebruiken als username, maar ook dan moet die uniek zijn
     #als username niet uniek is, wordt niet opgeslagen: 500 error. Moet teruggekoppeld worden, hoe?
+    #functiemaken om direct username op te zoeken, en een cijfer 2 toe te voegen achter username, en opnieuw zoeken of die bestaat, net zo lang tot hij uniek is
 
     #generate readable/usable pw of 6 characters with some digits, to be send via email
     # characters = string.digits + string.ascii_letters + string.digits + string.digits

@@ -1,76 +1,133 @@
 <style>
+
+.container {max-width:400px !important;}   
 input { max-width:400px !important;}
+.notification{ 
+    max-width:400px !important;
+    padding:8px;
+    }
 </style>
 
 <section class="section">
 
-    <div *ngIf="!success && !error"  >
-        <form (ngSubmit)="register()" class="container is-readable" name="Form" >
+<div class="columns is-centered">
 
+
+    <div *ngIf="!success && !error"  >
+        <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm"  >
             <div class="container is-login">
-                    <h1 class="title">I-Analyzer</h1>
+                    <h1 class="title">I-Analyzer sign-up</h1>
                 <div class="field">
                     <label for="firstname">First Name</label>
                     <p class="control has-icons-left has-icons-right">
-                        <input class="input" type="text"  required minlength="3" [(ngModel)]="firstname" name="firstname"  required/>
+                        <input class="input" type="text"  name="firstname" ngModel #firstname = "ngModel" required >
                         <span class="icon is-small is-left">
                         <i class="fa fa-user"></i>
                     </span>
                     </p>
+                    <div class="notification is-warning" *ngIf="firstname.errors?.required  && (firstname.dirty || firstname.touched)">
+                    first name is required.
+                    </div>
                 </div>
-
 
                 <div class="field">
                     <label for="lastname">Last Name</label>
                     <p class="control has-icons-left">
-                        <input class="input" type="text" [(ngModel)]="lastname" name="lastname"  required/>
+                        <input class="input" type="text" name="lastname"  ngModel  #lastname = "ngModel" required minlength="4" />
                         <span class="icon is-small is-left">
                         <i class="fa fa-user"></i>
                     </span>
-        
-                  
-
                     </p>
+                    <div class="notification is-warning" *ngIf="lastname.errors?.required && (lastname.dirty || lastname.touched)">
+                    last name is required.
+                    </div>
+                    <div *ngIf="lastname.errors?.minlength">
+                    last name must be at least 4 characters long.
+                    </div>
                 </div>
+
                 <div class="field">
                     <label for="email">Email</label>
                     <p class="control has-icons-left">
-                        <input class="input" type="email" [(ngModel)]="email" name="email"  required/>
+                        <input class="input" type="email"  name="email" ngModel  #email = "ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"  />
                         <span class="icon is-small is-left">
                         <i class="fa fa-user"></i>
                     </span>
                     </p>
+                    <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
+                        email is required.
+                    </div>
+                    <div class="notification is-warning" class="notification is-warning" *ngIf = "email.errors?.pattern && email.touched">
+                        Please enter a valid email address.
+                    </div>
                 </div>
+
                 <div class="field">
                         <label for="email">Email Confirm</label>
                         <p class="control has-icons-left">
-                            <input class="input" type="email" [(ngModel)]="emailconfirm" name="emailconfirm" />
+                            <input class="input" type="email"  name="emailconfirm" ngModel #emailconfirm = "ngModel" required/>
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
                         </span>
                         </p>
+                        <div class="notification is-warning" *ngIf="emailconfirm.errors?.required && (emailconfirm.dirty || emailconfirm.touched)">
+                            email confirmation is required.
+                        </div>
                     </div>
-                <div class="field">
+
+                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  (emailconfirm.dirty || emailconfirm.touched)" > 
+                        Email adresses do not match, please try again.
+                    </div>
+
+
+                    <div class="field">
                         <label for="email">Password</label>
                         <p class="control has-icons-left">
-                            <input class="input" type="password" [(ngModel)]="password" name="password"  required/>
+                            <input class="input" type="password"  name="password" ngModel #password = "ngModel" required  minlength ="6" />
                             <span class="icon is-small is-left">
                             <i class="fa fa-user"></i>
                         </span>
                         </p>
+                        <div class="notification is-warning" *ngIf="password.errors?.required && (password.dirty || password.touched)">
+                            password is required.
+                        </div>
+                        <div class="notification is-warning" *ngIf="password.errors?.minlength">
+                            password must be at least 6 characters long.
+                        </div>
                     </div>
+
                     <div class="field">
                             <label for="email">Password Confirm</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="password" [(ngModel)]="passwordconfirm" name="passwordconfirm" />
+                                <input class="input" type="password"  name="passwordconfirm" ngModel #passwordconfirm = "ngModel" required />
                                 <span class="icon is-small is-left">
                                 <i class="fa fa-user"></i>
                             </span>
                             </p>
+                            <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">
+                                password confirmation is required.
+                            </div>
+
+                            <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  (passwordconfirm.dirty || passwordconfirm.touched)" > 
+                                Passwords do not match, please try again.
+                            </div>
                         </div>
-                <div class="field">
+
+                    <div class="field">    
+                        <label>
+                            <input type="checkbox" name="agree" ngModel #agree= "ngModel" required > I have read and I agree with the privacy statement
+                          </label>
+                    </div>
+                    <div class="notification is-warning" *ngIf="agree.errors?.required && (agree.dirty || agree.touched)">
+                       You need to agree with the privacy statement
+                    </div>
+                    <br><br>
+
+                    <div class="field">
                     <p class="control">
-                        <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Register</button>
+                        <button class="button is-primary"
+                         [disabled]="!signupForm.form.valid"
+                         [ngClass]="{'is-loading':isLoading}">Register</button>
                     
                     </p>
                 </div>
@@ -78,28 +135,23 @@ input { max-width:400px !important;}
         </form>
     </div>
 
-    <div class='column is-one-third'></div> 
+  
       
-    <div *ngIf="success && !error" class="column is-one-third is-centered">
+    <div class="notification is-success container" *ngIf="success && !error" >
         <p class="title">Hello {{firstname_result}} {{lastname_result}},</p>
         <p>Thank you for your registration. An email had been sent to:</p>
-       
-        <p><h3>{{email_result}}</h3><p>
-        <p>Please follow the instructions in this email to finish your registration. </p>
+        <p class="title">{{email_result}} test</p>
+        <p>Please follow the instructions in this email to complete your registration. </p>
     </div>
-
-    <div *ngIf=error class="column is-one-third is-centered">
+ 
+    <div class="notification is-danger container" *ngIf=error >
             <p class="title">Registration failed</p>
-            <p>Please send a mail to:</p>
-           
-            <p><h3>MAIL ERROR NOG INVULLEN</h3><p>  
+            <p>Please notify the administrator of Digital Humanities Lab</p>
     </div>
 
 
-    
-<div class='is-one-third'></div> 
 
-
+</div>
 
 
 
