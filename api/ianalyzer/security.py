@@ -42,7 +42,32 @@ def logout_user(user):
     flask_logout_user()
 
 
-#Robert: voor user registration confirmation
+# lastname to username, trim spaces and check if name already exists, in that case, add number and check again
+def generate_username(lastname):
+    username=lastname.strip().replace(" ", "")
+    user = models.User.query.filter_by(username=username).first()
+
+    if user is None: # username does not exist, can be used rightaway 
+        return username
+
+    else:
+        for x in range(1,99):
+            username_extended=username+str(x)
+            print(username_extended)
+            user = models.User.query.filter_by(username=username_extended).first() 
+            if user is None: 
+                break   
+        return username_extended
+    
+# check if emailadres already exists for registration
+def email_unique(email):
+    user = models.User.query.filter_by(email=email).first()
+    if user is None: # email does not exist, can be used for registration
+        return True
+    else:
+        return False
+
+# userregistration confirmation, when clicked on link in confirmation email
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(config.SECRET_KEY)
     return serializer.dumps(email, salt=config.SECURITY_PASSWORD_SALT)

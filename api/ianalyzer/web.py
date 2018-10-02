@@ -125,6 +125,11 @@ def api_register():
     if not request.json:
         abort(400)
     
+
+    username=security.generate_username(request.json['lastname'])
+    #print(username)
+
+
     #print(request.json['password'])
 
     #lastname opzoeken in db als controle, of email adres gebruiken als username, maar ook dan moet die uniek zijn
@@ -145,18 +150,17 @@ def api_register():
     #msg.body = "testing"
     msg.html=render_template('mail/new_user.html', 
                 firstname=request.json['firstname'], 
-                lastname=request.json['lastname'], # TODO: dit wordt loginnaam, maar eerst kijken of die naam al bestaat, en in dat geval er een cijfer achterzetten
+                lastname=username, # TODO: dit wordt loginnaam, maar eerst kijken of die naam al bestaat, en in dat geval er een cijfer achterzetten
                 confirmation_link= app.config.get('BASE_URL')+'/api/registration_confirmation/'+token
     )
 
     #https://realpython.com/handling-email-confirmation-in-flask/
 
-    mail.send(msg) #even uitgeschakeld
 
     pw_hash=generate_password_hash(request.json['password'])
 
     new_user = models.User(
-        username=request.json['lastname'], 
+        username=username,
         email=request.json['email'],
         active=False,
         password=pw_hash,
@@ -167,18 +171,28 @@ def api_register():
 
     db = SQLAlchemy()
     db.session.add(new_user)
-    db.session.commit() # zet in db
+    
+    if security.email_unique(request.json['email']): # TODO: hij moet meteen via api de email checken terwijl je invult als je emailconfirm verlaat zie:https://alligator.io/angular/async-validators/
+        mail.send(msg) #even uitgeschakeld
+        db.session.commit() # zet in db UITGESCHAKELD
 
 
-    response=jsonify({
-        'success': True, 
-        'firstname':request.json['firstname'], 
-        'lastname':request.json['lastname'],
-        'email':request.json['email'],
-        })
+        response=jsonify({
+            'success': True, 
+            'firstname':request.json['firstname'], 
+            'lastname':request.json['lastname'],
+            'email':request.json['email'],
+            })
+
+    else: response=response=jsonify({
+            'success': False, 
+            'firstname':request.json['firstname'], 
+            'lastname':request.json['lastname'],
+            'email':request.json['email'],
+            })      
 
     return response
-
+    
 
 #endpoint for the confirmation of user if link in email is clicked.
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
