@@ -36,7 +36,7 @@ import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
-
+import { RegistrationComponent } from './registration/registration.component';
 
 const appRoutes: Routes = [
     {
@@ -47,6 +47,14 @@ const appRoutes: Routes = [
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: 'login/:activated',
+        component: LoginComponent
+    },
+    {
+        path: 'registration',
+        component: RegistrationComponent
     },
     {
         path: 'home',
@@ -95,7 +103,8 @@ const appRoutes: Routes = [
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
         FreqtableComponent,
-        SelectFieldComponent
+        SelectFieldComponent,
+        RegistrationComponent
     ],
     imports: [
         BrowserAnimationsModule,

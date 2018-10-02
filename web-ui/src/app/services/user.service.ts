@@ -5,12 +5,15 @@ import { SessionService } from './session.service';
 import { User } from '../models/user';
 
 import { Subject, Subscription } from 'rxjs';
+import { LoginComponent } from '../login/login.component';
 
 const localStorageKey = 'currentUser';
 const sessionCheckInterval = 10000;
 
 @Injectable()
 export class UserService implements OnDestroy {
+    // workaround for logging out "expired" users, including those who never logged on in the first place
+    public static loginActivated = false;
     private deserializedCurrentUser: User | false = false;
     private sessionExpiredSubscription: Subscription;
     /**
@@ -78,7 +81,7 @@ export class UserService implements OnDestroy {
 
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
-            // no need to notify the server that we are going to logoff, because it told us this is already the case
+            // no need to notify the server that we are going to logoff, because it told us this is already the case            
             this.logout(false, true);
         });
     }
@@ -124,6 +127,25 @@ export class UserService implements OnDestroy {
         return loginPromise;
     }
 
+
+
+    //Robert erbij gezet promise is de callback functie die uitgevoerd wordt 
+    public register(firstname:string, lastname: string, email: string, password:string ): Promise<void | {success: boolean; firstname: string; lastname: string; email: string;} > {
+
+        let registerPromise = this.apiService.register({ firstname, lastname, email, password }).then(result => {     
+                    
+            return result; 
+        },
+        reason => {
+            console.log(reason);
+        }
+    
+    );
+        return registerPromise;
+    }
+
+
+
     public loginAsGuest() {
         if (this.supportGuest) {
             return this.login('guest');
@@ -146,7 +168,7 @@ export class UserService implements OnDestroy {
             await this.apiService.logout();
         }
 
-        if (redirectToLogout) {
+        if (redirectToLogout && !UserService.loginActivated) {
             this.showLogin();
         }
 
@@ -157,3 +179,5 @@ export class UserService implements OnDestroy {
         this.router.navigate(['/login'], returnUrl ? { queryParams: { returnUrl } } : undefined);
     }
 }
+
+

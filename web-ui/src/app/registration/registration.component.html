@@ -1,0 +1,107 @@
+<style>
+input { max-width:400px !important;}
+</style>
+
+<section class="section">
+
+    <div *ngIf="!success && !error"  >
+        <form (ngSubmit)="register()" class="container is-readable" name="Form" >
+
+            <div class="container is-login">
+                    <h1 class="title">I-Analyzer</h1>
+                <div class="field">
+                    <label for="firstname">First Name</label>
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input" type="text"  required minlength="3" [(ngModel)]="firstname" name="firstname"  required/>
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    </p>
+                </div>
+
+
+                <div class="field">
+                    <label for="lastname">Last Name</label>
+                    <p class="control has-icons-left">
+                        <input class="input" type="text" [(ngModel)]="lastname" name="lastname"  required/>
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+        
+                  
+
+                    </p>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <p class="control has-icons-left">
+                        <input class="input" type="email" [(ngModel)]="email" name="email"  required/>
+                        <span class="icon is-small is-left">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    </p>
+                </div>
+                <div class="field">
+                        <label for="email">Email Confirm</label>
+                        <p class="control has-icons-left">
+                            <input class="input" type="email" [(ngModel)]="emailconfirm" name="emailconfirm" />
+                            <span class="icon is-small is-left">
+                            <i class="fa fa-user"></i>
+                        </span>
+                        </p>
+                    </div>
+                <div class="field">
+                        <label for="email">Password</label>
+                        <p class="control has-icons-left">
+                            <input class="input" type="password" [(ngModel)]="password" name="password"  required/>
+                            <span class="icon is-small is-left">
+                            <i class="fa fa-user"></i>
+                        </span>
+                        </p>
+                    </div>
+                    <div class="field">
+                            <label for="email">Password Confirm</label>
+                            <p class="control has-icons-left">
+                                <input class="input" type="password" [(ngModel)]="passwordconfirm" name="passwordconfirm" />
+                                <span class="icon is-small is-left">
+                                <i class="fa fa-user"></i>
+                            </span>
+                            </p>
+                        </div>
+                <div class="field">
+                    <p class="control">
+                        <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Register</button>
+                    
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class='column is-one-third'></div> 
+      
+    <div *ngIf="success && !error" class="column is-one-third is-centered">
+        <p class="title">Hello {{firstname_result}} {{lastname_result}},</p>
+        <p>Thank you for your registration. An email had been sent to:</p>
+       
+        <p><h3>{{email_result}}</h3><p>
+        <p>Please follow the instructions in this email to finish your registration. </p>
+    </div>
+
+    <div *ngIf=error class="column is-one-third is-centered">
+            <p class="title">Registration failed</p>
+            <p>Please send a mail to:</p>
+           
+            <p><h3>MAIL ERROR NOG INVULLEN</h3><p>  
+    </div>
+
+
+    
+<div class='is-one-third'></div> 
+
+
+
+
+
+</section>
+

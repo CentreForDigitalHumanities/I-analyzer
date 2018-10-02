@@ -6,13 +6,17 @@ import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
-
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, stream_with_context
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
-
+from flask_mail import Mail, Message   
+from flask_sqlalchemy import SQLAlchemy
+from ianalyzer import config_fallback as config
+from werkzeug.security import generate_password_hash, check_password_hash
+import string
+from random import choice
 from . import config_fallback as config
 from . import factories
 from . import models
@@ -21,6 +25,7 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+
 
 
 blueprint = Blueprint('blueprint', __name__)
@@ -112,6 +117,99 @@ def init():
         return redirect(url_for('admin.index'))
     else:
         return redirect(url_for('admin.login'))
+
+
+# endpoint for register new user via login form
+@blueprint.route('/api/register', methods=['POST'])
+def api_register():
+    if not request.json:
+        abort(400)
+    
+    print(request.json['password'])
+    #lastname opzoeken in db als controle, of email adres gebruiken als username, maar ook dan moet die uniek zijn
+    #als username niet uniek is, wordt niet opgeslagen: 500 error. Moet teruggekoppeld worden, hoe?
+
+    #generate readable/usable pw of 6 characters with some digits, to be send via email
+    # characters = string.digits + string.ascii_letters + string.digits + string.digits
+    # pw =  "".join(choice(characters) for x in range(6))
+    token = security.generate_confirmation_token(request.json['email'])
+
+    app = Flask(__name__)
+    app.config.from_pyfile('config.py')
+    mail = Mail(app)
+    msg = Message(app.config.get('MAIL_REGISTRATION_SUBJECT_LINE'), 
+                    sender = app.config.get('MAIL_FROM_ADRESS'), 
+                    recipients = [ request.json['email'] ])
+    #msg.body = "testing"
+    msg.html=render_template('mail/new_user.html', 
+                firstname=request.json['firstname'], 
+                lastname=request.json['lastname'], # TODO: dit wordt loginnaam, maar eerst kijken of die naam al bestaat, en in dat geval er een cijfer achterzetten
+                confirmation_link= app.config.get('BASE_URL')+'/api/registration_confirmation/'+token
+    )
+
+    #https://realpython.com/handling-email-confirmation-in-flask/
+
+    mail.send(msg) #even uitgeschakeld
+
+    pw_hash=generate_password_hash(request.json['password'])
+
+    new_user = models.User(
+        username=request.json['lastname'], 
+        email=request.json['email'],
+        active=False,
+        password=pw_hash,
+        #roles='times' #voorlopig zo, todo een instelling (list) in config maken welke roles een nieuwe registration standaard krijgt
+        # werkt niet, roles zit in (models.role), waar user id met rol is gekoppeld. Dus eerst user maken, dan de id ervan ophalen, en daarmee insert in roles
+        )
+    
+
+    db = SQLAlchemy()
+    db.session.add(new_user)
+    db.session.commit() # zet in db
+
+
+    response=jsonify({
+        'success': True, 
+        'firstname':request.json['firstname'], 
+        'lastname':request.json['lastname'],
+        'email':request.json['email'],
+        })
+
+    return response
+
+
+#endpoint for the confirmation of user if link in email is clicked.
+@blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
+def api_register_confirmation(token):
+    
+    # hier redirecten naar login scherm met een boodschap die op loginscherm wordt getoond
+    #https://realpython.com/handling-email-confirmation-in-flask/
+
+    expiration=60*60*72
+    try:
+        email = security.confirm_token(token, expiration)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger') #werktniet, want moet via frontend 
+        # hier moet een retrun komen met json naar de frontend
+    
+    user = models.User.query.filter_by(email=email).first_or_404()
+    #print(user)
+    
+    if user.active:
+        flash('Account already confirmed. Please login.', 'success') #idem, moet json return worden die frontend oproept
+    else:
+        user.active = True
+        models.db.session.add(user)
+        models.db.session.commit()
+    # variable active meesturen, zodat loginscherm een boodschap kan geven dat activatie gelukt is
+    return redirect(config.BASE_URL+'/login?isActivated=true')
+    # of een http post zenden?
+    #return 'test'
+    # response=jsonify({
+    #     'success': True,
+    #     })
+
+   # return response
 
 
 @blueprint.route('/api/es_config', methods=['GET'])
