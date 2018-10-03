@@ -1,8 +1,10 @@
-import { Input, Component, OnChanges, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, OnInit, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
+import { Subscription }   from 'rxjs';
 
+import { DataService } from '../services/index';
 
 @Component({
     selector: 'ia-barchart',
@@ -11,7 +13,7 @@ import * as _ from "lodash";
     encapsulation: ViewEncapsulation.None
 })
 
-export class BarChartComponent implements OnChanges {
+export class BarChartComponent implements OnChanges, OnInit {
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
@@ -41,6 +43,11 @@ export class BarChartComponent implements OnChanges {
     public yAxisLabel: any;
 
     private xBarWidth: number;
+    public subscription: Subscription;
+
+    ngOnInit() {
+        this.calculateCanvas();
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
@@ -48,14 +55,15 @@ export class BarChartComponent implements OnChanges {
             this.prepareTermFrequency();
             this.calculateDomains();
 
-            if (changes['visualizedField'] != undefined) {
-                this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
+            if (changes['searchData'] != undefined) {
+                this.createChart(true);
+                // to do: what happends if searchData is an empty array?
                 this.drawChartData(this.searchData);
                 this.rescaleY();
             }
 
             //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
+            else if (changes['asPercent'] != undefined) {
                 if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
                     this.rescaleY();
                 }
@@ -198,11 +206,4 @@ export class BarChartComponent implements OnChanges {
             .attr('height', d => this.height - this.yScale(d.doc_count));
     }
 
-}
-
-
-type KeyFrequencyPair = {
-    key: string;
-    doc_count: number;
-    key_as_string?: string;
 }

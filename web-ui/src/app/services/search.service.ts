@@ -8,7 +8,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateQueryFeedback } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -114,6 +114,12 @@ export class SearchService {
 
     public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback>{
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
+    }
+
+    public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
+        return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
+            return {[fieldName]: result['data']};
+        });
     }
 
     /**

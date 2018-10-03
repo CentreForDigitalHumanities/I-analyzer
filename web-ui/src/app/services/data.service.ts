@@ -1,15 +1,21 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject }    from 'rxjs';
 
-import { AggregateDataTriggered } from '../models/index';
+import { AggregateData } from '../models/index';
 
-const searchDataSource = new BehaviorSubject<AggregateDataTriggered>(undefined);
+const filterDataSource = new BehaviorSubject<AggregateData>(undefined);
+const visualizationDataSource = new BehaviorSubject<AggregateData>(undefined);
 
 @Injectable()
 export class DataService {
-    public searchData$ = searchDataSource.asObservable();
+    public filterData$ = filterDataSource.asObservable();
+    public visualizationData$ = visualizationDataSource.asObservable();
 
-    pushNewSearchData(data: AggregateDataTriggered) {
-        searchDataSource.next(data);
+    pushNewFilterData(data: AggregateData) {
+        filterDataSource.next(data);
+    }
+
+    pushNewVisualizationData(data: AggregateData) {
+        visualizationDataSource.next(data);
     }
 }

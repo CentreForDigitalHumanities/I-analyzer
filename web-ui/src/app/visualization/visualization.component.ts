@@ -15,7 +15,10 @@ export class VisualizationComponent implements OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
     @Input() public contents: string[];
-    //@Input() public aggregateData: AggregateData;
+    @Input() public visualizedFields: {
+        name: string;
+        displayName: string;
+    }[];
 
     public asPercentage: boolean;
 
@@ -25,10 +28,6 @@ export class VisualizationComponent implements OnChanges {
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
-    public visualizedFields: {
-        name: string;
-        displayName: string;
-    }[];
     public visualizationType: string;
     public freqtable: boolean = false;
 
@@ -38,10 +37,19 @@ export class VisualizationComponent implements OnChanges {
     public subscription: Subscription;
     public aggregateData: AggregateData;
 
-    constructor(private searchService: SearchService, private dataService: DataService, private apiService: ApiService) {
-        this.subscription = this.dataService.searchData$.subscribe(
+    constructor(private dataService: DataService, private apiService: ApiService) {
+        this.subscription = this.dataService.visualizationData$.subscribe(
             data => {
-                this.aggregateData = data;
+                if (data !== {}) {
+                    console.log(JSON.stringify(Object.keys(data)));
+                    this.aggregateData = data;
+                    if (this.visualizedField !== undefined) {
+                        this.setVisualizedField(this.visualizedField);
+                    }
+                    else {
+                        //
+                    }
+                }
         });
     }
 
@@ -56,26 +64,7 @@ export class VisualizationComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.visualizedFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field =>
-                (field.displayName != undefined) ?
-                    ({
-                        name: field.name,
-                        displayName: field.displayName
-                    }) :
-                    // in case display name is not provided in the corpus definition
-                    ({
-                        name: field.name,
-                        displayName: field.name
-                    })
-
-            )
-            : [];
-
-        if (!this.visualizedField) {
-            this.setVisualizedField(this.visualizedFields[0].name);
-        }
-
+        //this.visualizedField = this.visualizedField? this.visualizedField : this.visualizedFields[0].name;
         //SelectItem representations of visualized fields
         this.visDropdown =
             this.visualizedFields.map(field => ({
@@ -100,31 +89,28 @@ export class VisualizationComponent implements OnChanges {
     }
 
     setVisualizedField(visualizedField: string) {
-        let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
-        if (visualizationType == 'wordcloud') {
-            this.apiService.getWordcloudData({ 'content_list': this.contents }).then(result => {
-                this.visualizedField = visualizedField;
-                this.visualizationType = visualizationType;
-                this.aggResults = result['data'];
-            });
-        }
-        else if (visualizationType == 'timeline') {
-            let aggregator = [{name: visualizedField, size: 10000}];
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                this.visualizedField = visualizedField;
-                this.visualizationType = visualizationType;
-                this.aggResults = visual.aggregations[visualizedField];
-            });
-        }
-        else {
-            console.log(this.aggregateData);
-            this.aggResults = this.aggregateData[visualizedField];
-            // this.searchService.aggregateSearch(this.corpus, this.queryModel, visualizedField, 10000).then(visual => {
-            //     this.visualizedField = visualizedField;
-            //     this.visualizationType = visualizationType;
-            //     this.aggResults = visual.aggregations;
-            // });
-        }
+        let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
+        // if (visualizationType === 'wordcloud') {
+        //     this.apiService.getWordcloudData({ 'content_list': this.contents }).then(result => {
+        //         this.visualizedField = visualizedField;
+        //         this.visualizationType = visualizationType;
+        //         this.aggResults = result['data'];
+        //     });
+        // }
+        // else if (visualizationType == 'timeline') {
+        //     let aggregator = [{name: visualizedField, size: 10000}];
+        //     this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
+        //         this.visualizedField = visualizedField;
+        //         this.visualizationType = visualizationType;
+        //         this.aggResults = visual.aggregations[visualizedField].slice(0);
+        //     });
+        // }
+        // else {
+            //this.aggResults = this.aggregateData[visualizedField];
+            this.visualizedField = visualizedField;
+            this.visualizationType = visualizationType;
+            this.aggResults = this.aggregateData[visualizedField].slice(0); 
+        //}
     }
 
     showTable() {

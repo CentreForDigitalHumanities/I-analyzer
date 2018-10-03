@@ -74,7 +74,7 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string, size: number, min_doc_count: number) {
+    makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
         let aggregation = {
             terms: {
                 field: aggregator,

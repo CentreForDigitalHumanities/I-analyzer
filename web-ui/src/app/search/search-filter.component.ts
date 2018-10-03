@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { Subscription }   from 'rxjs';
 import * as _ from "lodash";
 
@@ -10,7 +10,7 @@ import { DataService } from '../services/index';
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
+export class SearchFilterComponent implements OnInit, OnDestroy {
     @Input()
     public field: CorpusField;
 
@@ -42,39 +42,13 @@ export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
     public aggregateData: AggregateData;
 
     constructor(private dataService: DataService) {
-        this.subscription = this.dataService.searchData$.subscribe(
+        this.subscription = this.dataService.filterData$.subscribe(
             data => {
-                if (this.aggregateData == undefined && this.data != undefined) {
-                    this.aggregateData = data.aggregations;
-                }
-                else if (this.field) {
-                    // update filter choices if aggregate search was triggered by another field
-                    if (data.trigger != this.filterData.fieldName) {
-                        this.aggregateData = data.aggregations;
-                    }
-                    // or update filter choices if aggregate search was triggered by deselecting the current filter
-                    else if (data.trigger == this.filterData.fieldName && data.aggregations[this.filterData.fieldName].length > this.aggregateData[this.filterData.fieldName].length) {
-                        this.aggregateData = data.aggregations;
-                    }                   
+                if (this.field) {
+                    this.aggregateData = data;
                     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
                 }
         });
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        // if (changes['aggregateData'] && changes['aggregateData'].currentValue != undefined) {
-        //     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
-        // }
-                 
-        
-        // if (changes['filterData'] && changes['filterData'].previousValue != changes['filterData'].currentValue) {
-        //     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
-        //     console.log("triggered getDisplayData", this.aggregateData);
-        // }
-        // if (changes['field']) {
-        //     // make sure the filter data is reset if only the field was changed
-        //     this.update(true);
-        // }
     }
 
     ngOnInit() {
@@ -210,13 +184,6 @@ export class SearchFilterComponent implements OnChanges, OnInit, OnDestroy {
                 };
         }
     }
-
-    // getOptions() {
-    //     let aggregator = {name: this.field.name, size: this.filter.options.length}
-    //         this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results =>
-    //             this.aggregateData = results.aggregations
-    //         );
-    // }
 
     /**
      * Trigger a change event.

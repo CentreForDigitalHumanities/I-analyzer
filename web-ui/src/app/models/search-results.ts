@@ -32,8 +32,3 @@ export type AggregateResult = {
 export type AggregateData = {
     [fieldName: string]: AggregateResult[]
 }
-
-export type AggregateDataTriggered = {
-    trigger: string,
-    aggregations: AggregateData
-}

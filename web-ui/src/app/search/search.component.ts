@@ -6,7 +6,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
@@ -67,18 +67,21 @@ export class SearchComponent implements OnInit {
      */
     public searchQueryText: string;
     public results: SearchResults;
-    public wordCloudData: string[];
+    public textFieldContent: {name: string, data: string[]}[];
 
-    public aggregateData: AggregateData;
+    public multipleChoiceData: AggregateData = {};
+    public visualizationData: AggregateData = {};
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
 
-    private wordCloudFields: string[];
-
-    private currentTrigger: string;
+    private wordcloudFields: string[];
+    private timelineFields: string[];
+    private multipleChoiceFilters: {name: string, size: number}[];
+    private visualizationDataRequested: boolean = false;
+    private visualizedFields;
 
     /**
      * For failed searches.
@@ -118,14 +121,23 @@ export class SearchComponent implements OnInit {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                if (corpus.fields.filter(field => field.visualizationType != undefined).length > 0) {
-                    this.showVisualizationButton = true;
-                    this.wordCloudFields = this.corpus.fields.filter(field =>
-                        field.visualizationType && field.visualizationType == 'wordcloud'
+                this.visualizedFields = this.corpus && this.corpus.fields
+                    ? this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
+
+                if (this.visualizedFields.length > 0) {
+                    this.wordcloudFields = this.visualizedFields.filter(field =>
+                        field.visualizationType === 'wordcloud'
                     ).map(field =>
                         field.name
                     );
+                    this.timelineFields = this.visualizedFields.filter(field =>
+                        field.visualizationType === 'timeline'
+                    ).map(field => ({name: field.name, size: 10000}));
                 }
+
+                this.multipleChoiceFilters = this.corpus.fields
+                    .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
+                    .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
 
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
@@ -149,7 +161,6 @@ export class SearchComponent implements OnInit {
     }
 
     public applyFilter(name: string, activated: boolean) {
-        this.currentTrigger = name;
         this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = activated;
@@ -174,10 +185,6 @@ export class SearchComponent implements OnInit {
         } else {
             this.router.navigateByUrl(url);
         }
-    }
-
-    public visualize() {
-        this.showVisualization = true;
     }
 
     public async download() {
@@ -223,6 +230,11 @@ export class SearchComponent implements OnInit {
         this.manualService.showPage('query');
     }
 
+    private tabChange() {
+        this.visualizationDataRequested = !this.visualizationDataRequested;
+        this.getVisualizationData();
+    }
+
     private performSearch() {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
@@ -239,7 +251,6 @@ export class SearchComponent implements OnInit {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.wordCloudData = _.flatten(this.wordCloudFields.map(name => results.documents.map(d => d.fieldValues[name])));
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
@@ -251,17 +262,62 @@ export class SearchComponent implements OnInit {
             console.trace(error);
             finallyReset();
         });
-        this.aggregateSearch();
+        
+        Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
+            let output: AggregateData = {};
+            filters.forEach(filter => {
+                Object.assign(output, filter);
+            })
+            this.multipleChoiceData = output;
+            this.showFilters = true;
+            this.dataService.pushNewFilterData(this.multipleChoiceData);
+        });
+
+        this.getVisualizationData();
+        
+    }
+    
+    private getVisualizationData() {
+        if (this.visualizationDataRequested) {
+            
+            this.awaitSearchData().then( results => {
+                console.log(JSON.stringify(results));
+                this.dataService.pushNewVisualizationData(this.visualizationData);
+            })
+        }
     }
 
-    private aggregateSearch() {
-        let multipleChoiceFilters = this.corpus.fields
-            .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
-            .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
-        this.searchService.aggregateSearch(this.corpus, this.queryModel, multipleChoiceFilters).then(results => {
-            this.aggregateData = results.aggregations;
-            this.dataService.pushNewSearchData({trigger: this.currentTrigger, aggregations: results.aggregations});
-            this.showFilters = true;
+    async awaitSearchData(): Promise<AggregateData> {
+        this.searchService.aggregateSearch(this.corpus, this.queryModel, this.multipleChoiceFilters).then(results => {
+            this.visualizationData = Object.assign(this.visualizationData, results.aggregations);
+        });
+        this.searchService.aggregateSearch(this.corpus, this.queryModel, this.timelineFields).then(results => {
+            this.visualizationData = Object.assign(this.visualizationData, results.aggregations);
+        });
+        this.textFieldContent = this.wordcloudFields.map(
+            name => { return {name: name, data: this.results.documents.map(d => d.fieldValues[name])} }
+        );
+        Promise.all(this.textFieldContent.map(textField => this.searchService.getWordcloudData(textField.name, textField.data))).then( results => {
+            results.forEach(result => {
+                this.visualizationData = Object.assign(this.visualizationData, result);
+            }) 
+        });
+        return this.visualizationData;
+        //console.log(this.textFieldContent);
+        //this.visualizationData = Object.assign((this.wordCloudData));
+    }
+
+    async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
+        let queryModel = _.cloneDeep(this.queryModel);
+        // get the filter's choices, based on all other filters' choices, but not this filter's choices
+        if (queryModel.filters) {
+            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);                
+            if (index >= 0) {
+                queryModel.filters.splice(index, 1);
+            }      
+        }
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
+            return results.aggregations;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -269,6 +325,7 @@ export class SearchComponent implements OnInit {
                 message: error.message || 'An unknown error occurred'
             };
             console.trace(error);
+            return {};
         })
     }
 
