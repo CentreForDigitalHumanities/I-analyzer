@@ -53,7 +53,7 @@ def generate_username(lastname):
     else:
         for x in range(1,99):
             username_extended=username+str(x)
-            print(username_extended)
+            #print(username_extended)
             user = models.User.query.filter_by(username=username_extended).first() 
             if user is None: 
                 break   

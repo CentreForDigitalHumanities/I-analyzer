@@ -130,7 +130,7 @@ export class UserService implements OnDestroy {
 
 
     //Robert erbij gezet promise is de callback functie die uitgevoerd wordt 
-    public register(firstname:string, lastname: string, email: string, password:string ): Promise<void | {success: boolean; firstname: string; lastname: string; email: string;} > {
+    public register(firstname:string, lastname: string, email: string, password:string ): Promise<void | {success: boolean; firstname: string; lastname: string; email: string; errormessage:string;} > {
 
         let registerPromise = this.apiService.register({ firstname, lastname, email, password }).then(result => {     
                     

@@ -119,26 +119,13 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-# endpoint for register new user via login form
+# endpoint for registration new user via login form
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
     if not request.json:
         abort(400)
-    
 
     username=security.generate_username(request.json['lastname'])
-    #print(username)
-
-
-    #print(request.json['password'])
-
-    #lastname opzoeken in db als controle, of email adres gebruiken als username, maar ook dan moet die uniek zijn
-    #als username niet uniek is, wordt niet opgeslagen: 500 error. Moet teruggekoppeld worden, hoe?
-    #functiemaken om direct username op te zoeken, en een cijfer 2 toe te voegen achter username, en opnieuw zoeken of die bestaat, net zo lang tot hij uniek is
-
-    #generate readable/usable pw of 6 characters with some digits, to be send via email
-    # characters = string.digits + string.ascii_letters + string.digits + string.digits
-    # pw =  "".join(choice(characters) for x in range(6))
     token = security.generate_confirmation_token(request.json['email'])
 
     app = Flask(__name__)
@@ -150,12 +137,11 @@ def api_register():
     #msg.body = "testing"
     msg.html=render_template('mail/new_user.html', 
                 firstname=request.json['firstname'], 
-                lastname=username, # TODO: dit wordt loginnaam, maar eerst kijken of die naam al bestaat, en in dat geval er een cijfer achterzetten
+                lastname=username,
                 confirmation_link= app.config.get('BASE_URL')+'/api/registration_confirmation/'+token
     )
 
     #https://realpython.com/handling-email-confirmation-in-flask/
-
 
     pw_hash=generate_password_hash(request.json['password'])
 
@@ -171,25 +157,26 @@ def api_register():
 
     db = SQLAlchemy()
     db.session.add(new_user)
-    
-    if security.email_unique(request.json['email']): # TODO: hij moet meteen via api de email checken terwijl je invult als je emailconfirm verlaat zie:https://alligator.io/angular/async-validators/
-        mail.send(msg) #even uitgeschakeld
-        db.session.commit() # zet in db UITGESCHAKELD
+    errormessage=''
+    success=False
 
+    if security.email_unique(request.json['email']):# enkel email sturen en user aanmaken in db als email nog niet bestaat in db
+        mail.send(msg) 
+        db.session.commit()
+        success=True
+        #print('mail adres bestaat nog niet')
 
-        response=jsonify({
-            'success': True, 
+    else:    
+        errormessage='The email adress you entered already exists for an other user. Please enter a different email adress.'
+        #print('mailadres bestaat al')
+
+    response=jsonify({
+            'success': success,
             'firstname':request.json['firstname'], 
             'lastname':request.json['lastname'],
             'email':request.json['email'],
+            'errormessage':errormessage,
             })
-
-    else: response=response=jsonify({
-            'success': False, 
-            'firstname':request.json['firstname'], 
-            'lastname':request.json['lastname'],
-            'email':request.json['email'],
-            })      
 
     return response
     
@@ -201,12 +188,11 @@ def api_register_confirmation(token):
     # hier redirecten naar login scherm met een boodschap die op loginscherm wordt getoond
     #https://realpython.com/handling-email-confirmation-in-flask/
 
-    expiration=60*60*72
+    expiration=60*60*72 #method does not return email after this limit
     try:
         email = security.confirm_token(token, expiration)
     except:
         flash('The confirmation link is invalid or has expired.', 'danger') #werktniet, want moet via frontend 
-        # hier moet een retrun komen met json naar de frontend
     
     user = models.User.query.filter_by(email=email).first_or_404()
     #print(user)
@@ -219,13 +205,7 @@ def api_register_confirmation(token):
         models.db.session.commit()
     # variable active meesturen, zodat loginscherm een boodschap kan geven dat activatie gelukt is
     return redirect(config.BASE_URL+'/login?isActivated=true')
-    # of een http post zenden?
-    #return 'test'
-    # response=jsonify({
-    #     'success': True,
-    #     })
 
-   # return response
 
 
 @blueprint.route('/api/es_config', methods=['GET'])

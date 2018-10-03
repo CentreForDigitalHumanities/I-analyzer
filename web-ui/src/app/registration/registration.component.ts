@@ -24,6 +24,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   private firstname_result;
   private lastname_result;
   private email_result;
+  private errormessage: string;
+  private registration_succeded=false;
 
   constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title ) {
     this.title.setTitle('I-Analyzer');
@@ -45,22 +47,27 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   register(signupForm:NgForm){
 
       this.userService.register(signupForm.value.firstname, signupForm.value.lastname, signupForm.value.email, signupForm.value.password).then(result => {
-            
-              if (!result) {
+              
+              if (!result) { //dit gebeurt als er of nog geen request is geweest, of er is geen respons, dat is onduidelijk. hier ook variabele zetten dat hij al gestuurd is
                 this.success=false;
-                this.error=true;
+                this.error=true;// het rode errorscherm tonen, want er is iets misgegaan met request.
                 console.log(this.error);
                       }
               else {
-                  if(result.success) {
-                      this.success=true;
+                  
+                  this.success=result.success;
+                  this.errormessage=result.errormessage;
+                  console.log(result.errormessage);
+
+                  if(result.success) { //als er nu wel een result is, maar result.success is false, blijft registration_succeded =false, en wordt aanmeldscherm getoond
+                      this.registration_succeded=true;
                       this.firstname_result=result.firstname;
                       this.lastname_result=result.lastname;
                       this.email_result=result.email;
-                      console.log(this.error);
                     }
                     else{
-                      this.error=true;
+                      //this.error=true;
+                      //console.log(result.errormessage);
                     }
               }
         });

@@ -123,7 +123,7 @@ export class ApiService extends Rest {
     })
     public register: RestMethod<
     { firstname: string, lastname: string, email:string, password:string },
-    { success: boolean, firstname:string, lastname: string, email:string }>;  
+    { success: boolean, firstname:string, lastname: string, email:string, errormessage:string }>;  
 
 
     @RestAction({

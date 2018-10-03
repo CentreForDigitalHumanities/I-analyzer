@@ -13,7 +13,7 @@ input { max-width:400px !important;}
 <div class="columns is-centered">
 
 
-    <div *ngIf="!success && !error"  >
+    <div *ngIf="!registration_succeded && !error"  >
         <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm"  >
             <div class="container is-login">
                     <h1 class="title">I-Analyzer sign-up</h1>
@@ -75,10 +75,14 @@ input { max-width:400px !important;}
                         </div>
                     </div>
 
-                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  (emailconfirm.dirty || emailconfirm.touched)" > 
+                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  (emailconfirm.dirty || emailconfirm.touched || errormessage )" > 
                         Email adresses do not match, please try again.
                     </div>
-
+                    
+                    <div *ngIf="errormessage" > 
+                        <div class="notification is-danger">{{errormessage}}</div>
+                    </div>
+                   
 
                     <div class="field">
                         <label for="email">Password</label>
@@ -108,7 +112,7 @@ input { max-width:400px !important;}
                                 password confirmation is required.
                             </div>
 
-                            <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  (passwordconfirm.dirty || passwordconfirm.touched)" > 
+                            <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)" > 
                                 Passwords do not match, please try again.
                             </div>
                         </div>
@@ -137,10 +141,10 @@ input { max-width:400px !important;}
 
   
       
-    <div class="notification is-success container" *ngIf="success && !error" >
+    <div class="notification is-success container" *ngIf="registration_succeded && !error" >
         <p class="title">Hello {{firstname_result}} {{lastname_result}},</p>
-        <p>Thank you for your registration. An email had been sent to:</p>
-        <p class="title">{{email_result}} test</p>
+        <p>Thank you for your registration. An email has been sent to:</p>
+        <p class="title">{{email_result}}</p>
         <p>Please follow the instructions in this email to complete your registration. </p>
     </div>
  
