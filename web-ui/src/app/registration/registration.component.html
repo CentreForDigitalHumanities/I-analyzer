@@ -1,17 +1,5 @@
-<style>
-
-.container {max-width:400px !important;}   
-input { max-width:400px !important;}
-.notification{ 
-    max-width:400px !important;
-    padding:8px;
-    }
-</style>
-
 <section class="section">
-
 <div class="columns is-centered">
-
 
     <div *ngIf="!registration_succeded && !error"  >
         <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm"  >
@@ -119,7 +107,10 @@ input { max-width:400px !important;}
 
                     <div class="field">    
                         <label>
-                            <input type="checkbox" name="agree" ngModel #agree= "ngModel" required > I have read and I agree with the privacy statement
+                            <input type="checkbox" name="agree" ngModel #agree= "ngModel" required > I have read and I agree with the
+                            <a (click)="toggleModal()">
+                                privacy statement
+                            </a>
                           </label>
                     </div>
                     <div class="notification is-warning" *ngIf="agree.errors?.required && (agree.dirty || agree.touched)">
@@ -138,9 +129,7 @@ input { max-width:400px !important;}
             </div>
         </form>
     </div>
-
-  
-      
+    
     <div class="notification is-success container" *ngIf="registration_succeded && !error" >
         <p class="title">Hello {{firstname_result}} {{lastname_result}},</p>
         <p>Thank you for your registration. An email has been sent to:</p>
@@ -153,11 +142,23 @@ input { max-width:400px !important;}
             <p>Please notify the administrator of Digital Humanities Lab</p>
     </div>
 
-
-
 </div>
-
-
 
 </section>
 
+
+<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActive }">
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div class=" modal-content modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Privacy Statement</p>
+        <button class="delete" aria-label="close" (click)="toggleModal()"></button>
+      </header>
+      <section class="modal-card-body">
+        <ia-privacy></ia-privacy>
+      </section>
+      <footer class="modal-card-foot">
+      </footer>
+    </div>
+  </div>
+  

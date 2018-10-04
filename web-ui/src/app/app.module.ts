@@ -37,6 +37,7 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 const appRoutes: Routes = [
     {
@@ -55,6 +56,10 @@ const appRoutes: Routes = [
     {
         path: 'registration',
         component: RegistrationComponent
+    },
+    {
+        path: 'privacy',
+        component: PrivacyComponent
     },
     {
         path: 'home',
@@ -104,7 +109,8 @@ const appRoutes: Routes = [
         HistoryQueryDisplayComponent,
         FreqtableComponent,
         SelectFieldComponent,
-        RegistrationComponent
+        RegistrationComponent,
+        PrivacyComponent
     ],
     imports: [
         BrowserAnimationsModule,
