@@ -119,7 +119,7 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-# endpoint for registration new user via login form
+# endpoint for registration new user via signup form
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
     if not request.json:
@@ -134,14 +134,12 @@ def api_register():
     msg = Message(app.config.get('MAIL_REGISTRATION_SUBJECT_LINE'), 
                     sender = app.config.get('MAIL_FROM_ADRESS'), 
                     recipients = [ request.json['email'] ])
-    #msg.body = "testing"
+
     msg.html=render_template('mail/new_user.html', 
                 firstname=request.json['firstname'], 
                 lastname=username,
                 confirmation_link= app.config.get('BASE_URL')+'/api/registration_confirmation/'+token
     )
-
-    #https://realpython.com/handling-email-confirmation-in-flask/
 
     pw_hash=generate_password_hash(request.json['password'])
 
@@ -150,25 +148,23 @@ def api_register():
         email=request.json['email'],
         active=False,
         password=pw_hash,
-        #roles='times' #voorlopig zo, todo een instelling (list) in config maken welke roles een nieuwe registration standaard krijgt
-        # werkt niet, roles zit in (models.role), waar user id met rol is gekoppeld. Dus eerst user maken, dan de id ervan ophalen, en daarmee insert in roles
+        #Todo: add role for standard user, otherwise no corpus is available
+        # First needed a redesign of the roles functionality. role needs to be reworked to a group with privileges on certain corpora
         )
     
-
     db = SQLAlchemy()
     db.session.add(new_user)
     errormessage=''
     success=False
 
-    if security.email_unique(request.json['email']):# enkel email sturen en user aanmaken in db als email nog niet bestaat in db
+    # Check if email already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
+    if security.email_unique(request.json['email']):
         mail.send(msg) 
         db.session.commit()
         success=True
-        #print('mail adres bestaat nog niet')
 
     else:    
-        errormessage='The email adress you entered already exists for an other user. Please enter a different email adress.'
-        #print('mailadres bestaat al')
+        errormessage='The email adress you entered already exists. Please enter a different email adress.'
 
     response=jsonify({
             'success': success,
@@ -185,25 +181,18 @@ def api_register():
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
 def api_register_confirmation(token):
     
-    # hier redirecten naar login scherm met een boodschap die op loginscherm wordt getoond
-    #https://realpython.com/handling-email-confirmation-in-flask/
 
     expiration=60*60*72 #method does not return email after this limit
     try:
         email = security.confirm_token(token, expiration)
     except:
-        flash('The confirmation link is invalid or has expired.', 'danger') #werktniet, want moet via frontend 
+        flash('The confirmation link is invalid or has expired.', 'danger')
     
     user = models.User.query.filter_by(email=email).first_or_404()
-    #print(user)
-    
-    if user.active:
-        flash('Account already confirmed. Please login.', 'success') #idem, moet json return worden die frontend oproept
-    else:
-        user.active = True
-        models.db.session.add(user)
-        models.db.session.commit()
-    # variable active meesturen, zodat loginscherm een boodschap kan geven dat activatie gelukt is
+    user.active = True
+    models.db.session.add(user)
+    models.db.session.commit()
+   
     return redirect(config.BASE_URL+'/login?isActivated=true')
 
 

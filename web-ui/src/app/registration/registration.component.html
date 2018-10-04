@@ -63,8 +63,8 @@
                         </div>
                     </div>
 
-                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  (emailconfirm.dirty || emailconfirm.touched || errormessage )" > 
-                        Email adresses do not match, please try again.
+                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  ( emailconfirm.touched || errormessage )" > 
+                        Email adresses do not match.
                     </div>
                     
                     <div *ngIf="errormessage" > 
@@ -101,7 +101,7 @@
                             </div>
 
                             <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)" > 
-                                Passwords do not match, please try again.
+                                Passwords do not match.
                             </div>
                         </div>
 
@@ -161,4 +161,3 @@
       </footer>
     </div>
   </div>
-  

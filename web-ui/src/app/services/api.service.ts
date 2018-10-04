@@ -115,8 +115,6 @@ export class ApiService extends Rest {
         userID: number
     }>;
 
-
-    //Robert erbij gezet
     @RestAction({
         method: RestRequestMethod.Post,
         path: '/register'
@@ -124,7 +122,6 @@ export class ApiService extends Rest {
     public register: RestMethod<
     { firstname: string, lastname: string, email:string, password:string },
     { success: boolean, firstname:string, lastname: string, email:string, errormessage:string }>;  
-
 
     @RestAction({
         method: RestRequestMethod.Get,
