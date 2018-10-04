@@ -34,6 +34,9 @@ export class VisualizationComponent implements OnInit, OnChanges {
     public chartElement: any;
     public aggResults: AggregateResult[];
 
+    // aggregate search expects a size argument
+    public defaultSize: number = 10000;
+
     constructor(private searchService: SearchService) {
     }
 
@@ -62,17 +65,19 @@ export class VisualizationComponent implements OnInit, OnChanges {
         let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
         if (visualizationType === 'wordcloud') {
             this.searchService.getWordcloudData(visualizedField, this.textFieldContent.find(textField => textField.name === visualizedField).data).then(result =>{
+                // slice is used so the child component fires OnChange
                 this.aggResults = result[visualizedField].slice(0);
             })
         }
         else if (visualizationType == 'timeline') {
-            let aggregator = [{name: visualizedField, size: 10000}];
+            let aggregator = [{name: visualizedField, size: this.defaultSize}];
             this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[visualizedField].slice(0);
             });
         }
         else {
             let aggregator = this.multipleChoiceFilters.find(filter => filter.name == visualizedField);
+            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[visualizedField].slice(0);
             });
