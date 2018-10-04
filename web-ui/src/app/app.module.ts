@@ -8,6 +8,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
 import { ButtonModule, CalendarModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
@@ -128,6 +129,7 @@ const appRoutes: Routes = [
         DialogModule,
         CheckboxModule,
         SharedModule,
+        TableModule,
         TabViewModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
