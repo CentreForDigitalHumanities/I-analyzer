@@ -3,6 +3,8 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation }
 import * as d3 from 'd3';
 import * as _ from "lodash";
 
+// custom definition of scaleTime to avoid Chrome issue with displaying historical dates
+import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -46,7 +48,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.searchData && this.visualizedField) {
-            console.log(this.searchData);
             if (changes['visualizedField'] != undefined) {
                 this.calculateCanvas();
                 this.prepareTimeline();
@@ -71,13 +72,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.selectedData = this.formatTimeData();
 
         this.xDomain = d3.extent(this.selectedData, d => d.date);
-        this.xScale = d3.scaleTime()
+        this.xScale = scaleTimeCustom()
             .domain(this.xDomain)
             .range([0, this.width])
             .clamp(true);
-
-        let ticks = this.xScale.ticks(10);
-        let date = ticks[0];
 
         let [min, max] = this.xScale.domain();
 
@@ -85,7 +83,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .value(d => d.date)
             .domain([min, max])
             .thresholds(this.xScale.ticks(d3.timeYear));
-
+        
         this.currentTimeCategory = 'years';
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
 
@@ -128,6 +126,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 d.doc_count = 0;
             }
         });
+        // no need to draw zero height rectangles!
+        this.bins = this.bins.filter(b => b.doc_count>0);
         this.yMax = parseInt(d3.max(this.bins.map(d => d.doc_count)));
         this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
@@ -190,7 +190,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             }
 
         } else {
+            console.log(this.xScale.domain());
             this.xScale.domain([s[0] - this.margin.left, s[1] - this.margin.left].map(this.xScale.invert, this.xScale));
+            console.log(this.xScale.domain());
+            console.log(s[0], s[1], this.margin.left);
             this.svg.select(".brush").call(this.brush.move, null);
             this.zoomIn();
         }
@@ -230,7 +233,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         if (width > 0) {
             return width
         }
-        else return 0;
+        else -width;
     }
 
     adjustTimeCategory() {
