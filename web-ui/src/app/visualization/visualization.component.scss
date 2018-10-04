@@ -13,10 +13,11 @@
 }
 
 .checkbox {
-	margin-top: 1rem;
-	
+	margin-top: 1em;
+	margin-bottom: 1em;
 	input {
 		cursor: pointer;
 		margin-right: 0.25em;
+		vertical-align: center;
 	}
 }
