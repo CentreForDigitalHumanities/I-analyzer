@@ -36,7 +36,7 @@ http.cors.allow-origin: "*"
 ```
 npm install
 ```
-4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module.
+4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
 5. Go to `/api`, start a virtual environment with Python 3. See instructions below for Python package installation and dependency management.
 6. Define that the startup code for the Flask application is located within. manage.py by exporting / setting the environment variable:
 - Mac/Linux:
