@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { Subscription }   from 'rxjs';
 import * as _ from "lodash";
+import * as moment from 'moment';
 
 import { CorpusField, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
 import { DataService } from '../services/index';
@@ -202,6 +203,6 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
      * Return a string of the form 0123-04-25.
      */
     formatDate(date: Date): string {
-        return date.toISOString().slice(0, 10);
+        return moment(date).format().slice(0, 10);
     }
 }
