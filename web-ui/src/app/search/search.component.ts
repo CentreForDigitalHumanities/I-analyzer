@@ -78,10 +78,7 @@ export class SearchComponent implements OnInit {
     public searchResults: { [fieldName: string]: any }[];
 
     private wordcloudFields: string[];
-    private timelineFields: string[];
     private multipleChoiceFilters: {name: string, size: number}[];
-    private visualizationDataRequested: boolean = false;
-    private visualizedFields;
 
     /**
      * For failed searches.
@@ -121,19 +118,10 @@ export class SearchComponent implements OnInit {
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
 
-                this.visualizedFields = this.corpus && this.corpus.fields
-                    ? this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
-
-                if (this.visualizedFields.length > 0) {
-                    this.wordcloudFields = this.visualizedFields.filter(field =>
-                        field.visualizationType === 'wordcloud'
-                    ).map(field =>
+                this.wordcloudFields = this.corpus.fields.filter(
+                    field => field.visualizationType === 'wordcloud').map(field =>
                         field.name
-                    );
-                    this.timelineFields = this.visualizedFields.filter(field =>
-                        field.visualizationType === 'timeline'
-                    ).map(field => ({name: field.name, size: 10000}));
-                }
+                );
 
                 this.multipleChoiceFilters = this.corpus.fields
                     .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
@@ -230,11 +218,6 @@ export class SearchComponent implements OnInit {
         this.manualService.showPage('query');
     }
 
-    private tabChange() {
-        this.visualizationDataRequested = !this.visualizationDataRequested;
-        this.getVisualizationData();
-    }
-
     private performSearch() {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
@@ -251,6 +234,10 @@ export class SearchComponent implements OnInit {
             this.corpus
         ).then(results => {
             this.results = results;
+            // extract content from text fields for word clouds
+            this.textFieldContent = this.wordcloudFields.map(
+                name => { return {name: name, data: results.documents.map(d => d.fieldValues[name])} }
+            );
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {
@@ -272,39 +259,6 @@ export class SearchComponent implements OnInit {
             this.showFilters = true;
             this.dataService.pushNewFilterData(this.multipleChoiceData);
         });
-
-        this.getVisualizationData();
-        
-    }
-    
-    private getVisualizationData() {
-        if (this.visualizationDataRequested) {
-            
-            this.awaitSearchData().then( results => {
-                console.log(JSON.stringify(results));
-                this.dataService.pushNewVisualizationData(this.visualizationData);
-            })
-        }
-    }
-
-    async awaitSearchData(): Promise<AggregateData> {
-        this.searchService.aggregateSearch(this.corpus, this.queryModel, this.multipleChoiceFilters).then(results => {
-            this.visualizationData = Object.assign(this.visualizationData, results.aggregations);
-        });
-        this.searchService.aggregateSearch(this.corpus, this.queryModel, this.timelineFields).then(results => {
-            this.visualizationData = Object.assign(this.visualizationData, results.aggregations);
-        });
-        this.textFieldContent = this.wordcloudFields.map(
-            name => { return {name: name, data: this.results.documents.map(d => d.fieldValues[name])} }
-        );
-        Promise.all(this.textFieldContent.map(textField => this.searchService.getWordcloudData(textField.name, textField.data))).then( results => {
-            results.forEach(result => {
-                this.visualizationData = Object.assign(this.visualizationData, result);
-            }) 
-        });
-        return this.visualizationData;
-        //console.log(this.textFieldContent);
-        //this.visualizationData = Object.assign((this.wordCloudData));
     }
 
     async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
@@ -443,7 +397,6 @@ export class SearchComponent implements OnInit {
     }
 }
 
-type Tab = "search" | "columns";
 type QueryField = CorpusField & {
     data: SearchFilterData,
     useAsFilter: boolean,

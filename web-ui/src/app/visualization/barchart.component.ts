@@ -57,7 +57,7 @@ export class BarChartComponent implements OnChanges, OnInit {
 
             if (changes['searchData'] != undefined) {
                 this.createChart(true);
-                // to do: what happends if searchData is an empty array?
+                // to do: what happens if searchData is an empty array?
                 this.drawChartData(this.searchData);
                 this.rescaleY();
             }

@@ -41,6 +41,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
 
     public aggregateData: AggregateData;
 
+    public greyedOut: boolean = false;
+
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
@@ -111,13 +113,17 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
                     let options = [];
-                    if (aggregateData != null) {                    
+                    if (aggregateData != null) {
+                        this.greyedOut = false;                
                         options = _.sortBy(
                             aggregateData[filterData.fieldName], x => x.key
                         ).map(
                             x => { 
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
                         });
+                        if (options.length === 0) {
+                            this.greyedOut = true;
+                        }
                     }
                     else {
                         options = filter.options.map(x => { return { 'label': x, 'value': x } }); 
