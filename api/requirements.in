@@ -11,3 +11,4 @@ beautifulsoup4
 lxml
 pytest
 coverage
+requests
