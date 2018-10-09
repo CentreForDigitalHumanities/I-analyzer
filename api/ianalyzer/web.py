@@ -38,7 +38,6 @@ admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 csrf = SeaSurf()
-csrf.exempt_urls('/api/login',)
 
 
 def corpus_required(method):
