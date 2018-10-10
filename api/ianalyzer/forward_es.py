@@ -36,7 +36,8 @@ def require_role(corpus_name):
 
 def proxy_es(address):
     """ Forward the current request to ES, forward the response to wsgi. """
-    es_response = requests.post(
+    es_response = requests.request(
+        request.method,
         address,
         params=request.args,
         json=request.get_json(cache=False),
@@ -53,10 +54,21 @@ def proxy_es(address):
     )
 
 
-@es.route('/<server_name>')
+@es.route('/<server_name>', methods=['HEAD'])
+@login_required
 def forward_head(server_name):
-    """ This is a placeholder to make using url_for easy. """
-    abort(404)
+    """ Forward requests that check whether the ES server is still up. """
+    host = get_es_host_or_404(server_name)
+    return proxy_es('http://{}'.format(host))
+
+
+@es.route('/<server_name>/_search/scroll', methods=['POST'])
+@login_required
+def forward_scroll(server_name):
+    """ Forward scroll requests (needed for large downloads). """
+    host = get_es_host_or_404(server_name)
+    address = 'http://{}/_search/scroll'.format(host)
+    return proxy_es(address)
 
 
 @es.route('/<server_name>/<corpus_name>/<document_type>/_search', methods=['POST'])
