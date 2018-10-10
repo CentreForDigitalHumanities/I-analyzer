@@ -23,10 +23,10 @@ def elasticsearch(corpus_name, cfg=config):
 
 
 
-def flask_app(blueprint, admin_instance, login_manager, cfg=config):
+def flask_app(blueprint, admin_instance, login_manager, csrf, cfg=config):
     '''
-    Create Flask instance, with given configuration and flask_admin and
-    flask_login instances.
+    Create Flask instance, with given configuration and flask_admin, flask_login,
+    and csrf (SeaSurf) instances.
     '''
     app = Flask(__name__)
     app.config.from_object(cfg)
@@ -35,5 +35,8 @@ def flask_app(blueprint, admin_instance, login_manager, cfg=config):
     db.init_app(app)
     login_manager.init_app(app)
     admin_instance.init_app(app)
+    csrf.init_app(app)
 
     return app
+
+
