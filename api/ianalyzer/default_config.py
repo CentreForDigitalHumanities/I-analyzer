@@ -12,6 +12,7 @@ LOG_LEVEL = logging.INFO
 DEBUG = False
 TESTING = False
 SECRET_KEY = ''
+SERVER_NAME = 'localhost:4200'
 
 # SQLAlchemy
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
