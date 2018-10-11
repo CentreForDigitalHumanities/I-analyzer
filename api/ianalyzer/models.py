@@ -1,7 +1,7 @@
 '''
 Module contains the models for user management and query logging in SQL.
 '''
-
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -12,14 +12,52 @@ MAX_LENGTH_EMAIL = 254
 DOWNLOAD_LIMIT = 10000
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_CORPUS_NAME = 254
+ 
 
 db = SQLAlchemy()
 
-roles_users = db.Table(
-    'roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+
+
+#connects corpus id to role id
+corpora_roles = db.Table(
+    'corpora_roles',
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')), # de tabel/object role
+    db.Column('corpus_id', db.Integer(), db.ForeignKey('corpus.id'))
 )
+'''
+   connects corpus_id to role_id 
+'''
+
+class Role(db.Model):
+    '''
+    Determines user privileges.
+    '''
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
+
+    #todo order in form, how?
+    corpora = db.relationship('Corpus',
+        secondary=corpora_roles,
+        backref=db.backref('assigned_to', lazy='dynamic'), lazy='joined' # dit onderste veld genaamd  'roles' is optioneel
+    )
+    '''
+    Which corpora belong to a user role.
+    '''
+
+
+    def __init__(self, name="", description=""):
+        self.name = name
+        self.description = description
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name
+
+
 
 class User(db.Model):
 
@@ -27,6 +65,11 @@ class User(db.Model):
     username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     password = db.Column(db.String(MAX_LENGTH_PASSWORD))
     email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
+    
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'),nullable=True)
+    '''
+    To assign a role id to a user
+    '''
 
     active = db.Column(db.Boolean)
     '''
@@ -42,22 +85,21 @@ class User(db.Model):
     '''
     How high the download limit for the user is.
     '''
-
-    roles = db.relationship('Role',
-        secondary=roles_users,
-        backref=db.backref('users', lazy='dynamic'), lazy='joined'
+  
+    role = db.relationship('Role',
+        primaryjoin=( role_id == Role.id ),
+        backref=db.backref('users', lazy='dynamic'), lazy='joined', 
     )
     '''
     Which privileges the user has.
     '''
-
+    
     queries = db.relationship('Query',
         backref=db.backref('user', lazy='joined'), lazy='dynamic')
     '''
     Which queries the user has performed.
     '''
-
-
+ 
     def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT):
         self.username = username
         self.password = password
@@ -112,28 +154,11 @@ class User(db.Model):
 
 
     def has_role(self, role):
-        return bool([r for r in self.roles if r.name == role])
+        if self.role.name==role:
+            return True
+        else:
+            return False
 
-
-
-class Role(db.Model):
-    '''
-    Determines user privileges.
-    '''
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
-    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
-
-    def __init__(self, name="", description=""):
-        self.name = name
-        self.description = description
-
-    def __hash__(self):
-        return hash(self.name)
-
-    def __repr__(self):
-        return self.name
 
 
 
@@ -190,3 +215,25 @@ class Query(db.Model):
 
     def __repr__(self):
         return '<Query #{}>'.format( self.id )
+
+
+class Corpus(db.Model):
+    '''
+    The corpora that are attached to a role
+    '''
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
+
+
+
+    def __init__(self, name="", description=""):
+        self.name = name
+        self.description = description
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name

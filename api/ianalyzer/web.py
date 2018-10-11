@@ -30,12 +30,20 @@ admin_instance = admin.Admin(
 admin_instance.add_view(views.CorpusView(
     corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
     endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
+
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
+
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
+
+#nieuw erbij gezet voor Corpus tabel. In view bestaat al een CorpusView, wat is daar functie van?
+admin_instance.add_view(views.CorpusViewAdmin(
+    models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
+
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
+
 login_manager = LoginManager()
 csrf = SeaSurf()
 
@@ -152,18 +160,24 @@ def api_login():
     username = request.json['username']
     password = request.json['password']
     user = security.validate_user(username, password)
+
+    print(user.role.corpora)
+
     if user is None:
         response = jsonify({'success': False})
     else:
         security.login_user(user)
+
+        #TODO: new: roles used to be corpora names. Now the role is a group of assigned corpora names in teh DB. In fronted however this is not implemented yet. 
+        # Here the corpora names are send to frontend as 'roles'. The admin role needs to be assigned in the admin role group as 'corpus', in order to be send to frontend as a 'role'
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
             'roles': [{
-                'name': role.name,
-                'description': role.description
-            } for role in user.roles],
+                'name': corpus.name,
+                'description': corpus.description
+            } for corpus in user.role.corpora],
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
