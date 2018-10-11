@@ -2,7 +2,7 @@ import pytest
 import responses
 
 from ianalyzer.factories import flask_app
-from ianalyzer.models import db, User, Role
+from ianalyzer.models import db as database, User, Role
 from ianalyzer.web import blueprint, admin_instance, login_manager
 import ianalyzer.default_config as config
 
@@ -25,7 +25,7 @@ class UnittestConfig:
 
 
 @pytest.fixture
-def app_fix():
+def app():
     """ Provide an instance of the application with Flask's test_client. """
     # The following line needs fixing. See #259 and #261.
     app = flask_app(blueprint, admin_instance, login_manager, UnittestConfig)
@@ -34,25 +34,24 @@ def app_fix():
 
 
 @pytest.fixture
-def app_db_fix(app_fix):
+def db(app):
     """
-        Like app_fix, but with the database fully set up and in context.
+        Enable the database, fully set up and in context.
 
         Functions that use this fixture, inherit the application context in
         which the contents of the database are available. DO NOT create your
         own application context when using this fixture.
     """
-    db.create_all(app=app_fix)
-    with app_fix.app_context():
-        db.session.begin(subtransactions=True)
-        yield app_fix, db
-        db.session.rollback()
+    database.create_all(app=app)
+    with app.app_context():
+        database.session.begin(subtransactions=True)
+        yield database
+        database.session.rollback()
 
 
 @pytest.fixture
-def times_user(app_db_fix):
+def times_user(db):
     """ Ensure a user exists who has access to the Times corpus. """
-    app, db = app_db_fix
     user = User(username='times')
     role = Role(name='times')
     user.roles.append(role)
