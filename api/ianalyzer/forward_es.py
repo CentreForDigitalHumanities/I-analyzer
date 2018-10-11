@@ -36,12 +36,15 @@ def require_role(corpus_name):
 
 def proxy_es(address):
     """ Forward the current request to ES, forward the response to wsgi. """
+    kwargs = {}
+    if request.mimetype.count('json'):
+        kwargs['json'] = request.get_json(cache=False)
     es_response = requests.request(
         request.method,
         address,
         params=request.args,
-        json=request.get_json(cache=False),
         stream=True,
+        **kwargs
     )
     return Response(
         es_response.raw.stream(),
