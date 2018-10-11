@@ -1,6 +1,7 @@
 import logging
 
 import requests
+from requests.exceptions import Timeout
 
 from flask import Blueprint, request, json, abort, Response
 from flask_login import login_required, current_user
@@ -8,6 +9,7 @@ from flask_login import login_required, current_user
 from . import config_fallback as config
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
+TIMEOUT_SECONDS = 30
 
 logger = logging.getLogger(__name__)
 
@@ -49,13 +51,17 @@ def proxy_es(address):
     kwargs = {}
     if request.mimetype.count('json'):
         kwargs['json'] = request.get_json(cache=False)
-    es_response = requests.request(
-        request.method,
-        address,
-        params=request.args,
-        stream=True,
-        **kwargs
-    )
+    try:
+        es_response = requests.request(
+            request.method,
+            address,
+            params=request.args,
+            stream=True,
+            timeout=TIMEOUT_SECONDS,
+            **kwargs
+        )
+    except Timeout:
+        abort(504)  # Gateway Timeout
     return Response(
         es_response.raw.stream(),
         status=es_response.status_code,
