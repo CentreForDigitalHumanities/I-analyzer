@@ -12,3 +12,4 @@ lxml
 pytest
 coverage
 requests
+pytest-requests
