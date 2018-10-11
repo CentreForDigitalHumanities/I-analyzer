@@ -1,7 +1,7 @@
 import pytest
 
 from ianalyzer.factories import flask_app
-from ianalyzer.models import db
+from ianalyzer.models import db, User, Role
 from ianalyzer.web import blueprint, admin_instance, login_manager
 import ianalyzer.default_config as config
 
@@ -46,3 +46,16 @@ def app_db_fix(app_fix):
         db.session.begin(subtransactions=True)
         yield app_fix, db
         db.session.rollback()
+
+
+@pytest.fixture
+def times_user(app_db_fix):
+    """ Ensure a user exists who has access to the Times corpus. """
+    app, db = app_db_fix
+    user = User(username='times')
+    role = Role(name='times')
+    user.roles.append(role)
+    db.session.add(user)
+    db.session.add(role)
+    db.session.commit()
+    return user
