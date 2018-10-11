@@ -39,10 +39,7 @@ def get_es_host_or_404(server_name):
 
 def require_role(corpus_name):
     """ Abort if the current user is not authorized for corpus_name. """
-    for role in current_user.roles:
-        if role.name == corpus_name:
-            break
-    else:
+    if not current_user.has_role(corpus_name):
         abort(404)
 
 
