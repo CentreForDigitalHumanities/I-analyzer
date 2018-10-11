@@ -1,10 +1,16 @@
 import pytest
 import responses
 
+from werkzeug.security import generate_password_hash
+
+from flask import json
+
 from ianalyzer.factories import flask_app
 from ianalyzer.models import db as database, User, Role
 from ianalyzer.web import blueprint, admin_instance, login_manager
 import ianalyzer.default_config as config
+
+TIMES_USER_PASSWORD = '12345'
 
 
 class UnittestConfig:
@@ -52,13 +58,22 @@ def db(app):
 @pytest.fixture
 def times_user(db):
     """ Ensure a user exists who has access to the Times corpus. """
-    user = User(username='times')
+    user = User('times', generate_password_hash(TIMES_USER_PASSWORD))
     role = Role(name='times')
     user.roles.append(role)
     db.session.add(user)
     db.session.add(role)
     db.session.commit()
     return user
+
+
+@pytest.fixture
+def login(app, times_user):
+    """ Returns the response to a successful login, including the cookie. """
+    return app.test_client().post('/api/login', data=json.dumps({
+        'username': 'times',
+        'password': TIMES_USER_PASSWORD,
+    }), content_type='application/json')
 
 
 @pytest.fixture
