@@ -1,4 +1,5 @@
 import pytest
+import responses
 
 from ianalyzer.factories import flask_app
 from ianalyzer.models import db, User, Role
@@ -59,3 +60,11 @@ def times_user(app_db_fix):
     db.session.add(role)
     db.session.commit()
     return user
+
+
+@pytest.fixture
+def requests():
+    """ Allow mocking network requests using the `responses` package. """
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as mock:
+        mock.Response = responses.Response
+        yield mock

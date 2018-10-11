@@ -12,6 +12,6 @@ lxml
 pytest
 coverage
 requests
-pytest-requests
 scikit-learn
 numpy
+responses
