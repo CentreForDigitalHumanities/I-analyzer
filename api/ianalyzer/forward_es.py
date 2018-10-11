@@ -1,7 +1,7 @@
 import logging
 
 import requests
-from requests.exceptions import Timeout
+from requests.exceptions import Timeout, ConnectionError
 
 from flask import Blueprint, request, json, abort, Response
 from flask_login import login_required, current_user
@@ -60,6 +60,8 @@ def proxy_es(address):
             timeout=TIMEOUT_SECONDS,
             **kwargs
         )
+    except ConnectionError:
+        abort(503)  # Service unavailable
     except Timeout:
         abort(504)  # Gateway Timeout
     return Response(
