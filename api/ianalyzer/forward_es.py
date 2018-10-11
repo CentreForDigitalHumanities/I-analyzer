@@ -14,12 +14,22 @@ logger = logging.getLogger(__name__)
 es = Blueprint('es', __name__)
 
 
+def ensure_http(hostname):
+    """ If hostname does not include the http scheme, prepend it. """
+    prefix = ''
+    if not hostname.startswith('http'):
+        prefix = 'http:'
+        if not hostname.startswith('/'):
+            prefix += '//'
+    return prefix + hostname
+
+
 def get_es_host_or_404(server_name):
     """ Get the hostname of an ES server by name; abort if nonexistent. """
     if not server_name in config.SERVERS:
         abort(404)
     server = config.SERVERS[server_name]
-    host = server['host']
+    host = ensure_http(server['host'])
     if server['port']:
         host += ':{}'.format(server['port'])
     return host
@@ -62,7 +72,7 @@ def proxy_es(address):
 def forward_head(server_name):
     """ Forward requests that check whether the ES server is still up. """
     host = get_es_host_or_404(server_name)
-    return proxy_es('http://{}'.format(host))
+    return proxy_es(host)
 
 
 @es.route('/<server_name>/_search/scroll', methods=['POST'])
@@ -70,7 +80,7 @@ def forward_head(server_name):
 def forward_scroll(server_name):
     """ Forward scroll requests (needed for large downloads). """
     host = get_es_host_or_404(server_name)
-    address = 'http://{}/_search/scroll'.format(host)
+    address = '{}/_search/scroll'.format(host)
     return proxy_es(address)
 
 
@@ -80,5 +90,5 @@ def forward_search(server_name, corpus_name, document_type):
     """ Forward search requests to ES, if permitted. """
     require_role(corpus_name)
     host = get_es_host_or_404(server_name)
-    address = 'http://{}/{}/{}/_search'.format(host, corpus_name, document_type)
+    address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
