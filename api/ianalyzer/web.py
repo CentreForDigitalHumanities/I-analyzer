@@ -12,6 +12,7 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
+from flask_seasurf import SeaSurf
 
 from . import config_fallback as config
 from . import factories
@@ -36,6 +37,7 @@ admin_instance.add_view(views.RoleView(
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
+csrf = SeaSurf()
 
 
 def corpus_required(method):
