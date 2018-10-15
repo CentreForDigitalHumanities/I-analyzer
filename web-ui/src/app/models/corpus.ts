@@ -64,10 +64,12 @@ type BooleanFilter = {
     falseText: string,
     trueText: string
 }
-type MultipleChoiceFilter = {
+
+export type MultipleChoiceFilter = {
     description: string
     name: 'MultipleChoiceFilter',
-    options: string[]
+    options: string[],
+    counts?: any[]
 }
 
 type RangeFilter = {

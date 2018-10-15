@@ -11,7 +11,7 @@ import { TimelineComponent } from './timeline.component';
 import { VisualizationComponent } from './visualization.component';
 import { ApiService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
-import { AggregateResults, Corpus, QueryModel } from '../models/index';
+import { AggregateQueryFeedback, Corpus, QueryModel } from '../models/index';
 
 describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
@@ -25,7 +25,7 @@ describe('VisualizationComponent', () => {
                 {
                     provide: SearchService,
                     useValue: new MockSearchService()
-                },
+                }, 
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -47,10 +47,10 @@ describe('VisualizationComponent', () => {
 });
 
 class MockSearchService {
-    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<string>> {
+    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
         return {
             completed: false,
-            aggregations: [{
+            aggregations: { aggregator: [{
                 key: '1999',
                 doc_count: 200
             }, {
@@ -59,7 +59,7 @@ class MockSearchService {
             }, {
                 key: '2001',
                 doc_count: 400
-            }]
+            }]}
         };
     }
 }

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import * as _ from 'lodash';
-import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+import { Client, SearchResponse } from 'elasticsearch';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -75,11 +74,12 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string) {
+    makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
         let aggregation = {
             terms: {
                 field: aggregator,
-                size: 1000
+                size: size,
+                min_doc_count: min_doc_count
             }
         }
         return aggregation;
@@ -157,20 +157,22 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
-        let aggregation = this.makeAggregation(aggregator);
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        let aggregations = {}
+        aggregators.forEach(d => {
+            aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
+        });
         let esQuery = this.makeEsQuery(queryModel);
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
+        let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-
-        // Extract relevant information from dictionary returned by ES
-        let aggregations = result.aggregations;
-        let buckets = aggregator=="wordcloud"? aggregations[aggregator].keywords.buckets : aggregations[aggregator].buckets;
+        let aggregateData = {}
+        Object.keys(result.aggregations).forEach(fieldName => {
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+        })
         return {
             completed: true,
-            aggregations: buckets
-        };
+            aggregations: aggregateData
+        }
     }
 
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
@@ -294,3 +296,15 @@ type EsSearchClause = {
     match_all: {}
 };
 
+type Aggregator = {
+    name: string,
+    size: number
+};
+
+type EsAggregateResult = {
+    [fieldName: string]: {
+        doc_count_error_upper_bound: number,
+        sum_other_doc_count: number,
+        buckets: AggregateResult[]
+    }
+}

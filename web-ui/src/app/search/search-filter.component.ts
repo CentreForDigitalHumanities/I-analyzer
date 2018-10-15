@@ -1,15 +1,17 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
+import { Subscription }   from 'rxjs';
+import * as _ from "lodash";
 import * as moment from 'moment';
 
-import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
+import { DataService } from '../services/index';
 
 @Component({
     selector: 'search-filter',
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnChanges, OnInit {
+export class SearchFilterComponent implements OnInit, OnDestroy {
     @Input()
     public field: CorpusField;
 
@@ -36,25 +38,33 @@ export class SearchFilterComponent implements OnChanges, OnInit {
      */
     public data: any;
 
-    constructor() { }
+    public subscription: Subscription;
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['filterData']) {
-            this.data = this.getDisplayData(this.filter, this.filterData);
-        }
-        else if (changes['field']) {
-            // make sure the filter data is reset if only the field was changed
-            this.update(true);
-        }
+    public aggregateData: AggregateData;
+
+    public greyedOut: boolean = false;
+
+    constructor(private dataService: DataService) {
+        this.subscription = this.dataService.filterData$.subscribe(
+            data => {
+                if (this.field) {
+                    this.aggregateData = data;
+                    this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+                }
+        });
     }
 
     ngOnInit() {
         if (this.field) {
-            this.data = this.getDisplayData(this.filter, this.filterData);
-
-            // default values should also work as a filter: notify the parent
-            this.update();
+            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
         }
+
+        // default values should also work as a filter: notify the parent
+        this.update();
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     defaultFilterData(filter: SearchFilter): SearchFilterData {
@@ -92,7 +102,7 @@ export class SearchFilterComponent implements OnChanges, OnInit {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null) {
+    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
         if (filterData == null) {
             filterData = this.defaultFilterData(filter);
         }
@@ -103,7 +113,22 @@ export class SearchFilterComponent implements OnChanges, OnInit {
                 return [filterData.data.gte, filterData.data.lte];
             case 'MultipleChoiceFilter':
                 if (filter.name == filterData.filterName) {
-                    let options = filter.options.map(x => { return { 'label': x, 'value': x } });
+                    let options = [];
+                    if (aggregateData != null) {
+                        this.greyedOut = false;                
+                        options = _.sortBy(
+                            aggregateData[filterData.fieldName], x => x.key
+                        ).map(
+                            x => { 
+                                return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
+                        });
+                        if (options.length === 0) {
+                            this.greyedOut = true;
+                        }
+                    }
+                    else {
+                        options = filter.options.map(x => { return { 'label': x, 'value': x } }); 
+                    };
                     return { options: options, selected: filterData.data };
                 }
                 break;
