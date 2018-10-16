@@ -192,15 +192,28 @@ export class ElasticSearchService {
         }
 
         let connection = (await this.connections)[corpusDefinition.serverName];
-        let response = await connection.client.scroll({
-            scrollId: existingResults.scrollId,
-            scroll: connection.config.scrollTimeout
-        });
+        
+        try {
+            let response = await connection.client.scroll({
+                scrollId: existingResults.scrollId,
+                scroll: connection.config.scrollTimeout
+            });
 
-        let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
-        additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
-        additionalResults.fields = existingResults.fields;
-        return additionalResults;
+            let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
+            additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
+            additionalResults.fields = existingResults.fields;
+            return additionalResults;
+        }
+        catch (e) {
+            if (e.message.indexOf("search_context_missing_exception") >= 0) {                
+                let size = existingResults.retrieved + connection.config.overviewQuerySize;
+                let results = await this.search(corpusDefinition, existingResults.queryModel, size);
+                results.fields = existingResults.fields;
+                return results;
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
