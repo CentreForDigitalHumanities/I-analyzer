@@ -1,5 +1,5 @@
 <div #viscontrol>
-	<p-dropdown [options]="visDropdown" [(ngModel)]="visualized" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
+	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
 	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
