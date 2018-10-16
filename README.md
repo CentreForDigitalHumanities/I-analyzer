@@ -24,7 +24,7 @@ Prerequisites
 Running
 -------------------------------------------------------------------------------
 
-To get an instance running, do the following. Ideally run using a `virtualenv`:
+To get an instance running, do all of the following inside an activated `virtualenv`:
 
 1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine.
 2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
@@ -36,9 +36,9 @@ http.cors.allow-origin: "*"
 ```
 npm install
 ```
-4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module.
-5. Go to `/api`, start a virtual environment with Python 3. See instructions below for Python package installation and dependency management.
-6. Define that the startup code for the Flask application is located within. manage.py by exporting / setting the environment variable:
+4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
+5. Go to `/api`. See instructions below for Python package installation and dependency management.
+6. Define that the startup code for the Flask application is located within manage.py by exporting / setting the environment variable:
 - Mac/Linux:
 ```
 export FLASK_APP=manage.py

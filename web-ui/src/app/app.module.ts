@@ -12,7 +12,7 @@ import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -119,7 +119,25 @@ const appRoutes: Routes = [
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
         })
     ],
-    providers: [ApiService, ApiRetryService, CorpusService, ConfigService, DownloadService, ElasticSearchService, HighlightService, LogService, ManualService, NotificationService, QueryService, SearchService, SessionService, UserService, CorpusGuard, LoggedOnGuard, TitleCasePipe],
+    providers: [
+        ApiService, 
+        ApiRetryService, 
+        CorpusService, 
+        ConfigService, 
+        DataService, 
+        DownloadService, 
+        ElasticSearchService, 
+        HighlightService, 
+        LogService, 
+        ManualService, 
+        NotificationService, 
+        QueryService, 
+        SearchService, 
+        SessionService, 
+        UserService, 
+        CorpusGuard, 
+        LoggedOnGuard, 
+        TitleCasePipe],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

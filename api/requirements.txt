@@ -16,6 +16,7 @@ flask-admin==1.4.2
 flask-login==0.4.0
 flask-migrate==2.0.4
 flask-script==2.0.5       # via flask-migrate
+flask-seasurf==0.2.2
 flask-sqlalchemy==2.1
 flask==0.11.1
 idna==2.7                 # via requests

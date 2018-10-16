@@ -9,7 +9,7 @@ import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectBut
 import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, ApiRetryService, CorpusService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, DataService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { ManualServiceMock } from '../services/manual.service.mock';
@@ -48,6 +48,7 @@ describe('SearchComponent', () => {
                         ['corpus']: corpus.MockCorpusResponse
                     })
                 },
+                DataService,
                 DownloadService,
                 {
                     provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()

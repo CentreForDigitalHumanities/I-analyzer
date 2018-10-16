@@ -20,7 +20,7 @@
 <div class="d3-chart" #chart>
 	<ng-container [ngSwitch]="visualizationType">
 		<ng-container *ngIf="!freqtable">
-			<ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"
+            <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"
 			 [asPercent]="asPercentage">
 			</ia-barchart>
 			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
