@@ -7,7 +7,7 @@ from flask import json
 
 from ianalyzer.factories import flask_app
 from ianalyzer.models import db as database, User, Role
-from ianalyzer.web import blueprint, admin_instance, login_manager
+from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
 import ianalyzer.default_config as config
 
 TIMES_USER_PASSWORD = '12345'
@@ -34,7 +34,7 @@ class UnittestConfig:
 def app():
     """ Provide an instance of the application with Flask's test_client. """
     # The following line needs fixing. See #259 and #261.
-    app = flask_app(blueprint, admin_instance, login_manager, UnittestConfig)
+    app = flask_app(blueprint, admin_instance, login_manager, csrf, UnittestConfig)
     app.testing = True
     return app
 
