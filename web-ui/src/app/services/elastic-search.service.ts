@@ -184,6 +184,16 @@ export class ElasticSearchService {
     }
 
     /**
+    * Clear ES's scroll ID to free ES resources
+    */
+    public async clearScroll(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<void> {
+        if (existingResults.scrollId) {
+            let connection = (await this.connections)[corpusDefinition.serverName];
+            connection.client.clearScroll({scrollId: existingResults.scrollId})
+        }
+    }
+
+    /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
     public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {

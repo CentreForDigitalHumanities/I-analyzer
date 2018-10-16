@@ -29,6 +29,13 @@ export class SearchService {
     }
 
     /**
+     * Clear ES's scrollId and resources
+     */
+    public async clearESScroll(corpus: Corpus, existingResults: SearchResults): Promise<void> {
+        return this.elasticSearchService.clearScroll(corpus, existingResults);
+    }
+
+    /**
      * Construct a dictionary representing an ES query.
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param fields Optional list of fields to restrict the queryString to.

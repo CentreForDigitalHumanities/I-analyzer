@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -14,7 +14,7 @@ import { CorpusService, DataService, SearchService, DownloadService, UserService
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -131,6 +131,10 @@ export class SearchComponent implements OnInit {
                     this.performSearch();
                 }
             });
+    }
+
+    ngOnDestroy() {
+        this.searchService.clearESScroll(this.corpus, this.results);
     }
 
     @HostListener("window:scroll", [])
