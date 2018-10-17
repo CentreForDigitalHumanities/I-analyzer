@@ -119,31 +119,6 @@
     </div>
 </section>
 
-<!-- show customizations for downloading csv -->
-<p-dialog header="Select CSV Columns" [(visible)]="showCsvFields" *ngIf="showCsvFields">
-    <b> You can select which columns appear in your
-        <code>.csv</code> file. </b>
-    <div align="center">
-        <input type="checkbox" [(ngModel)]="selectedAll" (change)="selectAllCsvFields()">
-        <label *ngIf='selectedAll'>Deselect all columns</label>
-        <label *ngIf='!selectedAll'>Select all columns</label>
-    </div>
-
-    <ng-container *ngFor="let field of corpus.fields">
-        <div class="csv-column" *ngIf="!field.hidden">
-            <label class="checkbox">
-                <input type="checkbox" [(ngModel)]="queryField[field.name].visible" [name]="visibleField"
-                    (change)="checkIfAllSelected()"> {{ field.displayName
-                }}
-            </label>
-            <div class="description" *ngIf="field.description">
-                {{ field.description }}
-            </div>
-            <div class="description" *ngIf="!field.description">
-            </div>
-        </div>
-    </ng-container>
-</p-dialog>
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument"
     width="800" *ngIf="viewDocument">
