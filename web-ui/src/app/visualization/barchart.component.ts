@@ -1,4 +1,4 @@
-import { Input, Component, OnChanges, OnInit, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, OnInit, ElementRef, ViewChild, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -9,18 +9,17 @@ import { DataService } from '../services/index';
 @Component({
     selector: 'ia-barchart',
     templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrls: ['./barchart.component.scss']
 })
 
-export class BarChartComponent implements OnChanges, OnInit {
+export class BarChartComponent implements OnChanges {
+    @ViewChild('barchart') private barchartContainer: ElementRef;
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
         key_as_string?: string
     }[];
     @Input() visualizedField;
-    @Input() chartElement;
     @Input() asPercent;
 
     //public visualizingDate: boolean = false;
@@ -41,32 +40,30 @@ export class BarChartComponent implements OnChanges, OnInit {
     public xDomain: Array<any>;
     public yDomain: Array<number>;
     public yAxisLabel: any;
+    public chartElement: any;
 
     private xBarWidth: number;
     public subscription: Subscription;
 
-    ngOnInit() {
-        this.calculateCanvas();
-    }
-
     ngOnChanges(changes: SimpleChanges) {
-        if (this.searchData && this.visualizedField) {
+        if (this.chartElement == undefined) {
+            this.chartElement = this.barchartContainer.nativeElement;
+        }
+
+        // redraw only if searchData changed
+        if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.calculateCanvas();
             this.prepareTermFrequency();
             this.calculateDomains();
+            this.createChart();
+            this.drawChartData(this.searchData);
+            this.rescaleY();
+        }
 
-            if (changes['searchData'] != undefined) {
-                this.createChart(true);
-                // to do: what happens if searchData is an empty array?
-                this.drawChartData(this.searchData);
+        //listen for changes in 'asPercent'
+        else if (changes['asPercent'] != undefined) {
+            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
                 this.rescaleY();
-            }
-
-            //listen for changes in 'asPercent'
-            else if (changes['asPercent'] != undefined) {
-                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.rescaleY();
-                }
             }
         }
     }
@@ -116,9 +113,8 @@ export class BarChartComponent implements OnChanges, OnInit {
 
     /**
      * Creates the chart to draw the data on (including axes and labels).
-     * @param forceRedraw: erase the current chart and create a new one.
      */
-    createChart(forceRedraw: boolean) {
+    createChart() {
         /**
         * select DOM elements, set up scales and axes
         */

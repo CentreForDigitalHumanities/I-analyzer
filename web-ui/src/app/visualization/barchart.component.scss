@@ -1,15 +1,19 @@
 @import "../../_utilities";
-// to do: define colours on application level (now bulma is imported double here for the colour variables)
 
-.d3-chart .bar {
+.barchart .bar {
 	fill: $primary;
 }
 
-.d3-chart .axis path,
-.d3-chart .axis line {
+.barchart .axis path,
+.barchart .axis line {
 	stroke: #999;
 }
 
-.d3-chart .axis text {
+.barchart .axis text {
 	fill: #999;
+}
+
+.barchart {
+    width: 90%;
+    height: 400px;
 }

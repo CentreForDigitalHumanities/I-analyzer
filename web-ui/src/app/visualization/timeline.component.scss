@@ -1,7 +1,21 @@
 @import "../../_utilities";
 
-.d3-chart .bar {
+.timeline .bar {
 	fill: $primary;
+}
+
+.timeline .axis path,
+.timeline .axis line {
+	stroke: #999;
+}
+
+.timeline .axis text {
+	fill: #999;
+}
+
+.timeline {
+    width: 90%;
+    height: 400px;
 }
 
 ia-timeline {
