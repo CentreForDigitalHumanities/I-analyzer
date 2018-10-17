@@ -12,6 +12,7 @@ LOG_LEVEL = logging.INFO
 DEBUG = False
 TESTING = False
 SECRET_KEY = ''
+SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
 CSRF_COOKIE_NAME = 'csrf_token'

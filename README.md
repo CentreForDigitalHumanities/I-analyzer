@@ -66,7 +66,19 @@ The above steps do not actually install the package; you can do this at any stag
 
 ### Testing
 
-Tests exist in the `api/tests/` directory and may be run by calling `python -m py.test` from `/api`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `web-ui`, they should be run from that directory using Angular.
+Tests exist in the `api/ianalyzer/tests/` directory and may be run by calling `python -m py.test` from `/api`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `web-ui`, they should be run from that directory using Angular.
+
+When writing new backend tests, you can use the fixtures in `api/ianalyzer/tests/conftest.py`. For example, you can do the following in order to test a view.
+
+```py
+def test_some_view(app):
+    with app.test_client() as client:
+        response = client.get('/some/route')
+        assert response.status_code == 200
+        # etcetera
+```
+
+For further details, consult the source code in `api/ianalyzer/tests/conftest.py`.
 
 Indexing large corpora on the remote server
 -------------------------------------------------------------------------------
