@@ -57,7 +57,7 @@ class UserView(ModelView):
     #creates a clickable rolename in column 'role' which is editable
     column_editable_list = ['role'] 
 
-    #specifies the fields and thei order in create and edit views
+    #specifies the fields and their order in create and edit views
     form_create_rules = (
         'username', 'password', 'role', 'email', 'active', 'authenticated','download_limit')
     form_edit_rules = (

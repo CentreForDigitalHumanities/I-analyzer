@@ -37,7 +37,6 @@ admin_instance.add_view(views.UserView(
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
 
-#nieuw erbij gezet voor Corpus tabel. In view bestaat al een CorpusView, wat is daar functie van?
 admin_instance.add_view(views.CorpusViewAdmin(
     models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
 

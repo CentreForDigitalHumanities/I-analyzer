@@ -17,16 +17,17 @@ MAX_LENGTH_CORPUS_NAME = 254
 db = SQLAlchemy()
 
 
-
 #connects corpus id to role id
 corpora_roles = db.Table(
     'corpora_roles',
-    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')), # de tabel/object role
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')),
     db.Column('corpus_id', db.Integer(), db.ForeignKey('corpus.id'))
 )
 '''
-   connects corpus_id to role_id 
+   connects corpus id to role id 
 '''
+
+
 
 class Role(db.Model):
     '''
@@ -37,7 +38,6 @@ class Role(db.Model):
     name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
 
-    #todo order in form, how?
     corpora = db.relationship('Corpus',
         secondary=corpora_roles,
         backref=db.backref('assigned_to', lazy='dynamic'), lazy='joined' # dit onderste veld genaamd  'roles' is optioneel
