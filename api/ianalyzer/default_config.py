@@ -15,7 +15,7 @@ SECRET_KEY = ''
 SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
-CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+CSRF_COOKIE_NAME = 'csrf_token'
 CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
 
 # SQLAlchemy
