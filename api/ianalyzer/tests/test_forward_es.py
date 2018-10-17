@@ -66,7 +66,7 @@ FORWARD_CASES = {
         {'hits': {}},
         200,
     ),
-    'seach_unauthenticated': (
+    'search_unauthenticated': (
         False,
         'POST',
         '/es/default/times/article/_search?size=20&scroll=3m',
@@ -82,7 +82,7 @@ FORWARD_CASES = {
         None,
         401,
     ),
-    'seach_bogus': (
+    'search_bogus': (
         True,
         'POST',
         '/es/bogus/times/article/_search?size=20&scroll=3m',
@@ -98,7 +98,7 @@ FORWARD_CASES = {
         None,
         404,
     ),
-    'seach_unauthorized': (
+    'search_unauthorized': (
         True,
         'POST',
         '/es/default/daily-mail/article/_search?size=20&scroll=3m',
@@ -114,7 +114,7 @@ FORWARD_CASES = {
         None,
         404,
     ),
-    'seach_empty': (
+    'search_empty': (
         True,
         'POST',
         '/es/default/times/article/_search?size=20&scroll=3m',
@@ -123,7 +123,7 @@ FORWARD_CASES = {
         {'error': 'no query'},
         400,
     ),
-    'seach_success': (
+    'search_success': (
         True,
         'POST',
         '/es/default/times/article/_search?size=20&scroll=3m',
