@@ -1,42 +1,36 @@
 <div class="columns is-desktop">
-    <div class="column is-narrow">
-        <table class="box table" *ngIf="document">
-            <tr *ngIf="document.relevance">
-                <th>Relevance</th>
-                <td>
-                    <search-relevance [value]="document.relevance"></search-relevance>
-                </td>
-            </tr>
-            <ng-container *ngFor="let field of propertyFields">
-                <tr *ngIf="document.fieldValues[field.name]">
-                    <th>{{field.displayName}}</th>
-                    <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
-                </tr>
-            </ng-container>
-        </table>
-    </div>
-    <div>
-       
-    </div>
-    <div class="column">
-        <div class="content-control">
-            <button [class.button]="true" [class.is-primary]="contentMode=='text'" (click)="toggleContentMode('text')">
-                <i class="fa fa-book" aria-hidden="true"></i>
-            </button>
-            <button [class.button]="true" [class.is-primary]="contentMode=='image'" (click)="toggleContentMode('image')">
-                <i class="fa fa-image" aria-hidden="true"></i>
-            </button>
-        </div>
-
-        <ng-container *ngIf="contentMode=='text'">
-            <ng-container *ngFor="let field of contentFields">
-                <div class="box content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-            </ng-container>
-        </ng-container>
-        <ng-container *ngIf="contentMode=='image'">
-            <div class="box content">
-                <img src="/static/images/a4test.png"/>
+    <div class="column is-half">
+        <div class="box">
+            <div class="table-container">
+                <table class="table is-fullwidth" *ngIf="document">
+                    <tr *ngIf="document.relevance">
+                        <th>Relevance</th>
+                        <td>
+                            <search-relevance [value]="document.relevance"></search-relevance>
+                        </td>
+                    </tr>
+                    <ng-container *ngFor="let field of propertyFields">
+                        <tr *ngIf="document.fieldValues[field.name]">
+                            <th>{{field.displayName}}</th>
+                            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                        </tr>
+                    </ng-container>
+                </table>
             </div>
-        </ng-container>
+        </div>
+    </div>
+
+    <div class="column is-desktop">
+        <p-tabView> 
+            <p-tabPanel header="" leftIcon="fa fa-book">
+                <ng-container *ngFor="let field of contentFields">
+                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+                </ng-container>
+  
+            </p-tabPanel>
+            <p-tabPanel header="" leftIcon="fa fa-image">
+                    <img src="/static/images/a4test.png"/>
+            </p-tabPanel>
+        </p-tabView>
     </div>
 </div>
