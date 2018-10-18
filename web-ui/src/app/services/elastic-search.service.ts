@@ -211,6 +211,7 @@ export class ElasticSearchService {
             return additionalResults;
         }
         catch (e) {
+            // Check if this is the ES exception we except (scroll / search context is missing)
             if (e.message.indexOf("search_context_missing_exception") >= 0) {                
                 let size = existingResults.retrieved + connection.config.overviewQuerySize;
                 let results = await this.search(corpusDefinition, existingResults.queryModel, size);
