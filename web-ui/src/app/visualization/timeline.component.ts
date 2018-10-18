@@ -22,7 +22,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         key_as_string: string
     }[];
     @Input() visualizedField;
-    //@Input() chartElement;
     @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;

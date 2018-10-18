@@ -22,7 +22,6 @@ export class BarChartComponent implements OnChanges {
     @Input() visualizedField;
     @Input() asPercent;
 
-    //public visualizingDate: boolean = false;
     public yTicks: number = 10;
     public margin = { top: 10, bottom: 120, left: 70, right: 10 };
     public svg: any;

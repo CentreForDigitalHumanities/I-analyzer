@@ -1,7 +1,7 @@
-import { ElementRef, Input, Component, OnInit, OnChanges, ViewChild } from '@angular/core';
+import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, CorpusField, AggregateResult, AggregateData, QueryModel } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, QueryModel } from '../models/index';
 import { SearchService } from '../services/index';
 
 @Component({
@@ -10,8 +10,6 @@ import { SearchService } from '../services/index';
     styleUrls: ['./visualization.component.scss'],
 })
 export class VisualizationComponent implements OnInit, OnChanges {
-    //@ViewChild('chart') private chartContainer: ElementRef;
-
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
     @Input() public textFieldContent: {name: string, data: string[]}[];
@@ -31,9 +29,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     public visualizationType: string;
     public freqtable: boolean = false;
 
-    //public chartElement: any;
-    public aggResults: AggregateResult[] = [];
-
+    public aggResults: AggregateResult[];
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
 
@@ -43,7 +39,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
     ngOnInit() {
         // Initial values
         this.showTableButtons = true;
-        //this.chartElement = this.chartContainer.nativeElement;
         this.visualizedFields = this.corpus && this.corpus.fields ? 
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
@@ -57,13 +52,13 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     ngOnChanges() {
         if (this.visualizedField) {
+            this.aggResults = [];
             this.setVisualizedField(this.visualizedField);
         }
     }
 
     setVisualizedField(visualizedField: string) {
         let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
-        this.aggResults = [];
         if (visualizationType === 'wordcloud') {
             if (this.textFieldContent[0].data.length == 0) {
                 this.aggResults = [];
