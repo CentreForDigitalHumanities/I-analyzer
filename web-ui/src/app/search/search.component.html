@@ -145,8 +145,16 @@
     </ng-container>
 </p-dialog>
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument"
-    width="800" *ngIf="viewDocument">
+<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" 
+          [(visible)]="showDocument"
+          width="100%"
+          [modal]="true"
+          [responsive]="true"
+          [maximizable]="true"
+          [dismissableMask]="true"
+          [draggable]="false"
+          [resizable]="false"
+          *ngIf="viewDocument">
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
 </p-dialog>
 <!-- inform the user about a failed search -->
