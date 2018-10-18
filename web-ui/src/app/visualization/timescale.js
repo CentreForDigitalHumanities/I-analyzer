@@ -4,22 +4,12 @@
 
 import {bisector, tickStep} from "d3-array";
 import {interpolateNumber as reinterpolate} from "d3-interpolate";
-import {timeYear, timeMonth, timeWeek, timeDay, timeHour, timeMillisecond} from "d3-time";
+import {timeYear, timeMonth, timeWeek, timeDay, timeSecond, timeMillisecond} from "d3-time";
 import {default as interval} from "d3-time/src/interval.js"
 import {timeFormat} from "d3-time-format";
 import {map} from "d3-scale/src/array.js";
 import {default as continuous, copy, deinterpolateLinear as deinterpolate} from "d3-scale/src/continuous.js";
 import {default as nice} from "d3-scale/src/nice.js";
-
-var timeSecond = interval(function(date) {
-    date.setTime(Math.floor(date / durationSecond) * durationSecond);
-  }, function(date, step) {
-    date.setTime(+date + step * durationSecond);
-  }, function(start, end) {
-    return (end - start) / durationSecond;
-  }, function(date) {
-    return date.getUTCSeconds();
-  });
 
 var timeMinute = interval(function(date) {
   date.setSeconds(0, 0);
@@ -30,6 +20,16 @@ var timeMinute = interval(function(date) {
 }, function(date) {
   return date.getMinutes();
 });
+
+var timeHour = interval(function(date) {
+    date.setMinutes(0, 0, 0);
+}, function(date, step) {
+    date.setHours(date.getHours() + step);
+  }, function(start, end) {
+    return (end - start) / durationMinute;
+  }, function(date) {
+    return date.getHours();
+})
 
 var durationSecond = 1000,
     durationMinute = durationSecond * 60,
