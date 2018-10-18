@@ -3,7 +3,11 @@
 .navbar {
     background-color: $primary;
   }
-
+  .navbar-item img {
+    max-height: 3.75rem;
+    margin-right: 7px;
+    width: 50px;
+}
 
 .navbar-item{
     color: $text-primary-color;
