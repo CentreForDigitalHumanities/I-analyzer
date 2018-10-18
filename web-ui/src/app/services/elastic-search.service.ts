@@ -197,10 +197,6 @@ export class ElasticSearchService {
      * Loads more results and returns an object containing the existing and newly found documents.
      */
     public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {
-        if (!existingResults.scrollId) {
-            throw 'No scroll ID found.';
-        }
-
         let connection = (await this.connections)[corpusDefinition.serverName];
         
         try {
