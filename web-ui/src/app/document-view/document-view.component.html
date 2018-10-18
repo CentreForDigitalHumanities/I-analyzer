@@ -20,21 +20,21 @@
     </div>
     <div class="column">
         <div class="content-control">
-            <button [class.button]="true" [class.is-primary]="contentMode=='text'" (click)="toggleContentMode()">
+            <button [class.button]="true" [class.is-primary]="contentMode=='text'" (click)="toggleContentMode('text')">
                 <i class="fa fa-book" aria-hidden="true"></i>
             </button>
-            <button [class.button]="true" [class.is-primary]="contentMode=='image'" (click)="toggleContentMode()">
+            <button [class.button]="true" [class.is-primary]="contentMode=='image'" (click)="toggleContentMode('image')">
                 <i class="fa fa-image" aria-hidden="true"></i>
             </button>
         </div>
 
         <ng-container *ngIf="contentMode=='text'">
             <ng-container *ngFor="let field of contentFields">
-                <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+                <div class="box content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
             </ng-container>
         </ng-container>
         <ng-container *ngIf="contentMode=='image'">
-            <div class="box">
+            <div class="box content">
                 <img src="/static/images/a4test.png"/>
             </div>
         </ng-container>

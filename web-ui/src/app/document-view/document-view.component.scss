@@ -1,5 +1,15 @@
 .content-control {
     button {
         border-radius: 5px 5px 0px 0px;
+        border-bottom: none;
+        left: -1px;
+
+        &:focus{
+            outline: none;
+        }
     }
+}
+
+.content {
+    border-radius: 0px 5px 5px 5px;
 }

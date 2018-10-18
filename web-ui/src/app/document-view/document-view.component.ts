@@ -31,7 +31,7 @@ export class DocumentViewComponent implements OnInit {
     ngOnInit() {
     }
 
-    toggleContentMode() {
-        this.contentMode = this.contentMode == 'text' ? 'image' : 'text';
+    toggleContentMode(input) {
+        this.contentMode = input;
     }
 }
