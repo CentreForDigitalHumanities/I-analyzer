@@ -237,7 +237,7 @@ export class SearchComponent implements OnInit {
             // extract content from text fields for word clouds
             this.textFieldContent = this.wordcloudFields.map(
                 name => { return {name: name, data: results.documents.map(d => d.fieldValues[name])} }
-            );
+            ).slice(0);
             this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
             finallyReset();
         }, error => {

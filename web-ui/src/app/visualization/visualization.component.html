@@ -10,11 +10,7 @@
 	</button>
 </div>
 
-<ng-container *ngIf="aggResults.length==0">
-    <b> There is no data to be visualized. </b>
-</ng-container>
-
-<ng-container *ngIf="aggResults.length>0">
+<ng-container *ngIf="aggResults.length>0; else noResultsMessage">
     <div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
@@ -39,3 +35,7 @@
     	</ng-container>
     <!-- </div> -->
 </ng-container>
+
+<ng-template #noResultsMessage>
+    <b> There is no data to be visualized. </b>
+</ng-template>

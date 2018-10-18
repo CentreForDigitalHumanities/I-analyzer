@@ -1,15 +1,15 @@
 @import "../../_utilities";
 
-.timeline .bar {
+.timeline ::ng-deep .bar {
 	fill: $primary;
 }
 
-.timeline .axis path,
-.timeline .axis line {
+.timeline ::ng-deep .axis path,
+.timeline ::ng-deep .axis line {
 	stroke: #999;
 }
 
-.timeline .axis text {
+.timeline ::ng-deep .axis text {
 	fill: #999;
 }
 

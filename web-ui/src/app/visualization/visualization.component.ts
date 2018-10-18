@@ -63,26 +63,31 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     setVisualizedField(visualizedField: string) {
         let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
+        this.aggResults = [];
         if (visualizationType === 'wordcloud') {
-            this.searchService.getWordcloudData(visualizedField, this.textFieldContent.find(textField => textField.name === visualizedField).data).then(result =>{
-                // slice is used so the child component fires OnChange
-                this.aggResults = result[visualizedField];//.slice(0);
-            })
+            if (this.textFieldContent[0].data.length == 0) {
+                this.aggResults = [];
+            }
+            else {
+                this.searchService.getWordcloudData(visualizedField, this.textFieldContent.find(
+                    textField => textField.name === visualizedField).data).then(result => {
+                    this.aggResults = result[visualizedField];
+                })
+            }
         }
         else if (visualizationType == 'timeline') {
             let aggregator = [{name: visualizedField, size: this.defaultSize}];
             this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField];//.slice(0);
+                this.aggResults = visual.aggregations[visualizedField];
             });
         }
         else {
             let aggregator = this.multipleChoiceFilters.find(filter => filter.name == visualizedField);
             aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField];//.slice(0);
+                this.aggResults = visual.aggregations[visualizedField];
             });
         }
-        
         this.visualizedField = visualizedField;
         this.visualizationType = visualizationType;
     }

@@ -1,15 +1,15 @@
 @import "../../_utilities";
 
-.barchart .bar {
+.barchart ::ng-deep .bar {
 	fill: $primary;
 }
 
-.barchart .axis path,
-.barchart .axis line {
+.barchart ::ng-deep .axis path,
+.barchart ::ng-deep .axis line {
 	stroke: #999;
 }
 
-.barchart .axis text {
+.barchart ::ng-deep .axis text {
 	fill: #999;
 }
 
