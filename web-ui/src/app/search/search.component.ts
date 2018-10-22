@@ -80,14 +80,16 @@ export class SearchComponent implements OnInit {
     private wordcloudFields: string[];
     private multipleChoiceFilters: {name: string, size: number}[];
 
-    /**
-     * For failed searches.
-     */
-    public showError: false | undefined | {
-        date: string,
-        href: string,
-        message: string
-    };
+    private howManyResults: number = 0;
+
+    // /**
+    //  * For failed searches.
+    //  */
+    // public showError: false | undefined | {
+    //     date: string,
+    //     href: string,
+    //     message: string
+    // };
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -209,7 +211,15 @@ export class SearchComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
     }
 
-    public onViewDocument(document: FoundDocument) {
+    public onSearched(input) {
+        this.isSearching = false;
+        this.hasSearched = true;
+        this.howManyResults = input.howManyResults;
+        this.searchQueryText = input.queryText;
+        this.hasLimitedResults = this.user.downloadLimit && input.howManyResults > this.user.downloadLimit;
+    }
+
+    public onViewDocument(document) {
         this.showDocument = true;
         this.viewDocument = document;
     }
@@ -222,33 +232,6 @@ export class SearchComponent implements OnInit {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
-        // store it, the user might change it in the meantime
-        let currentQueryText = this.queryText;
-        let finallyReset = () => {
-            this.isSearching = false;
-            this.hasSearched = true;
-            this.searchQueryText = currentQueryText;
-        };
-        this.searchService.search(
-            this.queryModel,
-            this.corpus
-        ).then(results => {
-            this.results = results;
-            // extract content from text fields for word clouds
-            this.textFieldContent = this.wordcloudFields.map(
-                name => { return {name: name, data: results.documents.map(d => d.fieldValues[name])} }
-            );
-            this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
-            finallyReset();
-        }, error => {
-            this.showError = {
-                date: (new Date()).toISOString(),
-                href: location.href,
-                message: error.message || 'An unknown error occurred'
-            };
-            console.trace(error);
-            finallyReset();
-        });
         
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
@@ -273,11 +256,6 @@ export class SearchComponent implements OnInit {
         return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
             return results.aggregations;
         }, error => {
-            this.showError = {
-                date: (new Date()).toISOString(),
-                href: location.href,
-                message: error.message || 'An unknown error occurred'
-            };
             console.trace(error);
             return {};
         })
