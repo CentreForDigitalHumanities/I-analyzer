@@ -44,13 +44,11 @@ export class VisualizationComponent implements OnInit, OnChanges {
         // Initial values
         this.showTableButtons = true;
         this.chartElement = this.chartContainer.nativeElement;
-        this.visualizedFields = this.corpus && this.corpus.fields ? 
+        this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
             label: field.displayName,
-            value: {
-                field: field.name
-            }
+            value: field.name
         }))
         this.setVisualizedField(this.visualizedFields[0].name);
     }
@@ -77,13 +75,12 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
         else {
             let aggregator = this.multipleChoiceFilters.find(filter => filter.name == visualizedField);
-            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
+            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[visualizedField].slice(0);
             });
         }
-        
-        this.visualizedField = visualizedField;
+
         this.visualizationType = visualizationType;
     }
 
