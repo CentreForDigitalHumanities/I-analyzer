@@ -25,7 +25,7 @@ describe('VisualizationComponent', () => {
                 {
                     provide: SearchService,
                     useValue: new MockSearchService()
-                }, 
+                },
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -36,7 +36,12 @@ describe('VisualizationComponent', () => {
         component.queryModel = {
             queryText: "Wally"
         }
-        component.corpus = <any>{ visualize: ['test_field'] };
+        component.corpus = <any>{
+            fields: [{
+                displayName: 'Test Field', name: 'test_field'
+            }]
+        };
+        component.chartElement = document.createElement('div');
 
         fixture.detectChanges();
     });
@@ -50,16 +55,18 @@ class MockSearchService {
     public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
         return {
             completed: false,
-            aggregations: { aggregator: [{
-                key: '1999',
-                doc_count: 200
-            }, {
-                key: '2000',
-                doc_count: 300
-            }, {
-                key: '2001',
-                doc_count: 400
-            }]}
+            aggregations: {
+                aggregator: [{
+                    key: '1999',
+                    doc_count: 200
+                }, {
+                    key: '2000',
+                    doc_count: 300
+                }, {
+                    key: '2001',
+                    doc_count: 400
+                }]
+            }
         };
     }
 }
