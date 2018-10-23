@@ -6,6 +6,7 @@ import * as _ from "lodash";
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
+import { not } from '@angular/compiler/src/output/output_ast';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
