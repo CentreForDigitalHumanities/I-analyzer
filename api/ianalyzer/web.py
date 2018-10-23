@@ -38,6 +38,7 @@ admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
 csrf = SeaSurf()
+csrf.exempt_urls('/es',)
 
 
 def corpus_required(method):
@@ -121,8 +122,8 @@ def init():
 def api_es_config():
     return jsonify([{
         'name': server_name,
-        'host': server_config['host'],
-        'port': server_config['port'],
+        'host': url_for('es.forward_head', server_name=server_name, _external=True),
+        'port': None,
         'chunkSize': server_config['chunk_size'],
         'maxChunkBytes': server_config['max_chunk_bytes'],
         'bulkTimeout': server_config['bulk_timeout'],

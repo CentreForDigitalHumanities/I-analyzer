@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Http, HttpModule, Response } from '@angular/http';
+import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
@@ -137,7 +137,11 @@ const appRoutes: Routes = [
         UserService, 
         CorpusGuard, 
         LoggedOnGuard, 
-        TitleCasePipe],
+        TitleCasePipe,
+        {
+            provide: XSRFStrategy,
+            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
+        }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

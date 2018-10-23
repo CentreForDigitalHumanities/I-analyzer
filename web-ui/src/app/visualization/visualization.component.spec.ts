@@ -9,7 +9,7 @@ import { WordcloudComponent } from './wordcloud.component';
 import { FreqtableComponent } from './freqtable.component'
 import { TimelineComponent } from './timeline.component';
 import { VisualizationComponent } from './visualization.component';
-import { ApiService, SearchService } from '../services/index';
+import { ApiService, DataService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { AggregateQueryFeedback, Corpus, QueryModel } from '../models/index';
 
@@ -25,7 +25,8 @@ describe('VisualizationComponent', () => {
                 {
                     provide: SearchService,
                     useValue: new MockSearchService()
-                }, 
+                },
+                DataService, 
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -33,9 +34,6 @@ describe('VisualizationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(VisualizationComponent);
         component = fixture.componentInstance;
-        component.queryModel = {
-            queryText: "Wally"
-        }
         component.corpus = <any>{ visualize: ['test_field'] };
 
         fixture.detectChanges();

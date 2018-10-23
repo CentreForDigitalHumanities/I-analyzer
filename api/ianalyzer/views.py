@@ -28,9 +28,13 @@ class ModelView(admin_sqla.ModelView):
         return redirect(url_for('admin.index'))
 
 
-class QueryView(ModelView):
+class QueryView(admin_sqla.ModelView):
     can_create = False
     can_edit = False
+
+    column_filters = [
+        'user.username'
+    ]
 
 
 class RoleView(ModelView):
@@ -51,6 +55,8 @@ class UserView(ModelView):
             placeholder='Enter new password'
         ),
     )
+
+    form_excluded_columns = ('queries',)
 
 
 class CorpusView(admin.BaseView):
