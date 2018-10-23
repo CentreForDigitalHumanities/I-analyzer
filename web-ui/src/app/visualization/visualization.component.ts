@@ -1,15 +1,15 @@
 import { ElementRef, Input, Component, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, CorpusField, AggregateResult, AggregateData, QueryModel } from '../models/index';
-import { SearchService } from '../services/index';
+import { Corpus, CorpusField, AggregateResult, AggregateData, QueryModel, SearchResults } from '../models/index';
+import { SearchService, DataService } from '../services/index';
 
 @Component({
     selector: 'visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnInit, OnChanges {
+export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('chart') private chartContainer: ElementRef;
 
     @Input() public queryModel: QueryModel;
@@ -33,11 +33,20 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     public chartElement: any;
     public aggResults: AggregateResult[];
+    private searchResults: SearchResults;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
 
-    constructor(private searchService: SearchService) {
+    public subscription: Subscription;
+
+    constructor(private searchService: SearchService, private dataService: DataService) {
+        this.subscription = this.dataService.searchResults$.subscribe(results => {
+            this.searchResults = results;
+            if (this.visualizedField) {
+                this.setVisualizedField(this.visualizedField);
+            }
+        })
     }
 
     ngOnInit() {
@@ -61,13 +70,23 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
     }
 
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+
     setVisualizedField(visualizedField: string) {
         let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
         if (visualizationType === 'wordcloud') {
-            this.searchService.getWordcloudData(visualizedField, this.textFieldContent.find(textField => textField.name === visualizedField).data).then(result =>{
-                // slice is used so the child component fires OnChange
-                this.aggResults = result[visualizedField].slice(0);
-            })
+            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[visualizedField]);
+            if (textFieldContent.length === 0) {
+                this.aggResults = [];
+            }
+            else {
+                this.searchService.getWordcloudData(visualizedField, textFieldContent).then(result => {
+                    // slice is used so the child component fires OnChange
+                    this.aggResults = result[visualizedField].slice(0);
+                })
+            }
         }
         else if (visualizationType == 'timeline') {
             let aggregator = [{name: visualizedField, size: this.defaultSize}];
