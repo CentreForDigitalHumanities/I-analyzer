@@ -33,7 +33,7 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
 
     public chartElement: any;
     public aggResults: AggregateResult[];
-    public searchResults: SearchResults;
+    private searchResults: SearchResults;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;

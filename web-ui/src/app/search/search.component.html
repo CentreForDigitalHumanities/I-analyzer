@@ -145,7 +145,7 @@
     </ng-container>
 </p-dialog>
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{howManyResults}}" [(visible)]="showDocument"
+<p-dialog header="Document {{viewDocument.position}} of {{resultsCount}}" [(visible)]="showDocument"
     width="800" *ngIf="viewDocument">
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
 </p-dialog>

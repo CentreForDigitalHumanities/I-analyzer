@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { User, Corpus, SearchResults, FoundDocument, QueryModel } from '../models/index';
+import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { DataService, SearchService } from '../services';
-import { IRestMethodResultStrict } from 'rest-core';
 
 @Component({
     selector: 'ia-search-results',
@@ -9,11 +8,8 @@ import { IRestMethodResultStrict } from 'rest-core';
     styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit, OnChanges {
-    // @Input()
-    // public results: SearchResults;
-
     /**
-     * The search query to use for highlighting the results
+     * The search queryModel to use
      */
     @Input()
     public queryModel: QueryModel;
@@ -24,16 +20,13 @@ export class SearchResultsComponent implements OnInit, OnChanges {
     @Input()
     public corpus: Corpus;
 
-    @Output('download')
-    public downloadEvent = new EventEmitter();
-
     @Output('view')
     public viewEvent = new EventEmitter<FoundDocument>();
 
     @Output('searched')
-    public searchedEvent = new EventEmitter<Object>();
+    public searchedEvent = new EventEmitter<ResultOverview>();
 
-    public isLoadingMore = false;
+    public isLoading = false;
 
     public results: SearchResults;
 
@@ -59,14 +52,13 @@ export class SearchResultsComponent implements OnInit, OnChanges {
     }
 
     private search() {
+        this.isLoading = true;
         this.searchService.search(
             this.queryModel,
             this.corpus
         ).then(results => {
             this.results = results;
             this.searched(this.queryModel.queryText, this.results.total);
-            // push searchResults to data service observable, observed by visualization component
-            this.dataService.pushNewSearchResults(this.results);
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -80,21 +72,19 @@ export class SearchResultsComponent implements OnInit, OnChanges {
     }
 
     public async loadMore() {
-        this.isLoadingMore = true;
+        this.isLoading = true;
         this.results = await this.searchService.loadMore(this.corpus, this.results);
-        this.dataService.pushNewSearchResults(this.results);
-        this.isLoadingMore = false;
-    }
-
-    public download() {
-        this.downloadEvent.next();
+        this.searched(this.queryModel.queryText, this.results.total);
     }
 
     public view(document: FoundDocument) {
         this.viewEvent.next(document);
     }
 
-    public searched(queryText: string, howManyResults: number) {
-        this.searchedEvent.next({queryText: queryText, howManyResults: howManyResults});
+    public searched(queryText: string, resultsCount: number) {
+        // push searchResults to dataService observable, observed by visualization component
+        this.dataService.pushNewSearchResults(this.results);
+        this.searchedEvent.next({queryText: queryText, resultsCount: resultsCount});
+        this.isLoading = false;
     }
 }
