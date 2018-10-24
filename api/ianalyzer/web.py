@@ -23,13 +23,13 @@ from . import streaming
 from . import corpora
 from . import analyze
 
+from flask_admin.base import MenuLink
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(
-    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
-    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
+
+admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
 
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
@@ -160,23 +160,25 @@ def api_login():
     password = request.json['password']
     user = security.validate_user(username, password)
 
-    print(user.role.corpora)
-
     if user is None:
         response = jsonify({'success': False})
     else:
         security.login_user(user)
 
-        #TODO: new: roles used to be corpora names. Now the role is a group of assigned corpora names in teh DB. In fronted however this is not implemented yet. 
-        # Here the corpora names are send to frontend as 'roles'. The admin role needs to be assigned in the admin role group as 'corpus', in order to be send to frontend as a 'role'
+        roles = [{
+                'name': corpus.name,
+                'description': corpus.description
+            } for corpus in user.role.corpora]
+
+        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
+        if user.role.name == "admin":
+            roles.append({'name': 'admin', 'description': 'admin role'})
+
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': [{
-                'name': corpus.name,
-                'description': corpus.description
-            } for corpus in user.role.corpora],
+            'roles':roles,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,

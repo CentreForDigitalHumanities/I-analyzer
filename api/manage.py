@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
 from ianalyzer import config
-from ianalyzer.models import User, Role, db
+from ianalyzer.models import User, Role, db, Corpus
 from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
 from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
@@ -124,18 +124,19 @@ def append_role(user, name, description):
     if not role:
         role = Role(name, description)
         db.session.add(role)
-    user.roles.append(role)
+    user.role = role
     return role
 
 def append_corpus_role(user, corpus):
-    role_corpus = Role.query.filter_by(name=corpus).first()
+    role_corpus = Corpus.query.filter_by(name=corpus).first()
     if not role_corpus:
-        role_corpus = Role(
+        role_corpus = Corpus(
             corpus,
-            'Role for users who may access {0} data'.format(corpus)
+            '{0} corpus'.format(corpus)
         )
         db.session.add(role_corpus)
-    user.roles.append(role_corpus)
+    if role_corpus not in user.role.corpora:
+        user.role.corpora.append(role_corpus)
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)

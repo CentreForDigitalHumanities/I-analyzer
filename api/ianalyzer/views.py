@@ -50,12 +50,10 @@ class CorpusViewAdmin(ModelView):
     pass
 
 
+
 class UserView(ModelView):
     #specifies the columns and the order in users view
     column_list = ['username', 'role', 'email', 'active', 'authenticated', 'download_limit']
-
-    #creates a clickable rolename in column 'role' which is editable
-    column_editable_list = ['role'] 
 
     #specifies the fields and their order in create and edit views
     form_create_rules = (
@@ -81,24 +79,24 @@ class UserView(ModelView):
     form_excluded_columns = ('queries',)
 
 
-class CorpusView(admin.BaseView):
+# class CorpusView(admin.BaseView):
 
-    def __init__(self, corpus_name, **kwargs):
-        self.corpus_name = corpus_name
-        super(CorpusView, self).__init__(**kwargs)
+#     def __init__(self, corpus_name, **kwargs):
+#         self.corpus_name = corpus_name
+#         super(CorpusView, self).__init__(**kwargs)
 
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_role(self.corpus_name)
+#     def is_accessible(self):
+#         return current_user.is_authenticated #and current_user.has_role(self.corpus_name)
 
-    def inaccessible_callback(self, name, **kwargs):
-        flash('User does not exist, is deactivated '
-              'or could not be granted access to this corpus.')
-        return redirect(url_for('admin.index'))
+#     def inaccessible_callback(self, name, **kwargs):
+#         flash('User does not exist, is deactivated '
+#               'or could not be granted access to this corpus.')
+#         return redirect(url_for('admin.index'))
 
-    @admin.expose('/', methods=['GET', 'POST'])
-    @login_required
-    def index(self):
-        return redirect('../search/' + self.corpus_name)
+#     @admin.expose('/', methods=['GET', 'POST'])
+#     @login_required
+#     def index(self):
+#         return redirect('../search/' + self.corpus_name)
 
 
 class AdminIndexView(admin.AdminIndexView):

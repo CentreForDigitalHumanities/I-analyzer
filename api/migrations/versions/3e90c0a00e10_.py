@@ -45,14 +45,13 @@ def upgrade():
             { 'name':'times', 'description': 'Newspaper Times'},
             { 'name':'tml', 'description': 'music corpus'},
             { 'name':'dutchbanking', 'description': 'Dutch Banking'},
-            { 'name':'admin', 'description': 'temporally for administering admin role'},
         ]
     )
 
 
 def downgrade():
     op.execute(
-        corpus.delete().where(corpus.c.name.in_(('times','tml','dutchbanking','admin')))   
+        corpus.delete().where(corpus.c.name.in_(('times','tml','dutchbanking')))   
     )
     op.execute(
         role.delete().where(role.c.name=='basic')
