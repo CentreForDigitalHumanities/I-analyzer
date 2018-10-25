@@ -1,0 +1,36 @@
+@import "../../_utilities";
+
+.card {
+    cursor: pointer;
+}
+
+.card-content {
+    padding: 1.5rem;
+    color: $text-primary-color;
+    text-decoration: none;
+    background-color: $primary;
+}
+
+.card-footer {
+    border-top: 1px solid $contrast-primary-color;
+}
+
+.card-footer-item {
+    border-top: 1px solid $contrast-primary-color;
+    color: $text-primary-color;
+    cursor: pointer;
+    text-decoration: none;
+    background-color: $contrast-primary-color;
+
+    &:hover{
+        color: $text-primary-color;
+    }
+}
+
+.title-content {
+    font-size: 1.5em;
+}
+
+.subtitle {
+    margin-top: 1.5em !important;
+}

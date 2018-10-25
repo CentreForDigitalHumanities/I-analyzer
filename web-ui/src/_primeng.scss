@@ -1,0 +1,144 @@
+//
+// This partial defines a primeng theme using the same variables as used
+// to theme Bulma.
+//
+@import "_utilities";
+
+$fontFamily: $family-primary;
+$fontSize: $size-normal;
+$borderRadius: $radius;
+//Header
+$headerBorderWidth: $borderWidth;
+$headerBorderColor: $primary;
+$headerBgColor: $primary;
+$headerTextColor: $primary-invert;
+$headerFontWeight: bold;
+$headerIconTextColor: $primary-invert;
+
+//Content
+$contentBorderWidth: $borderWidth;
+$contentBorderColor: $border;
+$contentBgColor: $background;
+$contentTextColor: $text;
+
+//Default State
+$stateDefaultBorderWidth: $borderWidth;
+$stateDefaultBorderColor: $link;
+$stateDefaultBgColor: $link-invert;
+$stateDefaultTextColor: $link;
+
+//Active State
+$stateActiveBorderColor: $primary;
+$stateActiveBgColor: $primary;
+$stateActiveTextColor: $primary-invert;
+
+//Focus State
+$stateFocusBorderColor: $primary;
+$stateFocusBgColor: $primary-invert;
+$stateFocusTextColor: $primary;
+
+//Error State
+$stateErrorBorderColor: $danger;
+$stateErrorBgColor: $danger;
+$stateErrorTextColor: $danger-invert;
+
+//Hover State
+$stateHoverBorderColor: $contrast-primary-color;
+$stateHoverBgColor: $contrast-primary-color;
+$stateHoverTextColor: $primary-invert;
+
+//Forms
+$inputBgColor: $text-invert;
+$inputTextColor: $text;
+$invalidInputBorderColor: $danger;
+$inputGroupTextColor: $text;
+
+@import "~primeng/resources/themes/_theme.scss";
+
+.ui-button {
+    @extend .button;
+
+    &:hover {
+        background: $contrast-primary-color;
+        border-color: $contrast-primary-color;
+        color: $contrast-primary-color;
+    }
+}
+
+.ui-inputtext {
+    @extend .input;
+    border-color: $border;
+}
+
+.ui-buttonset .ui-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+
+    &:hover {
+        background: $contrast-primary-color;
+        border-color: $contrast-primary-color;
+        color: $contrast-primary-color;
+    }
+}
+
+.ui-slider {
+    .ui-slider-handle {
+        cursor: pointer;
+    }
+
+    &.ui-slider-horizontal .ui-slider-range {
+        border: none;
+        height: calc(100% + 2px);
+        margin: -1px 0;
+    }
+}
+
+.highlight {
+    background: $stateHighlightBgColor;
+    color: $stateHighlightTextColor;
+}
+
+.ui-widget-header {
+    border: 1px solid $primary;
+    background-color: $contrast-primary-color;
+    color: $text-primary-color;
+    font-weight: bold;
+}
+
+// All styling for the tabview
+.ui-tabview {
+    background-color: $primary-invert;
+    border: 0px;
+}
+
+.ui-tabview-nav {
+    padding: 0em 0em 0 !important;
+    border: 0px solid $primary;
+    background-color: $primary-invert;
+    border-bottom-color: $primary;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-radius: 0;
+
+    li {
+        top: 2px !important;
+    }
+
+    .ui-state-default a {
+        color: $primary-invert;
+        background-color: $primary;
+    }
+
+    .ui-state-default a:hover {
+        background: $contrast-primary-color;
+        color: $primary-invert;
+        cursor: pointer;
+    }
+
+    .ui-state-active a,
+    .ui-state-active a:hover {
+        background-color: $primary-invert;
+        color: $primary;
+        cursor: default !important;
+    }
+}

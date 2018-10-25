@@ -1,0 +1,24 @@
+<div class="dropdown" [ngClass]="{'is-active': showDropdown}">
+    <div class="dropdown-trigger" (click)="toggleDropdown()">
+        <button class="button" aria-haspopup="true">
+            <span *ngIf="optionLabel && value">{{value[optionLabel]}}</span>
+            <span *ngIf="!optionLabel && value">{{value}}</span>
+            <span *ngIf="!value">{{placeholder}}</span>
+            <span class="icon is-small">
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+        </button>
+    </div>
+    <div class="dropdown-menu" role="menu" *ngIf="showDropdown">
+        <div class="dropdown-content">
+            <a class="dropdown-item" [ngClass]="{'is-active': value === undefined}" (click)="select(undefined)" *ngIf="canDeselect">
+                {{placeholder}}
+            </a>
+            <a class="dropdown-item" *ngFor="let option of options" [ngClass]="{'is-active': value !== undefined && option == value}"
+                (click)="select(option)">
+                <ng-container *ngIf="optionLabel === undefined">{{option}}</ng-container>
+                <ng-container *ngIf="optionLabel !== undefined">{{option[optionLabel]}}</ng-container>
+            </a>
+        </div>
+    </div>
+</div>

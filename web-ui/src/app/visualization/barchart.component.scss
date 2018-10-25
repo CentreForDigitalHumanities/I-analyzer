@@ -1,0 +1,19 @@
+@import "../../_utilities";
+
+.barchart ::ng-deep .bar {
+	fill: $primary;
+}
+
+.barchart ::ng-deep .axis path,
+.barchart ::ng-deep .axis line {
+	stroke: #999;
+}
+
+.barchart ::ng-deep .axis text {
+	fill: #999;
+}
+
+.barchart {
+    width: 90%;
+    height: 400px;
+}

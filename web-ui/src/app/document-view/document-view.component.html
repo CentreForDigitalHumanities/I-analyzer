@@ -1,0 +1,23 @@
+<div class="columns is-desktop">
+    <div class="column is-narrow">
+        <table class="box table" *ngIf="document">
+            <tr *ngIf="document.relevance">
+                <th>Relevance</th>
+                <td>
+                    <search-relevance [value]="document.relevance"></search-relevance>
+                </td>
+            </tr>
+            <ng-container *ngFor="let field of propertyFields">
+                <tr *ngIf="document.fieldValues[field.name]">
+                    <th>{{field.displayName}}</th>
+                    <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                </tr>
+            </ng-container>
+        </table>
+    </div>
+    <div class="column">
+        <ng-container *ngFor="let field of contentFields">
+            <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+        </ng-container>
+    </div>
+</div>

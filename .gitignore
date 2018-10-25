@@ -1,2 +1,7 @@
-__pycache__/
-timestextminer/config.py
+.DS_Store
+/node_modules
+/.idea
+env/
+.vscode/
+.env/
+elasticsearch-*/

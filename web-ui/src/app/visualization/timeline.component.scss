@@ -1,0 +1,29 @@
+@import "../../_utilities";
+
+.timeline ::ng-deep .bar {
+	fill: $primary;
+}
+
+.timeline ::ng-deep .axis path,
+.timeline ::ng-deep .axis line {
+	stroke: #999;
+}
+
+.timeline ::ng-deep .axis text {
+	fill: #999;
+}
+
+.timeline {
+    width: 90%;
+    height: 400px;
+}
+
+ia-timeline {
+    z-index: 1;
+    position: absolute;
+}
+
+.notification {
+    @include unselectable;
+    opacity: 0.75;
+}

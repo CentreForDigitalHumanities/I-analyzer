@@ -1,0 +1,14 @@
+{
+    "name": "i-analyzer",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+        "postinstall": "npm run install-api && npm run install-web-ui",
+        "install-api": "cd api && pip install -r requirements.txt",
+        "install-web-ui": "cd web-ui && npm install",
+        "test-once": "cd web-ui && ng test --watch=false"
+    },
+    "private": true,
+    "devDependencies": {},
+    "dependencies": {}
+}

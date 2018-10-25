@@ -1,0 +1,65 @@
+@import "../../_utilities";
+
+.hits {
+    &.is-loading {
+        @extend %content-loader;
+
+        &:after {
+            // normally the spinner is placed in the middle, but this component is generally
+            // really long so it wouldn't be visible to the user changing the sorting then
+            top: 50px;
+        }
+    }
+}
+
+.document {
+    .table {
+        td, th {
+            border: none;
+        }
+    }
+
+    .relevance-score {
+        text-align: center;
+
+        strong, span {
+            vertical-align: baseline;
+        }
+
+        strong {
+            @extend .title;
+        }
+    }
+
+    &:hover {
+        box-shadow: $boxShadowHover;
+        cursor: pointer;
+    }
+}
+
+.hits {
+    margin-bottom: 15px;
+}
+
+.load-more .buttons {
+    padding: 0 15px 15px 15px;
+}
+
+.button.is-primary {
+    background-color: $primary;
+    border-color: transparent;
+    color: $text-primary-color;
+
+    &:hover{
+        background-color: $contrast-primary-color;
+        border-color: transparent;
+        color: $text-primary-color;
+    }
+}
+.title {
+    font-size: 1.5rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+}
