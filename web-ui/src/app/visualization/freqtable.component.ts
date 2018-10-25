@@ -20,7 +20,8 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     public searchData: {
         key: any,
         doc_count: number,
-        key_as_string?: string
+        key_as_string?: string,
+        // x0 and x1 are information for drawing in d3, added by d3.histogram
         x0?: Date,
         x1?: Date
     }[];
