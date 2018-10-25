@@ -166,19 +166,20 @@ def api_login():
         security.login_user(user)
 
         roles = [{
-                'name': corpus.name,
-                'description': corpus.description
-            } for corpus in user.role.corpora]
+            'name': corpus.name,
+            'description': corpus.description
+        } for corpus in user.role.corpora]
 
         # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
         if user.role.name == "admin":
             roles.append({'name': 'admin', 'description': 'admin role'})
 
+        print(roles)
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles':roles,
+            'roles': roles,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
@@ -280,6 +281,7 @@ def api_search_history():
             'transferred': query.transferred
         } for query in user.queries]
     })
+
 
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required

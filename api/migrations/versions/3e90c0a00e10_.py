@@ -17,43 +17,24 @@ depends_on = None
 
 
 role = sa.sql.table(
-        'role',
-        sa.Column('id', sa.Integer(), autoincrement=True),
-        sa.Column('name', sa.String(length=80), nullable=True),
-        sa.Column('description', sa.String(length=255), nullable=True), 
-    )
-
-corpus = sa.sql.table(
-        'corpus',
-        sa.Column('id', sa.Integer(), autoincrement=True),
-        sa.Column('name', sa.String(length=80), nullable=True),
-        sa.Column('description', sa.String(length=255), nullable=True), 
-    )
+    'role',
+    sa.Column('id', sa.Integer(), autoincrement=True),
+    sa.Column('name', sa.String(length=80), nullable=True),
+    sa.Column('description', sa.String(length=255), nullable=True),
+)
 
 
 def upgrade():
-   
-    op.bulk_insert(role,
-        [
-            { 'name':'basic', 'description': 'corpora for public access'},
-           
-        ]
-    )
 
-    op.bulk_insert(corpus,
-        [
-            { 'name':'times', 'description': 'Newspaper Times'},
-            { 'name':'tml', 'description': 'music corpus'},
-            { 'name':'dutchbanking', 'description': 'Dutch Banking'},
-        ]
-    )
+    op.bulk_insert(role,
+                   [
+                       {'name': 'basic', 'description': 'corpora for public access'},
+                   ]
+                   )
 
 
 def downgrade():
-    op.execute(
-        corpus.delete().where(corpus.c.name.in_(('times','tml','dutchbanking')))   
-    )
-    op.execute(
-        role.delete().where(role.c.name=='basic')
-    )
 
+    op.execute(
+        role.delete().where(role.c.name == 'basic')
+    )

@@ -20,9 +20,9 @@ from . import security
 
 class ModelView(admin_sqla.ModelView):
 
-    def is_accessible(self): 
+    def is_accessible(self):
         return current_user.is_authenticated and current_user.has_role('admin')
-       
+
     def inaccessible_callback(self, name, **kwargs):
         flash('Could not view page (requires administrator access).')
         return redirect(url_for('admin.index'))
@@ -38,30 +38,28 @@ class QueryView(admin_sqla.ModelView):
 
 
 class RoleView(ModelView):
-    #specifies the fields and order in the create- and edit view
+    # specifies the fields and order in the create- and edit view
     form_create_rules = (
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
 
-    
 
 class CorpusViewAdmin(ModelView):
     pass
 
 
-
 class UserView(ModelView):
-    #specifies the columns and the order in users view
-    column_list = ['username', 'role', 'email', 'active', 'authenticated', 'download_limit']
+    # specifies the columns and the order in users view
+    column_list = ['username', 'role', 'email',
+                   'active', 'authenticated', 'download_limit']
 
-    #specifies the fields and their order in create and edit views
+    # specifies the fields and their order in create and edit views
     form_create_rules = (
-        'username', 'password', 'role', 'email', 'active', 'authenticated','download_limit')
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
     form_edit_rules = (
-        'username', 'password', 'role', 'email', 'active', 'authenticated','download_limit')
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
 
-   
     form_overrides = dict(
         password=forms.PasswordField,
         queries=None,
@@ -77,26 +75,6 @@ class UserView(ModelView):
     )
 
     form_excluded_columns = ('queries',)
-
-
-# class CorpusView(admin.BaseView):
-
-#     def __init__(self, corpus_name, **kwargs):
-#         self.corpus_name = corpus_name
-#         super(CorpusView, self).__init__(**kwargs)
-
-#     def is_accessible(self):
-#         return current_user.is_authenticated #and current_user.has_role(self.corpus_name)
-
-#     def inaccessible_callback(self, name, **kwargs):
-#         flash('User does not exist, is deactivated '
-#               'or could not be granted access to this corpus.')
-#         return redirect(url_for('admin.index'))
-
-#     @admin.expose('/', methods=['GET', 'POST'])
-#     @login_required
-#     def index(self):
-#         return redirect('../search/' + self.corpus_name)
 
 
 class AdminIndexView(admin.AdminIndexView):

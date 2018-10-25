@@ -42,7 +42,6 @@ def admin(name, pwd):
     return db.session.commit()
 
 
-
 @app.cli.command()
 @click.option('--corpora', '-c', help='Corpus to be accessible without login (can be defined multiple times)', multiple=True, required=False)
 def guest(corpora):
@@ -66,6 +65,7 @@ def guest(corpora):
         append_corpus_role(user, corpus)
 
     return db.session.commit()
+
 
 @app.cli.command()
 @click.option(
@@ -110,14 +110,17 @@ def es(corpus, start, end):
 
     perform_indexing(corpus, this_corpus, start_index, end_index)
 
-def create_user(name, password = None):
+
+def create_user(name, password=None):
     if User.query.filter_by(username=name).first():
         return None
 
-    password_hash = None if password == None else generate_password_hash(password)
+    password_hash = None if password == None else generate_password_hash(
+        password)
     user = User(name, password_hash)
     db.session.add(user)
     return user
+
 
 def append_role(user, name, description):
     role = Role.query.filter_by(name=name).first()
@@ -126,6 +129,7 @@ def append_role(user, name, description):
         db.session.add(role)
     user.role = role
     return role
+
 
 def append_corpus_role(user, corpus):
     role_corpus = Corpus.query.filter_by(name=corpus).first()
@@ -137,6 +141,7 @@ def append_corpus_role(user, corpus):
         db.session.add(role_corpus)
     if role_corpus not in user.role.corpora:
         user.role.corpora.append(role_corpus)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)

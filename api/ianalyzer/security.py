@@ -7,7 +7,7 @@ from flask_login import logout_user as flask_logout_user
 def validate_user(username, password):
     """Validates the user and returns it if the username and password are valid."""
     user = models.User.query.filter_by(username=username).first()
-   
+
     if user is None:
         # User doesn't exist, or no password has been given or set
         return None
@@ -31,6 +31,7 @@ def login_user(user):
     models.db.session.add(user)
     models.db.session.commit()
     flask_login_user(user)
+
 
 def logout_user(user):
     user.authenticated = True
