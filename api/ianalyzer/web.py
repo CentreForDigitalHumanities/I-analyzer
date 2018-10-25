@@ -237,8 +237,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    models.db.session.add(query)
-    models.db.session.commit()
+    #models.db.session.add(query)
+    #models.db.session.commit()
 
     return jsonify({
         'id': query.id,

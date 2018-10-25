@@ -18,22 +18,24 @@
     	</label>
     </div>  
 
-    <!-- <div class="d3-chart" #chart></div> -->
-        <ng-container *ngIf="!freqtable">
-    	    <ng-container [ngSwitch]="visualizationType">
-                <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
-    			 [asPercent]="asPercentage">
-    			</ia-barchart>
-    			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
-    			[asPercent]="asPercentage"></ia-timeline>
-    			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
-            </ng-container>
+    <ng-container *ngIf="!freqtable">
+        <ng-container [ngSwitch]="visualizationType">
+            <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+    		 [asPercent]="asPercentage">
+    		</ia-barchart>
+    		<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
+    		[asPercent]="asPercentage"></ia-timeline>
+    		<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
         </ng-container>
-    	<ng-container *ngIf="freqtable">
-    		<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
-    		</ia-freqtable>
-    	</ng-container>
-    <!-- </div> -->
+    </ng-container>
+    <ng-container *ngIf="freqtable">
+    	<ia-freqtable *ngIf="visualizationType=='timeline'; else other" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+        </ia-freqtable>
+        <ng-template #other>
+            <ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+            </ia-freqtable>
+        </ng-template>
+    </ng-container>
 </ng-container>
 
 <ng-template #noResultsMessage>

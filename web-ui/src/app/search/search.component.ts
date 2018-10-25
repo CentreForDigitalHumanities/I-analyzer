@@ -77,6 +77,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private multipleChoiceFilters: {name: string, size: number}[];
 
     private resultsCount: number = 0;
+    private tabIndex: number;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -344,6 +345,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         } else {
             this.sortField = undefined;
         }
+    }
+
+    private tabChange(event){
+        this.tabIndex = event.index;
     }
 
     private selectSearchFieldsEvent(selection: QueryField[]) {
