@@ -94,7 +94,7 @@
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">
-                <p-tabView styleClass="is-content">
+                <p-tabView styleClass="is-content" (onChange)="tabChange($event)">
                     <p-tabPanel header="Search Results" leftIcon="fa fa-list">
                         <div class="column">
                                 <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
@@ -109,7 +109,7 @@
                     <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
                             <ng-template pTemplate="content">
                                 <div class="column">
-                                    <ia-visualization [corpus]="corpus" [multipleChoiceFilters]="multipleChoiceFilters"></ia-visualization>
+                                    <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [multipleChoiceFilters]="multipleChoiceFilters"></ia-visualization>
                                 </div>
                             </ng-template>
                     </p-tabPanel>
