@@ -1,5 +1,5 @@
 import { ElementRef, Input, Component, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { Subscription }   from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import { Corpus, CorpusField, AggregateResult, AggregateData, QueryModel, SearchResults } from '../models/index';
 import { SearchService, DataService } from '../services/index';
@@ -14,8 +14,8 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
 
     @Input() public queryModel: QueryModel;
     @Input() public corpus: Corpus;
-    @Input() public textFieldContent: {name: string, data: string[]}[];
-    @Input() public multipleChoiceFilters: {name: string, size: number}[];
+    @Input() public textFieldContent: { name: string, data: string[] }[];
+    @Input() public multipleChoiceFilters: { name: string, size: number }[];
 
 
     public visualizedFields: CorpusField[];
@@ -31,7 +31,7 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     public visualizationType: string;
     public freqtable: boolean = false;
 
-    public chartElement: any;
+    public chartElement: HTMLDivElement;
     public aggResults: AggregateResult[];
     private searchResults: SearchResults;
 
@@ -59,7 +59,12 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
             label: field.displayName,
             value: field.name
         }))
-        this.setVisualizedField(this.visualizedFields[0].name);
+        if (this.visualizedFields.length) {
+            this.setVisualizedField(this.visualizedFields[0].name);
+        } else {
+            this.visualizedField = undefined;
+            this.visualizationType = undefined;
+        }
     }
 
     ngOnChanges() {
@@ -87,19 +92,19 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
         else if (visualizationType == 'timeline') {
-            let aggregator = [{name: visualizedField, size: this.defaultSize}];
+            let aggregator = [{ name: visualizedField, size: this.defaultSize }];
             this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[visualizedField].slice(0);
             });
         }
         else {
             let aggregator = this.multipleChoiceFilters.find(filter => filter.name == visualizedField);
-            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};
+            aggregator = aggregator ? aggregator : { name: visualizedField, size: this.defaultSize };
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[visualizedField].slice(0);
             });
         }
-
+        this.visualizedField = visualizedField;
         this.visualizationType = visualizationType;
     }
 
