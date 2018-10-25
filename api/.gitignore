@@ -7,5 +7,9 @@ indexing*
 *.egg
 build/
 dist/
+<<<<<<< HEAD
 lib/
 set
+=======
+set/
+>>>>>>> feature/userroles

@@ -9,14 +9,13 @@ from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
 from ianalyzer import config
-from ianalyzer.models import User, Role, db
-from ianalyzer.web import blueprint, admin_instance, login_manager
+from ianalyzer.models import User, Role, db, Corpus
+from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
 from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
 from es_index import perform_indexing
 
-
-app = flask_app(blueprint, admin_instance, login_manager)
+app = flask_app(blueprint, admin_instance, login_manager, csrf)
 
 migrate = Migrate(app, db)
 
@@ -43,7 +42,6 @@ def admin(name, pwd):
     return db.session.commit()
 
 
-
 @app.cli.command()
 @click.option('--corpora', '-c', help='Corpus to be accessible without login (can be defined multiple times)', multiple=True, required=False)
 def guest(corpora):
@@ -67,6 +65,7 @@ def guest(corpora):
         append_corpus_role(user, corpus)
 
     return db.session.commit()
+
 
 @app.cli.command()
 @click.option(
@@ -111,32 +110,38 @@ def es(corpus, start, end):
 
     perform_indexing(corpus, this_corpus, start_index, end_index)
 
-def create_user(name, password = None):
+
+def create_user(name, password=None):
     if User.query.filter_by(username=name).first():
         return None
 
-    password_hash = None if password == None else generate_password_hash(password)
+    password_hash = None if password == None else generate_password_hash(
+        password)
     user = User(name, password_hash)
     db.session.add(user)
     return user
+
 
 def append_role(user, name, description):
     role = Role.query.filter_by(name=name).first()
     if not role:
         role = Role(name, description)
         db.session.add(role)
-    user.roles.append(role)
+    user.role = role
     return role
 
+
 def append_corpus_role(user, corpus):
-    role_corpus = Role.query.filter_by(name=corpus).first()
+    role_corpus = Corpus.query.filter_by(name=corpus).first()
     if not role_corpus:
-        role_corpus = Role(
+        role_corpus = Corpus(
             corpus,
-            'Role for users who may access {0} data'.format(corpus)
+            '{0} corpus'.format(corpus)
         )
         db.session.add(role_corpus)
-    user.roles.append(role_corpus)
+    if role_corpus not in user.role.corpora:
+        user.role.corpora.append(role_corpus)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=config.LOG_LEVEL)

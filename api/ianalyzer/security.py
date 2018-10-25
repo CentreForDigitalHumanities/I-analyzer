@@ -16,7 +16,7 @@ def validate_user(username, password):
         return None
 
     # Guest user is allowed to have no password
-    if user.password is None and any(True for role in user.roles if role.name == "guest"):
+    if user.password is None and user.role.name == "guest":
         return user
 
     if not password or user.password is None:
@@ -34,6 +34,7 @@ def login_user(user):
     models.db.session.add(user)
     models.db.session.commit()
     flask_login_user(user)
+
 
 def logout_user(user):
     user.authenticated = True

@@ -4,7 +4,7 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
-import { SearchFilterData, UserRole, Query } from '../models/index';
+import { SearchFilterData, AggregateResult, UserRole, Query } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -50,8 +50,8 @@ export class ApiService extends Rest {
         path: '/get_wordcloud_data'
     })
     public getWordcloudData: RestMethod<
-        { content_list: string[] }, 
-        { data: any[] }>;
+        { content_list: string[] },
+        { data: AggregateResult[] }>;
 
     @RestAction({
         path: '/corpus'
