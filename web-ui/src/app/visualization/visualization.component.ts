@@ -28,7 +28,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
     public freqtable: boolean = false;
 
     public aggResults: AggregateResult[];
-    private searchResults: SearchResults;
+    public searchResults: SearchResults;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -44,9 +44,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
             label: field.displayName,
-            value: {
-                field: field.name
-            }
+            value: field.name
         }))
         this.visualizedField = this.visualizedFields[0].name;
         // subscribe to data service pushing new search results

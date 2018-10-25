@@ -34,8 +34,29 @@ describe('VisualizationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(VisualizationComponent);
         component = fixture.componentInstance;
-        component.corpus = <any>{ visualize: ['test_field'] };
-
+        component.corpus = <any>{
+            fields: [{
+                displayName: 'Test Field', name: 'test_field'
+            }]
+        };
+        component.searchResults = {
+            completed: true,
+            documents: [createDocument({
+                'a': '1',
+                'b': '2',
+                'c': 'Hide-and-seek!'
+            }, '1', 1, 1),
+            createDocument({
+                'a': '3',
+                'b': '4',
+                'c': 'Wally is here'
+            }, '2', 0.5, 2)],
+            retrieved: 2,
+            total: 2,
+            queryModel: {
+                queryText: '',
+                filters: []
+            }};
         fixture.detectChanges();
     });
 
@@ -44,20 +65,27 @@ describe('VisualizationComponent', () => {
     });
 });
 
+function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
+    return { id, relevance, fieldValues, position };
+}
+
+
 class MockSearchService {
     public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
         return {
             completed: false,
-            aggregations: { aggregator: [{
-                key: '1999',
-                doc_count: 200
-            }, {
-                key: '2000',
-                doc_count: 300
-            }, {
-                key: '2001',
-                doc_count: 400
-            }]}
+            aggregations: {
+                aggregator: [{
+                    key: '1999',
+                    doc_count: 200
+                }, {
+                    key: '2000',
+                    doc_count: 300
+                }, {
+                    key: '2001',
+                    doc_count: 400
+                }]
+            }
         };
     }
 }

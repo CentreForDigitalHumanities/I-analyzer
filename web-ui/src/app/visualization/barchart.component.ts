@@ -41,7 +41,6 @@ export class BarChartComponent implements OnChanges {
     public subscription: Subscription;
 
     ngOnChanges(changes: SimpleChanges) {
-        console.log("changes detected");
         if (this.chartElement == undefined) {
             this.chartElement = this.barchartContainer.nativeElement;
         }
