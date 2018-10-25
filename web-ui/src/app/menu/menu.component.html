@@ -1,7 +1,8 @@
 <nav class="navbar" *ngIf="currentUser">
     <div class="container is-fluid">
         <div class="navbar-brand">
-            <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">I-ANALYZER</a>
+            <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
+            
             <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
