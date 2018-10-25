@@ -1,7 +1,7 @@
 import { Input, Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, CorpusField, AggregateResult, QueryModel, SearchResults } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, SearchResults } from '../models/index';
 import { SearchService, DataService } from '../services/index';
 
 @Component({
