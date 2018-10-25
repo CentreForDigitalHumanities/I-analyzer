@@ -67,10 +67,8 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     public searchQueryText: string;
     public results: SearchResults;
-    public textFieldContent: {name: string, data: string[]}[];
 
     public multipleChoiceData: AggregateData = {};
-    public visualizationData: AggregateData = {};
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;

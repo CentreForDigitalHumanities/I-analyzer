@@ -19,7 +19,6 @@ export class FreqtableComponent implements OnChanges {
         key_as_string?: string
     }[];
     @Input() public visualizedField;
-    @Input() public chartElement;
     @Input() public asPercent;
 
     public defaultSort: string = "doc_count";

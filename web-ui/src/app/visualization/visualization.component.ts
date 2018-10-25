@@ -1,22 +1,18 @@
-import { ElementRef, Input, Component, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Input, Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, CorpusField, AggregateResult, AggregateData, QueryModel, SearchResults } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, QueryModel, SearchResults } from '../models/index';
 import { SearchService, DataService } from '../services/index';
 
 @Component({
-    selector: 'visualization',
+    selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
-    @ViewChild('chart') private chartContainer: ElementRef;
 
-    @Input() public queryModel: QueryModel;
+export class VisualizationComponent implements OnInit, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public textFieldContent: { name: string, data: string[] }[];
-    @Input() public multipleChoiceFilters: { name: string, size: number }[];
-
+    @Input() public multipleChoiceFilters: {name: string, size: number}[];
 
     public visualizedFields: CorpusField[];
 
@@ -31,9 +27,8 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     public visualizationType: string;
     public freqtable: boolean = false;
 
-    public chartElement: HTMLDivElement;
     public aggResults: AggregateResult[];
-    private searchResults: SearchResults;
+    public searchResults: SearchResults;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -41,36 +36,28 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     public subscription: Subscription;
 
     constructor(private searchService: SearchService, private dataService: DataService) {
-        this.subscription = this.dataService.searchResults$.subscribe(results => {
-            this.searchResults = results;
-            if (this.visualizedField) {
-                this.setVisualizedField(this.visualizedField);
-            }
-        })
     }
 
     ngOnInit() {
         // Initial values
-        this.showTableButtons = true;
-        this.chartElement = this.chartContainer.nativeElement;
-        this.visualizedFields = this.corpus && this.corpus.fields ?
+        this.visualizedFields = this.corpus && this.corpus.fields ? 
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
             label: field.displayName,
             value: field.name
         }))
-        if (this.visualizedFields.length) {
-            this.setVisualizedField(this.visualizedFields[0].name);
-        } else {
-            this.visualizedField = undefined;
-            this.visualizationType = undefined;
-        }
-    }
-
-    ngOnChanges() {
-        if (this.visualizedField) {
-            this.setVisualizedField(this.visualizedField);
-        }
+        this.visualizedField = this.visualizedFields[0].name;
+        // subscribe to data service pushing new search results
+        this.subscription = this.dataService.searchResults$.subscribe(results => {
+            if (results.total > 0) {
+                this.searchResults = results;
+                this.setVisualizedField(this.visualizedField);
+            }
+            else {
+                this.aggResults = [];
+            }
+        });
+        this.showTableButtons = true;
     }
 
     ngOnDestroy() {
@@ -78,35 +65,34 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     setVisualizedField(visualizedField: string) {
+        this.aggResults = [];
         let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
         if (visualizationType === 'wordcloud') {
             let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[visualizedField]);
-            if (textFieldContent.length === 0) {
-                this.aggResults = [];
-            }
-            else {
+            if (textFieldContent.length > 0) {
                 this.searchService.getWordcloudData(visualizedField, textFieldContent).then(result => {
                     // slice is used so the child component fires OnChange
                     this.aggResults = result[visualizedField].slice(0);
                 })
             }
         }
-        else if (visualizationType == 'timeline') {
-            let aggregator = [{ name: visualizedField, size: this.defaultSize }];
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField].slice(0);
+        else if (visualizationType === 'timeline') {
+            let aggregator = [{name: visualizedField, size: this.defaultSize}];
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
+                this.aggResults = visual.aggregations[visualizedField];
             });
         }
         else {
-            let aggregator = this.multipleChoiceFilters.find(filter => filter.name == visualizedField);
-            aggregator = aggregator ? aggregator : { name: visualizedField, size: this.defaultSize };
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField].slice(0);
+            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === visualizedField);
+            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
+                this.aggResults = visual.aggregations[visualizedField];
             });
         }
         this.visualizedField = visualizedField;
         this.visualizationType = visualizationType;
     }
+    
 
     showTable() {
         this.freqtable = true;
@@ -114,6 +100,5 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
 
     showChart() {
         this.freqtable = false;
-        this.setVisualizedField(this.visualizedField);
     }
 }

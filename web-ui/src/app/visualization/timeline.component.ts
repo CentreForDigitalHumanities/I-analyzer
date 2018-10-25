@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -6,6 +6,7 @@ import * as _ from "lodash";
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
+import { not } from '@angular/compiler/src/output/output_ast';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -14,22 +15,19 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
-    styleUrls: ['./timeline.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
+    @ViewChild('timeline') private timelineContainer: ElementRef;
     @Input('searchData') searchData: {
         key: any,
         doc_count: number,
         key_as_string: string
     }[];
     @Input() visualizedField;
-    @Input() chartElement;
     @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;
-    private zoom: any;
-    private view: any;
 
     private brush: any;
     idleTimeout: any;
@@ -47,29 +45,35 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.searchData && this.visualizedField) {
+        if (this.chartElement == undefined) {
+            this.chartElement = this.timelineContainer.nativeElement;
+        }
+        if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.calculateCanvas();
             this.prepareTimeline();
             this.calculateDomains();
-            this.createChart(true);
+            this.createChart();
             this.rescaleY();
             this.calculateY(this.selectedData);
             this.drawChartData();
             this.setupBrushBehaviour();
+        }
 
-            //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
-                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.rescaleY();
-                }
+        //listen for changes in 'asPercent'
+        else if (changes['asPercent'] != undefined) {
+            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+                this.rescaleY();
             }
         }
     }
 
     prepareTimeline() {
         this.selectedData = this.formatTimeData();
-
         this.xDomain = d3.extent(this.selectedData, d => d.date);
+        if (this.xDomain[0] == this.xDomain[1]){
+            // make sure we display data even if there's only one data point
+            this.xDomain[1] = d3.timeDay.ceil(this.xDomain[0]);
+        }
         this.xScale = scaleTimeCustom()
             .domain(this.xDomain)
             .range([0, this.width])

@@ -26,7 +26,7 @@ describe('VisualizationComponent', () => {
                     provide: SearchService,
                     useValue: new MockSearchService()
                 },
-                DataService,
+                DataService, 
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -34,16 +34,29 @@ describe('VisualizationComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(VisualizationComponent);
         component = fixture.componentInstance;
-        component.queryModel = {
-            queryText: "Wally"
-        }
         component.corpus = <any>{
             fields: [{
                 displayName: 'Test Field', name: 'test_field'
             }]
         };
-        component.chartElement = document.createElement('div');
-
+        component.searchResults = {
+            completed: true,
+            documents: [createDocument({
+                'a': '1',
+                'b': '2',
+                'c': 'Hide-and-seek!'
+            }, '1', 1, 1),
+            createDocument({
+                'a': '3',
+                'b': '4',
+                'c': 'Wally is here'
+            }, '2', 0.5, 2)],
+            retrieved: 2,
+            total: 2,
+            queryModel: {
+                queryText: '',
+                filters: []
+            }};
         fixture.detectChanges();
     });
 
@@ -51,6 +64,11 @@ describe('VisualizationComponent', () => {
         expect(component).toBeTruthy();
     });
 });
+
+function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
+    return { id, relevance, fieldValues, position };
+}
+
 
 class MockSearchService {
     public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {

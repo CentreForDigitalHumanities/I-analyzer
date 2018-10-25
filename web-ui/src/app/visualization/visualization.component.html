@@ -10,26 +10,32 @@
 	</button>
 </div>
 
-<div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
-	<label>
-		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
-		as Percentage
-	</label>
-</div>
+<ng-container *ngIf="aggResults && aggResults.length>0; else noResultsMessage">
+    <div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
+    	<label>
+    		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
+    		as Percentage
+    	</label>
+    </div>  
 
-<div class="d3-chart" #chart>
-	<ng-container [ngSwitch]="visualizationType">
-		<ng-container *ngIf="!freqtable">
-            <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement"
-			 [asPercent]="asPercentage">
-			</ia-barchart>
-			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
-			 [chartElement]="chartElement" [asPercent]="asPercentage"></ia-timeline>
-			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [chartElement]="chartElement"></ia-wordcloud>
-		</ng-container>
-		<ng-container *ngIf="freqtable">
-			<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [chartElement]="chartElement" [asPercent]="asPercentage">
-			</ia-freqtable>
-		</ng-container>
-	</ng-container>
-</div>
+    <!-- <div class="d3-chart" #chart></div> -->
+        <ng-container *ngIf="!freqtable">
+    	    <ng-container [ngSwitch]="visualizationType">
+                <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+    			 [asPercent]="asPercentage">
+    			</ia-barchart>
+    			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
+    			[asPercent]="asPercentage"></ia-timeline>
+    			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
+            </ng-container>
+        </ng-container>
+    	<ng-container *ngIf="freqtable">
+    		<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+    		</ia-freqtable>
+    	</ng-container>
+    <!-- </div> -->
+</ng-container>
+
+<ng-template #noResultsMessage>
+    <b> There is no data to be visualized. </b>
+</ng-template>
