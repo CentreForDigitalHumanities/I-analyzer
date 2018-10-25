@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import { Subscription }   from 'rxjs';
 
 import { AggregateResult } from '../models/index';
+import { DataService } from '../services/index';
 
 @Component({
     selector: 'ia-barchart',
@@ -38,7 +39,9 @@ export class BarChartComponent implements OnChanges {
     public chartElement: any;
 
     private xBarWidth: number;
-    public subscription: Subscription;
+
+    // dataService is needed for pushing filtered data from timeline component
+    constructor(public dataService: DataService){}
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.chartElement == undefined) {

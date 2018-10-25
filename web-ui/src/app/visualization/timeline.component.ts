@@ -4,9 +4,9 @@ import * as d3 from 'd3';
 import * as _ from "lodash";
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
+import { AggregateResult } from '../models/index';
 import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
-import { not } from '@angular/compiler/src/output/output_ast';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -19,11 +19,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
     @ViewChild('timeline') private timelineContainer: ElementRef;
-    @Input('searchData') searchData: {
-        key: any,
-        doc_count: number,
-        key_as_string: string
-    }[];
+    @Input('searchData') searchData: AggregateResult[];
     @Input() visualizedField;
     @Input() asPercent;
 
@@ -130,6 +126,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         });
         // no need to draw zero height rectangles!
         this.bins = this.bins.filter(b => b.doc_count>0);
+        this.dataService.pushCurrentTimelineData(this.bins);
         this.yMax = parseInt(d3.max(this.bins.map(d => d.doc_count)));
         this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
