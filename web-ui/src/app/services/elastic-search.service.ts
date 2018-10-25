@@ -184,23 +184,43 @@ export class ElasticSearchService {
     }
 
     /**
+    * Clear ES's scroll ID to free ES resources
+    */
+    public async clearScroll(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<void> {
+        if (existingResults.scrollId) {
+            let connection = (await this.connections)[corpusDefinition.serverName];
+            connection.client.clearScroll({scrollId: existingResults.scrollId})
+        }
+    }
+
+    /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
     public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {
-        if (!existingResults.scrollId) {
-            throw 'No scroll ID found.';
-        }
-
         let connection = (await this.connections)[corpusDefinition.serverName];
-        let response = await connection.client.scroll({
-            scrollId: existingResults.scrollId,
-            scroll: connection.config.scrollTimeout
-        });
+        
+        try {
+            let response = await connection.client.scroll({
+                scrollId: existingResults.scrollId,
+                scroll: connection.config.scrollTimeout
+            });
 
-        let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
-        additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
-        additionalResults.fields = existingResults.fields;
-        return additionalResults;
+            let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
+            additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
+            additionalResults.fields = existingResults.fields;
+            return additionalResults;
+        }
+        catch (e) {
+            // Check if this is the ES exception we except (scroll / search context is missing)
+            if (e.message.indexOf("search_context_missing_exception") >= 0) {                
+                let size = existingResults.retrieved + connection.config.overviewQuerySize;
+                let results = await this.search(corpusDefinition, existingResults.queryModel, size);
+                results.fields = existingResults.fields;
+                return results;
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**

@@ -18,6 +18,11 @@ export type SearchResults = {
     scrollId?: string
 }
 
+export type ResultOverview = {
+    queryText: string,
+    resultsCount: number
+}
+
 export type AggregateQueryFeedback = {
     completed: boolean,
     aggregations: AggregateData
