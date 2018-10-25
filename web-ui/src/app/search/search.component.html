@@ -44,7 +44,7 @@
                         <div class="level-item">
                             <div class="field has-addons">
                                 <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!" [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
-                                    <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="!results">
+                                    <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download" (click)="download()" [disabled]="howManyResults==0">
                                         <span class="icon is-small">
                                             <i class="fa fa-download"></i>
                                         </span>
@@ -93,12 +93,12 @@
                 </div>
             </div>
             <!-- search results, on right -->
-            <div class="is-boxed column is-9" *ngIf="results">
+            <div class="is-boxed column is-9" *ngIf="queryModel">
                 <p-tabView styleClass="is-content">
                     <p-tabPanel header="Search Results" leftIcon="fa fa-list">
                         <div class="column">
-                                <ia-search-results [results]="results" [corpus]="corpus" [isLoading]="isSearching" [query]="searchQueryText" [user]="user"
-                                    (view)="onViewDocument($event)">
+                                <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
+                                    (view)="onViewDocument($event)" (searched)="onSearched($event)">
                                     <div class="field">
                                         <label class="label">Sort By</label>
                                     </div>
@@ -120,37 +120,7 @@
 </section>
 
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{results.total}}" [(visible)]="showDocument"
+<p-dialog header="Document {{viewDocument.position}} of {{resultsCount}}" [(visible)]="showDocument"
     width="800" *ngIf="viewDocument">
     <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
-</p-dialog>
-<!-- inform the user about a failed search -->
-<p-dialog [(visible)]="showError" width="600" *ngIf="showError">
-    <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>
-    <div class="content">
-        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the
-            following information when seeking support:</p>
-        <table>
-            <tbody>
-                <tr>
-                    <th>Date</th>
-                    <td>
-                        <code>{{showError.date}}</code>
-                    </td>
-                </tr>
-                <tr>
-                    <th>URL</th>
-                    <td>
-                        <code>{{showError.href}}</code>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Error</th>
-                    <td>
-                        <code>{{showError.message}}</code>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </p-dialog>
