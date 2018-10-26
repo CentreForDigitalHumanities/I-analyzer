@@ -222,11 +222,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    if 'id' in request.json:
-        query = models.Query.query.filter_by(id=request.json['id']).first()
-    else:
-        query = models.Query(
-            query=query_json, corpus_name=corpus_name, user=current_user)
+    # if 'id' in request.json:
+    #     query = models.Query.query.filter_by(id=request.json['id']).first()
+    # else:
+    query = models.Query(
+        query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
