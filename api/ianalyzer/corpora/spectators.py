@@ -77,7 +77,8 @@ class Spectators(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.XML(tag='date', toplevel=True)
+            extractor=extract.XML(tag='date', toplevel=True),
+            preselected=True
         ),
         Field(
             name='id',
@@ -109,7 +110,8 @@ class Spectators(XMLCorpus):
                 description='Search only within these magazines.',
                 options=sorted(['De Hollandsche Spectator', 'De Denker']),
             ),
-            extractor=extract.XML(tag='magazine', toplevel=True)
+            extractor=extract.XML(tag='magazine', toplevel=True),
+            preselected=True
         ),
         Field(
             name='editors',
@@ -122,7 +124,8 @@ class Spectators(XMLCorpus):
             display_name='Title',
             prominent_field=True,
             description='Article title.',
-            extractor=extract.XML(tag='title', toplevel=True)
+            extractor=extract.XML(tag='title', toplevel=True),
+            preselected=True
         ),
         Field(
             name='content',
@@ -130,7 +133,8 @@ class Spectators(XMLCorpus):
             display_type='text_content',
             description='Text content.',
             prominent_field=True,
-            extractor=extract.XML(tag='text', multiple=True, flatten=True)
+            extractor=extract.XML(tag='text', multiple=True, flatten=True),
+            preselected=True
         ),
     ]
 

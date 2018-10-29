@@ -76,6 +76,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'origDate'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='remarks on date',
@@ -92,6 +93,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'transcription'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='incipit',
@@ -143,6 +145,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'sex'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='age',
@@ -157,6 +160,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'age'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='remarks on age',
@@ -198,6 +202,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'inscriptionType'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='iconography type',
@@ -218,6 +223,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'iconographyType'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='iconography description',
@@ -246,6 +252,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'material'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='language',
@@ -263,6 +270,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'language'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='number of lines surviving',
@@ -277,6 +285,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'numberOfLinesSurviving'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='location',
@@ -285,6 +294,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'location'],
                 toplevel=False,
             ),
+            preselected=True
         ),
         Field(
             name='publication',
