@@ -188,6 +188,7 @@ class Times(XMLCorpus):
         Field(
             name='date-pub',
             display_name='Publication date',
+            preselected=True,
             description='Date of publication.',
             extractor=extract.XML(
                 tag='da', toplevel=True
@@ -269,7 +270,8 @@ class Times(XMLCorpus):
                 tag=['..', 'pageid'], attribute='isPartOf',
                 applicable=after(1985)
             ),
-            sortable=True
+            sortable=True,
+            preselected=True
         ),
         Field(
             name='supplement-title',
@@ -383,7 +385,8 @@ class Times(XMLCorpus):
             name='subtitle',
             display_name='Subtitle',
             description='Article subtitle.',
-            extractor=extract.XML(tag='ta', multiple=True)
+            extractor=extract.XML(tag='ta', multiple=True),
+            preselected=True
         ),
         Field(
             name='subheader',
@@ -407,7 +410,8 @@ class Times(XMLCorpus):
                     tag='au_composed', multiple=True,
                     applicable=after(1985)
                 )
-            )
+            ),
+            preselected=True
         ),
         Field(
             name='source-paper',
@@ -454,7 +458,8 @@ class Times(XMLCorpus):
                 ]
             ),
             extractor=extract.XML(tag='ct', multiple=True),
-            sortable=True
+            sortable=True,
+            preselected=True
         ),
         Field(
             name='illustration',
