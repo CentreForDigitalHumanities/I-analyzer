@@ -21,17 +21,8 @@
     </div>
 
     <div class="column is-desktop">
-        <div class="box">
-        <p-tabView> 
-            <p-tabPanel header="" leftIcon="fa fa-book">
-                <ng-container *ngFor="let field of contentFields">
-                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-                </ng-container>
-            </p-tabPanel>
-            <p-tabPanel header="" leftIcon="fa fa-image">
-                    <img src="/static/images/a4test.png"/>
-            </p-tabPanel>
-        </p-tabView>
-        </div>
+        <ng-container *ngFor="let field of contentFields">
+            <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+        </ng-container>
     </div>
 </div>
