@@ -17,13 +17,24 @@
                     <input class="input" type="password" [(ngModel)]="password" name="password" />
                     <span class="icon is-small is-left">
                     <i class="fa fa-lock"></i>
-                </span>
+                </span> 
                 </p>
             </div>
             <div class="field">
                 <p class="control">
                     <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Login</button>
                 </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                    Or login with:
+                </p>
+            </div>
+            <div>
+                <a class="box">   
+                    <img src="/assets/solis.png" width="40" height="40">
+                    <span><strong>Solis ID</strong></span>
+                </a>
             </div>
         </div>
     </form>
