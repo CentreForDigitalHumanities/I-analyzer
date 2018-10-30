@@ -73,8 +73,9 @@
                 <div *ngIf="corpus && showFilters">
                     <h4 class="title is-4" style="display:inline">Filters</h4>
                     <span
+                        *ngIf="activeFilters"
                         style="float:right"
-                        class="button icon filter-icon is-inverted"
+                        class="button icon filter-icon is-primary is-active is-medium"
                         (click)="disableAllFilters()"> 
                         <i class="fa fa-filter"></i>
                     </span>

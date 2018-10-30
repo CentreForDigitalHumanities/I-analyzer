@@ -52,6 +52,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public queryField: {
         [name: string]: QueryField
     };
+    public activeFilters: boolean = false;
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
@@ -136,6 +137,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
         this.applyFilter(name, activated)
+        this.checkActiveFilters();
     }
 
     public applyFilter(name: string, activated: boolean) {
@@ -148,7 +150,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public resetFilter(name: string) {
         this.hasModifiedFilters = true;
         let field = this.queryField[name];
-        console.log(field);
         this.search();
     }
 
@@ -158,7 +159,19 @@ export class SearchComponent implements OnInit, OnDestroy {
             let field = this.queryField[name];
             field.useAsFilter = false;
         }
+        this.checkActiveFilters();
         this.search();
+    }
+
+    public checkActiveFilters() {
+        this.activeFilters = false;
+        for (var name in this.queryField) {
+            let active = this.queryField[name].useAsFilter;
+            if (active) {
+                this.activeFilters = true;
+                break;
+            }
+        }
     }
 
     public changeSorting(event: SortEvent) {
