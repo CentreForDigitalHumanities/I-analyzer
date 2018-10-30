@@ -1,21 +1,20 @@
-import { ElementRef, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Input, Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription }   from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import { Corpus, AggregateResults, FoundDocument, QueryModel } from '../models/index';
-import { SearchService, ApiService } from '../services/index';
-
-
+import { Corpus, CorpusField, AggregateResult, SearchResults } from '../models/index';
+import { SearchService, DataService } from '../services/index';
 
 @Component({
-    selector: 'visualization',
+    selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnChanges {
-    @ViewChild('chart') private chartContainer: ElementRef;
 
-    @Input() public queryModel: QueryModel;
+export class VisualizationComponent implements OnInit, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public contents: string[];
+    @Input() public multipleChoiceFilters: {name: string, size: number}[];
+
+    public visualizedFields: CorpusField[];
 
     public asPercentage: boolean;
 
@@ -25,99 +24,81 @@ export class VisualizationComponent implements OnChanges {
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
-    public visualizedFields: {
-        name: string;
-        displayName: string;
-    }[];
     public visualizationType: string;
     public freqtable: boolean = false;
 
-    public chartElement: any;
     public aggResults: AggregateResult[];
+    public searchResults: SearchResults;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    // aggregate search expects a size argument
+    public defaultSize: number = 10000;
 
+    public subscription: Subscription;
+
+    constructor(private searchService: SearchService, private dataService: DataService) {
     }
 
     ngOnInit() {
-        // Initial values 
+        // Initial values
+        this.visualizedFields = this.corpus && this.corpus.fields ? 
+            this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
+        this.visDropdown = this.visualizedFields.map(field => ({
+            label: field.displayName,
+            value: field.name
+        }))
+        this.visualizedField = this.visualizedFields[0].name;
+        // subscribe to data service pushing new search results
+        this.subscription = this.dataService.searchResults$.subscribe(results => {
+            if (results.total > 0) {
+                this.searchResults = results;
+                this.setVisualizedField(this.visualizedField);
+            }
+            else {
+                this.aggResults = [];
+            }
+        });
         this.showTableButtons = true;
-        this.chartElement = this.chartContainer.nativeElement;
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        this.visualizedFields = this.corpus && this.corpus.fields
-            ? this.corpus.fields.filter(field => field.visualizationType != undefined).map(field =>
-                (field.displayName != undefined) ?
-                    ({
-                        name: field.name,
-                        displayName: field.displayName
-                    }) :
-                    // in case display name is not provided in the corpus definition
-                    ({
-                        name: field.name,
-                        displayName: field.name
-                    })
-
-            )
-            : [];
-
-        if (this.visualizedFields.length) {
-            this.setVisualizedField(this.visualizedFields[0].name);
-        }
-
-        //SelectItem representations of visualized fields
-        this.visDropdown =
-            this.visualizedFields.map(field => ({
-                label: field.displayName,
-                value: {
-                    field: field.name
-                }
-            }))
-
-        //Grouped visualizations. Keeping this here for future use.
-        // this.groupedVisualizations = [
-        //     {
-        //         label: 'Histograms',
-        //         items: this.visualizedFields.map(field => ({
-        //             label: field.displayName,
-        //             value: {
-        //                 field: field.name
-        //             }
-        //         }))
-        //     }
-        // ]
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     setVisualizedField(visualizedField: string) {
-        let visualizationType = this.corpus.fields.find(field => field.name == visualizedField).visualizationType;
-        if (visualizationType == 'wordcloud') {
-            this.apiService.getWordcloudData({'content_list': this.contents}).then( result => {
-            this.visualizedField = visualizedField;
-            this.visualizationType = visualizationType;
-            this.aggResults = result['data'];
-        });
+        this.aggResults = [];
+        let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
+        if (visualizationType === 'wordcloud') {
+            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[visualizedField]);
+            if (textFieldContent.length > 0) {
+                this.searchService.getWordcloudData(visualizedField, textFieldContent).then(result => {
+                    // slice is used so the child component fires OnChange
+                    this.aggResults = result[visualizedField].slice(0);
+                })
+            }
+        }
+        else if (visualizationType === 'timeline') {
+            let aggregator = [{name: visualizedField, size: this.defaultSize}];
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
+                this.aggResults = visual.aggregations[visualizedField];
+            });
         }
         else {
-            this.searchService.searchForVisualization(this.corpus, this.queryModel, visualizedField).then(visual => {
-                this.visualizedField = visualizedField;
-                this.visualizationType = visualizationType;
-                this.aggResults = visual.aggregations;
+            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === visualizedField);
+            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
+                this.aggResults = visual.aggregations[visualizedField];
             });
-        };
+        }
+        this.visualizedField = visualizedField;
+        this.visualizationType = visualizationType;
     }
     
+
     showTable() {
         this.freqtable = true;
     }
 
     showChart() {
         this.freqtable = false;
-        this.setVisualizedField(this.visualizedField);
     }
-}
-
-type AggregateResult = {
-    key: any,
-    doc_count: number
 }

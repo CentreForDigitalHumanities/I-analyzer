@@ -12,6 +12,7 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
+from flask_seasurf import SeaSurf
 
 from . import config_fallback as config
 from . import factories
@@ -36,6 +37,8 @@ admin_instance.add_view(views.RoleView(
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
 login_manager = LoginManager()
+csrf = SeaSurf()
+csrf.exempt_urls('/es',)
 
 
 def corpus_required(method):
@@ -119,8 +122,8 @@ def init():
 def api_es_config():
     return jsonify([{
         'name': server_name,
-        'host': server_config['host'],
-        'port': server_config['port'],
+        'host': url_for('es.forward_head', server_name=server_name, _external=True),
+        'port': None,
         'chunkSize': server_config['chunk_size'],
         'maxChunkBytes': server_config['max_chunk_bytes'],
         'bulkTimeout': server_config['bulk_timeout'],
@@ -219,11 +222,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    if 'id' in request.json:
-        query = models.Query.query.filter_by(id=request.json['id']).first()
-    else:
-        query = models.Query(
-            query=query_json, corpus_name=corpus_name, user=current_user)
+    # if 'id' in request.json:
+    #     query = models.Query.query.filter_by(id=request.json['id']).first()
+    # else:
+    query = models.Query(
+        query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -234,8 +237,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    models.db.session.add(query)
-    models.db.session.commit()
+    #models.db.session.add(query)
+    #models.db.session.commit()
 
     return jsonify({
         'id': query.id,

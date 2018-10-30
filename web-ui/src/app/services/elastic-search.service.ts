@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Client, ConfigOptions, SearchResponse } from 'elasticsearch';
-import * as _ from 'lodash';
-import { CorpusField, FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResults } from '../models/index';
+import { Client, SearchResponse } from 'elasticsearch';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -75,11 +74,12 @@ export class ElasticSearchService {
     * Construct the aggregator, based on kind of field
     * Date fields are aggregated in year intervals
     */
-    makeAggregation(aggregator: string) {
+    makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
         let aggregation = {
             terms: {
                 field: aggregator,
-                size: 1000
+                size: size,
+                min_doc_count: min_doc_count
             }
         }
         return aggregation;
@@ -157,20 +157,22 @@ export class ElasticSearchService {
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregator: string): Promise<AggregateResults<TKey>> {
-        let aggregation = this.makeAggregation(aggregator);
+    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        let aggregations = {}
+        aggregators.forEach(d => {
+            aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
+        });
         let esQuery = this.makeEsQuery(queryModel);
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let aggregationModel = Object.assign({ aggs: { [aggregator]: aggregation } }, esQuery);
+        let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-
-        // Extract relevant information from dictionary returned by ES
-        let aggregations = result.aggregations;
-        let buckets = aggregator=="wordcloud"? aggregations[aggregator].keywords.buckets : aggregations[aggregator].buckets;
+        let aggregateData = {}
+        Object.keys(result.aggregations).forEach(fieldName => {
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+        })
         return {
             completed: true,
-            aggregations: buckets
-        };
+            aggregations: aggregateData
+        }
     }
 
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
@@ -182,23 +184,43 @@ export class ElasticSearchService {
     }
 
     /**
+    * Clear ES's scroll ID to free ES resources
+    */
+    public async clearScroll(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<void> {
+        if (existingResults.scrollId) {
+            let connection = (await this.connections)[corpusDefinition.serverName];
+            connection.client.clearScroll({scrollId: existingResults.scrollId})
+        }
+    }
+
+    /**
      * Loads more results and returns an object containing the existing and newly found documents.
      */
     public async loadMore(corpusDefinition: ElasticSearchIndex, existingResults: SearchResults): Promise<SearchResults> {
-        if (!existingResults.scrollId) {
-            throw 'No scroll ID found.';
-        }
-
         let connection = (await this.connections)[corpusDefinition.serverName];
-        let response = await connection.client.scroll({
-            scrollId: existingResults.scrollId,
-            scroll: connection.config.scrollTimeout
-        });
+        
+        try {
+            let response = await connection.client.scroll({
+                scrollId: existingResults.scrollId,
+                scroll: connection.config.scrollTimeout
+            });
 
-        let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
-        additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
-        additionalResults.fields = existingResults.fields;
-        return additionalResults;
+            let additionalResults = await this.parseResponse(response, existingResults.queryModel, existingResults.retrieved);
+            additionalResults.documents = existingResults.documents.concat(additionalResults.documents);
+            additionalResults.fields = existingResults.fields;
+            return additionalResults;
+        }
+        catch (e) {
+            // Check if this is the ES exception we except (scroll / search context is missing)
+            if (e.message.indexOf("search_context_missing_exception") >= 0) {                
+                let size = existingResults.retrieved + connection.config.overviewQuerySize;
+                let results = await this.search(corpusDefinition, existingResults.queryModel, size);
+                results.fields = existingResults.fields;
+                return results;
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -294,3 +316,15 @@ type EsSearchClause = {
     match_all: {}
 };
 
+type Aggregator = {
+    name: string,
+    size: number
+};
+
+type EsAggregateResult = {
+    [fieldName: string]: {
+        doc_count_error_upper_bound: number,
+        sum_other_doc_count: number,
+        buckets: AggregateResult[]
+    }
+}

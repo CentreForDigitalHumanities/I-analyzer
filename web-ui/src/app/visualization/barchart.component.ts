@@ -1,27 +1,24 @@
-import { Input, Component, OnChanges, ElementRef, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, OnInit, ElementRef, ViewChild, ViewEncapsulation, SimpleChanges } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
+import { Subscription }   from 'rxjs';
 
+import { AggregateResult } from '../models/index';
+import { DataService } from '../services/index';
 
 @Component({
     selector: 'ia-barchart',
     templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrls: ['./barchart.component.scss']
 })
 
 export class BarChartComponent implements OnChanges {
-    @Input('searchData') searchData: {
-        key: any,
-        doc_count: number,
-        key_as_string?: string
-    }[];
+    @ViewChild('barchart') private barchartContainer: ElementRef;
+    @Input() searchData: AggregateResult[];
     @Input() visualizedField;
-    @Input() chartElement;
     @Input() asPercent;
 
-    //public visualizingDate: boolean = false;
     public yTicks: number = 10;
     public margin = { top: 10, bottom: 120, left: 70, right: 10 };
     public svg: any;
@@ -39,26 +36,32 @@ export class BarChartComponent implements OnChanges {
     public xDomain: Array<any>;
     public yDomain: Array<number>;
     public yAxisLabel: any;
+    public chartElement: any;
 
     private xBarWidth: number;
 
+    // dataService is needed for pushing filtered data from timeline component
+    constructor(public dataService: DataService){}
+
     ngOnChanges(changes: SimpleChanges) {
-        if (this.searchData && this.visualizedField) {
+        if (this.chartElement == undefined) {
+            this.chartElement = this.barchartContainer.nativeElement;
+        }
+
+        // redraw only if searchData changed
+        if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.calculateCanvas();
             this.prepareTermFrequency();
             this.calculateDomains();
+            this.createChart();
+            this.drawChartData(this.searchData);
+            this.rescaleY();
+        }
 
-            if (changes['visualizedField'] != undefined) {
-                this.createChart(changes['visualizedField'].previousValue != changes['visualizedField'].currentValue);
-                this.drawChartData(this.searchData);
+        //listen for changes in 'asPercent'
+        else if (changes['asPercent'] != undefined) {
+            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
                 this.rescaleY();
-            }
-
-            //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
-                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.rescaleY();
-                }
             }
         }
     }
@@ -73,7 +76,7 @@ export class BarChartComponent implements OnChanges {
          adjust the x and y ranges
          */
         this.yDomain = [0, this.yMax];
-        this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
+        this.yTicks = this.yDomain[1] > 10 ? 10 : this.yMax;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
@@ -108,9 +111,8 @@ export class BarChartComponent implements OnChanges {
 
     /**
      * Creates the chart to draw the data on (including axes and labels).
-     * @param forceRedraw: erase the current chart and create a new one.
      */
-    createChart(forceRedraw: boolean) {
+    createChart() {
         /**
         * select DOM elements, set up scales and axes
         */
@@ -169,7 +171,6 @@ export class BarChartComponent implements OnChanges {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
-
         const update = this.chart.selectAll('.bar')
             .data(inputData);
 
@@ -198,11 +199,4 @@ export class BarChartComponent implements OnChanges {
             .attr('height', d => this.height - this.yScale(d.doc_count));
     }
 
-}
-
-
-type KeyFrequencyPair = {
-    key: string;
-    doc_count: number;
-    key_as_string?: string;
 }

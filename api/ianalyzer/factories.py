@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch
 
 from . import config_fallback as config
 from .models import db
+from .forward_es import es
 
 def elasticsearch(corpus_name, cfg=config):
     '''
@@ -23,17 +24,21 @@ def elasticsearch(corpus_name, cfg=config):
 
 
 
-def flask_app(blueprint, admin_instance, login_manager, cfg=config):
+def flask_app(blueprint, admin_instance, login_manager, csrf, cfg=config):
     '''
-    Create Flask instance, with given configuration and flask_admin and
-    flask_login instances.
+    Create Flask instance, with given configuration and flask_admin, flask_login,
+    and csrf (SeaSurf) instances.
     '''
     app = Flask(__name__)
     app.config.from_object(cfg)
     app.register_blueprint(blueprint)
+    app.register_blueprint(es, url_prefix='/es')
 
     db.init_app(app)
     login_manager.init_app(app)
     admin_instance.init_app(app)
+    csrf.init_app(app)
 
     return app
+
+

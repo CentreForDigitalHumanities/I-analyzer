@@ -125,6 +125,7 @@ class Tml(HTMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            preselected=True,
             prominent_field=True,
             extractor=extract.HTML(tag='div', flatten=True,
                                    attribute_filter={

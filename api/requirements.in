@@ -3,6 +3,7 @@ Flask-SQLAlchemy
 Flask-Admin
 Flask-Login
 Flask-Migrate
+Flask-SeaSurf
 Werkzeug
 WTForms
 mysqlclient
@@ -11,3 +12,7 @@ beautifulsoup4
 lxml
 pytest
 coverage
+requests
+scikit-learn
+numpy
+responses
