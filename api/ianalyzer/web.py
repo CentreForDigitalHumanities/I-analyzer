@@ -8,7 +8,7 @@ import functools
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_file
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -264,6 +264,7 @@ def api_search_history():
         } for query in user.queries]
     })
 
+
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required
 def api_get_wordcloud_data():
@@ -271,3 +272,10 @@ def api_get_wordcloud_data():
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
     return jsonify({'data': word_counts})
+
+
+@blueprint.route('/api/get_source_image/', methods=['GET'])
+@login_required
+def api_get_source_image():
+    filename = '/users/3248526/documents/tptest.jpg'
+    return send_file(filename, mimetype='image/jpg')
