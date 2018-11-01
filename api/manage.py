@@ -84,7 +84,12 @@ def guest(corpora):
     'The input format is YYYY-MM-DD.' +
     'If not set, indexing will start from corpus maximum date.'
 )
-def es(corpus, start, end):
+@click.option(
+    '--delete', '-d',
+    help='Define whether the current index should be deleted' +
+    '(turned off by default)'
+)
+def es(corpus, start, end, delete=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -108,7 +113,7 @@ def es(corpus, start, end):
         )
         raise
 
-    perform_indexing(corpus, this_corpus, start_index, end_index)
+    perform_indexing(corpus, this_corpus, start_index, end_index, delete)
 
 def create_user(name, password = None):
     if User.query.filter_by(username=name).first():

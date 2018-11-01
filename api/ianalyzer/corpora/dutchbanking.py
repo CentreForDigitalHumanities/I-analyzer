@@ -1,3 +1,4 @@
+import csv
 import re
 import os
 import os.path as op
@@ -30,51 +31,90 @@ class DutchBanking(XMLCorpus):
     tag_entry = 'TextBlock'
 
     # New data members
-    filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
+    #filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
+    dutchbank_map = {}
+    with open(config.DUTCHBANK_MAP_FP) as f:
+            reader = csv.DictReader(f)
+            for line in reader:
+                dutchbank_map[line['abbr']] = line['name']
+
     def sources(self, start=min_date, end=max_date):
+         # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            head, tail = op.split(directory)
+            if tail=="Financials":
+                company_type = "Financial"
+            elif tail=="Non-Financials":
+                company_type = "Non-Financial"
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
-                match = self.filename_pattern.match(name)
-                if not match:
-                    logger.warning(self.non_match_msg.format(full_path))
+                information = re.split("_", name)
+                if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
-                bank, year, serial, scan = match.groups()
+                company = information[0]
+                year = information[1]
+                if len(information) == 3:
+                    serial = information[-1]
+                    scan = "00001"
+                else:
+                    serial = information[-2]
+                    scan = information[-1]
+                # if len(information)==5:
+                #     # there are two years supplied
+                #     untilyear = information[2]
+                # elif len(information)==6:
+                #     broken = True
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
-                    'bank': bank,
+                    'company': company,
+                    'company_type': company_type,
                     'year': year,
                     'serial': serial,
                     'scan': scan,
                 }
 
-
     fields = [
         Field(
-            name='bank',
-            display_name='Bank',
-            description='Banking concern to which the report belongs.',
+            name='company',
+            display_name='Company',
+            description='Company to which the report belongs.',
             results_overview=True,
             visualization_type='term_frequency',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
-                description='Search only within these banks.',
-                options=sorted(config.DUTCHBANK_MAP.values()),
+                description='Search only within these companies.',
+                options=sorted(dutchbank_map.values()),
             ),
             extractor=Metadata(
-                key='bank',
-                transform=lambda x: config.DUTCHBANK_MAP[x],
+                key='company',
+                transform=lambda x: dutchbank_map[x],
             ),
             preselected=True
+        ),
+        Field(
+            name='company_type',
+            display_name='Company Type',
+            description='Financial or non-financial company?',
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description=(
+                    'Accept only financial / non-financial companies'
+                ),
+                options=[
+                    'Financial',
+                    'Non-Financial'
+                ]
+            ),
+            extractor=Metadata(key='company_type')
         ),
         Field(
             name='year',
@@ -97,6 +137,7 @@ class DutchBanking(XMLCorpus):
             description='Object number in the dataset.',
             es_mapping={'type': 'integer'},
             extractor=Metadata(key='serial', transform=int),
+            hidden=True,
         ),
         Field(
             name='scan',
@@ -104,13 +145,14 @@ class DutchBanking(XMLCorpus):
             description='Scan number within the financial report. A scan contains one or two pages.',
             es_mapping={'type': 'integer'},
             extractor=Metadata(key='scan', transform=int),
+            hidden=True,
         ),
         Field(
             name='id',
             display_name='ID',
             description='Unique identifier of the text block.',
             extractor=Combined(
-                Metadata(key='bank'),
+                Metadata(key='company'),
                 Metadata(key='year'),
                 XML(attribute='ID'),
                 transform=lambda x: '_'.join(x),
