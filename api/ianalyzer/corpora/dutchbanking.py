@@ -28,24 +28,22 @@ class DutchBanking(XMLCorpus):
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
-    tag_entry = 'TextBlock'
+    tag_entry = 'Page'
 
     # New data members
-    #filename_pattern = re.compile('([A-Za-z]+)_(\d{4})_(\d+) ?_(\d{5})')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
-    dutchbank_map = {}
     with open(config.DUTCHBANK_MAP_FP) as f:
             reader = csv.DictReader(f)
             for line in reader:
-                dutchbank_map[line['abbr']] = line['name']
+                config.DUTCHBANK_MAP[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            head, tail = op.split(directory)
+            _, tail = op.split(directory)
             if tail=="Financials":
                 company_type = "Financial"
             elif tail=="Non-Financials":
@@ -57,6 +55,7 @@ class DutchBanking(XMLCorpus):
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
                 information = re.split("_", name)
+                # financial folders contain multiple xmls, ignore the abby files
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
@@ -67,11 +66,8 @@ class DutchBanking(XMLCorpus):
                 else:
                     serial = information[-2]
                     scan = information[-1]
-                # if len(information)==5:
-                #     # there are two years supplied
-                #     untilyear = information[2]
-                # elif len(information)==6:
-                #     broken = True
+                # to do: what about year reports which are combined (e.g. "1969_1970" in filepath)
+                # or which cover parts of two years ("br" in filepath)?
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
@@ -92,11 +88,11 @@ class DutchBanking(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(dutchbank_map.values()),
+                options=sorted(config.DUTCHBANK_MAP.values()),
             ),
             extractor=Metadata(
                 key='company',
-                transform=lambda x: dutchbank_map[x],
+                transform=lambda x: config.DUTCHBANK_MAP[x],
             ),
             preselected=True
         ),

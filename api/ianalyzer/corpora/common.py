@@ -196,7 +196,6 @@ class Corpus(object):
         `sources` is specified, those source/metadata tuples are used instead.
         '''
         sources = sources or self.sources()
-        print([source] for source in sources)
         return (document
                 for source in sources
                 for document in self.source2dicts(
