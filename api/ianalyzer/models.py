@@ -144,11 +144,14 @@ class User(db.Model):
 
         return str(self.id)
 
-    def has_role(self, role):
-        if self.role.name == role:
-            return True
-        else:
-            return False
+    def has_access(self, corpus_name):
+        for c in self.role.corpora:
+            if c.name == corpus_name:
+                return True
+        return False
+
+    def has_role(self, role):        
+        return self.role.name == role
 
 
 class Query(db.Model):
