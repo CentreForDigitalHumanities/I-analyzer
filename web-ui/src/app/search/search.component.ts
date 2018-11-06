@@ -147,7 +147,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
         this.applyFilter(name, activated)
-        this.checkActiveFilters();
     }
 
     public applyFilter(name: string, activated: boolean) {
@@ -160,7 +159,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public resetFilter(name: string) {
         this.hasModifiedFilters = true;
         this.filterComponents.find(f => f.field.name == name).update(true)
-        this.checkActiveFilters();
         this.search();
     }
 
@@ -183,16 +181,15 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.slumberFilters.forEach(f => this.queryField[f].useAsFilter = true);
             this.slumberFilters = [];
         }
-        this.checkActiveFilters();
         this.search();
     }
 
     public resetAllFilters() {
         this.filterComponents.forEach(f => f.update(true))
         for (var name in this.queryField) {
-            this.queryField[name].useAsFilter = false;
+            this.filterComponents.find(f => f.field.name == name).update(true)
         }
-        this.toggleActiveFilters();
+        this.search();
     }
 
     public checkActiveFilters() {
