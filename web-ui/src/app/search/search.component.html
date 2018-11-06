@@ -71,14 +71,23 @@
             <!-- Filters, on left -->
             <div class="column is-3">
                 <div *ngIf="corpus && showFilters">
-                    <h4 class="title is-4" style="display:inline">Filters</h4>
-                    <span
-                        *ngIf="activeFilters"
-                        style="float:right"
-                        class="button icon filter-icon is-primary is-active is-medium"
-                        (click)="disableAllFilters()"> 
-                        <i class="fa fa-filter"></i>
-                    </span>
+                    <div>
+                        <h4 class="title is-8" style="display:inline">Filters</h4>
+                        <span
+                            *ngIf="activeFilters"
+                            style="float:right"
+                            class="button icon is-2 filter-icon is-primary is-active is-medium"
+                            (click)="disableAllFilters()"> 
+                            <i class="fa fa-filter"></i>
+                        </span>
+                        <span
+                            *ngIf="activeFilters"
+                            style="float:right;margin-right:2px"
+                            class="button icon is-2 filter-icon is-primary is-active is-medium"
+                            (click)="resetAllFilters()"> 
+                            <i class="fa fa-repeat"></i>
+                        </span>
+                    </div>
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
                             <div class="field has-addons">

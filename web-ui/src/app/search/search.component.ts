@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -9,6 +9,8 @@ import * as _ from "lodash";
 import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 import { Fieldset } from 'primeng/primeng';
+import { SearchFilterComponent } from './search-filter.component';
+import { tickStep } from 'd3';
 
 @Component({
     selector: 'ia-search',
@@ -19,6 +21,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
+
+    @ViewChildren(SearchFilterComponent) filterComponents;
 
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
@@ -95,6 +99,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+        this.checkActiveFilters();
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
@@ -149,7 +154,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public resetFilter(name: string) {
         this.hasModifiedFilters = true;
-        let field = this.queryField[name];
+        this.filterComponents.find(f => f.field.name == name).update(true)
+        // let field = this.queryField[name];
+        // this.toggleFilter(name)
+        this.checkActiveFilters();
         this.search();
     }
 
@@ -159,6 +167,12 @@ export class SearchComponent implements OnInit, OnDestroy {
             let field = this.queryField[name];
             field.useAsFilter = false;
         }
+        this.checkActiveFilters();
+        this.search();
+    }
+
+    public resetAllFilters() {
+        this.filterComponents.forEach(f => f.update(true))
         this.checkActiveFilters();
         this.search();
     }
