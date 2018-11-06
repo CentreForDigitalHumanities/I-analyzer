@@ -5,7 +5,12 @@ import json
 import logging
 logger = logging.getLogger(__name__)
 import functools
+import logging
+logging.basicConfig(format='%(message)s')
+from os.path import splitext
 from datetime import datetime, timedelta
+from PIL import Image
+from io import BytesIO
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, stream_with_context, send_file
@@ -237,8 +242,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    #models.db.session.add(query)
-    #models.db.session.commit()
+    # models.db.session.add(query)
+    # models.db.session.commit()
 
     return jsonify({
         'id': query.id,
@@ -277,8 +282,28 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_source_image/', methods=['GET'])
+@blueprint.route('/api/get_source_image/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_source_image():
-    filename = '/users/3248526/documents/tptest.jpg'
-    return send_file(filename, mimetype='image/jpg')
+def api_get_source_image(image_path):
+    # toplevel directory for images of corpus, this should be decided by corpus
+    base_dir = '/Users/3248526/corpora/'
+
+    # extract file extension
+    name, extension = splitext(image_path)
+    full_path = base_dir + image_path
+
+    # jpg images can be directly served
+    if extension in ['.jpg', '.jpeg']:
+        return send_file(full_path, mimetype='image/jpg')
+
+    # TIF images need conversion to jpg encode
+    elif extension in ['.tif', '.tiff']:
+        img = Image.open(full_path)
+        bytestring = BytesIO()
+        img.save(bytestring, 'JPEG', quality=70)
+        return send_file(
+            bytestring,
+            mimetype='image/jpeg',
+            as_attachment=True,
+            attachment_filename='%s.jpg' % name
+        )
