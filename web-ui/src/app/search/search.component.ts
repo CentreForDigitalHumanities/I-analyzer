@@ -155,8 +155,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public resetFilter(name: string) {
         this.hasModifiedFilters = true;
         this.filterComponents.find(f => f.field.name == name).update(true)
-        // let field = this.queryField[name];
-        // this.toggleFilter(name)
         this.checkActiveFilters();
         this.search();
     }
