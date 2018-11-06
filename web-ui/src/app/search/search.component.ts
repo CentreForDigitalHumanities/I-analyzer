@@ -186,9 +186,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public resetAllFilters() {
         this.filterComponents.forEach(f => f.update(true))
-        for (var name in this.queryField) {
-            this.filterComponents.find(f => f.field.name == name).update(true)
-        }
         this.search();
     }
 
