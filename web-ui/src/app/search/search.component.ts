@@ -57,6 +57,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         [name: string]: QueryField
     };
     public activeFilters: boolean = false;
+    public slumberFilters: string[] = [];
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
@@ -99,7 +100,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        this.checkActiveFilters();
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
@@ -125,6 +125,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             });
     }
 
+    ngDoCheck() {
+        this.checkActiveFilters();
+    }
+
     ngOnDestroy() {
         this.searchService.clearESScroll(this.corpus, this.results);
     }
@@ -134,6 +138,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
+
 
     /**
      * turn a filter on/off via the filter icon
@@ -159,11 +164,24 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.search();
     }
 
-    public disableAllFilters() {
+    public toggleActiveFilters() {
         this.hasModifiedFilters = true;
-        for (var name in this.queryField) {
-            let field = this.queryField[name];
-            field.useAsFilter = false;
+        //if any filters are active, disable them and put them in 'slumber'
+        if (this.activeFilters) {
+            for (var name in this.queryField) {
+                let field = this.queryField[name];
+                if (field.useAsFilter) {
+                    field.useAsFilter = false;
+                    if (!this.slumberFilters.some(f => f === name)) {
+                        this.slumberFilters.push(name);
+                    }
+                }
+            }
+        }
+        //if no filters are active, slumbered filters are activated
+        else {
+            this.slumberFilters.forEach(f => this.queryField[f].useAsFilter = true);
+            this.slumberFilters = [];
         }
         this.checkActiveFilters();
         this.search();
@@ -171,8 +189,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public resetAllFilters() {
         this.filterComponents.forEach(f => f.update(true))
-        this.checkActiveFilters();
-        this.search();
+        for (var name in this.queryField) {
+            this.queryField[name].useAsFilter = false;
+        }
+        this.toggleActiveFilters();
     }
 
     public checkActiveFilters() {

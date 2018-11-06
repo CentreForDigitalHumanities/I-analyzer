@@ -74,10 +74,11 @@
                     <div>
                         <h4 class="title is-8" style="display:inline">Filters</h4>
                         <span
-                            *ngIf="activeFilters"
+                            *ngIf="(activeFilters || slumberFilters.length > 0)"
                             style="float:right"
-                            class="button icon is-2 filter-icon is-primary is-active is-medium"
-                            (click)="disableAllFilters()"> 
+                            class="button icon is-2 filter-icon is-inverted is-medium"
+                            [ngClass]="{'is-primary': activeFilters}"
+                            (click)="toggleActiveFilters()"> 
                             <i class="fa fa-filter"></i>
                         </span>
                         <span
