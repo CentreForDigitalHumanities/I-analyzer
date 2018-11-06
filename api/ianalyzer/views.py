@@ -11,13 +11,13 @@ from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 from flask import Blueprint
+from flask_sqlalchemy import SQLAlchemy
 
 from . import config
 from . import forms
 from . import models
 from . import corpora
 from . import security
-
 
 
 class ModelView(admin_sqla.ModelView):
@@ -45,10 +45,23 @@ class RoleView(ModelView):
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
-
+    
 
 class CorpusViewAdmin(ModelView):
-    pass
+    # add created corpus to admin role
+    def after_model_change(self, form, model, is_created):
+        admin = models.Role.query.filter_by(name='admin').first()
+        exists=False
+
+        for corpus in admin.corpora:
+            if corpus == model:
+                exists=True
+                break
+
+        if not exists:
+            admin.corpora.append(model)
+            models.db.session.commit()
+
 
 
 class UserView(ModelView):

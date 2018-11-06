@@ -11,7 +11,7 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
-from flask_mail import Mail, Message   
+from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -135,76 +135,81 @@ def api_register():
     if not request.json:
         abort(400)
 
-    username=security.generate_username(request.json['lastname'])
+    username = security.generate_username(request.json['lastname'])
     token = security.generate_confirmation_token(request.json['email'])
 
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     mail = Mail(app)
-    msg = Message(app.config.get('MAIL_REGISTRATION_SUBJECT_LINE'), 
-                    sender = app.config.get('MAIL_FROM_ADRESS'), 
-                    recipients = [ request.json['email'] ])
+    msg = Message(app.config.get('MAIL_REGISTRATION_SUBJECT_LINE'),
+                  sender=app.config.get('MAIL_FROM_ADRESS'),
+                  recipients=[request.json['email']])
 
-    msg.html=render_template('mail/new_user.html', 
-                firstname=request.json['firstname'], 
-                lastname=username,
-                confirmation_link= app.config.get('BASE_URL')+'/api/registration_confirmation/'+token
-    )
+    msg.html = render_template('mail/new_user.html',
+                               firstname=request.json['firstname'],
+                               lastname=username,
+                               confirmation_link=app.config.get(
+                                   'BASE_URL')+'/api/registration_confirmation/'+token
+                               )
 
-    pw_hash=generate_password_hash(request.json['password'])
+    # assign basic role to new user
+    pw_hash = generate_password_hash(request.json['password'])
+    role_name = 'basic'
+    role = models.Role.query.filter_by(name=role_name).first()
+
+    if not role:
+        role = models.Role(role_name, 'basic role')
+        db.session.add(role)
 
     new_user = models.User(
         username=username,
         email=request.json['email'],
         active=False,
         password=pw_hash,
-        #Todo: add role for standard user, otherwise no corpus is available
-        # First needed a redesign of the roles functionality. role needs to be reworked to a group with privileges on certain corpora
-        )
-    
+        role_id=role.id,
+    )
+
     db = SQLAlchemy()
     db.session.add(new_user)
-    errormessage=''
-    success=False
+    errormessage = ''
+    success = False
 
     # Check if email already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
     if security.email_unique(request.json['email']):
-        mail.send(msg) 
+        mail.send(msg)
         db.session.commit()
-        success=True
+        success = True
 
-    else:    
-        errormessage='The email adress you entered already exists. Please enter a different email adress.'
+    else:
+        errormessage = 'The email adress you entered already exists. Please enter a different email adress.'
 
-    response=jsonify({
-            'success': success,
-            'firstname':request.json['firstname'], 
-            'lastname':request.json['lastname'],
-            'email':request.json['email'],
-            'errormessage':errormessage,
-            })
+    response = jsonify({
+        'success': success,
+        'firstname': request.json['firstname'],
+        'lastname': request.json['lastname'],
+        'email': request.json['email'],
+        'errormessage': errormessage,
+    })
 
     return response
-    
 
-#endpoint for the confirmation of user if link in email is clicked.
+
+# endpoint for the confirmation of user if link in email is clicked.
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
 def api_register_confirmation(token):
-    
 
-    expiration=60*60*72 #method does not return email after this limit
+    expiration = 60*60*72  # method does not return email after this limit
     try:
         email = security.confirm_token(token, expiration)
     except:
         flash('The confirmation link is invalid or has expired.', 'danger')
-    
+
     user = models.User.query.filter_by(email=email).first_or_404()
     user.active = True
     models.db.session.add(user)
     models.db.session.commit()
-   
-    return redirect(config.BASE_URL+'/login?isActivated=true')
 
+    return redirect(config.BASE_URL+'/login?isActivated=true')
 
 
 @blueprint.route('/api/es_config', methods=['GET'])
