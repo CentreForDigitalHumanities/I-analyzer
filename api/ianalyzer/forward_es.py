@@ -37,9 +37,9 @@ def get_es_host_or_404(server_name):
     return host
 
 
-def require_role(corpus_name):
-    """ Abort if the current user is not authorized for corpus_name. """
-    if not current_user.has_role(corpus_name):
+def require_access(corpus_name):
+    """ Abort if the current user is not authorized for corpus_name. """    
+    if not current_user.has_access(corpus_name):
         abort(404)
 
 
@@ -93,7 +93,7 @@ def forward_scroll(server_name):
 @login_required
 def forward_search(server_name, corpus_name, document_type):
     """ Forward search requests to ES, if permitted. """
-    require_role(corpus_name)
+    require_access(corpus_name)
     host = get_es_host_or_404(server_name)
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
