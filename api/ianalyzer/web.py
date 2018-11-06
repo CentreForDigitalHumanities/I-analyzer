@@ -2,13 +2,14 @@
 Present the data to the user through a web interface.
 '''
 import json
+import base64
 import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -151,6 +152,15 @@ def api_corpus_list():
         corpora.DEFINITIONS.keys()
     ))
     return response
+
+
+@blueprint.route('/api/corpusimage/<image_name>', methods=['GET'])
+@login_required
+def api_corpus_image(image_name):
+    '''
+    Return the image for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
 
 @blueprint.route('/api/login', methods=['POST'])
