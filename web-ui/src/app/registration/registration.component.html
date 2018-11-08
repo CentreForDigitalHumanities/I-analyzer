@@ -14,7 +14,7 @@
                     </span>
                     </p>
                     <div class="notification is-warning" *ngIf="firstname.errors?.required  && (firstname.dirty || firstname.touched)">
-                    first name is required.
+                    First Name is required.
                     </div>
                 </div>
 
@@ -27,10 +27,10 @@
                     </span>
                     </p>
                     <div class="notification is-warning" *ngIf="lastname.errors?.required && (lastname.dirty || lastname.touched)">
-                    last name is required.
+                    Last Name is required.
                     </div>
                     <div *ngIf="lastname.errors?.minlength">
-                    last name must be at least 4 characters long.
+                    Last Name must be at least 4 characters long.
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                     </span>
                     </p>
                     <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
-                        email is required.
+                        Email is required.
                     </div>
                     <div class="notification is-warning" class="notification is-warning" *ngIf = "email.errors?.pattern && email.touched">
                         Please enter a valid email address.
@@ -59,7 +59,7 @@
                         </span>
                         </p>
                         <div class="notification is-warning" *ngIf="emailconfirm.errors?.required && (emailconfirm.dirty || emailconfirm.touched)">
-                            email confirmation is required.
+                            Email confirmation is required.
                         </div>
                     </div>
 
@@ -81,10 +81,10 @@
                         </span>
                         </p>
                         <div class="notification is-warning" *ngIf="password.errors?.required && (password.dirty || password.touched)">
-                            password is required.
+                            Password is required.
                         </div>
                         <div class="notification is-warning" *ngIf="password.errors?.minlength">
-                            password must be at least 6 characters long.
+                            Password must be at least 6 characters long.
                         </div>
                     </div>
 
@@ -97,7 +97,7 @@
                             </span>
                             </p>
                             <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">
-                                password confirmation is required.
+                                Password confirmation is required.
                             </div>
 
                             <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)" > 
@@ -109,7 +109,7 @@
                         <label>
                             <input type="checkbox" name="agree" ngModel #agree= "ngModel" required > I have read and I agree with the
                             <a (click)="toggleModal()">
-                                privacy statement
+                                Privacy statement
                             </a>
                           </label>
                     </div>

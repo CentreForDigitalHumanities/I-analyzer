@@ -24,7 +24,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   private isModalActive: boolean = false;
 
   constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
-    this.title.setTitle('I-Analyzer');
+    //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
     UserService.loginActivated = true;
 
   }
@@ -41,11 +41,10 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     this.isModalActive = !this.isModalActive;
   }
 
-
   register(signupForm: NgForm) {
 
     this.userService.register(signupForm.value.firstname, signupForm.value.lastname, signupForm.value.email, signupForm.value.password).then(result => {
-
+      
       if (!result) { 
         this.success = false;
         this.error = true;
@@ -59,9 +58,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           this.firstname_result = result.firstname;
           this.lastname_result = result.lastname;
           this.email_result = result.email;
-        }
-        else {
-        
         }
       }
     });

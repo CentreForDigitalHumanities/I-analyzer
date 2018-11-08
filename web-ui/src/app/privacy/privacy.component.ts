@@ -9,6 +9,7 @@ import { UserService } from '../services/user.service';
 export class PrivacyComponent implements OnInit {
 
   constructor() { 
+    //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
     UserService.loginActivated = true;
 
   }

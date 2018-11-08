@@ -10,8 +10,6 @@ import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
-from flask import Blueprint
-from flask_sqlalchemy import SQLAlchemy
 
 from . import config
 from . import forms

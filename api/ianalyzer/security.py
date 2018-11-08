@@ -50,23 +50,24 @@ def generate_username(lastname):
 
     if user is None: # username does not exist, can be used rightaway 
         return username
-
     else:
         for x in range(1,99):
             username_extended=username+str(x)
-            #print(username_extended)
             user = models.User.query.filter_by(username=username_extended).first() 
             if user is None: 
-                break   
+                break
         return username_extended
-    
+
+
 # check if emailadres already exists for registration
-def email_unique(email):
+def is_unique_email(email):
     user = models.User.query.filter_by(email=email).first()
+    print(user)
     if user is None: # email does not exist, can be used for registration
         return True
     else:
         return False
+
 
 # userregistration confirmation, when clicked on link in confirmation email
 def generate_confirmation_token(email):

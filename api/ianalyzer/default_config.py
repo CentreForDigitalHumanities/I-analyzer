@@ -127,24 +127,13 @@ DUTCHBANK_MAP = {
 
 JEWISH_INSCRIPTIONS_IMAGE = '/static/images/jewish_inscriptions.jpg'
 
-#user registration confimation email
-MAIL_SERVER = 'localhost' #server has its own smtp server
-MAIL_PORT = 25 
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
 MAIL_USE_TLS = False
 MAIL_USE_SSL = False
 MAIL_USERNAME = ''
-MAIL_PASSWORD =  ''
-MAIL_FROM_ADRESS= '' 
+MAIL_PASSWORD = ''
+MAIL_FROM_ADRESS='r.g.v.loeber@uu.nl'
 MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
-BASE_URL=''
-
-#for testing user registration confirmation email:
-# MAIL_SERVER = 'solismail.uu.nl'
-# MAIL_PORT = 587
-# MAIL_USE_TLS = True
-# MAIL_USE_SSL = False
-# MAIL_USERNAME = 'soliscom\[yoursolisusername]'
-# MAIL_PASSWORD = '[your solis pw]'
-# MAIL_FROM_ADRESS='[your solis mail adress]'
-# MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
-# BASE_URL='http://localhost:4200'
+BASE_URL='http://localhost:4200'
+LOGO_LINK='http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'

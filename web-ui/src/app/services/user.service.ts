@@ -135,16 +135,12 @@ export class UserService implements OnDestroy {
 
         let registerPromise = this.apiService.register({ firstname, lastname, email, password }).then(result => {     
                     
-            return result; 
-        },
-        reason => {
-            console.log(reason);
+            return result;
         }
-    
+        
     );
         return registerPromise;
     }
-
 
 
     public loginAsGuest() {

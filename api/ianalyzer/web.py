@@ -15,7 +15,6 @@ from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
 from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
-import string
 from random import choice
 from flask_seasurf import SeaSurf
 
@@ -51,6 +50,7 @@ admin_instance.add_view(views.QueryView(
 
 login_manager = LoginManager()
 csrf = SeaSurf()
+mail = Mail()
 
 
 def corpus_required(method):
@@ -132,56 +132,54 @@ def init():
 # endpoint for registration new user via signup form
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
-    if not request.json:
-        abort(400)
-
-    username = security.generate_username(request.json['lastname'])
-    token = security.generate_confirmation_token(request.json['email'])
-
-    app = Flask(__name__)
-    app.config.from_pyfile('config.py')
-    mail = Mail(app)
-    msg = Message(app.config.get('MAIL_REGISTRATION_SUBJECT_LINE'),
-                  sender=app.config.get('MAIL_FROM_ADRESS'),
-                  recipients=[request.json['email']])
-
-    msg.html = render_template('mail/new_user.html',
-                               firstname=request.json['firstname'],
-                               lastname=username,
-                               confirmation_link=app.config.get(
-                                   'BASE_URL')+'/api/registration_confirmation/'+token
-                               )
-
-    # assign basic role to new user
-    pw_hash = generate_password_hash(request.json['password'])
-    role_name = 'basic'
-    role = models.Role.query.filter_by(name=role_name).first()
-
-    if not role:
-        role = models.Role(role_name, 'basic role')
-        db.session.add(role)
-
-    new_user = models.User(
-        username=username,
-        email=request.json['email'],
-        active=False,
-        password=pw_hash,
-        role_id=role.id,
-    )
-
-    db = SQLAlchemy()
-    db.session.add(new_user)
     errormessage = ''
     success = False
+    role_name = 'basic'
 
+    if not request.json:
+        abort(400)
+    
+    # find role and role id
+    role = models.Role.query.filter_by(name=role_name).first() 
+   
     # Check if email already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
-    if security.email_unique(request.json['email']):
-        mail.send(msg)
-        db.session.commit()
-        success = True
-
+    if not security.is_unique_email(request.json['email']) :
+        errormessage = 'The email address you entered already exists. Please enter a different email address.'
     else:
-        errormessage = 'The email adress you entered already exists. Please enter a different email adress.'
+        username = security.generate_username(request.json['lastname'])
+        token = security.generate_confirmation_token(request.json['email'])
+       
+        msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
+                    sender=config.MAIL_FROM_ADRESS,
+                    recipients=[request.json['email']])
+
+        msg.html = render_template('mail/new_user.html',
+                                firstname=request.json['firstname'],
+                                lastname=username,
+                                confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                                url_i_analyzer=config.BASE_URL,
+                                logo_link=config.LOGO_LINK
+                                )
+
+        pw_hash = generate_password_hash(request.json['password'])
+
+        new_user = models.User(
+            username=username,
+            email=request.json['email'],
+            active=False,
+            password=pw_hash,
+            role_id=role.id,
+        )    
+    
+        try:
+            mail.send(msg)
+            models.db.session.add(new_user)
+            models.db.session.commit()
+            success = True
+
+        except:
+            errormessage='mail function did not work, the email could not be send. Please contact Digital Humanities Lab'
+            success = False
 
     response = jsonify({
         'success': success,

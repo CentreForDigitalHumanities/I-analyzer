@@ -22,19 +22,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
         this.title.setTitle('I-Analyzer');
-        //erbij gezet Robert
+        //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
         UserService.loginActivated = true;
-
     }
 
     ngOnInit() {
         // get return url from route parameters or default to '/'
         this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
-        // this.activatedRoute.params.subscribe( params => {
-        //     this.isActivated = params['activated'] === 'true';
-            
-        //     console.log(this.isActivated)
-        // });
         this.activatedRoute.queryParams.subscribe( params => {
             this.isActivated = params['isActivated'] === 'true';
         });
