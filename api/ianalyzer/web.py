@@ -166,21 +166,20 @@ def api_login():
     else:
         security.login_user(user)
 
-        roles = [{
+        corpora = [{
             'name': corpus.name,
             'description': corpus.description
         } for corpus in user.role.corpora]
-
-        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
-        if user.role.name == "admin":
-            roles.append({'name': 'admin', 'description': 'admin role'})
-
-        print(roles)
+        role = {
+            'name': user.role.name, 
+            'description': user.role.description, 
+            'corpora': corpora
+        }
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': roles,
+            'role': role,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
