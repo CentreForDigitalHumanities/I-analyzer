@@ -56,8 +56,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     public queryField: {
         [name: string]: QueryField
     };
-    public activeFilters: boolean = false;
-    public slumberFilters: string[] = [];
+
+    /**
+     * Two sets to hold indices of filters that are active or slumbered (recently deactivated)
+     */
+    public activeFilterSet: Set<string> = new Set(null);
+    public slumberedFilterSet: Set<string> = new Set(null);
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
@@ -125,10 +129,6 @@ export class SearchComponent implements OnInit, OnDestroy {
             });
     }
 
-    ngDoCheck() {
-        this.checkActiveFilters();
-    }
-
     ngOnDestroy() {
         this.searchService.clearESScroll(this.corpus, this.results);
     }
@@ -150,54 +150,61 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public applyFilter(name: string, activated: boolean) {
-        this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = activated;
+        if (activated) {
+            this.activeFilterSet.add(name);
+        }
+        else {
+            this.activeFilterSet.delete(name);
+        }
         this.search();
     }
 
     public resetFilter(name: string) {
-        this.hasModifiedFilters = true;
-        this.filterComponents.find(f => f.field.name == name).update(true)
+        // reset the filter to its default data
+        let filter = this.filterComponents.find(f => f.field.name === name)
+        filter.update(true);
+
+        // turn the filter off
+        this.queryField[name].useAsFilter = false;
+        this.activeFilterSet.delete(name);
         this.search();
     }
 
     public toggleActiveFilters() {
-        this.hasModifiedFilters = true;
         //if any filters are active, disable them and put them in 'slumber'
-        if (this.activeFilters) {
-            for (var name in this.queryField) {
-                let field = this.queryField[name];
-                if (field.useAsFilter) {
-                    field.useAsFilter = false;
-                    if (!this.slumberFilters.some(f => f === name)) {
-                        this.slumberFilters.push(name);
-                    }
-                }
-            }
+        if (this.activeFilterSet.size > 0) {
+            this.activeFilterSet.forEach(f => {
+                this.queryField[f].useAsFilter = false;
+                this.slumberedFilterSet.add(f);
+                this.activeFilterSet.delete(f);
+            })
         }
-        //if no filters are active, slumbered filters are activated
+        // if no filters are active, activate any slumbered filters
         else {
-            this.slumberFilters.forEach(f => this.queryField[f].useAsFilter = true);
-            this.slumberFilters = [];
+            this.slumberedFilterSet.forEach(f => {
+                this.queryField[f].useAsFilter = true;
+                this.activeFilterSet.add(f)
+                this.slumberedFilterSet.delete(f);
+            })
         }
         this.search();
     }
 
     public resetAllFilters() {
-        this.filterComponents.forEach(f => f.update(true))
-        this.search();
-    }
+        // reset all filters to their default data
+        this.filterComponents.forEach(f => {
+            f.update(true)
+        });
 
-    public checkActiveFilters() {
-        this.activeFilters = false;
-        for (var name in this.queryField) {
-            let active = this.queryField[name].useAsFilter;
-            if (active) {
-                this.activeFilters = true;
-                break;
-            }
-        }
+        // deactivate all filters, do not slumber them
+        let filters = Object.values(this.queryField);
+        _.mapValues(filters, f => { f.useAsFilter = false });
+
+        this.activeFilterSet = new Set(null);
+        this.slumberedFilterSet = new Set(null);
+        this.search();
     }
 
     public changeSorting(event: SortEvent) {

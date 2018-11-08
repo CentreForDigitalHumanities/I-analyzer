@@ -71,19 +71,19 @@
             <!-- Filters, on left -->
             <div class="column is-3">
                 <div *ngIf="corpus && showFilters">
-                    <div>
+                    <div style="padding-right: 20px">
                         <h4 class="title is-8" style="display:inline">Filters</h4>
                         <span
-                            *ngIf="(activeFilters || slumberFilters.length > 0)"
+                            *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)"
                             style="float:right"
-                            class="button icon is-2 filter-icon is-inverted is-medium"
-                            [ngClass]="{'is-primary': activeFilters}"
+                            class="button icon is-2 filter-icon is-inverted"
+                            [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}"
                             (click)="toggleActiveFilters()"> 
                             <i class="fa fa-filter"></i>
                         </span>
                         <span
-                            *ngIf="activeFilters"
-                            style="float:right;margin-right:2px"
+                            *ngIf="activeFilterSet.size > 0"
+                            style="float:right; margin-right:2px"
                             class="button icon is-2 filter-icon is-primary is-active is-medium"
                             (click)="resetAllFilters()"> 
                             <i class="fa fa-repeat"></i>
