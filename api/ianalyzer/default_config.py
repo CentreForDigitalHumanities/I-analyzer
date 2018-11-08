@@ -50,6 +50,10 @@ CORPUS_SERVER_NAMES = {
     'times': 'default',
 }
 
+# The folder (relative to 'api/ianalyzer') where the corpus images live.
+# Note that the name of each corpus image will need to be configuration separately.
+CORPUS_IMAGE_ROOT = 'corpora/images'
+
 # Index configurations
 DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
 DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
@@ -58,6 +62,7 @@ DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_DATA = '/Users/3248526/corpora/kranten_pd_voorbeeld'
 DUTCHNEWSPAPERS_MIN_DATE = datetime(year=1600, month=1, day=1)
 DUTCHNEWSPAPERS_MAX_DATE = datetime(year=2018, month=12, day=31)
+DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 
 TML_TITLE = "Thesaurus Musicarum Latinarum"
 TML_DESCRIPTION = "Description about this corpus"
@@ -66,6 +71,7 @@ TML_ES_DOCTYPE = 'article'
 TML_DATA = '/Users/3248526/corpora/tml'
 TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
+TML_IMAGE = 'times.jpg'
 
 TIMES_TITLE = "Times"
 TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
@@ -74,6 +80,7 @@ TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
 TIMES_MIN_DATE = datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
+TIMES_IMAGE = 'times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
@@ -82,6 +89,7 @@ DUTCHBANK_ES_DOCTYPE = 'article'
 DUTCHBANK_DATA = '/mnt/dutchbank'
 DUTCHBANK_MIN_DATE = datetime(year=1785, month=1, day=1)
 DUTCHBANK_MAX_DATE = datetime(year=2010, month=12, day=31)
+DUTCHBANK_IMAGE = 'dutchbanking.jpg'
 DUTCHBANK_MAP = {
     'AA':       'ABN AMRO',
     'AB':       'Amsterdamsche Bank',
