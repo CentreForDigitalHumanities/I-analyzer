@@ -80,13 +80,17 @@
                                 *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)"
                                 class="button icon filter-icon is-inverted"
                                 [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}"
-                                (click)="toggleActiveFilters()"> 
+                                (click)="toggleActiveFilters()"
+                                iaBalloon="{{(activeFilterSet.size>0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                                iaBalloonPosition="down-left"> 
                                 <i class="fa fa-filter"></i>
                             </span>
                             <span
                                 *ngIf="activeFilterSet.size > 0"
                                 class="button icon filter-icon is-primary is-active is-medium"
-                                (click)="resetAllFilters()"> 
+                                (click)="resetAllFilters()"
+                                iaBalloon="Reset all filters to their default values"
+                                iaBalloonPosition="down-left"> 
                                 <i class="fa fa-repeat"></i>
                             </span>
                         </p>
@@ -103,13 +107,16 @@
                                         class="button icon filter-icon is-inverted" 
                                         [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
                                         (click)="resetFilter(field.name)"
-                                        >
+                                        iaBalloon="Reset this filter to its default values"
+                                        iaBalloonPosition="down-left">
                                         <i class="fa fa-repeat"></i>
                                     </span>
                                     <span 
                                         class="button icon filter-icon is-inverted" 
                                         [ngClass]="{'is-primary is-medium': queryField[field.name].useAsFilter}"
-                                        (click)="toggleFilter(field.name)">
+                                        (click)="toggleFilter(field.name)"
+                                        iaBalloon="{{queryField[field.name].useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
+                                        iaBalloonPosition="down-left">
                                         <i class="fa fa-filter"></i>
                                     </span>
                                 </p>
