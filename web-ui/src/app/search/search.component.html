@@ -71,23 +71,25 @@
             <!-- Filters, on left -->
             <div class="column is-3">
                 <div *ngIf="corpus && showFilters">
-                    <div style="padding-right: 20px">
-                        <h4 class="title is-8" style="display:inline">Filters</h4>
-                        <span
-                            *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)"
-                            style="float:right"
-                            class="button icon is-2 filter-icon is-inverted"
-                            [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}"
-                            (click)="toggleActiveFilters()"> 
-                            <i class="fa fa-filter"></i>
-                        </span>
-                        <span
-                            *ngIf="activeFilterSet.size > 0"
-                            style="float:right; margin-right:2px"
-                            class="button icon is-2 filter-icon is-primary is-active is-medium"
-                            (click)="resetAllFilters()"> 
-                            <i class="fa fa-repeat"></i>
-                        </span>
+                    <div class="field has-addons"> 
+                        <div class="control is-expanded">
+                            <h4 class="title">Filters</h4>
+                        </div>
+                        <p class="control" style="float:right">
+                            <span
+                                *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)"
+                                class="button icon filter-icon is-inverted"
+                                [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}"
+                                (click)="toggleActiveFilters()"> 
+                                <i class="fa fa-filter"></i>
+                            </span>
+                            <span
+                                *ngIf="activeFilterSet.size > 0"
+                                class="button icon filter-icon is-primary is-active is-medium"
+                                (click)="resetAllFilters()"> 
+                                <i class="fa fa-repeat"></i>
+                            </span>
+                        </p>
                     </div>
                     <ng-container *ngFor="let field of corpus.fields">
                         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
