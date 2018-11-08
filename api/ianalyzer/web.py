@@ -28,19 +28,26 @@ from . import streaming
 from . import corpora
 from . import analyze
 
+from flask_admin.base import MenuLink
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(
-    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
-    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
+
+admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
+
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
+
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
+
+admin_instance.add_view(views.CorpusViewAdmin(
+    models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
+
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
+
 login_manager = LoginManager()
 csrf = SeaSurf()
 csrf.exempt_urls('/es',)
@@ -158,18 +165,26 @@ def api_login():
     username = request.json['username']
     password = request.json['password']
     user = security.validate_user(username, password)
+
     if user is None:
         response = jsonify({'success': False})
     else:
         security.login_user(user)
+
+        corpora = [{
+            'name': corpus.name,
+            'description': corpus.description
+        } for corpus in user.role.corpora]
+        role = {
+            'name': user.role.name, 
+            'description': user.role.description, 
+            'corpora': corpora
+        }
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': [{
-                'name': role.name,
-                'description': role.description
-            } for role in user.roles],
+            'role': role,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
