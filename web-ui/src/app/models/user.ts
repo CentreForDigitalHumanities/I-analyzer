@@ -8,11 +8,11 @@ export class User {
         public downloadLimit: number = 0, public queries: Query[]) {
     }
 
-    public canAccessCorpus(corpus): boolean {
+    public canAccessCorpus(corpus: string): boolean {
         return this.role.corpora.findIndex(x => x.name == corpus)>=0;
     }
 
-    public hasRole(role): boolean {
+    public hasRole(role: string): boolean {
         return this.role.name == role;
     }
 }

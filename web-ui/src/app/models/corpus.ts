@@ -56,12 +56,6 @@ export type QueryField = CorpusField & {
     visible: boolean
 };
 
-/** This model serves to query user access */
-export type AccessibleCorpus = {
-    name: string,
-    description: string
-}
-
 export type SearchFilter = BooleanFilter | MultipleChoiceFilter | RangeFilter | DateFilter;
 
 type BooleanFilter = {
