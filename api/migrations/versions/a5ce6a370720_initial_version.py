@@ -16,6 +16,7 @@ branch_labels = None
 depends_on = None
 
 
+
 def upgrade():
     op.create_table('role',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -50,8 +51,8 @@ def upgrade():
     op.create_table('roles_users',
         sa.Column('user_id', sa.Integer(), nullable=True),
         sa.Column('role_id', sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['role_id'], ['role.id']),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id']),
     )
 
 

@@ -23,19 +23,26 @@ from . import streaming
 from . import corpora
 from . import analyze
 
+from flask_admin.base import MenuLink
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(
-    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
-    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
+
+admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
+
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
+
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
+
+admin_instance.add_view(views.CorpusViewAdmin(
+    models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
+
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
+
 login_manager = LoginManager()
 csrf = SeaSurf()
 csrf.exempt_urls('/es',)
@@ -153,18 +160,27 @@ def api_login():
     username = request.json['username']
     password = request.json['password']
     user = security.validate_user(username, password)
+
     if user is None:
         response = jsonify({'success': False})
     else:
         security.login_user(user)
+
+        roles = [{
+            'name': corpus.name,
+            'description': corpus.description
+        } for corpus in user.role.corpora]
+
+        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
+        if user.role.name == "admin":
+            roles.append({'name': 'admin', 'description': 'admin role'})
+
+        print(roles)
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': [{
-                'name': role.name,
-                'description': role.description
-            } for role in user.roles],
+            'roles': roles,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
@@ -222,11 +238,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    if 'id' in request.json:
-        query = models.Query.query.filter_by(id=request.json['id']).first()
-    else:
-        query = models.Query(
-            query=query_json, corpus_name=corpus_name, user=current_user)
+    # if 'id' in request.json:
+    #     query = models.Query.query.filter_by(id=request.json['id']).first()
+    # else:
+    query = models.Query(
+        query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -266,6 +282,7 @@ def api_search_history():
             'transferred': query.transferred
         } for query in user.queries]
     })
+
 
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required

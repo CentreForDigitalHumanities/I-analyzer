@@ -74,6 +74,7 @@ class DutchBanking(XMLCorpus):
                 key='bank',
                 transform=lambda x: config.DUTCHBANK_MAP[x],
             ),
+            preselected=True
         ),
         Field(
             name='year',
@@ -88,6 +89,7 @@ class DutchBanking(XMLCorpus):
                 upper=max_date.year,
             ),
             extractor=Metadata(key='year', transform=int),
+            preselected=True
         ),
         Field(
             name='objectno',
@@ -127,6 +129,7 @@ class DutchBanking(XMLCorpus):
                 multiple=True,
                 transform=lambda x: ' '.join(x),
             ),
+            preselected=True
         ),
         Field(
             name='hpos',
