@@ -43,23 +43,22 @@ class RoleView(ModelView):
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
-    
+
 
 class CorpusViewAdmin(ModelView):
     # add created corpus to admin role
     def after_model_change(self, form, model, is_created):
         admin = models.Role.query.filter_by(name='admin').first()
-        exists=False
+        exists = False
 
         for corpus in admin.corpora:
             if corpus == model:
-                exists=True
+                exists = True
                 break
 
         if not exists:
             admin.corpora.append(model)
             models.db.session.commit()
-
 
 
 class UserView(ModelView):

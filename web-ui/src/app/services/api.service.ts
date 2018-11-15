@@ -88,7 +88,7 @@ export class ApiService extends Rest {
     })
     public login: RestMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
+        { success: boolean, id: number, firstname:string, lastname:string, email:string, username: string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
@@ -120,8 +120,8 @@ export class ApiService extends Rest {
         path: '/register'
     })
     public register: RestMethod<
-    { firstname: string, lastname: string, email:string, password:string },
-    { success: boolean, firstname:string, lastname: string, email:string, errormessage:string }>;  
+    { username: string, email:string, password:string },
+    { success: boolean, id: number, username:string, email:string, errormessage:string, errortype:string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Get,

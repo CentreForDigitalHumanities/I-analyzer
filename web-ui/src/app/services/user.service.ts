@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
-import { User } from '../models/user';
+import { User, RegisteredUser } from '../models/user';
 
 import { Subject, Subscription } from 'rxjs';
 import { LoginComponent } from '../login/login.component';
@@ -64,7 +64,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['email'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
         } else {
             return false;
         }
@@ -78,6 +78,8 @@ export class UserService implements OnDestroy {
             localStorage.setItem(localStorageKey, JSON.stringify(value));
         }
     }
+
+
 
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
@@ -109,6 +111,7 @@ export class UserService implements OnDestroy {
             if (result.success) {
                 this.currentUser = new User(
                     result.id,
+                    result.email,
                     result.username,
                     result.roles,
                     result.downloadLimit == null ? 0 : result.downloadLimit,
@@ -129,16 +132,22 @@ export class UserService implements OnDestroy {
 
 
     /**
-     * Registration of new user
-     */
-    public register(firstname:string, lastname: string, email: string, password:string ): Promise<void | {success: boolean; firstname: string; lastname: string; email: string; errormessage:string;} > {
+    * Registration of new user 
+    */
+    public register(username: string, email: string, password: string): Promise<RegisteredUser | { success, username, email, errormessage, errortype; }> {
 
-        let registerPromise = this.apiService.register({ firstname, lastname, email, password }).then(result => {     
-                    
-            return result;
+        let registerPromise = this.apiService.register({ username, email, password }).then(result => {
+
+            let registeredUser = new RegisteredUser(
+                result.username,
+                result.email,
+                result.success,
+                result.errormessage,
+                result.errortype
+            );
+            return registeredUser;
         }
-        
-    );
+        );
         return registerPromise;
     }
 

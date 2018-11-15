@@ -12,7 +12,6 @@ import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
 from flask_mail import Mail, Message
-from flask_sqlalchemy import SQLAlchemy
 from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
 from random import choice
@@ -133,9 +132,10 @@ def init():
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
     errormessage = ''
+    errortype =''
     success = False
     role_name = 'basic'
-
+   
     if not request.json:
         abort(400)
     
@@ -143,10 +143,15 @@ def api_register():
     role = models.Role.query.filter_by(name=role_name).first() 
    
     # Check if email already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
-    if not security.is_unique_email(request.json['email']) :
+    if not security.is_unique_email( request.json['email'] ):
         errormessage = 'The email address you entered already exists. Please enter a different email address.'
+        errortype = 'email_not_unique'
+     # Check if username already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
+    elif not security.is_unique_username( request.json['username'] ):
+        errormessage = 'The username you entered already exists. Please enter a different username.'
+        errortype= 'username_not_unique'
+
     else:
-        username = security.generate_username(request.json['lastname'])
         token = security.generate_confirmation_token(request.json['email'])
        
         msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
@@ -154,8 +159,7 @@ def api_register():
                     recipients=[request.json['email']])
 
         msg.html = render_template('mail/new_user.html',
-                                firstname=request.json['firstname'],
-                                lastname=username,
+                                lastname=request.json['username'],
                                 confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
                                 url_i_analyzer=config.BASE_URL,
                                 logo_link=config.LOGO_LINK
@@ -164,13 +168,13 @@ def api_register():
         pw_hash = generate_password_hash(request.json['password'])
 
         new_user = models.User(
-            username=username,
-            email=request.json['email'],
-            active=False,
-            password=pw_hash,
-            role_id=role.id,
+            username = request.json['username'],
+            email = request.json['email'],
+            active = False,
+            password = pw_hash,
+            role_id = role.id,
         )    
-    
+
         try:
             mail.send(msg)
             models.db.session.add(new_user)
@@ -178,17 +182,20 @@ def api_register():
             success = True
 
         except:
-            errormessage='mail function did not work, the email could not be send. Please contact Digital Humanities Lab'
-            success = False
+                errormessage ='Mail function did not work, the email could not be send. Please contact Digital Humanities Lab'
+                errortype = 'no_mail_function'
+                success = False
 
     response = jsonify({
+        'errortype': errortype,
         'success': success,
-        'firstname': request.json['firstname'],
-        'lastname': request.json['lastname'],
+        'id': '',
+        'username': request.json['username'],
         'email': request.json['email'],
         'errormessage': errormessage,
+        'roles': role_name, 
+        'downloadLimit':'',
     })
-
     return response
 
 
@@ -261,7 +268,6 @@ def api_login():
         if user.role.name == "admin":
             roles.append({'name': 'admin', 'description': 'admin role'})
 
-        print(roles)
         response = jsonify({
             'success': True,
             'id': user.id,

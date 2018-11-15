@@ -43,27 +43,39 @@ def logout_user(user):
     flask_logout_user()
 
 
-# lastname to username, trim spaces and check if name already exists, in that case, add number and check again
-def generate_username(lastname):
-    username=lastname.strip().replace(" ", "")
-    user = models.User.query.filter_by(username=username).first()
+# # lastname to username, trim spaces and check if name already exists, in that case, add number and check again
+# def generate_username(lastname):
+#     username = lastname.strip().replace(" ", "")
+#     user = models.User.query.filter_by(username=username).first()
 
-    if user is None: # username does not exist, can be used rightaway 
-        return username
+#     if user is None:  # username does not exist, can be used rightaway
+#         return username
+#     else:
+#         for x in range(1, 99):
+#             username_extended = username+str(x)
+#             user = models.User.query.filter_by(
+#                 username=username_extended).first()
+#             if user is None:
+#                 break
+#         return username_extended
+
+
+# lastname to username, trim spaces and check if name already exists, in that case, return true
+def is_unique_username(username):
+    username = username.strip().replace(" ", "")
+    user = models.User.query.filter_by(username=username).first()
+    if user is None:  # username does not exist, can be used rightaway
+        return True
     else:
-        for x in range(1,99):
-            username_extended=username+str(x)
-            user = models.User.query.filter_by(username=username_extended).first() 
-            if user is None: 
-                break
-        return username_extended
+        return False
+
+
 
 
 # check if emailadres already exists for registration
 def is_unique_email(email):
     user = models.User.query.filter_by(email=email).first()
-    print(user)
-    if user is None: # email does not exist, can be used for registration
+    if user is None:  # email does not exist, can be used for registration
         return True
     else:
         return False
