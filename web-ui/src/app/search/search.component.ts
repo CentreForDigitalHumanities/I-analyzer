@@ -90,6 +90,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     private resultsCount: number = 0;
     private tabIndex: number;
 
+    public greyedOut: boolean=false;
+
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
         private downloadService: DownloadService,
@@ -149,9 +151,21 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.applyFilter(name, activated)
     }
 
+    public disableToggle() {
+        this.greyedOut = false;
+    }
+
+    public get_filter_greyed_state(name:string) {
+        // console.log(this.filterComponents)
+        console.log(this.queryField[name])
+        // let filter = this.filterComponents.find(f => f.field.name === name);
+        // console.log(filter)
+        // return filter.greyedOut;
+    }
+
     public applyFilter(name: string, activated: boolean) {
-        let field = this.queryField[name];
-        field.useAsFilter = activated;
+        // let field = this.queryField[name];
+        // field.useAsFilter = activated;
         if (activated) {
             this.activeFilterSet.add(name);
         }
@@ -287,6 +301,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
+            console.log(data)
         }
         else if (previousData != null && previousData != data) {
             this.applyFilter(name, true);
