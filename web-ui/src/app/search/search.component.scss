@@ -85,3 +85,12 @@
 .tabs {
     white-space: normal;
 }
+
+.field.has-addons {
+    display: flex !important;
+    word-break: break-word;
+}
+
+.switch[type=checkbox].is-primary:checked + label::before, .switch[type=checkbox].is-primary:checked + label:before {
+    background: $primary;
+}
