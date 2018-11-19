@@ -3,7 +3,11 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { NgForm } from '@angular/Forms';
+<<<<<<< HEAD
 import { User } from '../models/user';
+=======
+import { RegisteredUser} from '../models/user';
+>>>>>>> 5d51551846243ff57d9f313a4041aa0345fd8a5d
 
 @Component({
   selector: 'ia-registration',
@@ -24,6 +28,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   private error = false;
 
   private isModalActive: boolean = false;
+  private registeredUser;
 
   constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
@@ -31,7 +36,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+   
   }
   ngOnDestroy() {
     UserService.loginActivated = false;
@@ -61,6 +66,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           this.error = true;
         }
       }
-    });
+    })
   }
 }

@@ -269,7 +269,6 @@ def api_login():
             'success': True,
             'id': user.id,
             'username': user.username,
-            'email': user.email,
             'roles': roles,
             'downloadLimit': user.download_limit,
             'queries': [{

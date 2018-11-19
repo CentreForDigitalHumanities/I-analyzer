@@ -137,5 +137,4 @@ DUTCHBANK_MAP = {
     'TRIODOS':  'Triodos Bank',
 }
 
-
 JEWISH_INSCRIPTIONS_IMAGE = '/static/images/jewish_inscriptions.jpg'

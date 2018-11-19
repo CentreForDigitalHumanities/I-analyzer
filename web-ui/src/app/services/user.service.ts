@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
-import { User } from '../models/user';
+import { User, RegisteredUser } from '../models/user';
 
 import { Subject, Subscription } from 'rxjs';
 import { LoginComponent } from '../login/login.component';
@@ -64,7 +64,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['email'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
         } else {
             return false;
         }
@@ -78,6 +78,8 @@ export class UserService implements OnDestroy {
             localStorage.setItem(localStorageKey, JSON.stringify(value));
         }
     }
+
+
 
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
