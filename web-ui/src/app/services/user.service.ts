@@ -129,17 +129,11 @@ export class UserService implements OnDestroy {
 
 
     /**
-     * Registration of new user
+     * Registration of new user.
      */
-    public register(firstname:string, lastname: string, email: string, password:string ): Promise<void | {success: boolean; firstname: string; lastname: string; email: string; errormessage:string;} > {
-
-        let registerPromise = this.apiService.register({ firstname, lastname, email, password }).then(result => {     
-                    
-            return result;
-        }
-        
-    );
-        return registerPromise;
+    public register(username:string, email: string, password:string ): 
+        Promise<{success: boolean, is_valid_username: boolean, is_valid_email: boolean}> {        
+        return this.apiService.register({ username, email, password })
     }
 
 

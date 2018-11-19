@@ -1,84 +1,53 @@
 <section class="section">
-<div class="columns is-centered">
+    <div class="columns is-centered">
 
-    <div *ngIf="!registration_succeded && !error"  >
-        <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm"  >
-            <div class="container is-login">
-                    <h1 class="title">I-Analyzer sign-up</h1>
-                <div class="field">
-                    <label for="firstname">First Name</label>
-                    <p class="control has-icons-left has-icons-right">
-                        <input class="input" type="text"  name="firstname" ngModel #firstname = "ngModel" required >
-                        <span class="icon is-small is-left">
-                        <i class="fa fa-user"></i>
-                    </span>
-                    </p>
-                    <div class="notification is-warning" *ngIf="firstname.errors?.required  && (firstname.dirty || firstname.touched)">
-                    First Name is required.
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label for="lastname">Last Name</label>
-                    <p class="control has-icons-left">
-                        <input class="input" type="text" name="lastname"  ngModel  #lastname = "ngModel" required minlength="4" />
-                        <span class="icon is-small is-left">
-                        <i class="fa fa-user"></i>
-                    </span>
-                    </p>
-                    <div class="notification is-warning" *ngIf="lastname.errors?.required && (lastname.dirty || lastname.touched)">
-                    Last Name is required.
-                    </div>
-                    <div *ngIf="lastname.errors?.minlength">
-                    Last Name must be at least 4 characters long.
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label for="email">Email</label>
-                    <p class="control has-icons-left">
-                        <input class="input" type="email"  name="email" ngModel  #email = "ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"  />
-                        <span class="icon is-small is-left">
-                        <i class="fa fa-user"></i>
-                    </span>
-                    </p>
-                    <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
-                        Email is required.
-                    </div>
-                    <div class="notification is-warning" class="notification is-warning" *ngIf = "email.errors?.pattern && email.touched">
-                        Please enter a valid email address.
-                    </div>
-                </div>
-
-                <div class="field">
-                        <label for="email">Email Confirm</label>
-                        <p class="control has-icons-left">
-                            <input class="input" type="email"  name="emailconfirm" ngModel #emailconfirm = "ngModel" required/>
+        <div *ngIf="!registration_succeeded && !error">
+            <form (ngSubmit)="register(signupForm)" class="container is-readable" #signupForm="ngForm">
+                <div class="container is-login">
+                    <h1 class="title">I-Analyzer sign-up</h1>                    
+                    <div class="field">
+                        <label for="username">Username</label>
+                        <p class="control has-icons-left has-icons-right">
+                            <input class="input" type="text" name="username" ngModel #username="ngModel" required>
                             <span class="icon is-small is-left">
-                            <i class="fa fa-user"></i>
-                        </span>
+                                <i class="fa fa-user"></i>
+                            </span>
                         </p>
-                        <div class="notification is-warning" *ngIf="emailconfirm.errors?.required && (emailconfirm.dirty || emailconfirm.touched)">
-                            Email confirmation is required.
+                        <div class="notification is-warning" *ngIf="username.errors?.required  && (username.dirty || username.touched)">
+                            Username is required.
+                        </div>
+                        <div *ngIf="!isValidUsername" > 
+                            <div class="notification is-danger">This username already exists. Please choose another one.</div>
                         </div>
                     </div>
 
-                    <div class="notification is-warning" *ngIf=" (signupForm.value.email !=  signupForm.value.emailconfirm) &&  ( emailconfirm.touched || errormessage )" > 
-                        Email adresses do not match.
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <p class="control has-icons-left">
+                            <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-user"></i>
+                            </span>
+                        </p>
+                        <div class="notification is-warning" *ngIf="email.errors?.required && (email.dirty || email.touched)">
+                            Email is required.
+                        </div>
+                        <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors?.pattern && email.touched">
+                            Please enter a valid email address.
+                        </div>
+                        <div *ngIf="!isValidEmail" > 
+                            <div class="notification is-danger">An account was found with this email address. Please choose another one.</div>
+                        </div>
                     </div>
-                    
-                    <div *ngIf="errormessage" > 
-                        <div class="notification is-danger">{{errormessage}}</div>
-                    </div>
-                   
 
                     <div class="field">
                         <label for="email">Password</label>
                         <p class="control has-icons-left">
-                            <input class="input" type="password"  name="password" ngModel #password = "ngModel" required  minlength ="6" />
+                            <input class="input" type="password" name="password" ngModel #password="ngModel" required
+                                minlength="6" />
                             <span class="icon is-small is-left">
-                            <i class="fa fa-user"></i>
-                        </span>
+                                <i class="fa fa-user"></i>
+                            </span>
                         </p>
                         <div class="notification is-warning" *ngIf="password.errors?.required && (password.dirty || password.touched)">
                             Password is required.
@@ -89,75 +58,73 @@
                     </div>
 
                     <div class="field">
-                            <label for="email">Password Confirm</label>
-                            <p class="control has-icons-left">
-                                <input class="input" type="password"  name="passwordconfirm" ngModel #passwordconfirm = "ngModel" required />
-                                <span class="icon is-small is-left">
+                        <label for="email">Confirm password</label>
+                        <p class="control has-icons-left">
+                            <input class="input" type="password" name="passwordconfirm" ngModel #passwordconfirm="ngModel"
+                                required />
+                            <span class="icon is-small is-left">
                                 <i class="fa fa-user"></i>
                             </span>
-                            </p>
-                            <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">
-                                Password confirmation is required.
-                            </div>
-
-                            <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)" > 
-                                Passwords do not match.
-                            </div>
+                        </p>
+                        <div class="notification is-warning" *ngIf="passwordconfirm.errors?.required && (passwordconfirm.dirty || passwordconfirm.touched)">
+                            Password confirmation is required.
                         </div>
 
-                    <div class="field">    
+                        <div class="notification is-warning" *ngIf=" (signupForm.value.password !=  signupForm.value.passwordconfirm) &&  ( passwordconfirm.touched)">
+                            Passwords do not match.
+                        </div>
+                    </div>
+
+                    <!-- Uncomment this if the privacy statement contains real info-->
+                    <!-- <div class="field">
                         <label>
-                            <input type="checkbox" name="agree" ngModel #agree= "ngModel" required > I have read and I agree with the
+                            <input type="checkbox" name="agree" ngModel #agree="ngModel" required> I have read and I
+                            agree with the
                             <a (click)="toggleModal()">
                                 Privacy statement
                             </a>
-                          </label>
+                        </label>
                     </div>
                     <div class="notification is-warning" *ngIf="agree.errors?.required && (agree.dirty || agree.touched)">
-                       You need to agree with the privacy statement
+                        You need to agree with the privacy statement
                     </div>
-                    <br><br>
-
-                    <div class="field">
-                    <p class="control">
-                        <button class="button is-primary"
-                         [disabled]="!signupForm.form.valid"
-                         [ngClass]="{'is-loading':isLoading}">Register</button>
+                    <br><br> -->
                     
-                    </p>
+                    <div class="field">
+                        <p class="control">
+                            <button class="button is-primary" [disabled]="!signupForm.form.valid" [ngClass]="{'is-loading':isLoading}">Register</button>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-    
-    <div class="notification is-success container" *ngIf="registration_succeded && !error" >
-        <p class="title">Hello {{firstname_result}} {{lastname_result}},</p>
-        <p>Thank you for your registration. An email has been sent to:</p>
-        <p class="title">{{email_result}}</p>
-        <p>Please follow the instructions in this email to complete your registration. </p>
-    </div>
- 
-    <div class="notification is-danger container" *ngIf=error >
-            <p class="title">Registration failed</p>
-            <p>Please notify the administrator of Digital Humanities Lab</p>
-    </div>
+            </form>
+        </div>
 
-</div>
+        <div class="notification is-success container" *ngIf="registration_succeeded">
+            <p class="title">Hello {{username}},</p>
+            <p>Thank you for your registration. An email has been sent to:</p>
+            <p class="title">{{email}}</p>
+            <p>Please follow the instructions in this email to complete your registration. </p>
+        </div>
 
+        <div class="notification is-danger container" *ngIf=error>
+            <p class="title">Oops!</p>
+            <p>A problem occured on our side. Please contact the Digital Humanities Lab (<b>digitalhumanities [at] uu [dot] nl</b>), so that we can fix it for you.</p>
+        </div>
+    </div>
 </section>
 
 
 <div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActive }">
     <div class="modal-background" (click)="toggleModal()"></div>
     <div class=" modal-content modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Privacy Statement</p>
-        <button class="delete" aria-label="close" (click)="toggleModal()"></button>
-      </header>
-      <section class="modal-card-body">
-        <ia-privacy></ia-privacy>
-      </section>
-      <footer class="modal-card-foot">
-      </footer>
+        <header class="modal-card-head">
+            <p class="modal-card-title">Privacy Statement</p>
+            <button class="delete" aria-label="close" (click)="toggleModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <ia-privacy></ia-privacy>
+        </section>
+        <footer class="modal-card-foot">
+        </footer>
     </div>
-  </div>
+</div>

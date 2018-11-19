@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { NgForm } from '@angular/Forms';
+import { User } from '../models/user';
 
 @Component({
   selector: 'ia-registration',
@@ -11,22 +12,22 @@ import { NgForm } from '@angular/Forms';
 })
 
 export class RegistrationComponent implements OnInit, OnDestroy {
-  private returnUrl: string;
+  public username: string;
+  public email: string;
+
+  public isValidUsername: boolean = true;
+  public isValidEmail: boolean = true;
+
   public isLoading: boolean;
-  public isWrong: boolean;
-  private success: boolean;
+
+  private registration_succeeded: boolean;
   private error = false;
-  private firstname_result;
-  private lastname_result;
-  private email_result;
-  private errormessage: string;
-  private registration_succeded = false;
+
   private isModalActive: boolean = false;
 
   constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
     UserService.loginActivated = true;
-
   }
 
   ngOnInit() {
@@ -42,26 +43,24 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   register(signupForm: NgForm) {
+    let username: string = signupForm.value.username;
+    let email: string = signupForm.value.email;
 
-    this.userService.register(signupForm.value.firstname, signupForm.value.lastname, signupForm.value.email, signupForm.value.password).then(result => {
-      
-      if (!result) { 
-        this.success = false;
-        this.error = true;
+    this.userService.register(username, email, signupForm.value.password).then(result => {
+      if (result.success) { 
+        this.registration_succeeded = true;
+        this.username = username;
+        this.email = email;
       }
       else {
-        this.success = result.success;
-        this.errormessage = result.errormessage;
+        this.isValidUsername = result.is_valid_username;
+        this.isValidEmail = result.is_valid_email;
 
-        if (result.success) { 
-          this.registration_succeded = true;
-          this.firstname_result = result.firstname;
-          this.lastname_result = result.lastname;
-          this.email_result = result.email;
+        // if input is valid an error occured
+        if (result.is_valid_email && result.is_valid_username) {
+          this.error = true;
         }
       }
     });
   }
-
-
 }
