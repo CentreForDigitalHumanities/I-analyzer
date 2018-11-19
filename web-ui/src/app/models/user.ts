@@ -13,9 +13,3 @@ export class User {
         return this.roles.findIndex(x => x.name == role) >= 0;
     }
 }
-
-
-export class RegisteredUser{
-    constructor(public username:string, public email:string, public success: boolean, public errormessage:string, public errortype:string) {
-    }
-}
