@@ -90,7 +90,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     private resultsCount: number = 0;
     private tabIndex: number;
 
-    public greyedOut: boolean=false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -151,21 +150,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.applyFilter(name, activated)
     }
 
-    public disableToggle() {
-        this.greyedOut = false;
-    }
-
-    public get_filter_greyed_state(name:string) {
-        // console.log(this.filterComponents)
-        console.log(this.queryField[name])
-        // let filter = this.filterComponents.find(f => f.field.name === name);
-        // console.log(filter)
-        // return filter.greyedOut;
-    }
-
     public applyFilter(name: string, activated: boolean) {
-        // let field = this.queryField[name];
-        // field.useAsFilter = activated;
+        let field = this.queryField[name];
+        field.useAsFilter = activated;
         if (activated) {
             this.activeFilterSet.add(name);
         }
@@ -309,6 +296,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.changeDetectorRef.detectChanges();
     }
 
+    public toggleGreyOutFilter(name:string, greyedOut:boolean) {
+        this.queryField[name].greyedOut = greyedOut;
+    }
+
     public onSearched(input: ResultOverview) {
         this.isSearching = false;
         this.hasSearched = true;
@@ -389,14 +380,16 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryField[field.name] = Object.assign({
                     data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
                     useAsFilter: true,
-                    downloadInCsv: true
+                    downloadInCsv: true,
+                    greyedOut: false
                 }, field);
             } else {
                 // this field is not found in the route
                 let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
-                    downloadInCsv: true
+                    downloadInCsv: true,
+                    greyedOut: false
                 }, field);
                 // in case there have been some settings before (i.e., from a deactivated filter), retain them
                 if (this.queryField[field.name]) {
@@ -447,5 +440,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type QueryField = CorpusField & {
     data: SearchFilterData,
     useAsFilter: boolean,
-    downloadInCsv: boolean
+    downloadInCsv: boolean,
+    greyedOut: boolean
 };
