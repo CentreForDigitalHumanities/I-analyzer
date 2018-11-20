@@ -72,7 +72,7 @@ def compose_image_path(date_string, page, corpus_dir):
     relative_path = os.path.join(year, year+month+day, file_name)
     complete_path = os.path.join(corpus_dir, relative_path)
     if os.path.isfile(complete_path):
-        return complete_path
+        return relative_path
     else:
         return None
 

@@ -73,6 +73,7 @@ export class SearchResultsComponent implements OnInit, OnChanges {
         if (this.results != undefined) {
             console.log(this.results);
         }
+
     }
 
     public async loadMore() {

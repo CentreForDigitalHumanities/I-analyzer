@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
-from os.path import splitext
+from os.path import splitext, join
+import sys
 from datetime import datetime, timedelta
 from PIL import Image
 from io import BytesIO
@@ -301,11 +302,12 @@ def api_get_wordcloud_data():
 @login_required
 def api_get_source_image(image_path):
     # toplevel directory for images of corpus, this should be decided by corpus
-    base_dir = '/Users/3248526/corpora/'
+    base_dir = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009/'
+    absolute_path = join(base_dir, image_path)
 
     # extract file extension
-    name, extension = splitext(image_path)
-    full_path = base_dir + image_path
+    # name, extension = splitext(image_path)
+    # full_path = base_dir + image_path
 
     # jpg images can be directly served
     # if extension in ['.jpg', '.jpeg']:
@@ -322,5 +324,5 @@ def api_get_source_image(image_path):
     #         as_attachment=True,
     #         attachment_filename='%s.jpg' % name
     #     )
-    print(current_user)
-    return send_file(full_path, mimetype='image/jpg')
+    print(absolute_path, file=sys.stdout)
+    return send_file(absolute_path, mimetype='image/png')
