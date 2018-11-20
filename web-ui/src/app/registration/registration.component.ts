@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { NgForm } from '@angular/Forms';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'ia-registration',
