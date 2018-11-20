@@ -27,6 +27,10 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilterData>();
 
+    @Output('greyedOut')
+    public greyedOutEmitter = new EventEmitter<boolean>();
+    
+
     public isBottleneck: boolean = false;
 
     public get filter() {
@@ -115,6 +119,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                 if (filter.name == filterData.filterName) {
                     let options = [];
                     if (aggregateData != null) {
+                        this.greyedOutEmitter.emit(false);
                         this.greyedOut = false;
                         options = _.sortBy(
                             aggregateData[filterData.fieldName], x => x.key
@@ -123,6 +128,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
                             });
                         if (options.length === 0) {
+                            this.greyedOutEmitter.emit(true);
                             this.greyedOut = true;
                         }
                     }
