@@ -309,20 +309,5 @@ def api_get_source_image(image_path):
     # name, extension = splitext(image_path)
     # full_path = base_dir + image_path
 
-    # jpg images can be directly served
-    # if extension in ['.jpg', '.jpeg']:
-    #     return send_file(full_path, mimetype='image/jpg')
-
-    # TIF images need conversion to jpg encode
-    # elif extension in ['.tif', '.tiff']:
-    #     img = Image.open(full_path)
-    #     bytestring = BytesIO()
-    #     img.save(bytestring, 'JPEG', quality=70)
-    #     return send_file(
-    #         bytestring,
-    #         mimetype='image/jpeg',
-    #         as_attachment=True,
-    #         attachment_filename='%s.jpg' % name
-    #     )
     print(absolute_path, file=sys.stdout)
     return send_file(absolute_path, mimetype='image/png')
