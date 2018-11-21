@@ -23,6 +23,7 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+from saml import DhlabFlaskSaml
 
 from flask_admin.base import MenuLink
 
@@ -47,6 +48,8 @@ admin_instance.add_view(views.QueryView(
 login_manager = LoginManager()
 csrf = SeaSurf()
 csrf.exempt_urls('/es',)
+
+saml = DhlabFlaskSaml(app.config['SAML_PATH'])
 
 
 def corpus_required(method):
@@ -198,6 +201,16 @@ def api_login():
         })
 
     return response
+
+
+@blueprint.route('/api/solislogin', methods=['POST'])
+def api_solis_login():
+    return saml.init_login(request, redirect, 'home')
+
+
+@blueprint.route('/saml/process_login_result', methods=['POST'])
+def process_login_result():
+    return saml.process_login_result(request, session, redirect, 'login')
 
 
 @blueprint.route('/api/log', methods=['POST'])
