@@ -44,6 +44,19 @@ SERVERS = {
     }
 }
 
+# Example configuration for the mail server
+# Copy to your local config.py!
+# MAIL_SERVER = 'localhost'
+# MAIL_PORT = 25
+# MAIL_USE_TLS = False
+# MAIL_USE_SSL = False
+# MAIL_USERNAME = ''
+# MAIL_PASSWORD = ''
+# MAIL_FROM_ADRESS='example@dhlab.nl'
+# MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
+# BASE_URL='http://localhost:4200'
+# LOGO_LINK='http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'
+
 # Specify which corpora are not using the default server
 CORPUS_SERVER_NAMES = {
     'times': 'default',
@@ -125,17 +138,3 @@ DUTCHBANK_MAP = {
 }
 
 JEWISH_INSCRIPTIONS_IMAGE = '/static/images/jewish_inscriptions.jpg'
-
-#Email settings for sending emails
-MAIL_SERVER = 'localhost'
-MAIL_PORT = 25
-MAIL_USE_TLS = False
-MAIL_USE_SSL = False
-MAIL_USERNAME = ''
-MAIL_PASSWORD = ''
-MAIL_FROM_ADRESS = 'test@test.nl'
-
-#Settings for user registration email
-MAIL_REGISTRATION_SUBJECT_LINE = 'Thank you for signing up at I-analyzer'
-BASE_URL = 'http://localhost:4200'
-LOGO_LINK = 'http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'

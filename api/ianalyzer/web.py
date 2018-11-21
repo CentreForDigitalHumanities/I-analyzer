@@ -131,72 +131,69 @@ def init():
 # endpoint for registration new user via signup form
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
-    errormessage = ''
-    errortype =''
-    success = False
-    role_name = 'basic'
-   
     if not request.json:
         abort(400)
-    
-    # find role and role id
-    role = models.Role.query.filter_by(name=role_name).first() 
-   
-    # Check if email already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
-    if not security.is_unique_email( request.json['email'] ):
-        errormessage = 'The email address you entered already exists. Please enter a different email address.'
-        errortype = 'email_not_unique'
-     # Check if username already exists in db, if not send mail and add user to database, else fill errormessage to be shown in signup form in frontend
-    elif not security.is_unique_username( request.json['username'] ):
-        errormessage = 'The username you entered already exists. Please enter a different username.'
-        errortype= 'username_not_unique'
-
-    else:
-        token = security.generate_confirmation_token(request.json['email'])
        
-        msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
-                    sender=config.MAIL_FROM_ADRESS,
-                    recipients=[request.json['email']])
+    # Validate user's input
+    username = request.json['username']
+    is_valid_username = security.is_unique_username(username)
+    is_valid_email = security.is_unique_email(request.json['email'])
+        
+    if not is_valid_username or not is_valid_email:
+        return jsonify({
+            'success': False,
+            'is_valid_username': is_valid_username,
+            'is_valid_email': is_valid_email
+        })
+    
+    # try sending the email
+    if not send_registration_mail(request.json['email'], username):
+        return jsonify({
+            'success': False,
+            'is_valid_username': True,
+            'is_valid_email': True
+        })
 
-        msg.html = render_template('mail/new_user.html',
-                                lastname=request.json['username'],
-                                confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
-                                url_i_analyzer=config.BASE_URL,
-                                logo_link=config.LOGO_LINK
-                                )
+    # if email was succesfully sent, add user to db    
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    pw_hash = generate_password_hash(request.json['password'])
+    
+    new_user = models.User(
+        username=username,
+        email=request.json['email'],
+        active=False,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
 
-        pw_hash = generate_password_hash(request.json['password'])
+    models.db.session.add(new_user)
+    models.db.session.commit()
 
-        new_user = models.User(
-            username = request.json['username'],
-            email = request.json['email'],
-            active = False,
-            password = pw_hash,
-            role_id = role.id,
-        )    
+    return jsonify({'success': True})
 
-        try:
-            mail.send(msg)
-            models.db.session.add(new_user)
-            models.db.session.commit()
-            success = True
+def send_registration_mail(email, username):
+    '''
+    Send an email with a confirmation token to a new user
+    Returns a boolean specifying whether the email was sent succesfully
+    '''
+    token = security.generate_confirmation_token(email)    
+    
+    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
 
-        except:
-                errormessage ='Mail function did not work, the email could not be send. Please contact Digital Humanities Lab'
-                errortype = 'no_mail_function'
-                success = False
+    msg.html = render_template('mail/new_user.html',
+                            username=username,
+                            confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                            url_i_analyzer=config.BASE_URL,
+                            logo_link=config.LOGO_LINK)
 
-    response = jsonify({
-        'errortype': errortype,
-        'success': success,
-        'id': '',
-        'username': request.json['username'],
-        'email': request.json['email'],
-        'errormessage': errormessage,
-        'roles': role_name, 
-        'downloadLimit':'',
-    })
-    return response
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        logger.error("An error occured sending an email to {}:".format(email))
+        logger.error(e)
+        return False
+
 
 
 # endpoint for the confirmation of user if link in email is clicked.
@@ -258,7 +255,7 @@ def api_login():
         response = jsonify({'success': False})
     else:
         security.login_user(user)
-
+        
         roles = [{
             'name': corpus.name,
             'description': corpus.description
@@ -267,7 +264,7 @@ def api_login():
         # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
         if user.role.name == "admin":
             roles.append({'name': 'admin', 'description': 'admin role'})
-
+        
         response = jsonify({
             'success': True,
             'id': user.id,
