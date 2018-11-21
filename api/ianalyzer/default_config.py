@@ -85,7 +85,7 @@ TIMES_IMAGE = 'times.jpg'
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
 DUTCHBANK_ES_INDEX = 'dutchbank'
-DUTCHBANK_ES_DOCTYPE = 'article'
+DUTCHBANK_ES_DOCTYPE = 'block'
 DUTCHBANK_DATA = '/mnt/dutchbank'
 DUTCHBANK_MIN_DATE = datetime(year=1785, month=1, day=1)
 DUTCHBANK_MAX_DATE = datetime(year=2010, month=12, day=31)
@@ -128,3 +128,5 @@ DUTCHBANK_MAP = {
     'TB':       'Twentsche Bank',
     'TRIODOS':  'Triodos Bank',
 }
+
+JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
