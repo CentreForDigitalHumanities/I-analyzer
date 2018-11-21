@@ -128,20 +128,11 @@ class DutchBanking(XMLCorpus):
             preselected=True
         ),
         Field(
-            name='objectno',
-            display_name='#',
-            description='Object number in the dataset.',
+            name='page_number',
+            display_name='Page Number',
+            description='The number of the page in the scan',
             es_mapping={'type': 'integer'},
-            extractor=Metadata(key='serial', transform=int),
-            hidden=True,
-        ),
-        Field(
-            name='scan',
-            display_name='Scan',
-            description='Scan number within the financial report. A scan contains one or two pages.',
-            es_mapping={'type': 'integer'},
-            extractor=Metadata(key='scan', transform=int),
-            hidden=True,
+            extractor=XML(attribute='PHYSICAL_IMG_NR', transform=int),
         ),
         Field(
             name='id',
@@ -153,6 +144,7 @@ class DutchBanking(XMLCorpus):
                 XML(attribute='ID'),
                 transform=lambda x: '_'.join(x),
             ),
+            hidden=False,
         ),
         Field(
             name='content',
@@ -168,40 +160,5 @@ class DutchBanking(XMLCorpus):
                 transform=lambda x: ' '.join(x),
             ),
             preselected=True
-        ),
-        Field(
-            name='hpos',
-            display_name='Horizontal Position',
-            description='Horizontal position on the scan in pixels.',
-            indexed=False,
-            es_mapping={'type': 'integer'},
-            extractor=XML(attribute='HPOS', transform=int),
-        ),
-        Field(
-            name='vpos',
-            display_name='Vertical Position',
-            display_type='px',
-            description='Vertical position on the scan in pixels.',
-            indexed=False,
-            es_mapping={'type': 'integer'},
-            extractor=XML(attribute='VPOS', transform=int),
-        ),
-        Field(
-            name='width',
-            display_name='Width',
-            display_type='px',
-            description='Width on the scan in pixels.',
-            indexed=False,
-            es_mapping={'type': 'integer'},
-            extractor=XML(attribute='WIDTH', transform=int),
-        ),
-        Field(
-            name='height',
-            display_name='Height',
-            display_type='px',
-            description='Height on the scan in pixels.',
-            indexed=False,
-            es_mapping={'type': 'integer'},
-            extractor=XML(attribute='HEIGHT', transform=int),
         ),
     ]
