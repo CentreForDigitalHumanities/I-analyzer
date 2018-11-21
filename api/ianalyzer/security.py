@@ -2,6 +2,9 @@ from . import models
 from werkzeug.security import check_password_hash
 from flask_login import login_user as flask_login_user
 from flask_login import logout_user as flask_logout_user
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
+from ianalyzer import config_fallback as config
 
 
 def validate_user(username, password):
@@ -38,3 +41,35 @@ def logout_user(user):
     models.db.session.add(user)
     models.db.session.commit()
     flask_logout_user()
+
+
+def is_unique_username(username):
+    ''' Check if a username is unique '''
+    username=username.strip().replace(" ", "")
+    user = models.User.query.filter_by(username=username).first()
+    return user is None
+
+
+def is_unique_email(email):
+    ''' Check if email address is unique '''
+    user = models.User.query.filter_by(email=email).first()
+    return user is None
+
+
+# userregistration confirmation, when clicked on link in confirmation email
+def generate_confirmation_token(email):
+    serializer = URLSafeTimedSerializer(config.SECRET_KEY)
+    return serializer.dumps(email, salt=config.SECURITY_PASSWORD_SALT)
+
+
+def confirm_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(config.SECRET_KEY)
+    try:
+        email = serializer.loads(
+            token,
+            salt=config.SECURITY_PASSWORD_SALT,
+            max_age=expiration
+        )
+    except:
+        return False
+    return email
