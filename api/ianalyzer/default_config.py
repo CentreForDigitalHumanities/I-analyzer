@@ -97,11 +97,11 @@ TIMES_IMAGE = 'times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
-DUTCHBANK_ES_INDEX = 'dutchbank'
-DUTCHBANK_ES_DOCTYPE = 'block'
+DUTCHBANK_ES_INDEX = 'dutchbanking'
+DUTCHBANK_ES_DOCTYPE = 'page'
 DUTCHBANK_DATA = '/mnt/dutchbank'
-DUTCHBANK_MIN_DATE = datetime(year=1785, month=1, day=1)
-DUTCHBANK_MAX_DATE = datetime(year=2010, month=12, day=31)
+DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
+DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHBANK_IMAGE = '/static/images/dutchbanking.jpg'
 DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
 DUTCHBANK_MAP = {}
