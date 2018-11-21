@@ -22,21 +22,11 @@ export class SearchHistoryComponent implements OnInit {
 
     async ngOnInit() {
         this.user = await this.userService.getCurrentUser();
-        if (this.user.hasRole("admin")) {
-            if (this.user.roles.length > 2) {
-                this.displayCorpora = true;
-                this.corpora = this.user.roles.filter(role => role.name != 'admin')
-                    .map(role => {
-                        return { 'label': role.name, 'value': role.name };
-                    });
-            }
-        } else {
-            if (this.user.roles.length > 1) {
-                this.displayCorpora = true;
-                this.corpora = this.user.roles.map(role => {
-                    return { 'label': role.name, 'value': role.name };
-                });
-            }
+        if (this.user.role.corpora.length > 1) {
+            this.displayCorpora = true;
+            this.corpora = this.user.role.corpora.map(corpus => {
+                return { 'label': corpus.name, 'value': corpus.name };
+            });
         }
 
         this.queryService.retrieveQueries().then(

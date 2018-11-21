@@ -31,6 +31,7 @@ export const MockCorpusRoles =
     Object.keys(MockCorpusResponse).map(name => {
         return {
             name,
-            description: ''
+            description: '',
+            corpora: []
         };
     });

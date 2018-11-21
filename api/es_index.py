@@ -70,7 +70,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         logging.info('Indexed documents ({}).'.format(result))
 
 
-def perform_indexing(corpus_name, corpus_definition, start, end, clear=False):
+def perform_indexing(corpus_name, corpus_definition, start, end, clear):
 
     # Log to a specific file
     logfile = 'indexing-{}-{}.log'.format(
@@ -86,7 +86,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear=False):
 
     # Create and populate the ES index
     client = factories.elasticsearch(corpus_name)
-    create(client, corpus_definition, clear=clear)
+    create(client, corpus_definition, clear)
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
