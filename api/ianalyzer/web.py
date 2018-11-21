@@ -2,13 +2,14 @@
 Present the data to the user through a web interface.
 '''
 import json
+import base64
 import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -153,6 +154,15 @@ def api_corpus_list():
     return response
 
 
+@blueprint.route('/api/corpusimage/<image_name>', methods=['GET'])
+@login_required
+def api_corpus_image(image_name):
+    '''
+    Return the image for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
+
+
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
     if not request.json:
@@ -166,21 +176,20 @@ def api_login():
     else:
         security.login_user(user)
 
-        roles = [{
+        corpora = [{
             'name': corpus.name,
             'description': corpus.description
         } for corpus in user.role.corpora]
-
-        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
-        if user.role.name == "admin":
-            roles.append({'name': 'admin', 'description': 'admin role'})
-
-        print(roles)
+        role = {
+            'name': user.role.name, 
+            'description': user.role.description, 
+            'corpora': corpora
+        }
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': roles,
+            'role': role,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
