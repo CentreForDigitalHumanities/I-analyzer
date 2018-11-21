@@ -10,5 +10,9 @@
     "/static": {
         "target": "http://localhost:5000",
         "secure": false
+    },
+    "/es": {
+        "target": "http://localhost:5000",
+        "secure": false
     }
 }

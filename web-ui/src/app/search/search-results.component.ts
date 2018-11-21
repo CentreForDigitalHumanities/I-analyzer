@@ -1,21 +1,18 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { User, Corpus, SearchResults, FoundDocument } from '../models/index';
-import { SearchService } from '../services';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
+import { DataService, SearchService } from '../services';
 
 @Component({
     selector: 'ia-search-results',
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnInit {
-    @Input()
-    public results: SearchResults;
-
+export class SearchResultsComponent implements OnInit, OnChanges {
     /**
-     * The search query to use for highlighting the results
+     * The search queryModel to use
      */
     @Input()
-    public query: string;
+    public queryModel: QueryModel;
 
     @Input()
     public user: User;
@@ -23,33 +20,71 @@ export class SearchResultsComponent implements OnInit {
     @Input()
     public corpus: Corpus;
 
-    @Input()
-    public isLoading: boolean = false;
-
-    @Output('download')
-    public downloadEvent = new EventEmitter();
-
     @Output('view')
     public viewEvent = new EventEmitter<FoundDocument>();
 
-    public isLoadingMore = false;
+    @Output('searched')
+    public searchedEvent = new EventEmitter<ResultOverview>();
 
-    constructor(private searchService: SearchService) { }
+    public isLoading = false;
+
+    public results: SearchResults;
+
+    public queryText: string;
+
+    /**
+     * For failed searches.
+     */
+    public showError: false | undefined | {
+        date: string,
+        href: string,
+        message: string
+    };
+
+    constructor(private searchService: SearchService, private dataService: DataService) { }
 
     ngOnInit() {
     }
 
-    public async loadMore() {
-        this.isLoadingMore = true;
-        this.results = await this.searchService.loadMore(this.corpus, this.results);
-        this.isLoadingMore = false;
+    ngOnChanges() {
+        this.queryText = this.queryModel.queryText;
+        this.search();
     }
 
-    public download() {
-        this.downloadEvent.next();
+    private search() {
+        this.isLoading = true;
+        this.searchService.search(
+            this.queryModel,
+            this.corpus
+        ).then(results => {
+            this.results = results;
+            this.searched(this.queryModel.queryText, this.results.total);
+        }, error => {
+            this.showError = {
+                date: (new Date()).toISOString(),
+                href: location.href,
+                message: error.message || 'An unknown error occurred'
+            };
+            console.trace(error);
+            // if an error occurred, return query text and 0 results
+            this.searched(this.queryModel.queryText, 0);
+        });
+    }
+
+    public async loadMore() {
+        this.isLoading = true;
+        this.results = await this.searchService.loadMore(this.corpus, this.results);
+        this.searched(this.queryModel.queryText, this.results.total);
     }
 
     public view(document: FoundDocument) {
         this.viewEvent.next(document);
+    }
+
+    public searched(queryText: string, resultsCount: number) {
+        // push searchResults to dataService observable, observed by visualization component
+        this.dataService.pushNewSearchResults(this.results);
+        this.searchedEvent.next({queryText: queryText, resultsCount: resultsCount});
+        this.isLoading = false;
     }
 }

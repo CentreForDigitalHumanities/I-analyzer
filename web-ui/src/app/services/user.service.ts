@@ -64,7 +64,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries']);
         } else {
             return false;
         }
@@ -112,7 +112,7 @@ export class UserService implements OnDestroy {
                 this.currentUser = new User(
                     result.id,
                     result.username,
-                    result.roles,
+                    result.role,
                     result.downloadLimit == null ? 0 : result.downloadLimit,
                     result.queries);
                 if (username == 'guest') {

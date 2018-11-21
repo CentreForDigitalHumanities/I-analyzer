@@ -16,11 +16,11 @@ describe('CorpusService', () => {
     let apiServiceMock = new ApiServiceMock();
     let userServiceMock = new UserServiceMock();
     // TODO: validate that this shouldn't be done server-side
-    userServiceMock.currentUser.roles.push(...[
+    userServiceMock.currentUser.role.corpora.push(...[
         { name: "test1", description: "" },
         { name: "test2", description: "" },
         { name: "times", description: "" },]);
-
+        
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [

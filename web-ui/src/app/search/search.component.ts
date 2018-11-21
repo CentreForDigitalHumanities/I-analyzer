@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -6,7 +6,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilter, SearchFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 
 @Component({
@@ -14,7 +14,7 @@ import { CorpusService, DataService, SearchService, DownloadService, UserService
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -67,27 +67,17 @@ export class SearchComponent implements OnInit {
      */
     public searchQueryText: string;
     public results: SearchResults;
-    public textFieldContent: {name: string, data: string[]}[];
 
     public multipleChoiceData: AggregateData = {};
-    public visualizationData: AggregateData = {};
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
-
-    private wordcloudFields: string[];
     private multipleChoiceFilters: {name: string, size: number}[];
 
-    /**
-     * For failed searches.
-     */
-    public showError: false | undefined | {
-        date: string,
-        href: string,
-        message: string
-    };
+    private resultsCount: number = 0;
+    private tabIndex: number;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -117,12 +107,7 @@ export class SearchComponent implements OnInit {
                 this.setCorpus(corpus);
                 let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
                 this.setSortFromParams(this.corpus.fields, params);
-
-                this.wordcloudFields = this.corpus.fields.filter(
-                    field => field.visualizationType === 'wordcloud').map(field =>
-                        field.name
-                );
-
+                // find which fields are multiple choice fields (so we can show their options when searching)
                 this.multipleChoiceFilters = this.corpus.fields
                     .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
                     .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
@@ -131,6 +116,10 @@ export class SearchComponent implements OnInit {
                     this.performSearch();
                 }
             });
+    }
+
+    ngOnDestroy() {
+        this.searchService.clearESScroll(this.corpus, this.results);
     }
 
     @HostListener("window:scroll", [])
@@ -175,6 +164,39 @@ export class SearchComponent implements OnInit {
         }
     }
 
+    private performSearch() {
+        this.queryModel = this.createQueryModel();
+        this.hasModifiedFilters = false;
+        this.isSearching = true;
+        
+        Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
+            let output: AggregateData = {};
+            filters.forEach(filter => {
+                Object.assign(output, filter);
+            })
+            this.multipleChoiceData = output;
+            this.showFilters = true;
+            this.dataService.pushNewFilterData(this.multipleChoiceData);
+        });
+    }
+
+    async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
+        let queryModel = _.cloneDeep(this.queryModel);
+        // get the filter's choices, based on all other filters' choices, but not this filter's choices
+        if (queryModel.filters) {
+            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);                
+            if (index >= 0) {
+                queryModel.filters.splice(index, 1);
+            }      
+        }
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
+            return results.aggregations;
+        }, error => {
+            console.trace(error);
+            return {};
+        })
+    }
+
     public async download() {
         this.isDownloading = true;
         let fields = this.getCsvFields();
@@ -209,6 +231,14 @@ export class SearchComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
     }
 
+    public onSearched(input: ResultOverview) {
+        this.isSearching = false;
+        this.hasSearched = true;
+        this.resultsCount = input.resultsCount;
+        this.searchQueryText = input.queryText;
+        this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
+    }
+
     public onViewDocument(document: FoundDocument) {
         this.showDocument = true;
         this.viewDocument = document;
@@ -216,71 +246,6 @@ export class SearchComponent implements OnInit {
 
     public showQueryDocumentation() {
         this.manualService.showPage('query');
-    }
-
-    private performSearch() {
-        this.queryModel = this.createQueryModel();
-        this.hasModifiedFilters = false;
-        this.isSearching = true;
-        // store it, the user might change it in the meantime
-        let currentQueryText = this.queryText;
-        let finallyReset = () => {
-            this.isSearching = false;
-            this.hasSearched = true;
-            this.searchQueryText = currentQueryText;
-        };
-        this.searchService.search(
-            this.queryModel,
-            this.corpus
-        ).then(results => {
-            this.results = results;
-            // extract content from text fields for word clouds
-            this.textFieldContent = this.wordcloudFields.map(
-                name => { return {name: name, data: results.documents.map(d => d.fieldValues[name])} }
-            );
-            this.hasLimitedResults = this.user.downloadLimit && results.total > this.user.downloadLimit;
-            finallyReset();
-        }, error => {
-            this.showError = {
-                date: (new Date()).toISOString(),
-                href: location.href,
-                message: error.message || 'An unknown error occurred'
-            };
-            console.trace(error);
-            finallyReset();
-        });
-        
-        Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
-            let output: AggregateData = {};
-            filters.forEach(filter => {
-                Object.assign(output, filter);
-            })
-            this.multipleChoiceData = output;
-            this.showFilters = true;
-            this.dataService.pushNewFilterData(this.multipleChoiceData);
-        });
-    }
-
-    async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
-        let queryModel = _.cloneDeep(this.queryModel);
-        // get the filter's choices, based on all other filters' choices, but not this filter's choices
-        if (queryModel.filters) {
-            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);                
-            if (index >= 0) {
-                queryModel.filters.splice(index, 1);
-            }      
-        }
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
-            return results.aggregations;
-        }, error => {
-            this.showError = {
-                date: (new Date()).toISOString(),
-                href: location.href,
-                message: error.message || 'An unknown error occurred'
-            };
-            console.trace(error);
-            return {};
-        })
     }
 
     private getCsvFields(): CorpusField[] {
@@ -380,6 +345,10 @@ export class SearchComponent implements OnInit {
         } else {
             this.sortField = undefined;
         }
+    }
+
+    private tabChange(event){
+        this.tabIndex = event.index;
     }
 
     private selectSearchFieldsEvent(selection: QueryField[]) {

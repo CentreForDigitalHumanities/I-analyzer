@@ -1,7 +1,7 @@
 import { Query, UserRole } from '../models/index';
 
 export class User {
-    constructor(public id, public name, public roles: UserRole[],
+    constructor(public id, public name, public role: UserRole,
         /**
          * The download limit for this user, will be 0 if there is no limit.
          */
@@ -9,7 +9,11 @@ export class User {
   
     }
 
-    public hasRole(role): boolean {
-        return this.roles.findIndex(x => x.name == role) >= 0;
+    public canAccessCorpus(corpus: string): boolean {
+        return this.role.corpora.findIndex(x => x.name == corpus)>=0;
+    }
+
+    public hasRole(role: string): boolean {
+        return this.role.name == role;
     }
 }

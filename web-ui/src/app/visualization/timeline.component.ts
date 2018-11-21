@@ -1,8 +1,11 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
 
+// custom definition of scaleTime to avoid Chrome issue with displaying historical dates
+import { AggregateResult } from '../models/index';
+import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -12,22 +15,15 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
-    styleUrls: ['./timeline.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @Input('searchData') searchData: {
-        key: any,
-        doc_count: number,
-        key_as_string: string
-    }[];
+    @ViewChild('timeline') private timelineContainer: ElementRef;
+    @Input('searchData') searchData: AggregateResult[];
     @Input() visualizedField;
-    @Input() chartElement;
     @Input() asPercent;
 
     public xScale: d3.ScaleTime<any, any>;
-    private zoom: any;
-    private view: any;
 
     private brush: any;
     idleTimeout: any;
@@ -45,36 +41,39 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.searchData && this.visualizedField) {
+        if (this.chartElement == undefined) {
+            this.chartElement = this.timelineContainer.nativeElement;
+        }
+        if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.calculateCanvas();
             this.prepareTimeline();
             this.calculateDomains();
-            this.createChart(true);
+            this.createChart();
             this.rescaleY();
             this.calculateY(this.selectedData);
             this.drawChartData();
             this.setupBrushBehaviour();
+        }
 
-            //listen for changes in 'asPercent'
-            if (changes['asPercent'] != undefined) {
-                if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                    this.rescaleY();
-                }
+        //listen for changes in 'asPercent'
+        else if (changes['asPercent'] != undefined) {
+            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+                this.rescaleY();
             }
         }
     }
 
     prepareTimeline() {
         this.selectedData = this.formatTimeData();
-
         this.xDomain = d3.extent(this.selectedData, d => d.date);
-        this.xScale = d3.scaleTime()
+        if (this.xDomain[0] == this.xDomain[1]){
+            // make sure we display data even if there's only one data point
+            this.xDomain[1] = d3.timeDay.ceil(this.xDomain[0]);
+        }
+        this.xScale = scaleTimeCustom()
             .domain(this.xDomain)
             .range([0, this.width])
             .clamp(true);
-
-        let ticks = this.xScale.ticks(10);
-        let date = ticks[0];
 
         let [min, max] = this.xScale.domain();
 
@@ -82,7 +81,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .value(d => d.date)
             .domain([min, max])
             .thresholds(this.xScale.ticks(d3.timeYear));
-
+        
         this.currentTimeCategory = 'years';
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
 
@@ -125,6 +124,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 d.doc_count = 0;
             }
         });
+        // no need to draw zero height rectangles!
+        this.bins = this.bins.filter(b => b.doc_count>0);
+        this.dataService.pushCurrentTimelineData(this.bins);
         this.yMax = parseInt(d3.max(this.bins.map(d => d.doc_count)));
         this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
@@ -200,8 +202,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     zoomIn() {
         this.rescaleX();
         let xExtent = this.xScale.domain();
-        let selection = this.bins.filter(d => d.x1 >= xExtent[0] && d.x0 <= xExtent[1]);
-        if (selection.length >= 10) {
+        // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
+        let timeRange = this.calculateTimeRange(xExtent[0], xExtent[1]);
+        // if not, zoom without rescaling
+        if (this.currentTimeCategory == 'days' || timeRange >= this.scaleDownThreshold) {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
                 .transition().duration(750)
@@ -210,13 +214,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 .attr('width', d => this.calculateWidth(d));
         }
         else {
-            while (selection.length < this.scaleDownThreshold && this.currentTimeCategory != 'days') {
-                // rearrange data to look at a smaller time category
+            while (timeRange < this.scaleDownThreshold && this.currentTimeCategory != 'days') {
                 this.adjustTimeCategory();
+                timeRange = this.calculateTimeRange(xExtent[0], xExtent[1]);
             }
-            this.calculateY(this.selectedData.filter(
+            let zoomedInData = this.selectedData.filter(
                 d => d.date >= xExtent[0] && d.date <= xExtent[1]
-            ));
+            );
+            this.calculateY(zoomedInData);
             this.drawChartData();
             this.rescaleY();
         }
@@ -227,7 +232,19 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         if (width > 0) {
             return width
         }
-        else return 0;
+    }
+
+    calculateTimeRange(min, max) {
+        switch (this.currentTimeCategory) {
+            case 'years':
+                return d3.timeYear.count(min, max);
+            case 'months':
+                return d3.timeMonth.count(min, max);
+            case 'weeks':
+                return d3.timeWeek.count(min, max);
+            case 'days':
+                return d3.timeDay.count(min, max);
+        }
     }
 
     adjustTimeCategory() {

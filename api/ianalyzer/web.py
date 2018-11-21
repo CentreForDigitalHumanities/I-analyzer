@@ -2,12 +2,13 @@
 Present the data to the user through a web interface.
 '''
 import json
+import base64
 import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -49,8 +50,9 @@ admin_instance.add_view(views.QueryView(
 
 login_manager = LoginManager()
 csrf = SeaSurf()
-mail = Mail()
+csrf.exempt_urls('/es',)
 
+mail = Mail()
 
 def corpus_required(method):
     '''
@@ -219,8 +221,8 @@ def api_register_confirmation(token):
 def api_es_config():
     return jsonify([{
         'name': server_name,
-        'host': server_config['host'],
-        'port': server_config['port'],
+        'host': url_for('es.forward_head', server_name=server_name, _external=True),
+        'port': None,
         'chunkSize': server_config['chunk_size'],
         'maxChunkBytes': server_config['max_chunk_bytes'],
         'bulkTimeout': server_config['bulk_timeout'],
@@ -243,6 +245,15 @@ def api_corpus_list():
     return response
 
 
+@blueprint.route('/api/corpusimage/<image_name>', methods=['GET'])
+@login_required
+def api_corpus_image(image_name):
+    '''
+    Return the image for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
+
+
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
     if not request.json:
@@ -255,21 +266,22 @@ def api_login():
         response = jsonify({'success': False})
     else:
         security.login_user(user)
-        
-        roles = [{
+
+        corpora = [{
             'name': corpus.name,
             'description': corpus.description
         } for corpus in user.role.corpora]
-
-        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
-        if user.role.name == "admin":
-            roles.append({'name': 'admin', 'description': 'admin role'})
+        role = {
+            'name': user.role.name, 
+            'description': user.role.description, 
+            'corpora': corpora
+        }
         
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': roles,
+            'role': role,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
@@ -327,11 +339,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    if 'id' in request.json:
-        query = models.Query.query.filter_by(id=request.json['id']).first()
-    else:
-        query = models.Query(
-            query=query_json, corpus_name=corpus_name, user=current_user)
+    # if 'id' in request.json:
+    #     query = models.Query.query.filter_by(id=request.json['id']).first()
+    # else:
+    query = models.Query(
+        query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -342,8 +354,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    models.db.session.add(query)
-    models.db.session.commit()
+    #models.db.session.add(query)
+    #models.db.session.commit()
 
     return jsonify({
         'id': query.id,
