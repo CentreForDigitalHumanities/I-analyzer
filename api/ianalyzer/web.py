@@ -7,12 +7,15 @@ import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
-
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
+from flask_mail import Mail, Message
+from ianalyzer import config_fallback as config
+from werkzeug.security import generate_password_hash, check_password_hash
+from random import choice
 from flask_seasurf import SeaSurf
 
 from . import config_fallback as config
@@ -26,6 +29,7 @@ from . import analyze
 from saml import DhlabFlaskSaml
 
 from flask_admin.base import MenuLink
+
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
@@ -49,8 +53,9 @@ login_manager = LoginManager()
 csrf = SeaSurf()
 csrf.exempt_urls('/es',)
 
-saml = DhlabFlaskSaml(app.config['SAML_PATH'])
+mail = Mail()
 
+saml = DhlabFlaskSaml(app.config['SAML_PATH'])
 
 def corpus_required(method):
     '''
@@ -128,6 +133,92 @@ def init():
         return redirect(url_for('admin.login'))
 
 
+# endpoint for registration new user via signup form
+@blueprint.route('/api/register', methods=['POST'])
+def api_register():
+    if not request.json:
+        abort(400)
+       
+    # Validate user's input
+    username = request.json['username']
+    is_valid_username = security.is_unique_username(username)
+    is_valid_email = security.is_unique_email(request.json['email'])
+        
+    if not is_valid_username or not is_valid_email:
+        return jsonify({
+            'success': False,
+            'is_valid_username': is_valid_username,
+            'is_valid_email': is_valid_email
+        })
+    
+    # try sending the email
+    if not send_registration_mail(request.json['email'], username):
+        return jsonify({
+            'success': False,
+            'is_valid_username': True,
+            'is_valid_email': True
+        })
+
+    # if email was succesfully sent, add user to db    
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    pw_hash = generate_password_hash(request.json['password'])
+    
+    new_user = models.User(
+        username=username,
+        email=request.json['email'],
+        active=False,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
+
+    models.db.session.add(new_user)
+    models.db.session.commit()
+
+    return jsonify({'success': True})
+
+def send_registration_mail(email, username):
+    '''
+    Send an email with a confirmation token to a new user
+    Returns a boolean specifying whether the email was sent succesfully
+    '''
+    token = security.generate_confirmation_token(email)    
+    
+    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
+
+    msg.html = render_template('mail/new_user.html',
+                            username=username,
+                            confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                            url_i_analyzer=config.BASE_URL,
+                            logo_link=config.LOGO_LINK)
+
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        logger.error("An error occured sending an email to {}:".format(email))
+        logger.error(e)
+        return False
+
+
+
+# endpoint for the confirmation of user if link in email is clicked.
+@blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
+def api_register_confirmation(token):
+
+    expiration = 60*60*72  # method does not return email after this limit
+    try:
+        email = security.confirm_token(token, expiration)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+
+    user = models.User.query.filter_by(email=email).first_or_404()
+    user.active = True
+    models.db.session.add(user)
+    models.db.session.commit()
+
+    return redirect(config.BASE_URL+'/login?isActivated=true')
+
+
 @blueprint.route('/api/es_config', methods=['GET'])
 @login_required
 def api_es_config():
@@ -188,6 +279,7 @@ def api_login():
             'description': user.role.description, 
             'corpora': corpora
         }
+        
         response = jsonify({
             'success': True,
             'id': user.id,

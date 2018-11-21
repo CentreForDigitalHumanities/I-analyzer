@@ -12,16 +12,18 @@ click==6.7                # via flask
 cookies==2.2.1            # via responses
 coverage==4.3.4
 elasticsearch==6.1.1
-flask-admin==1.4.2
-flask-login==0.4.0
-flask-migrate==2.0.4
-flask-script==2.0.5       # via flask-migrate
-flask-seasurf==0.2.2
-flask-sqlalchemy==2.1
-flask==0.11.1
-idna==2.7                 # via requests
-itsdangerous==0.24        # via flask
-jinja2==2.8               # via flask
+Flask==0.11.1
+Flask-Admin==1.4.2
+Flask-Login==0.4.0
+Flask-Migrate==2.0.4
+Flask-Script==2.0.5
+Flask-Scss==0.5
+Flask-Seasurf==0.2.2
+Flask-SQLAlchemy==2.1
+Flask-Mail==0.9.0
+idna==2.7
+itsdangerous==0.24
+Jinja2==2.8
 lxml==4.2.4
 mako==1.0.7               # via alembic
 markupsafe==1.0           # via jinja2, mako

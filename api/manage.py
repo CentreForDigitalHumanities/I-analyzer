@@ -10,12 +10,12 @@ from flask_migrate import Migrate
 
 from ianalyzer import config
 from ianalyzer.models import User, Role, db, Corpus
-from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
+from ianalyzer.web import blueprint, admin_instance, login_manager, csrf, mail
 from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
 from es_index import perform_indexing
 
-app = flask_app(blueprint, admin_instance, login_manager, csrf)
+app = flask_app(blueprint, admin_instance, login_manager, mail, csrf)
 
 migrate = Migrate(app, db)
 

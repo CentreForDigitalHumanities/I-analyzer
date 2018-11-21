@@ -1,6 +1,20 @@
 <section class="section">
+    
+
     <form (ngSubmit)="login()" class="container is-readable">
+        
         <div class="container is-login">
+           <div *ngIf="isActivated">
+                <article class="message is-success">
+                        <div class="message-header">
+                          <p>Success</p>
+                        </div>
+                        <div class="message-body">
+                           Your registration is complete. You can now log in
+                        </div>
+                      </article>
+                      <br>
+           </div>
                 <h1 class="title">I-Analyzer</h1>
             <div class="field">
                 <label for="username">Username</label>
@@ -23,6 +37,12 @@
             <div class="field">
                 <p class="control">
                     <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Login</button>
+                <a class="navbar-item pull-right" [routerLinkActive]="'is-active'" [routerLink]="['/registration']">
+                    <span class="icon">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    Sign Up
+                </a>
                 </p>
             </div>
             <div class="field">

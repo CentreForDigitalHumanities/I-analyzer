@@ -6,6 +6,7 @@ export class User {
          * The download limit for this user, will be 0 if there is no limit.
          */
         public downloadLimit: number = 0, public queries: Query[]) {
+  
     }
 
     public canAccessCorpus(corpus: string): boolean {
@@ -16,4 +17,3 @@ export class User {
         return this.role.name == role;
     }
 }
-
