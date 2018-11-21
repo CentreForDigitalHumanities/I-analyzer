@@ -141,8 +141,9 @@ def api_register():
        
     # Validate user's input
     username = request.json['username']
+    email = request.json['email']
     is_valid_username = security.is_unique_username(username)
-    is_valid_email = security.is_unique_email(request.json['email'])
+    is_valid_email = security.is_unique_email(email)
         
     if not is_valid_username or not is_valid_email:
         return jsonify({
@@ -152,21 +153,29 @@ def api_register():
         })
     
     # try sending the email
-    if not send_registration_mail(request.json['email'], username):
+    if not send_registration_mail(email, username):
         return jsonify({
             'success': False,
             'is_valid_username': True,
             'is_valid_email': True
         })
 
-    # if email was succesfully sent, add user to db    
+    # if email was succesfully sent, add user to db
+    add_basic_user(username, request.json['password'], email, False)
+
+    return jsonify({'success': True})
+
+
+def add_basic_user(username, password, email, is_active):
+    ''' Add a user with the role 'basic' to the database '''
+
     basic_role = models.Role.query.filter_by(name='basic').first()
-    pw_hash = generate_password_hash(request.json['password'])
+    pw_hash = generate_password_hash(password)
     
     new_user = models.User(
         username=username,
-        email=request.json['email'],
-        active=False,
+        email=email,
+        active=is_active,
         password=pw_hash,
         role_id=basic_role.id,
     )
@@ -174,7 +183,6 @@ def api_register():
     models.db.session.add(new_user)
     models.db.session.commit()
 
-    return jsonify({'success': True})
 
 def send_registration_mail(email, username):
     '''
@@ -274,11 +282,18 @@ def api_login():
             'name': corpus.name,
             'description': corpus.description
         } for corpus in user.role.corpora]
+<<<<<<< Updated upstream
         role = {
             'name': user.role.name, 
             'description': user.role.description, 
             'corpora': corpora
         }
+=======
+
+        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
+        if user.role.name == "admin":
+            roles.append({'name': 'admin', 'description': 'admin role'})
+>>>>>>> Stashed changes
         
         response = jsonify({
             'success': True,
