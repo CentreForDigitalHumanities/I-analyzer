@@ -146,7 +146,7 @@ class DutchBanking(XMLCorpus):
         Field(
             name='id',
             display_name='ID',
-            description='Unique identifier of the text block.',
+            description='Unique identifier of the page.',
             extractor=Combined(
                 Metadata(key='company'),
                 Metadata(key='year'),
@@ -158,7 +158,7 @@ class DutchBanking(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            description='Text content of the block.',
+            description='Text content of the page.',
             results_overview=True,
             extractor=XML(
                 tag='String',
