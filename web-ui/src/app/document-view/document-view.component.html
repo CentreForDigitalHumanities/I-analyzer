@@ -29,7 +29,7 @@
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined">
-                    <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{document.fieldValues.image_path}}"/>
+                    <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/>
             </p-tabPanel>
         </p-tabView>
         </div>

@@ -298,14 +298,13 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_source_image/<path:image_path>', methods=['GET'])
+@blueprint.route('/api/get_source_image/<corpus>/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_source_image(image_path, current_corpus):
+def api_get_source_image(image_path, corpus):
     # toplevel directory for images of corpus, this should be decided by corpus
-    base_dir = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009/'
-    absolute_path = join(base_dir, image_path)
-
-    user = current_user
-    print(user, file=sys.stdout)
-    print(absolute_path, file=sys.stdout)
-    return send_file(absolute_path, mimetype='image/png')
+    backend_corpus = corpora.DEFINITIONS[corpus]
+    absolute_path = join(backend_corpus.data_directory, image_path)
+    user_permitted_corpora = [
+        corpus.name for corpus in current_user.role.corpora]
+    if (corpus in user_permitted_corpora):
+        return send_file(absolute_path, mimetype='image/png')

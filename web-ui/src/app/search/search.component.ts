@@ -74,10 +74,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
-    private multipleChoiceFilters: {name: string, size: number}[];
+    private multipleChoiceFilters: { name: string, size: number }[];
 
     private resultsCount: number = 0;
     private tabIndex: number;
+
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -130,7 +131,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     /**
      * turn a filter on/off via the filter icon
-     */ 
+     */
     public toggleFilter(name: string) {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
@@ -168,7 +169,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
-        
+
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
             filters.forEach(filter => {
@@ -180,14 +181,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
+    async getMultipleChoiceFilterOptions(filter: { name: string, size: number }): Promise<AggregateData> {
         let queryModel = _.cloneDeep(this.queryModel);
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
         if (queryModel.filters) {
-            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);                
+            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);
             if (index >= 0) {
                 queryModel.filters.splice(index, 1);
-            }      
+            }
         }
         return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
             return results.aggregations;
@@ -221,7 +222,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
-        if (data.filterName == 'MultipleChoiceFilter' && data.data.length==0) {
+        if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
         }
@@ -347,7 +348,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
-    private tabChange(event){
+    private tabChange(event) {
         this.tabIndex = event.index;
     }
 

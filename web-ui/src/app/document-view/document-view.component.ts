@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CorpusField, FoundDocument } from '../models/index';
+import { CorpusField, FoundDocument, Corpus } from '../models/index';
 
 @Component({
     selector: 'document-view',
@@ -23,6 +23,9 @@ export class DocumentViewComponent implements OnInit {
 
     @Input()
     public query: string;
+
+    @Input()
+    public corpus: Corpus;
 
     constructor() { }
 

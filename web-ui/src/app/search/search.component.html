@@ -130,5 +130,5 @@
           [draggable]="false"
           [resizable]="false"
           *ngIf="viewDocument">
-    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
+    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText" [corpus]="corpus"></document-view>
 </p-dialog>
