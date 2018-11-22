@@ -28,8 +28,8 @@
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
             </p-tabPanel>
-            <p-tabPanel header="" leftIcon="fa fa-image">
-                    <img class="src-img" src="/api/get_source_image/{{document.fieldValues.image_path}}"/>
+            <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined">
+                    <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{document.fieldValues.image_path}}"/>
             </p-tabPanel>
         </p-tabView>
         </div>

@@ -300,14 +300,12 @@ def api_get_wordcloud_data():
 
 @blueprint.route('/api/get_source_image/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_source_image(image_path):
+def api_get_source_image(image_path, current_corpus):
     # toplevel directory for images of corpus, this should be decided by corpus
     base_dir = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009/'
     absolute_path = join(base_dir, image_path)
 
-    # extract file extension
-    # name, extension = splitext(image_path)
-    # full_path = base_dir + image_path
-
+    user = current_user
+    print(user, file=sys.stdout)
     print(absolute_path, file=sys.stdout)
     return send_file(absolute_path, mimetype='image/png')
