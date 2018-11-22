@@ -296,8 +296,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.changeDetectorRef.detectChanges();
     }
 
-    public toggleGreyOutFilter(name:string, greyedOut:boolean) {
+    public toggleGreyOutFilter(name: string, greyedOut: boolean) {
         this.queryField[name].greyedOut = greyedOut;
+    }
+
+    public toggleAltered(name: string, isDefault: boolean) {
+        this.queryField[name].isDefault = isDefault;
     }
 
     public onSearched(input: ResultOverview) {
@@ -381,7 +385,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                     data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
                     useAsFilter: true,
                     downloadInCsv: true,
-                    greyedOut: false
+                    greyedOut: false,
+                    isDefault: true
                 }, field);
             } else {
                 // this field is not found in the route
@@ -389,7 +394,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                     data: null,
                     useAsFilter: false,
                     downloadInCsv: true,
-                    greyedOut: false
+                    greyedOut: false,
+                    isDefault: true
                 }, field);
                 // in case there have been some settings before (i.e., from a deactivated filter), retain them
                 if (this.queryField[field.name]) {
@@ -441,5 +447,6 @@ type QueryField = CorpusField & {
     data: SearchFilterData,
     useAsFilter: boolean,
     downloadInCsv: boolean,
-    greyedOut: boolean
+    greyedOut: boolean,
+    isDefault: boolean
 };

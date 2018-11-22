@@ -29,13 +29,17 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
 
     @Output('greyedOut')
     public greyedOutEmitter = new EventEmitter<boolean>();
-    
+
+    // @Output('isDefault')
+    // public defaultEmitter = new EventEmitter<boolean>();
 
     public isBottleneck: boolean = false;
 
     public get filter() {
         return this.field.searchFilter;
     }
+
+    public isDefault: boolean;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
@@ -203,6 +207,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
      */
     update(reset = false) {
         this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
+        // this.defaultEmitter.emit(_.isEqual(this.defaultFilterData(this.filter).data, this.getFilterData().data));
+        this.isDefault = _.isEqual(this.defaultFilterData(this.filter).data, this.getFilterData().data)
     }
 
     /**
