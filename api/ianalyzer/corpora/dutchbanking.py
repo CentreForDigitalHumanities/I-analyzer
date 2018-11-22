@@ -78,6 +78,21 @@ class DutchBanking(XMLCorpus):
 
     fields = [
         Field(
+            name='year',
+            display_name='Year',
+            description='Year of the financial report.',
+            results_overview=True,
+            visualization_type='term_frequency',
+            es_mapping={'type': 'integer'},
+            search_filter=RangeFilter(
+                description='Restrict the years from which search results will be returned.',
+                lower=min_date.year,
+                upper=max_date.year,
+            ),
+            extractor=Metadata(key='year', transform=int),
+            preselected=True
+        ),
+        Field(
             name='company',
             display_name='Company',
             description='Company to which the report belongs.',
@@ -109,21 +124,6 @@ class DutchBanking(XMLCorpus):
                 ]
             ),
             extractor=Metadata(key='company_type')
-        ),
-        Field(
-            name='year',
-            display_name='Year',
-            description='Year of the financial report.',
-            results_overview=True,
-            visualization_type='term_frequency',
-            es_mapping={'type': 'integer'},
-            search_filter=RangeFilter(
-                description='Restrict the years from which search results will be returned.',
-                lower=min_date.year,
-                upper=max_date.year,
-            ),
-            extractor=Metadata(key='year', transform=int),
-            preselected=True
         ),
         Field(
             name='page_number',
