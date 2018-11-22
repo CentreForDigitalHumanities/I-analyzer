@@ -266,6 +266,7 @@ def api_search_history():
         } for query in user.queries]
     })
 
+
 @blueprint.route('/api/get_wordcloud_data', methods=['POST'])
 @login_required
 def api_get_wordcloud_data():
@@ -273,3 +274,25 @@ def api_get_wordcloud_data():
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
     return jsonify({'data': word_counts})
+
+
+@blueprint.route('/api/get_similar_words', methods=['POST'])
+@login_required
+def api_get_similar_words():
+    if not request.json:
+        abort(400)
+    similar_words = analyze.get_diachronic_contexts(
+        request.json['query_term'],
+        request.json['corpus']
+    )
+    if isinstance(similar_words, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': similar_words})
+    else:
+        response = jsonfify({
+            'success': True,
+            'similar_words': similar_words
+        }) 
+    return response

@@ -5,6 +5,8 @@ import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 
+from . import config_fallback as config
+
 def make_wordcloud_data(list_of_content):
     cv = CountVectorizer(stop_words="english", max_features=50)
     counts = cv.fit_transform(list_of_content).toarray().ravel()
@@ -13,14 +15,24 @@ def make_wordcloud_data(list_of_content):
     return output
 
 
-def get_diachronic_contexts(query_term, number_similar=10):
-    complete, binned = load_data()
+def get_diachronic_contexts(query_term, corpus, number_similar=10):
+    try:
+        wm_directory = config.WM_DIRECTORY[corpus]
+    except KeyError:
+        return "There are no word models for this corpus."
+    complete, binned = load_data(
+        wm_directory,
+        config.WM_COMPLETE_FN,
+        config.WM_BINNED_FN
+    )
     word_list = find_n_most_similar(
         complete['svd_ppmi'],
         complete['transformer'],
         query_term,
         number_similar)
     out_list = []
+    if not word_list:
+        return "The query term is not in the word models' vocabulary."
     for time_bin in binned:
         this_dict = similarity_with_top_terms(
             time_bin['svd_ppmi'],
@@ -33,10 +45,10 @@ def get_diachronic_contexts(query_term, number_similar=10):
     return out_list
 
 
-def load_data(directory=DIRECTORY, complete=COMPLETE_FN, binned=BINNED_FN):
-    with open(directory+complete, "rb") as f:
+def load_data(directory, complete_fn, binned_fn):
+    with open(os.path.join(directory,complete_fn), "rb") as f:
         complete = pickle.load(f)
-    with open(directory+binned, "rb") as f:
+    with open(os.path.join(directory,binned_fn), "rb") as f:
         binned = pickle.load(f)
     return complete, binned
 
