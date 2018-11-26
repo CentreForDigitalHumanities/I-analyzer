@@ -1,7 +1,7 @@
 <h2 class="title">
     Search results
 </h2>
-<ng-container *ngIf="!results.total; else resultsBlock">
+<ng-container *ngIf="results===undefined || !results.total; else resultsBlock">
     <h2 class="subtitle">
         0 hits
     </h2>
@@ -15,30 +15,33 @@
         <ng-container *ngIf="user.downloadLimit">
             Your download limit is {{user.downloadLimit}}.
         </ng-container>
-        This is a subset of {{results.documents.length}} results:
+        Showing {{results.documents.length}} results:
     </h2>
     <ng-content></ng-content>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
-                <table class=" column table is-fullwidth">
-                    <ng-container *ngFor="let field of results.fields">
-                        <tr *ngIf="document.fieldValues[field.name]">
-                            <td>
-                                <b>{{field.displayName}}: </b>
-                            </td>
-                            <td [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
-                        </tr>
-                    </ng-container>
-                </table>
+                    <table class="table is-fullwidth">
+                        <ng-container *ngFor="let field of results.fields">
+                            <tr *ngIf="document.fieldValues[field.name]">
+                                <td>
+                                    <b>{{field.displayName}}: </b>
+                                </td>
+                                <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                            </tr>
+                        </ng-container>
+                    </table>
                 <div class="column is-one-quarter is-centered" *ngIf="document.relevance">
                     <div class="relevance-score">
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
                 </div>
+                
             </div>
+            
         </div>
+        
     </div>
     <div class="levels load-more" *ngIf="results.total > 5">
         <div class="level-item buttons" *ngIf="!results.completed">
@@ -50,3 +53,33 @@
         </div>
     </div>
 </ng-template>
+<!-- inform the user about a failed search -->
+<p-dialog [(visible)]="showError" width="600" *ngIf="showError">
+    <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>
+    <div class="content">
+        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the
+            following information when seeking support:</p>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Date</th>
+                    <td>
+                        <code>{{showError.date}}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <th>URL</th>
+                    <td>
+                        <code>{{showError.href}}</code>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Error</th>
+                    <td>
+                        <code>{{showError.message}}</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</p-dialog>

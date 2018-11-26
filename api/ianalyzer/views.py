@@ -10,6 +10,9 @@ import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
+from wtforms import ValidationError, TextField
+from wtforms.validators import Required, AnyOf
+from ianalyzer import config_fallback as config
 
 from . import config
 from . import forms
@@ -28,16 +31,61 @@ class ModelView(admin_sqla.ModelView):
         return redirect(url_for('admin.index'))
 
 
-class QueryView(ModelView):
+class QueryView(admin_sqla.ModelView):
     can_create = False
     can_edit = False
 
+    column_filters = [
+        'user.username'
+    ]
+
 
 class RoleView(ModelView):
-    pass
+    # specifies the fields and order in the create- and edit view
+    form_create_rules = (
+        'name', 'description', 'corpora', 'users')
+    form_edit_rules = (
+        'name', 'description', 'corpora', 'users')
+    
+    def on_form_prefill(self, form, id):
+        ''' Ensure the existence of roles with certain names '''
+        if (form.data['name'] == 'basic' or form.data['name'] == 'admin'):
+            form.name.render_kw = { 'readonly': True }
+
+
+class CorpusViewAdmin(ModelView):
+    unknown_corpus_message = "Corpus name has to match a known corpus (see the CORPORA key in the application config)"
+
+    form_args = dict(
+        name = dict(validators=[Required(), AnyOf(config.CORPORA.keys(), unknown_corpus_message)])
+    )
+
+    def after_model_change(self, form, model, is_created):
+        ''' Make sure the admin user has access to a new corpus '''
+        admin = models.Role.query.filter_by(name='admin').first()
+        exists = False
+
+        for corpus in admin.corpora:
+            if corpus == model:
+                exists = True
+                break
+
+        if not exists:
+            admin.corpora.append(model)
+            models.db.session.commit()
 
 
 class UserView(ModelView):
+    # specifies the columns and the order in users view
+    column_list = ['username', 'role', 'email',
+                   'active', 'authenticated', 'download_limit']
+
+    # specifies the fields and their order in create and edit views
+    form_create_rules = (
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
+    form_edit_rules = (
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
+
     form_overrides = dict(
         password=forms.PasswordField,
         queries=None,
@@ -52,25 +100,7 @@ class UserView(ModelView):
         ),
     )
 
-
-class CorpusView(admin.BaseView):
-
-    def __init__(self, corpus_name, **kwargs):
-        self.corpus_name = corpus_name
-        super(CorpusView, self).__init__(**kwargs)
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.has_role(self.corpus_name)
-
-    def inaccessible_callback(self, name, **kwargs):
-        flash('User does not exist, is deactivated '
-              'or could not be granted access to this corpus.')
-        return redirect(url_for('admin.index'))
-
-    @admin.expose('/', methods=['GET', 'POST'])
-    @login_required
-    def index(self):
-        return redirect('../search/' + self.corpus_name)
+    form_excluded_columns = ('queries',)
 
 
 class AdminIndexView(admin.AdminIndexView):

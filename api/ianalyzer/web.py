@@ -2,16 +2,20 @@
 Present the data to the user through a web interface.
 '''
 import json
+import base64
 import logging
 logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
-
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
+from flask_mail import Mail, Message
+from ianalyzer import config_fallback as config
+from werkzeug.security import generate_password_hash, check_password_hash
+from random import choice
 from flask_seasurf import SeaSurf
 
 from . import config_fallback as config
@@ -23,22 +27,32 @@ from . import streaming
 from . import corpora
 from . import analyze
 
+from flask_admin.base import MenuLink
+
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
-admin_instance.add_view(views.CorpusView(
-    corpus_name=list(config.CORPORA.keys())[0], name='Return to search',
-    endpoint=config.CORPUS_SERVER_NAMES[list(config.CORPORA.keys())[0]]))
+
+admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
+
 admin_instance.add_view(views.UserView(
     models.User, models.db.session, name='Users', endpoint='users'))
+
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
+
+admin_instance.add_view(views.CorpusViewAdmin(
+    models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
+
 admin_instance.add_view(views.QueryView(
     models.Query, models.db.session, name='Queries', endpoint='queries'))
+
 login_manager = LoginManager()
 csrf = SeaSurf()
+csrf.exempt_urls('/es',)
 
+mail = Mail()
 
 def corpus_required(method):
     '''
@@ -116,13 +130,99 @@ def init():
         return redirect(url_for('admin.login'))
 
 
+# endpoint for registration new user via signup form
+@blueprint.route('/api/register', methods=['POST'])
+def api_register():
+    if not request.json:
+        abort(400)
+       
+    # Validate user's input
+    username = request.json['username']
+    is_valid_username = security.is_unique_username(username)
+    is_valid_email = security.is_unique_email(request.json['email'])
+        
+    if not is_valid_username or not is_valid_email:
+        return jsonify({
+            'success': False,
+            'is_valid_username': is_valid_username,
+            'is_valid_email': is_valid_email
+        })
+    
+    # try sending the email
+    if not send_registration_mail(request.json['email'], username):
+        return jsonify({
+            'success': False,
+            'is_valid_username': True,
+            'is_valid_email': True
+        })
+
+    # if email was succesfully sent, add user to db    
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    pw_hash = generate_password_hash(request.json['password'])
+    
+    new_user = models.User(
+        username=username,
+        email=request.json['email'],
+        active=False,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
+
+    models.db.session.add(new_user)
+    models.db.session.commit()
+
+    return jsonify({'success': True})
+
+def send_registration_mail(email, username):
+    '''
+    Send an email with a confirmation token to a new user
+    Returns a boolean specifying whether the email was sent succesfully
+    '''
+    token = security.generate_confirmation_token(email)    
+    
+    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
+
+    msg.html = render_template('mail/new_user.html',
+                            username=username,
+                            confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                            url_i_analyzer=config.BASE_URL,
+                            logo_link=config.LOGO_LINK)
+
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        logger.error("An error occured sending an email to {}:".format(email))
+        logger.error(e)
+        return False
+
+
+
+# endpoint for the confirmation of user if link in email is clicked.
+@blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
+def api_register_confirmation(token):
+
+    expiration = 60*60*72  # method does not return email after this limit
+    try:
+        email = security.confirm_token(token, expiration)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+
+    user = models.User.query.filter_by(email=email).first_or_404()
+    user.active = True
+    models.db.session.add(user)
+    models.db.session.commit()
+
+    return redirect(config.BASE_URL+'/login?isActivated=true')
+
+
 @blueprint.route('/api/es_config', methods=['GET'])
 @login_required
 def api_es_config():
     return jsonify([{
         'name': server_name,
-        'host': server_config['host'],
-        'port': server_config['port'],
+        'host': url_for('es.forward_head', server_name=server_name, _external=True),
+        'port': None,
         'chunkSize': server_config['chunk_size'],
         'maxChunkBytes': server_config['max_chunk_bytes'],
         'bulkTimeout': server_config['bulk_timeout'],
@@ -145,6 +245,15 @@ def api_corpus_list():
     return response
 
 
+@blueprint.route('/api/corpusimage/<image_name>', methods=['GET'])
+@login_required
+def api_corpus_image(image_name):
+    '''
+    Return the image for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
+
+
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
     if not request.json:
@@ -152,18 +261,27 @@ def api_login():
     username = request.json['username']
     password = request.json['password']
     user = security.validate_user(username, password)
+
     if user is None:
         response = jsonify({'success': False})
     else:
         security.login_user(user)
+
+        corpora = [{
+            'name': corpus.name,
+            'description': corpus.description
+        } for corpus in user.role.corpora]
+        role = {
+            'name': user.role.name, 
+            'description': user.role.description, 
+            'corpora': corpora
+        }
+        
         response = jsonify({
             'success': True,
             'id': user.id,
             'username': user.username,
-            'roles': [{
-                'name': role.name,
-                'description': role.description
-            } for role in user.roles],
+            'role': role,
             'downloadLimit': user.download_limit,
             'queries': [{
                 'query': query.query_json,
@@ -221,11 +339,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    if 'id' in request.json:
-        query = models.Query.query.filter_by(id=request.json['id']).first()
-    else:
-        query = models.Query(
-            query=query_json, corpus_name=corpus_name, user=current_user)
+    # if 'id' in request.json:
+    #     query = models.Query.query.filter_by(id=request.json['id']).first()
+    # else:
+    query = models.Query(
+        query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -236,8 +354,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    models.db.session.add(query)
-    models.db.session.commit()
+    #models.db.session.add(query)
+    #models.db.session.commit()
 
     return jsonify({
         'id': query.id,
@@ -276,23 +394,24 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_similar_words', methods=['POST'])
+@blueprint.route('/api/get_related_words', methods=['POST'])
 @login_required
-def api_get_similar_words():
+def api_get_related_words():
     if not request.json:
         abort(400)
-    similar_words = analyze.get_diachronic_contexts(
+    results = analyze.get_diachronic_contexts(
         request.json['query_term'],
-        request.json['corpus']
+        request.json['corpus_name']
     )
-    if isinstance(similar_words, str):
+    if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
             'success': False,
-            'message': similar_words})
+            'message': results})
     else:
-        response = jsonfify({
+        response = jsonify({
             'success': True,
-            'similar_words': similar_words
+            'similar_words': results[0],
+            'time_points': results[1]
         }) 
     return response

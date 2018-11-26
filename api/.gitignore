@@ -7,3 +7,6 @@ indexing*
 *.egg
 build/
 dist/
+lib/
+set
+ianalyzer/corpora/wm*

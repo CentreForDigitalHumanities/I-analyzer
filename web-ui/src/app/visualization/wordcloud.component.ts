@@ -28,12 +28,13 @@ export class WordcloudComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         this.chartElement = this.chartContainer.nativeElement;
         let significantText = changes.significantText.currentValue;
-        if (significantText==undefined) {
-            return undefined;
-        }
-
         d3.selectAll('svg').remove();
+        if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
+            this.drawWordCloud(significantText);
+        }
+    }
 
+    drawWordCloud(significantText: string[]) {
         this.svg = d3.select(this.chartElement)
           .append("svg")
           .attr("width", this.width)

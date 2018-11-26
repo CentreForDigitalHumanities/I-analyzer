@@ -4,7 +4,7 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
-import { SearchFilterData, AggregateResult, UserRole, Query } from '../models/index';
+import { SearchFilterData, AggregateResult, UserRole, Query, User, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -54,6 +54,14 @@ export class ApiService extends Rest {
         { data: AggregateResult[] }>;
 
     @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_related_words'
+    })
+    public getRelatedWords: RestMethod<
+        { query_term: string, corpus_name: string },
+        { success: boolean, message?: string, similar_words?: any, time_points?: number[] }>;
+
+    @RestAction({
         path: '/corpus'
     })
     public corpus: RestMethod<void, any>;
@@ -88,7 +96,7 @@ export class ApiService extends Rest {
     })
     public login: RestMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, roles: UserRole[], downloadLimit: number | null, queries: Query[] }>;
+        { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
         method: RestRequestMethod.Post,
@@ -114,6 +122,14 @@ export class ApiService extends Rest {
         id: number,
         userID: number
     }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/register'
+    })
+    public register: RestMethod<
+    { username: string, email: string, password: string },
+    { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;  
 
     @RestAction({
         method: RestRequestMethod.Get,

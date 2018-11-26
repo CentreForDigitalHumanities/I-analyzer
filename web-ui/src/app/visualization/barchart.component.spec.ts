@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
+import { DataService } from '../services/index';
 import { BarChartComponent } from './barchart.component';
 
 describe('BarchartComponent', () => {
@@ -10,6 +11,7 @@ describe('BarchartComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
+            providers: [DataService],
             declarations: [BarChartComponent]
         }).compileComponents();
     }));
@@ -17,6 +19,7 @@ describe('BarchartComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BarChartComponent);
         component = fixture.componentInstance;
+        component.chartElement = document.createElement('div');
         fixture.detectChanges();
     });
 

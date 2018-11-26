@@ -1,7 +1,7 @@
 '''
 Module contains the models for user management and query logging in SQL.
 '''
-
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -13,13 +13,48 @@ DOWNLOAD_LIMIT = 10000
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_CORPUS_NAME = 254
 
+
 db = SQLAlchemy()
 
-roles_users = db.Table(
-    'roles_users',
-    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+
+# connects corpus id to role id
+corpora_roles = db.Table(
+    'corpora_roles',
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')),
+    db.Column('corpus_id', db.Integer(), db.ForeignKey('corpus.id'))
 )
+'''
+   connects corpus id to role id 
+'''
+
+
+class Role(db.Model):
+    '''
+    Determines user privileges.
+    '''
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
+
+    corpora = db.relationship('Corpus',
+                              secondary=corpora_roles,
+                              backref=db.backref('assigned_to', lazy='dynamic'), lazy='joined'
+                              )
+    '''
+    Which corpora belong to a user role.
+    '''
+
+    def __init__(self, name="", description=""):
+        self.name = name
+        self.description = description
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name
+
 
 class User(db.Model):
 
@@ -27,6 +62,11 @@ class User(db.Model):
     username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     password = db.Column(db.String(MAX_LENGTH_PASSWORD))
     email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
+
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
+    '''
+    To assign a role id to a user
+    '''
 
     active = db.Column(db.Boolean)
     '''
@@ -43,33 +83,33 @@ class User(db.Model):
     How high the download limit for the user is.
     '''
 
-    roles = db.relationship('Role',
-        secondary=roles_users,
-        backref=db.backref('users', lazy='dynamic'), lazy='joined'
-    )
+    role = db.relationship('Role',
+                           primaryjoin=(role_id == Role.id),
+                           backref=db.backref('users', lazy='dynamic'), lazy='joined',
+                           )
     '''
     Which privileges the user has.
     '''
 
     queries = db.relationship('Query',
-        backref=db.backref('user', lazy='joined'), lazy='dynamic')
+                              backref=db.backref('user', lazy='joined'), lazy='dynamic')
     '''
     Which queries the user has performed.
     '''
 
-
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT):
+    def __init__(self, username=None, firstname= None, lastname= None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None):
+        self.firstname = firstname
+        self.lastname = lastname
         self.username = username
         self.password = password
         self.email = email
         self.active = active
         self.authenticated = authenticated
         self.download_limit = download_limit
-
+        self.role_id=role_id
 
     def __repr__(self):
         return self.username
-
 
     @property
     def is_authenticated(self):
@@ -79,7 +119,6 @@ class User(db.Model):
         '''
 
         return self.authenticated
-
 
     @property
     def is_active(self):
@@ -92,15 +131,12 @@ class User(db.Model):
 
         return self.active
 
-
     @property
     def is_anonymous(self):
         '''
         This property should return True if this is an anonymous user.
         '''
         return False
-
-
 
     def get_id(self):
         '''
@@ -110,31 +146,14 @@ class User(db.Model):
 
         return str(self.id)
 
+    def has_access(self, corpus_name):
+        for c in self.role.corpora:
+            if c.name == corpus_name:
+                return True
+        return False
 
-    def has_role(self, role):
-        return bool([r for r in self.roles if r.name == role])
-
-
-
-class Role(db.Model):
-    '''
-    Determines user privileges.
-    '''
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
-    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
-
-    def __init__(self, name="", description=""):
-        self.name = name
-        self.description = description
-
-    def __hash__(self):
-        return hash(self.name)
-
-    def __repr__(self):
-        return self.name
-
+    def has_role(self, role):        
+        return self.role.name == role
 
 
 class Query(db.Model):
@@ -189,4 +208,24 @@ class Query(db.Model):
         self.transferred = 0
 
     def __repr__(self):
-        return '<Query #{}>'.format( self.id )
+        return '<Query #{}>'.format(self.id)
+
+
+class Corpus(db.Model):
+    '''
+    The corpora that are attached to a role
+    '''
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
+    description = db.Column(db.String(MAX_LENGTH_DESCRIPTION))
+
+    def __init__(self, name="", description=""):
+        self.name = name
+        self.description = description
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return self.name

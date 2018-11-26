@@ -5,12 +5,15 @@ import { SessionService } from './session.service';
 import { User } from '../models/user';
 
 import { Subject, Subscription } from 'rxjs';
+import { LoginComponent } from '../login/login.component';
 
 const localStorageKey = 'currentUser';
 const sessionCheckInterval = 10000;
 
 @Injectable()
 export class UserService implements OnDestroy {
+    // workaround for logging out "expired" users, including those who never logged on in the first place
+    public static loginActivated = false;
     private deserializedCurrentUser: User | false = false;
     private sessionExpiredSubscription: Subscription;
     /**
@@ -61,7 +64,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['roles'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries']);
         } else {
             return false;
         }
@@ -76,9 +79,11 @@ export class UserService implements OnDestroy {
         }
     }
 
+
+
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
-            // no need to notify the server that we are going to logoff, because it told us this is already the case
+            // no need to notify the server that we are going to logoff, because it told us this is already the case            
             this.logout(false, true);
         });
     }
@@ -107,7 +112,7 @@ export class UserService implements OnDestroy {
                 this.currentUser = new User(
                     result.id,
                     result.username,
-                    result.roles,
+                    result.role,
                     result.downloadLimit == null ? 0 : result.downloadLimit,
                     result.queries);
                 if (username == 'guest') {
@@ -123,6 +128,16 @@ export class UserService implements OnDestroy {
 
         return loginPromise;
     }
+
+
+    /**
+     * Registration of new user.
+     */
+    public register(username:string, email: string, password:string ): 
+        Promise<{success: boolean, is_valid_username: boolean, is_valid_email: boolean}> {        
+        return this.apiService.register({ username, email, password })
+    }
+
 
     public loginAsGuest() {
         if (this.supportGuest) {
@@ -146,7 +161,7 @@ export class UserService implements OnDestroy {
             await this.apiService.logout();
         }
 
-        if (redirectToLogout) {
+        if (redirectToLogout && !UserService.loginActivated) {
             this.showLogin();
         }
 
@@ -157,3 +172,5 @@ export class UserService implements OnDestroy {
         this.router.navigate(['/login'], returnUrl ? { queryParams: { returnUrl } } : undefined);
     }
 }
+
+

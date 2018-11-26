@@ -15,7 +15,7 @@ def make_wordcloud_data(list_of_content):
     return output
 
 
-def get_diachronic_contexts(query_term, corpus, number_similar=10):
+def get_diachronic_contexts(query_term, corpus, number_similar=5):
     try:
         wm_directory = config.WM_DIRECTORY[corpus]
     except KeyError:
@@ -30,19 +30,21 @@ def get_diachronic_contexts(query_term, corpus, number_similar=10):
         complete['transformer'],
         query_term,
         number_similar)
-    out_list = []
     if not word_list:
         return "The query term is not in the word models' vocabulary."
+    times = []
+    if query_term in word_list:
+        word_list.remove(query_term)
+    word_data = [{'label': word, 'data': []} for word in word_list]
     for time_bin in binned:
-        this_dict = similarity_with_top_terms(
+        word_data = similarity_with_top_terms(
             time_bin['svd_ppmi'],
             time_bin['transformer'],
             query_term,
-            word_list)
-        this_dict['time_point'] = np.mean(
-            [time_bin['start_year'], time_bin['end_year']])
-        out_list.append(this_dict)
-    return out_list
+            word_data)
+        times.append(np.mean(
+            [time_bin['start_year'], time_bin['end_year']]))
+    return word_data, times
 
 
 def load_data(directory, complete_fn, binned_fn):
@@ -75,7 +77,7 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     return output_terms
 
 
-def similarity_with_top_terms(matrix, transformer, query_term, word_list):
+def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     """given a matrix of svd_ppmi values,
     the transformer (i.e., sklearn CountVectorizer), and a word list
     of the terms matching the query term best over the whole corpus,
@@ -85,17 +87,16 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_list):
             (i for i, a in enumerate(transformer.get_feature_names())
              if a == query_term), None)
     query_vec = matrix[:, query_index]
-    out = {}
-    for term in word_list:
+    for item in word_data:
         index = next(
             (i for i, a in enumerate(transformer.get_feature_names())
-             if a == term), None)
+             if a == item['label']), None)
         if not index:
-            value = None
+            value = 0
         else:
             value = cosine_similarity(matrix[:, index], query_vec)
-        out[term] = value
-    return out
+        item['data'].append(value)
+    return word_data
 
 
 def cosine_similarity(array1, array2):

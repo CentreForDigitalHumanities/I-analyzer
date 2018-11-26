@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as _ from "lodash";
 import { Subscription }   from 'rxjs';
 
+import { AggregateResult } from '../models/index';
 import { DataService } from '../services/index';
 
 @Component({
@@ -14,11 +15,7 @@ import { DataService } from '../services/index';
 
 export class BarChartComponent implements OnChanges {
     @ViewChild('barchart') private barchartContainer: ElementRef;
-    @Input('searchData') searchData: {
-        key: any,
-        doc_count: number,
-        key_as_string?: string
-    }[];
+    @Input() searchData: AggregateResult[];
     @Input() visualizedField;
     @Input() asPercent;
 
@@ -42,7 +39,9 @@ export class BarChartComponent implements OnChanges {
     public chartElement: any;
 
     private xBarWidth: number;
-    public subscription: Subscription;
+
+    // dataService is needed for pushing filtered data from timeline component
+    constructor(public dataService: DataService){}
 
     ngOnChanges(changes: SimpleChanges) {
         if (this.chartElement == undefined) {
@@ -77,7 +76,7 @@ export class BarChartComponent implements OnChanges {
          adjust the x and y ranges
          */
         this.yDomain = [0, this.yMax];
-        this.yTicks = (this.yDomain[1] > 1 && this.yDomain[1] < 20) ? this.yMax : 10;
+        this.yTicks = this.yDomain[1] > 10 ? 10 : this.yMax;
         this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
@@ -172,7 +171,6 @@ export class BarChartComponent implements OnChanges {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
-
         const update = this.chart.selectAll('.bar')
             .data(inputData);
 

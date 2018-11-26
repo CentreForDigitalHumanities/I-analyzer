@@ -29,6 +29,13 @@ export class SearchService {
     }
 
     /**
+     * Clear ES's scrollId and resources
+     */
+    public async clearESScroll(corpus: Corpus, existingResults: SearchResults): Promise<void> {
+        return this.elasticSearchService.clearScroll(corpus, existingResults);
+    }
+
+    /**
      * Construct a dictionary representing an ES query.
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param fields Optional list of fields to restrict the queryString to.
@@ -119,6 +126,19 @@ export class SearchService {
     public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
         return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
             return {[fieldName]: result['data']};
+        });
+    }
+
+    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<any> {
+        return this.apiService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'labels': result['time_points'], 'datasets':result['similar_words']});
+                }
+                else {
+                    reject({'message': result['message']})
+                }
+            })
         });
     }
 

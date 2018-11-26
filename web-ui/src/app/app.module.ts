@@ -3,11 +3,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Http, HttpModule, Response } from '@angular/http';
+import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
@@ -37,6 +37,9 @@ import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
+import { RegistrationComponent } from './registration/registration.component';
+import { PrivacyComponent } from './privacy/privacy.component';
+import { RelatedWordsComponent } from './visualization/related-words.component';
 
 const appRoutes: Routes = [
     {
@@ -47,6 +50,18 @@ const appRoutes: Routes = [
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: 'login/:activated',
+        component: LoginComponent
+    },
+    {
+        path: 'registration',
+        component: RegistrationComponent
+    },
+    {
+        path: 'privacy',
+        component: PrivacyComponent
     },
     {
         path: 'home',
@@ -95,7 +110,10 @@ const appRoutes: Routes = [
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
         FreqtableComponent,
-        SelectFieldComponent
+        SelectFieldComponent,
+        RegistrationComponent,
+        PrivacyComponent,
+        RelatedWordsComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -111,6 +129,7 @@ const appRoutes: Routes = [
         SliderModule,
         MenuModule,
         DialogModule,
+        ChartModule,
         CheckboxModule,
         SharedModule,
         TableModule,
@@ -137,7 +156,11 @@ const appRoutes: Routes = [
         UserService, 
         CorpusGuard, 
         LoggedOnGuard, 
-        TitleCasePipe],
+        TitleCasePipe,
+        {
+            provide: XSRFStrategy,
+            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
+        }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

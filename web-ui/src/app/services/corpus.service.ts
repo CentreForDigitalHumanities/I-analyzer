@@ -42,7 +42,7 @@ export class CorpusService {
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
         let currentUser = await this.userService.getCurrentUser();
-        let availableCorpora = Object.keys(data).filter(name => currentUser.hasRole(name));
+        let availableCorpora = Object.keys(data).filter(name => currentUser.canAccessCorpus(name));
         return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
 

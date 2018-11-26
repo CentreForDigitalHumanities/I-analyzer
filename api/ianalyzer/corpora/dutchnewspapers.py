@@ -1,3 +1,13 @@
+from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
+from ianalyzer import filters
+from ianalyzer import extract
+from ianalyzer import config_fallback as config
+from pprint import pprint
+import random
+import re
+from datetime import datetime, timedelta
+from os.path import join, isfile, splitext
+import os
 '''
 Collect corpus-specific information, that is, data structures and file
 locations.
@@ -5,17 +15,7 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-import os
-from os.path import join, isfile, splitext
-from datetime import datetime, timedelta
-import re
-import random
-from pprint import pprint
 
-from ianalyzer import config_fallback as config
-from ianalyzer import extract
-from ianalyzer import filters
-from ianalyzer.corpora.common import XMLCorpus, Field, until, after, string_contains
 
 # Source files ################################################################
 
@@ -214,6 +214,7 @@ class DutchNewspapers(XMLCorpus):
             name='category',
             display_name='Category',
             description='Whether the item is an article, advertisment, etc.',
+            preselected=True,
             es_mapping={'type': 'keyword'},
             extractor=extract.XML(tag='subject',
                                   toplevel=True,
@@ -260,6 +261,7 @@ class DutchNewspapers(XMLCorpus):
             name='language',
             display_name='Language',
             description='language',
+            preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(

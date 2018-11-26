@@ -1,5 +1,5 @@
 <div #viscontrol>
-	<p-dropdown [options]="visDropdown" [(ngModel)]="visualized" (onChange)="setVisualizedField($event.value.field)"></p-dropdown>
+	<p-dropdown [options]="visDropdown" [(ngModel)]="visualizedField" (onChange)="setVisualizedField($event.value)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
 	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
@@ -10,32 +10,34 @@
 	</button>
 </div>
 
-<ng-container *ngIf="aggResults.length>0; else noResultsMessage">
-    <div class="checkbox" *ngIf="visualizationType!='wordcloud' || freqtable">
+<ng-container *ngIf="aggResults && aggResults.length>0 || aggResults.labels; else noVisualsMessage">
+    <div class="checkbox" *ngIf="visualizationType!='wordcloud' && visualizationType!='relatedwords' || freqtable">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage
     	</label>
     </div>  
-
-    <!-- <div class="d3-chart" #chart></div> -->
-        <ng-container *ngIf="!freqtable">
-    	    <ng-container [ngSwitch]="visualizationType">
-                <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
-    			 [asPercent]="asPercentage">
-    			</ia-barchart>
-    			<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
-    			[asPercent]="asPercentage"></ia-timeline>
-    			<ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
-            </ng-container>
+    <ng-container *ngIf="!freqtable">
+        <ng-container [ngSwitch]="visualizationType">
+            <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+    		 [asPercent]="asPercentage">
+    		</ia-barchart>
+    		<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
+    		[asPercent]="asPercentage"></ia-timeline>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="aggResults"></ia-related-words>
         </ng-container>
-    	<ng-container *ngIf="freqtable">
-    		<ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
-    		</ia-freqtable>
-    	</ng-container>
-    <!-- </div> -->
+    </ng-container>
+    <ng-container *ngIf="freqtable">
+    	<ia-freqtable *ngIf="visualizationType=='timeline'; else other" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+        </ia-freqtable>
+        <ng-template #other>
+            <ia-freqtable [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+            </ia-freqtable>
+        </ng-template>
+    </ng-container>
 </ng-container>
 
-<ng-template #noResultsMessage>
-    <b> There is no data to be visualized. </b>
+<ng-template #noVisualsMessage>
+    <b> {{foundNoVisualsMessage}} </b>
 </ng-template>
