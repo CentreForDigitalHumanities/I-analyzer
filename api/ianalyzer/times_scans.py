@@ -85,9 +85,9 @@ def update_document(index, doc_type, doc_id, image_path):
     updated_docs += 1
 
 
-logfile = 'adding TIMES scans'
-logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
-logging.info('Started indexing updating')
-
-this_corpus = corpora.DEFINITIONS['times']
-add_images(this_corpus, 100)
+if __name__ == "__main__":
+    logfile = 'times_add_scans'
+    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
+    logging.info('Starting adding scans to ES index')
+    this_corpus = corpora.DEFINITIONS['times']
+    add_images(this_corpus, 100)
