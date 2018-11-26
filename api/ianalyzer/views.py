@@ -10,6 +10,9 @@ import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
+from wtforms import ValidationError, TextField
+from wtforms.validators import Required, AnyOf
+from ianalyzer import config_fallback as config
 
 from . import config
 from . import forms
@@ -43,10 +46,33 @@ class RoleView(ModelView):
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
+    
+    def on_form_prefill(self, form, id):
+        ''' Ensure the existence of roles with certain names '''
+        if (form.data['name'] == 'basic' or form.data['name'] == 'admin'):
+            form.name.render_kw = { 'readonly': True }
 
 
 class CorpusViewAdmin(ModelView):
-    pass
+    unknown_corpus_message = "Corpus name has to match a known corpus (see the CORPORA key in the application config)"
+
+    form_args = dict(
+        name = dict(validators=[Required(), AnyOf(config.CORPORA.keys(), unknown_corpus_message)])
+    )
+
+    def after_model_change(self, form, model, is_created):
+        ''' Make sure the admin user has access to a new corpus '''
+        admin = models.Role.query.filter_by(name='admin').first()
+        exists = False
+
+        for corpus in admin.corpora:
+            if corpus == model:
+                exists = True
+                break
+
+        if not exists:
+            admin.corpora.append(model)
+            models.db.session.commit()
 
 
 class UserView(ModelView):

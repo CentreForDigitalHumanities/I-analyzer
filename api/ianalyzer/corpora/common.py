@@ -196,7 +196,6 @@ class Corpus(object):
         `sources` is specified, those source/metadata tuples are used instead.
         '''
         sources = sources or self.sources()
-
         return (document
                 for source in sources
                 for document in self.source2dicts(
@@ -240,7 +239,7 @@ class XMLCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
-
+        
         # determine if the source contains multiple files
         multiple = isinstance(source, list)
 
