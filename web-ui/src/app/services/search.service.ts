@@ -132,7 +132,7 @@ export class SearchService {
                 else {
                     reject({'message': 'No word cloud data could be extracted from your search results.'});
                 }
-            }
+            });
         });
     }
 
