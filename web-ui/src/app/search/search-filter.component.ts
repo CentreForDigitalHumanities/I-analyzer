@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
-import { Subscription }   from 'rxjs';
+import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
@@ -27,6 +27,9 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilterData>();
 
+    @Output('greyedOut')
+    public greyedOutEmitter = new EventEmitter<boolean>();
+
     public isBottleneck: boolean = false;
 
     public get filter() {
@@ -51,7 +54,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                     this.aggregateData = data;
                     this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
                 }
-        });
+            });
     }
 
     ngOnInit() {
@@ -115,19 +118,21 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                 if (filter.name == filterData.filterName) {
                     let options = [];
                     if (aggregateData != null) {
-                        this.greyedOut = false;                
+                        this.greyedOutEmitter.emit(false);
+                        this.greyedOut = false;
                         options = _.sortBy(
                             aggregateData[filterData.fieldName], x => x.key
                         ).map(
-                            x => { 
-                                return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key } 
-                        });
+                            x => {
+                                return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
+                            });
                         if (options.length === 0) {
+                            this.greyedOutEmitter.emit(true);
                             this.greyedOut = true;
                         }
                     }
                     else {
-                        options = filter.options.map(x => { return { 'label': x, 'value': x } }); 
+                        options = filter.options.map(x => { return { 'label': x, 'value': x } });
                     };
                     return { options: options, selected: filterData.data };
                 }
