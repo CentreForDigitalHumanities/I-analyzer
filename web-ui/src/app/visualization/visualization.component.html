@@ -10,7 +10,7 @@
 	</button>
 </div>
 
-<ng-container *ngIf="aggResults && aggResults.length>0 || aggResults.labels; else noVisualsMessage">
+<ng-container *ngIf="searchResults && (aggResults && aggResults.length>0 || relatedWords); else noVisualsMessage">
     <div class="checkbox" *ngIf="visualizationType!='wordcloud' && visualizationType!='relatedwords' || freqtable">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
@@ -25,7 +25,7 @@
     		<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
     		[asPercent]="asPercentage"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="aggResults"></ia-related-words>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWords"></ia-related-words>
         </ng-container>
     </ng-container>
     <ng-container *ngIf="freqtable">
@@ -40,4 +40,9 @@
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>
+    <div class="container" *ngIf="errorMessage.length > 0">
+        <div class="notification is-warning">
+            {{errorMessage}}
+        </div>
+    </div>
 </ng-template>

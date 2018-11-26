@@ -22,15 +22,17 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     public visualizedField: string;
 
-    public noResults: string = "There is no data to be visualized."
+    public noResults: string = "Did not find data to visualize."
     public foundNoVisualsMessage: string = this.noResults;
+    public errorMessage: string = '';
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
     public visualizationType: string;
     public freqtable: boolean = false;
 
-    public aggResults: AggregateResult[] | any;
+    public aggResults: AggregateResult[];
+    public relatedWords: any;
     public searchResults: SearchResults;
 
     // aggregate search expects a size argument
@@ -77,6 +79,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     setVisualizedField(visualizedField: string) {
         this.aggResults = [];
+        this.errorMessage = '';
         let visualizationType: string;
         if (visualizedField == 'relatedwords') {
             visualizationType = visualizedField;
@@ -92,6 +95,10 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                     // slice is used so the child component fires OnChange
                     this.aggResults = result[visualizedField].slice(0);
                 })
+                .catch(error => {
+                    this.foundNoVisualsMessage = this.noResults;
+                    this.errorMessage = error['message'];
+                });
             }
         }
         else if (visualizationType === 'timeline') {
@@ -102,11 +109,11 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         }
         else if (visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
-                this.aggResults = results;
+                this.relatedWords = results;
             })
-            .catch( error => {
+            .catch(error => {
                 this.foundNoVisualsMessage = this.noResults;
-                console.log(error['message']);
+                this.errorMessage = error['message'];
             });
         }
         else {

@@ -125,7 +125,14 @@ export class SearchService {
 
     public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
         return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
-            return {[fieldName]: result['data']};
+            return new Promise( (resolve, reject) => {
+                if (result['data']) {
+                    resolve({[fieldName]: result['data']});
+                }
+                else {
+                    reject({'message': 'No word cloud data could be extracted from your search results.'});
+                }
+            }
         });
     }
 
