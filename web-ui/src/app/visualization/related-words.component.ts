@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+import { ManualService } from '../services/index';
+
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -23,14 +25,18 @@ export class RelatedWordsComponent implements OnInit {
             }]
         }
     }
-    constructor() { }
+    
+    constructor(private manualService: ManualService) { }
 
     ngOnInit() {
-        console.log(this.searchData);
         this.searchData.datasets.map( (d, index) => {
             d.fill = false;
             d.borderColor = this.colorPalette[index];
         })
+    }
+
+    showRelatedWordsDocumentation() {
+        this.manualService.showPage('relatedwords');
     }
 
 }

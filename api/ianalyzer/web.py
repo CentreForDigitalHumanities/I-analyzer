@@ -411,7 +411,10 @@ def api_get_related_words():
     else:
         response = jsonify({
             'success': True,
-            'similar_words': results[0],
-            'time_points': results[1]
+            'related_word_data': {
+                'similar_words_all': results[0],
+                'similar_words_subsets': results[1],
+                'time_points': results[2]
+            }
         }) 
     return response

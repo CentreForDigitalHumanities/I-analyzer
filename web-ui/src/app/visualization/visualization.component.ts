@@ -32,7 +32,15 @@ export class VisualizationComponent implements OnInit, OnDestroy {
     public freqtable: boolean = false;
 
     public aggResults: AggregateResult[];
-    public relatedWords: any;
+    public relatedWordsGraph: {
+        labels: string[], 
+        datasets: {
+            label: string, data: number[]
+        }[]
+    };
+    public relatedWordsTable: {
+        [word: string]: number
+    }
     public searchResults: SearchResults;
 
     // aggregate search expects a size argument
@@ -109,7 +117,8 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         }
         else if (visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
-                this.relatedWords = results;
+                this.relatedWordsGraph = results['graphData'];
+                this.relatedWordsTable = results['tableData'];
             })
             .catch(error => {
                 this.foundNoVisualsMessage = this.noResults;

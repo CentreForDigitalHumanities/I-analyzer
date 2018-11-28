@@ -140,7 +140,11 @@ export class SearchService {
         return this.apiService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
-                    resolve({'labels': result['time_points'], 'datasets':result['similar_words']});
+                    resolve({'graphData': {
+                                'labels': result['related_word_data'].time_points, 
+                                'datasets':result['related_word_data'].similar_words_subsets
+                            },
+                            'tableData': result['related_word_data'].similar_words_all});
                 }
                 else {
                     reject({'message': result['message']})

@@ -287,7 +287,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
-            console.log(data)
         }
         else if (previousData != null && previousData != data) {
             this.applyFilter(name, true);

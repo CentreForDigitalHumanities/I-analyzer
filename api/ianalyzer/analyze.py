@@ -1,6 +1,7 @@
 
 import os
 import pickle
+# as per Python 3, pickle uses cPickle under the hood
 
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
@@ -33,9 +34,9 @@ def get_diachronic_contexts(query_term, corpus, number_similar=5):
     if not word_list:
         return "The query term is not in the word models' vocabulary."
     times = []
-    if query_term in word_list:
+    if query_term in word_list.keys():
         word_list.remove(query_term)
-    word_data = [{'label': word, 'data': []} for word in word_list]
+    word_data = [{'label': word, 'data': []} for word in word_list.keys()]
     for time_bin in binned:
         word_data = similarity_with_top_terms(
             time_bin['svd_ppmi'],
@@ -44,7 +45,7 @@ def get_diachronic_contexts(query_term, corpus, number_similar=5):
             word_data)
         times.append(np.mean(
             [time_bin['start_year'], time_bin['end_year']]))
-    return word_data, times
+    return word_list, word_data, times
 
 
 def load_data(directory, complete_fn, binned_fn):
@@ -70,10 +71,10 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     similarities = cosine_similarity(matrix, vec)
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
-    output_terms = [
-        transformer.get_feature_names()[index]
+    output_terms = {
+        transformer.get_feature_names()[index]: similarities[index]
         for index in most_similar_indices[0]
-    ]
+    }
     return output_terms
 
 
