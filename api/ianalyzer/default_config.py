@@ -84,7 +84,7 @@ TML_ES_DOCTYPE = 'article'
 TML_DATA = '/Users/3248526/corpora/tml'
 TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
-TML_IMAGE = 'times.jpg'
+TML_IMAGE = 'tml.jpg'
 
 TIMES_TITLE = "Times"
 TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
@@ -102,7 +102,7 @@ DUTCHBANK_ES_DOCTYPE = 'page'
 DUTCHBANK_DATA = '/mnt/dutchbank'
 DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
-DUTCHBANK_IMAGE = '/static/images/dutchbanking.jpg'
+DUTCHBANK_IMAGE = 'dutchbanking.jpg'
 DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
 DUTCHBANK_MAP = {}
 
