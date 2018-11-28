@@ -2,12 +2,12 @@
     <ng-template pTemplate="header">
         <tr class="is-selected">
             <th [pSortableColumn]="'key'">
-                {{visualizedField|titlecase}}
+                {{visualizedField.displayName}}
                 <p-sortIcon [field]="'key'"></p-sortIcon>
             </th>
             <th [pSortableColumn]="'doc_count'">
-                <ng-container *ngIf="!asPercent">Frequency</ng-container>
-                <ng-container *ngIf="asPercent">Percent</ng-container>
+                <ng-container>Frequency</ng-container>
+                <!-- <ng-container *ngIf="asPercent">Percent</ng-container> -->
                 <p-sortIcon [field]="'doc_count'"></p-sortIcon>
             </th>
         </tr>
@@ -15,7 +15,7 @@
     <ng-template pTemplate="body" let-entry>
         <tr>
             <td>{{entry.key}}</td>
-            <td *ngIf="!asPercent">{{entry.doc_count}}</td>
+            <td *ngIf="!asPercent">{{entry.doc_count || entry.similarity}}</td>
             <td *ngIf="asPercent">{{entry.doc_count_fraction | percent:'1.0-2'}}</td>
         </tr>
     </ng-template>

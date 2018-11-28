@@ -437,6 +437,7 @@ class Field(object):
                  results_overview=False,
                  preselected=False,
                  visualization_type=None,
+                 default_sort="key",
                  es_mapping={'type': 'text'},
                  search_filter=None,
                  extractor=extract.Constant(None),
