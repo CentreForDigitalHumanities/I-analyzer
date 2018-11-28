@@ -148,6 +148,7 @@ class DutchBanking(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            visualization_type='wordcloud',
             description='Text content of the page.',
             results_overview=True,
             extractor=XML(
