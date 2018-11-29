@@ -149,7 +149,7 @@ export class BarChartComponent implements OnChanges {
             .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
         // adding axis labels
-        let xLabelText = this.visualizedField.replace(/\b\w/g, l => l.toUpperCase());
+        let xLabelText = this.visualizedField.displayName;
         let yLabelText = "Frequency";
 
         this.svg.append("text")

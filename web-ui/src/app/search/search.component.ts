@@ -232,7 +232,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
-
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
             filters.forEach(filter => {
