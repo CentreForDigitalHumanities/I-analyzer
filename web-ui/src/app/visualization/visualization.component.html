@@ -11,7 +11,7 @@
 </div>
 
 <ng-container *ngIf="searchResults && (aggResults && aggResults.length>0 || relatedWordsGraph); else noVisualsMessage">
-    <div class="checkbox" *ngIf="visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords' || freqtable">
+    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords') || (freqtable && visualizedField.visualizationType != 'relatedwords')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage
