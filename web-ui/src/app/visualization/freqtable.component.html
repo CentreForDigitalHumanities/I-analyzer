@@ -6,8 +6,7 @@
                 <p-sortIcon [field]="'key'"></p-sortIcon>
             </th>
             <th [pSortableColumn]="'doc_count'">
-                <ng-container>Frequency</ng-container>
-                <!-- <ng-container *ngIf="asPercent">Percent</ng-container> -->
+                <ng-container>{{rightColumnName}}</ng-container>
                 <p-sortIcon [field]="'doc_count'"></p-sortIcon>
             </th>
         </tr>

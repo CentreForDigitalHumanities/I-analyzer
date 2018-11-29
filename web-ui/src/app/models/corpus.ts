@@ -43,6 +43,7 @@ export type CorpusField = {
     resultsOverview?: boolean,
     preselected?: boolean,
     visualizationType?: string,
+    visualizationSort?: string,
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,

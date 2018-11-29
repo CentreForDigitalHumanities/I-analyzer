@@ -31,6 +31,7 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
 
     public defaultSort: string = "doc_count";
     public defaultSortOrder: string = "-1"
+    public rightColumnName: string;
 
     public tableData: FreqtableComponent['searchData'] & {
         doc_count_fraction: number
@@ -43,7 +44,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
             if (results !== undefined) {
                 this.searchData = results;
                 this.searchData.map(d => d.key = moment(d[0].date).format("YYYY-MM-DD"));
-                this.defaultSort = "key";
                 this.createTable();
             }
         });
@@ -53,15 +53,26 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges() {
+        // set the name of the right column
+        if (this.asPercent === true ) {
+            this.rightColumnName = "Percent";
+        }
+        else if (this.visualizedField.name === "relatedwords") {
+            this.rightColumnName = "Similarity";
+        }
+        else {
+            this.rightColumnName = "Frequency";
+        }
+        
         if (this.searchData && this.visualizedField) {
             // date fields are returned with keys containing identifiers by elasticsearch
             // replace with string representation, contained in 'key_as_string' field
-            if ("similarity" in this.searchData) {
-                this.defaultSort = "similarity";
+            if ("visualizationSort" in this.visualizedField) {
+                this.defaultSort = this.visualizedField.visualizationSort;
             }
             else {
-                this.defaultSort = "doc_count";             
+                this.defaultSort = "doc_count";      
             }
             this.createTable();
         }

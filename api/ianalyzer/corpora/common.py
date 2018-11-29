@@ -437,7 +437,7 @@ class Field(object):
                  results_overview=False,
                  preselected=False,
                  visualization_type=None,
-                 default_sort="key",
+                 visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
                  extractor=extract.Constant(None),
@@ -454,6 +454,7 @@ class Field(object):
         self.results_overview = results_overview
         self.preselected = preselected
         self.visualization_type = visualization_type
+        self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
         self.indexed = indexed
         self.hidden = not indexed or hidden

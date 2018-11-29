@@ -36,7 +36,7 @@ def get_diachronic_contexts(query_term, corpus, number_similar=5):
     times = []
     words = [word['key'] for word in word_list]
     if query_term in words:
-        word_list.remove(query_term)
+        words.remove(query_term)
     word_data = [{'label': word, 'data': []} for word in words]
     for time_bin in binned:
         word_data = similarity_with_top_terms(
@@ -72,6 +72,7 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     similarities = cosine_similarity(matrix, vec)
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
+    print(sorted_sim[0], sorted_sim[-1],[similarities[index] for index in most_similar_indices[0]])
     output_terms = [{
         'key': transformer.get_feature_names()[index], 
         'similarity': similarities[index]

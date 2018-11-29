@@ -93,7 +93,8 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         if (selectedField == 'relatedwords') {
             this.visualizedField.visualizationType = selectedField;
             this.visualizedField.name = selectedField;
-            this.visualizedField.displayName = 'Related Words'
+            this.visualizedField.displayName = 'Related Words';
+            this.visualizedField.visualizationSort = 'similarity';
             }
         else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { ManualService } from '../services/index';
 
@@ -7,7 +7,7 @@ import { ManualService } from '../services/index';
     templateUrl: './related-words.component.html',
     styleUrls: ['./related-words.component.scss']
 })
-export class RelatedWordsComponent implements OnInit {
+export class RelatedWordsComponent implements OnChanges {
     @Input() searchData: any;
     private colorPalette = ['#a6611a','#dfc27d','#80cdc1','#018571','#543005','#bf812d','#f6e8c3','#f5f5f5','#c7eae5','#35978f','#003c30']
     private chartOptions = {
@@ -28,7 +28,7 @@ export class RelatedWordsComponent implements OnInit {
     
     constructor(private manualService: ManualService) { }
 
-    ngOnInit() {
+    ngOnChanges() {
         this.searchData.datasets.map( (d, index) => {
             d.fill = false;
             d.borderColor = this.colorPalette[index];

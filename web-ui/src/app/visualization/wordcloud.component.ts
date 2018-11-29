@@ -1,7 +1,9 @@
-import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
+
+import { AggregateData } from '../models/index';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -10,12 +12,9 @@ import * as d3 from 'd3';
     encapsulation: ViewEncapsulation.None
 })
 
-export class WordcloudComponent implements OnChanges {
+export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
-    @Input('searchData') public significantText: {
-        key: string,
-        doc_count: number
-    }
+    @Input('searchData') public significantText: AggregateData;
 
     private width: number = 600;
     private height: number = 400;
@@ -25,16 +24,22 @@ export class WordcloudComponent implements OnChanges {
 
     constructor() { }
 
-    ngOnChanges(changes: SimpleChanges) {
-        this.chartElement = this.chartContainer.nativeElement;
+    ngOnInit() {
+       
+    }
+
+    ngOnChanges(changes: SimpleChanges) {  
+        this.chartElement = this.chartContainer.nativeElement;     
         let significantText = changes.significantText.currentValue;
-        d3.selectAll('svg').remove();
+        console.log(significantText);
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
-            this.drawWordCloud(significantText);
+            console.log("redrawing");
+            d3.selectAll('svg').remove();
+            this.drawWordCloud(this.significantText);
         }
     }
 
-    drawWordCloud(significantText: string[]) {
+    drawWordCloud(significantText: AggregateData) {
         this.svg = d3.select(this.chartElement)
           .append("svg")
           .attr("width", this.width)
