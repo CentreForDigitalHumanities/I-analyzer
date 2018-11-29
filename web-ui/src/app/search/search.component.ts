@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -8,6 +8,9 @@ import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
+import { Fieldset } from 'primeng/primeng';
+import { SearchFilterComponent } from './search-filter.component';
+import { tickStep } from 'd3';
 
 @Component({
     selector: 'ia-search',
@@ -18,6 +21,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
+
+    @ViewChildren(SearchFilterComponent) filterComponents;
 
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
@@ -51,6 +56,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     public queryField: {
         [name: string]: QueryField
     };
+
+    /**
+     * Two sets to hold indices of filters that are active or slumbered (recently deactivated)
+     */
+    public activeFilterSet: Set<string> = new Set(null);
+    public slumberedFilterSet: Set<string> = new Set(null);
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
@@ -74,10 +85,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     public sortField: CorpusField | undefined;
 
     public searchResults: { [fieldName: string]: any }[];
-    private multipleChoiceFilters: {name: string, size: number}[];
+    private multipleChoiceFilters: { name: string, size: number }[];
 
     private resultsCount: number = 0;
     private tabIndex: number;
+
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -128,9 +140,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
 
+
     /**
      * turn a filter on/off via the filter icon
-     */ 
+     */
     public toggleFilter(name: string) {
         let field = this.queryField[name];
         let activated = !field.useAsFilter;
@@ -138,9 +151,60 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public applyFilter(name: string, activated: boolean) {
-        this.hasModifiedFilters = true;
         let field = this.queryField[name];
         field.useAsFilter = activated;
+        if (activated) {
+            this.activeFilterSet.add(name);
+        }
+        else {
+            this.activeFilterSet.delete(name);
+        }
+        this.search();
+    }
+
+    public resetFilter(name: string) {
+        // reset the filter to its default data
+        let filter = this.filterComponents.find(f => f.field.name === name)
+        filter.update(true);
+
+        // turn the filter off
+        this.queryField[name].useAsFilter = false;
+        this.activeFilterSet.delete(name);
+        this.search();
+    }
+
+    public toggleActiveFilters() {
+        //if any filters are active, disable them and put them in 'slumber'
+        if (this.activeFilterSet.size > 0) {
+            this.activeFilterSet.forEach(f => {
+                this.queryField[f].useAsFilter = false;
+                this.slumberedFilterSet.add(f);
+                this.activeFilterSet.delete(f);
+            })
+        }
+        // if no filters are active, activate any slumbered filters
+        else {
+            this.slumberedFilterSet.forEach(f => {
+                this.queryField[f].useAsFilter = true;
+                this.activeFilterSet.add(f)
+                this.slumberedFilterSet.delete(f);
+            })
+        }
+        this.search();
+    }
+
+    public resetAllFilters() {
+        // reset all filters to their default data
+        this.filterComponents.forEach(f => {
+            f.update(true)
+        });
+
+        // deactivate all filters, do not slumber them
+        let filters = Object.values(this.queryField);
+        _.mapValues(filters, f => { f.useAsFilter = false });
+
+        this.activeFilterSet = new Set(null);
+        this.slumberedFilterSet = new Set(null);
         this.search();
     }
 
@@ -168,7 +232,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
-        
+
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
             filters.forEach(filter => {
@@ -180,14 +244,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: {name: string, size: number}): Promise<AggregateData> {
+    async getMultipleChoiceFilterOptions(filter: { name: string, size: number }): Promise<AggregateData> {
         let queryModel = _.cloneDeep(this.queryModel);
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
         if (queryModel.filters) {
-            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);                
+            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);
             if (index >= 0) {
                 queryModel.filters.splice(index, 1);
-            }      
+            }
         }
         return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
             return results.aggregations;
@@ -221,7 +285,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public updateFilterData(name: string, data: SearchFilterData) {
         let previousData = this.queryField[name].data;
         this.queryField[name].data = data;
-        if (data.filterName == 'MultipleChoiceFilter' && data.data.length==0) {
+        if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
         }
@@ -229,6 +293,10 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.applyFilter(name, true);
         }
         this.changeDetectorRef.detectChanges();
+    }
+
+    public toggleGreyOutFilter(name: string, greyedOut: boolean) {
+        this.queryField[name].greyedOut = greyedOut;
     }
 
     public onSearched(input: ResultOverview) {
@@ -311,14 +379,16 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.queryField[field.name] = Object.assign({
                     data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
                     useAsFilter: true,
-                    downloadInCsv: true
+                    downloadInCsv: true,
+                    greyedOut: false
                 }, field);
             } else {
                 // this field is not found in the route
                 let auxField = Object.assign({
                     data: null,
                     useAsFilter: false,
-                    downloadInCsv: true
+                    downloadInCsv: true,
+                    greyedOut: false
                 }, field);
                 // in case there have been some settings before (i.e., from a deactivated filter), retain them
                 if (this.queryField[field.name]) {
@@ -347,7 +417,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
     }
 
-    private tabChange(event){
+    private tabChange(event) {
         this.tabIndex = event.index;
     }
 
@@ -369,5 +439,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 type QueryField = CorpusField & {
     data: SearchFilterData,
     useAsFilter: boolean,
-    downloadInCsv: boolean
+    downloadInCsv: boolean,
+    greyedOut: boolean
 };

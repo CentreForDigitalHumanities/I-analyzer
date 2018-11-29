@@ -10,12 +10,12 @@ from flask_migrate import Migrate
 
 from ianalyzer import config
 from ianalyzer.models import User, Role, db, Corpus
-from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
+from ianalyzer.web import blueprint, admin_instance, login_manager, csrf, mail
 from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
 from es_index import perform_indexing
 
-app = flask_app(blueprint, admin_instance, login_manager, csrf)
+app = flask_app(blueprint, admin_instance, login_manager, mail, csrf)
 
 migrate = Migrate(app, db)
 
@@ -84,7 +84,12 @@ def guest(corpora):
     'The input format is YYYY-MM-DD.' +
     'If not set, indexing will start from corpus maximum date.'
 )
-def es(corpus, start, end):
+@click.option(
+    '--delete', '-d',
+    help='Define whether the current index should be deleted' +
+    '(turned off by default)'
+)
+def es(corpus, start, end, delete=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -108,7 +113,7 @@ def es(corpus, start, end):
         )
         raise
 
-    perform_indexing(corpus, this_corpus, start_index, end_index)
+    perform_indexing(corpus, this_corpus, start_index, end_index, delete)
 
 
 def create_user(name, password=None):
@@ -117,7 +122,7 @@ def create_user(name, password=None):
 
     password_hash = None if password == None else generate_password_hash(
         password)
-    user = User(name, password_hash)
+    user = User(name, password=password_hash)
     db.session.add(user)
     return user
 

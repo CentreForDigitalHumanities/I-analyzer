@@ -39,7 +39,6 @@ class Role(db.Model):
 
     corpora = db.relationship('Corpus',
                               secondary=corpora_roles,
-                              # dit onderste veld genaamd  'roles' is optioneel
                               backref=db.backref('assigned_to', lazy='dynamic'), lazy='joined'
                               )
     '''
@@ -98,13 +97,14 @@ class User(db.Model):
     Which queries the user has performed.
     '''
 
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT):
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None):
         self.username = username
         self.password = password
         self.email = email
         self.active = active
         self.authenticated = authenticated
         self.download_limit = download_limit
+        self.role_id=role_id
 
     def __repr__(self):
         return self.username
