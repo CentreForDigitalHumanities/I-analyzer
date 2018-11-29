@@ -44,7 +44,7 @@ export class BarChartComponent implements OnChanges {
     constructor(public dataService: DataService){}
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.chartElement == undefined) {
+        if (this.chartElement === undefined) {
             this.chartElement = this.barchartContainer.nativeElement;
         }
 
@@ -83,6 +83,7 @@ export class BarChartComponent implements OnChanges {
 
     prepareTermFrequency() {
         this.xDomain = this.searchData.map(d => d.key);
+        if (this.visualizedField.visualzationSort)
         this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
         this.xBarWidth = this.xScale.bandwidth();
         this.yMax = d3.max(this.searchData.map(d => d.doc_count));
