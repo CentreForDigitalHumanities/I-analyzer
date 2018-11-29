@@ -5,6 +5,7 @@ import pickle
 
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
+import scipy
 
 from . import config_fallback as config
 
@@ -35,8 +36,6 @@ def get_diachronic_contexts(query_term, corpus, number_similar=5):
         return "The query term is not in the word models' vocabulary."
     times = []
     words = [word['key'] for word in word_list]
-    if query_term in words:
-        words.remove(query_term)
     word_data = [{'label': word, 'data': []} for word in words]
     for time_bin in binned:
         word_data = similarity_with_top_terms(
@@ -69,14 +68,15 @@ def find_n_most_similar(matrix, transformer, query_term, n):
         print("query term not found")
         return None
     vec = matrix[:, index]
-    similarities = cosine_similarity(matrix, vec)
+    similarities = cosine_similarity_matrix_vector(vec, matrix)
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
-    print(sorted_sim[0], sorted_sim[-1],[similarities[index] for index in most_similar_indices[0]])
     output_terms = [{
         'key': transformer.get_feature_names()[index], 
         'similarity': similarities[index]
-        } for index in most_similar_indices[0]]
+        } for index in most_similar_indices[0] if
+        transformer.get_feature_names()[index]!=query_term
+    ]
     return output_terms
 
 
@@ -97,13 +97,19 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
         if not index:
             value = 0
         else:
-            value = cosine_similarity(matrix[:, index], query_vec)
+            value = cosine_similarity_vectors(matrix[:, index], query_vec)
         item['data'].append(value)
     return word_data
 
+def cosine_similarity_vectors(array1, array2):
+    dot = np.inner(array1, array2)
+    vec1_norm = np.linalg.norm(array1)
+    vec2_norm = np.linalg.norm(array2)
+    return dot / (vec1_norm * vec2_norm)
 
-def cosine_similarity(array1, array2):
-    dot = array2.dot(array1)
-    vec_norm = np.linalg.norm(array1)
-    mat_norm = np.linalg.norm(array2)
-    return dot / (vec_norm * mat_norm)
+def cosine_similarity_matrix_vector(vector, matrix):
+    dot = vector.dot(matrix)
+    matrix_norms = np.linalg.norm(matrix, axis=0)
+    vector_norm = np.linalg.norm(vector)
+    matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
+    return dot / matrix_vector_norms

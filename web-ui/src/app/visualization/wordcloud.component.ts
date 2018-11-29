@@ -31,9 +31,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
     ngOnChanges(changes: SimpleChanges) {  
         this.chartElement = this.chartContainer.nativeElement;     
         let significantText = changes.significantText.currentValue;
-        console.log(significantText);
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
-            console.log("redrawing");
             d3.selectAll('svg').remove();
             this.drawWordCloud(this.significantText);
         }
