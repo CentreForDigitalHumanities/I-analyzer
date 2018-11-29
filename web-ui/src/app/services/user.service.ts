@@ -30,6 +30,7 @@ export class UserService implements OnDestroy {
     private sessionCheckSubscription = this.requestSessionCheck.throttleTime(sessionCheckInterval)
         .subscribe(async () => {
             let currentUser = await this.getCurrentUserOrFallback();
+            console.log('session check')
             this.sessionCheckPromise = !currentUser
                 ? Promise.resolve(false)
                 : this.apiService.checkSession({ username: currentUser.name })
@@ -53,6 +54,7 @@ export class UserService implements OnDestroy {
      * Get the current user or fallback to guest
      */
     private async getCurrentUserOrFallback() {
+        console.log(this)
         return this.currentUser || this.supportGuest && await this.loginAsGuest() || false;
     }
 
@@ -83,7 +85,7 @@ export class UserService implements OnDestroy {
 
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
-            // no need to notify the server that we are going to logoff, because it told us this is already the case            
+            // no need to notify the server that we are going to logoff, because it told us this is already the case
             this.logout(false, true);
         });
     }
@@ -103,6 +105,8 @@ export class UserService implements OnDestroy {
             return currentUser;
         }
 
+        console.log('getCurrentUser')
+
         throw 'Not logged on';
     }
 
@@ -118,6 +122,38 @@ export class UserService implements OnDestroy {
                 if (username == 'guest') {
                     this.supportGuest = !password;
                 }
+                return this.currentUser;
+            }
+
+            return false;
+        });
+
+        this.sessionCheckPromise = loginPromise.then(user => !!user);
+
+        return loginPromise;
+    }
+
+    /**
+     * Start the SAML process to login with Solis identity
+     */
+    public initSolisLogin() {
+        this.apiService.initSolisLogin();
+    }
+
+
+    /**
+     * Do the actual login with SolisId
+     */
+    public solisLogin(solisId: string): Promise<User | false> {
+        let loginPromise = this.apiService.solisLogin({ solisId }).then(result => {
+            if (result.success) {
+                this.currentUser = new User(
+                    result.id,
+                    result.username,
+                    result.role,
+                    result.downloadLimit == null ? 0 : result.downloadLimit,
+                    result.queries);
+
                 return this.currentUser;
             }
 

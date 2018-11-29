@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory, session
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -26,7 +26,7 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
-from saml import DhlabFlaskSaml
+from .saml import DhlabFlaskSaml
 
 from flask_admin.base import MenuLink
 
@@ -55,7 +55,9 @@ csrf.exempt_urls('/es',)
 
 mail = Mail()
 
-saml = DhlabFlaskSaml(app.config['SAML_PATH'])
+## TODO: figure out how and where to pass SAML_PATH
+saml = DhlabFlaskSaml('./settings.json')
+
 
 def corpus_required(method):
     '''
@@ -166,24 +168,6 @@ def api_register():
     return jsonify({'success': True})
 
 
-def add_basic_user(username, password, email, is_active):
-    ''' Add a user with the role 'basic' to the database '''
-
-    basic_role = models.Role.query.filter_by(name='basic').first()
-    pw_hash = generate_password_hash(password)
-    
-    new_user = models.User(
-        username=username,
-        email=email,
-        active=is_active,
-        password=pw_hash,
-        role_id=basic_role.id,
-    )
-
-    models.db.session.add(new_user)
-    models.db.session.commit()
-
-
 def send_registration_mail(email, username):
     '''
     Send an email with a confirmation token to a new user
@@ -208,6 +192,23 @@ def send_registration_mail(email, username):
         return False
 
 
+def add_basic_user(username, password, email, is_active):
+    ''' Add a user with the role 'basic' to the database '''
+
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    pw_hash = generate_password_hash(password)
+    
+    new_user = models.User(
+        username=username,
+        email=email,
+        active=is_active,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
+
+    models.db.session.add(new_user)
+    models.db.session.commit()
+    
 
 # endpoint for the confirmation of user if link in email is clicked.
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
@@ -277,47 +278,59 @@ def api_login():
         response = jsonify({'success': False})
     else:
         security.login_user(user)
-
-        corpora = [{
-            'name': corpus.name,
-            'description': corpus.description
-        } for corpus in user.role.corpora]
-<<<<<<< Updated upstream
-        role = {
-            'name': user.role.name, 
-            'description': user.role.description, 
-            'corpora': corpora
-        }
-=======
-
-        # roles are still defined as corpusses in frontend. If role is admin, append 'admin' to the roles to keep frontend working
-        if user.role.name == "admin":
-            roles.append({'name': 'admin', 'description': 'admin role'})
->>>>>>> Stashed changes
-        
-        response = jsonify({
-            'success': True,
-            'id': user.id,
-            'username': user.username,
-            'role': role,
-            'downloadLimit': user.download_limit,
-            'queries': [{
-                'query': query.query_json,
-                'corpusName': query.corpus_name
-            } for query in user.queries]
-        })
+        response = create_response(user)
 
     return response
 
 
-@blueprint.route('/api/solislogin', methods=['POST'])
-def api_solis_login():
-    return saml.init_login(request, redirect, 'home')
+
+@blueprint.route('/api/init_solislogin', methods=['POST', 'GET'])
+def init_solislogin():
+    ''' SAML step 1. The starting point for logging in with SolisId. '''
+    return saml.init_login(request, redirect)
 
 
-@blueprint.route('/saml/process_login_result', methods=['POST'])
+@blueprint.route('/saml/process_login_result', methods=['POST', 'GET'])
 def process_login_result():
+    ''' SAML step 2. Will be called by Identity Provider (ITS)'''    
     return saml.process_login_result(request, session, redirect, 'login')
+
+
+@blueprint.route('/api/solislogin', methods=['GET'])
+def solislogin():
+    ''' SAML step 3. Called by frontend to retrieve user instance '''
+    solis_id = request.args.get('solisId')
+    user = models.User.query.filter_by(username=solis_id).first()
+    security.login_user(user)
+    return create_response(user)
+    
+
+
+def create_response(user):
+    corpora = [{
+        'name': corpus.name,
+        'description': corpus.description
+    } for corpus in user.role.corpora]
+    role = {
+        'name': user.role.name, 
+        'description': user.role.description, 
+        'corpora': corpora
+    }
+    
+    response = jsonify({
+        'success': True,
+        'id': user.id,
+        'username': user.username,
+        'role': role,
+        'downloadLimit': user.download_limit,
+        'queries': [{
+            'query': query.query_json,
+            'corpusName': query.corpus_name
+        } for query in user.queries]
+    })
+
+    return response
+
 
 
 @blueprint.route('/api/log', methods=['POST'])

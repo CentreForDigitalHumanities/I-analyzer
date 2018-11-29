@@ -10,6 +10,7 @@ from ianalyzer import config_fallback as config
 def validate_user(username, password):
     """Validates the user and returns it if the username and password are valid."""
     user = models.User.query.filter_by(username=username).first()
+    #return user
 
     if user is None:
         # User doesn't exist, or no password has been given or set

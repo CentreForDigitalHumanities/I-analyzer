@@ -31,6 +31,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
         this.activatedRoute.queryParams.subscribe( params => {
             this.isActivated = params['isActivated'] === 'true';
+
+            if (params['solisId']) {
+                this.solislogin(params['solisId']);
+            } 
         });
     }
     ngOnDestroy() {
@@ -39,12 +43,22 @@ export class LoginComponent implements OnInit, OnDestroy {
     login() {
         this.isLoading = true;
         this.userService.login(this.username, this.password).then(result => {
-            if (!result) {
-                this.isLoading = false;
-                this.isWrong = true;
-            } else {
-                this.router.navigateByUrl(this.returnUrl);
-            }
+            this.handleLoginSucces(result);
         });
+    }
+
+    solislogin(solisId: string): void {
+        this.userService.solisLogin(solisId).then(result => {
+           this.handleLoginSucces(result); 
+        });
+    }
+
+    handleLoginSucces(result) {
+        if (!result) {
+            this.isLoading = false;
+            this.isWrong = true;
+        } else {                
+            this.router.navigateByUrl(this.returnUrl);
+        }
     }
 }

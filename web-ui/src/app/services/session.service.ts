@@ -7,6 +7,7 @@ export class SessionService {
     public expired = SessionService.sessionExpiredSubject.asObservable();
 
     public static markExpired() {
+        console.log(this)
         SessionService.sessionExpiredSubject.next();
     }
 }
