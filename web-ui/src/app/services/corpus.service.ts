@@ -70,6 +70,7 @@ export class CorpusService {
             resultsOverview: data.results_overview,
             preselected: data.preselected,
             visualizationType: data.visualization_type,
+            visualizationSort: data.visualization_sort,
             hidden: data.hidden,
             sortable: data.sortable,
             searchable: data.searchable,
