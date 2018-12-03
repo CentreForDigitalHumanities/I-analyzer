@@ -404,11 +404,14 @@ def api_get_wordcloud_data():
 @login_required
 def api_get_source_image(image_path, corpus):
     # toplevel directory for images of corpus, this should be decided by corpus
+    # TODO pdfs
     backend_corpus = corpora.DEFINITIONS[corpus]
-    absolute_path = join(backend_corpus.data_directory, image_path)
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]
+
     if (corpus in user_permitted_corpora):
+        _, extension = splitext(image_path)
+        absolute_path = join(backend_corpus.data_directory, image_path)
         return send_file(absolute_path, mimetype='image/png')
 
 
