@@ -84,7 +84,7 @@ TML_ES_DOCTYPE = 'article'
 TML_DATA = '/Users/3248526/corpora/tml'
 TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
-TML_IMAGE = 'times.jpg'
+TML_IMAGE = 'tml.jpg'
 
 TIMES_TITLE = "Times"
 TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
@@ -97,49 +97,14 @@ TIMES_IMAGE = 'times.jpg'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
-DUTCHBANK_ES_INDEX = 'dutchbank'
-DUTCHBANK_ES_DOCTYPE = 'block'
+DUTCHBANK_ES_INDEX = 'dutchbanking'
+DUTCHBANK_ES_DOCTYPE = 'page'
 DUTCHBANK_DATA = '/mnt/dutchbank'
-DUTCHBANK_MIN_DATE = datetime(year=1785, month=1, day=1)
-DUTCHBANK_MAX_DATE = datetime(year=2010, month=12, day=31)
+DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
+DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHBANK_IMAGE = 'dutchbanking.jpg'
-DUTCHBANK_MAP = {
-    'AA':       'ABN AMRO',
-    'AB':       'Amsterdamsche Bank',
-    'AMRO':     'AMRO Bank',
-    'Albert':   'H. Albert de Bary',
-    'BMH':      'Bank Mees & Hope',
-    'CCBB':     'Cooperatieve Centrale Boerenleenbank',
-    'CCRB':     'Cooperatieve Centrale Raiffeisen-Bank',
-    'CDK':      'Crediet en Depositokas',
-    'CEB':      'Crediet en Effectenkas',
-    'CL':       'Credit Llyonnais Bank Nederland',
-    'FORTIS':   'Fortis Bank',
-    'FRIES':    'Friesland Bank',
-    'GB':       'Generale Bank',
-    'HBU':      'Hollandsche Bank Unie',
-    'HKB':      'Hollandsche Koopmansbank',
-    'IDM':      'Industriele Disconto Maatschappij',
-    'ING':      'ING Bank',
-    'KAS':      'Kas Bank',
-    'Kempen':   'Kempen & Co',
-    'LANS':     'Van Lanschot',
-    'Lab':      'Labouchere & Co.',
-    'Mendes':   'Bank Mendes Gans',
-    'NCB':      'Nederlandsche Credietbank',
-    'NHM':      'Nederlandsche Handel-Maatschappij',
-    'NIB':      'De Nationale Investeringsbank',
-    'NMB':      'Nederlandsche Middenstandsbank',
-    'NMBPost':  'NMB Postbank Groep',
-    'PHP':      'Pierson, Heldring en Pierson',
-    'Pari':     'Paribas Nederland',
-    'Post':     'Postbank',
-    'RB':       'Rotterdamsche Bank',
-    'SNS':      'SNS Bank',
-    'SlavB':    'Slavenburg\'s Bank',
-    'Staal':    'bankierskantoor Staal &Co/Staalbankiers',
-    'TB':       'Twentsche Bank',
-    'TRIODOS':  'Triodos Bank',
-}
+DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
+DUTCHBANK_MAP = {}
+
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'

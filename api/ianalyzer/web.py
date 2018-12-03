@@ -58,6 +58,7 @@ csrf.exempt_urls('/es',)
 
 mail = Mail()
 
+
 def corpus_required(method):
     '''
     Wrapper to make sure that a `corpus` argument is made accessible from a
@@ -139,19 +140,19 @@ def init():
 def api_register():
     if not request.json:
         abort(400)
-       
+
     # Validate user's input
     username = request.json['username']
     is_valid_username = security.is_unique_username(username)
     is_valid_email = security.is_unique_email(request.json['email'])
-        
+
     if not is_valid_username or not is_valid_email:
         return jsonify({
             'success': False,
             'is_valid_username': is_valid_username,
             'is_valid_email': is_valid_email
         })
-    
+
     # try sending the email
     if not send_registration_mail(request.json['email'], username):
         return jsonify({
@@ -160,10 +161,10 @@ def api_register():
             'is_valid_email': True
         })
 
-    # if email was succesfully sent, add user to db    
+    # if email was succesfully sent, add user to db
     basic_role = models.Role.query.filter_by(name='basic').first()
     pw_hash = generate_password_hash(request.json['password'])
-    
+
     new_user = models.User(
         username=username,
         email=request.json['email'],
@@ -177,20 +178,22 @@ def api_register():
 
     return jsonify({'success': True})
 
+
 def send_registration_mail(email, username):
     '''
     Send an email with a confirmation token to a new user
     Returns a boolean specifying whether the email was sent succesfully
     '''
-    token = security.generate_confirmation_token(email)    
-    
-    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
+    token = security.generate_confirmation_token(email)
+
+    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
+                  sender=config.MAIL_FROM_ADRESS, recipients=[email])
 
     msg.html = render_template('mail/new_user.html',
-                            username=username,
-                            confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
-                            url_i_analyzer=config.BASE_URL,
-                            logo_link=config.LOGO_LINK)
+                               username=username,
+                               confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                               url_i_analyzer=config.BASE_URL,
+                               logo_link=config.LOGO_LINK)
 
     try:
         mail.send(msg)
@@ -199,7 +202,6 @@ def send_registration_mail(email, username):
         logger.error("An error occured sending an email to {}:".format(email))
         logger.error(e)
         return False
-
 
 
 # endpoint for the confirmation of user if link in email is clicked.
@@ -280,7 +282,7 @@ def api_login():
             'description': user.role.description,
             'corpora': corpora
         }
-        
+
         response = jsonify({
             'success': True,
             'id': user.id,
@@ -408,3 +410,29 @@ def api_get_source_image(image_path, corpus):
         corpus.name for corpus in current_user.role.corpora]
     if (corpus in user_permitted_corpora):
         return send_file(absolute_path, mimetype='image/png')
+
+
+@blueprint.route('/api/get_related_words', methods=['POST'])
+@login_required
+def api_get_related_words():
+    if not request.json:
+        abort(400)
+    results = analyze.get_diachronic_contexts(
+        request.json['query_term'],
+        request.json['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'related_word_data': {
+                'similar_words_all': results[0],
+                'similar_words_subsets': results[1],
+                'time_points': results[2]
+            }
+        })
+    return response

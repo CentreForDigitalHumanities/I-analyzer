@@ -78,10 +78,32 @@
     }
 }
 
-.field.has-addons .control:last-child .button {
-    border-radius: 2px;
-}
+// .field.has-addons .control:last-child .button {
+//     border-radius: 2px;
+// }
 
 .tabs {
     white-space: normal;
+}
+
+.field.has-addons {
+    display: flex !important;
+    word-break: break-word;
+}
+
+.switch[type=checkbox].is-primary:checked + label::before, .switch[type=checkbox].is-primary:checked + label:before {
+    background: $primary;
+}
+
+.switch[type=checkbox] + label {
+    padding-left: 3rem;
+    padding-top: 0rem;
+}
+
+.right_control {
+    text-align: right;
+}
+
+.button.is-small {
+    font-size: 0.7rem;
 }
