@@ -11,6 +11,7 @@ import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectM
 import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
@@ -136,26 +137,27 @@ const appRoutes: Routes = [
         TabViewModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
-        })
+        }),
+        PdfViewerModule,
     ],
     providers: [
-        ApiService, 
-        ApiRetryService, 
-        CorpusService, 
-        ConfigService, 
-        DataService, 
-        DownloadService, 
-        ElasticSearchService, 
-        HighlightService, 
-        LogService, 
-        ManualService, 
-        NotificationService, 
-        QueryService, 
-        SearchService, 
-        SessionService, 
-        UserService, 
-        CorpusGuard, 
-        LoggedOnGuard, 
+        ApiService,
+        ApiRetryService,
+        CorpusService,
+        ConfigService,
+        DataService,
+        DownloadService,
+        ElasticSearchService,
+        HighlightService,
+        LogService,
+        ManualService,
+        NotificationService,
+        QueryService,
+        SearchService,
+        SessionService,
+        UserService,
+        CorpusGuard,
+        LoggedOnGuard,
         TitleCasePipe,
         {
             provide: XSRFStrategy,

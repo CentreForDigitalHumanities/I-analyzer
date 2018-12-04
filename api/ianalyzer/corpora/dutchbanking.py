@@ -33,18 +33,18 @@ class DutchBanking(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     with open(config.DUTCHBANK_MAP_FP) as f:
-            reader = csv.DictReader(f)
-            for line in reader:
-                config.DUTCHBANK_MAP[line['abbr']] = line['name']
+        reader = csv.DictReader(f)
+        for line in reader:
+            config.DUTCHBANK_MAP[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             _, tail = op.split(directory)
-            if tail=="Financials":
+            if tail == "Financials":
                 company_type = "Financial"
-            elif tail=="Non-Financials":
+            elif tail == "Non-Financials":
                 company_type = "Non-Financial"
             for filename in filenames:
                 name, extension = op.splitext(filename)
@@ -68,6 +68,7 @@ class DutchBanking(XMLCorpus):
                 # or which cover parts of two years ("br" in filepath)?
                 if int(year) < start.year or end.year < int(year):
                     continue
+                print(scan)
                 yield full_path, {
                     'company': company,
                     'company_type': company_type,

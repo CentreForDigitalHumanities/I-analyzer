@@ -8,8 +8,11 @@ logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
-from os.path import splitext, join
+from os.path import splitext, join, isfile
 import sys
+import tempfile
+from io import BytesIO
+from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory
@@ -400,19 +403,35 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_source_image/<corpus>/<path:image_path>', methods=['GET'])
+@blueprint.route('/api/get_source_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_source_image(image_path, corpus):
+def api_get_source_image(image_path, corpus_index):
     # toplevel directory for images of corpus, this should be decided by corpus
     # TODO pdfs
-    backend_corpus = corpora.DEFINITIONS[corpus]
+    backend_corpus = corpora.DEFINITIONS[corpus_index]
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]
 
-    if (corpus in user_permitted_corpora):
+    if (corpus_index in user_permitted_corpora):
         _, extension = splitext(image_path)
         absolute_path = join(backend_corpus.data_directory, image_path)
-        return send_file(absolute_path, mimetype='image/png')
+
+        if extension == '.pdf':
+            print(absolute_path)
+            tmp = BytesIO()
+            pdf_writer = PdfFileWriter()
+
+            input_pdf = PdfFileReader(absolute_path, "rb")
+            page = input_pdf.getPage(0)
+            pdf_writer.addPage(page)
+
+            pdf_writer.write(tmp)
+            tmp.seek(0)
+
+            return send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
+
+        else:
+            return send_file(absolute_path, 'image/png')
 
 
 @blueprint.route('/api/get_related_words', methods=['POST'])

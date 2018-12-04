@@ -16,3 +16,4 @@ requests
 scikit-learn
 numpy
 responses
+pypdf2

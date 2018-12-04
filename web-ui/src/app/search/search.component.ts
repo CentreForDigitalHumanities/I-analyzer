@@ -105,6 +105,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters

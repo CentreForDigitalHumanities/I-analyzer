@@ -162,5 +162,5 @@
 <p-dialog header="Document {{viewDocument.position}} of {{resultsCount}}" [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false"
     *ngIf="viewDocument">
-    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText"></document-view>
+    <document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText" [corpus]="corpus.index"></document-view>
 </p-dialog>

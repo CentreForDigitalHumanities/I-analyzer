@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
     selector: 'document-view',
@@ -15,6 +17,17 @@ export class DocumentViewComponent implements OnInit {
         return this.fields.filter(field => !field.hidden && field.displayType != 'text_content');
     }
 
+    public getPdfSrc(url) {
+        this.http.get(url, { responseType: 'arraybuffer' })
+            .subscribe((file: ArrayBuffer) => {
+                this.pdfSrc = new Uint8Array(file);
+            })
+    }
+
+    public imgSrc: string;
+
+    public pdfSrc: any;
+
     @Input()
     public fields: CorpusField[] = [];
 
@@ -27,8 +40,13 @@ export class DocumentViewComponent implements OnInit {
     @Input()
     public corpus: Corpus;
 
-    constructor() { }
+    public pdfURL: string;
+
+    constructor(private http: HttpClient) { }
 
     ngOnInit() {
+        console.log(this.corpus)
+        this.pdfURL = "/api/get_source_image/" + this.corpus + "/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
+        this.pdfSrc = this.getPdfSrc(this.pdfURL)
     }
 }

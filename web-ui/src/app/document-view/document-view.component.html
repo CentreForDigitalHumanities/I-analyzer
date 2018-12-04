@@ -28,8 +28,23 @@
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
             </p-tabPanel>
-            <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined">
-                    <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/>
+            <!-- <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined"> -->
+            <p-tabPanel header="" leftIcon="fa fa-image">
+                    <!-- <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/> -->
+                    <!-- <img class="src-img" src="/api/get_source_image/{{corpus.index}}/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"/> -->
+
+                    <pdf-viewer [src]="pdfSrc"
+                                [render-text]="true"
+                                style = "display: block;">
+                    </pdf-viewer>
+
+
+
+
+
+
+
+
             </p-tabPanel>
         </p-tabView>
         </div>
