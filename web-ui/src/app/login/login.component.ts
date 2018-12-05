@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     solislogin(solisId: string): void {
+        this.isLoading = true;
         this.userService.solisLogin(solisId).then(result => {
            this.handleLoginSucces(result); 
         });

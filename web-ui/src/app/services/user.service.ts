@@ -30,7 +30,6 @@ export class UserService implements OnDestroy {
     private sessionCheckSubscription = this.requestSessionCheck.throttleTime(sessionCheckInterval)
         .subscribe(async () => {
             let currentUser = await this.getCurrentUserOrFallback();
-            console.log('session check')
             this.sessionCheckPromise = !currentUser
                 ? Promise.resolve(false)
                 : this.apiService.checkSession({ username: currentUser.name })
@@ -54,7 +53,7 @@ export class UserService implements OnDestroy {
      * Get the current user or fallback to guest
      */
     private async getCurrentUserOrFallback() {
-        console.log(this)
+        await this.sessionCheckPromise;
         return this.currentUser || this.supportGuest && await this.loginAsGuest() || false;
     }
 
@@ -99,13 +98,17 @@ export class UserService implements OnDestroy {
     /**
      * Gets the current user, fallback to guest (if possible) and reject if no user is available.
      */
-    public async getCurrentUser(): Promise<User> {
+    public async getCurrentUser(fallback = false): Promise<User> {
+        if (!fallback) {
+            if (this.currentUser) {
+                return this.currentUser;
+            }
+            throw 'Not logged on';
+        }
         let currentUser = await this.getCurrentUserOrFallback();
         if (currentUser) {
             return currentUser;
         }
-
-        console.log('getCurrentUser')
 
         throw 'Not logged on';
     }
@@ -123,6 +126,8 @@ export class UserService implements OnDestroy {
                     this.supportGuest = !password;
                 }
                 return this.currentUser;
+            } else if (username == 'guest' && !password) {
+                this.supportGuest = false;
             }
 
             return false;
@@ -144,7 +149,8 @@ export class UserService implements OnDestroy {
     /**
      * Do the actual login with SolisId
      */
-    public solisLogin(solisId: string): Promise<User | false> {
+    public async solisLogin(solisId: string): Promise<User | false> {
+        await this.sessionCheckPromise;
         let loginPromise = this.apiService.solisLogin({ solisId }).then(result => {
             if (result.success) {
                 this.currentUser = new User(
@@ -169,17 +175,18 @@ export class UserService implements OnDestroy {
     /**
      * Registration of new user.
      */
-    public register(username:string, email: string, password:string ): 
-        Promise<{success: boolean, is_valid_username: boolean, is_valid_email: boolean}> {        
+    public register(username: string, email: string, password: string):
+        Promise<{ success: boolean, is_valid_username: boolean, is_valid_email: boolean }> {
         return this.apiService.register({ username, email, password })
     }
 
 
-    public loginAsGuest() {
+    public async loginAsGuest() {
+        await this.sessionCheckPromise;
         if (this.supportGuest) {
             return this.login('guest');
         } else {
-            return Promise.resolve<false>(false);
+            return false;
         }
     }
 
@@ -208,5 +215,3 @@ export class UserService implements OnDestroy {
         this.router.navigate(['/login'], returnUrl ? { queryParams: { returnUrl } } : undefined);
     }
 }
-
-

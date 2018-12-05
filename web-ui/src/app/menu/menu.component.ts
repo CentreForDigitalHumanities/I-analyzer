@@ -33,18 +33,6 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.checkCurrentUser();
-
-        // Note that this call to the corpus service ensures the existence of a CSRF token / cookie.
-        // Even on the login screen. If, for some reason, the order of events changes, please make 
-        // sure the CSRF cookie is still received from the server (also on login screen, i.e.  before POSTing the credentials).
-        this.corpusService.get().then((corpora) => {        
-            this.menuCorporaItems = corpora.map(corpus => ({
-                label: corpus.title,
-                command: (click) => 
-                    this.router.navigate(['/search', corpus.name])
-                
-            }));
-        });
     }
 
      public gotoAdmin() {
@@ -63,7 +51,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     private checkCurrentUser() {
-        this.userService.getCurrentUser().catch(() => false).then(currentUser => {
+        this.userService.getCurrentUser().then(currentUser => {
             if (currentUser) {                
                 if (currentUser == this.currentUser) {
                     // nothing changed
@@ -78,10 +66,24 @@ export class MenuComponent implements OnDestroy, OnInit {
             }
 
             this.setMenuItems();
+        }).catch(() => {
+            this.currentUser = undefined;
         });
     }
 
     private setMenuItems() {
+        // Note that this call to the corpus service ensures the existence of a CSRF token / cookie.
+        // Even on the login screen. If, for some reason, the order of events changes, please make 
+        // sure the CSRF cookie is still received from the server (also on login screen, i.e.  before POSTing the credentials).
+        this.corpusService.get().then((corpora) => {        
+            this.menuCorporaItems = corpora.map(corpus => ({
+                label: corpus.title,
+                command: (click) => 
+                    this.router.navigate(['/search', corpus.name])
+                
+            }));
+        });
+
         this.menuAdminItems = [
             {
                 label: 'Search history',
