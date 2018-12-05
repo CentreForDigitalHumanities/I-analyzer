@@ -54,9 +54,7 @@ csrf = SeaSurf()
 csrf.exempt_urls('/es',)
 
 mail = Mail()
-
-## TODO: figure out how and where to pass SAML_PATH
-saml = DhlabFlaskSaml('./settings.json')
+saml = DhlabFlaskSaml()
 
 
 def corpus_required(method):
@@ -302,8 +300,7 @@ def solislogin():
     solis_id = request.args.get('solisId')
     user = models.User.query.filter_by(username=solis_id).first()
     security.login_user(user)
-    return create_response(user)
-    
+    return create_response(user)    
 
 
 def create_response(user):

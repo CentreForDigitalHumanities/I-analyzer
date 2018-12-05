@@ -12,18 +12,16 @@ Custom SAML class based on the one in the dhlab-saml repo (https://github.com/UU
 class DhlabFlaskSaml:
     settings_folder = None
     errors = None
+        
 
-    def __init__(self, settings_folder):
+    def init_app(self, app):
         '''
-        Initialize DhlabFlaskSaml
+        Initialize Flask app with DhlabFlaskSaml instance
 
         Keyword arguments:
-            settings_folder -- Absolute path to the folder that contains 'settings.json'
+            app -- The Flask app
         '''
-        if not settings_folder:
-            raise ValueError("settings_folder cannot be None or empty")
-
-        self.settings_folder = settings_folder
+        self.settings_folder = app.config['SAML_PATH']
 
 
     def init_saml_auth(self, req):
@@ -75,7 +73,6 @@ class DhlabFlaskSaml:
         # req = self.prepare_flask_request(request)
         # auth = self.init_saml_auth(req)        
         # return redirect(auth.login())
-        print('init login')
         return redirect(request.host_url + 'saml/process_login_result')
 
 
@@ -92,8 +89,6 @@ class DhlabFlaskSaml:
             fail_safe -- The partial (i.e. relative to website's root) url that the application should be 
                          redirected to if errors occur (e.g. 'saml/errors'). Do not include a slash at the start.
         '''
-        
-        print('process login result')
         
         # check if user exists, if it doesn't add basic user (see web.py)
         solis_id = 'F103825'
@@ -115,7 +110,6 @@ class DhlabFlaskSaml:
 
         # redirect to frontend, passing solis id        
         redirect_to = 'login?solisId={0}'.format(solis_id)
-        print('redirecting to: ', redirect_to)
         return redirect(redirect_to)
 
 
