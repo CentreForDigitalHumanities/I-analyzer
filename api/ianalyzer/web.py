@@ -188,24 +188,6 @@ def send_registration_mail(email, username):
         logger.error("An error occured sending an email to {}:".format(email))
         logger.error(e)
         return False
-
-
-def add_basic_user(username, password, email, is_active):
-    ''' Add a user with the role 'basic' to the database '''
-
-    basic_role = models.Role.query.filter_by(name='basic').first()
-    pw_hash = generate_password_hash(password)
-    
-    new_user = models.User(
-        username=username,
-        email=email,
-        active=is_active,
-        password=pw_hash,
-        role_id=basic_role.id,
-    )
-
-    models.db.session.add(new_user)
-    models.db.session.commit()
     
 
 # endpoint for the confirmation of user if link in email is clicked.
@@ -281,7 +263,6 @@ def api_login():
     return response
 
 
-
 @blueprint.route('/api/init_solislogin', methods=['POST', 'GET'])
 def init_solislogin():
     ''' SAML step 1. The starting point for logging in with SolisId. '''
@@ -291,7 +272,15 @@ def init_solislogin():
 @blueprint.route('/saml/process_login_result', methods=['POST', 'GET'])
 def process_login_result():
     ''' SAML step 2. Will be called by Identity Provider (ITS)'''    
-    return saml.process_login_result(request, session, redirect, 'login')
+    saml.process_login_result(session, 'login')
+    solis_id = saml.get_solis_id(request, session)
+
+    user = models.User.query.filter_by(username=solis_id).first()
+    if user is None:
+        add_basic_user(solis_id, None, None, True)
+
+    redirect_to = 'login?solisId={0}'.format(solis_id)
+    return redirect(redirect_to)
 
 
 @blueprint.route('/api/solislogin', methods=['GET'])
@@ -300,7 +289,28 @@ def solislogin():
     solis_id = request.args.get('solisId')
     user = models.User.query.filter_by(username=solis_id).first()
     security.login_user(user)
-    return create_response(user)    
+    return create_response(user)
+
+
+def add_basic_user(username, password, email, is_active):
+    ''' Add a user with the role 'basic' to the database '''
+
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    
+    pw_hash = None
+    if (password):
+        pw_hash = generate_password_hash(password)
+    
+    new_user = models.User(
+        username=username,
+        email=email,
+        active=is_active,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
+
+    models.db.session.add(new_user)
+    models.db.session.commit()
 
 
 def create_response(user):

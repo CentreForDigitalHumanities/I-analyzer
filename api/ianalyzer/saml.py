@@ -12,7 +12,7 @@ Custom SAML class based on the one in the dhlab-saml repo (https://github.com/UU
 class DhlabFlaskSaml:
     settings_folder = None
     errors = None
-        
+
 
     def init_app(self, app):
         '''
@@ -69,50 +69,32 @@ class DhlabFlaskSaml:
         Keyword arguments:
             request       -- The Flask request object
             redirect      -- The Flask redirect method
-        '''        
+        '''
+        # PROD        
         # req = self.prepare_flask_request(request)
         # auth = self.init_saml_auth(req)        
         # return redirect(auth.login())
+
+        # TEST
         return redirect(request.host_url + 'saml/process_login_result')
 
 
-    def process_login_result(self, request, session, redirect, fail_safe):
+    def process_login_result(self, session, fail_safe):
         '''
         Process the request that the Identity Provider sends after the login procedure.
-        This, in SAML terms, is the implementation of an 'assertionConsumerService' or 'acs'
-        Note that this method will redirect the user to the url provided to 'init_login'.
+        This, in SAML terms, is the implementation of an 'assertionConsumerService' or 'acs'.
 
         Keyword arguments:
-            request   -- The Flask request object
             session   -- The Flask session object
-            redirect  -- The Flask redirect method 
             fail_safe -- The partial (i.e. relative to website's root) url that the application should be 
                          redirected to if errors occur (e.g. 'saml/errors'). Do not include a slash at the start.
         '''
-        
-        # check if user exists, if it doesn't add basic user (see web.py)
-        solis_id = 'F103825'
-        
-        user = models.User.query.filter_by(username=solis_id).first()
 
-        # TODO: can this be refactored into one method with add_basic_user from web.py?
-        if user is None:
-            basic_role = models.Role.query.filter_by(name='basic').first()
+        # TEST       
+        uuShortID = ['F103825']
+        session['samlUserdata'] = { "uuShortID": uuShortID }
 
-            new_user = models.User(
-                username=solis_id,
-                active=False,
-                role_id=basic_role.id,
-            )
-
-            models.db.session.add(new_user)
-            models.db.session.commit()
-
-        # redirect to frontend, passing solis id        
-        redirect_to = 'login?solisId={0}'.format(solis_id)
-        return redirect(redirect_to)
-
-
+        # PROD code
         # req = self.prepare_flask_request(request)
         # auth = self.init_saml_auth(req)
         # auth.process_response()
@@ -125,29 +107,6 @@ class DhlabFlaskSaml:
         #     session['samlNameId'] = auth.get_nameid()
         #     session['samlSessionIndex'] = auth.get_session_index()
         #     self_url = OneLogin_Saml2_Utils.get_self_url(req)
-
-        #     solis_id = session['samlUserdata']['uuShortID'][0]
-            
-        #     # check if user exists, if it doesn't add basic user (see web.py)
-        #     user = models.User.query.filter_by(username=solis_id).first()
-
-        #     # TODO: can this be refactored into one method with add_basic_user from web.py?
-        #     if user is None:
-        #         basic_role = models.Role.query.filter_by(name='basic').first()
-    
-        #         new_user = models.User(
-        #             username=solis_id,
-        #             active=false,
-        #             role_id=basic_role.id,
-        #         )
-
-        #         models.db.session.add(new_user)
-        #         models.db.session.commit()
-
-        #     # redirect to frontend, passing solis id
-        #     redirect_to = urlencode('{0}/?solisId={1}'.format(request.host_url, solis_id))
-
-        #     return redirect(auth.redirect_to(redirect_to))
         # else:
         #     self.process_errors(errors, auth.get_last_error_reason())
         #     return redirect(fail_safe)
@@ -155,7 +114,7 @@ class DhlabFlaskSaml:
     
     def init_logout(self, request, session, redirect):
         '''
-        Initialize a login procedure by redirecting the user to the identity provider (i.e. ITS)
+        Initialize a logout procedure
         
         Keyword arguments:
             request  -- The Flask request object
@@ -238,8 +197,11 @@ class DhlabFlaskSaml:
         '''
         Returns the user's Solis-ID (if user is still logged in)
         '''
-        if self.logged_in(request) and session['samlUserdata']['uuShortID']:
-            return session['samlUserdata']['uuShortID'][0]
+        # TEST
+        return session['samlUserdata']['uuShortID'][0]
+        # PROD
+        # if self.logged_in(request) and session['samlUserdata']['uuShortID']:
+        #     return session['samlUserdata']['uuShortID'][0]
 
 
     def get_account_type(self, request, session):
