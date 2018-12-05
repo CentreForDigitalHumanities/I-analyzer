@@ -67,7 +67,8 @@ class Tml(HTMLCorpus):
             name='author',
             display_name='author',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
+            csv_core=True,
             description='Author.',
             extractor=extract.HTML(tag='p', attribute_filter={
                 'attribute': 'class',
@@ -79,7 +80,7 @@ class Tml(HTMLCorpus):
             name='title',
             display_name='title',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             description='Title.',
             extractor=extract.HTML(
                 tag='p',
@@ -93,7 +94,8 @@ class Tml(HTMLCorpus):
         Field(
             name='source',
             display_name='source',
-            prominent_field=True,
+            results_overviews=True,
+            csv_core=True,
             description='Source.',
             extractor=extract.HTML(tag='p',
                                    flatten=True,
@@ -125,8 +127,8 @@ class Tml(HTMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            preselected=True,
-            prominent_field=True,
+            search_field_core=True,
+            results_overview=True,
             extractor=extract.HTML(tag='div', flatten=True,
                                    attribute_filter={
                                        'attribute': 'id',

@@ -89,7 +89,8 @@ describe('CorpusService', () => {
                     "name": "bank",
                     "display_name": "Bank",
                     "results_overview": false,
-                    "preselected": false,
+                    "csv_core": false,
+                    "search_field_core": false,
                     "visualization_type": "term_frequency",
                     "search_filter": {
                         "description": "Search only within these banks.",
@@ -106,7 +107,8 @@ describe('CorpusService', () => {
                     "indexed": true,
                     "name": "year",
                     "results_overview": true,
-                    "preselected": true,
+                    "csv_core": true,
+                    "search_field_core": false,
                     "term_frequency": false,
                     "visualization_type": "term_frequency",
                     "search_filter": {
@@ -129,7 +131,8 @@ describe('CorpusService', () => {
                 displayName: 'Bank',
                 displayType: 'keyword',
                 resultsOverview: false,
-                preselected: false,
+                csvCore: false,
+                searchFieldCore: false,
                 visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Search only within these banks.",
@@ -145,7 +148,8 @@ describe('CorpusService', () => {
                 displayName: 'year',
                 displayType: 'integer',
                 resultsOverview: true,
-                preselected: true,
+                csvCore: true,
+                searchFieldCore: false,
                 visualizationType: 'term_frequency',
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",

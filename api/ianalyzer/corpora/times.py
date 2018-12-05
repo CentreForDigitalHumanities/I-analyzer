@@ -99,11 +99,10 @@ class Times(XMLCorpus):
     fields = [
         Field(
             name='date',
-            display_name='Publication date',
-            description='Publication date, programmatically generated.',
+            display_name='Publication Date',
+            description='Publication date, parsed to yyyy-MM-dd format',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            results_overview=True,
-            preselected=True,
+            hidden=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
                 config.TIMES_MIN_DATE,
@@ -162,7 +161,8 @@ class Times(XMLCorpus):
                     tag='ed', toplevel=True, multiple=True,
                     applicable=after(1985)
                 )
-            )
+            ),
+            csv_core=True
         ),
         Field(
             name='issue',
@@ -174,7 +174,8 @@ class Times(XMLCorpus):
                 # Hardcoded to ignore one particular issue with source data
                 transform=lambda x: (62226 if x == "6222662226" else int(x))
             ),
-            sortable=True
+            sortable=True,
+            csv_core=True
         ),
         Field(
             name='volume',
@@ -183,13 +184,15 @@ class Times(XMLCorpus):
             extractor=extract.XML(
                 tag='volNum', toplevel=True,
                 applicable=after(1985)
-            )
+            ),
+            csv_core=True
         ),
         Field(
             name='date-pub',
-            display_name='Publication date',
-            preselected=True,
-            description='Date of publication.',
+            display_name='Publication Date',
+            csv_core=True,
+            results_overview=True,
+            description='Publication date as full string, as found in source file',
             extractor=extract.XML(
                 tag='da', toplevel=True
             )
@@ -206,26 +209,6 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(indexed=False,
-              name='weekday',
-              display_name='Weekday',
-              description='Day of the week.',
-              extractor=extract.XML(
-                  tag='dw', toplevel=True,
-                  applicable=after(1985)
-              )
-              ),
-        Field(indexed=False,
-              name='publication-date',
-              display_name='Publication date (fixed)',
-              description=(
-                  'Fixed publication date. Logically generated from date, '
-                  'e.g. yyyymmdd'
-              ),
-              extractor=extract.XML(
-                  tag='pf', toplevel=True,
-              )
-              ),
         Field(
             name='page-count',
             display_name='Image count',
@@ -270,8 +253,7 @@ class Times(XMLCorpus):
                 tag=['..', 'pageid'], attribute='isPartOf',
                 applicable=after(1985)
             ),
-            sortable=True,
-            preselected=True
+            sortable=True
         ),
         Field(
             name='supplement-title',
@@ -280,7 +262,7 @@ class Times(XMLCorpus):
             extractor=extract.XML(
                 tag=['..', 'pageid', 'supptitle'], multiple=True,
                 applicable=after(1985)
-            )
+            ),
         ),
         Field(
             name='supplement-subtitle',
@@ -376,7 +358,7 @@ class Times(XMLCorpus):
             name='title',
             display_name='Title',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             visualization_type='wordcloud',
             description='Article title.',
             extractor=extract.XML(tag='ti')
@@ -386,7 +368,7 @@ class Times(XMLCorpus):
             display_name='Subtitle',
             description='Article subtitle.',
             extractor=extract.XML(tag='ta', multiple=True),
-            preselected=True
+            search_field_core=True
         ),
         Field(
             name='subheader',
@@ -411,7 +393,8 @@ class Times(XMLCorpus):
                     applicable=after(1985)
                 )
             ),
-            preselected=True
+            search_field_core=True,
+            csv_core=True
         ),
         Field(
             name='source-paper',
@@ -458,8 +441,7 @@ class Times(XMLCorpus):
                 ]
             ),
             extractor=extract.XML(tag='ct', multiple=True),
-            sortable=True,
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='illustration',
@@ -493,7 +475,7 @@ class Times(XMLCorpus):
                     applicable=after(1985)
                 )
             ),
-            sortable=True
+            csv_core=True
         ),
         Field(
             name='content-preamble',
@@ -520,7 +502,7 @@ class Times(XMLCorpus):
             visualization_type='wordcloud',
             description='Raw OCR\'ed text (content).',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             extractor=extract.XML(
                 tag=['text', 'text.cr'], multiple=True,
                 flatten=True
