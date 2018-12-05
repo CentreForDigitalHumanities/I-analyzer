@@ -115,17 +115,12 @@ export class UserService implements OnDestroy {
 
     public login(username: string, password: string = null): Promise<User | false> {
         let loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {
-                this.currentUser = new User(
-                    result.id,
-                    result.username,
-                    result.role,
-                    result.downloadLimit == null ? 0 : result.downloadLimit,
-                    result.queries);
+            if (result.success) {                
                 if (username == 'guest') {
                     this.supportGuest = !password;
                 }
-                return this.currentUser;
+
+                return this.processLoginSucces(result);
             } else if (username == 'guest' && !password) {
                 this.supportGuest = false;
             }
@@ -138,13 +133,6 @@ export class UserService implements OnDestroy {
         return loginPromise;
     }
 
-    /**
-     * Start the SAML process to login with Solis identity
-     */
-    public initSolisLogin() {
-        this.apiService.initSolisLogin();
-    }
-
 
     /**
      * Do the actual login with SolisId
@@ -153,14 +141,7 @@ export class UserService implements OnDestroy {
         await this.sessionCheckPromise;
         let loginPromise = this.apiService.solisLogin({ solisId }).then(result => {
             if (result.success) {
-                this.currentUser = new User(
-                    result.id,
-                    result.username,
-                    result.role,
-                    result.downloadLimit == null ? 0 : result.downloadLimit,
-                    result.queries);
-
-                return this.currentUser;
+                return this.processLoginSucces(result);
             }
 
             return false;
@@ -169,6 +150,21 @@ export class UserService implements OnDestroy {
         this.sessionCheckPromise = loginPromise.then(user => !!user);
 
         return loginPromise;
+    }
+
+    /**
+     * Create user and assign it to this.currentUser
+     * @param result The result from the API call
+     */
+    private processLoginSucces(result): User {
+        this.currentUser = new User(
+            result.id,
+            result.username,
+            result.role,
+            result.downloadLimit == null ? 0 : result.downloadLimit,
+            result.queries);
+
+        return this.currentUser;
     }
 
 

@@ -124,17 +124,11 @@ export class ApiService extends Rest {
     { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;  
 
     @RestAction({
-        method: RestRequestMethod.Post,
-        path: '/init_solislogin'
-    })
-    public initSolisLogin: RestMethod<{},{}>; 
-
-    @RestAction({
         method: RestRequestMethod.Get,
         path: '/solislogin'
     })
     public solisLogin: RestMethod<
-    { solisId: string },
+    { },
     { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
 
     @RestAction({
