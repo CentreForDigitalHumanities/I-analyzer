@@ -406,8 +406,6 @@ def api_get_wordcloud_data():
 @blueprint.route('/api/get_source_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_source_image(image_path, corpus_index):
-    # toplevel directory for images of corpus, this should be decided by corpus
-    # TODO pdfs
     backend_corpus = corpora.DEFINITIONS[corpus_index]
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]
@@ -422,7 +420,7 @@ def api_get_source_image(image_path, corpus_index):
             pdf_writer = PdfFileWriter()
 
             input_pdf = PdfFileReader(absolute_path, "rb")
-            page = input_pdf.getPage(0)
+            page = input_pdf.getPage(38)
             pdf_writer.addPage(page)
 
             pdf_writer.write(tmp)

@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <div class="column is-desktop">
+    <div class="column is-7">
         <div class="box">
         <p-tabView> 
             <p-tabPanel header="" leftIcon="fa fa-book">
@@ -29,12 +29,14 @@
                 </ng-container>
             </p-tabPanel>
             <!-- <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined"> -->
-            <p-tabPanel header="" leftIcon="fa fa-image">
+            <p-tabPanel header="" leftIcon="fa fa-image" style="width:100%;">
                     <!-- <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/> -->
                     <!-- <img class="src-img" src="/api/get_source_image/{{corpus.index}}/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"/> -->
 
                     <pdf-viewer [src]="pdfSrc"
                                 [render-text]="true"
+                                [original-size]="false"
+                                [autoresize]="true"
                                 style = "display: block;">
                     </pdf-viewer>
 

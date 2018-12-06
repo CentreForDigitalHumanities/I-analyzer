@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { HttpClient } from '@angular/common/http';
 
-
 @Component({
     selector: 'document-view',
     templateUrl: './document-view.component.html',
@@ -45,8 +44,13 @@ export class DocumentViewComponent implements OnInit {
     constructor(private http: HttpClient) { }
 
     ngOnInit() {
-        console.log(this.corpus)
-        this.pdfURL = "/api/get_source_image/" + this.corpus + "/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
-        this.pdfSrc = this.getPdfSrc(this.pdfURL)
+        // console.log(this.corpus)
+        // this.pdfURL = "/api/get_source_image/" + this.corpus + "/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
+        // this.pdfSrc = this.getPdfSrc(this.pdfURL)
+        // this.pdfSrc = Promise.resolve(pdfservice.getpdf(arg1, arg2))
+    }
+
+    ngOnChange() {
+        // this.pdfSrc = this.getPdfSrc(this.pdfURL)
     }
 }
