@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { QueryField } from '../models/index';
+import { CorpusField } from '../models/index';
+
+import * as _ from "lodash";
 
 @Component({
     selector: 'ia-select-field',
@@ -7,40 +9,55 @@ import { QueryField } from '../models/index';
     styleUrls: ['./select-field.component.scss'],
 })
 export class SelectFieldComponent implements OnInit {
-    @Input() public availableFields: QueryField[];
+    @Input() public availableFields: CorpusField[];
+    @Input() public filterCriterion: string;
     @Input() public label: string;
     @Input() public selectAll: boolean;
     @Input() public showSelectedFields: boolean;
-    @Output() selectedFields = new EventEmitter<QueryField[]>();
+    @Output() selectedFields = new EventEmitter<CorpusField[]>();
     public allVisible: boolean = false;
-    public selectedQueryFields: QueryField[];
-    public optionsFields: QueryField[];
+    public selectedQueryFields: CorpusField[];
+    public optionsFields: CorpusField[];
 
     constructor() { }
 
     ngOnInit() {
-        if (this.availableFields!=undefined) {
-            this.optionsFields = this.availableFields.filter(field => field.preselected);
+        if (this.availableFields !== undefined && this.filterCriterion !== undefined) {
+            this.filterCoreFields();
             if (this.selectAll) {
                 this.selectedQueryFields = this.optionsFields;
             }
-        }
+            else {
+                this.selectedQueryFields = [];
+            }
+        }        
     }
 
     public toggleAllFields() {
         if (this.allVisible) {
-            this.optionsFields = this.availableFields.filter(field => field.preselected);
+            this.filterCoreFields();
         }
         else {
-            this.optionsFields = this.availableFields;
+            // show all options, with core options first, the rest alphabetically sorted
+            let noCoreOptions = _.without(this.availableFields, ... this.optionsFields);
+            this.optionsFields = this.optionsFields.concat(_.sortBy(noCoreOptions,['displayName']));
         }
         this.allVisible = !this.allVisible;
     }
 
-    public toggleField() {
-        // Searching in different fields also yields different results.
-        //this.hasModifiedFilters = true;
+    public toggleField(field: CorpusField) {
         this.selectedFields.emit(this.selectedQueryFields);
     }
 
+    private filterCoreFields() {
+        if (this.filterCriterion === 'csv') {
+            this.optionsFields = this.availableFields.filter(field => field.csvCore);
+        }
+        else if (this.filterCriterion === 'searchField') {
+            this.optionsFields = this.availableFields.filter(field => field.searchFieldCore);
+        }
+        else {
+            this.optionsFields = this.availableFields;
+        }  
+    }
 }

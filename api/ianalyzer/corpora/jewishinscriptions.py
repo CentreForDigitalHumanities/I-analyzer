@@ -76,7 +76,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'origDate'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='remarks on date',
@@ -93,12 +93,13 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'transcription'],
                 toplevel=False,
             ),
-            preselected=True
+            search_field_core=True
         ),
         Field(
             name='incipit',
             description='The start of the text content of the inscription.',
             es_mapping={'type': 'keyword'},
+            csv_core=True,
             search_filter=MultipleChoiceFilter(
                 description='Search only within these incipit types.',
                 options=['המצבה הזאת',
@@ -145,7 +146,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'sex'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='age',
@@ -160,7 +161,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'age'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='remarks on age',
@@ -202,7 +203,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'inscriptionType'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='iconography type',
@@ -223,7 +224,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'iconographyType'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='iconography description',
@@ -252,7 +253,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'material'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='language',
@@ -270,7 +271,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'language'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='number of lines surviving',
@@ -285,7 +286,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'numberOfLinesSurviving'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='location',
@@ -294,7 +295,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'location'],
                 toplevel=False,
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='publication',
@@ -335,6 +336,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'commentary'],
                 toplevel=False,
             ),
+            search_field_core=True,
         )
     ]
     """ Removed for first demo: this tag is empty in all 64 xml files
