@@ -125,7 +125,31 @@ export class SearchService {
 
     public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
         return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
-            return {[fieldName]: result['data']};
+            return new Promise( (resolve, reject) => {
+                if (result['data']) {
+                    resolve({[fieldName]: result['data']});
+                }
+                else {
+                    reject({'message': 'No word cloud data could be extracted from your search results.'});
+                }
+            });
+        });
+    }
+
+    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<any> {
+        return this.apiService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'graphData': {
+                                'labels': result['related_word_data'].time_points, 
+                                'datasets':result['related_word_data'].similar_words_subsets
+                            },
+                            'tableData': result['related_word_data'].similar_words_all});
+                }
+                else {
+                    reject({'message': result['message']})
+                }
+            })
         });
     }
 

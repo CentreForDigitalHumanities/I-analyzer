@@ -89,6 +89,7 @@ class DutchBanking(XMLCorpus):
                 lower=min_date.year,
                 upper=max_date.year,
             ),
+            visualization_sort="key",
             extractor=Metadata(key='year', transform=int),
             preselected=True
         ),

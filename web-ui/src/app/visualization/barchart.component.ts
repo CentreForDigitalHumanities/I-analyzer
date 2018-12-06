@@ -25,6 +25,7 @@ export class BarChartComponent implements OnChanges {
     public chart: any;
     public width: number;
     public height: number;
+    private correction: number = 0;
     public xScale: any; // can be either ordinal or time scale
     public yScale: d3.ScaleLinear<number, number>;
     public xAxis: d3.Selection<any, any, any, any>;
@@ -44,7 +45,7 @@ export class BarChartComponent implements OnChanges {
     constructor(public dataService: DataService){}
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.chartElement == undefined) {
+        if (this.chartElement === undefined) {
             this.chartElement = this.barchartContainer.nativeElement;
         }
 
@@ -83,8 +84,19 @@ export class BarChartComponent implements OnChanges {
 
     prepareTermFrequency() {
         this.xDomain = this.searchData.map(d => d.key);
-        this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
-        this.xBarWidth = this.xScale.bandwidth();
+        if (typeof this.xDomain[0]==="number") {
+            // set up a linear rather than ordinal scale
+            let xDomain = [d3.min(this.xDomain)-1, d3.max(this.xDomain)+1]
+            this.xScale = d3.scaleLinear().domain(xDomain).rangeRound([0, this.width]);
+            // width of canvas, divided by potential datapoints
+            this.xBarWidth = this.width / (this.xScale.domain()[1]-this.xScale.domain()[0])-1;
+            this.correction = this.xBarWidth/2;
+        }
+        else {
+            this.xScale = d3.scaleBand().domain(this.xDomain).rangeRound([0, this.width]).padding(.1);
+            this.xBarWidth = this.xScale.bandwidth();
+            this.correction = 0;
+        }
         this.yMax = d3.max(this.searchData.map(d => d.doc_count));
     }
 
@@ -130,9 +142,13 @@ export class BarChartComponent implements OnChanges {
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
         this.xAxisClass = d3.axisBottom(this.xScale);
+        if (typeof this.xDomain[0]==="number") {
+            // prevent commas in years, e.g. 1,992
+            this.xAxisClass.tickFormat(d3.format(""));
+        }
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis-x')
-            .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+            .attr('transform', `translate(${this.margin.left + this.correction}, ${this.margin.top + this.height})`)
             .call(this.xAxisClass);
 
         // set style of x tick marks
@@ -148,7 +164,7 @@ export class BarChartComponent implements OnChanges {
             .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
 
         // adding axis labels
-        let xLabelText = this.visualizedField.replace(/\b\w/g, l => l.toUpperCase());
+        let xLabelText = this.visualizedField.displayName;
         let yLabelText = "Frequency";
 
         this.svg.append("text")
@@ -191,7 +207,7 @@ export class BarChartComponent implements OnChanges {
             .attr('class', 'bar')
             .attr('x', d => this.xScale(d.key))
             .attr('width', this.xBarWidth)
-            .attr('y', d => this.yScale(0)) //set to zero first for smooth transition
+            .attr('y', this.yScale(0)) //set to zero first for smooth transition
             .attr('height', 0)
             .transition().duration(750)
             .delay((d, i) => i * 10)

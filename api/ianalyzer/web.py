@@ -392,3 +392,29 @@ def api_get_wordcloud_data():
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
     return jsonify({'data': word_counts})
+
+
+@blueprint.route('/api/get_related_words', methods=['POST'])
+@login_required
+def api_get_related_words():
+    if not request.json:
+        abort(400)
+    results = analyze.get_diachronic_contexts(
+        request.json['query_term'],
+        request.json['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'related_word_data': {
+                'similar_words_all': results[0],
+                'similar_words_subsets': results[1],
+                'time_points': results[2]
+            }
+        }) 
+    return response
