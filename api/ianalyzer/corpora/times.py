@@ -209,6 +209,15 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
+        Field(indexed=False,
+              name='weekday',
+              display_name='Weekday',
+              description='Day of the week.',
+              extractor=extract.XML(
+                  tag='dw', toplevel=True,
+                  applicable=after(1985)
+              )
+        ),
         Field(
             name='page-count',
             display_name='Image count',
