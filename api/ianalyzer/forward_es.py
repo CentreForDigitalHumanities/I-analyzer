@@ -10,12 +10,14 @@ from . import config_fallback as config
 from . import tasks
 
 
+
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
 
 logger = logging.getLogger(__name__)
 
 es = Blueprint('es', __name__)
+
 
 
 def ensure_http(hostname):
@@ -46,17 +48,14 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
-    #create csv in background via celery task
-    celerytest=tasks.download_csv.apply_async(args=[address])
-    #print(celerytest.traceback)
-    #print(celerytest.get()) #hiermee resultaat als je resultbackend hebt ingesteld
-    #print(celerytest.id) #geeft de id van de taak
-
-
+    #create csv file with results in background via celery task and send mail
+    celerytest=tasks.download_csv.apply_async(args=[address, current_user.email])
+  
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
         kwargs['json'] = request.get_json(cache=False)
+        print(request)
     try:
         es_response = requests.request(
             request.method,

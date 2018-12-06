@@ -55,6 +55,7 @@ SERVERS = {
 # MAIL_PASSWORD = ''
 # MAIL_FROM_ADRESS='example@dhlab.nl'
 # MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
+# MAIL_CSV_SUBJECT_LINE='Your I-analyzer csv file is ready'
 # BASE_URL='http://localhost:4200'
 # LOGO_LINK='http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'
 
@@ -67,7 +68,7 @@ CORPUS_SERVER_NAMES = {
 # Note that the name of each corpus image will need to be configuration separately.
 CORPUS_IMAGE_ROOT = 'corpora/images'
 
-#folder for storing the csv files for'csv download'. This is different on local windows machines. Override this in 'config.py'
+#folder for storing the csv files for'csv download'. This can be different on local machines. Override this in 'config.py'
 CSV_FOLDER='I-analyzer/api/csv_files'
 
 # Index configurations
