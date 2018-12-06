@@ -138,7 +138,7 @@ class DutchNewspapers(XMLCorpus):
             description='Publication date.',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
                 config.DUTCHNEWSPAPERS_MIN_DATE,
@@ -163,7 +163,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Newspaper title',
             description='Title of the newspaper',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
@@ -198,7 +198,7 @@ class DutchNewspapers(XMLCorpus):
             name='issue_number',
             display_name='Issue number',
             description='Issue number of the newspaper',
-            preselected=True,
+            csv_core=True,
             es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='issuenumber',
                                   toplevel=True,
@@ -214,7 +214,7 @@ class DutchNewspapers(XMLCorpus):
             name='category',
             display_name='Category',
             description='Whether the item is an article, advertisment, etc.',
-            preselected=True,
+            csv_core=True,
             es_mapping={'type': 'keyword'},
             extractor=extract.XML(tag='subject',
                                   toplevel=True,
@@ -231,6 +231,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Circulation',
             description='The area in which the newspaper was distributed.',
             es_mapping={'type': 'keyword'},
+            csv_core=True,
             extractor=extract.XML(tag='spatial',
                                   toplevel=True,
                                   recursive=True,
@@ -245,6 +246,7 @@ class DutchNewspapers(XMLCorpus):
             name='publisher',
             display_name='Publisher',
             description='Publisher',
+            search_field_core=True,
             extractor=extract.XML(tag='publisher',
                                   toplevel=True,
                                   multiple=True,
@@ -261,7 +263,6 @@ class DutchNewspapers(XMLCorpus):
             name='language',
             display_name='Language',
             description='language',
-            preselected=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
@@ -283,7 +284,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Article title',
             description='Article title',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             extractor=extract.XML(tag='title', flatten=True, toplevel=True)
         ),
         Field(
@@ -316,7 +317,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Distribution',
             description='Distribution area of the newspaper.',
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
@@ -338,7 +339,7 @@ class DutchNewspapers(XMLCorpus):
             display_name='Publication frequency',
             description='publication frequency of the newspaper.',
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
@@ -361,7 +362,7 @@ class DutchNewspapers(XMLCorpus):
             display_type='text_content',
             description='Text content.',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             extractor=extract.XML(tag='p', multiple=True,
                                   flatten=True, toplevel=True)
         ),

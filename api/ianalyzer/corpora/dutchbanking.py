@@ -97,7 +97,7 @@ class DutchBanking(XMLCorpus):
             ),
             visualization_sort="key",
             extractor=Metadata(key='year', transform=int),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='company',
@@ -114,7 +114,7 @@ class DutchBanking(XMLCorpus):
                 key='company',
                 transform=lambda x: config.DUTCHBANK_MAP[x],
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='company_type',
@@ -138,6 +138,7 @@ class DutchBanking(XMLCorpus):
             description='The number of the page in the scan',
             es_mapping={'type': 'integer'},
             extractor=XML(attribute='PHYSICAL_IMG_NR', transform=int),
+            csv_core=True,
         ),
         Field(
             name='id',
@@ -149,7 +150,7 @@ class DutchBanking(XMLCorpus):
                 XML(attribute='ID'),
                 transform=lambda x: '_'.join(x),
             ),
-            hidden=False,
+            hidden=True,
         ),
         Field(
             name='content',
@@ -165,6 +166,6 @@ class DutchBanking(XMLCorpus):
                 multiple=True,
                 transform=lambda x: ' '.join(x),
             ),
-            preselected=True
+            search_field_core=True
         ),
     ]
