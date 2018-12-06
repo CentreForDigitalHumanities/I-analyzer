@@ -128,12 +128,20 @@ export class ApiService extends Rest {
         path: '/register'
     })
     public register: RestMethod<
-    { username: string, email: string, password: string },
-    { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;  
+        { username: string, email: string, password: string },
+        { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Get,
         path: '/search_history'
     })
     public search_history: RestMethod<void, { 'queries': Query[] }>;
+
+    @RestAction({
+        path: '/get_scan_image/{!corpus_index}/{!page}/{!image_path}'
+    })
+    public get_scan_image: RestMethod<
+        { corpus_index: string, page: number | null, image_path: string },
+        // { corpus_index: string, page: number | null, image_path: string },
+        { file: ArrayBuffer }>;
 }

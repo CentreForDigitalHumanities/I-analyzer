@@ -14,6 +14,7 @@ import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ScanImageService } from './services/scan-image.service';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -153,6 +154,7 @@ const appRoutes: Routes = [
         ManualService,
         NotificationService,
         QueryService,
+        ScanImageService,
         SearchService,
         SessionService,
         UserService,
