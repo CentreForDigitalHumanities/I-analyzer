@@ -7,6 +7,8 @@ from flask import Blueprint, request, json, abort, Response
 from flask_login import login_required, current_user
 
 from . import config_fallback as config
+from . import tasks
+
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
@@ -44,6 +46,13 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
+    #create csv in background via celery task
+    celerytest=tasks.download_csv.apply_async(args=[address])
+    #print(celerytest.traceback)
+    #print(celerytest.get()) #hiermee resultaat als je resultbackend hebt ingesteld
+    #print(celerytest.id) #geeft de id van de taak
+
+
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
@@ -70,6 +79,7 @@ def proxy_es(address):
             for key in PASSTHROUGH_HEADERS if key in es_response.headers
         },
     )
+
 
 
 @es.route('/<server_name>', methods=['HEAD'])

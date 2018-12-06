@@ -2,10 +2,21 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 
+//geimporeerd
+//import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
+//import { UserService } from './user.service';
+
+
 @Injectable()
 export class DownloadService {
 
-    constructor() { }
+    constructor(
+        //private queryService: QueryService,
+        //private userService: UserService,
+
+    ) { 
+
+    }
 
     /**
      * Downloads the given tabular data as a CSV file.
@@ -14,6 +25,15 @@ export class DownloadService {
      * @param header The column names to place at the beginning of the file.
      * @param separator Cell separator to use.
      */
+
+    // public async downloadCsv(queryModel: QueryModel, corpus: Corpus){
+    //     let user = await this.userService.getCurrentUser();
+    //     let query = new Query(queryModel, corpus.name, user.id);
+    //     console.log(query)
+    // }
+
+
+    //even hernoemd
     public downloadCsv(filename: string, values: string[][], header: string[], separator = ','): void {
         const newline = '\n';
 

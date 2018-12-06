@@ -40,6 +40,7 @@ def flask_app(blueprint, admin_instance, login_manager, csrf, mail, cfg=config):
     csrf.init_app(app)
     mail.init_app(app)
 
+
     return app
 
 

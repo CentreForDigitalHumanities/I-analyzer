@@ -15,6 +15,7 @@ from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
 from es_index import perform_indexing
 
+
 app = flask_app(blueprint, admin_instance, login_manager, mail, csrf)
 
 migrate = Migrate(app, db)

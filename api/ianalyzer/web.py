@@ -29,6 +29,7 @@ from . import analyze
 
 from flask_admin.base import MenuLink
 
+import os
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
@@ -128,6 +129,12 @@ def init():
         return redirect(url_for('admin.index'))
     else:
         return redirect(url_for('admin.login'))
+
+
+# endpoint for link to csv file
+@blueprint.route('/api/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory(config.CSV_FOLDER, '{}'.format(filename))
 
 
 # endpoint for registration new user via signup form

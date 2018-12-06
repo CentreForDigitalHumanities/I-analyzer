@@ -84,6 +84,9 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
+        
+        console.log(query)
+
         let querySave = this.queryService.save(query, true);
         let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
