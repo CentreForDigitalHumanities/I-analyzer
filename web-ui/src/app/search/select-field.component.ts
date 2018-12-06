@@ -45,7 +45,7 @@ export class SelectFieldComponent implements OnInit {
         this.allVisible = !this.allVisible;
     }
 
-    public toggleField(field: CorpusField) {
+    public toggleField() {
         this.selectedFields.emit(this.selectedQueryFields);
     }
 
