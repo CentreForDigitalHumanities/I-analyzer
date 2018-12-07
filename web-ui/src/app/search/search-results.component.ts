@@ -46,11 +46,6 @@ export class SearchResultsComponent implements OnInit, OnChanges {
     constructor(private searchService: SearchService, private dataService: DataService, private scanImageService: ScanImageService) { }
 
     ngOnInit() {
-        let url = "Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
-
-        // this.scanImageService.get_scan_image(this.corpus.index, this.document.fieldValues.page_number, url).then(
-        //     results => this.imgSrc = results
-        // )
 
     }
 

@@ -28,12 +28,9 @@
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
             </p-tabPanel>
-            <!-- <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="document.fieldValues.image_path==undefined"> -->
             <p-tabPanel header="" leftIcon="fa fa-image" style="width:100%;">
-                    <!-- <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/> -->
-                    <!-- <img class="src-img" src="/api/get_source_image/{{corpus.index}}/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"/> -->
-
-                    <pdf-viewer *ngIf="showPdf"
+                    <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/0/{{document.fieldValues.image_path}}"/>
+                    <pdf-viewer *ngIf="corpus.scan_image_type=='pdf' && imgSrc != 'undefined'"
                                 [src]="imgSrc"
                                 [render-text]="true"
                                 [original-size]="false"
@@ -41,14 +38,6 @@
                                 (text-layer-rendered)="textLayerRendered($event, this.query)"
                                 style = "display: block;">
                     </pdf-viewer>
-                    <!-- <img class= "src-image" [src]="imgSrc"> -->
-
-
-
-
-
-
-
             </p-tabPanel>
         </p-tabView>
         </div>

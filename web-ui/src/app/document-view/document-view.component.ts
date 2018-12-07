@@ -43,19 +43,22 @@ export class DocumentViewComponent implements OnInit {
     @Input()
     public corpus: Corpus;
 
-    public showPdf: boolean = false;
-
-    public imgSrc: Uint8Array;
+    public imgSrc: any;
 
     constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
     ngOnInit() {
-        this.showPdf = this.corpus.scan_image_type == 'pdf'
-        if (this.showPdf) {
+        if (this.corpus.scan_image_type == 'pdf') {
             let url = "Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
             this.scanImageService.get_scan_image(this.corpus.index, 38, url).then(
                 results => this.imgSrc = results)
         }
+
+        //     this.scanImageService.get_scan_image(this.corpus.index, 0, this.document.fieldValues.image_path).then(
+        //         results => this.imgSrc = new Uint8Array(results)
+        //     )
+        //     // console.log(this.imgSrc)
+        // }
     }
 
     ngOnChange() { }
