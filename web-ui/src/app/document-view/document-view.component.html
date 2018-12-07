@@ -33,13 +33,13 @@
                     <!-- <img *ngIf="document.fieldValues.image_path!=undefined" class="src-img" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/> -->
                     <!-- <img class="src-img" src="/api/get_source_image/{{corpus.index}}/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"/> -->
 
-                    <!-- <pdf-viewer [src]="pdfSrc"
+                    <pdf-viewer [src]="imgSrc"
                                 [render-text]="true"
                                 [original-size]="false"
                                 [autoresize]="true"
                                 style = "display: block;">
-                    </pdf-viewer> -->
-                    <img class= "src-image" src="imgSrc">
+                    </pdf-viewer>
+                    <!-- <img class= "src-image" [src]="imgSrc"> -->
 
 
 

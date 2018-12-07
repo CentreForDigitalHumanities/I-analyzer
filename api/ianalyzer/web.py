@@ -403,22 +403,23 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_scan_image/<corpus_index>/<page>/<path:image_path>', methods=['GET'])
+@blueprint.route('/api/get_scan_image/<corpus_index>/<int:page>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_source_image(corpus_index, page, image_path):
     print(corpus_index)
     print(page)
+    print(type(page))
     print(image_path)
     backend_corpus = corpora.DEFINITIONS[corpus_index]
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]
     try:
-        image_type = corpora.DEFINITIONS[corpus_index]
+        image_type = backend_corpus.scan_image_type
     except:
         image_type = 'png'
 
+    print ('ello?')
     if (corpus_index in user_permitted_corpora):
-        _, extension = splitext(image_path)
         absolute_path = join(backend_corpus.data_directory, image_path)
 
         # if extension == '.pdf':
@@ -437,8 +438,26 @@ def api_get_source_image(corpus_index, page, image_path):
 
         # else:
         #     return send_file(absolute_path, 'image/png')
+        print(image_type)
 
-        return send_file(BytesIO(absolute_path, 'image/png'))
+        if image_type == 'pdf':
+            tmp = BytesIO()
+            pdf_writer = PdfFileWriter()
+            input_pdf = PdfFileReader(absolute_path, "rb")
+            target_page = input_pdf.getPage(page)
+            pdf_writer.addPage(target_page)
+            pdf_writer.write(tmp)
+            tmp.seek(0)
+            print(tmp.getbuffer().nbytes)
+
+            return send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
+
+        if image_type == 'png':
+
+            with open(absolute_path, 'rb') as f:
+                print(BytesIO(f.read()).getbuffer().nbytes)
+                return send_file(BytesIO(f.read()), attachment_filename="scan.png", as_attachment=True, mimetype='image/png')
+            # return send_file(absolute_path, mimetype='image/png')
 
 
 @blueprint.route('/api/get_related_words', methods=['POST'])

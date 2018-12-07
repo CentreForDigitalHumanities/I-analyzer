@@ -23,6 +23,7 @@ class DutchBanking(XMLCorpus):
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
     image = config.DUTCHBANK_IMAGE
+    scan_image_type = config.DUTCHBANK_SCAN_IMAGE_TYPE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'

@@ -136,12 +136,4 @@ export class ApiService extends Rest {
         path: '/search_history'
     })
     public search_history: RestMethod<void, { 'queries': Query[] }>;
-
-    @RestAction({
-        path: '/get_scan_image/{!corpus_index}/{!page}/{!image_path}'
-    })
-    public get_scan_image: RestMethod<
-        { corpus_index: string, page: number | null, image_path: string },
-        // { corpus_index: string, page: number | null, image_path: string },
-        { file: ArrayBuffer }>;
 }

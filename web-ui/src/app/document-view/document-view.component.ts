@@ -18,12 +18,12 @@ export class DocumentViewComponent implements OnInit {
         return this.fields.filter(field => !field.hidden && field.displayType != 'text_content');
     }
 
-    // public getPdfSrc(url) {
-    //     this.http.get(url, { responseType: 'arraybuffer' })
-    //         .subscribe((file: ArrayBuffer) => {
-    //             this.pdfSrc = new Uint8Array(file);
-    //         })
-    // }
+    public getPdfSrc(url) {
+        this.http.get(url, { responseType: 'arraybuffer' })
+            .subscribe((file: ArrayBuffer) => {
+                this.imgSrc = new Uint8Array(file);
+            })
+    }
 
     public imgSrc: any;
 
@@ -41,19 +41,21 @@ export class DocumentViewComponent implements OnInit {
     @Input()
     public corpus: Corpus;
 
-    public pdfURL: string;
 
-    constructor(private scanImageService: ScanImageService) { }
+    constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
     ngOnInit() {
-        // console.log(this.corpus)
-        // this.pdfURL = "/api/get_source_image/" + this.corpus + "/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
-        // this.pdfSrc = this.getPdfSrc(this.pdfURL)
+        // this.pdfURL = "/api/get_scan_image/" + this.corpus + "/38/Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
+        // this.getPdfSrc(this.pdfURL)
         // this.pdfSrc = Promise.resolve(pdfservice.getpdf(arg1, arg2))
 
-        this.imgSrc = Promise.resolve(this.scanImageService.get_scan_image('times', 0, 'C:/paadje'))
+        // this.imgSrc = Promise.resolve(this.scanImageService.get_scan_image('times', 0, this.document.fieldValues.image_path))
 
-
+        console.log(this.document)
+        // let corpus_index = this.corpus.index,
+        //     page = this.document.fieldValues.page == 'undefined' ? this.document.fieldValues.page : null,
+        //     image_path = this.document.fieldValues.image_path
+        // this.scanImageService.get_scan_image(corpus_index, page, image_path).then(data => this.imgSrc = data)
     }
 
     ngOnChange() {
