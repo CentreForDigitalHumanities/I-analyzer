@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { DataService, SearchService, ScanImageService } from '../services';
 
 @Component({
     selector: 'ia-search-results',
@@ -32,6 +32,8 @@ export class SearchResultsComponent implements OnInit, OnChanges {
 
     public queryText: string;
 
+    public imgSrc: Uint8Array;
+
     /**
      * For failed searches.
      */
@@ -41,9 +43,15 @@ export class SearchResultsComponent implements OnInit, OnChanges {
         message: string
     };
 
-    constructor(private searchService: SearchService, private dataService: DataService) { }
+    constructor(private searchService: SearchService, private dataService: DataService, private scanImageService: ScanImageService) { }
 
     ngOnInit() {
+        let url = "Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
+
+        // this.scanImageService.get_scan_image(this.corpus.index, this.document.fieldValues.page_number, url).then(
+        //     results => this.imgSrc = results
+        // )
+
     }
 
     ngOnChanges() {

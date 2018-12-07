@@ -39,6 +39,12 @@
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
                     <!-- <img *ngIf="document.fieldValues.image_path!=undefined" class="src-thumbnail" src="/api/get_source_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/> -->
+                    <pdf-viewer [src]="imgSrc"
+                                [render-text]="true"
+                                [original-size]="false"
+                                [autoresize]="true"
+                                style = "display: block;">
+                    </pdf-viewer>
                 </div>
                 
             </div>
