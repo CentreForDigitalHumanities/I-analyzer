@@ -94,6 +94,7 @@ TIMES_DATA = '/mnt/times'
 TIMES_MIN_DATE = datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
 TIMES_IMAGE = 'times.jpg'
+TIMES_SCAN_IMAGE_TYPE = 'png'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
@@ -103,6 +104,7 @@ DUTCHBANK_DATA = '/mnt/dutchbank'
 DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHBANK_IMAGE = 'dutchbanking.jpg'
+DUTCHBANK_SCAN_IMAGE_TYPE = 'pdf'
 DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
 DUTCHBANK_MAP = {}
 
