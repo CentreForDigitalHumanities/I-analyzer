@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { HttpClient } from '@angular/common/http';
 
@@ -11,7 +11,7 @@ import { PdfViewerComponent } from 'ng2-pdf-viewer';
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent implements OnInit {
+export class DocumentViewComponent implements OnChanges {
 
     @ViewChild(PdfViewerComponent) private pdfComponent: PdfViewerComponent;
 
@@ -31,6 +31,17 @@ export class DocumentViewComponent implements OnInit {
         });
     }
 
+    public get_pdf() {
+        this.scanImageService.get_scan_image(
+            this.corpus.index,
+            this.document.fieldValues.page_number - 1, //0-indexed pdf vs 1-indexed realworld numbering
+            this.document.fieldValues.image_path).then(
+                results => {
+                    console.log(' results!')
+                    this.imgSrc = results;
+                })
+    }
+
     @Input()
     public fields: CorpusField[] = [];
 
@@ -47,19 +58,10 @@ export class DocumentViewComponent implements OnInit {
 
     constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
-    ngOnInit() {
+    ngOnChanges() {
+        console.log('change!')
         if (this.corpus.scan_image_type == 'pdf') {
-            let url = "Financials/AA_2007_00978/AA_2007_00978_00001.pdf"
-            this.scanImageService.get_scan_image(this.corpus.index, 38, url).then(
-                results => this.imgSrc = results)
+            this.get_pdf()
         }
-
-        //     this.scanImageService.get_scan_image(this.corpus.index, 0, this.document.fieldValues.image_path).then(
-        //         results => this.imgSrc = new Uint8Array(results)
-        //     )
-        //     // console.log(this.imgSrc)
-        // }
     }
-
-    ngOnChange() { }
 }
