@@ -20,7 +20,7 @@ describe('CorpusService', () => {
         { name: "test1", description: "" },
         { name: "test2", description: "" },
         { name: "times", description: "" },]);
-        
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -79,6 +79,7 @@ describe('CorpusService', () => {
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
                 "image": "/static/no-image.jpg",
+                "scan_image_type": "png",
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -91,6 +92,7 @@ describe('CorpusService', () => {
                     "results_overview": false,
                     "preselected": false,
                     "visualization_type": "term_frequency",
+                    "visualization_sort": "key",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -109,6 +111,7 @@ describe('CorpusService', () => {
                     "preselected": true,
                     "term_frequency": false,
                     "visualization_type": "term_frequency",
+                    "visualization_sort": "key",
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
@@ -131,6 +134,7 @@ describe('CorpusService', () => {
                 resultsOverview: false,
                 preselected: false,
                 visualizationType: 'term_frequency',
+                visualizationSort: "key",
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -147,6 +151,7 @@ describe('CorpusService', () => {
                 resultsOverview: true,
                 preselected: true,
                 visualizationType: 'term_frequency',
+                visualizationSort: "key",
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",
@@ -165,6 +170,7 @@ describe('CorpusService', () => {
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
+                'png'
             )]);
         });
     });

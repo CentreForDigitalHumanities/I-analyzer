@@ -411,7 +411,6 @@ def api_get_scan_image(corpus_index, page, image_path):
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]
 
-    print ('ello?')
     if (corpus_index in user_permitted_corpora):
         absolute_path = join(backend_corpus.data_directory, image_path)
 

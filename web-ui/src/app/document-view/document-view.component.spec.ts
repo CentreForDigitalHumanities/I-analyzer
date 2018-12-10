@@ -3,7 +3,11 @@ import { By } from '@angular/platform-browser';
 
 import { DocumentViewComponent } from './document-view.component';
 import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
-import { HighlightService } from '../services/index';
+import { HighlightService, ScanImageService } from '../services/index';
+
+import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { TabViewModule } from 'primeng/primeng';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;
@@ -11,8 +15,9 @@ describe('DocumentViewComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, DocumentViewComponent, SearchRelevanceComponent],
-            providers: [HighlightService]
+            declarations: [HighlightPipe, DocumentViewComponent, SearchRelevanceComponent, PdfViewerComponent],
+            imports: [TabViewModule, HttpClientModule],
+            providers: [HighlightService, ScanImageService]
         }).compileComponents();
     }));
 
