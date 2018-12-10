@@ -37,7 +37,6 @@ export class DocumentViewComponent implements OnChanges {
             this.document.fieldValues.page_number - 1, //0-indexed pdf vs 1-indexed realworld numbering
             this.document.fieldValues.image_path).then(
                 results => {
-                    console.log(' results!')
                     this.imgSrc = results;
                 })
     }
@@ -59,7 +58,6 @@ export class DocumentViewComponent implements OnChanges {
     constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
     ngOnChanges() {
-        console.log('change!')
         if (this.corpus.scan_image_type == 'pdf') {
             this.get_pdf()
         }

@@ -58,13 +58,13 @@ class DutchBanking(XMLCorpus):
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
-                if not re.match("[a-zA-Z]+", information[1]): 
+                if not re.match("[a-zA-Z]+", information[1]):
                     # second part of file name is part of company name
                     company = "_".join([company, information[1]])
                 # using first four-integer string in the file name as year
                 years = re.compile("[0-9]{4}")
-                year = next((int(info) for info in information 
-                            if re.match(years, info)), None)
+                year = next((int(info) for info in information
+                             if re.match(years, info)), None)
                 if len(information) == 3:
                     serial = information[-1]
                     scan = "00001"
@@ -75,7 +75,6 @@ class DutchBanking(XMLCorpus):
                 # or which cover parts of two years ("br" in filepath)?
                 if int(year) < start.year or end.year < int(year):
                     continue
-                print(scan)
                 yield full_path, {
                     'company': company,
                     'company_type': company_type,
