@@ -26,7 +26,13 @@ def add_images(corpus):
             if information[-1] == "abby" or len(information[-1]) > 5:
                 continue
             company = information[0]
-            year = information[1]
+            if not re.match("[a-zA-Z]+", information[1]):
+                # second part of file name is part of company name
+                company = "_".join([company, information[1]])
+                # using first four-integer string in the file name as year
+            years = re.compile("[0-9]{4}")
+            year = next((int(info) for info in information
+                         if re.match(years, info)), None)
 
             scan_filename = name + '.pdf'
             full_scan_path = op.join(rel_dir, scan_filename)
