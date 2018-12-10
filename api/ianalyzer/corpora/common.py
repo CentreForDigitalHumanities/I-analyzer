@@ -424,13 +424,24 @@ class HTMLCorpus(XMLCorpus):
 
 class Field(object):
     '''
-    Fields hold data about the name of their columns in CSV files, how the
-    corresponding content is to be extracted from the source, how they are
-    described in user interfaces, whether the field lends itself to term
-    frequency queries, whether it appears in the results overview
-    of the user interface, whether it is preselected to search in / download
-    what ElasticSearch filters are associated
-    with them, how they are mapped in the index, etcetera.
+    Fields may hold the following data:
+    - a short hand name (name)
+    - the name shown shown to the user (display name)
+    - what kind of data they contain, e.g. text, keywords... (display type)
+    - an explanation of the field (description)
+    - whether they are added to the Elasticsearch index (indexed)
+    - whether they are hidden from the frontend (hidden)
+    - whether they appear in the overview of results (results_overview)
+    - whether they appear in the preselection of csv fields (csv_core)
+    - whether they appear in the preselection of search fields (search_field_core)
+    - whether they are associated with a visualization type (visualization_type) 
+        options: term_frequency, timeline, wordcloud
+    - how the visualization's x-axis should be sorted (visualization_sort)
+    - the mapping of the field in Elasticsearch (es_mapping)
+    - definitions for if the field is also used as search filter (search_filter)
+    - how to extract data from the source documents (extractor)
+    - whether you can sort by this field (sortable)
+    - whether you can search this field (searchable)
 
     In short, this is how all things related to the informational structure of
     each particular corpus is stored.
@@ -444,7 +455,8 @@ class Field(object):
                  indexed=True,
                  hidden=False,
                  results_overview=False,
-                 preselected=False,
+                 csv_core=False,
+                 search_field_core=False,
                  visualization_type=None,
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
@@ -461,7 +473,8 @@ class Field(object):
         self.description = description
         self.search_filter = search_filter
         self.results_overview = results_overview
-        self.preselected = preselected
+        self.csv_core = csv_core
+        self.search_field_core = search_field_core
         self.visualization_type = visualization_type
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping

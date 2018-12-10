@@ -58,7 +58,13 @@ class DutchBanking(XMLCorpus):
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
-                year = information[1]
+                if not re.match("[a-zA-Z]+", information[1]): 
+                    # second part of file name is part of company name
+                    company = "_".join([company, information[1]])
+                # using first four-integer string in the file name as year
+                years = re.compile("[0-9]{4}")
+                year = next((int(info) for info in information 
+                            if re.match(years, info)), None)
                 if len(information) == 3:
                     serial = information[-1]
                     scan = "00001"
@@ -93,7 +99,7 @@ class DutchBanking(XMLCorpus):
             ),
             visualization_sort="key",
             extractor=Metadata(key='year', transform=int),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='company',
@@ -110,7 +116,7 @@ class DutchBanking(XMLCorpus):
                 key='company',
                 transform=lambda x: config.DUTCHBANK_MAP[x],
             ),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='company_type',
@@ -134,6 +140,7 @@ class DutchBanking(XMLCorpus):
             description='The number of the page in the scan',
             es_mapping={'type': 'integer'},
             extractor=XML(attribute='PHYSICAL_IMG_NR', transform=int),
+            csv_core=True,
         ),
         Field(
             name='id',
@@ -145,7 +152,7 @@ class DutchBanking(XMLCorpus):
                 XML(attribute='ID'),
                 transform=lambda x: '_'.join(x),
             ),
-            hidden=False,
+            hidden=True,
         ),
         Field(
             name='content',
@@ -161,6 +168,6 @@ class DutchBanking(XMLCorpus):
                 multiple=True,
                 transform=lambda x: ' '.join(x),
             ),
-            preselected=True
+            search_field_core=True
         ),
     ]
