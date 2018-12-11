@@ -41,6 +41,7 @@ import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
+import { PdfViewComponent } from './document-view/pdf-view.component';
 
 const appRoutes: Routes = [
     {
@@ -114,7 +115,8 @@ const appRoutes: Routes = [
         SelectFieldComponent,
         RegistrationComponent,
         PrivacyComponent,
-        RelatedWordsComponent
+        RelatedWordsComponent,
+        PdfViewComponent
     ],
     imports: [
         BrowserAnimationsModule,
