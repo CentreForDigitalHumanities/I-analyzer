@@ -67,7 +67,7 @@ class Troonredes(XMLCorpus):
             description='title.',
             extractor=extract.XML(tag='title'),
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
         ),
         Field(
             name='monarch',
@@ -76,7 +76,7 @@ class Troonredes(XMLCorpus):
             extractor=extract.XML(tag='monarch'),
             es_mapping={'type': 'keyword'},
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
@@ -93,7 +93,7 @@ class Troonredes(XMLCorpus):
             extractor=extract.XML(tag='speech_type'),
             es_mapping={'type': 'keyword'},
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
@@ -110,7 +110,7 @@ class Troonredes(XMLCorpus):
             extractor=extract.XML(tag='date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
-            preselected=True,
+            csv_core=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
                 config.TROONREDES_MIN_DATE,
@@ -127,7 +127,7 @@ class Troonredes(XMLCorpus):
             display_type='text_content',
             description='Text content.',
             results_overview=True,
-            preselected=True,
+            search_field_core=True,
             extractor=extract.XML(tag='content')
         ),
     ]

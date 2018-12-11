@@ -41,8 +41,10 @@ export type CorpusField = {
      */
     displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
     resultsOverview?: boolean,
-    preselected?: boolean,
+    csvCore?: boolean,
+    searchFieldCore?: boolean,
     visualizationType?: string,
+    visualizationSort?: string,
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,
