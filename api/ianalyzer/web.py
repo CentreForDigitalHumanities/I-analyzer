@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 import functools
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory, session
+    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -52,6 +52,7 @@ admin_instance.add_view(views.QueryView(
 login_manager = LoginManager()
 csrf = SeaSurf()
 csrf.exempt_urls('/es',)
+csrf.exempt_urls('/saml',)
 
 mail = Mail()
 saml = DhlabFlaskSaml()
@@ -265,19 +266,20 @@ def api_login():
 
 @blueprint.route('/api/init_solislogin', methods=['POST', 'GET'])
 def init_solislogin():
-    ''' SAML step 1. The starting point for logging in with SolisId. '''
+    ''' SAML login step 1. The starting point for logging in with SolisId. '''
     return saml.init_login(request, redirect)
 
 
 @blueprint.route('/saml/process_login_result', methods=['POST', 'GET'])
 def process_login_result():
-    ''' SAML step 2. Will be called by Identity Provider (ITS)'''    
-    saml.process_login_result(session, 'login')
+    ''' SAML login step 2. Will be called by Identity Provider (ITS)'''    
+    saml.process_login_result(request, session, redirect, 'login')
     solis_id = saml.get_solis_id(request, session)
+    email = saml.get_email_address(request, session)
 
     user = models.User.query.filter_by(username=solis_id).first()
     if user is None:
-        add_basic_user(solis_id, None, None, True)
+        add_basic_user(solis_id, None, email, True)
 
     redirect_to = 'login?solisId={0}'.format(solis_id)
     return redirect(redirect_to)
@@ -285,11 +287,19 @@ def process_login_result():
 
 @blueprint.route('/api/solislogin', methods=['GET'])
 def solislogin():
-    ''' SAML step 3. Called by frontend to retrieve user instance '''
+    ''' SAML login step 3. Called by frontend to retrieve user instance '''
     solis_id = request.args.get('solisId')
     user = models.User.query.filter_by(username=solis_id).first()
     security.login_user(user)
     return create_response(user)
+
+
+@blueprint.route('/saml/metadata/', methods=['GET'])
+def metadata():
+    '''
+    Pass the SAML metadata
+    '''
+    return saml.metadata(request, make_response)
 
 
 def add_basic_user(username, password, email, is_active):

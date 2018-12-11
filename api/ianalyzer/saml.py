@@ -5,6 +5,20 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from . import models
 
+'''
+Custom exception that will be thrown by the DhlabFlaskSaml class if an error occurs
+'''
+class DhlabFlaskSamlException(Exception):
+    errors = None
+    last_error_reason = None
+
+    def __init__(self, errors, last_error_reason):        
+        message = '{0}: {1}'.format(errors, last_error_reason)
+        super().__init__(message)
+
+        self.last_error_reason = last_error_reason
+        self.errors = errors
+
 
 '''
 Custom SAML class based on the one in the dhlab-saml repo (https://github.com/UUDigitalHumanitieslab/dhlab-saml)
@@ -12,6 +26,7 @@ Custom SAML class based on the one in the dhlab-saml repo (https://github.com/UU
 class DhlabFlaskSaml:
     settings_folder = None
     errors = None
+    saml_auth = None
 
 
     def init_app(self, app):
@@ -28,8 +43,7 @@ class DhlabFlaskSaml:
         '''
         Initialize OneLogin's Auth class.
         '''
-        auth = OneLogin_Saml2_Auth(req, custom_base_path=self.settings_folder)
-        return auth
+        self.saml_auth = OneLogin_Saml2_Auth(req, custom_base_path=self.settings_folder)
 
 
     def prepare_flask_request(self, request):
@@ -58,8 +72,8 @@ class DhlabFlaskSaml:
             last_error_reason -- The reason for the last error. Note that extra info is accessed through: 
                                  'auth.get_last_error_reason()' (where auth is an instance of OneLogin_Saml2_Auth)
         '''
-        self.errors = errors
-        self.errors.append(last_error_reason)
+        raise DhlabFlaskSamlException(errors, last_error_reason)
+        
 
 
     def init_login(self, request, redirect):
@@ -70,16 +84,12 @@ class DhlabFlaskSaml:
             request       -- The Flask request object
             redirect      -- The Flask redirect method
         '''
-        # PROD        
-        # req = self.prepare_flask_request(request)
-        # auth = self.init_saml_auth(req)        
-        # return redirect(auth.login())
-
-        # TEST
-        return redirect(request.host_url + 'saml/process_login_result')
+        req = self.prepare_flask_request(request)
+        self.init_saml_auth(req)        
+        return redirect(self.saml_auth.login())
 
 
-    def process_login_result(self, session, fail_safe):
+    def process_login_result(self, request, session, redirect, fail_safe):
         '''
         Process the request that the Identity Provider sends after the login procedure.
         This, in SAML terms, is the implementation of an 'assertionConsumerService' or 'acs'.
@@ -89,27 +99,20 @@ class DhlabFlaskSaml:
             fail_safe -- The partial (i.e. relative to website's root) url that the application should be 
                          redirected to if errors occur (e.g. 'saml/errors'). Do not include a slash at the start.
         '''
-
-        # TEST       
-        uuShortID = ['F103825']
-        session['samlUserdata'] = { "uuShortID": uuShortID }
-
-        # PROD code
-        # req = self.prepare_flask_request(request)
-        # auth = self.init_saml_auth(req)
-        # auth.process_response()
+        req = self.prepare_flask_request(request)
+        self.init_saml_auth(req)
+        self.saml_auth.process_response()
         
-        # errors = []
-        # errors = auth.get_errors()
+        errors = []
+        errors = self.saml_auth.get_errors()
 
-        # if len(errors) == 0:
-        #     session['samlUserdata'] = auth.get_attributes()
-        #     session['samlNameId'] = auth.get_nameid()
-        #     session['samlSessionIndex'] = auth.get_session_index()
-        #     self_url = OneLogin_Saml2_Utils.get_self_url(req)
-        # else:
-        #     self.process_errors(errors, auth.get_last_error_reason())
-        #     return redirect(fail_safe)
+        if len(errors) == 0:
+            session['samlUserdata'] = self.saml_auth.get_attributes()            
+            session['samlNameId'] = self.saml_auth.get_nameid()
+            session['samlSessionIndex'] = self.saml_auth.get_session_index()
+            self_url = OneLogin_Saml2_Utils.get_self_url(req)
+        else:
+            self.process_errors(errors, self.saml_auth.get_last_error_reason())
 
     
     def init_logout(self, request, session, redirect):
@@ -122,7 +125,7 @@ class DhlabFlaskSaml:
             redirect -- The Flask redirect method
         '''
         req = self.prepare_flask_request(request)
-        auth = self.init_saml_auth(req)        
+        self.init_saml_auth(req)        
         name_id = None
         session_index = None
 
@@ -131,7 +134,7 @@ class DhlabFlaskSaml:
         if 'samlSessionIndex' in session:
             session_index = session['samlSessionIndex']
 
-        return redirect(auth.logout(name_id=name_id, session_index=session_index))
+        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
 
 
     def process_logout_result(self, request, session, redirect, fail_safe):
@@ -147,17 +150,17 @@ class DhlabFlaskSaml:
                          redirected to if errors occur (e.g. 'saml/errors'). Do not include a slash at the start.
         '''
         req = self.prepare_flask_request(request)
-        auth = self.init_saml_auth(req)
+        self.init_saml_auth(req)
         errors = []
 
         dscb = lambda: session.clear()
-        url = auth.process_slo(delete_session_cb=dscb)
-        errors = auth.get_errors()
+        url = self.saml_auth.process_slo(delete_session_cb=dscb)
+        errors = self.saml_auth.get_errors()
         if len(errors) == 0:
             if url is not None:            
                 return redirect(url)
         else:
-            self.process_errors(errors, auth.get_last_error_reason())
+            self.process_errors(errors, self.saml_auth.get_last_error_reason())
             
         return redirect(fail_safe)
 
@@ -171,8 +174,8 @@ class DhlabFlaskSaml:
             make_response -- The Flask make_response method
         '''
         req = self.prepare_flask_request(request)
-        auth = self.init_saml_auth(req)
-        settings = auth.get_settings()
+        self.init_saml_auth(req)
+        settings = self.saml_auth.get_settings()
         metadata = settings.get_sp_metadata()
         errors = settings.validate_metadata(metadata)
 
@@ -188,32 +191,34 @@ class DhlabFlaskSaml:
         '''
         Check if the user is still logged in.
         '''
-        req = self.prepare_flask_request(request)
-        auth = self.init_saml_auth(req)
-        return auth.is_authenticated()
+        if (self.saml_auth is None):
+            req = self.prepare_flask_request(request)
+            self.init_saml_auth(req)
+                
+        return self.saml_auth.is_authenticated()
 
 
     def get_solis_id(self, request, session):
         '''
         Returns the user's Solis-ID (if user is still logged in)
         '''
-        # TEST
-        return session['samlUserdata']['uuShortID'][0]
-        # PROD
-        # if self.logged_in(request) and session['samlUserdata']['uuShortID']:
-        #     return session['samlUserdata']['uuShortID'][0]
+        if self.logged_in(request) and session['samlUserdata']['uuShortID']:
+            return session['samlUserdata']['uuShortID'][0]
+
+
+    def get_email_address(self, request, session):
+        '''
+        Returns the user's email address (if user is still logged in)
+        '''
+        if self.logged_in(request) and session['samlUserdata']['uuMail']:
+            return session['samlUserdata']['uuMail'][0]
 
 
     def get_account_type(self, request, session):
         '''
-        Returns the user's account type
+        Returns the user's account type (if user is still logged in)
         '''
         if self.logged_in(request) and session['samlUserdata']['uuType']:
             return session['samlUserdata']['uuType'][0]
-
-
-    def get_errors(self):
-        '''
-        Get any errors that occured during the SAML procedure.
-        '''
-        return self.errors
+            
+    

@@ -123,9 +123,6 @@ def create_user(name, password=None):
     password_hash = None if password == None else generate_password_hash(password)
     
     user = User(name, password_hash)
-
-    print(user.password)
-
     db.session.add(user)   
     return user
 
