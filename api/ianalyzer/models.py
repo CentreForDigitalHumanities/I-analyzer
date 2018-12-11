@@ -78,9 +78,9 @@ class User(db.Model):
     Whether the user has provided the correct credentials.
     '''
 
-    is_idp_login = db.Column(db.Boolean)
+    is_saml_login = db.Column(db.Boolean)
     '''
-    Whether the user is logging in via an Identity Provider (i.e. ITS), 
+    Whether the user is logging in via SAML / an Identity Provider (i.e. ITS), 
     and not submitting a solisId directly to the frontend via URL.
     '''
 

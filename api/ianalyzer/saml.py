@@ -5,6 +5,8 @@ from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 from . import models
 
+import requests
+
 '''
 Custom exception that will be thrown by the DhlabFlaskSaml class if an error occurs
 '''
@@ -114,7 +116,7 @@ class DhlabFlaskSaml:
         else:
             self.process_errors(errors, self.saml_auth.get_last_error_reason())
 
-    
+
     def init_logout(self, request, session, redirect):
         '''
         Initialize a logout procedure
@@ -134,7 +136,9 @@ class DhlabFlaskSaml:
         if 'samlSessionIndex' in session:
             session_index = session['samlSessionIndex']
 
-        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
+        url = self.saml_auth.logout(name_id=name_id, session_index=session_index)
+        test = requests.get(url)
+        return 'blah'
 
 
     def process_logout_result(self, request, session, redirect, fail_safe):
@@ -156,13 +160,8 @@ class DhlabFlaskSaml:
         dscb = lambda: session.clear()
         url = self.saml_auth.process_slo(delete_session_cb=dscb)
         errors = self.saml_auth.get_errors()
-        if len(errors) == 0:
-            if url is not None:            
-                return redirect(url)
-        else:
+        if len(errors) > 0:
             self.process_errors(errors, self.saml_auth.get_last_error_reason())
-            
-        return redirect(fail_safe)
 
 
     def metadata(self, request, make_response):

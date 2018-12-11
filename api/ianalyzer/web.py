@@ -269,7 +269,7 @@ def init_solislogin():
     return saml.init_login(request, redirect)
 
 
-@blueprint.route('/saml/process_login_result', methods=['POST', 'GET'])
+@blueprint.route('/saml/process_login_result', methods=['POST'])
 def process_login_result():
     ''' SAML login step 2. Will be called by Identity Provider (ITS)'''    
     saml.process_login_result(request, session, redirect, 'login')
@@ -280,7 +280,7 @@ def process_login_result():
     if user is None:
         user = add_basic_user(solis_id, None, email, True)
 
-    user.is_idp_login = True
+    user.is_saml_login = True
     user.save()
 
     redirect_to = 'login?solisId={0}'.format(solis_id)
@@ -291,17 +291,47 @@ def process_login_result():
 def solislogin():
     ''' SAML login step 3. Called by frontend to retrieve user instance '''
     solis_id = request.args.get('solisId')
-    user = models.User.query.filter_by(username=solis_id, is_idp_login=True).first()
+    user = models.User.query.filter_by(username=solis_id, is_saml_login=True).first()
     
     # if someone attempts to login with solisid in url user shall be None
     if user is None:
         return jsonify({'success': False})
-    else:
-        user.is_idp_login = False
-        user.save()
 
     security.login_user(user)
     return create_response(user)
+
+
+@blueprint.route('/api/logout', methods=['POST', 'GET'])
+def api_logout():
+    if current_user.is_saml_login:
+        current_user.is_saml_login = False
+        current_user.save()
+        return saml.init_logout(request, session, redirect)
+    
+    if current_user.is_authenticated:
+        security.logout_user(current_user)  
+
+    return jsonify({'success': True})
+
+
+@blueprint.route('/saml/init_logout', methods=['POST'])
+def init_logout():
+    if current_user.is_saml_login:        
+        current_user.is_saml_login = False
+        current_user.save()
+    
+    if current_user.is_authenticated:
+        security.logout_user(current_user)
+    
+    return saml.init_logout(request, session, redirect)    
+
+
+@blueprint.route('/saml/process_logout_result', methods=['POST'])
+def process_logout_result():
+    ''' SAML logout step 2. This will be called by the Identity Provider (ITS) after a logout request or,
+    more importantly, when the user logs out from their Solis account elsewhere (i.e. not on our site)
+    '''
+    return redirect('login')
 
 
 @blueprint.route('/saml/metadata/', methods=['GET'])
@@ -375,12 +405,6 @@ def api_log():
 
     return jsonify({'success': True})
 
-
-@blueprint.route('/api/logout', methods=['POST'])
-def api_logout():
-    if current_user.is_authenticated:
-        security.logout_user(current_user)
-    return jsonify({'success': True})
 
 
 @blueprint.route('/api/check_session', methods=['POST'])

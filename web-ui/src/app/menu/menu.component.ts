@@ -107,7 +107,10 @@ export class MenuComponent implements OnDestroy, OnInit {
                 } : {
                     label: 'Exit',
                     icon: 'fa fa-sign-out',
-                    command: (onclick) => this.logout()
+                    command: (onclick) => {
+                        // window.location.href = 'saml/init_logout'
+                        this.logout()
+                    }
                 }
         ];
 
