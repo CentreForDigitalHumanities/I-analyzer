@@ -78,6 +78,12 @@ class User(db.Model):
     Whether the user has provided the correct credentials.
     '''
 
+    is_idp_login = db.Column(db.Boolean)
+    '''
+    Whether the user is logging in via an Identity Provider (i.e. ITS), 
+    and not submitting a solisId directly to the frontend via URL.
+    '''
+
     download_limit = db.Column(db.Integer, default=DOWNLOAD_LIMIT)
     '''
     How high the download limit for the user is.
@@ -154,6 +160,10 @@ class User(db.Model):
 
     def has_role(self, role):        
         return self.role.name == role
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Query(db.Model):

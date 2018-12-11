@@ -202,7 +202,7 @@ class DhlabFlaskSaml:
         '''
         Returns the user's Solis-ID (if user is still logged in)
         '''
-        if self.logged_in(request) and session['samlUserdata']['uuShortID']:
+        if self.logged_in(request) and 'uuShortID' in session['samlUserdata']:
             return session['samlUserdata']['uuShortID'][0]
 
 
@@ -210,7 +210,7 @@ class DhlabFlaskSaml:
         '''
         Returns the user's email address (if user is still logged in)
         '''
-        if self.logged_in(request) and session['samlUserdata']['uuMail']:
+        if self.logged_in(request) and 'uuMail' in session['samlUserdata']:
             return session['samlUserdata']['uuMail'][0]
 
 
@@ -218,7 +218,7 @@ class DhlabFlaskSaml:
         '''
         Returns the user's account type (if user is still logged in)
         '''
-        if self.logged_in(request) and session['samlUserdata']['uuType']:
+        if self.logged_in(request) and 'uuType' in session['samlUserdata']:
             return session['samlUserdata']['uuType'][0]
-            
+
     

@@ -203,8 +203,7 @@ def api_register_confirmation(token):
 
     user = models.User.query.filter_by(email=email).first_or_404()
     user.active = True
-    models.db.session.add(user)
-    models.db.session.commit()
+    user.save()
 
     return redirect(config.BASE_URL+'/login?isActivated=true')
 
@@ -279,7 +278,10 @@ def process_login_result():
 
     user = models.User.query.filter_by(username=solis_id).first()
     if user is None:
-        add_basic_user(solis_id, None, email, True)
+        user = add_basic_user(solis_id, None, email, True)
+
+    user.is_idp_login = True
+    user.save()
 
     redirect_to = 'login?solisId={0}'.format(solis_id)
     return redirect(redirect_to)
@@ -289,7 +291,15 @@ def process_login_result():
 def solislogin():
     ''' SAML login step 3. Called by frontend to retrieve user instance '''
     solis_id = request.args.get('solisId')
-    user = models.User.query.filter_by(username=solis_id).first()
+    user = models.User.query.filter_by(username=solis_id, is_idp_login=True).first()
+    
+    # if someone attempts to login with solisid in url user shall be None
+    if user is None:
+        return jsonify({'success': False})
+    else:
+        user.is_idp_login = False
+        user.save()
+
     security.login_user(user)
     return create_response(user)
 
@@ -319,8 +329,8 @@ def add_basic_user(username, password, email, is_active):
         role_id=basic_role.id,
     )
 
-    models.db.session.add(new_user)
-    models.db.session.commit()
+    new_user.save()
+    return new_user
 
 
 def create_response(user):
