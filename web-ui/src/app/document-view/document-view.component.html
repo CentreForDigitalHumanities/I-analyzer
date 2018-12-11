@@ -28,7 +28,7 @@
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
             </p-tabPanel>
-            <p-tabPanel header="" leftIcon="fa fa-image" style="width:100%;">
+            <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
                     <ng-template pTemplate="content">
                         <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/0/{{document.fieldValues.image_path}}"/>
                         <pdf-viewer *ngIf="corpus.scan_image_type=='pdf' && imgSrc"
