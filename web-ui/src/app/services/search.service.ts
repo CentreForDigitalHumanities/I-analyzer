@@ -153,6 +153,23 @@ export class SearchService {
         });
     }
 
+    public async getRelatedWordsTimeInterval(queryTerm: string, corpusName: string): Promise<any> {
+        return this.apiService.getRelatedWordsTimeInterval({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'graphData': {
+                                'labels': result['related_word_data'].time_points, 
+                                'datasets':result['related_word_data'].similar_words_subsets
+                            },
+                            'tableData': result['related_word_data'].similar_words_all});
+                }
+                else {
+                    reject({'message': result['message']})
+                }
+            })
+        });
+    }
+
     /**
      * Search and return a simple two-dimensional string array containing the values.
      */

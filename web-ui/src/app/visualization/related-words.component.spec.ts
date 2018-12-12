@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import { RelatedWordsComponent } from './related-words.component';
 
@@ -8,6 +9,7 @@ describe('RelatedWordsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ FormsModule ],
       declarations: [ RelatedWordsComponent ]
     })
     .compileComponents();

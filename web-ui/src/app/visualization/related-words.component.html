@@ -1,4 +1,4 @@
-<p-chart type="line" [data]="searchData" [options]="chartOptions"></p-chart>
+<p-chart type="line" [data]="searchData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart>
 <a class="button" (click)="showRelatedWordsDocumentation()">
     <span class="icon">
         <i class="fa fa-question-circle"></i>

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { ManualService } from '../services/index';
+import { ManualService, SearchService } from '../services/index';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -16,6 +16,8 @@ export class RelatedWordsComponent implements OnChanges {
             borderColor?: string
         }[]
     };
+    @Input() queryText: string;
+    @Input() corpusName: string;
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
     public colorPalette = ['#a6611a','#dfc27d','#80cdc1','#018571','#543005','#bf812d','#f6e8c3','#f5f5f5','#c7eae5','#35978f','#003c30']
     public chartOptions = {
@@ -34,7 +36,7 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
     
-    constructor(private manualService: ManualService) { }
+    constructor(private manualService: ManualService, private searchService: SearchService) { }
 
     ngOnChanges() {
         this.searchData.datasets.map( (d, index) => {
@@ -45,6 +47,13 @@ export class RelatedWordsComponent implements OnChanges {
 
     showRelatedWordsDocumentation() {
         this.manualService.showPage('relatedwords');
+    }
+
+    zoomTimeInterval(event) {
+        // this.searchService.getRelatedWords(this.queryText, this.corpusName).then(results => {
+        //     let currentResults = results['graphData'];
+        // });
+        console.log(event.element._index);
     }
 
 }
