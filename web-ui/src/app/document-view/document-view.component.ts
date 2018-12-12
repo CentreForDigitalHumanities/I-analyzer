@@ -34,7 +34,7 @@ export class DocumentViewComponent implements OnChanges {
     public get_pdf() {
         this.scanImageService.get_scan_image(
             this.corpus.index,
-            this.document.fieldValues.page_number - 1, //0-indexed pdf vs 1-indexed realworld numbering
+            this.document.fieldValues.page - 1, //0-indexed pdf vs 1-indexed realworld numbering
             this.document.fieldValues.image_path).then(
                 results => {
                     this.imgSrc = results;

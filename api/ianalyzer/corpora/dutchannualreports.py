@@ -42,6 +42,7 @@ class DutchAnnualReports(XMLCorpus):
          # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            rel_dir = op.relpath(directory, self.data_directory)
             _, tail = op.split(directory)
             if tail == "Financials":
                 company_type = "Financial"
@@ -50,6 +51,9 @@ class DutchAnnualReports(XMLCorpus):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
+                file_path = op.join(rel_dir, filename)
+                image_path = op.join(
+                    rel_dir, name + '.' + self.scan_image_type)
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
@@ -58,12 +62,12 @@ class DutchAnnualReports(XMLCorpus):
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
-                if not re.match("[a-zA-Z]+", information[1]):
+                if re.match("[a-zA-Z]+", information[1]):
                     # second part of file name is part of company name
                     company = "_".join([company, information[1]])
                 # using first four-integer string in the file name as year
                 years = re.compile("[0-9]{4}")
-                year = next((int(info) for info in information
+                year = next((info for info in information
                              if re.match(years, info)), None)
                 if len(information) == 3:
                     serial = information[-1]
@@ -76,6 +80,8 @@ class DutchAnnualReports(XMLCorpus):
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
+                    'file_path': file_path,
+                    'image_path': image_path,
                     'company': company,
                     'company_type': company_type,
                     'year': year,
@@ -134,7 +140,7 @@ class DutchAnnualReports(XMLCorpus):
             extractor=Metadata(key='company_type')
         ),
         Field(
-            name='page_number',
+            name='page',
             display_name='Page Number',
             description='The number of the page in the scan',
             es_mapping={'type': 'integer'},
@@ -169,4 +175,20 @@ class DutchAnnualReports(XMLCorpus):
             ),
             search_field_core=True
         ),
+        Field(
+            name='file_path',
+            display_name='File path',
+            description='Filepath of the source file containing the document,\
+            relative to the corpus data directory.',
+            extractor=Metadata(key='file_path'),
+            hidden=True,
+        ),
+        Field(
+            name='image_path',
+            display_name="Image path",
+            description="Path of the source image corresponding to the document,\
+            relative to the corpus data directory.",
+            extractor=Metadata(key='image_path'),
+            hidden=True,
+        )
     ]
