@@ -16,13 +16,10 @@ export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
     public isGuest: boolean = true;
-    public isSamlLogin: boolean = false;
     public menuAdminItems: MenuItem[];
     menuOpen: boolean = false;
     
     private routerSubscription: Subscription;
-
-    
 
     constructor(private corpusService: CorpusService, private configService: ConfigService, private userService: UserService, private router: Router) {
         this.routerSubscription = router.events.subscribe(() => this.checkCurrentUser());
