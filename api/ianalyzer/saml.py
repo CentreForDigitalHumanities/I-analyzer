@@ -136,9 +136,8 @@ class DhlabFlaskSaml:
         if 'samlSessionIndex' in session:
             session_index = session['samlSessionIndex']
 
-        url = self.saml_auth.logout(name_id=name_id, session_index=session_index)
-        test = requests.get(url)
-        return 'blah'
+        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
+        
 
 
     def process_logout_result(self, request, session, redirect, fail_safe):

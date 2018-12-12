@@ -306,7 +306,7 @@ def api_logout():
     if current_user.is_saml_login:
         current_user.is_saml_login = False
         current_user.save()
-        return saml.init_logout(request, session, redirect)
+        saml.init_logout(request, session, redirect)
     
     if current_user.is_authenticated:
         security.logout_user(current_user)  
@@ -314,7 +314,7 @@ def api_logout():
     return jsonify({'success': True})
 
 
-@blueprint.route('/saml/init_logout', methods=['POST'])
+@blueprint.route('/saml/init_logout', methods=['POST', 'GET'])
 def init_logout():
     if current_user.is_saml_login:        
         current_user.is_saml_login = False
