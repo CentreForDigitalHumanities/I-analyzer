@@ -6,6 +6,7 @@
 #
 alembic==0.9.4            # via flask-migrate
 beautifulsoup4==4.4.1
+blinker==1.4              # via flask-mail
 certifi==2018.4.16        # via requests
 chardet==3.0.4            # via requests
 click==6.7                # via flask
@@ -14,6 +15,7 @@ coverage==4.3.4
 elasticsearch==6.1.1
 flask-admin==1.4.2
 flask-login==0.4.0
+flask-mail==0.9.1
 flask-migrate==2.0.4
 flask-script==2.0.5       # via flask-migrate
 flask-seasurf==0.2.2
