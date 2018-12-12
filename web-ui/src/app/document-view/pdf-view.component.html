@@ -1,10 +1,17 @@
 <div *ngIf="isLoaded" style="text-align: center;">
-    <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
-        <i class="fa fa-chevron-left" aria-hidden="true"></i>
-    </button>
-    <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === totalPages">
-        <i class="fa fa-chevron-right" aria-hidden="true"></i>
-    </button>
+    <div class="field is-grouped">
+        <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
+            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </button>
+
+        <a *ngFor="let pageNr of pageArray" (click)=setPage(pageNr) [ngClass]="{'is-inverted': pageNr!=page}" class="button is-small is-primary">
+            {{pageNr}}
+        </a>
+
+        <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === totalPages">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
 </div>
 
 <pdf-viewer 
