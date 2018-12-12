@@ -418,8 +418,9 @@ def api_get_scan_image(corpus_index, page, image_path):
             tmp = BytesIO()
             pdf_writer = PdfFileWriter()
             input_pdf = PdfFileReader(absolute_path, "rb")
-            target_page = input_pdf.getPage(page)
-            pdf_writer.addPage(target_page)
+            for p in range(page-2, page+3):
+                target_page = input_pdf.getPage(p)
+                pdf_writer.addPage(target_page)
             pdf_writer.write(tmp)
             tmp.seek(0)
             return send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)

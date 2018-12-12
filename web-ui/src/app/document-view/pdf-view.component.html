@@ -12,6 +12,8 @@
     [render-text]="true"
     [original-size]="false"
     [autoresize]="true"
+    [show-all]="false"
+    [page]="page"
     (after-load-complete)="afterLoadComplete($event)"
     (text-layer-rendered)="textLayerRendered($event, this.query)"
     style="display:block;">
