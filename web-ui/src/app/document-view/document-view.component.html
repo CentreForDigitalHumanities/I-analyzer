@@ -20,9 +20,28 @@
         </div>
     </div>
 
-    <div class="column is-desktop">
-        <ng-container *ngFor="let field of contentFields">
-            <div class="box" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
-        </ng-container>
+    <div class="column is-7">
+        <div class="box">
+        <p-tabView> 
+            <p-tabPanel header="" leftIcon="fa fa-book">
+                <ng-container *ngFor="let field of contentFields">
+                    <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
+                </ng-container>
+            </p-tabPanel>
+            <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
+                    <ng-template pTemplate="content">
+                        <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/0/{{document.fieldValues.image_path}}"/>
+                        <pdf-viewer *ngIf="corpus.scan_image_type=='pdf' && imgSrc"
+                                    [src]="imgSrc"
+                                    [render-text]="true"
+                                    (text-layer-rendered)="textLayerRendered($event, this.query)"
+                                    [original-size]="false"
+                                    [autoresize]="true"
+                                    style="max-width:100%;">
+                        </pdf-viewer>
+                    </ng-template>
+            </p-tabPanel>
+        </p-tabView>
+        </div>
     </div>
 </div>

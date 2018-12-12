@@ -107,6 +107,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
@@ -235,6 +236,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.queryModel = this.createQueryModel();
         this.hasModifiedFilters = false;
         this.isSearching = true;
+
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
             filters.forEach(filter => {

@@ -23,6 +23,7 @@ class DutchBanking(XMLCorpus):
     es_doctype = config.DUTCHBANK_ES_DOCTYPE
     es_settings = None
     image = config.DUTCHBANK_IMAGE
+    scan_image_type = config.DUTCHBANK_SCAN_IMAGE_TYPE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -33,18 +34,18 @@ class DutchBanking(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     with open(config.DUTCHBANK_MAP_FP) as f:
-            reader = csv.DictReader(f)
-            for line in reader:
-                config.DUTCHBANK_MAP[line['abbr']] = line['name']
+        reader = csv.DictReader(f)
+        for line in reader:
+            config.DUTCHBANK_MAP[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             _, tail = op.split(directory)
-            if tail=="Financials":
+            if tail == "Financials":
                 company_type = "Financial"
-            elif tail=="Non-Financials":
+            elif tail == "Non-Financials":
                 company_type = "Non-Financial"
             for filename in filenames:
                 name, extension = op.splitext(filename)
@@ -57,13 +58,13 @@ class DutchBanking(XMLCorpus):
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
-                if not re.match("[a-zA-Z]+", information[1]): 
+                if not re.match("[a-zA-Z]+", information[1]):
                     # second part of file name is part of company name
                     company = "_".join([company, information[1]])
                 # using first four-integer string in the file name as year
                 years = re.compile("[0-9]{4}")
-                year = next((int(info) for info in information 
-                            if re.match(years, info)), None)
+                year = next((int(info) for info in information
+                             if re.match(years, info)), None)
                 if len(information) == 3:
                     serial = information[-1]
                     scan = "00001"

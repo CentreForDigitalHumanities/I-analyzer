@@ -72,7 +72,7 @@ DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
 DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
-DUTCHNEWSPAPERS_DATA = '/Users/3248526/corpora/kranten_pd_voorbeeld'
+DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
 DUTCHNEWSPAPERS_MIN_DATE = datetime(year=1600, month=1, day=1)
 DUTCHNEWSPAPERS_MAX_DATE = datetime(year=2018, month=12, day=31)
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
@@ -81,7 +81,7 @@ TML_TITLE = "Thesaurus Musicarum Latinarum"
 TML_DESCRIPTION = "Description about this corpus"
 TML_ES_INDEX = 'tml'
 TML_ES_DOCTYPE = 'article'
-TML_DATA = '/Users/3248526/corpora/tml'
+TML_DATA = '/mnt/tml'
 TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
 TML_IMAGE = 'tml.jpg'
@@ -94,15 +94,17 @@ TIMES_DATA = '/mnt/times'
 TIMES_MIN_DATE = datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
 TIMES_IMAGE = 'times.jpg'
+TIMES_SCAN_IMAGE_TYPE = 'png'
 
 DUTCHBANK_TITLE = "Dutch Banking"
 DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
 DUTCHBANK_ES_INDEX = 'dutchbanking'
 DUTCHBANK_ES_DOCTYPE = 'page'
-DUTCHBANK_DATA = '/mnt/dutchbank'
+DUTCHBANK_DATA = '/mnt/times/dutchbanking'
 DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHBANK_IMAGE = 'dutchbanking.jpg'
+DUTCHBANK_SCAN_IMAGE_TYPE = 'pdf'
 DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
 DUTCHBANK_MAP = {}
 

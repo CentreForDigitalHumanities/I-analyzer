@@ -148,19 +148,3 @@ class Tml(HTMLCorpus):
         ),
 
     ]
-
-
-# if __name__ == '__main__':
-    #     t = Tml()
-    # corpus_object = Tml()
-#     # d = t.documents()
-#     s = t.sources()
-#     d = t.documents()
-#     # s = t.sources()
-    # alle_documenten = corpus_object.documents()
-    # print(next(alle_documenten))
-#     for si in d:
-#         print(si)
-#     for document in alle_documenten:
-#         print(document)
-#     # print(next(d))
