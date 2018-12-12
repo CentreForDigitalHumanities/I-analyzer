@@ -4,7 +4,7 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
-import { SearchFilterData, AggregateResult, UserRole, Query, User } from '../models/index';
+import { SearchFilterData, AggregateResult, UserRole, Query, QueryModel, User, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -114,6 +114,14 @@ export class ApiService extends Rest {
         id: number,
         userID: number
     }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path:'/download'
+    })
+    public download: RestMethod<
+    { corpus: Corpus, esQuery: string, size: number },
+    { success: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Post,

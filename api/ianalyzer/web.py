@@ -17,6 +17,7 @@ from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
 from random import choice
 from flask_seasurf import SeaSurf
+import requests
 
 from . import config_fallback as config
 from . import factories
@@ -26,10 +27,13 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+from . import tasks
+from . import forward_es
 
 from flask_admin.base import MenuLink
 
 import os
+
 
 blueprint = Blueprint('blueprint', __name__)
 admin_instance = admin.Admin(
@@ -260,6 +264,15 @@ def api_corpus_image(image_name):
     '''
     return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
+@blueprint.route('/api/download', methods=['POST'])
+@login_required
+def api_download():
+    if not request.json:
+        abort(400)
+    tasks.download_csv.apply_async(args=[request.json, current_user.email])
+    return jsonify({'success': True})
+
+
 
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
@@ -399,3 +412,5 @@ def api_get_wordcloud_data():
         abort(400)
     word_counts = analyze.make_wordcloud_data(request.json['content_list'])
     return jsonify({'data': word_counts})
+
+

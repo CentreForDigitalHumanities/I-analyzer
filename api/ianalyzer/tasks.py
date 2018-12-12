@@ -7,21 +7,50 @@ from flask import Flask, current_app, render_template
 from flask_mail import Mail, Message
 from flask_login import current_user
 import logging
+from . import forward_es
 
 logger = logging.getLogger(__name__)
 celery= Celery('tasks', broker=config.BROKER_URL)
 
 @celery.task(bind=True)
-def download_csv(self,address, email):
-    params = {'size': '10' } #size is max amount, defaults to 10, must be set much higher after development
-    response=requests.request('POST', address, params=params, stream=True, timeout=30 )
-    result = json.loads(response.text)
+def download_csv(self, request_json, email ):
+    corpus = request_json['corpus']
+    es_query = request_json['esQuery']
+    download_size = request_json['size']
+    
+    #use function in forward_es.py
+    host = forward_es.get_es_host_or_404(corpus['serverName']) 
+    address = host + "/".join(["",  corpus['index'], corpus['doctype'], '_search'])
+    params = {'size': download_size }
+    kwargs = {}
+    kwargs['json'] = request_json['esQuery']
+
+    #is very nested in response TODO: geeft error als er een leeg veld is in query
+    query=request_json['esQuery']['query']['bool']['must']['simple_query_string']['query']
+    #TODO: geft error als geen datumrange
+    publication_range=request_json['esQuery']['query']['bool']['filter'][0]['range']['date']
+    
+    print(publication_range)
+
+    try:
+        response = requests.request('POST',
+            address,
+            params=params,
+            stream=True,
+            timeout=30,
+            **kwargs
+        )
+    except ConnectionError:
+        abort(503)  # Service unavailable
+
+    #print(response.text)
+    result=json.loads(response.text)
     result_hits=result['hits']['hits'] #results we need are in here
     entries = []
     counter=0
 
     for entry in result_hits:
-        entry_s=entry['_source'] #dictionary
+        entry_s=entry['_source'] #is dictionary
 
         list=[]
         if counter==0: #key names in first row
@@ -34,9 +63,7 @@ def download_csv(self,address, email):
         entries.append(list)
         counter+=1
 
-    #print(counter)    
-    # filename is now the taskid. But it seems more tasks are running at the same time, resulting in more written files, why?
-    filename=self.request.id.__str__()+'.csv'
+    filename=corpus['index'] + "_" + publication_range['gte'] + "_" + publication_range['lte'] + "_" + query + '.csv'
     filepath='csv_files/'+filename
     csv.register_dialect('myDialect', delimiter = ',', quotechar = '"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
     

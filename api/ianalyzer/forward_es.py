@@ -7,8 +7,7 @@ from flask import Blueprint, request, json, abort, Response
 from flask_login import login_required, current_user
 
 from . import config_fallback as config
-from . import tasks
-
+import json
 
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
@@ -48,14 +47,11 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
-    #create csv file with results in background via celery task and send mail
-    celerytest=tasks.download_csv.apply_async(args=[address, current_user.email])
-  
+
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
         kwargs['json'] = request.get_json(cache=False)
-        print(request)
     try:
         es_response = requests.request(
             request.method,
@@ -78,7 +74,7 @@ def proxy_es(address):
             for key in PASSTHROUGH_HEADERS if key in es_response.headers
         },
     )
-
+ 
 
 
 @es.route('/<server_name>', methods=['HEAD'])
@@ -106,3 +102,5 @@ def forward_search(server_name, corpus_name, document_type):
     host = get_es_host_or_404(server_name)
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
+
+

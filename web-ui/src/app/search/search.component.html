@@ -50,7 +50,7 @@
                                 <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!"
                                     [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
                                     <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
-                                        (click)="download()" [disabled]="howManyResults==0">
+                                        (click)="download2()" [disabled]="howManyResults==0">
                                         <span class="icon is-small">
                                             <i class="fa fa-download"></i>
                                         </span>

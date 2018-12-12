@@ -7,7 +7,7 @@ import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
+import { CorpusService, DataService, SearchService, ElasticSearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
 import { Fieldset } from 'primeng/primeng';
 import { SearchFilterComponent } from './search-filter.component';
 import { tickStep } from 'd3';
@@ -94,6 +94,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
         private downloadService: DownloadService,
+        private elasticsearchService: ElasticSearchService,
         private searchService: SearchService,
         private userService: UserService,
         private manualService: ManualService,
@@ -214,8 +215,32 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.search();
     }
 
+    //vanuit downloadcsv knop een search doen die bedoeld is om csv te maken in backend. Er zou een variabele meegegeven moeten worden om hem dat te vertellen
+    public download2(){
+
+        this.searchService.searchObservable(
+            this.corpus,
+            this.queryModel
+        ).then(success => {
+            console.log(success);
+            //this.searched(this.queryModel.queryText, this.results.total);
+        }, error => {
+            // this.showError = {
+            //     date: (new Date()).toISOString(),
+            //     href: location.href,
+            //     message: error.message || 'An unknown error occurred'
+            // };
+            console.trace(error);
+            // if an error occurred, return query text and 0 results
+            //this.searched(this.queryModel.queryText, 0);
+        });
+
+    }
+
+
     public search() {
         let queryModel = this.createQueryModel();
+       
         let route = this.searchService.queryModelToRoute(queryModel);
         let url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
@@ -260,6 +285,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             return {};
         })
     }
+
 
     public async download() {
         this.isDownloading = true;

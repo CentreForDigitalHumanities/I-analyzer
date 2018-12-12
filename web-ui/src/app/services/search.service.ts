@@ -109,16 +109,20 @@ export class SearchService {
         };
     }
 
-    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
+    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<{success: boolean}> {
         let completed = false;
         let totalTransferred = 0;
-
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
         // Log the query to the database
         this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
 
         // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable(
-            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
+        // return this.elasticSearchService.searchObservable(
+        //     corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
+        console.log("csv search requested");
+        return this.apiService.download(
+            {corpus: corpus, esQuery: esQuery, size:(await this.userService.getCurrentUser()).downloadLimit}
+        );
     }
 
 
@@ -140,6 +144,9 @@ export class SearchService {
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
 
+
+
+        
         return new Promise<string[][]>(async (resolve, reject) => {
             let rows: string[][] = [];
             (await this.searchObservable(corpus, queryModel))
@@ -156,6 +163,10 @@ export class SearchService {
                     (error) => reject(error),
                     () => resolve(rows));
         });
+
+
+
+
     }
 
     /**
