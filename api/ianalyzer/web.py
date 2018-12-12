@@ -326,7 +326,7 @@ def init_logout():
     return saml.init_logout(request, session, redirect)    
 
 
-@blueprint.route('/saml/process_logout_result', methods=['POST'])
+@blueprint.route('/saml/process_logout_result', methods=['POST', 'GET'])
 def process_logout_result():
     ''' SAML logout step 2. This will be called by the Identity Provider (ITS) after a logout request or,
     more importantly, when the user logs out from their Solis account elsewhere (i.e. not on our site)
