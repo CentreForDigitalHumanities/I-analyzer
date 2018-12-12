@@ -34,6 +34,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
             if (params['solisId']) {
                 this.solislogin(params['solisId']);
+            }
+            
+            if (params['samlLogout'] === 'true') {
+                window.location.href = '/saml/init_logout'
             } 
         });
     }

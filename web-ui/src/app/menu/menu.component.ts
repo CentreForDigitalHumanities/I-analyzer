@@ -16,6 +16,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
     public isGuest: boolean = true;
+    public isSamlLogin: boolean = false;
     public menuAdminItems: MenuItem[];
     menuOpen: boolean = false;
     
@@ -107,10 +108,7 @@ export class MenuComponent implements OnDestroy, OnInit {
                 } : {
                     label: 'Logout',
                     icon: 'fa fa-sign-out',
-                    command: (onclick) => {
-                        window.location.href = 'saml/init_logout'
-                        // this.logout()
-                    }
+                    command: (onclick) => this.logout()
                 }
         ];
 

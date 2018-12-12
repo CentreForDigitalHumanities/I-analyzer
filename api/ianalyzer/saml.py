@@ -75,7 +75,6 @@ class DhlabFlaskSaml:
                                  'auth.get_last_error_reason()' (where auth is an instance of OneLogin_Saml2_Auth)
         '''
         raise DhlabFlaskSamlException(errors, last_error_reason)
-        
 
 
     def init_login(self, request, redirect):
@@ -137,8 +136,7 @@ class DhlabFlaskSaml:
             session_index = session['samlSessionIndex']
 
         return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
-        
-
+     
 
     def process_logout_result(self, request, session, redirect, fail_safe):
         '''
@@ -218,5 +216,4 @@ class DhlabFlaskSaml:
         '''
         if self.logged_in(request) and 'uuType' in session['samlUserdata']:
             return session['samlUserdata']['uuType'][0]
-
     
