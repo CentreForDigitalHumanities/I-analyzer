@@ -10,20 +10,20 @@ from ianalyzer.filters import MultipleChoiceFilter, RangeFilter
 from ianalyzer.corpora.common import XMLCorpus, Field
 
 
-class DutchBanking(XMLCorpus):
-    """ Alto XML corpus of Dutch banking year records. """
+class DutchAnnualReports(XMLCorpus):
+    """ Alto XML corpus of Dutch annual reports. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = config.DUTCHBANK_TITLE
-    description = config.DUTCHBANK_DESCRIPTION
-    data_directory = config.DUTCHBANK_DATA
-    min_date = config.DUTCHBANK_MIN_DATE
-    max_date = config.DUTCHBANK_MAX_DATE
-    es_index = config.DUTCHBANK_ES_INDEX
-    es_doctype = config.DUTCHBANK_ES_DOCTYPE
+    title = config.DUTCHANNUALREPORTS_TITLE
+    description = config.DUTCHANNUALREPORTS_DESCRIPTION
+    data_directory = config.DUTCHANNUALREPORTS_DATA
+    min_date = config.DUTCHANNUALREPORTS_MIN_DATE
+    max_date = config.DUTCHANNUALREPORTS_MAX_DATE
+    es_index = config.DUTCHANNUALREPORTS_ES_INDEX
+    es_doctype = config.DUTCHANNUALREPORTS_ES_DOCTYPE
     es_settings = None
-    image = config.DUTCHBANK_IMAGE
-    scan_image_type = config.DUTCHBANK_SCAN_IMAGE_TYPE
+    image = config.DUTCHANNUALREPORTS_IMAGE
+    scan_image_type = config.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -33,10 +33,10 @@ class DutchBanking(XMLCorpus):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
-    with open(config.DUTCHBANK_MAP_FP) as f:
+    with open(config.DUTCHANNUALREPORTS_MAP_FP) as f:
         reader = csv.DictReader(f)
         for line in reader:
-            config.DUTCHBANK_MAP[line['abbr']] = line['name']
+            config.DUTCHANNUALREPORTS_MAP[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
@@ -109,11 +109,11 @@ class DutchBanking(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(config.DUTCHBANK_MAP.values()),
+                options=sorted(config.DUTCHANNUALREPORTS_MAP.values()),
             ),
             extractor=Metadata(
                 key='company',
-                transform=lambda x: config.DUTCHBANK_MAP[x],
+                transform=lambda x: config.DUTCHANNUALREPORTS_MAP[x],
             ),
             csv_core=True
         ),

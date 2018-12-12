@@ -59,5 +59,5 @@ if __name__ == "__main__":
     logfile = 'db_add_scans'
     logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
     logging.info('Starting adding scans to ES index')
-    this_corpus = corpora.DEFINITIONS['dutchbanking']
+    this_corpus = corpora.DEFINITIONS['dutchannualreports']
     add_images(this_corpus)

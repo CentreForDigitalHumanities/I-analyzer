@@ -96,17 +96,17 @@ TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 
-DUTCHBANK_TITLE = "Dutch Banking"
-DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
-DUTCHBANK_ES_INDEX = 'dutchbanking'
-DUTCHBANK_ES_DOCTYPE = 'page'
-DUTCHBANK_DATA = '/mnt/times/dutchbanking'
-DUTCHBANK_MIN_DATE = datetime(year=1957, month=1, day=1)
-DUTCHBANK_MAX_DATE = datetime(year=2008, month=12, day=31)
-DUTCHBANK_IMAGE = 'dutchbanking.jpg'
-DUTCHBANK_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHBANK_MAP_FP = 'ianalyzer/corpora/dutchbank_mapping.csv'
-DUTCHBANK_MAP = {}
+DUTCHANNUALREPORTS_TITLE = "Dutch Annual Reports"
+DUTCHANNUALREPORTS_DESCRIPTION = "Annual reports of Dutch financial institutes"
+DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
+DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
+DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
+DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
+DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
+DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannuareports_mapping.csv'
+DUTCHANNUALREPORTS_MAP = {}
 
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
