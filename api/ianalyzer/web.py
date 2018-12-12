@@ -26,7 +26,6 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
-from .saml import DhlabFlaskSaml
 
 from flask_admin.base import MenuLink
 
@@ -51,11 +50,9 @@ admin_instance.add_view(views.QueryView(
 
 login_manager = LoginManager()
 csrf = SeaSurf()
-csrf.exempt_urls('/es',)
-csrf.exempt_urls('/saml',)
+csrf.exempt_urls(('/es', '/saml'))
 
 mail = Mail()
-saml = DhlabFlaskSaml()
 
 
 def corpus_required(method):
@@ -258,47 +255,9 @@ def api_login():
         response = jsonify({'success': False})
     else:
         security.login_user(user)
-        response = create_response(user)
+        response = create_success_response(user)
 
     return response
-
-
-@blueprint.route('/api/init_solislogin', methods=['POST', 'GET'])
-def init_solislogin():
-    ''' SAML login step 1. The starting point for logging in with SolisId. '''
-    return saml.init_login(request, redirect)
-
-
-@blueprint.route('/saml/process_login_result', methods=['POST'])
-def process_login_result():
-    ''' SAML login step 2. Will be called by Identity Provider (ITS)'''    
-    saml.process_login_result(request, session, redirect, 'login')
-    solis_id = saml.get_solis_id(request, session)
-    email = saml.get_email_address(request, session)
-
-    user = models.User.query.filter_by(username=solis_id).first()
-    if user is None:
-        user = add_basic_user(solis_id, None, email, True)
-
-    user.is_saml_login = True
-    user.save()
-
-    redirect_to = 'login?solisId={0}'.format(solis_id)
-    return redirect(redirect_to)
-
-
-@blueprint.route('/api/solislogin', methods=['GET'])
-def solislogin():
-    ''' SAML login step 3. Called by frontend to retrieve user instance '''
-    solis_id = request.args.get('solisId')
-    user = models.User.query.filter_by(username=solis_id, is_saml_login=True).first()
-    
-    # if someone attempts to login with solisid in url user shall be None
-    if user is None:
-        return jsonify({'success': False})
-
-    security.login_user(user)
-    return create_response(user)
 
 
 @blueprint.route('/api/logout', methods=['POST'])
@@ -314,31 +273,6 @@ def api_logout():
         security.logout_user(current_user)  
 
     return jsonify({'success': True, 'samlLogout': samlLogout})
-
-
-@blueprint.route('/saml/init_logout', methods=['GET'])
-def init_logout():
-    ''' SAML logout step 1. Redirect to ITS to perform logout. '''    
-    return saml.init_logout(request, session, redirect)    
-
-
-@blueprint.route('/saml/process_logout_result', methods=['POST'])
-def process_logout_result():
-    ''' 
-    SAML logout step 2. This will be called by the Identity Provider (ITS) after a logout request. 
-    Strictly speaking, this could also be called by the IdP when the user logs out ot elsewhere (i.e. not our application),
-    but support for this is currently not implemented.
-    '''
-    # all necessary actions performed in SAML logout step 1, simply go home.
-    return redirect('')
-
-
-@blueprint.route('/saml/metadata/', methods=['GET'])
-def metadata():
-    '''
-    Pass the SAML metadata
-    '''
-    return saml.metadata(request, make_response)
 
 
 def add_basic_user(username, password, email, is_active):
@@ -362,7 +296,7 @@ def add_basic_user(username, password, email, is_active):
     return new_user
 
 
-def create_response(user):
+def create_success_response(user):
     corpora = [{
         'name': corpus.name,
         'description': corpus.description

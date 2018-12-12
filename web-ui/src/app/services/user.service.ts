@@ -199,7 +199,7 @@ export class UserService implements OnDestroy {
         if (notifyServer) {
             await this.apiService.logout().then(result => {
                 if (result.samlLogout) {
-                    window.location.href = 'saml/init_logout'
+                    window.location.href = 'api/init_solislogout'
                 }
             });
         }
