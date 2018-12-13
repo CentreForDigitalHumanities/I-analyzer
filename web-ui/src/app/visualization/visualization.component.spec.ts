@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
+import { Observable } from 'rxjs';
+
 import { SharedModule, DropdownModule } from 'primeng/primeng';
 import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
@@ -28,7 +30,7 @@ describe('VisualizationComponent', () => {
                     provide: SearchService,
                     useValue: new MockSearchService()
                 },
-                DataService,
+                { provide: DataService, useValue: { searchResults$: Observable.of({}) } },
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -66,6 +68,15 @@ describe('VisualizationComponent', () => {
     it('should be created', () => {
         expect(component).toBeTruthy();
     });
+      
+      // this assumes you have unsubscribed from the subscription in your
+      // component, which you should always do in the ngOnDestroy of the component
+    //   it('should unsubscribe when component destroyed', () => {
+    //     let fixture = TestBed.createComponent(VisualizationComponent);
+    //     fixture.detectChanges();
+    //     fixture.destroy();
+    //     expect(dataService.$searchData.subscription.unsubscribe).toHaveBeenCalled();
+    //   })
 });
 
 function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
@@ -91,4 +102,8 @@ class MockSearchService {
             }
         };
     }
+}
+
+class MockDataService {
+
 }
