@@ -7,7 +7,7 @@ import { ScanImageService } from '../services/scan-image.service';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 
 @Component({
-    selector: 'document-view',
+    selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
@@ -58,7 +58,7 @@ export class DocumentViewComponent implements OnChanges {
     constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
     ngOnChanges() {
-        if (this.corpus.scan_image_type == 'pdf') {
+        if (this.corpus && this.corpus.scan_image_type == 'pdf') {
             this.get_pdf()
         }
     }

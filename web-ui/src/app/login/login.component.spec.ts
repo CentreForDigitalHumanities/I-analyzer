@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 
 import { UserService } from '../services/index';
 import { LoginComponent } from './login.component';
@@ -12,11 +12,9 @@ describe('LoginComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [LoginComponent],
-            imports: [FormsModule],
+            imports: [ FormsModule, RouterTestingModule ],
             providers: [
-                { provide: ActivatedRoute, useValue: { 'snapshot': { 'queryParams': {} } } },
-                { provide: UserService, useValue: {} },
-                { provide: Router, useValue: {} }
+                { provide: UserService, useValue: {} }
             ]
         }).compileComponents();
     }));

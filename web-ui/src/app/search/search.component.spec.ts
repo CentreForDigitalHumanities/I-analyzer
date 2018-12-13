@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule } from 'primeng/primeng';
+import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
@@ -26,10 +27,11 @@ import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { BarChartComponent } from '../visualization/barchart.component';
+import { RelatedWordsComponent } from '../visualization/related-words.component';
 import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { FreqtableComponent } from '../visualization/freqtable.component';
-import { VisualizationComponent } from '../visualization/visualization.component'
+import { VisualizationComponent } from '../visualization/visualization.component';
 import { UserServiceMock } from '../services/user.service.mock';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 
@@ -39,8 +41,8 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, PdfViewerComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
-            imports: [FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
+            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            imports: [ ChartModule, FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
                 CorpusService,

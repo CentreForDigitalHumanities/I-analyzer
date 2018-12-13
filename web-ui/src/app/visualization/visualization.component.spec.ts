@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
+import { Observable } from 'rxjs';
+
 import { SharedModule, DropdownModule } from 'primeng/primeng';
 import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
@@ -22,13 +24,13 @@ describe('VisualizationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, ChartModule, SharedModule, DropdownModule, TableModule],
-            declarations: [BarChartComponent, FreqtableComponent, TimelineComponent, RelatedWordsComponent, WordcloudComponent, VisualizationComponent],
+            declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
             providers: [
                 {
                     provide: SearchService,
                     useValue: new MockSearchService()
                 },
-                DataService,
+                { provide: DataService, useValue: { searchResults$: Observable.of({}) } },
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
