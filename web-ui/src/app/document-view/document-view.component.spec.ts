@@ -6,7 +6,7 @@ import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
 import { HighlightService, ScanImageService } from '../services/index';
 
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { TabViewModule } from 'primeng/primeng';
+import { TabViewModule } from 'primeng/tabview';
 import { HttpClientModule } from '@angular/common/http';
 
 describe('DocumentViewComponent', () => {
