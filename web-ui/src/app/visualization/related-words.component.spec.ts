@@ -1,5 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { ChartModule } from 'primeng/primeng'
 
+import { ManualService, SearchService } from '../services/index';
+import { ManualServiceMock } from '../services/manual.service.mock';
 import { RelatedWordsComponent } from './related-words.component';
 
 describe('RelatedWordsComponent', () => {
@@ -8,7 +12,12 @@ describe('RelatedWordsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RelatedWordsComponent ]
+      imports: [ FormsModule, ChartModule ],
+      declarations: [ RelatedWordsComponent ],
+      providers: [ 
+        SearchService,
+        { provide: ManualService, useClass: ManualServiceMock },
+      ]
     })
     .compileComponents();
   }));

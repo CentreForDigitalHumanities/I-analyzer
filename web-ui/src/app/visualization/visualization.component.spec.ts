@@ -9,6 +9,7 @@ import { BarChartComponent } from './barchart.component';
 import { WordcloudComponent } from './wordcloud.component';
 import { FreqtableComponent } from './freqtable.component'
 import { TimelineComponent } from './timeline.component';
+import { RelatedWordsComponent } from './related-words.component';
 import { VisualizationComponent } from './visualization.component';
 import { ApiService, DataService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
@@ -21,7 +22,7 @@ describe('VisualizationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, ChartModule, SharedModule, DropdownModule, TableModule],
-            declarations: [BarChartComponent, FreqtableComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
+            declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
             providers: [
                 {
                     provide: SearchService,
