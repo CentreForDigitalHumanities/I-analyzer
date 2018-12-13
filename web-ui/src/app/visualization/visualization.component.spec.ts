@@ -68,15 +68,6 @@ describe('VisualizationComponent', () => {
     it('should be created', () => {
         expect(component).toBeTruthy();
     });
-      
-      // this assumes you have unsubscribed from the subscription in your
-      // component, which you should always do in the ngOnDestroy of the component
-    //   it('should unsubscribe when component destroyed', () => {
-    //     let fixture = TestBed.createComponent(VisualizationComponent);
-    //     fixture.detectChanges();
-    //     fixture.destroy();
-    //     expect(dataService.$searchData.subscription.unsubscribe).toHaveBeenCalled();
-    //   })
 });
 
 function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
@@ -102,8 +93,4 @@ class MockSearchService {
             }
         };
     }
-}
-
-class MockDataService {
-
 }
