@@ -27,6 +27,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
     public noResults: string = "Did not find data to visualize."
     public foundNoVisualsMessage: string = this.noResults;
     public errorMessage: string = '';
+    public noVisualizations: boolean;
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
@@ -69,18 +70,24 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 value: 'relatedwords'
             })
         }
-        this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
-        // subscribe to data service pushing new search results
-        this.subscription = this.dataService.searchResults$.subscribe(results => {
-            if (results.total > 0) {
-                this.searchResults = results;
-                this.setVisualizedField(this.visualizedField.name);
-            }
-            else {
-                this.aggResults = [];
-            }
-        });
-        this.showTableButtons = true;
+        if (this.visualizedFields === undefined) {
+            this.noVisualizations = true;
+        }
+        else {
+            this.noVisualizations = false;
+            this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
+            // subscribe to data service pushing new search results
+            this.subscription = this.dataService.searchResults$.subscribe(results => {
+                if (results.total > 0) {
+                    this.searchResults = results;
+                    this.setVisualizedField(this.visualizedField.name);
+                }
+                else {
+                    this.aggResults = [];
+                }
+            });
+            this.showTableButtons = true;
+        }
     }
 
     ngOnDestroy() {
@@ -136,8 +143,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
-    }
-    
+    }   
 
     showTable() {
         this.freqtable = true;
