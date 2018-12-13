@@ -80,8 +80,7 @@ class User(db.Model):
 
     is_saml_login = db.Column(db.Boolean)
     '''
-    Whether the user is logging in via SAML / an Identity Provider (i.e. ITS), 
-    and not submitting a solisId directly to the frontend via URL.
+    Specifies whether the user is logging in via SAML / an Identity Provider (i.e. ITS)
     '''
 
     download_limit = db.Column(db.Integer, default=DOWNLOAD_LIMIT)
