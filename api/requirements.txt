@@ -11,34 +11,37 @@ chardet==3.0.4            # via requests
 click==6.7                # via flask
 cookies==2.2.1            # via responses
 coverage==4.3.4
+defusedxml==0.5.0         # via python3-saml
 elasticsearch==6.1.1
-Flask==0.11.1
-Flask-Admin==1.4.2
-Flask-Login==0.4.0
-Flask-Migrate==2.0.4
-Flask-Script==2.0.5
-Flask-Scss==0.5
-Flask-Seasurf==0.2.2
-Flask-SQLAlchemy==2.1
-Flask-Mail==0.9.0
-idna==2.7
-itsdangerous==0.24
-Jinja2==2.8
+flask-admin==1.4.2
+flask-login==0.4.0
+flask-migrate==2.0.4
+flask-script==2.0.5       # via flask-migrate
+flask-seasurf==0.2.2
+flask-sqlalchemy==2.1
+flask==0.11.1
+idna==2.7                 # via requests
+isodate==0.6.0            # via python3-saml
+itsdangerous==0.24        # via flask
+jinja2==2.8               # via flask
 lxml==4.2.4
 mako==1.0.7               # via alembic
 markupsafe==1.0           # via jinja2, mako
 mysqlclient==1.3.10
 numpy==1.15.2
+pkgconfig==1.4.0          # via xmlsec
 py==1.4.33                # via pytest
 pytest==3.0.6
 python-dateutil==2.6.1    # via alembic
 python-editor==1.0.3      # via alembic
+python3-saml==1.4.1
 requests==2.19.1
 responses==0.9.0
 scikit-learn==0.20.0
 scipy==1.1.0              # via scikit-learn
-six==1.10.0               # via python-dateutil, responses
+six==1.10.0               # via isodate, python-dateutil, responses
 sqlalchemy==1.1.4         # via alembic, flask-sqlalchemy
 urllib3==1.22             # via elasticsearch, requests
 werkzeug==0.11.11
 wtforms==2.1
+xmlsec==1.3.3             # via python3-saml
