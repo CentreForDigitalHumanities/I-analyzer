@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { DataService, SearchService, ScanImageService } from '../services';
 
 @Component({
     selector: 'ia-search-results',
@@ -32,6 +32,8 @@ export class SearchResultsComponent implements OnInit, OnChanges {
 
     public queryText: string;
 
+    public imgSrc: Uint8Array;
+
     /**
      * For failed searches.
      */
@@ -41,9 +43,10 @@ export class SearchResultsComponent implements OnInit, OnChanges {
         message: string
     };
 
-    constructor(private searchService: SearchService, private dataService: DataService) { }
+    constructor(private searchService: SearchService, private dataService: DataService, private scanImageService: ScanImageService) { }
 
     ngOnInit() {
+
     }
 
     ngOnChanges() {
@@ -69,6 +72,11 @@ export class SearchResultsComponent implements OnInit, OnChanges {
             // if an error occurred, return query text and 0 results
             this.searched(this.queryModel.queryText, 0);
         });
+
+        if (this.results != undefined) {
+            console.log(this.results);
+        }
+
     }
 
     public async loadMore() {
@@ -84,7 +92,7 @@ export class SearchResultsComponent implements OnInit, OnChanges {
     public searched(queryText: string, resultsCount: number) {
         // push searchResults to dataService observable, observed by visualization component
         this.dataService.pushNewSearchResults(this.results);
-        this.searchedEvent.next({queryText: queryText, resultsCount: resultsCount});
+        this.searchedEvent.next({ queryText: queryText, resultsCount: resultsCount });
         this.isLoading = false;
     }
 }

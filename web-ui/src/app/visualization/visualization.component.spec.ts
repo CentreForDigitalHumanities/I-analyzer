@@ -28,7 +28,7 @@ describe('VisualizationComponent', () => {
                     provide: SearchService,
                     useValue: new MockSearchService()
                 },
-                DataService, 
+                DataService,
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -58,7 +58,8 @@ describe('VisualizationComponent', () => {
             queryModel: {
                 queryText: '',
                 filters: []
-            }};
+            }
+        };
         fixture.detectChanges();
     });
 

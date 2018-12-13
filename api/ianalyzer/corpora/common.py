@@ -96,6 +96,16 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
+    # @property
+    def scan_image_type(self):
+        '''
+        Filetype of scanned documents (images)
+        '''
+        if self.scan_image_type is None:
+            return None
+        else:
+            return self.scan_image_type
+
     def es_mapping(self):
         '''
         Create the ElasticSearch mapping for the fields of this corpus. May be
@@ -214,14 +224,12 @@ class XMLCorpus(Corpus):
         '''
         The top-level tag in the source documents.
         '''
-    
 
     @property
     def tag_entry(self):
         '''
         The tag that corresponds to a single document entry.
         '''
-        
 
     def source2dicts(self, source):
         '''
@@ -239,7 +247,7 @@ class XMLCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
-        
+
         # determine if the source contains multiple files
         multiple = isinstance(source, list)
 
@@ -351,6 +359,7 @@ class HTMLCorpus(XMLCorpus):
     '''
     An HTMLCorpus is any corpus that extracts its data from HTML sources.
     '''
+
     def source2dicts(self, source):
         '''
         Generate a document dictionaries from a given HTML file. This is the
