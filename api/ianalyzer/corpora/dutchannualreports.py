@@ -10,20 +10,20 @@ from ianalyzer.filters import MultipleChoiceFilter, RangeFilter
 from ianalyzer.corpora.common import XMLCorpus, Field
 
 
-class DutchBanking(XMLCorpus):
-    """ Alto XML corpus of Dutch banking year records. """
+class DutchAnnualReports(XMLCorpus):
+    """ Alto XML corpus of Dutch annual reports. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = config.DUTCHBANK_TITLE
-    description = config.DUTCHBANK_DESCRIPTION
-    data_directory = config.DUTCHBANK_DATA
-    min_date = config.DUTCHBANK_MIN_DATE
-    max_date = config.DUTCHBANK_MAX_DATE
-    es_index = config.DUTCHBANK_ES_INDEX
-    es_doctype = config.DUTCHBANK_ES_DOCTYPE
+    title = config.DUTCHANNUALREPORTS_TITLE
+    description = config.DUTCHANNUALREPORTS_DESCRIPTION
+    data_directory = config.DUTCHANNUALREPORTS_DATA
+    min_date = config.DUTCHANNUALREPORTS_MIN_DATE
+    max_date = config.DUTCHANNUALREPORTS_MAX_DATE
+    es_index = config.DUTCHANNUALREPORTS_ES_INDEX
+    es_doctype = config.DUTCHANNUALREPORTS_ES_DOCTYPE
     es_settings = None
-    image = config.DUTCHBANK_IMAGE
-    scan_image_type = config.DUTCHBANK_SCAN_IMAGE_TYPE
+    image = config.DUTCHANNUALREPORTS_IMAGE
+    scan_image_type = config.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -33,15 +33,16 @@ class DutchBanking(XMLCorpus):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
-    with open(config.DUTCHBANK_MAP_FP) as f:
+    with open(config.DUTCHANNUALREPORTS_MAP_FP) as f:
         reader = csv.DictReader(f)
         for line in reader:
-            config.DUTCHBANK_MAP[line['abbr']] = line['name']
+            config.DUTCHANNUALREPORTS_MAP[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            rel_dir = op.relpath(directory, self.data_directory)
             _, tail = op.split(directory)
             if tail == "Financials":
                 company_type = "Financial"
@@ -50,6 +51,9 @@ class DutchBanking(XMLCorpus):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
+                file_path = op.join(rel_dir, filename)
+                image_path = op.join(
+                    rel_dir, name + '.' + self.scan_image_type)
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
@@ -58,12 +62,12 @@ class DutchBanking(XMLCorpus):
                 if information[-1] == "abby" or len(information[-1]) > 5:
                     continue
                 company = information[0]
-                if not re.match("[a-zA-Z]+", information[1]):
+                if re.match("[a-zA-Z]+", information[1]):
                     # second part of file name is part of company name
                     company = "_".join([company, information[1]])
                 # using first four-integer string in the file name as year
                 years = re.compile("[0-9]{4}")
-                year = next((int(info) for info in information
+                year = next((info for info in information
                              if re.match(years, info)), None)
                 if len(information) == 3:
                     serial = information[-1]
@@ -76,6 +80,8 @@ class DutchBanking(XMLCorpus):
                 if int(year) < start.year or end.year < int(year):
                     continue
                 yield full_path, {
+                    'file_path': file_path,
+                    'image_path': image_path,
                     'company': company,
                     'company_type': company_type,
                     'year': year,
@@ -109,11 +115,11 @@ class DutchBanking(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(config.DUTCHBANK_MAP.values()),
+                options=sorted(config.DUTCHANNUALREPORTS_MAP.values()),
             ),
             extractor=Metadata(
                 key='company',
-                transform=lambda x: config.DUTCHBANK_MAP[x],
+                transform=lambda x: config.DUTCHANNUALREPORTS_MAP[x],
             ),
             csv_core=True
         ),
@@ -134,7 +140,7 @@ class DutchBanking(XMLCorpus):
             extractor=Metadata(key='company_type')
         ),
         Field(
-            name='page_number',
+            name='page',
             display_name='Page Number',
             description='The number of the page in the scan',
             es_mapping={'type': 'integer'},
@@ -169,4 +175,20 @@ class DutchBanking(XMLCorpus):
             ),
             search_field_core=True
         ),
+        Field(
+            name='file_path',
+            display_name='File path',
+            description='Filepath of the source file containing the document,\
+            relative to the corpus data directory.',
+            extractor=Metadata(key='file_path'),
+            hidden=True,
+        ),
+        Field(
+            name='image_path',
+            display_name="Image path",
+            description="Path of the source image corresponding to the document,\
+            relative to the corpus data directory.",
+            extractor=Metadata(key='image_path'),
+            hidden=True,
+        )
     ]

@@ -1,5 +1,5 @@
 import { Input, Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription }   from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
@@ -14,7 +14,7 @@ import { SearchService, DataService } from '../services/index';
 
 export class VisualizationComponent implements OnInit, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public multipleChoiceFilters: {name: string, size: number}[];
+    @Input() public multipleChoiceFilters: { name: string, size: number }[];
 
     public visualizedFields: CorpusField[];
 
@@ -36,7 +36,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     public aggResults: AggregateResult[];
     public relatedWordsGraph: {
-        labels: string[], 
+        labels: string[],
         datasets: {
             label: string, data: number[]
         }[]
@@ -56,15 +56,15 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         // Initial values
-        this.visualizedFields = this.corpus && this.corpus.fields ? 
+        this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
             label: field.displayName,
             value: field.name
         }))
         // this is very hacky:
-        // word models only exist for dutchbanking for now
-        if (this.corpus.name=="dutchbanking") {
+        // word models only exist for dutch annual reports for now
+        if (this.corpus.name == "dutchannualreports") {
             this.visDropdown.push({
                 label: 'Related Words',
                 value: 'relatedwords'
@@ -102,7 +102,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
-            }
+        }
         else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
         }
@@ -114,14 +114,14 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                     // slice is used so the child component fires OnChange
                     this.aggResults = result[this.visualizedField.name].slice(0);
                 })
-                .catch(error => {
-                    this.foundNoVisualsMessage = this.noResults;
-                    this.errorMessage = error['message'];
-                });
+                    .catch(error => {
+                        this.foundNoVisualsMessage = this.noResults;
+                        this.errorMessage = error['message'];
+                    });
             }
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
-            let aggregator = [{name: this.visualizedField.name, size: this.defaultSize}];
+            let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
             this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
@@ -131,19 +131,19 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
             })
-            .catch(error => {
-                this.foundNoVisualsMessage = this.noResults;
-                this.errorMessage = error['message'];
-            });
+                .catch(error => {
+                    this.foundNoVisualsMessage = this.noResults;
+                    this.errorMessage = error['message'];
+                });
         }
         else {
             let aggregator = this.multipleChoiceFilters.find(filter => filter.name === this.visualizedField.name);
-            aggregator = aggregator ? aggregator : {name: this.visualizedField.name, size: this.defaultSize};            
+            aggregator = aggregator ? aggregator : { name: this.visualizedField.name, size: this.defaultSize };
             this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
-    }   
+    }
 
     showTable() {
         this.freqtable = true;
