@@ -1,0 +1,12 @@
+<p-dialog [(visible)]="showDialog" *ngIf="showDialog" positionTop="50" width="800">
+  <p-header>{{title}}</p-header>
+  <div class="content" [ngClass]="{'is-loading':isLoading}" [innerHTML]="innerHtml"></div>  
+  <p-footer *ngIf="!isLoading">
+      <a class="button" (click)="navigate()">
+          <span class="icon">
+              <i class="fa fa-book"></i>
+          </span>
+          <span>{{footerButtonLabel}}</span>
+      </a>
+  </p-footer>
+</p-dialog>

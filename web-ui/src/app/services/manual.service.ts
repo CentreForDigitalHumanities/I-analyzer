@@ -2,21 +2,23 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 import { MarkdownService } from 'ngx-md';
+import { DialogService } from "./dialog.service";
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 
 @Injectable()
 export class ManualService {
-    private behavior = new BehaviorSubject<ManualPageEvent>({ status: 'hide' });
+    
     private manifest: Promise<ManualPageMetaData[]> | undefined;
 
-    public pageEvent = this.behavior.asObservable();
-
-    public constructor(private domSanitizer: DomSanitizer, private markdownService: MarkdownService) {
+    public constructor(
+        private domSanitizer: DomSanitizer, 
+        private markdownService: MarkdownService,
+        private dialogService: DialogService) {
     }
 
     public closePage() {
-        this.behavior.next({ status: 'hide' });
+        this.dialogService.behavior.next({ status: 'hide' });
     }
 
     public async getPage(identifier: string) {
@@ -24,7 +26,7 @@ export class ManualService {
         let pagePromise = fetch(path).then(response => this.parseResponse(response));
 
         let [html, manifest] = await Promise.all([pagePromise, this.getManifest()]);
-        let title = manifest.find(page => page.id == identifier).title;
+        let title = "Manual: " + manifest.find(page => page.id == identifier).title;
 
         return { html, title };
     }
@@ -42,17 +44,21 @@ export class ManualService {
      * Requests that a manual page should be shown to the user.
      * @param identifier Name of the page
      */
-    public async showPage(identifier: string) {
-        this.behavior.next({
+    public async showPage(identifier: string) {        
+        this.dialogService.behavior.next({
             status: 'loading'
         });
         let { html, title } = await this.getPage(identifier);
 
-        this.behavior.next({
+        this.dialogService.behavior.next({
             identifier,
             html,
             title,
-            status: 'show'
+            status: 'show',
+            footer: {
+                buttonLabel: 'View in manual',
+                routerLink: ['/manual', identifier]
+            }
         });
     }
 
@@ -70,17 +76,6 @@ export class ManualService {
     }
 }
 
-export type ManualPageEvent =
-    {
-        status: 'loading'
-    } | {
-        status: 'show',
-        identifier: string,
-        title: string,
-        html: SafeHtml
-    } | {
-        status: 'hide'
-    }
 
 export type ManualPageMetaData = {
     title: string,

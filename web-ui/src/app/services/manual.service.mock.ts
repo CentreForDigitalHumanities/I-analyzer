@@ -1,20 +1,18 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import {DialogServiceMock} from "./dialog.service.mock";
 
-import { ManualPageEvent } from './manual.service';
 
 @Injectable()
 export class ManualServiceMock {
-    private behavior = new BehaviorSubject<ManualPageEvent>({ status: 'hide' });
-    public pageEvent = this.behavior.asObservable();
+    public pageEvent = this.dialogService.behavior.asObservable();
 
-    public constructor(private domSanitizer: DomSanitizer) {
+    public constructor(private domSanitizer: DomSanitizer, private dialogService: DialogServiceMock) {
     }
 
     public closePage() {
-        this.behavior.next({ status: 'hide' });
+        this.dialogService.behavior.next({ status: 'hide' });
     }
 
     /**
@@ -24,15 +22,19 @@ export class ManualServiceMock {
     public async showPage(identifier: string) {
         // TODO: in a multilingual application this would need to be modified
         let path = `assets/manual/en-GB/${identifier}.md`;
-        this.behavior.next({
+        this.dialogService.behavior.next({
             status: 'loading'
         });
         let html = await Promise.resolve('<p>Hello world!</p>');
-        this.behavior.next({
+        this.dialogService.behavior.next({
             html: this.domSanitizer.bypassSecurityTrustHtml(html),
             identifier: 'example',
             title: 'Example Title',
-            status: 'show'
+            status: 'show',
+            footer: {
+                buttonLabel: 'test',
+                routerLink: ['/manual', identifier]
+            }
         });
     }
 }

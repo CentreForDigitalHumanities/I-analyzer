@@ -13,7 +13,7 @@ import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService, DialogService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -21,7 +21,6 @@ import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
 import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
-import { ManualDialogComponent } from './manual/manual-dialog.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
@@ -41,6 +40,7 @@ import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
+import { DialogComponent } from './dialog/dialog.component';
 
 const appRoutes: Routes = [
     {
@@ -97,7 +97,6 @@ const appRoutes: Routes = [
         SearchResultsComponent,
         SearchSortingComponent,
         ManualComponent,
-        ManualDialogComponent,
         ManualNavigationComponent,
         MenuComponent,
         NotificationsComponent,
@@ -114,7 +113,8 @@ const appRoutes: Routes = [
         SelectFieldComponent,
         RegistrationComponent,
         PrivacyComponent,
-        RelatedWordsComponent
+        RelatedWordsComponent,
+        DialogComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -146,6 +146,7 @@ const appRoutes: Routes = [
         CorpusService,
         ConfigService,
         DataService,
+        DialogService,
         DownloadService,
         ElasticSearchService,
         HighlightService,
