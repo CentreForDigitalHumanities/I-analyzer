@@ -136,4 +136,12 @@ export class ApiService extends Rest {
         path: '/search_history'
     })
     public search_history: RestMethod<void, { 'queries': Query[] }>;
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/source_image'
+    })
+    public source_image: RestMethod<
+        { corpus_index: string, image_path: string },
+        any>
 }

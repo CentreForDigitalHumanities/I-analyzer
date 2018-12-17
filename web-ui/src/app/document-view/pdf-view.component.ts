@@ -27,6 +27,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public page: number = 3;
 
+    public startPage: number;
+
     public totalPages: number;
 
     public isLoaded: boolean = false;
@@ -36,7 +38,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
     get_pdf() {
         this.scanImageService.get_scan_image(
             this.corpus.index,
-            this.document.fieldValues.page_number - 1, //0-indexed pdf
+            this.document.fieldValues.page - 1, //0-indexed pdf
             this.document.fieldValues.image_path).then(
                 results => {
                     this.pdfSrc = results;
@@ -62,31 +64,25 @@ export class PdfViewComponent implements OnChanges, OnInit {
     }
 
     public textLayerRendered(e: CustomEvent, querytext: string) {
-        console.log(this.page)
         this.pdfComponent.pdfFindController.executeCommand('find', {
             caseSensitive: false, findPrevious: true, highlightAll: true, phraseSearch: true,
             query: querytext
-
         });
-        console.log(this.page)
     }
 
     constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
 
     ngOnInit() {
-        // this.get_pdf();
+        this.get_pdf();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.get_pdf();
-        // console.log('onChange')
-        // console.log(changes)
-        // if (changes.document.previousValue) {
-        //     console.log('docChange')
-        //     this.isLoaded = false;
-        //     this.page = 3;
-        //     this.get_pdf();
+        if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
+            console.log('docChange')
+            this.isLoaded = false;
+            this.page = 3;
+            this.get_pdf();
+        }
     }
-}
 
 }
