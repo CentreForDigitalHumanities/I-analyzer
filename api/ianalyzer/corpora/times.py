@@ -31,6 +31,7 @@ class Times(XMLCorpus):
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None
     image = config.TIMES_IMAGE
+    scan_image_type = config.TIMES_SCAN_IMAGE_TYPE
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
@@ -94,7 +95,6 @@ class Times(XMLCorpus):
                 logger.warning('XML file {} does not exist'.format(xmlfile))
 
             date += delta
-
 
     fields = [
         Field(

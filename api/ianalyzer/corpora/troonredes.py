@@ -35,8 +35,8 @@ class Troonredes(XMLCorpus):
     es_settings = None
     image = config.TROONREDES_IMAGE
 
-    xml_tag_toplevel = 'doc'
-    xml_tag_entry = 'entry'
+    tag_toplevel = 'doc'
+    tag_entry = 'entry'
 
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'

@@ -136,8 +136,8 @@ export class ApiService extends Rest {
         path: '/register'
     })
     public register: RestMethod<
-    { username: string, email: string, password: string },
-    { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;  
+        { username: string, email: string, password: string },
+        { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Get,

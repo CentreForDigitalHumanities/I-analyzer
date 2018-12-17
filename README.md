@@ -47,7 +47,7 @@ export FLASK_APP=manage.py
 ```
 set FLASK_APP=manage.py
 ```
-7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchbanking -s 1785-01-01 -e 2010-12-31`, for indexing the Dutchbanking corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
+7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
 8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
 9. Set up the database and migrations by running `flask db upgrade`.
 10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
