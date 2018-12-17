@@ -473,8 +473,8 @@ def api_get_related_words_time_interval():
         response = jsonify({
             'success': True,
             'related_word_data': {
-                'similar_words': results[0],
-                'time_points': request.json['time']
+                'similar_words_subsets': results,
+                'time_points': [request.json['time']]
             }
         }) 
     return response

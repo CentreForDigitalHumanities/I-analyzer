@@ -52,12 +52,13 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     """
     binned = load_word_models(corpus, config.WM_BINNED_FN)
     time_bin = next((time for time in binned if 
-        np.mean(time['start_year'], time['end_year'])-which_time_interval<1), None)
+        abs(np.mean([time['start_year'], time['end_year']]) - int(which_time_interval)) < 1.0), None)
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
         time_bin['transformer'],
         query_term,
         number_similar)
-    return word_list
+    word_data = [{'label': word['key'], 'data': [word['similarity']]} for word in word_list]
+    return word_data
 
 
 def load_word_models(corpus, path):
