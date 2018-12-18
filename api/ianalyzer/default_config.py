@@ -18,6 +18,11 @@ SERVER_NAME = 'localhost:4200'
 CSRF_COOKIE_NAME = 'csrf_token'
 CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
 
+# SAML
+SAML_FOLDER = "//path//to//folder//where///setting.json//resides"
+SAML_SOLISID_KEY = "uuShortID"
+SAML_MAIL_KEY = "mail"
+
 # SQLAlchemy
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False

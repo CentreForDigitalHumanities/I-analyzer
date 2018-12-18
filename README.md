@@ -91,3 +91,5 @@ Indexing large corpora on the remote server
 SAML
 -------------------------------------------------------------------------------
 In order to login with Solis ID, I-analyzer has SAML integration with ITS. For this, it uses our custom class `dhlab_flask_saml.py` from the [dhlab-saml](https://github.com/UUDigitalHumanitieslab/dhlab-saml) repo. More information on working with SAML, setting up a local environment to test the SAML integration, etc. can be found there.
+
+Note that the SAML integration relies on three variables in the config (see te default config), one of which you will need to adjust to get a working situation. 
