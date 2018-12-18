@@ -138,10 +138,3 @@ class Spectators(XMLCorpus):
             search_field_core=True
         ),
     ]
-
-
-if __name__ == '__main__':
-    c = Spectators()
-    d = c.documents()
-
-    print(next(d))

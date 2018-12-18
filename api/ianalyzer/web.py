@@ -6,9 +6,16 @@ import base64
 import logging
 logger = logging.getLogger(__name__)
 import functools
+import logging
+logging.basicConfig(format='%(message)s')
+from os.path import splitext, join, isfile
+import sys
+import tempfile
+from io import BytesIO
+from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, stream_with_context, send_from_directory, session, make_response
+    render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -136,7 +143,7 @@ def init():
 def api_register():
     if not request.json:
         abort(400)
-       
+
     # Validate user's input
     username = request.json['username']
     email = request.json['email']
@@ -149,7 +156,7 @@ def api_register():
             'is_valid_username': is_valid_username,
             'is_valid_email': is_valid_email
         })
-    
+
     # try sending the email
     if not send_registration_mail(email, username):
         return jsonify({
@@ -169,15 +176,16 @@ def send_registration_mail(email, username):
     Send an email with a confirmation token to a new user
     Returns a boolean specifying whether the email was sent succesfully
     '''
-    token = security.generate_confirmation_token(email)    
-    
-    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
+    token = security.generate_confirmation_token(email)
+
+    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
+                  sender=config.MAIL_FROM_ADRESS, recipients=[email])
 
     msg.html = render_template('mail/new_user.html',
-                            username=username,
-                            confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
-                            url_i_analyzer=config.BASE_URL,
-                            logo_link=config.LOGO_LINK)
+                               username=username,
+                               confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
+                               url_i_analyzer=config.BASE_URL,
+                               logo_link=config.LOGO_LINK)
 
     try:
         mail.send(msg)
@@ -379,8 +387,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    #models.db.session.add(query)
-    #models.db.session.commit()
+    # models.db.session.add(query)
+    # models.db.session.commit()
 
     return jsonify({
         'id': query.id,
@@ -419,6 +427,31 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
+@blueprint.route('/api/get_scan_image/<corpus_index>/<int:page>/<path:image_path>', methods=['GET'])
+@login_required
+def api_get_scan_image(corpus_index, page, image_path):
+    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    image_type = backend_corpus.scan_image_type
+    user_permitted_corpora = [
+        corpus.name for corpus in current_user.role.corpora]
+
+    if (corpus_index in user_permitted_corpora):
+        absolute_path = join(backend_corpus.data_directory, image_path)
+
+        if image_type == 'pdf':
+            tmp = BytesIO()
+            pdf_writer = PdfFileWriter()
+            input_pdf = PdfFileReader(absolute_path, "rb")
+            target_page = input_pdf.getPage(page)
+            pdf_writer.addPage(target_page)
+            pdf_writer.write(tmp)
+            tmp.seek(0)
+            return send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
+
+        if image_type == 'png':
+            return send_file(absolute_path, mimetype='image/png')
+
+
 @blueprint.route('/api/get_related_words', methods=['POST'])
 @login_required
 def api_get_related_words():
@@ -441,5 +474,5 @@ def api_get_related_words():
                 'similar_words_subsets': results[1],
                 'time_points': results[2]
             }
-        }) 
+        })
     return response

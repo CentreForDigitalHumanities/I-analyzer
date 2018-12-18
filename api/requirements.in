@@ -4,6 +4,7 @@ Flask-Admin
 Flask-Login
 Flask-Migrate
 Flask-SeaSurf
+Flask-Mail
 Werkzeug
 WTForms
 mysqlclient
@@ -17,3 +18,4 @@ scikit-learn
 numpy
 responses
 python3-saml
+pypdf2
