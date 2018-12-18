@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     public password: string;
     public isLoading: boolean;
     public isWrong: boolean;
+    public hasError: boolean;
 
     public isActivated: boolean;
 
@@ -31,6 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
         this.activatedRoute.queryParams.subscribe( params => {
             this.isActivated = params['isActivated'] === 'true';
+            this.hasError = params['hasError'] === 'true' || false;
 
             if (params['solisId']) {
                 this.solislogin(params['solisId']);

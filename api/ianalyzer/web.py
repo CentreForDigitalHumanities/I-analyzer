@@ -269,7 +269,7 @@ def api_logout():
         current_user.save()
         samlLogout = True
     
-    if current_user.is_authenticated:
+    if current_user.is_authenticated:        
         security.logout_user(current_user)  
 
     return jsonify({'success': True, 'samlLogout': samlLogout})

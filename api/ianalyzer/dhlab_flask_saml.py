@@ -193,14 +193,20 @@ class DhlabFlaskSaml:
         '''
         Returns the user's Solis-ID (if user is still logged in)
         '''
-        if self.logged_in(request) and self.solis_id_key in session['samlUserdata']:
-            return session['samlUserdata'][self.solis_id_key][0]
+        return self.get_attribute(request, session, self.solis_id_key)
 
 
     def get_email_address(self, request, session):
         '''
         Returns the user's email address (if user is still logged in)
         '''
-        if self.logged_in(request) and self.mail_key in session['samlUserdata']:
-            return session['samlUserdata'][self.mail_key][0]
+        return self.get_attribute(request, session, self.mail_key)
+    
+
+    def get_attribute(self, request, session, key):
+        '''
+        Returns the specified attribute (i.e. data received from IdP)
+        '''
+        if self.logged_in(request) and key in session['samlUserdata']:
+            return session['samlUserdata'][key][0]
     

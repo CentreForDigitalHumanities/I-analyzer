@@ -63,5 +63,8 @@
         <div class="notification is-danger" *ngIf="isWrong" [ngClass]="{'is-loading':isLoading}">
             <strong>Invalid username or password</strong>. Please try again.
         </div>
+        <div class="notification is-danger" *ngIf="hasError" [ngClass]="{'is-loading':isLoading}">
+            <strong>Something went wrong while logging you in</strong>. Please try again.
+        </div>
     </div>
 </section>
