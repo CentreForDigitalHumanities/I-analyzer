@@ -144,4 +144,10 @@ export class ApiService extends Rest {
         path: '/search_history'
     })
     public search_history: RestMethod<void, { 'queries': Query[] }>;
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/ensure_csrf'
+    })
+    public ensureCsrf: RestMethod<void, { success: boolean }>;
 }

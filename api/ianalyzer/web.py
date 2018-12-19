@@ -130,6 +130,11 @@ def load_user(user_id):
     return models.User.query.get(user_id)
 
 
+@blueprint.route('/api/ensure_csrf', methods=['GET'])
+def ensure_csrf():
+    return jsonify({'success': True})
+
+
 @blueprint.route('/', methods=['GET'])
 def init():
     if current_user:

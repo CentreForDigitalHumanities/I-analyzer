@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
@@ -163,6 +163,12 @@ const appRoutes: Routes = [
         {
             provide: XSRFStrategy,
             useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: csrfProviderFactory,
+            deps: [Injector, ApiService],
+            multi: true
         }],
     bootstrap: [AppComponent]
 })
@@ -171,4 +177,15 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function restHandlerFactory(http: Http) {
     return new RestHandlerHttp(http);
+}
+
+export function csrfProviderFactory(injector: Injector, provider: ApiService): Function {
+    return () => provider.ensureCsrf().then(result => {
+        console.log('token load')
+        console.log(result)
+
+        if (!result) {
+            // do something because CSRF token not present
+        }
+    })
 }
