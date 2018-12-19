@@ -208,7 +208,8 @@ def api_register_confirmation(token):
 
     user = models.User.query.filter_by(email=email).first_or_404()
     user.active = True
-    user.save()
+    models.db.session.add(user)
+    models.db.session.commit()
 
     return redirect(config.BASE_URL+'/login?isActivated=true')
 
@@ -273,12 +274,13 @@ def api_logout():
     samlLogout = False
     
     if current_user.is_saml_login:
+        # reset saml_login to disallow loading user from URL (i.e. via the query param 'solisID')
         current_user.is_saml_login = False
-        current_user.save()
+        models.db.session.add(current_user)
+        models.db.session.commit()
         samlLogout = True
     
-    if current_user.is_authenticated:        
-        security.logout_user(current_user)  
+    security.logout_user(current_user)  
 
     return jsonify({'success': True, 'samlLogout': samlLogout})
 
@@ -300,7 +302,8 @@ def add_basic_user(username, password, email, is_active):
         role_id=basic_role.id,
     )
 
-    new_user.save()
+    models.db.session.add(new_user)
+    models.db.session.commit()
     return new_user
 
 

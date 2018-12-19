@@ -158,9 +158,7 @@ class User(db.Model):
     def has_role(self, role):        
         return self.role.name == role
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
+        
 
 
 class Query(db.Model):
