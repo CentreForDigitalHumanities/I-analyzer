@@ -3,12 +3,17 @@ For creation of Flask and ElasticSearch objects.
 '''
 
 from flask import Flask
+from flask_mail import Mail
+from flask_login import LoginManager
+from flask_seasurf import SeaSurf
 
 from elasticsearch import Elasticsearch
 
 from . import config_fallback as config
 from .models import db
-from .forward_es import es
+from .admin import admin_instance
+from .es_forward import es
+from .web import login_manager
 
 def elasticsearch(corpus_name, cfg=config):
     '''
@@ -24,15 +29,17 @@ def elasticsearch(corpus_name, cfg=config):
 
 
 
-def flask_app(blueprint, admin_instance, login_manager, csrf, mail, cfg=config):
+def flask_app(cfg=config):
     '''
     Create Flask instance, with given configuration and flask_admin, flask_login,
     and csrf (SeaSurf) instances.
     '''
     app = Flask(__name__)
+    csrf = SeaSurf()
+    csrf.exempt_urls('/es',)
+    mail = Mail()
+
     app.config.from_object(cfg)
-    app.register_blueprint(blueprint)
-    app.register_blueprint(es, url_prefix='/es')
 
     db.init_app(app)
     login_manager.init_app(app)

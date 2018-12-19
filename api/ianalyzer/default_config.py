@@ -105,7 +105,7 @@ DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannuareports_mapping.csv'
+DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_MAP = {}
 
 

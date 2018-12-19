@@ -12,13 +12,12 @@ from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 from wtforms import ValidationError, TextField
 from wtforms.validators import Required, AnyOf
-from ianalyzer import config_fallback as config
 
-from . import config
+from . import config_fallback as config
 from . import forms
 from . import models
 from . import corpora
-from . import security
+from api import security
 
 
 class ModelView(admin_sqla.ModelView):

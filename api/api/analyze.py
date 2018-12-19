@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import scipy
 
-from . import config_fallback as config
+from ianalyzer import config_fallback as config
 
 def make_wordcloud_data(list_of_content):
     for content in list_of_content:

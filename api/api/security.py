@@ -1,11 +1,10 @@
-from . import models
 from werkzeug.security import check_password_hash
 from flask_login import login_user as flask_login_user
 from flask_login import logout_user as flask_logout_user
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from ianalyzer import config_fallback as config
-
+from ianalyzer import models
 
 def validate_user(username, password):
     """Validates the user and returns it if the username and password are valid."""

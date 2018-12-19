@@ -4,19 +4,22 @@ import logging
 from datetime import datetime
 import click
 
-from flask import Flask
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
 from ianalyzer import config
 from ianalyzer.models import User, Role, db, Corpus
-from ianalyzer.web import blueprint, admin_instance, login_manager, csrf, mail
+from ianalyzer.web import entry
+from ianalyzer.es_forward import es
 from ianalyzer.factories import flask_app, elasticsearch
 from ianalyzer import corpora
-from es_index import perform_indexing
+from ianalyzer.es_index import perform_indexing
+from api.api import api
 
-app = flask_app(blueprint, admin_instance, login_manager, mail, csrf)
-
+app = flask_app(config)
+app.register_blueprint(entry)
+app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(es, url_prefix='/es')
 migrate = Migrate(app, db)
 
 
