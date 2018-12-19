@@ -1,6 +1,7 @@
 <section class="section">
 
     <form (ngSubmit)="login()" class="container is-readable">
+        <input type="hidden" name="csrf_token" value="76ae3097eb927e65b5da3a47ddeea7ede2fd2dab">
         
         <div class="container is-login">
            <div *ngIf="isActivated">
