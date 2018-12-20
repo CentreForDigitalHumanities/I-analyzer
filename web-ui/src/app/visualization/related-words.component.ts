@@ -38,6 +38,7 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
     private event: any;
+    public errorMessage: string;
 
     constructor(private manualService: ManualService, private searchService: SearchService) { }
 
@@ -76,7 +77,7 @@ export class RelatedWordsComponent implements OnChanges {
                 })
             })
             .catch(error => {
-                console.log(error['message']);
+                this.errorMessage = error;
             })
     }
 
