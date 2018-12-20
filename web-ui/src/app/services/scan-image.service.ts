@@ -13,8 +13,4 @@ export class ScanImageService {
     return this.http.get(url, { responseType: 'arraybuffer' }).toPromise();
   }
 
-  public simple_image(corpus_index: string, image_path: string) {
-    console.log(this.apiService.source_image({ corpus_index: corpus_index, image_path: image_path }))
-  }
-
 }
