@@ -9,7 +9,7 @@ import scipy
 
 from . import config_fallback as config
 
-NUMBER_SIMILAR = 10
+NUMBER_SIMILAR = 8
 
 def make_wordcloud_data(list_of_content):
     for content in list_of_content:
@@ -57,6 +57,8 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
         time_bin['transformer'],
         query_term,
         number_similar)
+    if not word_list:
+        return "The query term is not in the word models' vocabulary."
     word_data = [{'label': word['key'], 'data': [word['similarity']]} for word in word_list]
     return word_data
 
@@ -80,7 +82,6 @@ def find_n_most_similar(matrix, transformer, query_term, n):
         (i for i, a in enumerate(transformer.get_feature_names())
          if a == query_term), None)
     if not(index):
-        print("query term not found")
         return None
     vec = matrix[:, index]
     similarities = cosine_similarity_matrix_vector(vec, matrix)

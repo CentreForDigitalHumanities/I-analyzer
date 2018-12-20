@@ -20,7 +20,7 @@ export class RelatedWordsComponent implements OnChanges {
     @Input() corpusName: string;
     public zoomedInData; // data requested when clicking on a time interval
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
-    public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#f5f5f5', '#c7eae5', '#35978f', '#003c30']
+    public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
     public chartOptions = {
         elements: {
             line: {
@@ -37,6 +37,7 @@ export class RelatedWordsComponent implements OnChanges {
             xAxes: [],
         }
     }
+    private event: any;
 
     constructor(private manualService: ManualService, private searchService: SearchService) { }
 
@@ -45,6 +46,9 @@ export class RelatedWordsComponent implements OnChanges {
             d.fill = false;
             d.borderColor = this.colorPalette[index];
         })
+        if (this.zoomedInData) {
+            this.zoomTimeInterval(this.event);
+        }
     }
 
     showRelatedWordsDocumentation() {
@@ -52,6 +56,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     zoomTimeInterval(event) {
+        this.event = event;
         this.searchService.getRelatedWordsTimeInterval(
             this.queryText,
             this.corpusName,
@@ -69,6 +74,9 @@ export class RelatedWordsComponent implements OnChanges {
                         display: false
                     }
                 })
+            })
+            .catch(error => {
+                console.log(error['message']);
             })
     }
 
