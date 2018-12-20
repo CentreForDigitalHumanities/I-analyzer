@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
 import { ManualService, SearchService } from '../services/index';
 @Component({
@@ -38,7 +38,8 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
     private event: any;
-    public errorMessage: string;
+    @Output('error')
+    public errorEmitter = new EventEmitter<string>();
 
     constructor(private manualService: ManualService, private searchService: SearchService) { }
 
@@ -77,7 +78,7 @@ export class RelatedWordsComponent implements OnChanges {
                 })
             })
             .catch(error => {
-                this.errorMessage = error;
+                this.errorEmitter.emit(error['message']);
             })
     }
 

@@ -1,4 +1,3 @@
-<div *ngIf="!errorMessage">
 <p-chart *ngIf="!zoomedInData" type="line" [data]="searchData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart>
 <div *ngIf="zoomedInData">
     <a class="button" (click)="zoomBack()">
@@ -13,9 +12,3 @@
         <i class="fa fa-question-circle"></i>
     </span>
 </a>
-</div>
-<div class="container" *ngIf="errorMessage">
-    <div class="notification is-warning">
-        {{errorMessage}}
-    </div>
-</div>

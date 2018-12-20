@@ -145,6 +145,11 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         }
     }
 
+    setErrorMessage(message: string) {
+        this.foundNoVisualsMessage = this.noResults;
+        this.errorMessage = message;
+    }
+
     showTable() {
         this.freqtable = true;
     }
