@@ -270,6 +270,8 @@ def api_download():
     if not request.json:
         abort(400)
     tasks.download_csv.apply_async(args=[request.json, current_user.email])
+
+    #print(request.json)
     return jsonify({'success': True})
 
 

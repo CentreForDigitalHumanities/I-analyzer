@@ -17,6 +17,7 @@ export class SearchService {
         private queryService: QueryService,
         private userService: UserService,
         private logService: LogService) {
+        window['apiService'] = this.apiService;
     }
 
     /**
@@ -109,20 +110,35 @@ export class SearchService {
         };
     }
 
-    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<{success: boolean}> {
+
+    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
+        let completed = false;
+        let totalTransferred = 0;
+
+        // Log the query to the database
+        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
+
+        // Perform the search and obtain output stream
+        return this.elasticSearchService.searchObservable(
+            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
+}
+
+
+
+    public async download_async(corpus: Corpus, queryModel: QueryModel): Promise< boolean  > {
         let completed = false;
         let totalTransferred = 0;
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
         // Log the query to the database
         this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
 
-        // Perform the search and obtain output stream
-        // return this.elasticSearchService.searchObservable(
-        //     corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
-        console.log("csv search requested");
-        return this.apiService.download(
-            {corpus: corpus, esQuery: esQuery, size:(await this.userService.getCurrentUser()).downloadLimit}
+        console.log("csv download via api service");
+
+        let result = await this.apiService.download(
+            {corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit}
         );
+        
+        return result.success;
     }
 
 

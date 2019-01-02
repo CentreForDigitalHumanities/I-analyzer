@@ -291,10 +291,10 @@ type Connection = {
         scrollTimeout: string
     }
 };
-type EsQuerySorted = EsQuery & {
+export type EsQuerySorted = EsQuery & {
     sort: { [fieldName: string]: 'desc' | 'asc' }[]
 };
-type EsQuery = {
+export type EsQuery = {
     aborted?: boolean,
     completed?: Date,
     query: EsSearchClause | {

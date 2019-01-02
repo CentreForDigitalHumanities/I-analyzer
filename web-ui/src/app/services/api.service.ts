@@ -4,6 +4,7 @@ import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestActi
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
+import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { SearchFilterData, AggregateResult, UserRole, Query, QueryModel, User, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -120,8 +121,8 @@ export class ApiService extends Rest {
         path:'/download'
     })
     public download: RestMethod<
-    { corpus: Corpus, esQuery: string, size: number },
-    { success: boolean }>;
+    { corpus: Corpus, esQuery: EsQuery | EsQuerySorted, size: number },
+    { success: boolean } >;
 
     @RestAction({
         method: RestRequestMethod.Post,

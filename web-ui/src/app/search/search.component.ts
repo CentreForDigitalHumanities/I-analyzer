@@ -215,10 +215,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.search();
     }
 
-    //vanuit downloadcsv knop een search doen die bedoeld is om csv te maken in backend. Er zou een variabele meegegeven moeten worden om hem dat te vertellen
+    //vanuit downloadcsv knop een search doen die bedoeld is om csv te maken in backend.
     public download2(){
 
-        this.searchService.searchObservable(
+        this.searchService.download_async(
             this.corpus,
             this.queryModel
         ).then(success => {
