@@ -135,12 +135,6 @@ def init():
         return redirect(url_for('admin.login'))
 
 
-# endpoint for link to csv file
-@blueprint.route('/api/csv/<filename>', methods=['get'])
-def api_csv(filename):
-    return send_from_directory(config.CSV_FOLDER, '{}'.format(filename))
-
-
 # endpoint for registration new user via signup form
 @blueprint.route('/api/register', methods=['POST'])
 def api_register():
@@ -208,7 +202,6 @@ def send_registration_mail(email, username):
         return False
 
 
-
 # endpoint for the confirmation of user if link in email is clicked.
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
 def api_register_confirmation(token):
@@ -264,16 +257,23 @@ def api_corpus_image(image_name):
     '''
     return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
+
+# endpoint for backend handeling of large csv files
 @blueprint.route('/api/download', methods=['POST'])
 @login_required
 def api_download():
     if not request.json:
         abort(400)
-    tasks.download_csv.apply_async(args=[request.json, current_user.email])
 
-    #print(request.json)
+    # Celery task    
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path] ) 
     return jsonify({'success': True})
 
+
+# endpoint for link send in email to download csv file
+@blueprint.route('/api/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory( current_app.instance_path, '{}'.format(filename))
 
 
 @blueprint.route('/api/login', methods=['POST'])

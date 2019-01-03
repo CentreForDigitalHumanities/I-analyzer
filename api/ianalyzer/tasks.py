@@ -13,43 +13,39 @@ logger = logging.getLogger(__name__)
 celery= Celery('tasks', broker=config.BROKER_URL)
 
 @celery.task(bind=True)
-def download_csv(self, request_json, email ):
+def download_csv(self, request_json, email, instance_path ):
     corpus = request_json['corpus']
     es_query = request_json['esQuery']
     download_size = request_json['size']
-    host = forward_es.get_es_host_or_404(corpus['serverName']) 
+    host = forward_es.get_es_host_or_404(corpus['serverName'])
     address = host + "/".join(["",  corpus['index'], corpus['doctype'], '_search'])
     params = {'size': download_size }
     kwargs = {}
     kwargs['json'] = request_json['esQuery']
     query='query_match_all'
 
+    '''
+    build file name with query (entered in search field) and the used filters
+    '''
     if (request_json['esQuery']['query']['bool']['must'] != {'match_all': {}} ):
-        query=request_json['esQuery']['query']['bool']['must']['simple_query_string']['query'] #is very nested in response 
-
-    # build filename with query (entered in search field) and used filters
+        query=request_json['esQuery']['query']['bool']['must']['simple_query_string']['query'] #is very nested in response
 
     filename=corpus['index'] + "_" + query
 
     if not request_json['esQuery']['query']['bool']['filter']:
         filename += "_" + 'no_filters'
-    else: 
+    else:
         for filter in request_json['esQuery']['query']['bool']['filter']:
-            # print('filter is:')
-            # print(filter)
 
             if filter.get('range')!=None and filter['range'].get('date')!=None:
-                print(filter['range']['date']) 
+                print(filter['range']['date'])
                 filename += "_" + filter['range']['date']['gte'] + "_" + filter['range']['date']['lte']
 
             # iterate through terms, find name of filter term and get value of filter term and append to file name
             if filter.get('terms')!=None:
                 for term in filter['terms']:
-                    # print('term is:')
-                    # print(term)   
-                    # print(filter['terms'].get(term))
                     filename += "_" + str(filter['terms'].get(term))
-                   
+
     filename += '.csv'
 
     try:
@@ -69,10 +65,10 @@ def download_csv(self, request_json, email ):
     counter=0
 
     for entry in result_hits:
-        entry_s=entry['_source'] #is a dictionary
+        entry_s=entry['_source'] # is a dictionary
 
         list=[]
-        if counter==0: #key names in first row
+        if counter==0: # key names in first row
             for key in entry_s:
                 list.append(key)
         else:
@@ -82,29 +78,29 @@ def download_csv(self, request_json, email ):
         entries.append(list)
         counter+=1
 
-    
-    filepath='csv_files/' + filename
+    # uses the instance path of flask to folder 'instance'
+    filepath=instance_path + "/" + filename
     csv.register_dialect('myDialect', delimiter = ',', quotechar = '"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-    
+
     with open(filepath, 'w', newline='') as f:
         writer = csv.writer(f, dialect='myDialect')
         for row in entries:
             writer.writerow(row)
     f.close()
-    
-    send_mail(filename, email )
+
+    send_mail(filename, email)
 
 
 @celery.task()
 def send_mail(filename, email):
-
-    app = Flask(__name__) #context is not available in celery task
+    app = Flask(__name__) # context is not available in celery task
     mail=Mail(app)
 
     with app.app_context():
         msg = Message(config.MAIL_CSV_SUBJECT_LINE, sender=config.MAIL_FROM_ADRESS, recipients=[email])
         msg.html = render_template('mail/send_csv.html',
-                                        download_link=config.BASE_URL+'/api/csv/'+filename,
+                                        # link to the api endpoint where csv will be downloaded
+                                        download_link=config.BASE_URL + "/api/csv/" + filename,
                                         url_i_analyzer=config.BASE_URL,
                                         logo_link=config.LOGO_LINK)
 

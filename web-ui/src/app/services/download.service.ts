@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 
-//geimporeerd
-//import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
-//import { UserService } from './user.service';
-
 
 @Injectable()
 export class DownloadService {
@@ -14,7 +10,7 @@ export class DownloadService {
         //private queryService: QueryService,
         //private userService: UserService,
 
-    ) { 
+    ) {
 
     }
 
@@ -26,14 +22,7 @@ export class DownloadService {
      * @param separator Cell separator to use.
      */
 
-    // public async downloadCsv(queryModel: QueryModel, corpus: Corpus){
-    //     let user = await this.userService.getCurrentUser();
-    //     let query = new Query(queryModel, corpus.name, user.id);
-    //     console.log(query)
-    // }
 
-
-    //even hernoemd
     public downloadCsv(filename: string, values: string[][], header: string[], separator = ','): void {
         const newline = '\n';
 

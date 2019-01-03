@@ -90,6 +90,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private resultsCount: number = 0;
     private tabIndex: number;
 
+    private isModalActive: boolean = false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -215,32 +216,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.search();
     }
 
-    //vanuit downloadcsv knop een search doen die bedoeld is om csv te maken in backend.
-    public download2(){
-
-        this.searchService.download_async(
-            this.corpus,
-            this.queryModel
-        ).then(success => {
-            console.log(success);
-            //this.searched(this.queryModel.queryText, this.results.total);
-        }, error => {
-            // this.showError = {
-            //     date: (new Date()).toISOString(),
-            //     href: location.href,
-            //     message: error.message || 'An unknown error occurred'
-            // };
-            console.trace(error);
-            // if an error occurred, return query text and 0 results
-            //this.searched(this.queryModel.queryText, 0);
-        });
-
-    }
-
-
     public search() {
         let queryModel = this.createQueryModel();
-       
+
         let route = this.searchService.queryModelToRoute(queryModel);
         let url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
@@ -286,7 +264,39 @@ export class SearchComponent implements OnInit, OnDestroy {
         })
     }
 
+    /**
+     * called by download csv button. Large files are rendered in backend via Celery async task and an email is send with download link from backend
+     */
+    public choose_download_method() {
+        if (this.resultsCount < 1000) {
+            this.download();
+        }
+        else {
+            this.download_asc();
+        }
+    }
 
+    /**
+     * backend async downloading of csv
+     */
+    public download_asc() {
+        this.searchService.download_async(this.corpus, this.queryModel).then(success => {
+            this.toggleModal();
+        }, error => {
+            console.trace(error);
+        });
+    }
+
+    /**
+     * modal pops up after connecting to backend api to start creating csv
+     */
+    toggleModal() {
+        this.isModalActive = !this.isModalActive;
+    }
+
+    /**
+     * direct download for less than x results
+     */
     public async download() {
         this.isDownloading = true;
         let fields = this.getCsvFields();

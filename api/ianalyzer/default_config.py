@@ -68,9 +68,6 @@ CORPUS_SERVER_NAMES = {
 # Note that the name of each corpus image will need to be configuration separately.
 CORPUS_IMAGE_ROOT = 'corpora/images'
 
-#folder for storing the csv files for'csv download'. This can be different on local machines. Override this in 'config.py'
-CSV_FOLDER='I-analyzer/api/csv_files'
-
 # Index configurations
 DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
 DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
@@ -148,5 +145,5 @@ DUTCHBANK_MAP = {
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
-#celery configuration
+#Celery configuration
 BROKER_URL = 'amqp://'
