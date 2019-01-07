@@ -11,7 +11,8 @@ from flask_login import current_user, login_required
 from flask_mail import Mail, Message
 
 from ianalyzer import config_fallback as config
-from ianalyzer import models, corpora
+from ianalyzer import models
+import corpora
 
 from . import security
 from . import analyze
@@ -77,7 +78,7 @@ def send_registration_mail(email, username):
     msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
                   sender=config.MAIL_FROM_ADRESS, recipients=[email])
 
-    msg.html = render_template('mail/new_user.html',
+    msg.html = render_template('new_user_mail.html',
                                username=username,
                                confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
                                url_i_analyzer=config.BASE_URL,

@@ -1,5 +1,5 @@
 '''
-Login and index routes.
+Route forwarding to login and index
 '''
 
 from flask import Blueprint, url_for, redirect

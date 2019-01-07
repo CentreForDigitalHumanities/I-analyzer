@@ -5,7 +5,7 @@ from importlib import reload
 
 import pytest
 
-from ianalyzer import config_fallback as config, corpora
+from api.ianalyzer import config_fallback as config, corpora
 
 
 def test_key_error(monkeypatch,capsys):

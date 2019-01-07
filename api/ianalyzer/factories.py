@@ -9,11 +9,12 @@ from flask_seasurf import SeaSurf
 
 from elasticsearch import Elasticsearch
 
+from api.api import api
 from . import config_fallback as config
 from .models import db
-from .admin import admin_instance
+from admin.admin import admin_instance
+from .entry import entry, login_manager
 from .es_forward import es
-from .web import login_manager
 
 def elasticsearch(corpus_name, cfg=config):
     '''
@@ -40,6 +41,9 @@ def flask_app(cfg=config):
     mail = Mail()
 
     app.config.from_object(cfg)
+    app.register_blueprint(entry)
+    app.register_blueprint(api, url_prefix='/api')
+    app.register_blueprint(es, url_prefix='/es')
 
     db.init_app(app)
     login_manager.init_app(app)

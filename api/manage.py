@@ -9,17 +9,14 @@ from flask_migrate import Migrate
 
 from ianalyzer import config
 from ianalyzer.models import User, Role, db, Corpus
-from ianalyzer.web import entry
+from ianalyzer.entry import entry
 from ianalyzer.es_forward import es
 from ianalyzer.factories import flask_app, elasticsearch
-from ianalyzer import corpora
 from ianalyzer.es_index import perform_indexing
+import corpora
 from api.api import api
 
 app = flask_app(config)
-app.register_blueprint(entry)
-app.register_blueprint(api, url_prefix='/api')
-app.register_blueprint(es, url_prefix='/es')
 migrate = Migrate(app, db)
 
 

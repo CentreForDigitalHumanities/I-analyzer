@@ -1,7 +1,7 @@
 import flask_admin as admin
 from flask_admin.base import MenuLink
 
-from . import models
+from ianalyzer import models
 from . import views
 
 admin_instance = admin.Admin(

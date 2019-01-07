@@ -11,7 +11,7 @@ import json
 import inspect
 import itertools
 
-from ianalyzer import extract
+from . import extract
 
 
 class Corpus(object):

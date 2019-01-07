@@ -13,11 +13,12 @@ from wtforms.widgets import PasswordInput
 from wtforms import ValidationError, TextField
 from wtforms.validators import Required, AnyOf
 
-from . import config_fallback as config
-from . import forms
-from . import models
-from . import corpora
+from ianalyzer import config_fallback as config
+from ianalyzer import models
 from api import security
+import corpora
+from . import forms
+
 
 
 class ModelView(admin_sqla.ModelView):

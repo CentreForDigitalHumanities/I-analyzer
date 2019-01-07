@@ -2,10 +2,11 @@
 
 import logging
 from elasticsearch import Elasticsearch
-from ianalyzer import config_fallback as config
-from ianalyzer import corpora
 import os
 from datetime import datetime
+
+from ianalyzer import config_fallback as config
+import corpora
 
 es = Elasticsearch()
 updated_docs = 0

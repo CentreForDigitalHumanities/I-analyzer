@@ -63,10 +63,6 @@ CORPUS_SERVER_NAMES = {
     'times': 'default',
 }
 
-# The folder (relative to 'api/ianalyzer') where the corpus images live.
-# Note that the name of each corpus image will need to be configuration separately.
-CORPUS_IMAGE_ROOT = 'corpora/images'
-
 # Index configurations
 DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
 DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
