@@ -4,6 +4,7 @@ import { ChartModule } from 'primeng/primeng'
 
 import { ManualService, SearchService } from '../services/index';
 import { ManualServiceMock } from '../services/manual.service.mock';
+import { SearchServiceMock } from '../services/search.service.mock';
 import { RelatedWordsComponent } from './related-words.component';
 
 describe('RelatedWordsComponent', () => {
@@ -14,8 +15,8 @@ describe('RelatedWordsComponent', () => {
     TestBed.configureTestingModule({
       imports: [ FormsModule, ChartModule ],
       declarations: [ RelatedWordsComponent ],
-      providers: [ 
-        SearchService,
+      providers: [
+        { provide: SearchService, useValue: new SearchServiceMock()},
         { provide: ManualService, useClass: ManualServiceMock },
       ]
     })

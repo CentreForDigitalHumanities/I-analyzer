@@ -106,3 +106,10 @@ DUTCHANNUALREPORTS_MAP = {}
 
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
+
+# Word model information for related words visualization
+WM_DIRECTORY = {
+    'dutchannualreports': 'ianalyzer/corpora/wm/'
+}
+WM_COMPLETE_FN = "complete.pkl"
+WM_BINNED_FN = "binned.pkl"
