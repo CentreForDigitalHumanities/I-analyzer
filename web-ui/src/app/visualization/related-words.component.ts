@@ -57,7 +57,7 @@ export class RelatedWordsComponent implements OnChanges {
         this.manualService.showPage('relatedwords');
     }
 
-    zoomTimeInterval(event) {
+    zoomTimeInterval(event: any) {
         this.event = event;
         this.searchService.getRelatedWordsTimeInterval(
             this.queryText,
@@ -71,11 +71,11 @@ export class RelatedWordsComponent implements OnChanges {
                         d.backgroundColor = this.colorPalette[index];
                     })
                 // hide grid lines as we only have one data point on x axis
-                this.chartOptions.scales.xAxes.push({
+                this.chartOptions.scales.xAxes = [{
                     gridLines: {
                         display: false
                     }
-                })
+                }];
             })
             .catch(error => {
                 this.errorEmitter.emit(error['message']);
