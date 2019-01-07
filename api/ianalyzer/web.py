@@ -263,6 +263,15 @@ def api_corpus_image(image_name):
     return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
 
+@blueprint.route('/api/corpusdocument/<document_name>', methods=['GET'])
+@login_required
+def api_corpus_document(document_name):
+    '''
+    Return a document for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_DOCUMENT_ROOT, '{}'.format(document_name))
+
+
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
     if not request.json:
