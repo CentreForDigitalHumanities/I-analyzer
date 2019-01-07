@@ -107,6 +107,7 @@ const appRoutes: Routes = [
         VisualizationComponent,
         WordcloudComponent,
         TimelineComponent,
+        RelatedWordsComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,

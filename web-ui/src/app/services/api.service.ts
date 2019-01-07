@@ -62,6 +62,14 @@ export class ApiService extends Rest {
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
     @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_related_words_time_interval'
+    })
+    public getRelatedWordsTimeInterval: RestMethod<
+        { query_term: string, corpus_name: string, time: string },
+        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @RestAction({
         path: '/corpus'
     })
     public corpus: RestMethod<void, any>;

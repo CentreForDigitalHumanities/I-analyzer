@@ -450,5 +450,31 @@ def api_get_related_words():
                 'similar_words_subsets': results[1],
                 'time_points': results[2]
             }
-        })
+        }) 
+    return response
+
+
+@blueprint.route('/api/get_related_words_time_interval', methods=['POST'])
+@login_required
+def api_get_related_words_time_interval():
+    if not request.json:
+        abort(400)
+    results = analyze.get_context_time_interval(
+        request.json['query_term'],
+        request.json['corpus_name'],
+        request.json['time']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'related_word_data': {
+                'similar_words_subsets': results,
+                'time_points': [request.json['time']]
+            }
+        }) 
     return response

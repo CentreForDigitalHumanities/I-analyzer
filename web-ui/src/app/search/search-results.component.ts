@@ -72,11 +72,6 @@ export class SearchResultsComponent implements OnInit, OnChanges {
             // if an error occurred, return query text and 0 results
             this.searched(this.queryModel.queryText, 0);
         });
-
-        if (this.results != undefined) {
-            console.log(this.results);
-        }
-
     }
 
     public async loadMore() {
