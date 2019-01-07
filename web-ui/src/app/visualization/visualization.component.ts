@@ -127,6 +127,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
+            console.log("requesting related words...");
             this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -135,6 +136,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                     this.relatedWordsGraph = undefined;
                     this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
+                    console.log(error['message']);
                     this.errorMessage = error['message'];
                 });
         }

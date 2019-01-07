@@ -340,7 +340,7 @@ def api_get_related_words():
     return response
 
 
-@blueprint.route('/api/get_related_words_time_interval', methods=['POST'])
+@api.route('/get_related_words_time_interval', methods=['POST'])
 @login_required
 def api_get_related_words_time_interval():
     if not request.json:
