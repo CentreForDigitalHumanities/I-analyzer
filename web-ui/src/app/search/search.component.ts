@@ -65,8 +65,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
-    public availableQueryFields: QueryField[];
-    public selectedQueryFields: QueryField[];
+    public availableFields: CorpusField[];
+    public selectedFields: CorpusField[];
+    public csvCoreFields: CorpusField[];
+    public searchFieldCoreFields: CorpusField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -107,6 +109,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
@@ -125,7 +128,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.multipleChoiceFilters = this.corpus.fields
                     .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
                     .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
-
+                this.csvCoreFields = this.corpus.fields.filter(field => field.csvCore);
+                this.searchFieldCoreFields = this.corpus.fields.filter(field => field.searchFieldCore);
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
@@ -324,7 +328,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
             // empty multiple choice filters are automatically deactivated
             this.applyFilter(name, false);
-            console.log(data)
         }
         else if (previousData != null && previousData != data) {
             this.applyFilter(name, true);
@@ -358,7 +361,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private getQueryFields(): string[] | null {
-        let fields = this.selectedQueryFields.map(field => field.name);
+        let fields = this.selectedFields.map(field => field.name);
         if (!fields.length) return null;
         return fields;
     }
@@ -386,7 +389,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         if (!this.corpus || this.corpus.name != corpus.name) {
             if (!this.queryField) {
                 this.queryField = {};
-                this.selectedQueryFields = [];
+                this.selectedFields = [];
             }
             this.corpus = corpus;
             this.title.setTitle(this.corpus.name);
@@ -401,7 +404,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         let queryRestriction: string[] = [];
         if (params.has('fields')) {
             queryRestriction = params.get('fields').split(',');
-            this.selectedQueryFields = [];
+            this.selectedFields = [];
         }
 
         for (let field of corpusFields) {
@@ -435,12 +438,12 @@ export class SearchComponent implements OnInit, OnDestroy {
                     this.queryField[field.name] = auxField;
                 }
                 if (queryRestriction.includes(field.name)) {
-                    this.selectedQueryFields.push(auxField);
+                    this.selectedFields.push(auxField);
                 }
             }
         }
 
-        this.availableQueryFields = Object.values(this.queryField).filter(field => field.searchable);
+        this.availableFields = Object.values(this.queryField).filter(field => field.searchable);
         return fieldsSet;
     }
 
@@ -458,12 +461,12 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.tabIndex = event.index;
     }
 
-    private selectSearchFieldsEvent(selection: QueryField[]) {
-        this.selectedQueryFields = selection;
+    private selectSearchFieldsEvent(selection: CorpusField[]) {
+        this.selectedFields = selection;
         this.hasModifiedFilters = true;
     }
 
-    private selectCsvFieldsEvent(selection: QueryField[]) {
+    private selectCsvFieldsEvent(selection: CorpusField[]) {
         let fields = selection.map(field => field.name);
         // set first that no fields are downloaded, then set only the selected ones to download
         Object.values(this.queryField).forEach(field => field.downloadInCsv = false);

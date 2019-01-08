@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { NgForm } from '@angular/forms';
 
@@ -19,12 +17,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   public isLoading: boolean;
 
-  private registration_succeeded: boolean;
-  private error = false;
+  public registration_succeeded: boolean;
+  public error = false;
 
-  private isModalActive: boolean = false;
+  public isModalActive: boolean = false;
 
-  constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private title: Title) {
+  constructor(private userService: UserService) {
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
     UserService.loginActivated = true;
   }

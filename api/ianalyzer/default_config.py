@@ -73,7 +73,7 @@ DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
 DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
-DUTCHNEWSPAPERS_DATA = '/Users/3248526/corpora/kranten_pd_voorbeeld'
+DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
 DUTCHNEWSPAPERS_MIN_DATE = datetime(year=1600, month=1, day=1)
 DUTCHNEWSPAPERS_MAX_DATE = datetime(year=2018, month=12, day=31)
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
@@ -82,10 +82,10 @@ TML_TITLE = "Thesaurus Musicarum Latinarum"
 TML_DESCRIPTION = "Description about this corpus"
 TML_ES_INDEX = 'tml'
 TML_ES_DOCTYPE = 'article'
-TML_DATA = '/Users/3248526/corpora/tml'
+TML_DATA = '/mnt/tml'
 TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
-TML_IMAGE = 'times.jpg'
+TML_IMAGE = 'tml.jpg'
 
 TIMES_TITLE = "Times"
 TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
@@ -95,55 +95,29 @@ TIMES_DATA = '/mnt/times'
 TIMES_MIN_DATE = datetime(year=1785, month=1, day=1)
 TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
 TIMES_IMAGE = 'times.jpg'
+TIMES_SCAN_IMAGE_TYPE = 'png'
 
-DUTCHBANK_TITLE = "Dutch Banking"
-DUTCHBANK_DESCRIPTION = "Annual reports of Dutch finanical institutes"
-DUTCHBANK_ES_INDEX = 'dutchbank'
-DUTCHBANK_ES_DOCTYPE = 'block'
-DUTCHBANK_DATA = '/mnt/dutchbank'
-DUTCHBANK_MIN_DATE = datetime(year=1785, month=1, day=1)
-DUTCHBANK_MAX_DATE = datetime(year=2010, month=12, day=31)
-DUTCHBANK_IMAGE = 'dutchbanking.jpg'
-DUTCHBANK_MAP = {
-    'AA':       'ABN AMRO',
-    'AB':       'Amsterdamsche Bank',
-    'AMRO':     'AMRO Bank',
-    'Albert':   'H. Albert de Bary',
-    'BMH':      'Bank Mees & Hope',
-    'CCBB':     'Cooperatieve Centrale Boerenleenbank',
-    'CCRB':     'Cooperatieve Centrale Raiffeisen-Bank',
-    'CDK':      'Crediet en Depositokas',
-    'CEB':      'Crediet en Effectenkas',
-    'CL':       'Credit Llyonnais Bank Nederland',
-    'FORTIS':   'Fortis Bank',
-    'FRIES':    'Friesland Bank',
-    'GB':       'Generale Bank',
-    'HBU':      'Hollandsche Bank Unie',
-    'HKB':      'Hollandsche Koopmansbank',
-    'IDM':      'Industriele Disconto Maatschappij',
-    'ING':      'ING Bank',
-    'KAS':      'Kas Bank',
-    'Kempen':   'Kempen & Co',
-    'LANS':     'Van Lanschot',
-    'Lab':      'Labouchere & Co.',
-    'Mendes':   'Bank Mendes Gans',
-    'NCB':      'Nederlandsche Credietbank',
-    'NHM':      'Nederlandsche Handel-Maatschappij',
-    'NIB':      'De Nationale Investeringsbank',
-    'NMB':      'Nederlandsche Middenstandsbank',
-    'NMBPost':  'NMB Postbank Groep',
-    'PHP':      'Pierson, Heldring en Pierson',
-    'Pari':     'Paribas Nederland',
-    'Post':     'Postbank',
-    'RB':       'Rotterdamsche Bank',
-    'SNS':      'SNS Bank',
-    'SlavB':    'Slavenburg\'s Bank',
-    'Staal':    'bankierskantoor Staal &Co/Staalbankiers',
-    'TB':       'Twentsche Bank',
-    'TRIODOS':  'Triodos Bank',
-}
+DUTCHANNUALREPORTS_TITLE = "Dutch Annual Reports"
+DUTCHANNUALREPORTS_DESCRIPTION = "Annual reports of Dutch financial institutes"
+DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
+DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
+DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
+DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
+DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
+DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
+DUTCHANNUALREPORTS_MAP = {}
+
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 #Celery configuration
 BROKER_URL = 'amqp://'
+# Word model information for related words visualization
+
+WM_DIRECTORY = {
+    'dutchannualreports': 'ianalyzer/corpora/wm/'
+}
+WM_COMPLETE_FN = "complete.pkl"
+WM_BINNED_FN = "binned.pkl"

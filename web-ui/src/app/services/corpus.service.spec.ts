@@ -20,7 +20,7 @@ describe('CorpusService', () => {
         { name: "test1", description: "" },
         { name: "test2", description: "" },
         { name: "times", description: "" },]);
-        
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -79,6 +79,7 @@ describe('CorpusService', () => {
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
                 "image": "/static/no-image.jpg",
+                "scan_image_type": "png",
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -89,8 +90,10 @@ describe('CorpusService', () => {
                     "name": "bank",
                     "display_name": "Bank",
                     "results_overview": false,
-                    "preselected": false,
+                    "csv_core": false,
+                    "search_field_core": false,
                     "visualization_type": "term_frequency",
+                    "visualization_sort": "key",
                     "search_filter": {
                         "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
@@ -106,9 +109,11 @@ describe('CorpusService', () => {
                     "indexed": true,
                     "name": "year",
                     "results_overview": true,
-                    "preselected": true,
+                    "csv_core": true,
+                    "search_field_core": false,
                     "term_frequency": false,
                     "visualization_type": "term_frequency",
+                    "visualization_sort": "key",
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
                         "lower": 1785,
@@ -129,8 +134,10 @@ describe('CorpusService', () => {
                 displayName: 'Bank',
                 displayType: 'keyword',
                 resultsOverview: false,
-                preselected: false,
+                csvCore: false,
+                searchFieldCore: false,
                 visualizationType: 'term_frequency',
+                visualizationSort: "key",
                 searchFilter: {
                     description: "Search only within these banks.",
                     name: "MultipleChoiceFilter",
@@ -145,8 +152,10 @@ describe('CorpusService', () => {
                 displayName: 'year',
                 displayType: 'integer',
                 resultsOverview: true,
-                preselected: true,
+                csvCore: true,
+                searchFieldCore: false,
                 visualizationType: 'term_frequency',
+                visualizationSort: "key",
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
                     name: "RangeFilter",
@@ -165,6 +174,7 @@ describe('CorpusService', () => {
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
+                'png'
             )]);
         });
     });

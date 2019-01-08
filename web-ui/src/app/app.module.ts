@@ -7,12 +7,13 @@ import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/htt
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -39,6 +40,7 @@ import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-h
 import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { RelatedWordsComponent } from './visualization/related-words.component';
 
 const appRoutes: Routes = [
     {
@@ -105,13 +107,15 @@ const appRoutes: Routes = [
         VisualizationComponent,
         WordcloudComponent,
         TimelineComponent,
+        RelatedWordsComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
         FreqtableComponent,
         SelectFieldComponent,
         RegistrationComponent,
-        PrivacyComponent
+        PrivacyComponent,
+        RelatedWordsComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -127,32 +131,35 @@ const appRoutes: Routes = [
         SliderModule,
         MenuModule,
         DialogModule,
+        ChartModule,
         CheckboxModule,
         SharedModule,
         TableModule,
         TabViewModule,
         RestModule.forRoot({
             handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
-        })
+        }),
+        PdfViewerModule,
     ],
     providers: [
-        ApiService, 
-        ApiRetryService, 
-        CorpusService, 
-        ConfigService, 
-        DataService, 
-        DownloadService, 
-        ElasticSearchService, 
-        HighlightService, 
-        LogService, 
-        ManualService, 
-        NotificationService, 
-        QueryService, 
-        SearchService, 
-        SessionService, 
-        UserService, 
-        CorpusGuard, 
-        LoggedOnGuard, 
+        ApiService,
+        ApiRetryService,
+        CorpusService,
+        ConfigService,
+        DataService,
+        DownloadService,
+        ElasticSearchService,
+        HighlightService,
+        LogService,
+        ManualService,
+        NotificationService,
+        QueryService,
+        ScanImageService,
+        SearchService,
+        SessionService,
+        UserService,
+        CorpusGuard,
+        LoggedOnGuard,
         TitleCasePipe,
         {
             provide: XSRFStrategy,

@@ -5,7 +5,7 @@ import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { SearchFilterData, AggregateResult, UserRole, Query, QueryModel, User, Corpus } from '../models/index';
+import { SearchFilterData, AggregateResult, RelatedWordsResults, UserRole, Query, User, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type RestMethod<IB, O> = IRestMethod<IB, O>;
@@ -53,6 +53,22 @@ export class ApiService extends Rest {
     public getWordcloudData: RestMethod<
         { content_list: string[] },
         { data: AggregateResult[] }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_related_words'
+    })
+    public getRelatedWords: RestMethod<
+        { query_term: string, corpus_name: string },
+        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_related_words_time_interval'
+    })
+    public getRelatedWordsTimeInterval: RestMethod<
+        { query_term: string, corpus_name: string, time: string },
+        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
     @RestAction({
         path: '/corpus'
@@ -129,8 +145,8 @@ export class ApiService extends Rest {
         path: '/register'
     })
     public register: RestMethod<
-    { username: string, email: string, password: string },
-    { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;  
+        { username: string, email: string, password: string },
+        { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Get,

@@ -4,7 +4,7 @@ import { DialogModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
 import { CorpusField } from '../models/index';
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
+import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, ScanImageService, UserService } from '../services';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
@@ -12,6 +12,7 @@ import { UserServiceMock } from '../services/user.service.mock';
 import { HighlightPipe } from './highlight.pipe';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 describe('Search Results Component', () => {
@@ -21,7 +22,7 @@ describe('Search Results Component', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [HighlightPipe, SearchRelevanceComponent, SearchResultsComponent],
-            imports: [DialogModule],
+            imports: [DialogModule, HttpClientModule],
             providers: [
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
@@ -37,6 +38,7 @@ describe('Search Results Component', () => {
                 LogService,
                 QueryService,
                 SearchService,
+                ScanImageService,
                 {
                     provide: UserService, useValue: new UserServiceMock()
                 }]

@@ -69,7 +69,7 @@ class Spectators(XMLCorpus):
             description='Publication date.',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
             search_filter=filters.DateFilter(
                 config.SPECTATORS_MIN_DATE,
                 config.SPECTATORS_MAX_DATE,
@@ -78,7 +78,7 @@ class Spectators(XMLCorpus):
                 )
             ),
             extractor=extract.XML(tag='date', toplevel=True),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='id',
@@ -96,14 +96,15 @@ class Spectators(XMLCorpus):
             display_name='Issue number',
             es_mapping={'type': 'integer'},
             description='Source issue number.',
-            prominent_field=True,
-            extractor=extract.XML(tag='issue', toplevel=True)
+            results_overview=True,
+            extractor=extract.XML(tag='issue', toplevel=True),
+            csv_core=True,
         ),
         Field(
             name='magazine',
             display_name='Magazine name',
             term_frequency=True,
-            prominent_field=True,
+            results_overview=True,
             es_mapping={'type': 'keyword'},
             description='Magazine name.',
             search_filter=filters.MultipleChoiceFilter(
@@ -111,7 +112,7 @@ class Spectators(XMLCorpus):
                 options=sorted(['De Hollandsche Spectator', 'De Denker']),
             ),
             extractor=extract.XML(tag='magazine', toplevel=True),
-            preselected=True
+            csv_core=True
         ),
         Field(
             name='editors',
@@ -122,25 +123,18 @@ class Spectators(XMLCorpus):
         Field(
             name='title',
             display_name='Title',
-            prominent_field=True,
+            results_overview=True,
             description='Article title.',
             extractor=extract.XML(tag='title', toplevel=True),
-            preselected=True
+            search_field_core=True
         ),
         Field(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            prominent_field=True,
+            results_overview=True,
             extractor=extract.XML(tag='text', multiple=True, flatten=True),
-            preselected=True
+            search_field_core=True
         ),
     ]
-
-
-if __name__ == '__main__':
-    c = Spectators()
-    d = c.documents()
-
-    print(next(d))

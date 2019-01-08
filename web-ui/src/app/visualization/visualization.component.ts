@@ -1,6 +1,8 @@
 import { Input, Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription }   from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
+import * as _ from "lodash";
+
 import { Corpus, CorpusField, AggregateResult, SearchResults } from '../models/index';
 import { SearchService, DataService } from '../services/index';
 
@@ -12,7 +14,7 @@ import { SearchService, DataService } from '../services/index';
 
 export class VisualizationComponent implements OnInit, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public multipleChoiceFilters: {name: string, size: number}[];
+    @Input() public multipleChoiceFilters: { name: string, size: number }[];
 
     public visualizedFields: CorpusField[];
 
@@ -20,7 +22,12 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     public showTableButtons: boolean;
 
-    public visualizedField: string;
+    public visualizedField: CorpusField;
+
+    public noResults: string = "Did not find data to visualize."
+    public foundNoVisualsMessage: string = this.noResults;
+    public errorMessage: string = '';
+    public noVisualizations: boolean;
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
@@ -28,6 +35,15 @@ export class VisualizationComponent implements OnInit, OnDestroy {
     public freqtable: boolean = false;
 
     public aggResults: AggregateResult[];
+    public relatedWordsGraph: {
+        labels: string[],
+        datasets: {
+            label: string, data: number[]
+        }[]
+    };
+    public relatedWordsTable: {
+        [word: string]: number
+    }
     public searchResults: SearchResults;
 
     // aggregate search expects a size argument
@@ -40,59 +56,102 @@ export class VisualizationComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         // Initial values
-        this.visualizedFields = this.corpus && this.corpus.fields ? 
+        this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
         this.visDropdown = this.visualizedFields.map(field => ({
             label: field.displayName,
             value: field.name
         }))
-        this.visualizedField = this.visualizedFields[0].name;
-        // subscribe to data service pushing new search results
-        this.subscription = this.dataService.searchResults$.subscribe(results => {
-            if (results.total > 0) {
-                this.searchResults = results;
-                this.setVisualizedField(this.visualizedField);
-            }
-            else {
-                this.aggResults = [];
-            }
-        });
-        this.showTableButtons = true;
+        // this is very hacky:
+        // word models only exist for dutch annual reports for now
+        if (this.corpus.name == "dutchannualreports") {
+            this.visDropdown.push({
+                label: 'Related Words',
+                value: 'relatedwords'
+            })
+        }
+        if (this.visualizedFields === undefined) {
+            this.noVisualizations = true;
+        }
+        else {
+            this.noVisualizations = false;
+            this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
+            // subscribe to data service pushing new search results
+            this.subscription = this.dataService.searchResults$.subscribe(results => {
+                if (results.total > 0) {
+                    this.searchResults = results;
+                    this.setVisualizedField(this.visualizedField.name);
+                }
+                else {
+                    this.aggResults = [];
+                }
+            });
+            this.showTableButtons = true;
+        }
     }
 
     ngOnDestroy() {
         this.subscription.unsubscribe();
     }
 
-    setVisualizedField(visualizedField: string) {
+    setVisualizedField(selectedField: string) {
         this.aggResults = [];
-        let visualizationType = this.corpus.fields.find(field => field.name === visualizedField).visualizationType;
-        if (visualizationType === 'wordcloud') {
-            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[visualizedField]);
-            if (textFieldContent.length > 0) {
-                this.searchService.getWordcloudData(visualizedField, textFieldContent).then(result => {
-                    // slice is used so the child component fires OnChange
-                    this.aggResults = result[visualizedField].slice(0);
-                })
-            }
-        }
-        else if (visualizationType === 'timeline') {
-            let aggregator = [{name: visualizedField, size: this.defaultSize}];
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField];
-            });
+        this.errorMessage = '';
+        if (selectedField == 'relatedwords') {
+            this.visualizedField.visualizationType = selectedField;
+            this.visualizedField.name = selectedField;
+            this.visualizedField.displayName = 'Related Words';
+            this.visualizedField.visualizationSort = 'similarity';
         }
         else {
-            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === visualizedField);
-            aggregator = aggregator ? aggregator : {name: visualizedField, size: this.defaultSize};            
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
-                this.aggResults = visual.aggregations[visualizedField];
+            this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
+        }
+        this.foundNoVisualsMessage = "Retrieving data..."
+        if (this.visualizedField.visualizationType === 'wordcloud') {
+            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[this.visualizedField.name]);
+            if (textFieldContent.length > 0) {
+                this.searchService.getWordcloudData(this.visualizedField.name, textFieldContent).then(result => {
+                    // slice is used so the child component fires OnChange
+                    this.aggResults = result[this.visualizedField.name].slice(0);
+                })
+                    .catch(error => {
+                        this.foundNoVisualsMessage = this.noResults;
+                        this.errorMessage = error['message'];
+                    });
+            }
+        }
+        else if (this.visualizedField.visualizationType === 'timeline') {
+            let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
+                this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
-        this.visualizedField = visualizedField;
-        this.visualizationType = visualizationType;
+        else if (this.visualizedField.visualizationType === 'relatedwords') {
+            this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
+                this.relatedWordsGraph = results['graphData'];
+                this.relatedWordsTable = results['tableData'];
+            })
+                .catch(error => {
+                    this.relatedWordsGraph = undefined;
+                    this.relatedWordsTable = undefined;
+                    this.foundNoVisualsMessage = this.noResults;
+                    this.errorMessage = error['message'];
+                });
+        }
+        else {
+            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === this.visualizedField.name);
+            aggregator = aggregator ? aggregator : { name: this.visualizedField.name, size: this.defaultSize };
+            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
+                this.aggResults = visual.aggregations[this.visualizedField.name];
+            });
+        }
     }
-    
+
+    setErrorMessage(message: string) {
+        this.searchResults = null;
+        this.foundNoVisualsMessage = this.noResults;
+        this.errorMessage = message;
+    }
 
     showTable() {
         this.freqtable = true;
