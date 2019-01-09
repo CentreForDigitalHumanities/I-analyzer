@@ -89,8 +89,8 @@ def corpus_required(method):
             *nargs, **kwargs)
 
     return f
-
-
+    
+    
 def post_required(method):
     '''
     Wrapper to add relevant POSTed data to the parameters of a function.
@@ -272,13 +272,24 @@ def api_corpus_image(image_name):
 @blueprint.route('/api/download', methods=['POST'])
 @login_required
 def api_download():
+    response=jsonify({'success': False})
     if not request.json:
-        abort(400)
-
+        return response
+    if request.mimetype != 'application/json':
+        return response
+    if not 'esQuery' in request.json.keys():
+        return response
+    if not 'corpus' in request.json.keys():
+        return response
+    if not current_user.email:
+        return response
+    if not current_user.download_limit:
+        return response
     # Celery task    
-    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path] ) 
-    return jsonify({'success': True})
-
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
+    response=jsonify({'success': True})
+    return response
+    
 
 # endpoint for link send in email to download csv file
 @blueprint.route('/api/csv/<filename>', methods=['get'])

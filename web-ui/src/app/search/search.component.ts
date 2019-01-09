@@ -93,6 +93,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private tabIndex: number;
 
     private isModalActive: boolean = false;
+    private isModalActiveError: boolean = false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -284,8 +285,14 @@ export class SearchComponent implements OnInit, OnDestroy {
      * backend async downloading of csv
      */
     public download_asc() {
-        this.searchService.download_async(this.corpus, this.queryModel).then(success => {
-            this.toggleModal();
+        this.searchService.download_async(this.corpus, this.queryModel).then(result => {
+            if (result) {
+                this.toggleModal();
+            }
+            else {
+                this.toggleModalError();
+            }
+
         }, error => {
             console.trace(error);
         });
@@ -296,6 +303,13 @@ export class SearchComponent implements OnInit, OnDestroy {
      */
     toggleModal() {
         this.isModalActive = !this.isModalActive;
+    }
+
+    /**
+     * modal pops up after connecting to backend api and there was an error
+     */
+    toggleModalError() {
+        this.isModalActiveError = !this.isModalActiveError;
     }
 
     /**
