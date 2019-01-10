@@ -82,8 +82,6 @@ def es(corpus, start, end):
             end_index = this_corpus.max_date
         else:
             end_index = datetime.strptime(end, '%Y-%m-%d')  
-
-            print (start_index, end_index)
             
     except Exception:
         logging.critical(

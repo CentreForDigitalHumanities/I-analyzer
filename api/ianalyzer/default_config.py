@@ -110,8 +110,15 @@ DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannuareports_mapping.csv'
+DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_MAP = {}
 
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
+
+# Word model information for related words visualization
+WM_DIRECTORY = {
+    'dutchannualreports': 'ianalyzer/corpora/wm/'
+}
+WM_COMPLETE_FN = "complete.pkl"
+WM_BINNED_FN = "binned.pkl"

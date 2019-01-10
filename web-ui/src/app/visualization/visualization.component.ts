@@ -132,6 +132,8 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 this.relatedWordsTable = results['tableData'];
             })
                 .catch(error => {
+                    this.relatedWordsGraph = undefined;
+                    this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
                     this.errorMessage = error['message'];
                 });
@@ -143,6 +145,12 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
+    }
+
+    setErrorMessage(message: string) {
+        this.searchResults = null;
+        this.foundNoVisualsMessage = this.noResults;
+        this.errorMessage = message;
     }
 
     showTable() {

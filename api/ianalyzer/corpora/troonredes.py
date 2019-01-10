@@ -51,7 +51,6 @@ class Troonredes(XMLCorpus):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    # print(full_path, {'id': name})
                     yield full_path, {'id': name}
 
     fields = [
