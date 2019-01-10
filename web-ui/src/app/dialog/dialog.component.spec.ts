@@ -1,5 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { DialogModule } from 'primeng/primeng';
 
+import { DialogService } from '../services/index';
+import { DialogServiceMock } from '../services/dialog.service.mock';
 import { DialogComponent } from './dialog.component';
 
 describe('DialogComponent', () => {
@@ -8,7 +12,16 @@ describe('DialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DialogComponent ]
+      imports: [ DialogModule ],
+      declarations: [ DialogComponent ],
+      providers: [
+        {
+            provide: DialogService, useClass: DialogServiceMock
+        },
+        {
+            provide: Router, useValue: new RouterMock()
+        } 
+      ]
     })
     .compileComponents();
   }));
@@ -23,3 +36,7 @@ describe('DialogComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+class RouterMock {
+
+}
