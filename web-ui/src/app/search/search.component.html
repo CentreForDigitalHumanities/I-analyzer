@@ -4,6 +4,9 @@
         <h1 class="title">
             Search
             <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+            <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
+                <i class="moreInfoLink fa fa-info-circle card-info-icon"></i>
+            </span>
         </h1>
     </div>
 </section>

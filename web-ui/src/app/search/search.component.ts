@@ -320,6 +320,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.manualService.showManualPage('query');
     }
 
+    public showCorpusInfo(corpus: Corpus) {
+        this.manualService.showDescriptionPage(corpus);
+    }
+
     private getCsvFields(): CorpusField[] {
         return Object.values(this.queryField).filter(field => !field.hidden && field.downloadInCsv);
     }
