@@ -44,7 +44,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     showRelatedWordsDocumentation() {
-        this.manualService.showPage('relatedwords');
+        this.manualService.showManualPage('relatedwords');
     }
 
 }

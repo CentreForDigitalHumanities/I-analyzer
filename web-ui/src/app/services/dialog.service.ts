@@ -19,7 +19,7 @@ export type DialogEvent =
     identifier: string,
     title: string,
     html: SafeHtml
-    footer: {
+    footer?: {
       routerLink: string[],
       buttonLabel: string
     }

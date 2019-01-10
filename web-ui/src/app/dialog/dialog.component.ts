@@ -1,16 +1,16 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
 
-import { DialogService } from './../services/index';
+import { ManualService } from './../services/index';
 
 @Component({
   selector: 'ia-dialog',
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss']
 })
-export class DialogComponent implements OnDestroy {
+export class DialogComponent implements OnDestroy, OnInit {
   private dialogEventSubscription: Subscription;
 
   public title: string = undefined;
@@ -20,8 +20,8 @@ export class DialogComponent implements OnDestroy {
   public showDialog = false;
   public isLoading = false;
 
-  constructor(dialogService: DialogService, private router: Router) {    
-    this.dialogEventSubscription = dialogService.dialogEvent.subscribe(event => {      
+  constructor(private manualService: ManualService, private router: Router) {    
+    this.dialogEventSubscription = manualService.pageEvent.subscribe(event => {     
       switch (event.status) {
         case 'hide':
           this.innerHtml = undefined;
@@ -39,11 +39,20 @@ export class DialogComponent implements OnDestroy {
           this.title = event.title;
           this.showDialog = true;
           this.isLoading = false;
-          this.footerButtonLabel = event.footer.buttonLabel;
-          this.footerRouterLink = event.footer.routerLink;
+          if (event.footer){
+            this.footerButtonLabel = event.footer.buttonLabel;
+            this.footerRouterLink = event.footer.routerLink;
+          }
+          else {
+            this.footerButtonLabel = null;
+          }
           break;
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.manualService.closePage();
   }
 
   ngOnDestroy(): void {

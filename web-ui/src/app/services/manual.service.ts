@@ -1,27 +1,30 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { MarkdownService } from 'ngx-md';
-import { DialogService } from "./dialog.service";
+import { ApiService } from "./api.service";
 
-
+import { Corpus } from '../models/index';
 
 @Injectable()
 export class ManualService {
-    
+    private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
     private manifest: Promise<ManualPageMetaData[]> | undefined;
+    
+    public pageEvent = this.behavior.asObservable();
 
     public constructor(
         private domSanitizer: DomSanitizer, 
         private markdownService: MarkdownService,
-        private dialogService: DialogService) {
+        private apiService: ApiService) {
     }
 
     public closePage() {
-        this.dialogService.behavior.next({ status: 'hide' });
+        this.behavior.next({ status: 'hide' });
     }
 
-    public async getPage(identifier: string) {
+    public async getManualPage(identifier: string) {
         let path = this.getLocalizedPath(`${identifier}.md`);
         let pagePromise = fetch(path).then(response => this.parseResponse(response));
 
@@ -36,7 +39,7 @@ export class ManualService {
             return this.manifest;
         }
 
-        let path = this.getLocalizedPath(`manifest.json`);
+        let path = this.getLocalizedPath(`/manifest.json`);
         return this.manifest = fetch(path).then(response => response.json());
     }
 
@@ -44,13 +47,13 @@ export class ManualService {
      * Requests that a manual page should be shown to the user.
      * @param identifier Name of the page
      */
-    public async showPage(identifier: string) {        
-        this.dialogService.behavior.next({
+    public async showManualPage(identifier: string) {        
+        this.behavior.next({
             status: 'loading'
         });
-        let { html, title } = await this.getPage(identifier);
+        let { html, title } = await this.getManualPage(identifier);
 
-        this.dialogService.behavior.next({
+        this.behavior.next({
             identifier,
             html,
             title,
@@ -61,6 +64,24 @@ export class ManualService {
             }
         });
     }
+
+    public async showDescriptionPage(corpus: Corpus) {
+        this.behavior.next({
+            status: 'loading'
+        });
+        let pagePromise = this.apiService.corpusdescription({filename: corpus.descriptionpage}).then(response => {
+            return this.markdownService.compile(response);
+        });
+        let html = await Promise.resolve(pagePromise);
+        this.behavior.next({
+            identifier: corpus.name,
+            html: html,
+            title: corpus.name,
+            status: 'show',
+            footer: null
+        });
+    }
+    
 
     private getLocalizedPath(fileName: string) {
         // TODO: in a multilingual application this would need to be modified
@@ -75,6 +96,22 @@ export class ManualService {
         return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));
     }
 }
+
+export type DialogPageEvent =
+  {
+    status: 'loading'
+  } | {
+    status: 'show',
+    identifier: string,
+    title: string,
+    html: SafeHtml
+    footer: {
+      routerLink: string[],
+      buttonLabel: string
+    }
+  } | {
+    status: 'hide'
+  }
 
 
 export type ManualPageMetaData = {

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Corpus } from '../models/corpus';
 
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
-import { DialogService } from "./../services/dialog.service";
+import { ManualService } from "./../services/manual.service";
 
 @Component({
     selector: 'ia-corpus-selection',
@@ -14,26 +14,13 @@ export class CorpusSelectionComponent implements OnInit {
     @Input()
     public items: Corpus[];
 
-    constructor(private router: Router, private domSanitizer: DomSanitizer,  private dialogService: DialogService) { }
+    constructor(private router: Router, private domSanitizer: DomSanitizer,  private manualService: ManualService) { }
 
     ngOnInit() {
     }
 
     showMoreInfo(corpus: Corpus): void {
-        this.dialogService.behavior.next({
-            status: 'loading'
-        });
-        
-        let myHtml: string = "<p>Fabulous explanation and details and whatever else is required here</p><p>And more info</p><p><a href='/api/corpusdocument/dar_Concordantietabel_AR-F_vs4.xlsx'>Hier is een link</a></p><p><a href='/api/corpusdocument/dar_Concordantietabel_AR-NF_vs1.xlsx'>Hier is nog een link</a></p>";
-        let html = this.domSanitizer.bypassSecurityTrustHtml(myHtml.replace(/<a href=/g, '<a target="_blank" href='));
-
-        this.dialogService.behavior.next({
-            identifier: corpus.title,
-            html: html,
-            title: `More info about the ${corpus.title} corpus`,
-            status: 'show',
-            footer: null
-        });
+        this.manualService.showDescriptionPage(corpus);
     }
 
     navigateToCorpus(event: any, corpusName: string): void {

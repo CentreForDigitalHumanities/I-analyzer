@@ -24,7 +24,7 @@ export class ManualComponent implements OnInit {
         this.activatedRoute.paramMap.subscribe(async params => {
             let identifier = params.get('identifier');
             this.isLoading = true;
-            let page = await this.manualService.getPage(identifier);
+            let page = await this.manualService.getManualPage(identifier);
             this.manualHtml = page.html;
             this.title = page.title;
 

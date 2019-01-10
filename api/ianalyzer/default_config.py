@@ -68,6 +68,8 @@ CORPUS_SERVER_NAMES = {
 CORPUS_IMAGE_ROOT = 'corpora/images'
 # The folder (relative to 'api/ianalyzer') where corpus documents live.
 CORPUS_DOCUMENT_ROOT = 'corpora/documents'
+# The folder (relative to 'api/ianalyzer') where full corpus descriptions are.
+CORPUS_DESCRIPTION_ROOT = 'corpora/descriptions'
 
 # Index configurations
 DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
@@ -106,6 +108,7 @@ DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
 DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
 DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannuareports_mapping.csv'
 DUTCHANNUALREPORTS_MAP = {}
