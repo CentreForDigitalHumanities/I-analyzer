@@ -13,7 +13,7 @@ import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService, DialogService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -151,7 +151,6 @@ const appRoutes: Routes = [
         ElasticSearchService,
         HighlightService,
         LogService,
-        ManualService,
         NotificationService,
         QueryService,
         ScanImageService,

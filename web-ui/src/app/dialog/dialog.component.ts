@@ -3,7 +3,7 @@ import {Router} from '@angular/router';
 import { SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
 
-import { ManualService } from './../services/index';
+import { DialogService } from './../services/index';
 
 @Component({
   selector: 'ia-dialog',
@@ -20,8 +20,8 @@ export class DialogComponent implements OnDestroy, OnInit {
   public showDialog = false;
   public isLoading = false;
 
-  constructor(private manualService: ManualService, private router: Router) {    
-    this.dialogEventSubscription = manualService.pageEvent.subscribe(event => {     
+  constructor(private dialogService: DialogService, private router: Router) {    
+    this.dialogEventSubscription = dialogService.pageEvent.subscribe(event => {     
       switch (event.status) {
         case 'hide':
           this.innerHtml = undefined;
@@ -52,7 +52,7 @@ export class DialogComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.manualService.closePage();
+    this.dialogService.closePage();
   }
 
   ngOnDestroy(): void {

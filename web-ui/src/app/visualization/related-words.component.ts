@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { ManualService } from '../services/index';
+import { DialogService } from '../services/index';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -34,7 +34,7 @@ export class RelatedWordsComponent implements OnChanges {
         }
     }
     
-    constructor(private manualService: ManualService) { }
+    constructor(private dialogService: DialogService) { }
 
     ngOnChanges() {
         this.searchData.datasets.map( (d, index) => {
@@ -44,7 +44,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     showRelatedWordsDocumentation() {
-        this.manualService.showManualPage('relatedwords');
+        this.dialogService.showManualPage('relatedwords');
     }
 
 }

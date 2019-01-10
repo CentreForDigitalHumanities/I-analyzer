@@ -7,7 +7,7 @@ import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
+import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
 import { Fieldset } from 'primeng/primeng';
 import { SearchFilterComponent } from './search-filter.component';
 import { tickStep } from 'd3';
@@ -98,7 +98,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         private downloadService: DownloadService,
         private searchService: SearchService,
         private userService: UserService,
-        private manualService: ManualService,
+        private dialogService: DialogService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
         private changeDetectorRef: ChangeDetectorRef,
@@ -317,11 +317,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public showQueryDocumentation() {
-        this.manualService.showManualPage('query');
+        this.dialogService.showManualPage('query');
     }
 
     public showCorpusInfo(corpus: Corpus) {
-        this.manualService.showDescriptionPage(corpus);
+        this.dialogService.showDescriptionPage(corpus);
     }
 
     private getCsvFields(): CorpusField[] {
