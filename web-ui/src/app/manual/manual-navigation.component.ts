@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import { ManualService, ManualPageMetaData, HighlightService } from '../services';
+import { DialogService, ManualPageMetaData, HighlightService } from '../services';
 import "rxjs/add/observable/combineLatest";
 
 @Component({
@@ -34,11 +34,11 @@ export class ManualNavigationComponent implements OnInit {
      */
     public highlightText: string | undefined;
 
-    constructor(private highlightService: HighlightService, private manualService: ManualService) {
+    constructor(private highlightService: HighlightService, private dialogService: DialogService) {
     }
 
     async ngOnInit() {
-        this.manifest.next(await this.manualService.getManifest());
+        this.manifest.next(await this.dialogService.getManifest());
     }
 
     private *filter(pages: ManualPageMetaData[], filter: string): Iterable<ManualPageMetaData> {

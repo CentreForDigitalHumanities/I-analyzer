@@ -262,6 +262,22 @@ def api_corpus_image(image_name):
     '''
     return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
+@blueprint.route('/api/corpusdescription/<description_name>', methods=['GET'])
+@login_required
+def api_corpus_description(description_name):
+    '''
+    Return comprehensive information on the corpus.
+    '''
+    return send_from_directory(config.CORPUS_DESCRIPTION_ROOT, '{}'.format(description_name))
+
+@blueprint.route('/api/corpusdocument/<document_name>', methods=['GET'])
+@login_required
+def api_corpus_document(document_name):
+    '''
+    Return a document for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_DOCUMENT_ROOT, '{}'.format(document_name))
+
 
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
