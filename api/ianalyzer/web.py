@@ -181,7 +181,7 @@ def send_registration_mail(email, username):
     Send an email with a confirmation token to a new user
     Returns a boolean specifying whether the email was sent succesfully
     '''
-    token = security.generate_confirmation_token(email)
+    token = security.get_token(email)
 
     msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
                   sender=config.MAIL_FROM_ADRESS, recipients=[email])
@@ -206,9 +206,9 @@ def send_registration_mail(email, username):
 def api_register_confirmation(token):
 
     expiration = 60*60*72  # method does not return email after this limit
-    try:
-        email = security.confirm_token(token, expiration)
-    except:
+    email = security.get_original_token_input(token, expiration)
+    
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
 
     user = models.User.query.filter_by(email=email).first_or_404()

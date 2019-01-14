@@ -34,14 +34,16 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.isActivated = params['isActivated'] === 'true';
             this.hasError = params['hasError'] === 'true' || false;
 
-            if (params['solisId']) {
-                this.solislogin(params['solisId']);
+            if (params['solislogin'] === 'true') {
+                this.solislogin();
             } 
         });
     }
+
     ngOnDestroy() {
         UserService.loginActivated = false;
     }
+
     login() {
         this.isLoading = true;
         this.userService.login(this.username, this.password).then(result => {
@@ -49,9 +51,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         });
     }
 
-    solislogin(solisId: string): void {
+    solislogin(): void {
         this.isLoading = true;
-        this.userService.solisLogin(solisId).then(result => {
+        this.userService.solisLogin().then(result => {
            this.handleLoginResponse(result); 
         });
     }

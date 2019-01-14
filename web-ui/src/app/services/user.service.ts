@@ -137,9 +137,9 @@ export class UserService implements OnDestroy {
     /**
      * Do the actual login with SolisId
      */
-    public async solisLogin(solisId: string): Promise<User | false> {
+    public async solisLogin(): Promise<User | false> {
         await this.sessionCheckPromise;
-        let loginPromise = this.apiService.solisLogin({ solisId }).then(result => {
+        let loginPromise = this.apiService.solisLogin().then(result => {
             if (result.success) {
                 return this.processLoginSucces(result);
             }

@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 from ianalyzer import config_fallback as config
 from .models import User, db
-from .security import login_user
+from .security import login_user, get_token, get_original_token_input
 from .web import blueprint, add_basic_user, create_success_response
 from .saml_auth import SamlAuth, SamlAuthError
 
@@ -34,21 +34,24 @@ def process_login_result():
     if user is None:
         user = add_basic_user(solis_id, None, email, True)
 
+    session['solislogin_token'] = get_token(solis_id)
+
     user.is_saml_login = True
     db.session.add(user)
     db.session.commit()
 
-    redirect_to = 'login?solisId={0}'.format(solis_id)
+    redirect_to = 'login?solislogin=true'
     return redirect(redirect_to)
 
 
 @blueprint.route('/api/solislogin', methods=['GET'])
 def solislogin():
     ''' SAML login step 3. Called by frontend to retrieve user instance '''
-    solis_id = request.args.get('solisId')
-    user = User.query.filter_by(username=solis_id, is_saml_login=True).first()
+    solis_id = get_original_token_input(session['solislogin_token'], 30)
 
-    # if someone attempts to login with solisid in url user shall be None
+    user = User.query.filter_by(username=solis_id).first()    
+
+    # if someone attempts to login with 'solislogin=true' in the url user shall be None
     if user is None:
         return jsonify({'success': False})
 
