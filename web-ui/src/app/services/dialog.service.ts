@@ -76,7 +76,7 @@ export class DialogService {
         this.behavior.next({
             identifier: corpus.name,
             html: html,
-            title: corpus.name,
+            title: corpus.title,
             status: 'show',
             footer: null
         });
