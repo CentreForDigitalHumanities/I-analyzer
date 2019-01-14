@@ -13,9 +13,9 @@ import random
 from pprint import pprint
 
 from ianalyzer import config_fallback as config
-from corpora import extract
-from corpora import filters
-from corpora.corpus import XMLCorpus, Field, until, after, string_contains
+from add-corpus import extract
+from add-corpus import filters
+from add-corpus.corpus import XMLCorpus, Field, until, after, string_contains
 
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',

@@ -3,7 +3,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 import logging
 from datetime import datetime
 from io import BytesIO
-from os.path import join
+from os.path import dirname, isfile, join
 
 from flask import abort, Blueprint, flash, jsonify, \
     redirect, render_template, request, send_file, send_from_directory, url_for
@@ -12,7 +12,7 @@ from flask_mail import Mail, Message
 
 from ianalyzer import config_fallback as config
 from ianalyzer import models
-import corpora
+from addcorpus.load_corpus import load_corpus
 
 from . import security
 from . import analyze
@@ -130,23 +130,26 @@ def api_es_config():
 @api.route('/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
+    definitions = {}
+    for corpus in config.CORPORA:
+        definitions[corpus] = load_corpus(corpus)
     response = jsonify(dict(
         (key, dict(
             server_name=config.CORPUS_SERVER_NAMES[key],
-            **corpora.DEFINITIONS[key].serialize()
+            **definitions[key].serialize()
         )) for key in
-        corpora.DEFINITIONS.keys()
+        config.CORPORA.keys()
     ))
     return response
 
 
-@api.route('/corpusimage/<image_name>', methods=['GET'])
+@api.route('/corpusimage/<corpus>/<image_name>', methods=['GET'])
 @login_required
-def api_corpus_image(image_name):
+def api_corpus_image(corpus, image_name):
     '''
     Return the image for a corpus.
     '''
-    return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
+    return send_from_directory(join(dirname(config.CORPORA[corpus]), config.IMAGE_PATH), '{}'.format(image_name))
 
 
 @api.route('/login', methods=['POST'])
@@ -292,7 +295,7 @@ def api_get_wordcloud_data():
 @api.route('/get_scan_image/<corpus_index>/<int:page>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_scan_image(corpus_index, page, image_path):
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = load_corpus(corpus_index)
     image_type = backend_corpus.scan_image_type
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]

@@ -3,22 +3,23 @@ import re
 import os
 import os.path as op
 import logging
+from datetime import datetime
 
 from ianalyzer import config_fallback as config
-from corpora.extract import XML, Metadata, Combined
-from corpora.filters import MultipleChoiceFilter, RangeFilter
-from corpora.corpus import XMLCorpus, Field
+from addcorpus.extract import XML, Metadata, Combined
+from addcorpus.filters import MultipleChoiceFilter, RangeFilter
+from addcorpus.corpus import XMLCorpus, Field
 
 
 class DutchAnnualReports(XMLCorpus):
     """ Alto XML corpus of Dutch annual reports. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = config.DUTCHANNUALREPORTS_TITLE
-    description = config.DUTCHANNUALREPORTS_DESCRIPTION
+    title = "Dutch Annual Reports"
+    description = "Annual reports of Dutch financial and non-financial institutes"
     data_directory = config.DUTCHANNUALREPORTS_DATA
-    min_date = config.DUTCHANNUALREPORTS_MIN_DATE
-    max_date = config.DUTCHANNUALREPORTS_MAX_DATE
+    min_date = datetime(year=1957, month=1, day=1)
+    max_date = datetime(year=2008, month=12, day=31)
     es_index = config.DUTCHANNUALREPORTS_ES_INDEX
     es_doctype = config.DUTCHANNUALREPORTS_ES_DOCTYPE
     es_settings = None
@@ -33,7 +34,7 @@ class DutchAnnualReports(XMLCorpus):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
-    with open(config.DUTCHANNUALREPORTS_MAP_FP) as f:
+    with open(config.DUTCHANNUALREPORTS_MAP_FILE) as f:
         reader = csv.DictReader(f)
         for line in reader:
             config.DUTCHANNUALREPORTS_MAP[line['abbr']] = line['name']

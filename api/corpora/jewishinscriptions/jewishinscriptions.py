@@ -6,20 +6,20 @@ import logging
 from flask import current_app
 
 from ianalyzer import config_fallback as config
-from corpora.extract import XML, Metadata, Combined
-from corpora.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
-from corpora.corpus import XMLCorpus, Field
+from addcorpus.extract import XML, Metadata, Combined
+from addcorpus.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
+from addcorpus.corpus import XMLCorpus, Field
 
 
 class JewishInscriptions(XMLCorpus):
     """ Alto XML corpus of Jewish funerary inscriptions. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = config.JEWISH_INSCRIPTIONS_TITLE
-    description = config.JEWISH_INSCRIPTIONS_DESCRIPTION
-    data_directory = config.JEWISH_INSCRIPTIONS_DATA
+    title = "Jewish Funerary Inscriptions"
+    description = "A collection of inscriptions on Jewish burial sites"
     min_date = config.JEWISH_INSCRIPTIONS_MIN_DATE
     max_date = config.JEWISH_INSCRIPTIONS_MAX_DATE
+    data_directory = config.JEWISH_INSCRIPTIONS_DATA
     es_index = config.JEWISH_INSCRIPTIONS_ES_INDEX
     es_doctype = config.JEWISH_INSCRIPTIONS_ES_DOCTYPE
     es_settings = None

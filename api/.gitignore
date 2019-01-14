@@ -9,4 +9,4 @@ build/
 dist/
 lib/
 set
-ianalyzer/corpora/wm*
+corpora/*/wm/*

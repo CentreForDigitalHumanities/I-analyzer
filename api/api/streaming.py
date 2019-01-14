@@ -4,7 +4,7 @@ Module handles such things as streaming CSV files from dictionary iterators.
 
 import csv
 from datetime import datetime
-from .corpora.common import Field
+from add-corpus.corpus import Field
 
 
 def field_lists(dictionaries, selected=None):

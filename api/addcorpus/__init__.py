@@ -43,6 +43,6 @@ def load_corpus(corpus_name):
 
 
 
-DEFINITIONS = {}
-for corpus_name in config.CORPORA.keys():
-    DEFINITIONS[corpus_name] = load_corpus(corpus_name)
+# DEFINITIONS = {}
+# for corpus_name in config.CORPORA.keys():
+#     DEFINITIONS[corpus_name] = load_corpus(corpus_name)

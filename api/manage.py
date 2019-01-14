@@ -93,7 +93,7 @@ def es(corpus, start, end, delete=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
-    this_corpus = corpora.DEFINITIONS[corpus]
+    this_corpus = load_corpus(corpus)
 
     try:
         if start:

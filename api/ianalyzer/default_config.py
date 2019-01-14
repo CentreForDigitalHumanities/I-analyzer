@@ -22,11 +22,16 @@ CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-# the corpora dictionary provides the file path of the corpus definition(s)
-# these definitions can be anywhere on the file system
+# the corpora dictionary provides the file path of the corpus definition
+# this information can be anywhere on the file system
 CORPORA = {
-    'times': 'ianalyzer/corpora/times.py'
+    'times': 'ianalyzer/corpora/times/times.py'
 }
+
+IMAGE_PATH = 'images'
+DESCRIPTION_PATH = 'description'
+DOCUMENT_PATH = 'documents'
+WM_PATH = 'wm'
 
 # Specify indexing servers here
 SERVERS = {
@@ -63,15 +68,20 @@ CORPUS_SERVER_NAMES = {
     'times': 'default',
 }
 
-# Index configurations
-DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
-DUTCHNEWSPAPERS_DESCRIPTION = "Description about this corpus"
+DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
+DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
+DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
+DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
+DUTCHANNUALREPORTS_MAP = {}
+
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
-DUTCHNEWSPAPERS_MIN_DATE = datetime(year=1600, month=1, day=1)
-DUTCHNEWSPAPERS_MAX_DATE = datetime(year=2018, month=12, day=31)
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
+
+JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 TML_TITLE = "Thesaurus Musicarum Latinarum"
 TML_DESCRIPTION = "Description about this corpus"
@@ -82,34 +92,12 @@ TML_MIN_DATE = datetime(year=1, month=1, day=1)
 TML_MAX_DATE = datetime(year=2018, month=12, day=31)
 TML_IMAGE = 'tml.jpg'
 
-TIMES_TITLE = "Times"
-TIMES_DESCRIPTION = "Newspaper archive, 1785-2010"
 TIMES_ES_INDEX = 'times'
 TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
-TIMES_MIN_DATE = datetime(year=1785, month=1, day=1)
-TIMES_MAX_DATE = datetime(year=2010, month=12, day=31)
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 
-DUTCHANNUALREPORTS_TITLE = "Dutch Annual Reports"
-DUTCHANNUALREPORTS_DESCRIPTION = "Annual reports of Dutch financial institutes"
-DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
-DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
-DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
-DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
-DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
-DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
-DUTCHANNUALREPORTS_MAP = {}
-
-
-JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
-
 # Word model information for related words visualization
-WM_DIRECTORY = {
-    'dutchannualreports': 'ianalyzer/corpora/wm/'
-}
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"

@@ -12,20 +12,20 @@ import re
 from pprint import pprint
 
 from ianalyzer import config_fallback as config
-from corpora import extract
-from corpora import filters
-from corpora.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus import extract
+from addcorpus import filters
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
 
 # Source files ################################################################
 
 
 class Spectators(XMLCorpus):
-    title = config.SPECTATORS_TITLE
-    description = config.SPECTATORS_DESCRIPTION
-    data_directory = config.SPECTATORS_DATA
+    title = "Spectators"
+    description = "A collection of Spectator newspapers"
     min_date = config.SPECTATORS_MIN_DATE
     max_date = config.SPECTATORS_MAX_DATE
+    data_directory = config.SPECTATORS_DATA
     es_index = config.SPECTATORS_ES_INDEX
     es_doctype = config.SPECTATORS_ES_DOCTYPE
     es_settings = None

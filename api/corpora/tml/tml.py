@@ -11,9 +11,9 @@ from datetime import datetime, timedelta
 import re
 
 from ianalyzer import config_fallback as config
-from corpora import extract
-from corpora import filters
-from corpora.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
+from add-corpus import extract
+from add-corpus import filters
+from add-corpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
 
 
 # Source files ################################################################

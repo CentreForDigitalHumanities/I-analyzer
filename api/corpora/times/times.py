@@ -13,20 +13,20 @@ import os.path
 from datetime import datetime, timedelta
 
 from ianalyzer import config_fallback as config
-from corpora import extract
-from corpora import filters
-from corpora.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus import extract
+from addcorpus import filters
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
 
 # Source files ################################################################
 
 
 class Times(XMLCorpus):
-    title = config.TIMES_TITLE
-    description = config.TIMES_DESCRIPTION
+    title = "Times"
+    description = "Newspaper archive, 1785-2010"
+    min_date = datetime(year=1785, month=1, day=1)
+    max_date = datetime(year=2010, month=12, day=31)
     data_directory = config.TIMES_DATA
-    min_date = config.TIMES_MIN_DATE
-    max_date = config.TIMES_MAX_DATE
     es_index = config.TIMES_ES_INDEX
     es_doctype = config.TIMES_ES_DOCTYPE
     es_settings = None

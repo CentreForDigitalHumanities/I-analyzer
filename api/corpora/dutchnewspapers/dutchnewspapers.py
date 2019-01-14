@@ -11,9 +11,9 @@ from os.path import join, isfile, splitext
 import os
 import logging
 
-from corpora.corpus import XMLCorpus, Field, until, after, string_contains
-from corpora import filters
-from corpora import extract
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus import filters
+from addcorpus import extract
 from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
@@ -23,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 class DutchNewspapers(XMLCorpus):
-    title = config.DUTCHNEWSPAPERS_TITLE
-    description = config.DUTCHNEWSPAPERS_DESCRIPTION
+    title = "Dutch Newspapers"
+    description = "Collection of Dutch newspapers by the KB"
     data_directory = config.DUTCHNEWSPAPERS_DATA
-    min_date = config.DUTCHNEWSPAPERS_MIN_DATE
-    max_date = config.DUTCHNEWSPAPERS_MAX_DATE
+    min_date = datetime(year=1600, month=1, day=1)
+    max_date = datetime(year=2018, month=12, day=31)
     es_index = config.DUTCHNEWSPAPERS_ES_INDEX
     es_doctype = config.DUTCHNEWSPAPERS_ES_DOCTYPE
     es_settings = None
