@@ -3,14 +3,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
+import { HttpModule } from '@angular/http';
+
 import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
-import { ResourceHandler, IResourceRequest, IResourceResponse } from '@ngx-resource/core';
+import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
@@ -127,6 +129,10 @@ const appRoutes: Routes = [
         FormsModule,
         HttpModule,
         HttpClientModule,
+        HttpClientXsrfModule.withOptions({
+            cookieName: 'csrf_token',
+            headerName: 'X-XSRF-Token'
+        }),
         RouterModule.forRoot(appRoutes),
         MarkdownModule,
         MultiSelectModule,
@@ -163,10 +169,7 @@ const appRoutes: Routes = [
         CorpusGuard,
         LoggedOnGuard,
         TitleCasePipe,
-        {
-            provide: XSRFStrategy,
-            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
-        }],
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
