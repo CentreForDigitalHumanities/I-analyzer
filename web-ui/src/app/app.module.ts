@@ -3,14 +3,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
+import { HttpModule } from '@angular/http';
+
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
-import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
-import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
+import { ResourceHandler } from '@ngx-resource/core';
+import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
@@ -127,6 +130,11 @@ const appRoutes: Routes = [
         DropdownModule,
         FormsModule,
         HttpModule,
+        HttpClientModule,
+        HttpClientXsrfModule.withOptions({
+            cookieName: 'csrf_token',
+            headerName: 'X-XSRF-Token'
+        }),
         RouterModule.forRoot(appRoutes),
         MarkdownModule,
         MultiSelectModule,
@@ -138,8 +146,8 @@ const appRoutes: Routes = [
         SharedModule,
         TableModule,
         TabViewModule,
-        RestModule.forRoot({
-            handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
+        ResourceModule.forRoot({
+            handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
         }),
         PdfViewerModule,
     ],
@@ -163,15 +171,12 @@ const appRoutes: Routes = [
         CorpusGuard,
         LoggedOnGuard,
         TitleCasePipe,
-        {
-            provide: XSRFStrategy,
-            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
-        }],
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
 
 // AoT requires an exported function for factories
-export function restHandlerFactory(http: Http) {
-    return new RestHandlerHttp(http);
+export function resourceHandlerFactory(http: HttpClient) {
+    return new ResourceHandlerHttpClient(http);
 }
