@@ -4,6 +4,7 @@ Present the data to the user through a web interface.
 import json
 import base64
 import logging
+import math
 logger = logging.getLogger(__name__)
 import functools
 import logging
@@ -504,14 +505,16 @@ def api_get_pdf_post():
         input_pdf = PdfFileReader(absolute_path, "rb")
    
         for p in range(page-2, page+3):
-            target_page = input_pdf.getPage(p)
-            pdf_writer.addPage(target_page)
+            pdf_writer.addPage(input_pdf.getPage(p))
 
         pdf_writer.write(tmp)
         tmp.seek(0)
         response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
-        response.headers['pdf_information'] = 'joehoe'
-
+        pdf_header = json.dumps({
+            "page_numbers": [n+1 for n in list(range(page-2, page+3))],
+            "initial_page_index": 2
+        })
+        response.headers['pdf_info'] = pdf_header
 
     return response
     

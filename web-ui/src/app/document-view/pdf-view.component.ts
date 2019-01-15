@@ -3,6 +3,7 @@ import { Corpus, FoundDocument } from '../models/index';
 import { HttpClient } from '@angular/common/http';
 import { ScanImageService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { JsonPipe } from '@angular/common';
 
 @Component({
     selector: 'ia-pdf-view',
@@ -35,6 +36,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public pageArray: number[];
 
+    public pdfInfo: pdfInfo;
+
     get_pdf() {
         this.scanImageService.get_source_pdf(
             this.corpus.index,
@@ -42,14 +45,18 @@ export class PdfViewComponent implements OnChanges, OnInit {
             this.document.fieldValues.page - 1) //0-indexed
             .then(
                 results => {
-                    console.log(results);
-                    this.pdfSrc = results;
+                    // this.pdfHeader = JSON.parse(results.headers.pdf_info).map(
+                    //     item => 
+                    // )
+                    this.pdfInfo = <pdfHeader>JSON.parse(results.headers.pdf_info)
+                    this.pdfSrc = results.body;
                 })
     }
 
     afterLoadComplete(pdfData: any) {
         this.totalPages = pdfData.numPages;
-        this.pageArray = Array.from(Array(pdfData.numPages)).map((x, i) => i + 1);
+        // this.pageArray = Array.from(Array(pdfData.numPages)).map((x, i) => i + 1);
+        this.pageArray = this.pdfInfo.page_numbers
         this.isLoaded = true;
     }
 
@@ -82,9 +89,14 @@ export class PdfViewComponent implements OnChanges, OnInit {
         if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
             console.log('docChange')
             this.isLoaded = false;
-            this.page = 3;
+            this.page = this.pdfInfo.initial_page_index;
             this.get_pdf();
         }
     }
 
+}
+
+interface pdfHeader {
+    page_numbers: number[];
+    initial_page_index: number;
 }

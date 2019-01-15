@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod } from '@ngx-resource/core';
+import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { ConfigService } from './config.service';
 import { AggregateResult, RelatedWordsResults, UserRole, Query } from '../models/index';
@@ -163,9 +163,10 @@ export class ApiService extends Resource {
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/source_pdf_post',
-        responseBodyType: ResourceResponseBodyType.ArrayBuffer
+        responseBodyType: ResourceResponseBodyType.ArrayBuffer,
+        asResourceResponse: true
     })
-    public sourcePdfPost: ResourceMethod<
+    public sourcePdfPost: IResourceMethodFull<
         { corpus_index: string, image_path: string, page: number },
         any>;
 
