@@ -24,6 +24,7 @@ class DutchAnnualReports(XMLCorpus):
     es_settings = None
     image = config.DUTCHANNUALREPORTS_IMAGE
     scan_image_type = config.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
+    description_page = config.DUTCHANNUALREPORTS_DESCRIPTION_PAGE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'

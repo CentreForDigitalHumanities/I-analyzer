@@ -10,10 +10,10 @@ import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, ApiRetryService, CorpusService, DataService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { ManualServiceMock } from '../services/manual.service.mock';
+import { DialogServiceMock } from '../services/dialog.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
 import { SearchComponent } from './search.component';
@@ -58,7 +58,7 @@ describe('SearchComponent', () => {
                 },
                 LogService,
                 {
-                    provide: ManualService, useClass: ManualServiceMock
+                    provide: DialogService, useClass: DialogServiceMock
                 },
                 NotificationService,
                 QueryService,
