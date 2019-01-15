@@ -3,7 +3,7 @@ import { CorpusField, FoundDocument, Corpus } from '../models/index';
 
 
 @Component({
-    selector: 'document-view',
+    selector: 'ia-document-view',
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
@@ -34,5 +34,8 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
+        if (this.corpus && this.corpus.scan_image_type == 'pdf') {
+            this.get_pdf()
+        }
     }
 }

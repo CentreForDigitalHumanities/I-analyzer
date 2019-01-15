@@ -144,7 +144,25 @@ export class SearchService {
                                 'labels': result['related_word_data'].time_points, 
                                 'datasets':result['related_word_data'].similar_words_subsets
                             },
-                            'tableData': result['related_word_data'].similar_words_all});
+                            'tableData': result['related_word_data'].similar_words_all
+                    });
+                }
+                else {
+                    reject({'message': result['message']})
+                }
+            })
+        });
+    }
+
+    public async getRelatedWordsTimeInterval(queryTerm: string, corpusName: string, timeInterval: string): Promise<any> {
+        return this.apiService.getRelatedWordsTimeInterval({'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'graphData': {
+                                'labels': result['related_word_data'].time_points, 
+                                'datasets':result['related_word_data'].similar_words_subsets
+                            }
+                    });
                 }
                 else {
                     reject({'message': result['message']})

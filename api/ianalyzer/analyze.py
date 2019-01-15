@@ -9,6 +9,8 @@ import scipy
 
 from . import config_fallback as config
 
+NUMBER_SIMILAR = 8
+
 def make_wordcloud_data(list_of_content):
     for content in list_of_content:
         if content != '':
@@ -20,16 +22,9 @@ def make_wordcloud_data(list_of_content):
     return output
 
 
-def get_diachronic_contexts(query_term, corpus, number_similar=5):
-    try:
-        wm_directory = config.WM_DIRECTORY[corpus]
-    except KeyError:
-        return "There are no word models for this corpus."
-    complete, binned = load_data(
-        wm_directory,
-        config.WM_COMPLETE_FN,
-        config.WM_BINNED_FN
-    )
+def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
+    complete = load_word_models(corpus, config.WM_COMPLETE_FN)
+    binned = load_word_models(corpus, config.WM_BINNED_FN)
     word_list = find_n_most_similar(
         complete['svd_ppmi'],
         complete['transformer'],
@@ -51,12 +46,31 @@ def get_diachronic_contexts(query_term, corpus, number_similar=5):
     return word_list, word_data, times
 
 
-def load_data(directory, complete_fn, binned_fn):
-    with open(os.path.join(directory,complete_fn), "rb") as f:
-        complete = pickle.load(f)
-    with open(os.path.join(directory,binned_fn), "rb") as f:
-        binned = pickle.load(f)
-    return complete, binned
+def get_context_time_interval(query_term, corpus, which_time_interval, number_similar=NUMBER_SIMILAR):
+    """ Given a query term and corpus, and a number indicating the mean of the requested time interval,
+    return a word list of number_similar most similar words.
+    """
+    binned = load_word_models(corpus, config.WM_BINNED_FN)
+    time_bin = next((time for time in binned if 
+        abs(np.mean([time['start_year'], time['end_year']]) - int(which_time_interval)) < 1.0), None)
+    word_list = find_n_most_similar(time_bin['svd_ppmi'],
+        time_bin['transformer'],
+        query_term,
+        number_similar)
+    if not word_list:
+        return "The query term is not in the word models' vocabulary."
+    word_data = [{'label': word['key'], 'data': [word['similarity']]} for word in word_list]
+    return word_data
+
+
+def load_word_models(corpus, path):
+    try:
+        wm_directory = config.WM_DIRECTORY[corpus]       
+    except KeyError:
+        return "There are no word models for this corpus."
+    with open(os.path.join(wm_directory, path), "rb") as f:
+        wm = pickle.load(f)
+    return wm
 
 
 def find_n_most_similar(matrix, transformer, query_term, n):
@@ -68,7 +82,6 @@ def find_n_most_similar(matrix, transformer, query_term, n):
         (i for i, a in enumerate(transformer.get_feature_names())
          if a == query_term), None)
     if not(index):
-        print("query term not found")
         return None
     vec = matrix[:, index]
     similarities = cosine_similarity_matrix_vector(vec, matrix)
@@ -103,6 +116,7 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
             value = cosine_similarity_vectors(matrix[:, index], query_vec)
         item['data'].append(value)
     return word_data
+    
 
 def cosine_similarity_vectors(array1, array2):
     dot = np.inner(array1, array2)

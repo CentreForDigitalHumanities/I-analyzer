@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, RequestMethod, RequestOptionsArgs } from '@angular/http';
-import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestAction, IRestMethod } from 'rest-core';
+import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, RestResponseBodyType, IRestAction, IRestMethod } from 'rest-core';
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
@@ -59,6 +59,14 @@ export class ApiService extends Rest {
     })
     public getRelatedWords: RestMethod<
         { query_term: string, corpus_name: string },
+        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @RestAction({
+        method: RestRequestMethod.Post,
+        path: '/get_related_words_time_interval'
+    })
+    public getRelatedWordsTimeInterval: RestMethod<
+        { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
     @RestAction({
@@ -144,4 +152,19 @@ export class ApiService extends Rest {
     public source_image: RestMethod<
         { corpus_index: string, image_path: string },
         any>
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/source_pdf'
+    })
+    public source_pdf: RestMethod<
+        { corpus_index: string, image_path: string, page: number },
+        any>
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/corpusdescription/{filename}',
+        responseBodyType: RestResponseBodyType.Text
+    })
+    public corpusdescription: RestMethod<{ filename: string }, any>;
 }

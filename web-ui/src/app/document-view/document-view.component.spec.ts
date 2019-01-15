@@ -6,7 +6,7 @@ import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
 import { HighlightService, ScanImageService } from '../services/index';
 
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { TabViewModule } from 'primeng/primeng';
+import { TabViewModule } from 'primeng/tabview';
 import { HttpClientModule } from '@angular/common/http';
 
 describe('DocumentViewComponent', () => {
@@ -24,14 +24,9 @@ describe('DocumentViewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(DocumentViewComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should be created', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should render fields', async () => {
+        component.corpus = <any>{
+            scan_image_type: 'farout_image_type'
+        };
         component.fields = [{
             name: 'test',
             displayName: 'Test',
@@ -49,6 +44,13 @@ describe('DocumentViewComponent', () => {
             position: 1
         };
         fixture.detectChanges();
+    });
+
+    it('should be created', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should render fields', async () => {
         await fixture.whenStable();
 
         let debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));

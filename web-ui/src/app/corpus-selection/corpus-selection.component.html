@@ -10,7 +10,7 @@
         <article>
             <div class="columns is-multiline">
                 <div class="column is-4" *ngFor="let item of items">
-                    <a role="link" [routerLink]="['/search', item.name]">
+                    <a role="link" (click)="navigateToCorpus($event, item.name)">
                         <div class="card">
                             <div class="card-image">
                                 <figure class="image is-4by3">
@@ -20,6 +20,9 @@
                             <div class="card-content">
                                 <div class="title-content">
                                     {{item.title}}
+                                        <span *ngIf="item.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="down-left" (click)="showMoreInfo(item)">
+                                            <i class="moreInfoLink fa fa-info-circle card-info-icon"></i>
+                                        </span>
                                     <hr>
                                 </div>
                                 <div class="content">
