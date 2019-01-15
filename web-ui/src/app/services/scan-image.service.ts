@@ -14,7 +14,7 @@ export class ScanImageService {
   }
 
   public get_source_pdf(corpus_index: string, image_path: string, page: number): Promise<any> {
-    return this.apiService.source_pdf({ corpus_index, image_path, page })
+    return this.apiService.sourcePdfPost({ corpus_index, image_path, page })
   }
 
 }

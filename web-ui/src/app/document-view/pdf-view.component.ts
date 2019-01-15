@@ -42,6 +42,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
             this.document.fieldValues.page - 1) //0-indexed
             .then(
                 results => {
+                    console.log(results);
                     this.pdfSrc = results;
                 })
     }

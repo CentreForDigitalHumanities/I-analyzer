@@ -14,7 +14,7 @@ import tempfile
 from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
-from flask import Flask, Blueprint, Response, request, abort, current_app, \
+from flask import Flask, Blueprint, Response, make_response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
@@ -448,6 +448,7 @@ def api_get_scan_image(corpus_index, page, image_path):
 @blueprint.route('/api/source_pdf', methods=['GET'])
 @login_required
 def api_get_pdf():
+    print("url:\t"+request.url)
     corpus_index = request.args.get('corpus_index')
     image_path = request.args.get('image_path')
     page = int(request.args.get('page'))
@@ -470,6 +471,50 @@ def api_get_pdf():
         tmp.seek(0)
         s = send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
     return s
+
+@blueprint.route('/api/source_pdf_post', methods=['POST'])
+@login_required
+def api_get_pdf_post():
+    """
+    input: 
+        corpus_index
+        image_path
+        page_number
+    output:
+        succes (bool) 
+        pdf (arraybuffer)
+        page numbers (in FILE)
+        initial page number (in ARRAY)
+    """ 
+    pages_returned = 5
+
+    if not request.json:
+        abort(400)
+    corpus_index = request.json['corpus_index']
+    image_path = request.json['image_path']
+    page = request.json['page']
+    backend_corpus = corpora.DEFINITIONS[corpus_index]
+
+    if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        abort(400)
+    else:
+        absolute_path = join(backend_corpus.data_directory, image_path)
+        tmp = BytesIO()
+        pdf_writer = PdfFileWriter()
+        input_pdf = PdfFileReader(absolute_path, "rb")
+   
+        for p in range(page-2, page+3):
+            target_page = input_pdf.getPage(p)
+            pdf_writer.addPage(target_page)
+
+        pdf_writer.write(tmp)
+        tmp.seek(0)
+        response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
+        response.headers['pdf_information'] = 'joehoe'
+
+
+    return response
+    
 
 @blueprint.route('/api/get_related_words', methods=['POST'])
 @login_required
