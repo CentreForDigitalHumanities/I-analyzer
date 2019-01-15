@@ -105,8 +105,8 @@ class Times(XMLCorpus):
             hidden=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
-                config.TIMES_MIN_DATE,
-                config.TIMES_MAX_DATE,
+                min_date,
+                max_date,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )

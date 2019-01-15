@@ -1,5 +1,6 @@
 
 import os
+from os.path import dirname, join
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
@@ -7,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import scipy
 
-from ianalyzer import config_fallback as config
+from flask import current_app
 
 NUMBER_SIMILAR = 8
 
@@ -23,8 +24,8 @@ def make_wordcloud_data(list_of_content):
 
 
 def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
-    complete = load_word_models(corpus, config.WM_COMPLETE_FN)
-    binned = load_word_models(corpus, config.WM_BINNED_FN)
+    complete = load_word_models(corpus, current_app.config['WM_COMPLETE_FN'])
+    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
     word_list = find_n_most_similar(
         complete['svd_ppmi'],
         complete['transformer'],
@@ -50,7 +51,7 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     """ Given a query term and corpus, and a number indicating the mean of the requested time interval,
     return a word list of number_similar most similar words.
     """
-    binned = load_word_models(corpus, config.WM_BINNED_FN)
+    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
     time_bin = next((time for time in binned if 
         abs(np.mean([time['start_year'], time['end_year']]) - int(which_time_interval)) < 1.0), None)
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
@@ -65,7 +66,7 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
 
 def load_word_models(corpus, path):
     try:
-        wm_directory = config.WM_DIRECTORY[corpus]       
+        wm_directory = join(dirname(current_app.config['CORPORA'][corpus]), current_app.config['WM_PATH'])       
     except KeyError:
         return "There are no word models for this corpus."
     with open(os.path.join(wm_directory, path), "rb") as f:

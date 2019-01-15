@@ -11,23 +11,24 @@ from flask_seasurf import SeaSurf
 from elasticsearch import Elasticsearch
 
 from api.api import api
-from . import config_fallback as config
 from .models import db
 from admin.admin import admin_instance
 from .entry import entry, login_manager
 from .es_forward import es
 
-def elasticsearch(corpus_name, cfg=config):
-    '''
-    Create ElasticSearch instance with default configuration.
-    '''
-    server_name = config.CORPUS_SERVER_NAMES[corpus_name]
-    server_config = config.SERVERS[server_name]
-    node = {'host': server_config['host'],
-            'port': server_config['port']}
-    if server_config['username']:
-        node['http_auth'] = (server_config['username'], server_config['password'])
-    return Elasticsearch([node])
+from ianalyzer import config_fallback as config
+
+# def elasticsearch(corpus_name, cfg=config):
+#     '''
+#     Create ElasticSearch instance with default configuration.
+#     '''
+#     server_name = cfg.CORPUS_SERVER_NAMES[corpus_name]
+#     server_config = cfg.SERVERS[server_name]
+#     node = {'host': server_config['host'],
+#             'port': server_config['port']}
+#     if server_config['username']:
+#         node['http_auth'] = (server_config['username'], server_config['password'])
+#     return Elasticsearch([node])
 
 
 

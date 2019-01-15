@@ -143,8 +143,8 @@ class DutchNewspapers(XMLCorpus):
             csv_core=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
-                config.DUTCHNEWSPAPERS_MIN_DATE,
-                config.DUTCHNEWSPAPERS_MAX_DATE,
+                min_date,
+                max_date,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )

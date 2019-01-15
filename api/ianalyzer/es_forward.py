@@ -3,10 +3,8 @@ import logging
 import requests
 from requests.exceptions import Timeout, ConnectionError
 
-from flask import Blueprint, request, json, abort, Response
+from flask import Blueprint, current_app, request, json, abort, Response
 from flask_login import login_required, current_user
-
-from . import config_fallback as config
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
@@ -28,9 +26,9 @@ def ensure_http(hostname):
 
 def get_es_host_or_404(server_name):
     """ Get the hostname of an ES server by name; abort if nonexistent. """
-    if not server_name in config.SERVERS:
+    if not server_name in current_app.config['SERVERS']:
         abort(404)
-    server = config.SERVERS[server_name]
+    server = current_app.config['SERVERS'][server_name]
     host = ensure_http(server['host'])
     if server['port']:
         host += ':{}'.format(server['port'])

@@ -5,12 +5,11 @@ from datetime import datetime
 from io import BytesIO
 from os.path import dirname, isfile, join
 
-from flask import abort, Blueprint, flash, jsonify, \
+from flask import abort, current_app, Blueprint, flash, jsonify, \
     redirect, render_template, request, send_file, send_from_directory, url_for
 from flask_login import current_user, login_required 
 from flask_mail import Mail, Message
 
-from ianalyzer import config_fallback as config
 from ianalyzer import models
 from addcorpus.load_corpus import load_corpus
 
@@ -75,14 +74,14 @@ def send_registration_mail(email, username):
     '''
     token = security.generate_confirmation_token(email)
 
-    msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
-                  sender=config.MAIL_FROM_ADRESS, recipients=[email])
+    msg = Message(current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
+                  sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
 
     msg.html = render_template('new_user_mail.html',
                                username=username,
-                               confirmation_link=config.BASE_URL+'/api/registration_confirmation/'+token,
-                               url_i_analyzer=config.BASE_URL,
-                               logo_link=config.LOGO_LINK)
+                               confirmation_link=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
+                               url_i_analyzer=current_app.config['BASE_URL'],
+                               logo_link=current_app.config['LOGO_LINK'])
 
     try:
         mail.send(msg)
@@ -108,7 +107,7 @@ def api_register_confirmation(token):
     models.db.session.add(user)
     models.db.session.commit()
 
-    return redirect(config.BASE_URL+'/login?isActivated=true')
+    return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
 
 
 @api.route('/es_config', methods=['GET'])
@@ -124,21 +123,21 @@ def api_es_config():
         'overviewQuerySize': server_config['overview_query_size'],
         'scrollTimeout': server_config['scroll_timeout'],
         'scrollPagesize': server_config['scroll_page_size']
-    } for server_name, server_config in config.SERVERS.items()])
+    } for server_name, server_config in current_app.config['SERVERS'].items()])
 
 
 @api.route('/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
     definitions = {}
-    for corpus in config.CORPORA:
+    for corpus in current_app.config['CORPORA']:
         definitions[corpus] = load_corpus(corpus)
     response = jsonify(dict(
         (key, dict(
-            server_name=config.CORPUS_SERVER_NAMES[key],
+            server_name=current_app.config['CORPUS_SERVER_NAMES'][key],
             **definitions[key].serialize()
         )) for key in
-        config.CORPORA.keys()
+        current_app.config['CORPORA'].keys()
     ))
     return response
 
@@ -149,7 +148,9 @@ def api_corpus_image(corpus, image_name):
     '''
     Return the image for a corpus.
     '''
-    return send_from_directory(join(dirname(config.CORPORA[corpus]), config.IMAGE_PATH), '{}'.format(image_name))
+    return send_from_directory(join(
+        dirname(current_app.config['CORPORA'][corpus]), 
+        current_app.config['IMAGE_PATH']), '{}'.format(image_name))
 
 
 @api.route('/login', methods=['POST'])

@@ -4,7 +4,7 @@ Views.
 
 import logging
 logger = logging.getLogger(__name__)
-from flask import request, flash, redirect, url_for
+from flask import current_app, request, flash, redirect, url_for
 import flask_admin as admin
 import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, logout_user, current_user
@@ -13,8 +13,8 @@ from wtforms.widgets import PasswordInput
 from wtforms import ValidationError, TextField
 from wtforms.validators import Required, AnyOf
 
-from ianalyzer import config_fallback as config
 from ianalyzer import models
+from ianalyzer import config_fallback as config
 from api import security
 import corpora
 from . import forms
@@ -55,7 +55,10 @@ class RoleView(ModelView):
 
 class CorpusViewAdmin(ModelView):
     unknown_corpus_message = "Corpus name has to match a known corpus (see the CORPORA key in the application config)"
-
+    
+    # form_args = dict(
+    #     name = dict(validators=[Required(), AnyOf(current_app.config['CORPORA'].keys(), unknown_corpus_message)])
+    # )
     form_args = dict(
         name = dict(validators=[Required(), AnyOf(config.CORPORA.keys(), unknown_corpus_message)])
     )

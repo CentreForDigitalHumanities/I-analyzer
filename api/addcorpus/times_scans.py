@@ -5,7 +5,9 @@ from elasticsearch import Elasticsearch
 import os
 from datetime import datetime
 
-from ianalyzer import config_fallback as config
+from flask import current_app
+
+# everything based on corpora is broken
 import corpora
 
 es = Elasticsearch()
@@ -18,7 +20,7 @@ def add_images(corpus_definition, page_size):
     corpus_dir = os.path.join(
         corpus_definition.data_directory, 'TDA_GDA', 'TDA_GDA_1785-2009')
     size = page_size
-    scroll = config.SERVERS['default']['scroll_timeout']
+    scroll = current_app.config['SERVERS']['default']['scroll_timeout']
 
     # Collect initial page
     page = init_search(index, doc_type, size, scroll)

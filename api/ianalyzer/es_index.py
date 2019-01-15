@@ -11,7 +11,8 @@ from datetime import datetime
 import elasticsearch as es
 import elasticsearch.helpers as es_helpers
 
-from ianalyzer import config_fallback as config
+from flask import current_app
+
 from ianalyzer import factories
 
 
@@ -57,7 +58,8 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         } for doc in docs
     )
 
-    corpus_server = config.SERVERS[config.CORPUS_SERVER_NAMES[corpus_name]]
+    corpus_server = current_app.config['SERVERS'][
+        current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
     # Do bulk operation
     for result in es_helpers.bulk(
         client,
@@ -77,7 +79,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear):
         start.strftime('%Y%m%d'),
         end.strftime('%Y%m%d')
     )
-    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
+    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'])
     logging.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),

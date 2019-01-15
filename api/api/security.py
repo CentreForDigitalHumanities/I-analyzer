@@ -3,7 +3,6 @@ from flask_login import login_user as flask_login_user
 from flask_login import logout_user as flask_logout_user
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
-from ianalyzer import config_fallback as config
 from ianalyzer import models
 
 def validate_user(username, password):
@@ -57,16 +56,16 @@ def is_unique_email(email):
 
 # userregistration confirmation, when clicked on link in confirmation email
 def generate_confirmation_token(email):
-    serializer = URLSafeTimedSerializer(config.SECRET_KEY)
-    return serializer.dumps(email, salt=config.SECURITY_PASSWORD_SALT)
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=current_app.config['SECURITY_PASSWORD_SALT'])
 
 
 def confirm_token(token, expiration=3600):
-    serializer = URLSafeTimedSerializer(config.SECRET_KEY)
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = serializer.loads(
             token,
-            salt=config.SECURITY_PASSWORD_SALT,
+            salt=current_app.config['SECURITY_PASSWORD_SALT'],
             max_age=expiration
         )
     except:
