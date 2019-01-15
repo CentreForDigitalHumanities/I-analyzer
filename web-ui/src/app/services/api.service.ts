@@ -155,7 +155,8 @@ export class ApiService extends Rest {
 
     @RestAction({
         method: RestRequestMethod.Get,
-        path: '/source_pdf'
+        path: '/source_pdf',
+        responseBodyType: RestResponseBodyType.ArrayBuffer
     })
     public source_pdf: RestMethod<
         { corpus_index: string, image_path: string, page: number },

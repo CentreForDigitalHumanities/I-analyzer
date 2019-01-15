@@ -36,10 +36,11 @@ export class PdfViewComponent implements OnChanges, OnInit {
     public pageArray: number[];
 
     get_pdf() {
-        this.scanImageService.get_scan_image(
+        this.scanImageService.get_source_pdf(
             this.corpus.index,
-            this.document.fieldValues.page - 1, //0-indexed pdf
-            this.document.fieldValues.image_path).then(
+            this.document.fieldValues.image_path,
+            this.document.fieldValues.page - 1) //0-indexed
+            .then(
                 results => {
                     this.pdfSrc = results;
                 })

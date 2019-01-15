@@ -13,4 +13,8 @@ export class ScanImageService {
     return this.http.get(url, { responseType: 'arraybuffer' }).toPromise();
   }
 
+  public get_source_pdf(corpus_index: string, image_path: string, page: number): Promise<any> {
+    return this.apiService.source_pdf({ corpus_index, image_path, page })
+  }
+
 }
