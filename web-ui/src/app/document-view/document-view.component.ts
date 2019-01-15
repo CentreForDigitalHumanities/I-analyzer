@@ -34,8 +34,5 @@ export class DocumentViewComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges() {
-        if (this.corpus && this.corpus.scan_image_type == 'pdf') {
-            this.get_pdf()
-        }
     }
 }

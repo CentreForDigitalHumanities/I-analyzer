@@ -89,6 +89,7 @@ const appRoutes: Routes = [
         AppComponent,
         BalloonDirective,
         DropdownComponent,
+        DialogComponent,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
