@@ -476,43 +476,51 @@ def api_get_pdf():
 @blueprint.route('/api/source_pdf_post', methods=['POST'])
 @login_required
 def api_get_pdf_post():
-    """
-    input: 
-        corpus_index
-        image_path
-        page_number
-    output:
-        succes (bool) 
-        pdf (arraybuffer)
-        page numbers (in FILE)
-        initial page number (in ARRAY)
-    """ 
-    pages_returned = 5
-
     if not request.json:
         abort(400)
     corpus_index = request.json['corpus_index']
-    image_path = request.json['image_path']
-    page = request.json['page']
     backend_corpus = corpora.DEFINITIONS[corpus_index]
 
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
     else:
+        pages_returned = 9 #number of pages that is displayed. must be odd number.
+        context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
+        home_page = request.json['page'] #the page corresponding to the document
+
+        image_path = request.json['image_path']
         absolute_path = join(backend_corpus.data_directory, image_path)
         tmp = BytesIO()
         pdf_writer = PdfFileWriter()
         input_pdf = PdfFileReader(absolute_path, "rb")
-   
-        for p in range(page-2, page+3):
-            pdf_writer.addPage(input_pdf.getPage(p))
+        num_pages = input_pdf.getNumPages()
+        all_pages = list(range(0, num_pages))
 
+        #the page is within context_radius of the beginning of the pdf:
+        if (home_page - context_radius) <= 0:
+            pages = all_pages[:pages_returned]
+            home_page_index = home_page
+
+        #the page is within context_radius of the end of the pdf:
+        elif (home_page + context_radius) >= num_pages:
+            pages = all_pages[(i*-1):]
+            home_page_index = all_pages.index(home_page)
+
+        #normal case:
+        else:
+            pages = all_pages[(home_page-context_radius):(home_page+context_radius+1)]
+            home_page_index = context_radius
+
+        #push the pages to the writer
+        for p in pages:
+            pdf_writer.addPage(input_pdf.getPage(p))
         pdf_writer.write(tmp)
-        tmp.seek(0)
+        tmp.seek(0) #reset stream
+        
         response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
         pdf_header = json.dumps({
-            "page_numbers": [n+1 for n in list(range(page-2, page+3))],
-            "initial_page_index": 2
+            "page_numbers": pages,
+            "initial_page_index": home_page_index
         })
         response.headers['pdf_info'] = pdf_header
 
