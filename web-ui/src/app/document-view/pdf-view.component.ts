@@ -3,7 +3,6 @@ import { Corpus, FoundDocument } from '../models/index';
 import { HttpClient } from '@angular/common/http';
 import { ScanImageService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { JsonPipe } from '@angular/common';
 
 @Component({
     selector: 'ia-pdf-view',
@@ -36,7 +35,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public pageArray: number[];
 
-    public pdfInfo: pdfInfo;
+    public pdfInfo: pdfHeader;
 
     get_pdf() {
         this.scanImageService.get_source_pdf(

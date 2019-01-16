@@ -8,6 +8,7 @@ import { HighlightService, ScanImageService } from '../services/index';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { TabViewModule } from 'primeng/tabview';
 import { HttpClientModule } from '@angular/common/http';
+import { PdfViewComponent } from './pdf-view.component';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;
@@ -15,7 +16,7 @@ describe('DocumentViewComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, DocumentViewComponent, SearchRelevanceComponent, PdfViewerComponent],
+            declarations: [HighlightPipe, DocumentViewComponent, PdfViewComponent, SearchRelevanceComponent, PdfViewerComponent],
             imports: [TabViewModule, HttpClientModule],
             providers: [HighlightService, ScanImageService]
         }).compileComponents();
