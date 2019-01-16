@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, RequestMethod, RequestOptionsArgs } from '@angular/http';
-import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, IRestAction, IRestMethod } from 'rest-core';
+import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, RestResponseBodyType, IRestAction, IRestMethod } from 'rest-core';
 import { Subject, Observable } from 'rxjs';
 
 import { ConfigService } from './config.service';
@@ -153,4 +153,11 @@ export class ApiService extends Rest {
         path: '/search_history'
     })
     public search_history: RestMethod<void, { 'queries': Query[] }>;
+
+    @RestAction({
+        method: RestRequestMethod.Get,
+        path: '/corpusdescription/{filename}',
+        responseBodyType: RestResponseBodyType.Text
+    })
+    public corpusdescription: RestMethod<{filename: string}, any>;
 }

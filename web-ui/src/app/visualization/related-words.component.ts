@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { ManualService, SearchService } from '../services/index';
+import { DialogService, SearchService } from '../services/index';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -41,7 +41,7 @@ export class RelatedWordsComponent implements OnChanges {
     @Output('error')
     public errorEmitter = new EventEmitter<string>();
 
-    constructor(private manualService: ManualService, private searchService: SearchService) { }
+    constructor(private dialogService: DialogService, private searchService: SearchService) { }
 
     ngOnChanges() {
         this.searchData.datasets.map((d, index) => {
@@ -54,7 +54,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     showRelatedWordsDocumentation() {
-        this.manualService.showPage('relatedwords');
+        this.dialogService.showManualPage('relatedwords');
     }
 
     zoomTimeInterval(event: any) {

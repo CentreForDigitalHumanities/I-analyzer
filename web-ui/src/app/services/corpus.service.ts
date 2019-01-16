@@ -48,7 +48,6 @@ export class CorpusService {
 
     private parseCorpusItem(name: string, data: any): Corpus {
         let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
-
         return new Corpus(
             data.server_name,
             name,
@@ -60,7 +59,8 @@ export class CorpusService {
             this.parseDate(data.min_date),
             this.parseDate(data.max_date),
             data.image,
-            data.scan_image_type);
+            data.scan_image_type,
+            data.description_page);
     }
 
     private parseField(data: any): CorpusField {
