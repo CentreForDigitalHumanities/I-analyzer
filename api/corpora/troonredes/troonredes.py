@@ -12,10 +12,11 @@ import re
 import random
 from pprint import pprint
 
-from ianalyzer import config_fallback as config
-from add-corpus import extract
-from add-corpus import filters
-from add-corpus.corpus import XMLCorpus, Field, until, after, string_contains
+from flask import current_app
+
+from addcorpus import extract
+from addcorpus import filters
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
@@ -25,15 +26,15 @@ SPEECH_TYPES = ['openingsrede', 'troonrede', 'inhuldigingsrede']
 
 
 class Troonredes(XMLCorpus):
-    title = config.TROONREDES_TITLE
-    description = config.TROONREDES_DESCRIPTION
-    data_directory = config.TROONREDES_DATA
-    min_date = config.TROONREDES_MIN_DATE
-    max_date = config.TROONREDES_MAX_DATE
-    es_index = config.TROONREDES_ES_INDEX
-    es_doctype = config.TROONREDES_ES_DOCTYPE
+    title = "Troonredes"
+    description = "Speeches by Dutch monarchs"
+    min_date = datetime(year=1814, month=1, day=1)
+    max_date = datetime(year=2018, month=12, day=31)
+    data_directory = current_app.config['TROONREDES_DATA']
+    es_index = current_app.config['TROONREDES_ES_INDEX']
+    es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
     es_settings = None
-    image = config.TROONREDES_IMAGE
+    image = current_app.config['TROONREDES_IMAGE']
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
@@ -113,8 +114,8 @@ class Troonredes(XMLCorpus):
             csv_core=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
-                config.TROONREDES_MIN_DATE,
-                config.TROONREDES_MAX_DATE,
+                min_date,
+                max_date,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )

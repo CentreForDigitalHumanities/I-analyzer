@@ -11,7 +11,7 @@ from flask_login import current_user, login_required
 from flask_mail import Mail, Message
 
 from ianalyzer import models
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_all_corpora
 
 from . import security
 from . import analyze
@@ -129,15 +129,13 @@ def api_es_config():
 @api.route('/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
-    definitions = {}
-    for corpus in current_app.config['CORPORA']:
-        definitions[corpus] = load_corpus(corpus)
+    load_all_corpora()
     response = jsonify(dict(
         (key, dict(
             server_name=current_app.config['CORPUS_SERVER_NAMES'][key],
-            **definitions[key].serialize()
+            **current_app.config['CORPUS_DEFINITIONS'][key].serialize()
         )) for key in
-        current_app.config['CORPORA'].keys()
+        current_app.config['CORPUS_DEFINITIONS'].keys()
     ))
     return response
 
@@ -238,9 +236,6 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    # if 'id' in request.json:
-    #     query = models.Query.query.filter_by(id=request.json['id']).first()
-    # else:
     query = models.Query(
         query=query_json, corpus_name=corpus_name, user=current_user)
 
@@ -296,7 +291,7 @@ def api_get_wordcloud_data():
 @api.route('/get_scan_image/<corpus_index>/<int:page>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_scan_image(corpus_index, page, image_path):
-    backend_corpus = load_corpus(corpus_index)
+    backend_corpus = current_app.config['CORPUS_DEFINITIONS'][corpus_index]
     image_type = backend_corpus.scan_image_type
     user_permitted_corpora = [
         corpus.name for corpus in current_user.role.corpora]

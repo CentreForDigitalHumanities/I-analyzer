@@ -68,13 +68,14 @@ CORPUS_SERVER_NAMES = {
     'times': 'default',
 }
 
+CORPUS_DEFINITIONS = {}
+
 DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
 DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
 DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
-DUTCHANNUALREPORTS_MAP = {}
 
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
@@ -83,13 +84,9 @@ DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
-TML_TITLE = "Thesaurus Musicarum Latinarum"
-TML_DESCRIPTION = "Description about this corpus"
 TML_ES_INDEX = 'tml'
 TML_ES_DOCTYPE = 'article'
 TML_DATA = '/mnt/tml'
-TML_MIN_DATE = datetime(year=1, month=1, day=1)
-TML_MAX_DATE = datetime(year=2018, month=12, day=31)
 TML_IMAGE = 'tml.jpg'
 
 TIMES_ES_INDEX = 'times'

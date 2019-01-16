@@ -11,10 +11,11 @@ from os.path import join, isfile, splitext
 import os
 import logging
 
+from flask import current_app
+
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 from addcorpus import filters
 from addcorpus import extract
-from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +26,13 @@ logger = logging.getLogger(__name__)
 class DutchNewspapers(XMLCorpus):
     title = "Dutch Newspapers"
     description = "Collection of Dutch newspapers by the KB"
-    data_directory = config.DUTCHNEWSPAPERS_DATA
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=2018, month=12, day=31)
-    es_index = config.DUTCHNEWSPAPERS_ES_INDEX
-    es_doctype = config.DUTCHNEWSPAPERS_ES_DOCTYPE
+    data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
+    es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
+    es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
     es_settings = None
-    image = config.DUTCHNEWSPAPERS_IMAGE
+    image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
     tag_entry = 'p'

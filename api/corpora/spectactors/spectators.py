@@ -11,7 +11,8 @@ from datetime import datetime, timedelta
 import re
 from pprint import pprint
 
-from ianalyzer import config_fallback as config
+from flask import current_app
+
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
@@ -23,11 +24,11 @@ from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 class Spectators(XMLCorpus):
     title = "Spectators"
     description = "A collection of Spectator newspapers"
-    min_date = config.SPECTATORS_MIN_DATE
-    max_date = config.SPECTATORS_MAX_DATE
-    data_directory = config.SPECTATORS_DATA
-    es_index = config.SPECTATORS_ES_INDEX
-    es_doctype = config.SPECTATORS_ES_DOCTYPE
+    min_date = datetime()
+    max_date = datetime()
+    data_directory = current_app.config['SPECTATORS_DATA']
+    es_index = current_app.config['SPECTATORS_ES_INDEX']
+    es_doctype = current_app.config['SPECTATORS_ES_DOCTYPE']
     es_settings = None
 
     tag_toplevel = 'article'
@@ -71,8 +72,8 @@ class Spectators(XMLCorpus):
             term_frequency=True,
             results_overview=True,
             search_filter=filters.DateFilter(
-                config.SPECTATORS_MIN_DATE,
-                config.SPECTATORS_MAX_DATE,
+                min_date,
+                max_date,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )

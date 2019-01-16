@@ -10,25 +10,26 @@ from os.path import join, isfile, splitext
 from datetime import datetime, timedelta
 import re
 
-from ianalyzer import config_fallback as config
-from add-corpus import extract
-from add-corpus import filters
-from add-corpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
+from flask import current_app
+
+from addcorpus import extract
+from addcorpus import filters
+from addcorpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
 
 
 # Source files ################################################################
 
 
 class Tml(HTMLCorpus):
-    title = config.TML_TITLE
-    description = config.TML_DESCRIPTION
-    data_directory = config.TML_DATA
-    min_date = config.TML_MIN_DATE
-    max_date = config.TML_MAX_DATE
-    es_index = config.TML_ES_INDEX
-    es_doctype = config.TML_ES_DOCTYPE
+    title = "Thesaurus Musicarum Latinarum"
+    description = "A collection of Medieval writings about music"
+    min_date = datetime(year=300, month=1, day=1)
+    max_date = datetime(year=1699, month=12, day=31)
+    data_directory = current_app.config['TML_DATA']
+    es_index = current_app.config['TML_ES_INDEX']
+    es_doctype = current_app.config['TML_ES_DOCTYPE']
     es_settings = None
-    image = config.TML_IMAGE
+    image = current_app.config['TML_IMAGE']
 
     tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
     tag_entry = ''

@@ -5,7 +5,8 @@ import os.path as op
 import logging
 from datetime import datetime
 
-from ianalyzer import config_fallback as config
+from flask import current_app
+
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpus, Field
@@ -17,14 +18,14 @@ class DutchAnnualReports(XMLCorpus):
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = "Dutch Annual Reports"
     description = "Annual reports of Dutch financial and non-financial institutes"
-    data_directory = config.DUTCHANNUALREPORTS_DATA
     min_date = datetime(year=1957, month=1, day=1)
     max_date = datetime(year=2008, month=12, day=31)
-    es_index = config.DUTCHANNUALREPORTS_ES_INDEX
-    es_doctype = config.DUTCHANNUALREPORTS_ES_DOCTYPE
+    data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
+    es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
+    es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
     es_settings = None
-    image = config.DUTCHANNUALREPORTS_IMAGE
-    scan_image_type = config.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
+    image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
+    scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -34,10 +35,12 @@ class DutchAnnualReports(XMLCorpus):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
-    with open(config.DUTCHANNUALREPORTS_MAP_FILE) as f:
+    dutchannualreports_map = {}
+
+    with open(current_app.config['DUTCHANNUALREPORTS_MAP_FILE']) as f:
         reader = csv.DictReader(f)
         for line in reader:
-            config.DUTCHANNUALREPORTS_MAP[line['abbr']] = line['name']
+            dutchannualreports_map[line['abbr']] = line['name']
 
     def sources(self, start=min_date, end=max_date):
          # make the mapping dictionary from the csv file defined in config
@@ -116,11 +119,11 @@ class DutchAnnualReports(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(config.DUTCHANNUALREPORTS_MAP.values()),
+                options=sorted(dutchannualreports_map.values()),
             ),
             extractor=Metadata(
                 key='company',
-                transform=lambda x: config.DUTCHANNUALREPORTS_MAP[x],
+                transform=lambda x: dutchannualreports_map[x],
             ),
             csv_core=True
         ),

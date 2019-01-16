@@ -12,7 +12,8 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from ianalyzer import config_fallback as config
+from flask import current_app
+
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
@@ -26,12 +27,12 @@ class Times(XMLCorpus):
     description = "Newspaper archive, 1785-2010"
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
-    data_directory = config.TIMES_DATA
-    es_index = config.TIMES_ES_INDEX
-    es_doctype = config.TIMES_ES_DOCTYPE
+    data_directory = current_app.config['TIMES_DATA']
+    es_index = current_app.config['TIMES_ES_INDEX']
+    es_doctype = current_app.config['TIMES_ES_DOCTYPE']
     es_settings = None
-    image = config.TIMES_IMAGE
-    scan_image_type = config.TIMES_SCAN_IMAGE_TYPE
+    image = current_app.config['TIMES_IMAGE']
+    scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
