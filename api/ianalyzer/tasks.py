@@ -81,7 +81,7 @@ def create_csv(result, filepath):
         counter += 1
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
                          quoting=csv.QUOTE_ALL, skipinitialspace=True)
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w', newline='') as f:
         writer = csv.writer(f, dialect='myDialect')
         for row in entries:
             writer.writerow(row)
