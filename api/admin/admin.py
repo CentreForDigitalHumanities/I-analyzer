@@ -4,7 +4,7 @@ from flask_admin.base import MenuLink
 from ianalyzer import models
 from . import views
 
-admin_instance = admin.Admin(
+admin_instance = admin.Admin( 
     name='IAnalyzer', index_view=views.AdminIndexView(), endpoint='admin')
 
 admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
