@@ -3,6 +3,7 @@ import { Corpus, FoundDocument } from '../models/index';
 import { HttpClient } from '@angular/common/http';
 import { ScanImageService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { JsonPipe } from '@angular/common';
 
 @Component({
     selector: 'ia-pdf-view',
@@ -25,11 +26,9 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public pdfSrc: ArrayBuffer;
 
-    public page: number = 3;
+    public page: number = null;
 
-    public startPage: number;
-
-    public totalPages: number;
+    public lastPage: number;
 
     public isLoaded: boolean = false;
 
@@ -37,25 +36,18 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public pdfInfo: pdfHeader;
 
-    get_pdf() {
-        this.scanImageService.get_source_pdf(
+    async get_pdf() {
+        const pdfResponse = <pdfResponse>await this.scanImageService.get_source_pdf(
             this.corpus.index,
             this.document.fieldValues.image_path,
-            this.document.fieldValues.page - 1) //0-indexed
-            .then(
-                results => {
-                    // this.pdfHeader = JSON.parse(results.headers.pdf_info).map(
-                    //     item => 
-                    // )
-                    this.pdfInfo = <pdfHeader>JSON.parse(results.headers.pdf_info)
-                    this.pdfSrc = results.body;
-                })
+            this.document.fieldValues.page - 1)
+        this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
+        this.page = this.pdfInfo.homePageIndex + 1; //1-indexed
+        this.pdfSrc = pdfResponse.body;
     }
 
     afterLoadComplete(pdfData: any) {
-        this.totalPages = pdfData.numPages;
-        // this.pageArray = Array.from(Array(pdfData.numPages)).map((x, i) => i + 1);
-        this.pageArray = this.pdfInfo.page_numbers
+        this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
 
@@ -86,9 +78,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
-            console.log('docChange')
             this.isLoaded = false;
-            this.page = this.pdfInfo.initial_page_index;
+            this.page = null;
             this.get_pdf();
         }
     }
@@ -96,6 +87,12 @@ export class PdfViewComponent implements OnChanges, OnInit {
 }
 
 interface pdfHeader {
-    page_numbers: number[];
-    initial_page_index: number;
+    pageNumbers: number[];
+    homePageIndex: number;
+}
+
+interface pdfResponse {
+    status: number;
+    body: ArrayBuffer;
+    headers: any;
 }

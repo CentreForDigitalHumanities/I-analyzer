@@ -484,7 +484,7 @@ def api_get_pdf_post():
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
     else:
-        pages_returned = 9 #number of pages that is displayed. must be odd number.
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
         context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
         home_page = request.json['page'] #the page corresponding to the document
 
@@ -504,7 +504,7 @@ def api_get_pdf_post():
         #the page is within context_radius of the end of the pdf:
         elif (home_page + context_radius) >= num_pages:
             pages = all_pages[(i*-1):]
-            home_page_index = all_pages.index(home_page)
+            home_page_index = all_pages.index(home_page)+1 #0-indexed
 
         #normal case:
         else:
@@ -519,11 +519,12 @@ def api_get_pdf_post():
         
         response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
         pdf_header = json.dumps({
-            "page_numbers": pages,
-            "initial_page_index": home_page_index
+            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
+            "homePageIndex": home_page_index
         })
-        response.headers['pdf_info'] = pdf_header
-
+        response.headers['pdfinfo'] = pdf_header
+        print([p+1 for p in pages])
+        print(home_page_index)
     return response
     
 

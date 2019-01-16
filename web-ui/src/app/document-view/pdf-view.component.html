@@ -4,23 +4,28 @@
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </button>
 
-        <a *ngFor="let pageNr of pageArray" (click)=setPage(pageNr) [ngClass]="{'is-inverted': pageNr!=page}" class="button is-small is-primary">
+        <a *ngFor="let pageNr of pdfInfo.pageNumbers; let i = index;" (click)=setPage(i+1) [ngClass]="{'is-inverted': (i+1)!=page}" class="button is-small is-primary">
             {{pageNr}}
         </a>
 
-        <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === totalPages">
+        <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === pdfInfo.pageNumbers.length">
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </button>
     </div>
 </div>
 
-<pdf-viewer 
-    [src]="pdfSrc"
-    [render-text]="true"
-    [original-size]="false"
-    [autoresize]="true"
-    [show-all]="false"
-    [page]="page"
-    (after-load-complete)="afterLoadComplete($event)"
-    style="display:block;">
-</pdf-viewer>
+<div class="pdf" [ngClass]="{'is-loading':!isLoaded}">
+    <ng-container *ngIf="page">
+        <pdf-viewer
+            [src]="pdfSrc"
+            [render-text]="true"
+            [original-size]="false"
+            [autoresize]="true"
+            [show-all]="false"
+            [page]="page"
+            (after-load-complete)="afterLoadComplete($event)"
+            style="display:block;">
+        </pdf-viewer>
+    </ng-container>
+</div>
+

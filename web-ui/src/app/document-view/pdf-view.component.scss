@@ -1,6 +1,15 @@
+@import "../../_utilities";
 div.is-grouped {
-    margin: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-  }
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
+
+.pdf {
+    &.is-loading {
+        @extend %content-loader;
+    }
+}
