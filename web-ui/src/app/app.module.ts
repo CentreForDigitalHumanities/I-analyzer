@@ -10,7 +10,7 @@ import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
@@ -127,6 +127,7 @@ const appRoutes: Routes = [
         BrowserModule,
         CalendarModule,
         CommonModule,
+        ConfirmDialogModule,
         DropdownModule,
         FormsModule,
         HttpModule,

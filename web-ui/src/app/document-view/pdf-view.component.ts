@@ -1,14 +1,14 @@
 import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { Corpus, FoundDocument } from '../models/index';
-import { HttpClient } from '@angular/common/http';
 import { ScanImageService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { JsonPipe } from '@angular/common';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'ia-pdf-view',
     templateUrl: './pdf-view.component.html',
-    styleUrls: ['./pdf-view.component.scss']
+    styleUrls: ['./pdf-view.component.scss'],
+    providers: [ConfirmationService]
 })
 export class PdfViewComponent implements OnChanges, OnInit {
     @ViewChild(PdfViewerComponent)
@@ -70,7 +70,21 @@ export class PdfViewComponent implements OnChanges, OnInit {
         });
     }
 
-    constructor(private scanImageService: ScanImageService, private http: HttpClient) { }
+    confirmDownload() {
+        this.confirmationService.confirm({
+            message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
+            header: "Confirm download",
+            acceptLabel: "Download",
+            rejectLabel: "Do not download",
+            accept: () => {
+                console.log('accept');
+            },
+            reject: () => {
+            }
+        });
+    }
+
+    constructor(private scanImageService: ScanImageService, private confirmationService: ConfirmationService) { }
 
     ngOnInit() {
         this.get_pdf();
@@ -89,6 +103,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
 interface pdfHeader {
     pageNumbers: number[];
     homePageIndex: number;
+    fileName: string;
+    fileSize: string;
 }
 
 interface pdfResponse {

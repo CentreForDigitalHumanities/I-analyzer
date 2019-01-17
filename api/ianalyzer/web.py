@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
-from os.path import splitext, join, isfile
+from os.path import split, join, isfile, getsize
 import sys
 import tempfile
 from io import BytesIO
@@ -446,36 +446,17 @@ def api_get_scan_image(corpus_index, page, image_path):
             return send_file(absolute_path, mimetype='image/png')
 
 
-@blueprint.route('/api/source_pdf', methods=['GET'])
+@blueprint.route('/api/source_pdf', methods=['POST'])
 @login_required
 def api_get_pdf():
-    print("url:\t"+request.url)
-    corpus_index = request.args.get('corpus_index')
-    image_path = request.args.get('image_path')
-    page = int(request.args.get('page'))
+    #filesize formatter
+    def sizeof_fmt(num, suffix='B'):
+        for unit in ['','K','M','G','T','P','E','Z']:
+            if abs(num) < 1024.0:
+                return "%3.1f %s%s" % (num, unit, suffix)
+            num /= 1024.0
+        return "%.1f %s%s" % (num, 'Yi', suffix)
 
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
-    user_permitted_corpora = [
-        corpus.name for corpus in current_user.role.corpora]
-
-    if (corpus_index in user_permitted_corpora):
-        absolute_path = join(backend_corpus.data_directory, image_path)
-        tmp = BytesIO()
-        pdf_writer = PdfFileWriter()
-        input_pdf = PdfFileReader(absolute_path, "rb")
-   
-        for p in range(page-2, page+3):
-            target_page = input_pdf.getPage(p)
-            pdf_writer.addPage(target_page)
-
-        pdf_writer.write(tmp)
-        tmp.seek(0)
-        s = send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
-    return s
-
-@blueprint.route('/api/source_pdf_post', methods=['POST'])
-@login_required
-def api_get_pdf_post():
     if not request.json:
         abort(400)
     corpus_index = request.json['corpus_index']
@@ -493,6 +474,9 @@ def api_get_pdf_post():
         tmp = BytesIO()
         pdf_writer = PdfFileWriter()
         input_pdf = PdfFileReader(absolute_path, "rb")
+        filesize = sizeof_fmt(getsize(absolute_path))
+        title = input_pdf.getDocumentInfo().title
+        _dir, filename = split(image_path)
         num_pages = input_pdf.getNumPages()
         all_pages = list(range(0, num_pages))
 
@@ -520,11 +504,11 @@ def api_get_pdf_post():
         response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
         pdf_header = json.dumps({
             "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
-            "homePageIndex": home_page_index
+            "homePageIndex": home_page_index,
+            "fileName": title if title else filename,
+            "fileSize": filesize
         })
         response.headers['pdfinfo'] = pdf_header
-        print([p+1 for p in pages])
-        print(home_page_index)
     return response
     
 

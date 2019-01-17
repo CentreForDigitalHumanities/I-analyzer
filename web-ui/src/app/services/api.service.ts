@@ -152,21 +152,12 @@ export class ApiService extends Resource {
         any>
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/source_pdf',
-        responseBodyType: ResourceResponseBodyType.ArrayBuffer
-    })
-    public sourcePdf: ResourceMethod<
-        { corpus_index: string, image_path: string, page: number },
-        any>
-
-    @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/source_pdf_post',
+        path: '/source_pdf',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
         asResourceResponse: true
     })
-    public sourcePdfPost: IResourceMethodFull<
+    public sourcePdf: IResourceMethodFull<
         { corpus_index: string, image_path: string, page: number },
         any>;
 
