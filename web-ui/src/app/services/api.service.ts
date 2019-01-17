@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, RequestMethod, RequestOptionsArgs } from '@angular/http';
-import { Rest, RestAction, RestParams, RestRequestMethod, RestHandler, RestResponseBodyType, IRestAction, IRestMethod } from 'rest-core';
-import { Subject, Observable } from 'rxjs';
+import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod } from '@ngx-resource/core';
 
 import { ConfigService } from './config.service';
-import { SearchFilterData, AggregateResult, RelatedWordsResults, UserRole, Query, User } from '../models/index';
+import { AggregateResult, RelatedWordsResults, UserRole, Query } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
-type RestMethod<IB, O> = IRestMethod<IB, O>;
+type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
 
 /**
  * Describes the values as expected and returned by the server.
@@ -22,15 +20,15 @@ type QueryDb<TDateType> = {
 }
 
 @Injectable()
-@RestParams()
-export class ApiService extends Rest {
+@ResourceParams()
+export class ApiService extends Resource {
     private apiUrl: Promise<string> | null = null;
 
-    constructor(private config: ConfigService, restHandler: RestHandler) {
+    constructor(private config: ConfigService, restHandler: ResourceHandler) {
         super(restHandler);
     }
 
-    $getUrl(actionOptions: IRestAction): string | Promise<string> {
+    $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         let urlPromise = super.$getUrl(actionOptions);
         if (!this.apiUrl) {
             this.apiUrl = this.config.get().then(config => config.apiUrl);
@@ -39,46 +37,46 @@ export class ApiService extends Rest {
         return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
     }
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/check_session'
     })
-    public checkSession: RestMethod<{ username: string }, { success: boolean }>;
+    public checkSession: ResourceMethod<{ username: string }, { success: boolean }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/get_wordcloud_data'
     })
-    public getWordcloudData: RestMethod<
+    public getWordcloudData: ResourceMethod<
         { content_list: string[] },
         { data: AggregateResult[] }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/get_related_words'
     })
-    public getRelatedWords: RestMethod<
+    public getRelatedWords: ResourceMethod<
         { query_term: string, corpus_name: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/get_related_words_time_interval'
     })
-    public getRelatedWordsTimeInterval: RestMethod<
+    public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
-    @RestAction({
+    @ResourceAction({
         path: '/corpus'
     })
-    public corpus: RestMethod<void, any>;
+    public corpus: ResourceMethod<void, any>;
 
-    @RestAction({
-        method: RestRequestMethod.Get,
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/es_config'
     })
-    public esConfig: RestMethod<void, [{
+    public esConfig: ResourceMethod<void, [{
         'name': string,
         'host': string,
         'port': number,
@@ -90,33 +88,33 @@ export class ApiService extends Rest {
         'scrollPagesize': number
     }]>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/log'
     })
-    public log: RestMethod<
+    public log: ResourceMethod<
         { msg: string, type: 'info' | 'error' },
         { success: boolean }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/login'
     })
-    public login: RestMethod<
+    public login: ResourceMethod<
         { username: string, password: string },
         { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/logout'
     })
-    public logout: RestMethod<void, { success: boolean }>;
+    public logout: ResourceMethod<void, { success: boolean }>;
 
-    @RestAction({
-        method: RestRequestMethod.Put,
+    @ResourceAction({
+        method: ResourceRequestMethod.Put,
         path: '/query'
     })
-    public query: RestMethod<QueryDb<Date> & {
+    public query: ResourceMethod<QueryDb<Date> & {
         id?: number,
         /**
          * Mark the query as started, and use the server time for determining this timestamp.
@@ -131,24 +129,24 @@ export class ApiService extends Rest {
         userID: number
     }>;
 
-    @RestAction({
-        method: RestRequestMethod.Post,
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
         path: '/register'
     })
-    public register: RestMethod<
+    public register: ResourceMethod<
         { username: string, email: string, password: string },
         { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
 
-    @RestAction({
-        method: RestRequestMethod.Get,
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/search_history'
     })
-    public search_history: RestMethod<void, { 'queries': Query[] }>;
+    public search_history: ResourceMethod<void, { 'queries': Query[] }>;
 
-    @RestAction({
-        method: RestRequestMethod.Get,
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/corpusdescription/{filename}',
-        responseBodyType: RestResponseBodyType.Text
+        responseBodyType: ResourceResponseBodyType.Text
     })
-    public corpusdescription: RestMethod<{filename: string}, any>;
+    public corpusdescription: ResourceMethod<{ filename: string }, any>;
 }
