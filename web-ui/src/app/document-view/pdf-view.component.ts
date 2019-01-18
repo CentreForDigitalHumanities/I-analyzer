@@ -77,7 +77,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
             acceptLabel: "Download",
             rejectLabel: "Do not download",
             accept: () => {
-                console.log('accept');
+                this.scanImageService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
             },
             reject: () => {
             }

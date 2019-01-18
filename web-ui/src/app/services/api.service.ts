@@ -149,7 +149,7 @@ export class ApiService extends Resource {
     })
     public source_image: ResourceMethod<
         { corpus_index: string, image_path: string },
-        any>
+        any>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -160,6 +160,13 @@ export class ApiService extends Resource {
     public sourcePdf: IResourceMethodFull<
         { corpus_index: string, image_path: string, page: number },
         any>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/download_pdf/{corpus_index}/{filepath}'
+    })
+    public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

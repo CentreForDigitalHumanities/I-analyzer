@@ -17,4 +17,8 @@ export class ScanImageService {
     return this.apiService.sourcePdf({ corpus_index, image_path, page })
   }
 
+  public download_pdf(corpus_index: string, filepath: string): Promise<any> {
+    return this.apiService.downloadPdf({ corpus_index, filepath })
+  }
+
 }
