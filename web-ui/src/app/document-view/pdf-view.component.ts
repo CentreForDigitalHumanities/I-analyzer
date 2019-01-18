@@ -1,6 +1,6 @@
 import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { Corpus, FoundDocument } from '../models/index';
-import { ScanImageService } from '../services';
+import { PdfService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ConfirmationService } from 'primeng/api';
 
@@ -37,7 +37,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
     public pdfInfo: pdfHeader;
 
     async get_pdf() {
-        const pdfResponse = <pdfResponse>await this.scanImageService.get_source_pdf(
+        const pdfResponse = <pdfResponse>await this.pdfService.get_source_pdf(
             this.corpus.index,
             this.document.fieldValues.image_path,
             this.document.fieldValues.page - 1)
@@ -76,14 +76,14 @@ export class PdfViewComponent implements OnChanges, OnInit {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                this.scanImageService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
+                this.pdfService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
             },
             reject: () => {
             }
         });
     }
 
-    constructor(private scanImageService: ScanImageService, private confirmationService: ConfirmationService) { }
+    constructor(private pdfService: PdfService, private confirmationService: ConfirmationService) { }
 
     ngOnInit() {
         this.get_pdf();

@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from './api.service'
 
 @Injectable()
-export class ScanImageService {
+export class PdfService {
 
   constructor(private http: HttpClient, private apiService: ApiService) { }
 

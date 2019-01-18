@@ -16,7 +16,7 @@ import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, PdfService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -165,7 +165,7 @@ const appRoutes: Routes = [
         LogService,
         NotificationService,
         QueryService,
-        ScanImageService,
+        PdfService,
         SearchService,
         SessionService,
         UserService,

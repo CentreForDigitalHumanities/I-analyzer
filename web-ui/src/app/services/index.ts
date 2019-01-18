@@ -10,7 +10,7 @@ export * from './highlight.service';
 export * from './log.service';
 export * from './notification.service';
 export * from './query.service';
-export * from './scan-image.service'
+export * from './pdf.service'
 export * from './search.service';
 export * from './session.service';
 export * from './user.service';

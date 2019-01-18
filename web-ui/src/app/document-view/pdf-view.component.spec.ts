@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { ApiService, ConfigService, ScanImageService } from '../services/index';
+import { ApiService, ConfigService, PdfService } from '../services/index';
 import { PdfViewComponent } from './pdf-view.component';
 
 
@@ -17,7 +17,7 @@ describe('PdfViewComponent', () => {
       providers: [
         ApiService,
         ConfigService,
-        ScanImageService],
+        PdfService],
       imports: [HttpModule, HttpClientModule]
     })
       .compileComponents();
