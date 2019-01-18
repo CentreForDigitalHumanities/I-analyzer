@@ -147,7 +147,7 @@ export class ApiService extends Resource {
         method: ResourceRequestMethod.Get,
         path: '/source_image'
     })
-    public source_image: ResourceMethod<
+    public sourceImage: ResourceMethod<
         { corpus_index: string, image_path: string },
         any>;
 
