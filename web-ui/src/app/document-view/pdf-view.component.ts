@@ -32,8 +32,6 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public isLoaded: boolean = false;
 
-    public pageArray: number[];
-
     public pdfInfo: pdfHeader;
 
     async get_pdf() {
@@ -74,8 +72,6 @@ export class PdfViewComponent implements OnChanges, OnInit {
         this.confirmationService.confirm({
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
-            acceptLabel: "Download",
-            rejectLabel: "Do not download",
             accept: () => {
                 this.scanImageService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
             },
