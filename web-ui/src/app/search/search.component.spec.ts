@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
 
-import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
@@ -44,7 +44,7 @@ describe('SearchComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, PdfViewComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
-            imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
+            imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
                 CorpusService,

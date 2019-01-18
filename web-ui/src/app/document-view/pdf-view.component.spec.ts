@@ -4,8 +4,8 @@ import { HttpModule } from '@angular/http';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ApiService, ConfigService, PdfService } from '../services/index';
 import { PdfViewComponent } from './pdf-view.component';
-
-
+import { ConfirmDialogModule } from 'primeng/primeng';
+import { ResourceModule } from '@ngx-resource/handler-ngx-http';
 
 describe('PdfViewComponent', () => {
   let component: PdfViewComponent;
@@ -17,8 +17,9 @@ describe('PdfViewComponent', () => {
       providers: [
         ApiService,
         ConfigService,
-        PdfService],
-      imports: [HttpModule, HttpClientModule]
+        PdfService,
+      ],
+      imports: [ConfirmDialogModule, HttpModule, HttpClientModule, ResourceModule],
     })
       .compileComponents();
   }));
