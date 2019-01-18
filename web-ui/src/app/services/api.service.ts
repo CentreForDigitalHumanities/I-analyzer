@@ -144,14 +144,6 @@ export class ApiService extends Resource {
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/source_image'
-    })
-    public sourceImage: ResourceMethod<
-        { corpus_index: string, image_path: string },
-        any>;
-
-    @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/source_pdf',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,

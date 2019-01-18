@@ -422,7 +422,7 @@ def api_get_wordcloud_data():
 
 @blueprint.route('/api/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_scan_image(corpus_index, page, image_path):
+def api_get_scan_image(corpus_index, image_path):
     backend_corpus = corpora.DEFINITIONS[corpus_index]
 
     if corpus_index in [corpus.name for corpus in current_user.role.corpora]:

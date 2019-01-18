@@ -29,8 +29,6 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public corpus: Corpus;
 
-    public imgSrc: any;
-
     constructor() { }
 
     ngOnChanges() {
