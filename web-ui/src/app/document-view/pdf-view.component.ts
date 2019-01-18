@@ -28,6 +28,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
 
     public page: number = null;
 
+    public startPage: number = null;
+
     public lastPage: number;
 
     public isLoaded: boolean = false;
@@ -41,6 +43,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
             this.document.fieldValues.page - 1)
         this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
         this.page = this.pdfInfo.homePageIndex + 1; //1-indexed
+        this.startPage = this.page;
         this.pdfSrc = pdfResponse.body;
     }
 
@@ -90,6 +93,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
         if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
             this.isLoaded = false;
             this.page = null;
+            this.startPage = null;
             this.get_pdf();
         }
     }
