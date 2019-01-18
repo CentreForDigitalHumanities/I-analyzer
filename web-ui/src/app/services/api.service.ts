@@ -155,7 +155,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/download_pdf/{corpus_index}/{filepath}'
+        path: '/download_pdf/{corpus_index}/{filepath}',
     })
     public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
 

@@ -3,6 +3,8 @@ import { Corpus, FoundDocument } from '../models/index';
 import { PdfService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ConfirmationService } from 'primeng/api';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { saveAs } from 'file-saver';
 
 @Component({
     selector: 'ia-pdf-view',
@@ -25,6 +27,8 @@ export class PdfViewComponent implements OnChanges, OnInit {
     public query: string;
 
     public pdfSrc: ArrayBuffer;
+
+    public pdfFile: any;
 
     public page: number = null;
 
@@ -76,14 +80,15 @@ export class PdfViewComponent implements OnChanges, OnInit {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                this.pdfService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
+                // this.pdfService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
+                window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
             },
             reject: () => {
             }
         });
     }
 
-    constructor(private pdfService: PdfService, private confirmationService: ConfirmationService) { }
+    constructor(private pdfService: PdfService, private confirmationService: ConfirmationService, private http: HttpClient) { }
 
     ngOnInit() {
         this.get_pdf();
