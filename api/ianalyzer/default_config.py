@@ -81,6 +81,7 @@ DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
+DUTCHNEWSPAPERS_TITLES = 'newspaper_titles.txt'
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 

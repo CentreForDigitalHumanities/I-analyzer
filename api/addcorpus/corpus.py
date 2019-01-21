@@ -247,25 +247,20 @@ class XMLCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
-
-        # determine if the source contains multiple files
-        multiple = isinstance(source, list)
-
-        # split fields by external xml or document xml
-        (regular_fields, external_fields) = self.split_document_sources(
-            source) if multiple else (self.fields, {})
-
-        # extract information from external xml files first
-        external_dict = self.external_source2dict(
-            source, external_fields) if multiple else {}
-
-        # regular fields extraction
-        if multiple:
-            # document files are files with either no tag, or a tag that is not required for any external xml extraction
-            document_files = [(f, meta) for (f, meta) in source if (
-                'file_tag' not in meta) or (meta['file_tag'] not in external_fields)]
+        
+        document_files = [source]
+        # extract information from external xml files first, if applicable
+        if 'external_file' in source[1]:
+            external_fields = [field for field in self.fields if 
+                 isinstance(field.extractor, extract.XML) and 
+                 field.extractor.external_file]
+            regular_fields = [field for field in self.fields if 
+                 field not in external_fields]
+            external_dict = self.external_source2dict(external_fields, source[1])
         else:
-            document_files = [source]
+            regular_fields = self.fields
+            external_dict = {}
+
         for filename, metadata in document_files:
             soup = self.soup_from_xml(filename)
             # Extract fields from the soup
@@ -288,46 +283,25 @@ class XMLCorpus(Corpus):
                 logger.warning(
                     'Top-level tag not found in `{}`'.format(filename))
 
-    def external_source2dict(self, source, external_fields):
+    def external_source2dict(self, external_fields, metadata):
         external_dict = {}
-        for file_tag in external_fields.keys():
-            files_by_tag = [(filename, metadata) for filename, metadata in source if (
-                'file_tag' in metadata) and (metadata['file_tag'] == file_tag)]
-            for filename, metadata in files_by_tag:
-                soup = self.soup_from_xml(filename)
-                # Extract fields from soup
-                for field in external_fields[file_tag]:
-                    tag = field.extractor.external_file['xml_tag_entry']
-                    bowl = self.bowl_from_soup(
-                        soup, field.extractor.external_file['xml_tag_toplevel'])
-                    if bowl:
-                        for spoon in bowl.find_all(tag):
-                            external_dict[field.name] = field.extractor.apply(
-                                soup_top=bowl,
-                                soup_entry=spoon,
-                                metadata=metadata
-                            )
-                    else:
-                        logger.warning(
-                            'Top-level tag not found in `{}`'.format(filename))
+        filename = metadata['external_file']
+        soup = self.soup_from_xml(filename)
+        for field in external_fields:
+            tag = field.extractor.external_file['xml_tag_entry']
+            bowl = self.bowl_from_soup(
+                soup, field.extractor.external_file['xml_tag_toplevel'])
+            if bowl:
+                for spoon in bowl.find_all(tag):
+                    external_dict[field.name] = field.extractor.apply(
+                        soup_top=bowl,
+                        soup_entry=spoon,
+                        metadata=metadata
+                    )
+            else:
+                logger.warning(
+                    'Top-level tag not found in `{}`'.format(filename))
         return external_dict
-
-    def split_document_sources(self, source):
-        regular_fields = list()
-        external_fields = {}
-        for field in self.fields:
-            try:
-                tag = field.extractor.external_file['file_tag']
-                if tag:
-                    if tag in external_fields.keys():
-                        external_fields[tag].append(field)
-                    else:
-                        external_fields[tag] = [field]
-                else:
-                    regular_fields.append(field)
-            except AttributeError:
-                regular_fields.append(field)
-        return regular_fields, external_fields
 
     def soup_from_xml(self, filename):
         '''

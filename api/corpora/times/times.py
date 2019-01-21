@@ -284,15 +284,15 @@ class Times(XMLCorpus):
             )
         ),
         Field(
-            name='cover',
-            display_name='On cover',
-            description='Whether the article is on the cover page.',
+            name='frontpage',
+            display_name='On front page',
+            description='Whether the article is on the front page.',
             es_mapping={'type': 'boolean'},
             search_filter=filters.BooleanFilter(
                 true='Cover page',
                 false='Other',
                 description=(
-                    'Accept only articles that are on the cover page. '
+                    'Accept only articles that are on the front page. '
                     'From 1985.'
                 )
             ),
