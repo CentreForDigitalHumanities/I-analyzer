@@ -24,6 +24,7 @@ from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
 from random import choice
 from flask_seasurf import SeaSurf
+import requests
 
 from . import config_fallback as config
 from . import factories
@@ -33,8 +34,12 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+from . import tasks
+from . import forward_es
 
 from flask_admin.base import MenuLink
+
+import os
 
 
 blueprint = Blueprint('blueprint', __name__)
@@ -84,8 +89,8 @@ def corpus_required(method):
             *nargs, **kwargs)
 
     return f
-
-
+    
+    
 def post_required(method):
     '''
     Wrapper to add relevant POSTed data to the parameters of a function.
@@ -277,6 +282,35 @@ def api_corpus_document(document_name):
     Return a document for a corpus.
     '''
     return send_from_directory(config.CORPUS_DOCUMENT_ROOT, '{}'.format(document_name))
+
+
+# endpoint for backend handeling of large csv files
+@blueprint.route('/api/download', methods=['POST'])
+@login_required
+def api_download():
+    response=jsonify({'success': False})
+    if not request.json:
+        return response
+    if request.mimetype != 'application/json':
+        return response
+    if not 'esQuery' in request.json.keys():
+        return response
+    if not 'corpus' in request.json.keys():
+        return response
+    if not current_user.email:
+        return response
+    if not current_user.download_limit:
+        return response
+    # Celery task    
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
+    response=jsonify({'success': True})
+    return response
+    
+
+# endpoint for link send in email to download csv file
+@blueprint.route('/api/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory( current_app.instance_path, '{}'.format(filename))
 
 
 @blueprint.route('/api/login', methods=['POST'])
