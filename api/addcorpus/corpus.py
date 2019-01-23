@@ -247,10 +247,15 @@ class XMLCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
-        
-        document_files = [source]
         # extract information from external xml files first, if applicable
-        if 'external_file' in source[1]:
+        if isinstance(source, str):
+            # no metadata
+            filename = source
+            metadata = {}
+        else:
+            filename = source[0]
+            metadata = source[1] or None
+        if 'external_file' in metadata:
             external_fields = [field for field in self.fields if 
                  isinstance(field.extractor, extract.XML) and 
                  field.extractor.external_file]
@@ -260,44 +265,46 @@ class XMLCorpus(Corpus):
         else:
             regular_fields = self.fields
             external_dict = {}
-
-        for filename, metadata in document_files:
-            soup = self.soup_from_xml(filename)
-            # Extract fields from the soup
-            tag = self.tag_entry
-            bowl = self.bowl_from_soup(soup)
-            if bowl:
-                for spoon in bowl.find_all(tag):
-                    # yield the union of external fields and document fields
-                    yield dict(itertools.chain(external_dict.items(),  {
-                        field.name: field.extractor.apply(
-                            # The extractor is put to work by simply throwing at it
-                            # any and all information it might need
-                            soup_top=bowl,
-                            soup_entry=spoon,
-                            metadata=metadata
-                        ) for field in regular_fields if field.indexed
-                    }.items()
-                    ))
-            else:
-                logger.warning(
-                    'Top-level tag not found in `{}`'.format(filename))
+        soup = self.soup_from_xml(filename)
+        # Extract fields from the soup
+        tag = self.tag_entry
+        bowl = self.bowl_from_soup(soup)
+        if bowl:
+            for spoon in bowl.find_all(tag):
+                # yield the union of external fields and document fields
+                yield dict(itertools.chain(external_dict.items(),  {
+                    field.name: field.extractor.apply(
+                        # The extractor is put to work by simply throwing at it
+                        # any and all information it might need
+                        soup_top=bowl,
+                        soup_entry=spoon,
+                        metadata=metadata
+                    ) for field in regular_fields if field.indexed
+                }.items()
+                ))
+        else:
+            logger.warning(
+                'Top-level tag not found in `{}`'.format(filename))
 
     def external_source2dict(self, external_fields, metadata):
+        ''' 
+        given an external xml file with metadata,
+        return a dictionary with tags which were found in that metadata
+        wrt to the current source.
+        '''
         external_dict = {}
         filename = metadata['external_file']
         soup = self.soup_from_xml(filename)
         for field in external_fields:
-            tag = field.extractor.external_file['xml_tag_entry']
             bowl = self.bowl_from_soup(
                 soup, field.extractor.external_file['xml_tag_toplevel'])
+            spoon = field.extractor.external_file['xml_tag_entry']
             if bowl:
-                for spoon in bowl.find_all(tag):
-                    external_dict[field.name] = field.extractor.apply(
-                        soup_top=bowl,
-                        soup_entry=spoon,
-                        metadata=metadata
-                    )
+                external_dict[field.name] = field.extractor.apply(
+                    soup_top=bowl,
+                    soup_entry=spoon,
+                    metadata=metadata
+                )            
             else:
                 logger.warning(
                     'Top-level tag not found in `{}`'.format(filename))
@@ -342,7 +349,6 @@ class XMLCorpus(Corpus):
         out_dict = {}
         soup = self.soup_from_xml(filename)
         for tag in tags:
-            print(tag)
             if isinstance(tag, str):
                 tag_info = soup.find(tag)
                 if not tag_info:
@@ -362,7 +368,6 @@ class XMLCorpus(Corpus):
                     out_dict[tag['save_as']] = right_tag.text
                 else:
                     out_dict[tag['tag']] = right_tag.text
-        print(out_dict)
         return out_dict
 
 

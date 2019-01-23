@@ -171,7 +171,6 @@ class XML(Extractor):
         if self.secondary_tag:
             sibling = soup.find(self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
             if sibling:
-                print(sibling.parent.contents, sibling.parent.find(tag))
                 return sibling.parent.find(tag)
 
         # Find and return (all) relevant BeautifulSoup element(s)

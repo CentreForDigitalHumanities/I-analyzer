@@ -54,7 +54,7 @@ class DutchNewspapers(XMLCorpus):
                                 self.definition_pattern.match(filename)), None)
             if not definition_file:
                 continue
-            meta = self.metadata_from_xml(definition_file, tags=[
+            meta_dict = self.metadata_from_xml(definition_file, tags=[
                     "title", 
                     "date", 
                     "publisher", 
@@ -62,7 +62,8 @@ class DutchNewspapers(XMLCorpus):
                     "source",
                     "issuenumber",
                     "language",
-                    "version_of",
+                    "isVersionOf",
+                    "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
             for filename in filenames:
@@ -79,7 +80,7 @@ class DutchNewspapers(XMLCorpus):
                             full_path)) + article_match.group(1)
                         record_id = identifier[4:-4].replace("_",":") +\
                           ":a" + identifier[-4:]
-                        meta_dict = meta.update({
+                        meta_dict.update({
                             'external_file': definition_file,
                             'id': record_id
                         })
@@ -131,15 +132,7 @@ class DutchNewspapers(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=Metadata('tag='date',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  transform=lambda x: str(x)'
-                                  )
+            extractor=Metadata('date')
         ),
         Field(
             name='newspaper_title',
@@ -153,28 +146,14 @@ class DutchNewspapers(XMLCorpus):
                 description='Accept only articles in these newspapers.',
                 options=papers
             ),
-            extractor=XML(tag='title',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('title')
         ),
         Field(
             name='version_of',
             display_name='Version of',
             description='The newspaper is a version of this newspaper.',
             es_mapping={'type': 'keyword'},
-            extractor=XML(tag='isVersionOf',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('isVersionOf')
         ),
         Field(
             name='issue_number',
@@ -182,14 +161,7 @@ class DutchNewspapers(XMLCorpus):
             description='Issue number of the newspaper',
             csv_core=True,
             es_mapping={'type': 'integer'},
-            extractor=XML(tag='issuenumber',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('issuenumber')
         ),
         Field(
             name='category',
@@ -198,7 +170,7 @@ class DutchNewspapers(XMLCorpus):
             csv_core=True,
             es_mapping={'type': 'keyword'},
             extractor=XML(tag='subject',
-                                  toplevel=False,
+                                  toplevel=True,
                                   recursive=True,
                                   multiple=False,
                                   secondary_tag={
@@ -206,7 +178,7 @@ class DutchNewspapers(XMLCorpus):
                                       'match': 'id'
                                   },
                                   external_file={
-                                      'xml_tag_toplevel': 'Item',
+                                      'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'dcx'
                                   }
                                   )
@@ -217,30 +189,14 @@ class DutchNewspapers(XMLCorpus):
             description='The area in which the newspaper was distributed.',
             es_mapping={'type': 'keyword'},
             csv_core=True,
-            extractor=XML(tag='spatial',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('spatial')
         ),
         Field(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
             search_field_core=True,
-            extractor=XML(tag='publisher',
-                                  toplevel=True,
-                                  multiple=True,
-                                  flatten=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('publisher')
         ),
         Field(
             name='language',
@@ -252,14 +208,7 @@ class DutchNewspapers(XMLCorpus):
                 description='Accept only articles in these newspapers.',
                 options=['nl', 'fr']
             ),
-            extractor=XML(tag='language',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('language')
         ),
         Field(
             name='article_title',
@@ -280,49 +229,14 @@ class DutchNewspapers(XMLCorpus):
             display_name='Source',
             description='Library or archive which keeps the hard copy of this newspaper.',
             es_mapping={'type': 'keyword'},
-            extractor=XML(tag='source',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('source')
         ),
         Field(
             name='pub_place',
             display_name='Publication Place',
             description='Where the newspaper was published',
             es_mapping={'type': 'keyword'},
-            extractor=XML(tag='spatial',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'yearsDigitized'
-                                  }
-                                )
-        ),
-        Field(
-            name='spatial',
-            display_name='Distribution',
-            description='Distribution area of the newspaper.',
-            results_overview=True,
-            csv_core=True,
-            es_mapping={'type': 'keyword'},
-            visualization_type='term_frequency',
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this distribution area.',
-                options=list(distribution.keys())
-            ),
-            extractor=XML(tag='spatial',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  )
+            extractor=Metadata('pub_place')
         ),
         Field(
             name='temporal',
@@ -336,14 +250,7 @@ class DutchNewspapers(XMLCorpus):
                 description='Accept only articles in newspapers with this publication frequency.',
                 options=['Dag', 'Week', 'Maand'],
             ),
-            extractor=XML(tag='temporal',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  )
+            extractor=Metadata('temporal')
         ),
         Field(
             name='content',
