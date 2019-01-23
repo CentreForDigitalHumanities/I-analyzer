@@ -60,7 +60,7 @@ class CorpusViewAdmin(ModelView):
     #     name = dict(validators=[Required(), AnyOf(current_app.config['CORPORA'].keys(), unknown_corpus_message)])
     # )
     form_args = dict(
-        name = dict(validators=[Required(), AnyOf(config.CORPORA.keys(), unknown_corpus_message)])
+        name = dict(validators=[Required(), AnyOf(lambda: current_app.config['CORPORA'].keys(), unknown_corpus_message)])
     )
 
     def after_model_change(self, form, model, is_created):
