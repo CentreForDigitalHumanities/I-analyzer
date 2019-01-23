@@ -51,9 +51,20 @@ class DutchNewspapers(XMLCorpus):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             definition_file = next((join(directory, filename) for filename in filenames if 
-                                self.definition_pattern.match(filename)),None)
+                                self.definition_pattern.match(filename)), None)
             if not definition_file:
                 continue
+            meta = self.metadata_from_xml(definition_file, tags=[
+                    "title", 
+                    "date", 
+                    "publisher", 
+                    {"tag": "spatial", "save_as":"distribution"},
+                    "source",
+                    "issuenumber",
+                    "language",
+                    "version_of",
+                    {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
+            ])
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)
@@ -68,11 +79,11 @@ class DutchNewspapers(XMLCorpus):
                             full_path)) + article_match.group(1)
                         record_id = identifier[4:-4].replace("_",":") +\
                           ":a" + identifier[-4:]
-                        # still need to insert ":a" after "mpeg21"
-                        yield full_path, {
+                        meta_dict = meta.update({
                             'external_file': definition_file,
                             'id': record_id
-                        }
+                        })
+                        yield full_path, meta_dict
     
     titlefile = join(dirname(current_app.config['CORPORA']['dutchnewspapers']), current_app.config['DUTCHNEWSPAPERS_TITLES'])
     with open(titlefile) as f:
@@ -120,14 +131,14 @@ class DutchNewspapers(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=XML(tag='date',
+            extractor=Metadata('tag='date',
                                   toplevel=True,
                                   recursive=True,
                                   external_file={
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'Item'
                                   },
-                                  transform=lambda x: str(x)
+                                  transform=lambda x: str(x)'
                                   )
         ),
         Field(

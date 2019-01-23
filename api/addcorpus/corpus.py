@@ -327,6 +327,43 @@ class XMLCorpus(Corpus):
             entry_tag = self.tag_entry
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
+    
+    def metadata_from_xml(self, filename, tags):
+        '''
+        Given a filename of an xml with metadata, and a range of tags to extract,
+        return a dictionary of all the contents of the requested tags.
+        A tag can either be a string, or a dictionary: 
+        {
+            "tag": "tag_to_extract",
+            "attribute": attribute to additionally filter on, optional
+            "save_as": key to use in output dictionary, optional
+        }
+        '''
+        out_dict = {}
+        soup = self.soup_from_xml(filename)
+        for tag in tags:
+            print(tag)
+            if isinstance(tag, str):
+                tag_info = soup.find(tag)
+                if not tag_info:
+                    continue
+                out_dict[tag] = tag_info.text
+            else:
+                candidates = soup.find_all(tag['tag'])
+                if 'attribute' in tag:
+                    right_tag = next((candidate for candidate in candidates if 
+                     candidate.attrs==tag['attribute']), None)
+                else:
+                    right_tag = next((candidate for candidate in candidates if 
+                     candidate.attrs=={}), None)
+                if not right_tag:
+                    continue
+                if 'save_as' in tag:
+                    out_dict[tag['save_as']] = right_tag.text
+                else:
+                    out_dict[tag['tag']] = right_tag.text
+        print(out_dict)
+        return out_dict
 
 
 class HTMLCorpus(XMLCorpus):
