@@ -4,6 +4,11 @@
         <h1 class="title">
             Search
             <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+            <sup>
+                <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
+                    <i class="moreInfoLink fa fa-info-circle info-icon"></i>
+                </span>
+            </sup>
         </h1>
     </div>
 </section>
@@ -38,8 +43,9 @@
                                     </div>
                                     <div class="control" iaBalloon="Restrict your query to specific fields"
                                         iaBalloonLength="medium">
-                                        <ia-select-field [availableFields]="availableFields" [filterCriterion]=" 'searchField' " [label]=" 'All fields'"
-                                            (selectedFields)="selectSearchFieldsEvent($event)" [showSelectedFields]="true">
+                                        <ia-select-field [availableFields]="availableFields" [filterCriterion]=" 'searchField' "
+                                            [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [showSelectedFields]="true">
                                         </ia-select-field>
                                     </div>
                                 </div>
@@ -50,7 +56,7 @@
                                 <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!"
                                     [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
                                     <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
-                                        (click)="download()" [disabled]="howManyResults==0">
+                                        (click)="choose_download_method()" [disabled]="howManyResults==0">
                                         <span class="icon is-small">
                                             <i class="fa fa-download"></i>
                                         </span>
@@ -58,8 +64,9 @@
                                     </button>
                                 </p>
                                 <p class="control" iaBalloon="Restrict your query to specific fields" iaBalloonLength="medium">
-                                    <ia-select-field [availableFields]="availableFields" [filterCriterion]=" 'csv' " [label]=" 'Customize' "
-                                        [selectAll]=" 'true' " [showSelectedFields]="false" (selectedFields)="selectCsvFieldsEvent($event)">
+                                    <ia-select-field [availableFields]="availableFields" [filterCriterion]=" 'csv' "
+                                        [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
+                                        (selectedFields)="selectCsvFieldsEvent($event)">
                                     </ia-select-field>
                                 </p>
                             </div>
@@ -104,19 +111,13 @@
                                         }}</label>
                                 </div>
                                 <p class="control">
-                                    <span 
-                                        *ngIf="queryField[field.name].useAsFilter" 
-                                        class="button icon filter-icon is-primary is-inverted is-round"
-                                        (click)="resetFilter(field.name)"
-                                        iaBalloon="Reset this filter to its default values"
+                                    <span *ngIf="queryField[field.name].useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                                        (click)="resetFilter(field.name)" iaBalloon="Reset this filter to its default values"
                                         iaBalloonPosition="down-left">
                                         <i class="fa fa-trash"></i>
                                     </span>
-                                    <span 
-                                        class="button icon filter-icon is-primary is-inverted is-round" 
-                                        [ngClass]="{'is-primary': queryField[field.name].useAsFilter}"
-                                        (click)="toggleFilter(field.name)"
-                                        iaBalloon="{{queryField[field.name].useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
+                                    <span class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': queryField[field.name].useAsFilter}"
+                                        (click)="toggleFilter(field.name)" iaBalloon="{{queryField[field.name].useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
                                         iaBalloonPosition="down-left">
                                         <i class="fa fa-filter"></i>
                                     </span>
@@ -164,3 +165,37 @@
     *ngIf="viewDocument">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText" [corpus]="corpus"></ia-document-view>
 </p-dialog>
+
+
+<!-- modal that shows if download csv api returns succes is True -->
+<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActive }">
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head modal-card-head_success">
+            <p class="modal-card-title">Your csv file is being created...</p>
+            <button class="delete" aria-label="close" (click)="toggleModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            When your csv file is ready, you will recieve an email on the address associated with your account.
+            This email contains a link to your file. Please click this link to download.
+        </section>
+        <footer class="modal-card-foot">
+        </footer>
+    </div>
+</div>
+
+<!-- modal that shows if download csv api returns False -->
+<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActiveError }">
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head modal-card-head_error">
+            <p class="modal-card-title">Something went wrong...</p>
+            <button class="delete" aria-label="close" (click)="toggleModalError()"></button>
+        </header>
+        <section class="modal-card-body">
+            Sorry, your CSV file could not be created. Please contact the web adminstrator.
+        </section>
+        <footer class="modal-card-foot">
+        </footer>
+    </div>
+</div>

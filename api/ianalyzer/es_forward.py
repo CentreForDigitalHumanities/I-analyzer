@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 es = Blueprint('es', __name__)
 
 
+
 def ensure_http(hostname):
     """ If hostname does not include the http scheme, prepend it. """
     prefix = ''
@@ -42,6 +43,7 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
+
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
@@ -68,6 +70,7 @@ def proxy_es(address):
             for key in PASSTHROUGH_HEADERS if key in es_response.headers
         },
     )
+ 
 
 
 @es.route('/<server_name>', methods=['HEAD'])
@@ -95,3 +98,5 @@ def forward_search(server_name, corpus_name, document_type):
     host = get_es_host_or_404(server_name)
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
+
+

@@ -15,6 +15,8 @@ from addcorpus.load_corpus import load_all_corpora
 
 from . import security
 from . import analyze
+from . import tasks
+from . import forward_es
 
 api = Blueprint('api', __name__)
 
@@ -150,6 +152,55 @@ def api_corpus_image(corpus, image_name):
         dirname(current_app.config['CORPORA'][corpus]), 
         current_app.config['IMAGE_PATH']), '{}'.format(image_name))
 
+@api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
+@login_required
+def api_corpus_description(description_name):
+    '''
+    Return comprehensive information on the corpus.
+    '''
+    return send_from_directory(join(
+        dirname(current_app.config['CORPORA'][corpus]),
+        current_app.config['CORPUS_DESCRIPTION_ROOT']), '{}'.format(description_name))
+
+@api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
+@login_required
+def api_corpus_document(document_name):
+    '''
+    Return a document for a corpus.
+    '''
+    return send_from_directory(join(
+        dirname(current_app.config['CORPORA'][corpus]),
+        current_app.config['CORPUS_DOCUMENT_ROOT']), '{}'.format(document_name))
+
+
+# endpoint for backend handeling of large csv files
+@api.route('/download', methods=['POST'])
+@login_required
+def api_download():
+    response=jsonify({'success': False})
+    if not request.json:
+        return response
+    if request.mimetype != 'application/json':
+        return response
+    if not 'esQuery' in request.json.keys():
+        return response
+    if not 'corpus' in request.json.keys():
+        return response
+    if not current_user.email:
+        return response
+    if not current_user.download_limit:
+        return response
+    # Celery task    
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
+    response=jsonify({'success': True})
+    return response
+    
+
+# endpoint for link send in email to download csv file
+@api.route('/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory( current_app.instance_path, '{}'.format(filename))
+
 
 @api.route('/login', methods=['POST'])
 def api_login():
@@ -236,8 +287,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    query = models.Query(
-        query=query_json, corpus_name=corpus_name, user=current_user)
+    if 'id' in request.json:
+        query = models.Query.query.filter_by(id=request.json['id']).first()
+    else:
+        query = models.Query(
+            query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -248,8 +302,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    # models.db.session.add(query)
-    # models.db.session.commit()
+    models.db.session.add(query)
+    models.db.session.commit()
 
     return jsonify({
         'id': query.id,

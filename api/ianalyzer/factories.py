@@ -38,6 +38,7 @@ def flask_app(cfg=config):
     csrf.init_app(app)
     mail.init_app(app)
 
+
     return app
 
 

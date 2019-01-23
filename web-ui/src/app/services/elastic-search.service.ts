@@ -25,7 +25,7 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
+    public makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
 
         if (queryModel.queryText) {
@@ -178,6 +178,7 @@ export class ElasticSearchService {
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
         let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);
+        console.log(corpusDefinition);
         // Perform the search
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response, queryModel, 0);
@@ -290,10 +291,10 @@ type Connection = {
         scrollTimeout: string
     }
 };
-type EsQuerySorted = EsQuery & {
+export type EsQuerySorted = EsQuery & {
     sort: { [fieldName: string]: 'desc' | 'asc' }[]
 };
-type EsQuery = {
+export type EsQuery = {
     aborted?: boolean,
     completed?: Date,
     query: EsSearchClause | {

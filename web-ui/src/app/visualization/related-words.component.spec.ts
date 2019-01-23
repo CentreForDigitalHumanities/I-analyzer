@@ -2,8 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/primeng'
 
-import { ManualService, SearchService } from '../services/index';
-import { ManualServiceMock } from '../services/manual.service.mock';
+import { DialogService, SearchService } from '../services/index';
+import { DialogServiceMock } from '../services/dialog.service.mock';
 import { SearchServiceMock } from '../services/search.service.mock';
 import { RelatedWordsComponent } from './related-words.component';
 
@@ -17,7 +17,7 @@ describe('RelatedWordsComponent', () => {
       declarations: [ RelatedWordsComponent ],
       providers: [
         { provide: SearchService, useValue: new SearchServiceMock()},
-        { provide: ManualService, useClass: ManualServiceMock },
+        { provide: DialogService, useClass: DialogServiceMock },
       ]
     })
     .compileComponents();

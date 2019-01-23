@@ -7,7 +7,7 @@ import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, DataService, SearchService, DownloadService, UserService, ManualService, NotificationService } from '../services/index';
+import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
 import { Fieldset } from 'primeng/primeng';
 import { SearchFilterComponent } from './search-filter.component';
 import { tickStep } from 'd3';
@@ -92,13 +92,15 @@ export class SearchComponent implements OnInit, OnDestroy {
     private resultsCount: number = 0;
     private tabIndex: number;
 
+    private isModalActive: boolean = false;
+    private isModalActiveError: boolean = false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
         private downloadService: DownloadService,
         private searchService: SearchService,
         private userService: UserService,
-        private manualService: ManualService,
+        private dialogService: DialogService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
         private changeDetectorRef: ChangeDetectorRef,
@@ -220,6 +222,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     public search() {
         let queryModel = this.createQueryModel();
+
         let route = this.searchService.queryModelToRoute(queryModel);
         let url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
@@ -265,6 +268,52 @@ export class SearchComponent implements OnInit, OnDestroy {
         })
     }
 
+    /**
+     * called by download csv button. Large files are rendered in backend via Celery async task and an email is send with download link from backend
+     */
+    public choose_download_method() {
+        if (this.resultsCount < 1000) {
+            this.download();
+        }
+        else {
+            this.download_asc();
+        }
+    }
+
+    /**
+     * backend async downloading of csv
+     */
+    public download_asc() {
+        this.searchService.download_async(this.corpus, this.queryModel).then(result => {
+            if (result) {
+                this.toggleModal();
+            }
+            else {
+                this.toggleModalError();
+            }
+
+        }, error => {
+            console.trace(error);
+        });
+    }
+
+    /**
+     * modal pops up after connecting to backend api to start creating csv
+     */
+    toggleModal() {
+        this.isModalActive = !this.isModalActive;
+    }
+
+    /**
+     * modal pops up after connecting to backend api and there was an error
+     */
+    toggleModalError() {
+        this.isModalActiveError = !this.isModalActiveError;
+    }
+
+    /**
+     * direct download for less than x results
+     */
     public async download() {
         this.isDownloading = true;
         let fields = this.getCsvFields();
@@ -317,7 +366,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public showQueryDocumentation() {
-        this.manualService.showPage('query');
+        this.dialogService.showManualPage('query');
+    }
+
+    public showCorpusInfo(corpus: Corpus) {
+        this.dialogService.showDescriptionPage(corpus);
     }
 
     private getCsvFields(): CorpusField[] {

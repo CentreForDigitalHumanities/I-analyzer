@@ -105,6 +105,12 @@ class Corpus(object):
             return None
         else:
             return self.scan_image_type
+    
+    def description_page(self):
+        ''' 
+        URL to markdown document with a comprehensive description
+        '''
+        return None
 
     def es_mapping(self):
         '''
