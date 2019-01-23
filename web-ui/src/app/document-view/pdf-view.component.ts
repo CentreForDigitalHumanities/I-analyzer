@@ -46,7 +46,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
             this.document.fieldValues.image_path,
             this.document.fieldValues.page - 1)
         this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
-        this.page = this.pdfInfo.homePageIndex + 1; //1-indexed
+        this.page = this.pdfInfo.homePageIndex; //1-indexed
         this.startPage = this.page;
         this.pdfSrc = pdfResponse.body;
     }
@@ -68,13 +68,6 @@ export class PdfViewComponent implements OnChanges, OnInit {
         this.page = pageNr;
     }
 
-    public textLayerRendered(e: CustomEvent, querytext: string) {
-        this.pdfComponent.pdfFindController.executeCommand('find', {
-            caseSensitive: false, findPrevious: true, highlightAll: true, phraseSearch: true,
-            query: querytext
-        });
-    }
-
     confirmDownload() {
         this.confirmationService.confirm({
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
@@ -91,16 +84,20 @@ export class PdfViewComponent implements OnChanges, OnInit {
     constructor(private pdfService: PdfService, private confirmationService: ConfirmationService, private http: HttpClient) { }
 
     ngOnInit() {
+        console.log(this.corpus);
         this.get_pdf();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
-            this.isLoaded = false;
-            this.page = null;
-            this.startPage = null;
-            this.get_pdf();
+        if (changes.document) {
+            if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
+                this.isLoaded = false;
+                this.page = null;
+                this.startPage = null;
+                this.get_pdf();
+            }
         }
+
     }
 
 }

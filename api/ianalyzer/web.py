@@ -433,16 +433,20 @@ def api_get_scan_image(corpus_index, image_path):
 @blueprint.route('/api/source_pdf', methods=['POST'])
 @login_required
 def api_get_pdf():
-    #filesize formatter
     def sizeof_fmt(num, suffix='B'):
-        for unit in ['','K','M','G','T','P','E','Z']:
+        """
+        Converts numerical filesize to human-readable string.
+        Maximum of three numbers before the decimal, and one behind.
+        E.g. 124857000 -> "119.1 MB"
+         """
+        for unit in ['','K','M','G']:
             if abs(num) < 1024.0:
-                return "%3.1f %s%s" % (num, unit, suffix)
+                return "{:3.1f} {}{}".format(num, unit, suffix)
             num /= 1024.0
-        return "%.1f %s%s" % (num, 'Yi', suffix)
 
     if not request.json:
         abort(400)
+
     corpus_index = request.json['corpus_index']
     backend_corpus = corpora.DEFINITIONS[corpus_index]
 
@@ -463,16 +467,16 @@ def api_get_pdf():
         _dir, filename = split(image_path)
         num_pages = input_pdf.getNumPages()
         all_pages = list(range(0, num_pages))
-
+        
         #the page is within context_radius of the beginning of the pdf:
         if (home_page - context_radius) <= 0:
-            pages = all_pages[:pages_returned]
-            home_page_index = home_page
+            pages = all_pages[:home_page+context_radius+1]
+            home_page_index = pages.index(home_page)
 
         #the page is within context_radius of the end of the pdf:
         elif (home_page + context_radius) >= num_pages:
-            pages = all_pages[(i*-1):]
-            home_page_index = all_pages.index(home_page)+1 #0-indexed
+            pages = all_pages[home_page-context_radius:]
+            home_page_index = pages.index(home_page)
 
         #normal case:
         else:
@@ -488,7 +492,7 @@ def api_get_pdf():
         response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
         pdf_header = json.dumps({
             "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
-            "homePageIndex": home_page_index,
+            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
             "fileName": title if title else filename,
             "fileSize": filesize
         })
