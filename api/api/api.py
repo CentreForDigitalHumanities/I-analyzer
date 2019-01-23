@@ -11,12 +11,12 @@ from flask_login import current_user, login_required
 from flask_mail import Mail, Message
 
 from ianalyzer import models
+from ianalyzer import es_forward
 from addcorpus.load_corpus import load_all_corpora
 
 from . import security
 from . import analyze
 from . import tasks
-from . import forward_es
 
 api = Blueprint('api', __name__)
 

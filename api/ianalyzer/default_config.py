@@ -97,6 +97,9 @@ TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 
+#Celery configuration
+BROKER_URL = 'amqp://'
+
 # Word model information for related words visualization
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
