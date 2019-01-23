@@ -1,10 +1,9 @@
 import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { Corpus, FoundDocument } from '../models/index';
-import { PdfService } from '../services';
+import { ApiService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ConfirmationService } from 'primeng/api';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { saveAs } from 'file-saver';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'ia-pdf-view',
@@ -41,10 +40,11 @@ export class PdfViewComponent implements OnChanges, OnInit {
     public pdfInfo: pdfHeader;
 
     async get_pdf() {
-        const pdfResponse = <pdfResponse>await this.pdfService.get_source_pdf(
-            this.corpus.index,
-            this.document.fieldValues.image_path,
-            this.document.fieldValues.page - 1)
+        const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
+            corpus_index: this.corpus.index,
+            image_path: this.document.fieldValues.image_path,
+            page: this.document.fieldValues.page - 1
+        })
         this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
         this.page = this.pdfInfo.homePageIndex; //1-indexed
         this.startPage = this.page;
@@ -77,7 +77,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                // this.pdfService.download_pdf(this.corpus.index, this.document.fieldValues.image_path)
+                // this.apiService.downloadPdf({corpus_index: this.corpus.index, filepath: this.document.fieldValues.image_path})
                 window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
             },
             reject: () => {
@@ -85,7 +85,7 @@ export class PdfViewComponent implements OnChanges, OnInit {
         });
     }
 
-    constructor(private pdfService: PdfService, private confirmationService: ConfirmationService, private http: HttpClient) { }
+    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private http: HttpClient) { }
 
     ngOnInit() {
         this.get_pdf();
