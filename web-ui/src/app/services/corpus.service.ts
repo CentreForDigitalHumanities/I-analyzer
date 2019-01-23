@@ -60,6 +60,7 @@ export class CorpusService {
             this.parseDate(data.max_date),
             data.image,
             data.scan_image_type,
+            data.allow_image_download,
             data.description_page);
     }
 

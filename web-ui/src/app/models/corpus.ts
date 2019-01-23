@@ -22,6 +22,7 @@ export class Corpus implements ElasticSearchIndex {
         public maxDate: Date,
         public image: string,
         public scan_image_type: string,
+        public allow_image_download: boolean,
         public descriptionpage?: string) { }
 
 }

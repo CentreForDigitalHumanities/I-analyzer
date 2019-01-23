@@ -12,7 +12,7 @@
         </button>
         
     </div>
-    <button class="button download is-primary is-small" (click)="confirmDownload()">
+    <button *ngIf="corpus.allow_image_download" class="button download is-primary is-small" (click)="confirmDownload()">
         <i class="fa fa-download" aria-hidden="true"></i>
     </button>
 </div>

@@ -84,7 +84,6 @@ export class PdfViewComponent implements OnChanges, OnInit {
     constructor(private pdfService: PdfService, private confirmationService: ConfirmationService, private http: HttpClient) { }
 
     ngOnInit() {
-        console.log(this.corpus);
         this.get_pdf();
     }
 
