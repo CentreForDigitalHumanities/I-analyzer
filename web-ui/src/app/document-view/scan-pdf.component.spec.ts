@@ -2,22 +2,21 @@ import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { ApiService, ConfigService, PdfService } from '../services/index';
-import { PdfViewComponent } from './pdf-view.component';
+import { ApiService, ConfigService } from '../services/index';
+import { ScanPdfComponent } from './scan-pdf.component';
 import { ConfirmDialogModule } from 'primeng/primeng';
 import { ResourceModule } from '@ngx-resource/handler-ngx-http';
 
-describe('PdfViewComponent', () => {
-  let component: PdfViewComponent;
-  let fixture: ComponentFixture<PdfViewComponent>;
+describe('ScanPdfComponent', () => {
+  let component: ScanPdfComponent;
+  let fixture: ComponentFixture<ScanPdfComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [PdfViewComponent, PdfViewerComponent],
+      declarations: [ScanPdfComponent, PdfViewerComponent],
       providers: [
         ApiService,
         ConfigService,
-        PdfService,
       ],
       imports: [ConfirmDialogModule, HttpModule, HttpClientModule, ResourceModule],
     })
@@ -25,7 +24,7 @@ describe('PdfViewComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PdfViewComponent);
+    fixture = TestBed.createComponent(ScanPdfComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -6,12 +6,12 @@ import { ConfirmationService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-    selector: 'ia-pdf-view',
-    templateUrl: './pdf-view.component.html',
-    styleUrls: ['./pdf-view.component.scss'],
+    selector: 'ia-scan-pdf',
+    templateUrl: './scan-pdf.component.html',
+    styleUrls: ['./scan-pdf.component.scss'],
     providers: [ConfirmationService]
 })
-export class PdfViewComponent implements OnChanges, OnInit {
+export class ScanPdfComponent implements OnChanges, OnInit {
     @ViewChild(PdfViewerComponent)
 
     private pdfComponent: PdfViewerComponent;

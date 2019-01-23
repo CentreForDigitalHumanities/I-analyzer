@@ -34,7 +34,7 @@ import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { FreqtableComponent } from '../visualization/freqtable.component';
 import { VisualizationComponent } from '../visualization/visualization.component';
 import { UserServiceMock } from '../services/user.service.mock';
-import { PdfViewComponent } from '../document-view/pdf-view.component'
+import { ScanPdfComponent } from '../document-view/scan-pdf.component'
 
 
 describe('SearchComponent', () => {
@@ -43,7 +43,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, PdfViewComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
