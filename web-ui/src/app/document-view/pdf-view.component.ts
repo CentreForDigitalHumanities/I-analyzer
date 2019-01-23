@@ -52,6 +52,10 @@ export class PdfViewComponent implements OnChanges, OnInit {
     }
 
     afterLoadComplete(pdfData: any) {
+        /**
+         * Callback for ng2-pdf-viewer loadcomplete event,
+         * fires after all pdf data is received and loaded by the viewer.
+         */
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
