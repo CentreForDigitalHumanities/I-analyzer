@@ -135,7 +135,6 @@ export class SearchService {
         let result = await this.apiService.download(
             { corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit }
         );
-
         return result.success;
     }
 

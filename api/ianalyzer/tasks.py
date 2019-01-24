@@ -3,7 +3,7 @@ import csv
 import json
 from . import config_fallback as config
 from celery import Celery
-from flask import Flask, current_app, render_template
+from flask import Flask, abort, current_app, render_template
 from flask_mail import Mail, Message
 import logging
 from . import forward_es

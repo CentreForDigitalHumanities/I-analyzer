@@ -291,15 +291,15 @@ def api_download():
     response=jsonify({'success': False})
     if not request.json:
         return response
-    if request.mimetype != 'application/json':
+    elif request.mimetype != 'application/json':
         return response
-    if not 'esQuery' in request.json.keys():
+    elif not 'esQuery' in request.json.keys():
         return response
-    if not 'corpus' in request.json.keys():
+    elif not 'corpus' in request.json.keys():
         return response
-    if not current_user.email:
+    elif not current_user.email:
         return response
-    if not current_user.download_limit:
+    elif not current_user.download_limit:
         return response
     # Celery task    
     tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
