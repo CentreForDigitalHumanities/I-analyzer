@@ -38,7 +38,8 @@ class DutchAnnualReports(XMLCorpus):
 
     dutchannualreports_map = {}
 
-    with open(current_app.config['DUTCHANNUALREPORTS_MAP_FILE']) as f:
+    with open(op.join(op.dirname(current_app.config['CORPORA']['dutchannualreports']),
+     current_app.config['DUTCHANNUALREPORTS_MAP_FILE'])) as f:
         reader = csv.DictReader(f)
         for line in reader:
             dutchannualreports_map[line['abbr']] = line['name']

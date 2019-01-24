@@ -17,7 +17,7 @@ celery = Celery('tasks', broker=config.BROKER_URL)
 @celery.task(bind=True)
 def download_csv(self, request_json, email, instance_path, download_size):
     corpus = request_json['corpus']
-    host = forward_es.get_es_host_or_404(corpus['serverName'])
+    host = es_forward.get_es_host_or_404(corpus['serverName'])
     address = host + "/".join(["",  corpus['index'],
                                corpus['doctype'], '_search'])
     params = {'size': download_size}

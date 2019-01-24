@@ -97,6 +97,8 @@ TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 
+TROONREDES_IMAGE = 'troon.jpg'
+
 #Celery configuration
 BROKER_URL = 'amqp://'
 
