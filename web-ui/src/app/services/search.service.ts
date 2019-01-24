@@ -86,8 +86,6 @@ export class SearchService {
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
 
-        console.log(query)
-
         let querySave = this.queryService.save(query, true);
         let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
@@ -133,8 +131,6 @@ export class SearchService {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
         // Log the query to the database
         this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
-
-        console.log("csv download via api service");
 
         let result = await this.apiService.download(
             { corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit }
