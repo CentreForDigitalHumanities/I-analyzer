@@ -4,6 +4,7 @@ import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 import { AggregateData } from '../models/index';
+import { DialogService } from '../services/index';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -22,7 +23,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
     private chartElement: any; 
     private svg: any;
 
-    constructor() { }
+    constructor(private dialogService: DialogService) { }
 
     ngOnInit() {
        
@@ -35,6 +36,10 @@ export class WordcloudComponent implements OnChanges, OnInit {
             d3.selectAll('svg').remove();
             this.drawWordCloud(this.significantText);
         }
+    }
+
+    showWordcloudDocumentation() {
+        this.dialogService.showManualPage('wordcloud');
     }
 
     drawWordCloud(significantText: AggregateData) {
