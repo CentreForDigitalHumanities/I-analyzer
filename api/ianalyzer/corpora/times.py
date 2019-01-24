@@ -275,8 +275,7 @@ class Times(XMLCorpus):
             extractor=extract.XML(
                 tag=['..', 'pageid'], attribute='isPartOf',
                 applicable=after(1985)
-            ),
-            sortable=True
+            )
         ),
         Field(
             name='supplement-title',
@@ -313,8 +312,7 @@ class Times(XMLCorpus):
                 tag=['..', 'pageid'], attribute='pageType',
                 transform=string_contains("cover"),
                 applicable=after(1985)
-            ),
-            sortable=True
+            )
         ),
         Field(
             name='id',
