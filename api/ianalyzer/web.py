@@ -433,17 +433,6 @@ def api_get_scan_image(corpus_index, image_path):
 @blueprint.route('/api/source_pdf', methods=['POST'])
 @login_required
 def api_get_pdf():
-    def sizeof_fmt(num, suffix='B'):
-        """
-        Converts numerical filesize to human-readable string.
-        Maximum of three numbers before the decimal, and one behind.
-        E.g. 124857000 -> "119.1 MB"
-         """
-        for unit in ['','K','M','G']:
-            if abs(num) < 1024.0:
-                return "{:3.1f} {}{}".format(num, unit, suffix)
-            num /= 1024.0
-
     if not request.json:
         abort(400)
 
@@ -454,47 +443,21 @@ def api_get_pdf():
         abort(400)
     else:
         pages_returned = 5 #number of pages that is displayed. must be odd number.
-        context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
+        
         home_page = request.json['page'] #the page corresponding to the document
-
         image_path = request.json['image_path']
         absolute_path = join(backend_corpus.data_directory, image_path)
-        tmp = BytesIO()
-        pdf_writer = PdfFileWriter()
-        input_pdf = PdfFileReader(absolute_path, "rb")
-        filesize = sizeof_fmt(getsize(absolute_path))
-        title = input_pdf.getDocumentInfo().title
-        _dir, filename = split(image_path)
-        num_pages = input_pdf.getNumPages()
-        all_pages = list(range(0, num_pages))
+
+        input_pdf, pdf_info = retrieve_pdf(absolute_path)
+        pages, home_page_index = pdf_pages(all_pages, pages_returned, home_page)
+        out = build_partial_pdf(pages, input_pdf)
         
-        #the page is within context_radius of the beginning of the pdf:
-        if (home_page - context_radius) <= 0:
-            pages = all_pages[:home_page+context_radius+1]
-            home_page_index = pages.index(home_page)
-
-        #the page is within context_radius of the end of the pdf:
-        elif (home_page + context_radius) >= num_pages:
-            pages = all_pages[home_page-context_radius:]
-            home_page_index = pages.index(home_page)
-
-        #normal case:
-        else:
-            pages = all_pages[(home_page-context_radius):(home_page+context_radius+1)]
-            home_page_index = context_radius
-
-        #push the pages to the writer
-        for p in pages:
-            pdf_writer.addPage(input_pdf.getPage(p))
-        pdf_writer.write(tmp)
-        tmp.seek(0) #reset stream
-        
-        response = make_response(send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
+        response = make_response(send_file(out, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
         pdf_header = json.dumps({
             "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
             "homePageIndex": home_page_index+1, #change from 0-indexed to real page
-            "fileName": title if title else filename,
-            "fileSize": filesize
+            "fileName": pdf_info['filename'],
+            "fileSize": pdf_info['filesize']
         })
         response.headers['pdfinfo'] = pdf_header
     return response
@@ -559,3 +522,67 @@ def api_get_related_words_time_interval():
             }
         }) 
     return response
+
+def pdf_pages(all_pages, pages_returned, home_page):
+    '''
+    Decide which pages should be returned, and the index of the home page in the resulting list
+    '''
+            context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
+            #the page is within context_radius of the beginning of the pdf:
+            if (home_page - context_radius) <= 0:
+                pages = all_pages[:home_page+context_radius+1]
+                home_page_index = pages.index(home_page)
+
+            #the page is within context_radius of the end of the pdf:
+            elif (home_page + context_radius) >= num_pages:
+                pages = all_pages[home_page-context_radius:]
+                home_page_index = pages.index(home_page)
+
+            #normal case:
+            else:
+                pages = all_pages[(home_page-context_radius):(home_page+context_radius+1)]
+                home_page_index = context_radius
+            
+            return pages, home_page_index
+
+def build_partial_pdf(pages, input_pdf):
+    '''
+    Build a partial pdf consisting of the requires pages.
+    Returns a temporary file stream.
+    '''
+    tmp = BytesIO()
+    pdf_writer = PdfFileWriter()
+    for p in pages:
+        pdf_writer.addPage(input_pdf.getPage(p))
+    pdf_writer.write(tmp)
+    tmp.seek(0) #reset stream
+
+    return tmp
+
+def retrieve_pdf(path):
+    '''
+    Retrieve the pdf as a file object, and gather some additional information.
+    '''
+    pdf = PdfFileReader(path, 'rb')
+    title = input_pdf.getDocumentInfo().title
+    _dir, filename = split(path)
+    num_pages = pdf.getNumPages()
+
+    info = {
+        'filename': title if title else filename,
+        'filesize': sizeof_fmt(getsize(path))
+        'all_pages': list(range(0, num_pages))
+     }
+
+    return pdf, info
+
+def sizeof_fmt(num, suffix='B'):
+        """
+        Converts numerical filesize to human-readable string.
+        Maximum of three numbers before the decimal, and one behind.
+        E.g. 124857000 -> "119.1 MB"
+         """
+        for unit in ['','K','M','G']:
+            if abs(num) < 1024.0:
+                return "{:3.1f} {}{}".format(num, unit, suffix)
+            num /= 1024.0
