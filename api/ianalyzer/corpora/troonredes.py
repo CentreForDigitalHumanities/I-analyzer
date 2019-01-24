@@ -110,7 +110,6 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
             csv_core=True,
-            visualization_type='timeline',
             search_filter=filters.DateFilter(
                 config.TROONREDES_MIN_DATE,
                 config.TROONREDES_MAX_DATE,
@@ -127,6 +126,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
+            visualization_type='wordcloud',
             extractor=extract.XML(tag='content')
         ),
     ]
