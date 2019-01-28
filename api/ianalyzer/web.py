@@ -275,16 +275,9 @@ def api_login():
 
 
 @blueprint.route('/api/logout', methods=['POST'])
-def api_logout():
-    samlLogout = False
-
-    # if this was a solis login, logout at ITS
-    if 'solislogin_token' in session:
-        samlLogout = True
-    
-    security.logout_user(current_user)  
-
-    return jsonify({'success': True, 'samlLogout': samlLogout})
+def api_logout():    
+    security.logout_user(current_user)
+    return jsonify({'success': True})
 
 
 def add_basic_user(username, password, email, is_active):

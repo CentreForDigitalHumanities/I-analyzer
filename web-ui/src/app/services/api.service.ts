@@ -102,7 +102,7 @@ export class ApiService extends Rest {
         method: RestRequestMethod.Post,
         path: '/logout'
     })
-    public logout: RestMethod<void, { success: boolean, samlLogout: boolean }>;
+    public logout: RestMethod<void, { success: boolean }>;
 
     @RestAction({
         method: RestRequestMethod.Put,

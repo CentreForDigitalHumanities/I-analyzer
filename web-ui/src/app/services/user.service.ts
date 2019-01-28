@@ -65,7 +65,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries'], parsed['isSolisLogin']);
         } else {
             return false;
         }
@@ -141,7 +141,7 @@ export class UserService implements OnDestroy {
         await this.sessionCheckPromise;
         let loginPromise = this.apiService.solisLogin().then(result => {
             if (result.success) {
-                return this.processLoginSucces(result);
+                return this.processLoginSucces(result, true);
             }
 
             return false;
@@ -156,13 +156,14 @@ export class UserService implements OnDestroy {
      * Create user and assign it to this.currentUser
      * @param result The result from the API call
      */
-    private processLoginSucces(result): User {
+    private processLoginSucces(result, isSolisLogin: boolean = false): User {
         this.currentUser = new User(
             result.id,
             result.username,
             result.role,
             result.downloadLimit == null ? 0 : result.downloadLimit,
-            result.queries);
+            result.queries,
+            isSolisLogin);
 
         return this.currentUser;
     }
@@ -188,17 +189,19 @@ export class UserService implements OnDestroy {
 
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
         let guestUser = await this.loginAsGuest();
+        let isSolisLogin = false;
         if (guestUser) {
             // switched back to guest user
             this.currentUser = guestUser;
         } else {
+            if (this.currentUser) { isSolisLogin = this.currentUser.isSolisLogin; }
             this.currentUser = false;
             this.sessionCheckPromise = Promise.resolve(false);
         }
 
         if (notifyServer) {
-            await this.apiService.logout().then(result => {
-                if (result.samlLogout) {
+            await this.apiService.logout().then(result => {                
+                if (isSolisLogin) {
                     window.location.href = 'api/init_solislogout'
                 }
             });
