@@ -12,6 +12,7 @@ import { TableModule } from 'primeng/table';
 import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
 import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
@@ -160,6 +161,7 @@ const appRoutes: Routes = [
         CorpusGuard,
         LoggedOnGuard,
         TitleCasePipe,
+        CookieService,
         {
             provide: XSRFStrategy,
             useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
@@ -167,7 +169,7 @@ const appRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             useFactory: csrfProviderFactory,
-            deps: [Injector, ApiService],
+            deps: [Injector, ApiService, CookieService],
             multi: true
         }],
     bootstrap: [AppComponent]
@@ -179,13 +181,14 @@ export function restHandlerFactory(http: Http) {
     return new RestHandlerHttp(http);
 }
 
-export function csrfProviderFactory(injector: Injector, provider: ApiService): Function {
-    return () => provider.ensureCsrf().then(result => {
-        console.log('token load')
-        console.log(result)
-
-        if (!result) {
-            // do something because CSRF token not present
+export function csrfProviderFactory(injector: Injector, provider: ApiService, cookieService: CookieService): Function {    
+    return () => { 
+            if (!cookieService.check('csrf_token')) { 
+                provider.ensureCsrf().then(result => {        
+                if (!result) {
+                    throw new Error("CSRF token could not be collected.");
+                }
+            })
         }
-    })
+    }
 }
