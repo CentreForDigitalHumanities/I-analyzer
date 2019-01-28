@@ -277,12 +277,9 @@ def api_login():
 @blueprint.route('/api/logout', methods=['POST'])
 def api_logout():
     samlLogout = False
-    
-    if current_user.is_saml_login:
-        # reset saml_login to disallow loading user from URL (i.e. via the query param 'solisID')
-        current_user.is_saml_login = False
-        models.db.session.add(current_user)
-        models.db.session.commit()
+
+    # if this was a solis login, logout at ITS
+    if 'solislogin_token' in session:
         samlLogout = True
     
     security.logout_user(current_user)  
