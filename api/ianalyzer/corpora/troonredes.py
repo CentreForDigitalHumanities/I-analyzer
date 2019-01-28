@@ -117,7 +117,7 @@ class Troonredes(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-
+            sortable=True
         ),
         Field(
             name='content',

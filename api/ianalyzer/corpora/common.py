@@ -498,7 +498,6 @@ class Field(object):
             not hidden and indexed and \
             ((self.es_mapping['type'] == 'text') or
              (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
-
         # Add back reference to field in filter
         if self.search_filter:
             self.search_filter.field = self

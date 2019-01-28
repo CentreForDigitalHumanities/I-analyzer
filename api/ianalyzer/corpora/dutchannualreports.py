@@ -105,7 +105,8 @@ class DutchAnnualReports(XMLCorpus):
             ),
             visualization_sort="key",
             extractor=Metadata(key='year', transform=int),
-            csv_core=True
+            csv_core=True,
+            sortable=True
         ),
         Field(
             name='company',
@@ -147,6 +148,7 @@ class DutchAnnualReports(XMLCorpus):
             es_mapping={'type': 'integer'},
             extractor=XML(attribute='PHYSICAL_IMG_NR', transform=int),
             csv_core=True,
+            sortable=True
         ),
         Field(
             name='id',
