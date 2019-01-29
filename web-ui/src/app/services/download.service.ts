@@ -2,10 +2,17 @@ import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
 
+
 @Injectable()
 export class DownloadService {
 
-    constructor() { }
+    constructor(
+        //private queryService: QueryService,
+        //private userService: UserService,
+
+    ) {
+
+    }
 
     /**
      * Downloads the given tabular data as a CSV file.
@@ -14,6 +21,8 @@ export class DownloadService {
      * @param header The column names to place at the beginning of the file.
      * @param separator Cell separator to use.
      */
+
+
     public downloadCsv(filename: string, values: string[][], header: string[], separator = ','): void {
         const newline = '\n';
 

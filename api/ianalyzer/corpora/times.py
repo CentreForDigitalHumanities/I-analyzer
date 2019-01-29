@@ -198,6 +198,20 @@ class Times(XMLCorpus):
             )
         ),
         Field(
+            name='ocr',
+            display_name='OCR confidence',
+            description='OCR confidence level.',
+            es_mapping={'type': 'float'},
+            search_filter=filters.RangeFilter(0, 100,
+                                              description=(
+                                                  'Accept only articles for which the Opitical Character Recognition confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=extract.XML(tag='ocr', transform=float),
+            sortable=True
+        ),
+        Field(
             name='date-end',
             display_name='Ending date',
             description=(
@@ -245,7 +259,7 @@ class Times(XMLCorpus):
               ),
         Field(
             name='page-type',
-            display_name='Page Type',
+            display_name='Page type',
             description='Supplement in which article occurs.',
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
@@ -261,8 +275,7 @@ class Times(XMLCorpus):
             extractor=extract.XML(
                 tag=['..', 'pageid'], attribute='isPartOf',
                 applicable=after(1985)
-            ),
-            sortable=True
+            )
         ),
         Field(
             name='supplement-title',
@@ -284,14 +297,14 @@ class Times(XMLCorpus):
         ),
         Field(
             name='cover',
-            display_name='On cover',
-            description='Whether the article is on the cover page.',
+            display_name='On front page',
+            description='Whether the article is on the front page.',
             es_mapping={'type': 'boolean'},
             search_filter=filters.BooleanFilter(
                 true='Cover page',
                 false='Other',
                 description=(
-                    'Accept only articles that are on the cover page. '
+                    'Accept only articles that are on the front page. '
                     'From 1985.'
                 )
             ),
@@ -299,28 +312,13 @@ class Times(XMLCorpus):
                 tag=['..', 'pageid'], attribute='pageType',
                 transform=string_contains("cover"),
                 applicable=after(1985)
-            ),
-            sortable=True
+            )
         ),
         Field(
             name='id',
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='id')
-        ),
-        Field(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            # search_filter=filters.RangeFilter(0, 100,
-            #                                   description=(
-            #                                       'Accept only articles for which the Opitical Character Recognition confidence '
-            #                                       'indicator is in this range.'
-            #                                   )
-            #                                   ),
-            extractor=extract.XML(tag='ocr', transform=float),
-            sortable=True
         ),
         Field(
             name='ocr-relevant',

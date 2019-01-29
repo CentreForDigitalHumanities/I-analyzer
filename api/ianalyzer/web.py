@@ -25,6 +25,7 @@ from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
 from random import choice
 from flask_seasurf import SeaSurf
+import requests
 
 from . import config_fallback as config
 from . import factories
@@ -34,8 +35,12 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+from . import tasks
+from . import forward_es
 
 from flask_admin.base import MenuLink
+
+import os
 
 
 blueprint = Blueprint('blueprint', __name__)
@@ -85,8 +90,8 @@ def corpus_required(method):
             *nargs, **kwargs)
 
     return f
-
-
+    
+    
 def post_required(method):
     '''
     Wrapper to add relevant POSTed data to the parameters of a function.
@@ -280,6 +285,35 @@ def api_corpus_document(document_name):
     return send_from_directory(config.CORPUS_DOCUMENT_ROOT, '{}'.format(document_name))
 
 
+# endpoint for backend handeling of large csv files
+@blueprint.route('/api/download', methods=['POST'])
+@login_required
+def api_download():
+    response=jsonify({'success': False})
+    if not request.json:
+        return response
+    elif request.mimetype != 'application/json':
+        return response
+    elif not 'esQuery' in request.json.keys():
+        return response
+    elif not 'corpus' in request.json.keys():
+        return response
+    elif not current_user.email:
+        return response
+    elif not current_user.download_limit:
+        return response
+    # Celery task    
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
+    response=jsonify({'success': True})
+    return response
+    
+
+# endpoint for link send in email to download csv file
+@blueprint.route('/api/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory( current_app.instance_path, '{}'.format(filename))
+
+
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
     if not request.json:
@@ -365,11 +399,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    # if 'id' in request.json:
-    #     query = models.Query.query.filter_by(id=request.json['id']).first()
-    # else:
-    query = models.Query(
-        query=query_json, corpus_name=corpus_name, user=current_user)
+    if 'id' in request.json:
+        query = models.Query.query.filter_by(id=request.json['id']).first()
+    else:
+        query = models.Query(
+            query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -380,8 +414,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    # models.db.session.add(query)
-    # models.db.session.commit()
+    models.db.session.add(query)
+    models.db.session.commit()
 
     return jsonify({
         'id': query.id,

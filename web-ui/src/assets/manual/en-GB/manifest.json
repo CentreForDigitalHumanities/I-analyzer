@@ -10,5 +10,8 @@
     {
         "id": "relatedwords",
         "title": "Related Words Query"
+    },
+    {   "id": "wordcloud",
+        "title": "Word cloud visualization"
     }
 ]

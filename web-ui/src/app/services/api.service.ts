@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { ConfigService } from './config.service';
-import { AggregateResult, RelatedWordsResults, UserRole, Query } from '../models/index';
+import { EsQuery, EsQuerySorted } from './elastic-search.service';
+//import { SearchFilterData, AggregateResult, RelatedWordsResults, UserRole, Query, User, Corpus } from '../models/index';
+import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -128,6 +130,14 @@ export class ApiService extends Resource {
         id: number,
         userID: number
     }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download'
+    })
+    public download: ResourceMethod<
+        { corpus: Corpus, esQuery: EsQuery | EsQuerySorted, size: number },
+        { success: boolean }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

@@ -25,7 +25,7 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    private makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
+    public makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
 
         if (queryModel.queryText) {
@@ -290,10 +290,10 @@ type Connection = {
         scrollTimeout: string
     }
 };
-type EsQuerySorted = EsQuery & {
+export type EsQuerySorted = EsQuery & {
     sort: { [fieldName: string]: 'desc' | 'asc' }[]
 };
-type EsQuery = {
+export type EsQuery = {
     aborted?: boolean,
     completed?: Date,
     query: EsSearchClause | {

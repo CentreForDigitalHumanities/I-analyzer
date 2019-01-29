@@ -55,6 +55,7 @@ SERVERS = {
 # MAIL_PASSWORD = ''
 # MAIL_FROM_ADRESS='example@dhlab.nl'
 # MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
+# MAIL_CSV_SUBJECT_LINE='Your I-analyzer csv file is ready'
 # BASE_URL='http://localhost:4200'
 # LOGO_LINK='http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'
 
@@ -117,7 +118,10 @@ DUTCHANNUALREPORTS_MAP = {}
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
+#Celery configuration
+BROKER_URL = 'amqp://'
 # Word model information for related words visualization
+
 WM_DIRECTORY = {
     'dutchannualreports': 'ianalyzer/corpora/wm/'
 }
