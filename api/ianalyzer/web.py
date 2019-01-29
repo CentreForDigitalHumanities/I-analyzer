@@ -577,12 +577,12 @@ def retrieve_pdf(path):
     return pdf, info
 
 def sizeof_fmt(num, suffix='B'):
-        """
-        Converts numerical filesize to human-readable string.
-        Maximum of three numbers before the decimal, and one behind.
-        E.g. 124857000 -> "119.1 MB"
-         """
-        for unit in ['','K','M','G']:
-            if abs(num) < 1024.0:
-                return "{:3.1f} {}{}".format(num, unit, suffix)
-            num /= 1024.0
+    '''
+    Converts numerical filesize to human-readable string.
+    Maximum of three numbers before the decimal, and one behind.
+    E.g. 124857000 -> "119.1 MB"
+    '''
+    for unit in ['','K','M','G']:
+        if abs(num) < 1024.0:
+            return "{:3.1f} {}{}".format(num, unit, suffix)
+        num /= 1024.0

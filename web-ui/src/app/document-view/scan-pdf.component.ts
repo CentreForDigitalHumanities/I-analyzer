@@ -51,11 +51,12 @@ export class ScanPdfComponent implements OnChanges, OnInit {
         this.pdfSrc = pdfResponse.body;
     }
 
-    afterLoadComplete(pdfData: any) {
-        /**
-         * Callback for ng2-pdf-viewer loadcomplete event,
+    /**
+         * callback for ng2-pdf-viewer loadcomplete event,
          * fires after all pdf data is received and loaded by the viewer.
          */
+    afterLoadComplete(pdfData: any) {
+
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
