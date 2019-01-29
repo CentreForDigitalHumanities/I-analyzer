@@ -80,6 +80,7 @@ describe('CorpusService', () => {
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
                 "image": "/static/no-image.jpg",
                 "scan_image_type": "png",
+                "allow_image_download": false,
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -174,7 +175,8 @@ describe('CorpusService', () => {
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
-                'png'
+                'png',
+                false
             )]);
         });
     });
