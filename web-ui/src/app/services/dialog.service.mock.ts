@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { ManualPageEvent } from './manual.service';
+import { DialogPageEvent } from './dialog.service';
 
 @Injectable()
-export class ManualServiceMock {
-    private behavior = new BehaviorSubject<ManualPageEvent>({ status: 'hide' });
+export class DialogServiceMock {
+    private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
     public pageEvent = this.behavior.asObservable();
 
     public constructor(private domSanitizer: DomSanitizer) {
@@ -32,7 +31,11 @@ export class ManualServiceMock {
             html: this.domSanitizer.bypassSecurityTrustHtml(html),
             identifier: 'example',
             title: 'Example Title',
-            status: 'show'
+            status: 'show',
+            footer: {
+                buttonLabel: 'test',
+                routerLink: ['/manual', identifier]
+            }
         });
     }
 }

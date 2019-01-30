@@ -60,6 +60,7 @@ SERVERS = {
 # MAIL_PASSWORD = ''
 # MAIL_FROM_ADRESS='example@dhlab.nl'
 # MAIL_REGISTRATION_SUBJECT_LINE='Thank you for signing up at I-analyzer'
+# MAIL_CSV_SUBJECT_LINE='Your I-analyzer csv file is ready'
 # BASE_URL='http://localhost:4200'
 # LOGO_LINK='http://dhstatic.hum.uu.nl/logo-lab/png/dighum-logo.png'
 
@@ -71,6 +72,10 @@ CORPUS_SERVER_NAMES = {
 # The folder (relative to 'api/ianalyzer') where the corpus images live.
 # Note that the name of each corpus image will need to be configuration separately.
 CORPUS_IMAGE_ROOT = 'corpora/images'
+# The folder (relative to 'api/ianalyzer') where corpus documents live.
+CORPUS_DOCUMENT_ROOT = 'corpora/documents'
+# The folder (relative to 'api/ianalyzer') where full corpus descriptions are.
+CORPUS_DESCRIPTION_ROOT = 'corpora/descriptions'
 
 # Index configurations
 DUTCHNEWSPAPERS_TITLE = "Dutch Newspapers"
@@ -109,9 +114,21 @@ DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
 DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
 DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
 DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
 DUTCHANNUALREPORTS_MAP = {}
 
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
+
+#Celery configuration
+BROKER_URL = 'amqp://'
+# Word model information for related words visualization
+
+WM_DIRECTORY = {
+    'dutchannualreports': 'ianalyzer/corpora/wm/'
+}
+WM_COMPLETE_FN = "complete.pkl"
+WM_BINNED_FN = "binned.pkl"

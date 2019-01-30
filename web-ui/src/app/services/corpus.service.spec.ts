@@ -80,12 +80,14 @@ describe('CorpusService', () => {
                 "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
                 "image": "/static/no-image.jpg",
                 "scan_image_type": "png",
+                "allow_image_download": false,
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
                     "hidden": true,
                     "sortable": false,
-                    "searchable": false,
+                    "searchable": true,
+                    "downloadable": false,
                     "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
@@ -106,6 +108,7 @@ describe('CorpusService', () => {
                     "hidden": false,
                     "sortable": true,
                     "searchable": false,
+                    "downloadable": true,
                     "indexed": true,
                     "name": "year",
                     "results_overview": true,
@@ -130,6 +133,7 @@ describe('CorpusService', () => {
                 hidden: true,
                 sortable: false,
                 searchable: false,
+                downloadable: true,
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
@@ -148,6 +152,7 @@ describe('CorpusService', () => {
                 hidden: false,
                 sortable: true,
                 searchable: false,
+                downloadable: true,
                 name: 'year',
                 displayName: 'year',
                 displayType: 'integer',
@@ -174,7 +179,8 @@ describe('CorpusService', () => {
                 new Date(1785, 0, 1, 0, 0),
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
-                'png'
+                'png',
+                false
             )]);
         });
     });

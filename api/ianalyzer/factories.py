@@ -41,6 +41,7 @@ def flask_app(blueprint, admin_instance, login_manager, csrf, mail, saml, cfg=co
     mail.init_app(app)
     saml.init_app(app)
 
+
     return app
 
 

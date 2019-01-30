@@ -51,7 +51,6 @@ class Troonredes(XMLCorpus):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    # print(full_path, {'id': name})
                     yield full_path, {'id': name}
 
     fields = [
@@ -111,7 +110,6 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
             csv_core=True,
-            visualization_type='timeline',
             search_filter=filters.DateFilter(
                 config.TROONREDES_MIN_DATE,
                 config.TROONREDES_MAX_DATE,
@@ -119,7 +117,7 @@ class Troonredes(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-
+            sortable=True
         ),
         Field(
             name='content',
@@ -128,6 +126,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
+            visualization_type='wordcloud',
             extractor=extract.XML(tag='content')
         ),
     ]

@@ -24,6 +24,8 @@ class DutchAnnualReports(XMLCorpus):
     es_settings = None
     image = config.DUTCHANNUALREPORTS_IMAGE
     scan_image_type = config.DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE
+    allow_image_download = config.DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD
+    description_page = config.DUTCHANNUALREPORTS_DESCRIPTION_PAGE
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -104,7 +106,8 @@ class DutchAnnualReports(XMLCorpus):
             ),
             visualization_sort="key",
             extractor=Metadata(key='year', transform=int),
-            csv_core=True
+            csv_core=True,
+            sortable=True
         ),
         Field(
             name='company',
@@ -146,6 +149,7 @@ class DutchAnnualReports(XMLCorpus):
             es_mapping={'type': 'integer'},
             extractor=XML(attribute='PHYSICAL_IMG_NR', transform=int),
             csv_core=True,
+            sortable=True
         ),
         Field(
             name='id',

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
-import { DataService, SearchService, ScanImageService } from '../services';
+import { DataService, SearchService } from '../services';
 
 @Component({
     selector: 'ia-search-results',
@@ -43,7 +43,7 @@ export class SearchResultsComponent implements OnInit, OnChanges {
         message: string
     };
 
-    constructor(private searchService: SearchService, private dataService: DataService, private scanImageService: ScanImageService) { }
+    constructor(private searchService: SearchService, private dataService: DataService) { }
 
     ngOnInit() {
 
@@ -72,11 +72,6 @@ export class SearchResultsComponent implements OnInit, OnChanges {
             // if an error occurred, return query text and 0 results
             this.searched(this.queryModel.queryText, 0);
         });
-
-        if (this.results != undefined) {
-            console.log(this.results);
-        }
-
     }
 
     public async loadMore() {

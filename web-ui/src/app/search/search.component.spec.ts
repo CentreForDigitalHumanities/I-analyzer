@@ -5,17 +5,18 @@ import { FormsModule } from '@angular/forms';
 
 import { Observable } from 'rxjs';
 
-import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, ApiRetryService, CorpusService, DataService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, ManualService, NotificationService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { ManualServiceMock } from '../services/manual.service.mock';
+import { DialogServiceMock } from '../services/dialog.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
+import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
@@ -33,7 +34,8 @@ import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { FreqtableComponent } from '../visualization/freqtable.component';
 import { VisualizationComponent } from '../visualization/visualization.component';
 import { UserServiceMock } from '../services/user.service.mock';
-import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { ScanPdfComponent } from '../document-view/scan-pdf.component'
+
 
 describe('SearchComponent', () => {
     let component: SearchComponent;
@@ -41,8 +43,8 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
-            imports: [ ChartModule, FormsModule, CalendarModule, CheckboxModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
+            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
                 CorpusService,
@@ -58,7 +60,7 @@ describe('SearchComponent', () => {
                 },
                 LogService,
                 {
-                    provide: ManualService, useClass: ManualServiceMock
+                    provide: DialogService, useClass: DialogServiceMock
                 },
                 NotificationService,
                 QueryService,

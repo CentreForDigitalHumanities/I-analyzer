@@ -29,16 +29,9 @@
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
-                    <ng-template pTemplate="content">
-                        <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/0/{{document.fieldValues.image_path}}"/>
-                        <pdf-viewer *ngIf="corpus.scan_image_type=='pdf' && imgSrc"
-                                    [src]="imgSrc"
-                                    [render-text]="true"
-                                    (text-layer-rendered)="textLayerRendered($event, this.query)"
-                                    [original-size]="false"
-                                    [autoresize]="true"
-                                    style="max-width:100%;">
-                        </pdf-viewer>
+                    <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}"/>
+                    <ng-template *ngIf="corpus.scan_image_type=='pdf'" pTemplate="content">
+                        <ia-scan-pdf [corpus]="corpus" [document]="document" [query]="query"></ia-scan-pdf>
                     </ng-template>
             </p-tabPanel>
         </p-tabView>

@@ -3,18 +3,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Http, HttpModule, XSRFStrategy, CookieXSRFStrategy } from '@angular/http';
+import { HttpModule } from '@angular/http';
+
+import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { ButtonModule, CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
-import { RestHandler, IRestRequest, IRestResponse } from 'rest-core';
-import { RestHandlerHttp, RestModule } from 'rest-ngx-http';
+import { ResourceHandler } from '@ngx-resource/core';
+import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DownloadService, ElasticSearchService, HighlightService, ManualService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -22,7 +25,6 @@ import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
 import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
-import { ManualDialogComponent } from './manual/manual-dialog.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
 import { NotificationsComponent } from './notifications/notifications.component';
@@ -42,6 +44,8 @@ import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
+import { ScanPdfComponent } from './document-view/scan-pdf.component';
+import { DialogComponent } from './dialog/dialog.component';
 
 const appRoutes: Routes = [
     {
@@ -89,6 +93,7 @@ const appRoutes: Routes = [
         AppComponent,
         BalloonDirective,
         DropdownComponent,
+        DialogComponent,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
@@ -98,7 +103,6 @@ const appRoutes: Routes = [
         SearchResultsComponent,
         SearchSortingComponent,
         ManualComponent,
-        ManualDialogComponent,
         ManualNavigationComponent,
         MenuComponent,
         NotificationsComponent,
@@ -108,6 +112,7 @@ const appRoutes: Routes = [
         VisualizationComponent,
         WordcloudComponent,
         TimelineComponent,
+        RelatedWordsComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
         HistoryQueryDisplayComponent,
@@ -115,16 +120,23 @@ const appRoutes: Routes = [
         SelectFieldComponent,
         RegistrationComponent,
         PrivacyComponent,
-        RelatedWordsComponent
+        RelatedWordsComponent,
+        ScanPdfComponent
     ],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CalendarModule,
         CommonModule,
+        ConfirmDialogModule,
         DropdownModule,
         FormsModule,
         HttpModule,
+        HttpClientModule,
+        HttpClientXsrfModule.withOptions({
+            cookieName: 'csrf_token',
+            headerName: 'X-XSRF-Token'
+        }),
         RouterModule.forRoot(appRoutes),
         MarkdownModule,
         MultiSelectModule,
@@ -136,8 +148,8 @@ const appRoutes: Routes = [
         SharedModule,
         TableModule,
         TabViewModule,
-        RestModule.forRoot({
-            handler: { provide: RestHandler, useFactory: (restHandlerFactory), deps: [Http] }
+        ResourceModule.forRoot({
+            handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
         }),
         PdfViewerModule,
     ],
@@ -147,14 +159,13 @@ const appRoutes: Routes = [
         CorpusService,
         ConfigService,
         DataService,
+        DialogService,
         DownloadService,
         ElasticSearchService,
         HighlightService,
         LogService,
-        ManualService,
         NotificationService,
         QueryService,
-        ScanImageService,
         SearchService,
         SessionService,
         UserService,
@@ -177,8 +188,8 @@ const appRoutes: Routes = [
 export class AppModule { }
 
 // AoT requires an exported function for factories
-export function restHandlerFactory(http: Http) {
-    return new RestHandlerHttp(http);
+export function resourceHandlerFactory(http: HttpClient) {
+    return new ResourceHandlerHttpClient(http);
 }
 
 export function csrfProviderFactory(injector: Injector, provider: ApiService, cookieService: CookieService): Function {    

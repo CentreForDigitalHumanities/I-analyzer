@@ -1,3 +1,8 @@
+from ianalyzer import extract
+import itertools
+import inspect
+import json
+import bs4
 '''
 Module contains the base classes from which corpora can derive;
 '''
@@ -5,13 +10,6 @@ Module contains the base classes from which corpora can derive;
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger(__name__)
-
-import bs4
-import json
-import inspect
-import itertools
-
-from ianalyzer import extract
 
 
 class Corpus(object):
@@ -105,6 +103,21 @@ class Corpus(object):
             return None
         else:
             return self.scan_image_type
+
+    def allow_image_download(self):
+        '''
+        Allow the downloading of source images
+        '''
+        if self.allow_image_download is None:
+            return False
+        else:
+            return self.allow_image_download
+
+    def description_page(self):
+        ''' 
+        URL to markdown document with a comprehensive description
+        '''
+        return None
 
     def es_mapping(self):
         '''
@@ -464,6 +477,7 @@ class Field(object):
                  extractor=extract.Constant(None),
                  sortable=None,
                  searchable=None,
+                 downloadable=True,
                  **kwargs
                  ):
 
@@ -492,8 +506,9 @@ class Field(object):
             not hidden and indexed and \
             ((self.es_mapping['type'] == 'text') or
              (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
-
         # Add back reference to field in filter
+        self.downloadable = downloadable
+        
         if self.search_filter:
             self.search_filter.field = self
 

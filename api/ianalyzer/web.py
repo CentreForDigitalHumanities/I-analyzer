@@ -4,11 +4,12 @@ Present the data to the user through a web interface.
 import json
 import base64
 import logging
+import math
 logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
-from os.path import splitext, join, isfile
+from os.path import split, join, isfile, getsize
 import sys
 import tempfile
 from io import BytesIO
@@ -24,6 +25,7 @@ from ianalyzer import config_fallback as config
 from werkzeug.security import generate_password_hash, check_password_hash
 from random import choice
 from flask_seasurf import SeaSurf
+import requests
 
 from . import config_fallback as config
 from . import factories
@@ -33,8 +35,12 @@ from . import security
 from . import streaming
 from . import corpora
 from . import analyze
+from . import tasks
+from . import forward_es
 
 from flask_admin.base import MenuLink
+
+import os
 
 
 blueprint = Blueprint('blueprint', __name__)
@@ -84,8 +90,8 @@ def corpus_required(method):
             *nargs, **kwargs)
 
     return f
-
-
+    
+    
 def post_required(method):
     '''
     Wrapper to add relevant POSTed data to the parameters of a function.
@@ -256,6 +262,51 @@ def api_corpus_image(image_name):
     '''
     return send_from_directory(config.CORPUS_IMAGE_ROOT, '{}'.format(image_name))
 
+@blueprint.route('/api/corpusdescription/<description_name>', methods=['GET'])
+@login_required
+def api_corpus_description(description_name):
+    '''
+    Return comprehensive information on the corpus.
+    '''
+    return send_from_directory(config.CORPUS_DESCRIPTION_ROOT, '{}'.format(description_name))
+
+@blueprint.route('/api/corpusdocument/<document_name>', methods=['GET'])
+@login_required
+def api_corpus_document(document_name):
+    '''
+    Return a document for a corpus.
+    '''
+    return send_from_directory(config.CORPUS_DOCUMENT_ROOT, '{}'.format(document_name))
+
+
+# endpoint for backend handeling of large csv files
+@blueprint.route('/api/download', methods=['POST'])
+@login_required
+def api_download():
+    response=jsonify({'success': False})
+    if not request.json:
+        return response
+    elif request.mimetype != 'application/json':
+        return response
+    elif not 'esQuery' in request.json.keys():
+        return response
+    elif not 'corpus' in request.json.keys():
+        return response
+    elif not current_user.email:
+        return response
+    elif not current_user.download_limit:
+        return response
+    # Celery task    
+    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
+    response=jsonify({'success': True})
+    return response
+    
+
+# endpoint for link send in email to download csv file
+@blueprint.route('/api/csv/<filename>', methods=['get'])
+def api_csv(filename):
+    return send_from_directory( current_app.instance_path, '{}'.format(filename))
+
 
 @blueprint.route('/api/login', methods=['POST'])
 def api_login():
@@ -370,11 +421,11 @@ def api_query():
     query_json = request.json['query']
     corpus_name = request.json['corpus_name']
 
-    # if 'id' in request.json:
-    #     query = models.Query.query.filter_by(id=request.json['id']).first()
-    # else:
-    query = models.Query(
-        query=query_json, corpus_name=corpus_name, user=current_user)
+    if 'id' in request.json:
+        query = models.Query.query.filter_by(id=request.json['id']).first()
+    else:
+        query = models.Query(
+            query=query_json, corpus_name=corpus_name, user=current_user)
 
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -385,8 +436,8 @@ def api_query():
     query.aborted = request.json['aborted']
     query.transferred = request.json['transferred']
 
-    # models.db.session.add(query)
-    # models.db.session.commit()
+    models.db.session.add(query)
+    models.db.session.commit()
 
     return jsonify({
         'id': query.id,
@@ -425,29 +476,56 @@ def api_get_wordcloud_data():
     return jsonify({'data': word_counts})
 
 
-@blueprint.route('/api/get_scan_image/<corpus_index>/<int:page>/<path:image_path>', methods=['GET'])
+@blueprint.route('/api/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
-def api_get_scan_image(corpus_index, page, image_path):
+def api_get_scan_image(corpus_index, image_path):
     backend_corpus = corpora.DEFINITIONS[corpus_index]
-    image_type = backend_corpus.scan_image_type
-    user_permitted_corpora = [
-        corpus.name for corpus in current_user.role.corpora]
 
-    if (corpus_index in user_permitted_corpora):
+    if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        absolute_path = join(backend_corpus.data_directory, image_path)
+        return send_file(absolute_path, mimetype='image/png')
+
+
+@blueprint.route('/api/source_pdf', methods=['POST'])
+@login_required
+def api_get_pdf():
+    if not request.json:
+        abort(400)
+
+    corpus_index = request.json['corpus_index']
+    backend_corpus = corpora.DEFINITIONS[corpus_index]
+
+    if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        abort(400)
+    else:
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
+        
+        home_page = request.json['page'] #the page corresponding to the document
+        image_path = request.json['image_path']
         absolute_path = join(backend_corpus.data_directory, image_path)
 
-        if image_type == 'pdf':
-            tmp = BytesIO()
-            pdf_writer = PdfFileWriter()
-            input_pdf = PdfFileReader(absolute_path, "rb")
-            target_page = input_pdf.getPage(page)
-            pdf_writer.addPage(target_page)
-            pdf_writer.write(tmp)
-            tmp.seek(0)
-            return send_file(tmp, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True)
+        input_pdf, pdf_info = retrieve_pdf(absolute_path)
+        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
+        out = build_partial_pdf(pages, input_pdf)
+        
+        response = make_response(send_file(out, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
+        pdf_header = json.dumps({
+            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
+            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
+            "fileName": pdf_info['filename'],
+            "fileSize": pdf_info['filesize']
+        })
+        response.headers['pdfinfo'] = pdf_header
+    return response
 
-        if image_type == 'png':
-            return send_file(absolute_path, mimetype='image/png')
+@blueprint.route('/api/download_pdf/<corpus_index>/<path:filepath>', methods=['GET'])
+@login_required 
+def api_download_pdf(corpus_index, filepath):
+    backend_corpus = corpora.DEFINITIONS[corpus_index]
+
+    if corpus_index in [c.name for c in current_user.role.corpora]:
+        absolute_path = join(backend_corpus.data_directory, filepath)
+        return send_file(absolute_path, as_attachment=True)
 
 
 @blueprint.route('/api/get_related_words', methods=['POST'])
@@ -472,5 +550,95 @@ def api_get_related_words():
                 'similar_words_subsets': results[1],
                 'time_points': results[2]
             }
-        })
+        }) 
     return response
+
+
+@blueprint.route('/api/get_related_words_time_interval', methods=['POST'])
+@login_required
+def api_get_related_words_time_interval():
+    if not request.json:
+        abort(400)
+    results = analyze.get_context_time_interval(
+        request.json['query_term'],
+        request.json['corpus_name'],
+        request.json['time']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'related_word_data': {
+                'similar_words_subsets': results,
+                'time_points': [request.json['time']]
+            }
+        }) 
+    return response
+
+def pdf_pages(all_pages, pages_returned, home_page):
+    '''
+    Decide which pages should be returned, and the index of the home page in the resulting list
+    '''
+    context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
+    #the page is within context_radius of the beginning of the pdf:
+    if (home_page - context_radius) <= 0:
+        pages = all_pages[:home_page+context_radius+1]
+        home_page_index = pages.index(home_page)
+
+    #the page is within context_radius of the end of the pdf:
+    elif (home_page + context_radius) >= len(all_pages):
+        pages = all_pages[home_page-context_radius:]
+        home_page_index = pages.index(home_page)
+
+    #normal case:
+    else:
+        pages = all_pages[(home_page-context_radius):(home_page+context_radius+1)]
+        home_page_index = context_radius
+    
+    return pages, home_page_index
+
+def build_partial_pdf(pages, input_pdf):
+    '''
+    Build a partial pdf consisting of the requires pages.
+    Returns a temporary file stream.
+    '''
+    tmp = BytesIO()
+    pdf_writer = PdfFileWriter()
+    for p in pages:
+        pdf_writer.addPage(input_pdf.getPage(p))
+    pdf_writer.write(tmp)
+    tmp.seek(0) #reset stream
+
+    return tmp
+
+def retrieve_pdf(path):
+    '''
+    Retrieve the pdf as a file object, and gather some additional information.
+    '''
+    pdf = PdfFileReader(path, 'rb')
+    title = pdf.getDocumentInfo().title
+    _dir, filename = split(path)
+    num_pages = pdf.getNumPages()
+
+    info = {
+        'filename': title if title else filename,
+        'filesize': sizeof_fmt(getsize(path)),
+        'all_pages': list(range(0, num_pages))
+     }
+
+    return pdf, info
+
+def sizeof_fmt(num, suffix='B'):
+    '''
+    Converts numerical filesize to human-readable string.
+    Maximum of three numbers before the decimal, and one behind.
+    E.g. 124857000 -> "119.1 MB"
+    '''
+    for unit in ['','K','M','G']:
+        if abs(num) < 1024.0:
+            return "{:3.1f} {}{}".format(num, unit, suffix)
+        num /= 1024.0

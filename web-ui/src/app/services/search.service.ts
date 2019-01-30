@@ -17,6 +17,7 @@ export class SearchService {
         private queryService: QueryService,
         private userService: UserService,
         private logService: LogService) {
+        window['apiService'] = this.apiService;
     }
 
     /**
@@ -84,6 +85,7 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
+
         let querySave = this.queryService.save(query, true);
         let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
         querySave.then((savedQuery) => {
@@ -106,6 +108,7 @@ export class SearchService {
         };
     }
 
+
     public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
         let completed = false;
         let totalTransferred = 0;
@@ -119,7 +122,24 @@ export class SearchService {
     }
 
 
-    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback>{
+    /**
+     * download csv via api service. In backend csv is saved, link send to user per email
+     */
+    public async download_async(corpus: Corpus, queryModel: QueryModel): Promise<boolean> {
+        let completed = false;
+        let totalTransferred = 0;
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
+        // Log the query to the database
+        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
+
+        let result = await this.apiService.download(
+            { corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit }
+        );
+        return result.success;
+    }
+
+
+    public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
@@ -144,7 +164,25 @@ export class SearchService {
                                 'labels': result['related_word_data'].time_points, 
                                 'datasets':result['related_word_data'].similar_words_subsets
                             },
-                            'tableData': result['related_word_data'].similar_words_all});
+                            'tableData': result['related_word_data'].similar_words_all
+                    });
+                }
+                else {
+                    reject({'message': result['message']})
+                }
+            })
+        });
+    }
+
+    public async getRelatedWordsTimeInterval(queryTerm: string, corpusName: string, timeInterval: string): Promise<any> {
+        return this.apiService.getRelatedWordsTimeInterval({'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'graphData': {
+                                'labels': result['related_word_data'].time_points, 
+                                'datasets':result['related_word_data'].similar_words_subsets
+                            }
+                    });
                 }
                 else {
                     reject({'message': result['message']})
@@ -160,6 +198,9 @@ export class SearchService {
         let totalTransferred = 0;
 
         this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
+
+
+
 
         return new Promise<string[][]>(async (resolve, reject) => {
             let rows: string[][] = [];
@@ -177,6 +218,10 @@ export class SearchService {
                     (error) => reject(error),
                     () => resolve(rows));
         });
+
+
+
+
     }
 
     /**

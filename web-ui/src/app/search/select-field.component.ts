@@ -30,7 +30,7 @@ export class SelectFieldComponent implements OnInit {
             else {
                 this.selectedQueryFields = [];
             }
-        }        
+        }       
     }
 
     public toggleAllFields() {
@@ -58,6 +58,6 @@ export class SelectFieldComponent implements OnInit {
         }
         else {
             this.optionsFields = this.availableFields;
-        }  
+        } 
     }
 }

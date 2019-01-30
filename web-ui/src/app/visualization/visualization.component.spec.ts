@@ -15,7 +15,7 @@ import { RelatedWordsComponent } from './related-words.component';
 import { VisualizationComponent } from './visualization.component';
 import { ApiService, DataService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
-import { AggregateQueryFeedback, Corpus, QueryModel } from '../models/index';
+import { SearchServiceMock } from '../services/search.service.mock';
 
 describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
@@ -26,10 +26,7 @@ describe('VisualizationComponent', () => {
             imports: [FormsModule, ChartModule, SharedModule, DropdownModule, TableModule],
             declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
             providers: [
-                {
-                    provide: SearchService,
-                    useValue: new MockSearchService()
-                },
+                { provide: SearchService, useValue: new SearchServiceMock() },
                 { provide: DataService, useValue: { searchResults$: Observable.of({}) } },
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
@@ -72,25 +69,4 @@ describe('VisualizationComponent', () => {
 
 function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
     return { id, relevance, fieldValues, position };
-}
-
-
-class MockSearchService {
-    public async searchForVisualization(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {
-        return {
-            completed: false,
-            aggregations: {
-                aggregator: [{
-                    key: '1999',
-                    doc_count: 200
-                }, {
-                    key: '2000',
-                    doc_count: 300
-                }, {
-                    key: '2001',
-                    doc_count: 400
-                }]
-            }
-        };
-    }
 }

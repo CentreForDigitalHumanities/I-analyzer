@@ -7,6 +7,8 @@ from flask import Blueprint, request, json, abort, Response
 from flask_login import login_required, current_user
 
 from . import config_fallback as config
+import json
+
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
@@ -14,6 +16,7 @@ TIMEOUT_SECONDS = 30
 logger = logging.getLogger(__name__)
 
 es = Blueprint('es', __name__)
+
 
 
 def ensure_http(hostname):
@@ -44,6 +47,7 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
+
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
@@ -70,6 +74,7 @@ def proxy_es(address):
             for key in PASSTHROUGH_HEADERS if key in es_response.headers
         },
     )
+ 
 
 
 @es.route('/<server_name>', methods=['HEAD'])
@@ -97,3 +102,5 @@ def forward_search(server_name, corpus_name, document_type):
     host = get_es_host_or_404(server_name)
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
+
+
