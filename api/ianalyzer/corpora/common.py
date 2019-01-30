@@ -470,6 +470,7 @@ class Field(object):
                  extractor=extract.Constant(None),
                  sortable=None,
                  searchable=None,
+                 downloadable=True,
                  **kwargs
                  ):
 
@@ -499,6 +500,8 @@ class Field(object):
             ((self.es_mapping['type'] == 'text') or
              (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
+        self.downloadable = downloadable
+        
         if self.search_filter:
             self.search_filter.field = self
 

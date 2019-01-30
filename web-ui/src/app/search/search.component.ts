@@ -457,7 +457,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             }
         }
         this.availableSearchFields = Object.values(this.queryField).filter(field => field.searchable);
-        this.availableCsvFields = Object.values(this.queryField).filter(field => !field.hidden)
+        this.availableCsvFields = Object.values(this.queryField).filter(field => field.downloadable);
         return fieldsSet;
     }
 

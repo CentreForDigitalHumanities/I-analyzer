@@ -50,6 +50,7 @@ export type CorpusField = {
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,
+    downloadable: boolean,
     name: string,
     searchFilter: SearchFilter | null
 }
