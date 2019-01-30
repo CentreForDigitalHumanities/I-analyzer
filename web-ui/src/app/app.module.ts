@@ -10,13 +10,13 @@ import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -43,6 +43,7 @@ import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
+import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 
 const appRoutes: Routes = [
@@ -91,6 +92,7 @@ const appRoutes: Routes = [
         AppComponent,
         BalloonDirective,
         DropdownComponent,
+        DialogComponent,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
@@ -118,13 +120,14 @@ const appRoutes: Routes = [
         RegistrationComponent,
         PrivacyComponent,
         RelatedWordsComponent,
-        DialogComponent
+        ScanPdfComponent
     ],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CalendarModule,
         CommonModule,
+        ConfirmDialogModule,
         DropdownModule,
         FormsModule,
         HttpModule,
@@ -162,7 +165,6 @@ const appRoutes: Routes = [
         LogService,
         NotificationService,
         QueryService,
-        ScanImageService,
         SearchService,
         SessionService,
         UserService,
