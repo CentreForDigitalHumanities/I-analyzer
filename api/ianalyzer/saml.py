@@ -1,10 +1,11 @@
 from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response
+from flask_login import current_user
 import logging
 logger = logging.getLogger(__name__)
 
 from ianalyzer import config_fallback as config
 from .models import User, db
-from .security import login_user, get_token, get_original_token_input
+from .security import login_user, get_token, get_original_token_input, logout_user
 from .web import blueprint, add_basic_user, create_success_response
 from .saml_auth import SamlAuth, SamlAuthError
 
@@ -76,6 +77,7 @@ def process_logout_result():
     '''
     try:
         saml.process_logout_result(request, session) #TODO local: SAMLing doesn't work with this
+        logout_user(current_user)
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)

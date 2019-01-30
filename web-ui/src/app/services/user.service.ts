@@ -190,25 +190,29 @@ export class UserService implements OnDestroy {
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
         let guestUser = await this.loginAsGuest();
         let isSolisLogin = false;
+        
         if (guestUser) {
             // switched back to guest user
             this.currentUser = guestUser;
         } else {
-            if (this.currentUser) { isSolisLogin = this.currentUser.isSolisLogin; }
+            if (this.currentUser) { 
+                isSolisLogin = this.currentUser.isSolisLogin; 
+            }
+            
             this.currentUser = false;
             this.sessionCheckPromise = Promise.resolve(false);
         }
 
-        if (notifyServer) {
-            await this.apiService.logout().then(result => {                
-                if (isSolisLogin) {
-                    window.location.href = 'api/init_solislogout'
-                }
-            });
-        }
+        if (isSolisLogin) {
+            window.location.href = 'api/init_solislogout'
+        } else {
+            if (notifyServer) {                
+                await this.apiService.logout();
+            }
 
-        if (redirectToLogout && !UserService.loginActivated) {
-            this.showLogin();
+            if (redirectToLogout && !UserService.loginActivated) {
+                this.showLogin();
+            }
         }
 
         return guestUser || undefined;
