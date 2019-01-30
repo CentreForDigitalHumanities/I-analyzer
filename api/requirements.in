@@ -17,4 +17,5 @@ requests
 scikit-learn
 numpy
 responses
+python3-saml
 pypdf2

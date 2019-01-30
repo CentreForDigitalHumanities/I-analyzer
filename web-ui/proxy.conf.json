@@ -14,5 +14,9 @@
     "/es": {
         "target": "http://localhost:5000",
         "secure": false
+    },
+    "/saml": {
+        "target": "http://localhost:5000",
+        "secure": false
     }
 }

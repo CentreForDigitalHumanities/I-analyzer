@@ -2,7 +2,7 @@ from . import models
 from werkzeug.security import check_password_hash
 from flask_login import login_user as flask_login_user
 from flask_login import logout_user as flask_logout_user
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, BadSignature, BadTimeSignature
 from flask import current_app
 from ianalyzer import config_fallback as config
 
@@ -56,20 +56,27 @@ def is_unique_email(email):
     return user is None
 
 
-# userregistration confirmation, when clicked on link in confirmation email
-def generate_confirmation_token(email):
+def get_token(input):
+    '''
+    Generate a safe token based on your input.
+    Note that on the basis of the token you can retrieve the original input (see below) 
+    '''
     serializer = URLSafeTimedSerializer(config.SECRET_KEY)
-    return serializer.dumps(email, salt=config.SECURITY_PASSWORD_SALT)
+    return serializer.dumps(input, salt=config.SECURITY_PASSWORD_SALT)
 
 
-def confirm_token(token, expiration=3600):
+def get_original_token_input(token, expiration=3600):
+    '''
+    Retrieve the original input from the token.
+    Will return False if the token has expired.
+    '''
     serializer = URLSafeTimedSerializer(config.SECRET_KEY)
     try:
-        email = serializer.loads(
+        original_input = serializer.loads(
             token,
             salt=config.SECURITY_PASSWORD_SALT,
             max_age=expiration
         )
-    except:
+    except (BadSignature, BadTimeSignature):
         return False
-    return email
+    return original_input

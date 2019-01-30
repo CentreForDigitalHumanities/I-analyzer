@@ -15,8 +15,8 @@ import tempfile
 from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
-from flask import Flask, Blueprint, Response, make_response, request, abort, current_app, \
-    render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory
+from flask import Flask, Blueprint, Response, request, abort, current_app, \
+    render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
@@ -63,7 +63,7 @@ admin_instance.add_view(views.QueryView(
 
 login_manager = LoginManager()
 csrf = SeaSurf()
-csrf.exempt_urls('/es',)
+csrf.exempt_urls(('/es', '/saml'))
 
 mail = Mail()
 
@@ -136,6 +136,11 @@ def load_user(user_id):
     return models.User.query.get(user_id)
 
 
+@blueprint.route('/api/ensure_csrf', methods=['GET'])
+def ensure_csrf():
+    return jsonify({'success': True})
+
+
 @blueprint.route('/', methods=['GET'])
 def init():
     if current_user:
@@ -152,9 +157,10 @@ def api_register():
 
     # Validate user's input
     username = request.json['username']
+    email = request.json['email']
     is_valid_username = security.is_unique_username(username)
-    is_valid_email = security.is_unique_email(request.json['email'])
-
+    is_valid_email = security.is_unique_email(email)
+        
     if not is_valid_username or not is_valid_email:
         return jsonify({
             'success': False,
@@ -163,7 +169,7 @@ def api_register():
         })
 
     # try sending the email
-    if not send_registration_mail(request.json['email'], username):
+    if not send_registration_mail(email, username):
         return jsonify({
             'success': False,
             'is_valid_username': True,
@@ -171,19 +177,7 @@ def api_register():
         })
 
     # if email was succesfully sent, add user to db
-    basic_role = models.Role.query.filter_by(name='basic').first()
-    pw_hash = generate_password_hash(request.json['password'])
-
-    new_user = models.User(
-        username=username,
-        email=request.json['email'],
-        active=False,
-        password=pw_hash,
-        role_id=basic_role.id,
-    )
-
-    models.db.session.add(new_user)
-    models.db.session.commit()
+    add_basic_user(username, request.json['password'], email, False)
 
     return jsonify({'success': True})
 
@@ -193,7 +187,7 @@ def send_registration_mail(email, username):
     Send an email with a confirmation token to a new user
     Returns a boolean specifying whether the email was sent succesfully
     '''
-    token = security.generate_confirmation_token(email)
+    token = security.get_token(email)
 
     msg = Message(config.MAIL_REGISTRATION_SUBJECT_LINE,
                   sender=config.MAIL_FROM_ADRESS, recipients=[email])
@@ -211,16 +205,16 @@ def send_registration_mail(email, username):
         logger.error("An error occured sending an email to {}:".format(email))
         logger.error(e)
         return False
-
+    
 
 # endpoint for the confirmation of user if link in email is clicked.
 @blueprint.route('/api/registration_confirmation/<token>', methods=['GET'])
 def api_register_confirmation(token):
 
     expiration = 60*60*72  # method does not return email after this limit
-    try:
-        email = security.confirm_token(token, expiration)
-    except:
+    email = security.get_original_token_input(token, expiration)
+    
+    if not email:
         flash('The confirmation link is invalid or has expired.', 'danger')
 
     user = models.User.query.filter_by(email=email).first_or_404()
@@ -326,30 +320,64 @@ def api_login():
         response = jsonify({'success': False})
     else:
         security.login_user(user)
-
-        corpora = [{
-            'name': corpus.name,
-            'description': corpus.description
-        } for corpus in user.role.corpora]
-        role = {
-            'name': user.role.name,
-            'description': user.role.description,
-            'corpora': corpora
-        }
-
-        response = jsonify({
-            'success': True,
-            'id': user.id,
-            'username': user.username,
-            'role': role,
-            'downloadLimit': user.download_limit,
-            'queries': [{
-                'query': query.query_json,
-                'corpusName': query.corpus_name
-            } for query in user.queries]
-        })
+        response = create_success_response(user)
 
     return response
+
+
+@blueprint.route('/api/logout', methods=['POST'])
+def api_logout():    
+    security.logout_user(current_user)
+    return jsonify({'success': True})
+
+
+def add_basic_user(username, password, email, is_active):
+    ''' Add a user with the role 'basic' to the database '''
+
+    basic_role = models.Role.query.filter_by(name='basic').first()
+    
+    pw_hash = None
+    if (password):
+        pw_hash = generate_password_hash(password)
+    
+    new_user = models.User(
+        username=username,
+        email=email,
+        active=is_active,
+        password=pw_hash,
+        role_id=basic_role.id,
+    )
+
+    models.db.session.add(new_user)
+    models.db.session.commit()
+    return new_user
+
+
+def create_success_response(user):
+    corpora = [{
+        'name': corpus.name,
+        'description': corpus.description
+    } for corpus in user.role.corpora]
+    role = {
+        'name': user.role.name, 
+        'description': user.role.description, 
+        'corpora': corpora
+    }
+    
+    response = jsonify({
+        'success': True,
+        'id': user.id,
+        'username': user.username,
+        'role': role,
+        'downloadLimit': user.download_limit,
+        'queries': [{
+            'query': query.query_json,
+            'corpusName': query.corpus_name
+        } for query in user.queries]
+    })
+
+    return response
+
 
 
 @blueprint.route('/api/log', methods=['POST'])
@@ -367,12 +395,6 @@ def api_log():
 
     return jsonify({'success': True})
 
-
-@blueprint.route('/api/logout', methods=['POST'])
-def api_logout():
-    if current_user.is_authenticated:
-        security.logout_user(current_user)
-    return jsonify({'success': True})
 
 
 @blueprint.route('/api/check_session', methods=['POST'])

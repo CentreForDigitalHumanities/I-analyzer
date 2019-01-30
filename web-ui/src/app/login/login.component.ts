@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     public password: string;
     public isLoading: boolean;
     public isWrong: boolean;
+    public hasError: boolean;
 
     public isActivated: boolean;
 
@@ -31,20 +32,38 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
         this.activatedRoute.queryParams.subscribe( params => {
             this.isActivated = params['isActivated'] === 'true';
+            this.hasError = params['hasError'] === 'true' || false;
+
+            if (params['solislogin'] === 'true') {
+                this.solislogin();
+            } 
         });
     }
+
     ngOnDestroy() {
         UserService.loginActivated = false;
     }
+
     login() {
         this.isLoading = true;
         this.userService.login(this.username, this.password).then(result => {
-            if (!result) {
-                this.isLoading = false;
-                this.isWrong = true;
-            } else {
-                this.router.navigateByUrl(this.returnUrl);
-            }
+            this.handleLoginResponse(result);
         });
+    }
+
+    solislogin(): void {
+        this.isLoading = true;
+        this.userService.solisLogin().then(result => {
+           this.handleLoginResponse(result); 
+        });
+    }
+
+    handleLoginResponse(result) {
+        if (!result) {
+            this.isLoading = false;
+            this.isWrong = true;
+        } else {                
+            this.router.navigateByUrl(this.returnUrl);
+        }
     }
 }

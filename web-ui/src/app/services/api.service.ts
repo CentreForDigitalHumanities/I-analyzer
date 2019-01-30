@@ -149,6 +149,20 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
+        path: '/solislogin'
+    })
+    public solisLogin: IResourceMethod<
+    { },
+    { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/ensure_csrf'
+    })
+    public ensureCsrf: ResourceMethod<void, { success: boolean }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/search_history'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;

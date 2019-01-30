@@ -53,6 +53,7 @@ export class UserService implements OnDestroy {
      * Get the current user or fallback to guest
      */
     private async getCurrentUserOrFallback() {
+        await this.sessionCheckPromise;
         return this.currentUser || this.supportGuest && await this.loginAsGuest() || false;
     }
 
@@ -64,7 +65,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries']);
+            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries'], parsed['isSolisLogin']);
         } else {
             return false;
         }
@@ -83,7 +84,7 @@ export class UserService implements OnDestroy {
 
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
-            // no need to notify the server that we are going to logoff, because it told us this is already the case            
+            // no need to notify the server that we are going to logoff, because it told us this is already the case
             this.logout(false, true);
         });
     }
@@ -97,7 +98,13 @@ export class UserService implements OnDestroy {
     /**
      * Gets the current user, fallback to guest (if possible) and reject if no user is available.
      */
-    public async getCurrentUser(): Promise<User> {
+    public async getCurrentUser(fallback = false): Promise<User> {
+        if (!fallback) {
+            if (this.currentUser) {
+                return this.currentUser;
+            }
+            throw 'Not logged on';
+        }
         let currentUser = await this.getCurrentUserOrFallback();
         if (currentUser) {
             return currentUser;
@@ -108,17 +115,14 @@ export class UserService implements OnDestroy {
 
     public login(username: string, password: string = null): Promise<User | false> {
         let loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {
-                this.currentUser = new User(
-                    result.id,
-                    result.username,
-                    result.role,
-                    result.downloadLimit == null ? 0 : result.downloadLimit,
-                    result.queries);
+            if (result.success) {                
                 if (username == 'guest') {
                     this.supportGuest = !password;
                 }
-                return this.currentUser;
+
+                return this.processLoginSucces(result);
+            } else if (username == 'guest' && !password) {
+                this.supportGuest = false;
             }
 
             return false;
@@ -131,38 +135,84 @@ export class UserService implements OnDestroy {
 
 
     /**
+     * Do the actual login with SolisId
+     */
+    public async solisLogin(): Promise<User | false> {
+        await this.sessionCheckPromise;
+        let loginPromise = this.apiService.solisLogin().then(result => {
+            if (result.success) {
+                return this.processLoginSucces(result, true);
+            }
+
+            return false;
+        });
+
+        this.sessionCheckPromise = loginPromise.then(user => !!user);
+
+        return loginPromise;
+    }
+
+    /**
+     * Create user and assign it to this.currentUser
+     * @param result The result from the API call
+     */
+    private processLoginSucces(result, isSolisLogin: boolean = false): User {
+        this.currentUser = new User(
+            result.id,
+            result.username,
+            result.role,
+            result.downloadLimit == null ? 0 : result.downloadLimit,
+            result.queries,
+            isSolisLogin);
+
+        return this.currentUser;
+    }
+
+
+    /**
      * Registration of new user.
      */
-    public register(username:string, email: string, password:string ): 
-        Promise<{success: boolean, is_valid_username: boolean, is_valid_email: boolean}> {        
+    public register(username: string, email: string, password: string):
+        Promise<{ success: boolean, is_valid_username: boolean, is_valid_email: boolean }> {
         return this.apiService.register({ username, email, password })
     }
 
 
-    public loginAsGuest() {
+    public async loginAsGuest() {
+        await this.sessionCheckPromise;
         if (this.supportGuest) {
             return this.login('guest');
         } else {
-            return Promise.resolve<false>(false);
+            return false;
         }
     }
 
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
         let guestUser = await this.loginAsGuest();
+        let isSolisLogin = false;
+        
         if (guestUser) {
             // switched back to guest user
             this.currentUser = guestUser;
         } else {
+            if (this.currentUser) { 
+                isSolisLogin = this.currentUser.isSolisLogin; 
+            }
+            
             this.currentUser = false;
             this.sessionCheckPromise = Promise.resolve(false);
         }
 
-        if (notifyServer) {
-            await this.apiService.logout();
-        }
+        if (isSolisLogin) {
+            window.location.href = 'api/init_solislogout'
+        } else {
+            if (notifyServer) {                
+                await this.apiService.logout();
+            }
 
-        if (redirectToLogout && !UserService.loginActivated) {
-            this.showLogin();
+            if (redirectToLogout && !UserService.loginActivated) {
+                this.showLogin();
+            }
         }
 
         return guestUser || undefined;
@@ -172,5 +222,3 @@ export class UserService implements OnDestroy {
         this.router.navigate(['/login'], returnUrl ? { queryParams: { returnUrl } } : undefined);
     }
 }
-
-

@@ -8,7 +8,7 @@ export class UserServiceMock {
         "times", 42);
     public currentUser: User = new User(42, "mouse", { name: "superuser", description: "users who can access deep thought", 
         corpora:[{name: "deep thought", description: "supercomputer database"}]}, 10000,
-        [this.query]);
+        [this.query], false);
 
     public getCurrentUser(): Promise<User> {
         return Promise.resolve(this.currentUser);
