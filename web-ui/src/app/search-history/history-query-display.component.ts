@@ -19,7 +19,6 @@ export class HistoryQueryDisplayComponent implements OnInit {
     constructor() { }
 
     ngOnInit() {
-        console.log(this.timeStamp);
         this.formattedFilters = '';
         if (typeof this.queryModel=="string") {
             this.queryModel = JSON.parse(this.queryModel);

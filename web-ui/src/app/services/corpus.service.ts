@@ -60,6 +60,7 @@ export class CorpusService {
             this.parseDate(data.max_date),
             data.image,
             data.scan_image_type,
+            data.allow_image_download,
             data.description_page);
     }
 
@@ -76,6 +77,7 @@ export class CorpusService {
             hidden: data.hidden,
             sortable: data.sortable,
             searchable: data.searchable,
+            downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
         }

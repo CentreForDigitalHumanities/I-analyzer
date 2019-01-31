@@ -16,7 +16,6 @@ from .es_forward import es
 
 from ianalyzer import config_fallback as config
 
-
 def flask_app(cfg=config):
     '''
     Create Flask instance, with given configuration and flask_admin, flask_login,
@@ -24,7 +23,7 @@ def flask_app(cfg=config):
     '''
     app = Flask(__name__)
     csrf = SeaSurf()
-    csrf.exempt_urls('/es',)
+    csrf.exempt_urls('/es', '/saml')
     mail = Mail()
 
     app.config.from_object(cfg)
@@ -37,7 +36,7 @@ def flask_app(cfg=config):
     admin_instance.init_app(app)
     csrf.init_app(app)
     mail.init_app(app)
-
+    saml.init_app(app)
 
     return app
 

@@ -65,10 +65,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
-    public availableFields: CorpusField[];
+    public availableSearchFields: CorpusField[];
+    public availableCsvFields: CorpusField[];
     public selectedFields: CorpusField[];
-    public csvCoreFields: CorpusField[];
-    public searchFieldCoreFields: CorpusField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -128,8 +127,6 @@ export class SearchComponent implements OnInit, OnDestroy {
                 this.multipleChoiceFilters = this.corpus.fields
                     .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
                     .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
-                this.csvCoreFields = this.corpus.fields.filter(field => field.csvCore);
-                this.searchFieldCoreFields = this.corpus.fields.filter(field => field.searchFieldCore);
                 if (fieldsSet || params.has('query')) {
                     this.performSearch();
                 }
@@ -459,8 +456,8 @@ export class SearchComponent implements OnInit, OnDestroy {
                 }
             }
         }
-
-        this.availableFields = Object.values(this.queryField).filter(field => field.searchable);
+        this.availableSearchFields = Object.values(this.queryField).filter(field => field.searchable);
+        this.availableCsvFields = Object.values(this.queryField).filter(field => field.downloadable);
         return fieldsSet;
     }
 

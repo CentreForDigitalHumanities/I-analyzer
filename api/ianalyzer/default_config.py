@@ -18,6 +18,11 @@ SERVER_NAME = 'localhost:4200'
 CSRF_COOKIE_NAME = 'csrf_token'
 CSRF_HEADER_NAME = 'X-XSRF-TOKEN'
 
+# SAML
+SAML_FOLDER = "saml"
+SAML_SOLISID_KEY = "uuShortID"
+SAML_MAIL_KEY = "mail"
+
 # SQLAlchemy
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -98,6 +103,23 @@ TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 
 TROONREDES_IMAGE = 'troon.jpg'
+
+DUTCHANNUALREPORTS_TITLE = "Dutch Annual Reports"
+DUTCHANNUALREPORTS_DESCRIPTION = "Annual reports of Dutch financial institutes"
+DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
+DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
+DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
+DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
+DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
+DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
+DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
+DUTCHANNUALREPORTS_MAP = {}
+
+
+JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 #Celery configuration
 BROKER_URL = 'amqp://'

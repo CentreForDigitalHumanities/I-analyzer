@@ -211,7 +211,8 @@ class DutchNewspapers(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'Item'
                                   }
-                                  )
+                                  ),
+            sortable=True
         ),
         Field(
             name='category',

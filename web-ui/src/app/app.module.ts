@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -10,13 +10,14 @@ import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
 import { MarkdownModule } from 'ngx-md';
-import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule } from 'primeng/primeng';
+import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, ScanImageService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -43,6 +44,7 @@ import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
+import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 
 const appRoutes: Routes = [
@@ -91,6 +93,7 @@ const appRoutes: Routes = [
         AppComponent,
         BalloonDirective,
         DropdownComponent,
+        DialogComponent,
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
@@ -118,13 +121,14 @@ const appRoutes: Routes = [
         RegistrationComponent,
         PrivacyComponent,
         RelatedWordsComponent,
-        DialogComponent
+        ScanPdfComponent
     ],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
         CalendarModule,
         CommonModule,
+        ConfirmDialogModule,
         DropdownModule,
         FormsModule,
         HttpModule,
@@ -162,14 +166,23 @@ const appRoutes: Routes = [
         LogService,
         NotificationService,
         QueryService,
-        ScanImageService,
         SearchService,
         SessionService,
         UserService,
         CorpusGuard,
         LoggedOnGuard,
         TitleCasePipe,
-    ],
+        CookieService,
+        {
+            provide: XSRFStrategy,
+            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
+        },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: csrfProviderFactory,
+            deps: [Injector, ApiService, CookieService],
+            multi: true
+        }],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
@@ -177,4 +190,16 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
+}
+
+export function csrfProviderFactory(injector: Injector, provider: ApiService, cookieService: CookieService): Function {    
+    return () => {        
+        if (!cookieService.check('csrf_token')) { 
+            provider.ensureCsrf().then(result => {                 
+                if (!result || !result.success) {
+                    throw new Error("CSRF token could not be collected.");
+                }
+            })
+        }
+    }
 }

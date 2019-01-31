@@ -105,7 +105,16 @@ class Corpus(object):
             return None
         else:
             return self.scan_image_type
-    
+
+    def allow_image_download(self):
+        '''
+        Allow the downloading of source images
+        '''
+        if self.allow_image_download is None:
+            return False
+        else:
+            return self.allow_image_download
+
     def description_page(self):
         ''' 
         URL to markdown document with a comprehensive description
@@ -470,6 +479,7 @@ class Field(object):
                  extractor=extract.Constant(None),
                  sortable=None,
                  searchable=None,
+                 downloadable=True,
                  **kwargs
                  ):
 
@@ -498,8 +508,9 @@ class Field(object):
             not hidden and indexed and \
             ((self.es_mapping['type'] == 'text') or
              (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
-
         # Add back reference to field in filter
+        self.downloadable = downloadable
+        
         if self.search_filter:
             self.search_filter.field = self
 

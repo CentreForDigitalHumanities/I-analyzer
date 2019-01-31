@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod } from '@ngx-resource/core';
+import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
@@ -149,9 +149,40 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
+        path: '/solislogin'
+    })
+    public solisLogin: IResourceMethod<
+    { },
+    { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/ensure_csrf'
+    })
+    public ensureCsrf: ResourceMethod<void, { success: boolean }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/search_history'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/source_pdf',
+        responseBodyType: ResourceResponseBodyType.ArrayBuffer,
+        asResourceResponse: true
+    })
+    public sourcePdf: IResourceMethodFull<
+        { corpus_index: string, image_path: string, page: number },
+        any>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/download_pdf/{corpus_index}/{filepath}',
+    })
+    public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

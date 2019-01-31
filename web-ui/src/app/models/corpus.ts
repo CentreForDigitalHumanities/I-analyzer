@@ -22,6 +22,7 @@ export class Corpus implements ElasticSearchIndex {
         public maxDate: Date,
         public image: string,
         public scan_image_type: string,
+        public allow_image_download: boolean,
         public descriptionpage?: string) { }
 
 }
@@ -50,6 +51,7 @@ export type CorpusField = {
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,
+    downloadable: boolean,
     name: string,
     searchFilter: SearchFilter | null
 }

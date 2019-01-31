@@ -76,7 +76,8 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'origDate'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            sortable=True
         ),
         Field(
             name='remarks on date',
@@ -123,6 +124,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'namesMentioned'],
                 toplevel=False,
             ),
+            search_field_core=True
         ),
         Field(
             name='names mentioned (Hebrew)',
@@ -161,7 +163,8 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'age'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            sortable=True
         ),
         Field(
             name='remarks on age',

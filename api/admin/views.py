@@ -103,7 +103,7 @@ class UserView(ModelView):
         ),
     )
 
-    form_excluded_columns = ('queries',)
+    form_excluded_columns = ('queries', 'is_saml_login')
 
 
 class AdminIndexView(admin.AdminIndexView):

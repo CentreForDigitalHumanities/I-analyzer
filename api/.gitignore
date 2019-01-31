@@ -8,5 +8,6 @@ indexing*
 build/
 dist/
 lib/
+instance/
 set
 corpora/*/wm/*

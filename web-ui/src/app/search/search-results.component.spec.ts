@@ -4,7 +4,7 @@ import { DialogModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
 import { CorpusField } from '../models/index';
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, ScanImageService, UserService } from '../services';
+import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
@@ -38,7 +38,6 @@ describe('Search Results Component', () => {
                 LogService,
                 QueryService,
                 SearchService,
-                ScanImageService,
                 {
                     provide: UserService, useValue: new UserServiceMock()
                 }]
