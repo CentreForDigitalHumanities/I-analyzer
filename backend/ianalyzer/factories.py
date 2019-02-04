@@ -3,6 +3,8 @@ For creation of Flask and ElasticSearch objects.
 '''
 import os
 
+from elasticsearch import Elasticsearch
+
 from flask import Flask
 from flask_mail import Mail
 from flask_login import LoginManager

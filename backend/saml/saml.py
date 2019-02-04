@@ -10,7 +10,6 @@ from flask_login import current_user
 import logging
 logger = logging.getLogger(__name__)
 
-from ianalyzer import config_fallback as config
 from ianalyzer.models import User, db
 from api.security import login_user, get_token, get_original_token_input, logout_user
 from api.api import api, add_basic_user, create_success_response

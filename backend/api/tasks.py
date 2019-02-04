@@ -11,8 +11,8 @@ from es import es_forward
 from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
+# celery = Celery('tasks', broker=lambda:current_app.config['BROKER_URL'])
 celery = Celery('tasks', broker=config.BROKER_URL)
-
 
 @celery.task(bind=True)
 def download_csv(self, request_json, email, instance_path, download_size):
@@ -96,7 +96,7 @@ def send_mail(filename, email):
     with app.app_context():
         msg = Message(config.MAIL_CSV_SUBJECT_LINE,
                       sender=config.MAIL_FROM_ADRESS, recipients=[email])
-        msg.html = render_template('mail/send_csv.html',
+        msg.html = render_template('send_csv_mail.html',
                                    # link to the api endpoint where csv will be downloaded
                                    download_link=config.BASE_URL + "/api/csv/" + filename,
                                    url_i_analyzer=config.BASE_URL,

@@ -174,10 +174,6 @@ const appRoutes: Routes = [
         TitleCasePipe,
         CookieService,
         {
-            provide: XSRFStrategy,
-            useValue: new CookieXSRFStrategy('csrf_token', 'X-XSRF-Token')
-        },
-        {
             provide: APP_INITIALIZER,
             useFactory: csrfProviderFactory,
             deps: [Injector, ApiService, CookieService],

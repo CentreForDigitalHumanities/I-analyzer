@@ -86,6 +86,7 @@ describe('Search Results Component', () => {
             hidden: false,
             sortable: true,
             searchable: false,
+            downloadable: true,
         };
     }
 

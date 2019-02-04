@@ -14,7 +14,6 @@ from wtforms import ValidationError, TextField
 from wtforms.validators import Required, AnyOf
 
 from ianalyzer import models
-from ianalyzer import config_fallback as config
 from api import security
 import corpora
 from . import forms
@@ -55,10 +54,6 @@ class RoleView(ModelView):
 
 class CorpusViewAdmin(ModelView):
     unknown_corpus_message = "Corpus name has to match a known corpus (see the CORPORA key in the application config)"
-    #print(current_app)
-    # form_args = dict(
-    #     name = dict(validators=[Required(), AnyOf(current_app.config['CORPORA'].keys(), unknown_corpus_message)])
-    # )
     form_args = dict(
         name = dict(validators=[Required(), AnyOf(lambda: current_app.config['CORPORA'].keys(), unknown_corpus_message)])
     )

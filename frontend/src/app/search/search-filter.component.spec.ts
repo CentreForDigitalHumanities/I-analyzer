@@ -35,6 +35,7 @@ describe('SearchFilterComponent', () => {
             hidden: false,
             sortable: true,
             searchable: false,
+            downloadable: true,
             name: 'name',
             searchFilter: {
                 description: 'description',

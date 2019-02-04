@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
-from os.path import split, join, isfile, getsize
+from os.path import dirname, split, join, isfile, getsize
 import sys
 import tempfile
 from io import BytesIO
@@ -33,11 +33,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(message)s')
 
 api = Blueprint('api', __name__)
-
-# csrf = SeaSurf()
-# csrf.exempt_urls(('/es', '/saml'))
-
-# mail = Mail()
 
 
 @api.route('/ensure_csrf', methods=['GET'])

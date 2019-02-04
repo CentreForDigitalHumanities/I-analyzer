@@ -123,6 +123,7 @@ JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 #Celery configuration
 BROKER_URL = 'amqp://'
+MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization
 WM_COMPLETE_FN = "complete.pkl"

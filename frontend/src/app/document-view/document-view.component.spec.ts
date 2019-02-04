@@ -37,7 +37,8 @@ describe('DocumentViewComponent', () => {
             hidden: false,
             sortable: false,
             searchable: false,
-            searchFilter: null
+            searchFilter: null,
+            downloadable: true
         }];
         component.document = {
             relevance: 0.5,
