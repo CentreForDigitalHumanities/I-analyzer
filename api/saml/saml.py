@@ -66,10 +66,6 @@ def process_login_result():
 
     session['solislogin_token'] = get_token(solis_id)
 
-    user.is_saml_login = True
-    db.session.add(user)
-    db.session.commit()
-
     redirect_to = 'login?solislogin=true'
     return redirect(redirect_to)
 
