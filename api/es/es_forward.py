@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 
 es = Blueprint('es', __name__)
 
-
-
 def ensure_http(hostname):
     """ If hostname does not include the http scheme, prepend it. """
     prefix = ''

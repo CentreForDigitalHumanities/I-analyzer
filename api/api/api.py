@@ -23,7 +23,6 @@ from flask_login import LoginManager, login_required, login_user, \
 from flask_mail import Mail, Message
 
 from ianalyzer import models
-from ianalyzer import es_forward
 from addcorpus.load_corpus import load_all_corpora
 
 from . import security
@@ -41,7 +40,7 @@ api = Blueprint('api', __name__)
 # mail = Mail()
 
 
-@api.route('/api/ensure_csrf', methods=['GET'])
+@api.route('/ensure_csrf', methods=['GET'])
 def ensure_csrf():
     return jsonify({'success': True})
 
@@ -227,12 +226,6 @@ def api_login():
         response = create_success_response(user)
 
     return response
-
-
-@api.route('/api/logout', methods=['POST'])
-def api_logout():    
-    security.logout_user(current_user)
-    return jsonify({'success': True})
 
 
 def add_basic_user(username, password, email, is_active):

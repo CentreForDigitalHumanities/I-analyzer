@@ -7,7 +7,7 @@ from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from ianalyzer import es_forward
+from es import es_forward
 from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
