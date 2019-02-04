@@ -158,13 +158,13 @@ def api_corpus_image(corpus, image_name):
 
 @api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
 @login_required
-def api_corpus_description(description_name):
+def api_corpus_description(corpus, description_name):
     '''
     Return comprehensive information on the corpus.
     '''
     return send_from_directory(join(
         dirname(current_app.config['CORPORA'][corpus]),
-        current_app.config['CORPUS_DESCRIPTION_ROOT']), '{}'.format(description_name))
+        current_app.config['DESCRIPTION_PATH']), '{}'.format(description_name))
 
 @api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
 @login_required
