@@ -91,8 +91,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     private resultsCount: number = 0;
     private tabIndex: number;
 
-    private isModalActive: boolean = false;
-    private isModalActiveError: boolean = false;
+    public isModalActive: boolean = false;
+    public isModalActiveError: boolean = false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
