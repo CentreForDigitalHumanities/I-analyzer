@@ -370,7 +370,7 @@ def api_get_wordcloud_data():
 @api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_scan_image(corpus_index, image_path):
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = current_app.config['CORPORA'][corpus_index]
 
     if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         absolute_path = join(backend_corpus.data_directory, image_path)
@@ -383,7 +383,7 @@ def api_get_pdf():
         abort(400)
 
     corpus_index = request.json['corpus_index']
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = current_app.config['CORPORA'][corpus_index]
 
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
@@ -411,7 +411,7 @@ def api_get_pdf():
 @api.route('/download_pdf/<corpus_index>/<path:filepath>', methods=['GET'])
 @login_required 
 def api_download_pdf(corpus_index, filepath):
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = current_app.config['CORPORA'][corpus_index]
 
     if corpus_index in [c.name for c in current_user.role.corpora]:
         absolute_path = join(backend_corpus.data_directory, filepath)
