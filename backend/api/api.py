@@ -158,26 +158,25 @@ def api_corpus_image(corpus, image_name):
 
 @api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
 @login_required
-def api_corpus_description(description_name):
+def api_corpus_description(corpus, description_name):
     '''
     Return comprehensive information on the corpus.
     '''
-    return send_from_directory(join(
-        dirname(current_app.config['CORPORA'][corpus]),
-        current_app.config['CORPUS_DESCRIPTION_ROOT']), '{}'.format(description_name))
+    corpus_dir = dirname(current_app.config['CORPORA'][corpus])
+    return send_from_directory(corpus_dir, 'description/{}'.format(description_name))
+
 
 @api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
 @login_required
-def api_corpus_document(document_name):
+def api_corpus_document(corpus, document_name):
     '''
     Return a document for a corpus.
     '''
-    return send_from_directory(join(
-        dirname(current_app.config['CORPORA'][corpus]),
-        current_app.config['CORPUS_DOCUMENT_ROOT']), '{}'.format(document_name))
+    corpus_dir = dirname(current_app.config['CORPORA'][corpus])
+    return send_from_directory(corpus_dir, 'documents/{}'.format(document_name))
 
 
-# endpoint for backend handeling of large csv files
+# endpoint for backend handling of large csv files
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
