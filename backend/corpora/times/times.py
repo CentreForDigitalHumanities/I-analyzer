@@ -33,6 +33,7 @@ class Times(XMLCorpus):
     es_settings = None
     image = current_app.config['TIMES_IMAGE']
     scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
+    description_page = current_app.config['TIMES_DESCRIPTION_PAGE']
 
     tag_toplevel = 'issue'
     tag_entry = 'article'

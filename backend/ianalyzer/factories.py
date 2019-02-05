@@ -39,7 +39,7 @@ def flask_app(cfg=config):
     '''
     app = Flask(__name__)
     csrf = SeaSurf()
-    csrf.exempt_urls(['/es', '/saml'])
+    csrf.exempt_urls(('/es', '/saml'))
     mail = Mail()
 
     app.config.from_object(cfg)

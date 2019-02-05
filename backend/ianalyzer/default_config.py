@@ -101,6 +101,7 @@ TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
+TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TROONREDES_IMAGE = 'troon.jpg'
 

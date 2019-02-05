@@ -162,9 +162,15 @@ def api_corpus_description(corpus, description_name):
     '''
     Return comprehensive information on the corpus.
     '''
+<<<<<<< HEAD
     corpus_dir = dirname(current_app.config['CORPORA'][corpus])
     return send_from_directory(corpus_dir, 'description/{}'.format(description_name))
 
+=======
+    return send_from_directory(join(
+        dirname(current_app.config['CORPORA'][corpus]),
+        current_app.config['DESCRIPTION_PATH']), '{}'.format(description_name))
+>>>>>>> f0ff8b83d395b39e83d89d796b25e59abad9174e
 
 @api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
 @login_required
