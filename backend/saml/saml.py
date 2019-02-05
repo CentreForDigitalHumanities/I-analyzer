@@ -78,7 +78,7 @@ def process_logout_result():
     '''
     try:
         saml_auth.process_logout_result(request, session) #TODO local: SAMLing doesn't work with this
-        if (current_user): 
+        if current_user.is_authenticated:
             logout_user(current_user)
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
