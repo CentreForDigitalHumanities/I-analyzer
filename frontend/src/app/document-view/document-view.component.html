@@ -29,7 +29,8 @@
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
-                    <img *ngIf="corpus.scan_image_type=='png'" class="src-img" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}" alt="Image not available."/>
+                    <img *ngIf="corpus.scan_image_type=='png' && !imgNotFound" class="src-img" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}" (error)="imgNotFound=true"/>
+                    <div *ngIf="imgNotFound">Image not available.</div>
                     <ng-template *ngIf="corpus.scan_image_type=='pdf'" pTemplate="content">
                         <ia-scan-pdf [corpus]="corpus" [document]="document" [query]="query"></ia-scan-pdf>
                     </ng-template>
