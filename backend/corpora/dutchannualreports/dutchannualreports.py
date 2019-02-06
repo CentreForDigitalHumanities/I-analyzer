@@ -28,6 +28,7 @@ class DutchAnnualReports(XMLCorpus):
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
     allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
+    word_models_present = op.isfile(op.join(current_app.config['WM_PATH'], current_app.config['WM_BINNED_FN']))
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'

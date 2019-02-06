@@ -105,6 +105,15 @@ class Corpus(object):
             return None
         else:
             return self.scan_image_type
+    
+    def word_models_present(self):
+        '''
+        if word models are present for this corpus
+        '''
+        if self.word_models_present is None:
+            return False
+        else:
+            return self.word_models_present
 
     def allow_image_download(self):
         '''
