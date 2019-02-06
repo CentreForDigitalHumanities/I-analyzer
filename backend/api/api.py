@@ -374,7 +374,10 @@ def api_get_scan_image(corpus_index, image_path):
 
     if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         absolute_path = join(backend_corpus.data_directory, image_path)
-        return send_file(absolute_path, mimetype='image/png')
+        if not isfile(absolute_path):
+            abort(404)
+        else:
+            return send_file(absolute_path, mimetype='image/png')
 
 @api.route('/source_pdf', methods=['POST'])
 @login_required
