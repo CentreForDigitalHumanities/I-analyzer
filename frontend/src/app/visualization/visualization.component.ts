@@ -64,7 +64,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         }))
         // this is very hacky:
         // word models only exist for dutch annual reports for now
-        if (this.corpus.name == "dutchannualreports") {
+        if (this.corpus.word_models_present == true) {
             this.visDropdown.push({
                 label: 'Related Words',
                 value: 'relatedwords'

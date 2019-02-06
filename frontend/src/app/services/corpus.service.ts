@@ -61,6 +61,7 @@ export class CorpusService {
             data.image,
             data.scan_image_type,
             data.allow_image_download,
+            data.word_models_present,
             data.description_page);
     }
 

@@ -35,6 +35,7 @@ class Troonredes(XMLCorpus):
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['TROONREDES_IMAGE']
+    word_models_present = op.isfile(op.join(current_app.config['WM_PATH'], current_app.config['WM_BINNED_FN']))
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
