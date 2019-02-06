@@ -1,4 +1,3 @@
-
 <div *ngIf="isLoaded" style="text-align: center;">
     <div class="field is-grouped">
         <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
@@ -17,7 +16,7 @@
     </button>
 </div>
 
-<div class="pdf" [ngClass]="{'is-loading':!isLoaded}">
+<div *ngIf="!pdfNotFound" class="pdf" [ngClass]="{'is-loading':!isLoaded}">
     <ng-container *ngIf="page">
         <pdf-viewer
             [src]="pdfSrc"
@@ -27,10 +26,12 @@
             [show-all]="false"
             [page]="page"
             (after-load-complete)="afterLoadComplete($event)"
+            (error)="onError($event)"
             style="display:block;">
         </pdf-viewer>
     </ng-container>
 </div>
+<div *ngIf="pdfNotFound">Image not available.</div>
 
 <p-confirmDialog #cd appendTo="body">
     <p-footer>

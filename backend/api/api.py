@@ -397,6 +397,9 @@ def api_get_pdf():
         image_path = request.json['image_path']
         absolute_path = join(backend_corpus.data_directory, image_path)
 
+        if not isfile(absolute_path):
+            abort(404)
+
         input_pdf, pdf_info = retrieve_pdf(absolute_path)
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         out = build_partial_pdf(pages, input_pdf)
