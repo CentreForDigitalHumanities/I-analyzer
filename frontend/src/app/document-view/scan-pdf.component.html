@@ -1,0 +1,49 @@
+<div *ngIf="isLoaded" style="text-align: center;">
+    <div class="field is-grouped">
+        <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
+            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <a *ngFor="let pageNr of pdfInfo.pageNumbers; let i = index;" (click)=setPage(i+1) [ngClass]="{'is-inverted': (i+1)!=page && (i+1)!=startPage, 'is-outlined':(i+1)==startPage && (i+1)!=page}" class="button is-small is-primary">
+            {{pageNr}}
+        </a>
+        <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === pdfInfo.pageNumbers.length">
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        
+    </div>
+    <button *ngIf="corpus.allow_image_download" class="button download is-primary is-small" (click)="confirmDownload()">
+        <i class="fa fa-download" aria-hidden="true"></i>
+    </button>
+</div>
+
+<div *ngIf="!pdfNotFound" class="pdf" [ngClass]="{'is-loading':!isLoaded}">
+    <ng-container *ngIf="page">
+        <pdf-viewer
+            [src]="pdfSrc"
+            [render-text]="true"
+            [original-size]="false"
+            [autoresize]="true"
+            [show-all]="false"
+            [page]="page"
+            (after-load-complete)="afterLoadComplete($event)"
+            (error)="onError($event)"
+            style="display:block;">
+        </pdf-viewer>
+    </ng-container>
+</div>
+<div *ngIf="pdfNotFound">Image not available.</div>
+
+<p-confirmDialog #cd appendTo="body">
+    <p-footer>
+        <div class="field is-grouped">   
+            <button class="button is-primary" (click)="cd.accept()">
+                <i class="fa fa-fw fa-download" aria-hidden="true"></i> Download
+            </button>
+            <button class="button is-primary" (click)="cd.rejectt()">
+                <i class="fa fa-fw fa-times" aria-hidden="true"></i> Cancel
+            </button>
+        </div>
+    </p-footer>
+</p-confirmDialog>
+
+

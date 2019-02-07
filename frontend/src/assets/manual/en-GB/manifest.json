@@ -1,0 +1,17 @@
+[
+    {
+        "id": "main",
+        "title": "I-Analyzer User Manual"
+    },
+    {
+        "id": "query",
+        "title": "Search Query"
+    },
+    {
+        "id": "relatedwords",
+        "title": "Related Words Query"
+    },
+    {   "id": "wordcloud",
+        "title": "Word cloud visualization"
+    }
+]
