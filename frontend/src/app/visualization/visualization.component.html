@@ -46,7 +46,7 @@
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>
-    <div class="container" *ngIf="errorMessage.length > 0">
+    <div class="container" *ngIf="errorMessage && errorMessage.length > 0">
         <div class="notification is-warning">
             {{errorMessage}}
         </div>
