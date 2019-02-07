@@ -48,7 +48,10 @@ describe('CorpusService', () => {
                 "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
-                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
+                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "scan_image_type": "png",
+                "allow_image_download": false,
+                "word_models_present": false
             },
             "test2": {
                 "title": "Test 2",
@@ -59,7 +62,10 @@ describe('CorpusService', () => {
                 "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
-                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
+                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "scan_image_type": "jpg",
+                "allow_image_download": true,
+                "word_models_present": true
             },
         };
         service.get().then((items) => {
@@ -81,6 +87,7 @@ describe('CorpusService', () => {
                 "image": "/static/no-image.jpg",
                 "scan_image_type": "png",
                 "allow_image_download": false,
+                "word_models_present": true,
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -132,8 +139,8 @@ describe('CorpusService', () => {
                 description: "Banking concern to which the report belongs.",
                 hidden: true,
                 sortable: false,
-                searchable: false,
-                downloadable: true,
+                searchable: true,
+                downloadable: false,
                 name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
@@ -180,7 +187,8 @@ describe('CorpusService', () => {
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
                 'png',
-                false
+                false,
+                true
             )]);
         });
     });

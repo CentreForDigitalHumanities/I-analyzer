@@ -23,7 +23,7 @@ from flask_login import LoginManager, login_required, login_user, \
 from flask_mail import Mail, Message
 
 from ianalyzer import models
-from addcorpus.load_corpus import load_all_corpora
+from addcorpus.load_corpus import load_all_corpora, load_corpus
 
 from . import security
 from . import analyze
@@ -241,6 +241,27 @@ def add_basic_user(username, password, email, is_active):
     return new_user
 
 
+def add_uu_user(username, password, email, is_active):
+    ''' Add a user with the role 'uu' to the database
+    Solis-id users get this role by default
+    '''
+
+    uu_role = models.Role.query.filter_by(name='uu').first()  
+    pw_hash = None
+    if (password):
+        pw_hash = generate_password_hash(password)    
+    new_user = models.User(
+        username=username,
+        email=email,
+        active=is_active,
+        password=pw_hash,
+        role_id=uu_role.id,
+    )
+    models.db.session.add(new_user)
+    models.db.session.commit()
+    return new_user
+
+
 def create_success_response(user):
     corpora = [{
         'name': corpus.name,
@@ -370,11 +391,14 @@ def api_get_wordcloud_data():
 @api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
 def api_get_scan_image(corpus_index, image_path):
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = load_corpus(corpus_index)
 
     if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         absolute_path = join(backend_corpus.data_directory, image_path)
-        return send_file(absolute_path, mimetype='image/png')
+        if not isfile(absolute_path):
+            abort(404)
+        else:
+            return send_file(absolute_path, mimetype='image/png')
 
 @api.route('/source_pdf', methods=['POST'])
 @login_required
@@ -383,7 +407,7 @@ def api_get_pdf():
         abort(400)
 
     corpus_index = request.json['corpus_index']
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = load_corpus(corpus_index)
 
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
@@ -393,6 +417,9 @@ def api_get_pdf():
         home_page = request.json['page'] #the page corresponding to the document
         image_path = request.json['image_path']
         absolute_path = join(backend_corpus.data_directory, image_path)
+
+        if not isfile(absolute_path):
+            abort(404)
 
         input_pdf, pdf_info = retrieve_pdf(absolute_path)
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
@@ -411,7 +438,7 @@ def api_get_pdf():
 @api.route('/download_pdf/<corpus_index>/<path:filepath>', methods=['GET'])
 @login_required 
 def api_download_pdf(corpus_index, filepath):
-    backend_corpus = corpora.DEFINITIONS[corpus_index]
+    backend_corpus = load_corpus(corpus_index)
 
     if corpus_index in [c.name for c in current_user.role.corpora]:
         absolute_path = join(backend_corpus.data_directory, filepath)

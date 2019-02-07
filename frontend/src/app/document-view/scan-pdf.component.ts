@@ -39,16 +39,24 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public pdfInfo: pdfHeader;
 
+    public pdfNotFound: boolean = false;
+
     async get_pdf() {
-        const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
-            corpus_index: this.corpus.index,
-            image_path: this.document.fieldValues.image_path,
-            page: this.document.fieldValues.page - 1
-        })
-        this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
-        this.page = this.pdfInfo.homePageIndex; //1-indexed
-        this.startPage = this.page;
-        this.pdfSrc = pdfResponse.body;
+        this.pdfNotFound = false;
+        try {
+            const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
+                corpus_index: this.corpus.index,
+                image_path: this.document.fieldValues.image_path,
+                page: this.document.fieldValues.page - 1
+            })
+            this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
+            this.page = this.pdfInfo.homePageIndex; //1-indexed
+            this.startPage = this.page;
+            this.pdfSrc = pdfResponse.body;
+        }
+        catch (e) {
+            this.pdfNotFound = true;
+        }
     }
 
     /**
@@ -59,6 +67,10 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
+    }
+
+    onError(error: any) {
+        console.log(error)
     }
 
     nextPage() {

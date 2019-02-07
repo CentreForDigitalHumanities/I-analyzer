@@ -64,7 +64,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
         }))
         // this is very hacky:
         // word models only exist for dutch annual reports for now
-        if (this.corpus.name == "dutchannualreports") {
+        if (this.corpus.word_models_present == true) {
             this.visDropdown.push({
                 label: 'Related Words',
                 value: 'relatedwords'
@@ -127,7 +127,6 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
-            console.log("requesting related words...");
             this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];

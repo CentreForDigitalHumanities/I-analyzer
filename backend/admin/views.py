@@ -38,6 +38,9 @@ class QueryView(admin_sqla.ModelView):
         'user.username'
     ]
 
+class CorpusView(ModelView):
+    can_create = False
+    can_edit = True
 
 class RoleView(ModelView):
     # specifies the fields and order in the create- and edit view
@@ -48,29 +51,8 @@ class RoleView(ModelView):
     
     def on_form_prefill(self, form, id):
         ''' Ensure the existence of roles with certain names '''
-        if (form.data['name'] == 'basic' or form.data['name'] == 'admin'):
+        if (form.data['name'] == 'basic' or form.data['name'] == 'admin' or form.data['name'] == 'uu'):
             form.name.render_kw = { 'readonly': True }
-
-
-class CorpusViewAdmin(ModelView):
-    unknown_corpus_message = "Corpus name has to match a known corpus (see the CORPORA key in the application config)"
-    form_args = dict(
-        name = dict(validators=[Required(), AnyOf(lambda: current_app.config['CORPORA'].keys(), unknown_corpus_message)])
-    )
-
-    def after_model_change(self, form, model, is_created):
-        ''' Make sure the admin user has access to a new corpus '''
-        admin = models.Role.query.filter_by(name='admin').first()
-        exists = False
-
-        for corpus in admin.corpora:
-            if corpus == model:
-                exists = True
-                break
-
-        if not exists:
-            admin.corpora.append(model)
-            models.db.session.commit()
 
 
 class UserView(ModelView):

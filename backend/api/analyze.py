@@ -42,8 +42,7 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
             time_bin['transformer'],
             query_term,
             word_data)
-        times.append(np.mean(
-            [time_bin['start_year'], time_bin['end_year']]))
+        times.append(str(time_bin['start_year'])+"-"+str(time_bin['end_year']))
     return word_list, word_data, times
 
 
@@ -52,8 +51,8 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     return a word list of number_similar most similar words.
     """
     binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
-    time_bin = next((time for time in binned if 
-        abs(np.mean([time['start_year'], time['end_year']]) - int(which_time_interval)) < 1.0), None)
+    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and 
+        time['end_year']==int(which_time_interval[-4:])), None)
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
         time_bin['transformer'],
         query_term,

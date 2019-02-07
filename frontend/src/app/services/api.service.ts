@@ -3,7 +3,6 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-//import { SearchFilterData, AggregateResult, RelatedWordsResults, UserRole, Query, User, Corpus } from '../models/index';
 import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
