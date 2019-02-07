@@ -2,15 +2,13 @@ import os
 import pwd
 import grp
 import logging
+import shutil
 
 from PIL import Image
 from progress.bar import Bar
 
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
-
-# UID = pwd.getpwnam("root").gr_uid
-# GID = grp.getgrnam("digitalhumanities").gr_gid
 
 
 class ProgressBar(Bar):
@@ -26,7 +24,7 @@ def convert_image(filepath, output_format='png', quality=50):
             with Image.open(filepath) as image:
                 image.save(fp=out_file, format=output_format.upper(),
                            quality=quality)
-                # os.chown(out_file, uid, gid)
+            shutil.chown(out_file, user='root', group='digitalhumanities')
         except Exception as e:
             # logging.warning('file {} failed to convert'.format(out_file))
             logging.error(e)
@@ -73,4 +71,4 @@ if __name__ == '__main__':
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.INFO)
     logging.info('Start converting...')
 
-    convert_year_range(1785, 1786)
+    convert_year_range(1791, 1791)
