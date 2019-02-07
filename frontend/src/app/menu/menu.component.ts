@@ -73,7 +73,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         // Note that this call to the corpus service ensures the existence of a CSRF token / cookie.
         // Even on the login screen. If, for some reason, the order of events changes, please make 
         // sure the CSRF cookie is still received from the server (also on login screen, i.e.  before POSTing the credentials).
-        this.corpusService.get().then((corpora) => {        
+        this.corpusService.get().then((corpora) => {       
             this.menuCorporaItems = corpora.map(corpus => ({
                 label: corpus.title,
                 command: (click) => 

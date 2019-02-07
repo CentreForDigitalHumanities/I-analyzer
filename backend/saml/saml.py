@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 from ianalyzer.models import User, db
 from api.security import login_user, get_token, get_original_token_input, logout_user
-from api.api import api, add_basic_user, create_success_response
+from api.api import api, add_uu_user, create_success_response
 from .saml_auth import SamlAuth, SamlAuthError
 
 saml = Blueprint('saml', __name__)
@@ -61,7 +61,7 @@ def process_login_result():
 
     user = User.query.filter_by(username=solis_id).first()
     if user is None:
-        user = add_basic_user(solis_id, None, email, True)
+        user = add_uu_user(solis_id, None, email, True)
 
     session['solislogin_token'] = get_token(solis_id)
 

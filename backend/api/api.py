@@ -241,6 +241,27 @@ def add_basic_user(username, password, email, is_active):
     return new_user
 
 
+def add_uu_user(username, password, email, is_active):
+    ''' Add a user with the role 'uu' to the database
+    Solis-id users get this role by default
+    '''
+
+    uu_role = models.Role.query.filter_by(name='uu').first()  
+    pw_hash = None
+    if (password):
+        pw_hash = generate_password_hash(password)    
+    new_user = models.User(
+        username=username,
+        email=email,
+        active=is_active,
+        password=pw_hash,
+        role_id=uu_role.id,
+    )
+    models.db.session.add(new_user)
+    models.db.session.commit()
+    return new_user
+
+
 def create_success_response(user):
     corpora = [{
         'name': corpus.name,

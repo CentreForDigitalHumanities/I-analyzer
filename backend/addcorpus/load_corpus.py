@@ -7,6 +7,8 @@ from os.path import isfile
 
 from flask import current_app
 
+from ianalyzer import models
+
 def load_corpus(corpus_name):
     filepath = current_app.config['CORPORA'][corpus_name]
 
@@ -40,3 +42,15 @@ def load_all_corpora():
         corpus = load_corpus(corpus_name)
         if corpus:
             current_app.config['CORPUS_DEFINITIONS'][corpus_name] = corpus
+            corpus_db = models.Corpus.query.filter_by(name=corpus_name).first()
+            if not corpus_db:
+                # add corpus to database if it's not already in
+                corpus_db = models.Corpus(
+                    name=corpus_name,
+                    description=current_app.config['CORPUS_DEFINITIONS'][corpus_name].description
+                )
+                models.db.session.add(corpus_db)
+                # add it to admin role, too
+                admin = models.Role.query.filter_by(name='admin').first()
+                admin.corpora.append(corpus_db)
+                models.db.session.commit()

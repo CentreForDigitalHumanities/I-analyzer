@@ -127,7 +127,6 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
-            console.log("requesting related words...");
             this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
