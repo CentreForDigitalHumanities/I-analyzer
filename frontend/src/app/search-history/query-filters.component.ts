@@ -9,7 +9,7 @@ import { QueryModel, searchFilterDataToParam } from '../models/index'
 })
 export class QueryFiltersComponent implements OnInit {
     @Input() public queryModel: QueryModel;
-    private formattedFilters: { 
+    public formattedFilters: { 
         name: string, 
         formattedData: string | string[] }[];
     
