@@ -105,7 +105,7 @@ class Troonredes(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only speeches of'
+                    'Accept only speeches of '
                     'the relevant type.'
                 ),
                 options=SPEECH_TYPES
@@ -123,7 +123,7 @@ class Troonredes(XMLCorpus):
                 min_date,
                 max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
+                    'Accept only speeches held between the given dates.'
                 )
             ),
             sortable=True

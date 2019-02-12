@@ -23,7 +23,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     public isScrolledDown: boolean;
 
     @ViewChildren(SearchFilterComponent) filterComponents;
-
     public corpus: Corpus;
     public availableCorpora: Promise<Corpus[]>;
 
@@ -108,7 +107,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-
         this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
         // the search to perform is specified in the query parameters
@@ -401,10 +399,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
-            if (!this.queryField) {
-                this.queryField = {};
-                this.selectedFields = [];
-            }
+            this.queryField = {};
+            this.selectedFields = [];
             this.corpus = corpus;
             this.title.setTitle(this.corpus.name);
         }
