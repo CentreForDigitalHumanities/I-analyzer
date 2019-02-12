@@ -39,13 +39,14 @@ import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
-import { SearchHistoryComponent, HistoryQueryDisplayComponent } from './search-history/index';
+import { SearchHistoryComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
+import { QueryFiltersComponent } from './search-history/query-filters.component';
 
 const appRoutes: Routes = [
     {
@@ -97,6 +98,7 @@ const appRoutes: Routes = [
         HomeComponent,
         CorpusSelectionComponent,
         HighlightPipe,
+        QueryTextPipe,
         SearchComponent,
         SearchFilterComponent,
         SearchRelevanceComponent,
@@ -115,13 +117,13 @@ const appRoutes: Routes = [
         RelatedWordsComponent,
         DocumentViewComponent,
         SearchHistoryComponent,
-        HistoryQueryDisplayComponent,
         FreqtableComponent,
         SelectFieldComponent,
         RegistrationComponent,
         PrivacyComponent,
         RelatedWordsComponent,
-        ScanPdfComponent
+        ScanPdfComponent,
+        QueryFiltersComponent
     ],
     imports: [
         BrowserAnimationsModule,

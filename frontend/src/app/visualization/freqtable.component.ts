@@ -1,8 +1,6 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
-import { TitleCasePipe } from '@angular/common';
 import { Subscription }   from 'rxjs';
 
-import * as d3 from 'd3';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
