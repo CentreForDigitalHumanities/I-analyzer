@@ -12,3 +12,17 @@
 ::ng-deep .ui-calendar {
     margin: 1px 0;
 }
+
+.filter-container{
+    &:hover{
+        box-shadow: 0 0 0 1px $primary;
+    }
+}
+
+.filter-container.on{
+    box-shadow: 0 0 0 2px $primary;
+}
+
+.filter-icon {
+    border: none;
+}

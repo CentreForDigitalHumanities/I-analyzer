@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
-import { CorpusField, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
+import { CorpusField, QueryModel, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
 import { DataService } from '../services/index';
 
 @Component({
@@ -16,25 +16,16 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     public field: CorpusField;
 
     @Input()
-    public enabled: boolean;
-
-    @Input()
-    public filterData: SearchFilterData;
-
-    @Input()
-    public warnBottleneck: boolean;
+    public queryModel: QueryModel;
 
     @Output('update')
-    public updateEmitter = new EventEmitter<SearchFilterData>();
-
-    @Output('greyedOut')
-    public greyedOutEmitter = new EventEmitter<boolean>();
-
-    public isBottleneck: boolean = false;
+    public updateEmitter = new EventEmitter<QueryModel>();
 
     public get filter() {
         return this.field.searchFilter;
     }
+
+    private filterData: SearchFilterData;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
@@ -46,24 +37,27 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     public aggregateData: AggregateData;
 
     public greyedOut: boolean = false;
+    public useAsFilter: boolean = false;
+    public enabled: boolean = false;
 
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
                 if (this.field) {
                     this.aggregateData = data;
-                    this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+                    this.data = this.getDisplayData(this.filter, this.queryModel, this.aggregateData);
                 }
             });
     }
 
     ngOnInit() {
+        console.log(this.field, this.filter);
         if (this.field) {
-            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+            this.data = this.getDisplayData(this.filter, this.queryModel, this.aggregateData);
         }
 
         // default values should also work as a filter: notify the parent
-        this.update();
+        //this.update();
     }
 
     ngOnDestroy() {
@@ -105,43 +99,43 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
         }
     }
 
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
-        if (filterData == null) {
-            filterData = this.defaultFilterData(filter);
+    getDisplayData(filter: SearchFilter, queryModel: QueryModel = null, aggregateData: AggregateData = null) {
+        if (queryModel.filters.length === 0) {
+            this.filterData = this.defaultFilterData(filter);
         }
-        switch (filterData.filterName) {
+        console.log(this.filterData);
+        switch (this.filterData.filterName) {
             case 'BooleanFilter':
-                return filterData.data;
+                return this.filterData.data;
             case 'RangeFilter':
-                return [filterData.data.gte, filterData.data.lte];
+                return [this.filterData.data['gte'], this.filterData.data['lte']];
             case 'MultipleChoiceFilter':
-                if (filter.name == filterData.filterName) {
+                if (filter.name == this.filterData.filterName) {
                     let options = [];
                     if (aggregateData != null) {
-                        this.greyedOutEmitter.emit(false);
                         this.greyedOut = false;
                         options = _.sortBy(
-                            aggregateData[filterData.fieldName], x => x.key
+                            aggregateData[this.filterData.fieldName], x => x.key
                         ).map(
                             x => {
                                 return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
                             });
                         if (options.length === 0) {
-                            this.greyedOutEmitter.emit(true);
+                            //this.greyedOutEmitter.emit(true);
                             this.greyedOut = true;
                         }
                     }
                     else {
                         options = filter.options.map(x => { return { 'label': x, 'value': x } });
                     };
-                    return { options: options, selected: filterData.data };
+                    return { options: options, selected: this.filterData.data };
                 }
                 break;
             case 'DateFilter':
-                if (filter.name == filterData.filterName) {
+                if (filter.name == this.filterData.filterName) {
                     return {
-                        min: new Date(filterData.data.gte),
-                        max: new Date(filterData.data.lte),
+                        min: new Date(this.filterData.data.gte),
+                        max: new Date(this.filterData.data.lte),
                         minYear: new Date(filter.lower).getFullYear(),
                         maxYear: new Date(filter.upper).getFullYear()
                     };
@@ -149,14 +143,13 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                 break;
         }
 
-        console.error(['Unexpected combination of filter and filterData', filter, filterData]);
+        console.error(['Unexpected combination of filter and filterData', filter, this.filterData]);
     }
 
     /**
      * Create a new version of the filter data from the user input.
      */
     getFilterData() {
-        this.isBottleneck = false;
         switch (this.filter.name) {
             case 'BooleanFilter':
                 return {
@@ -165,14 +158,12 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                     data: this.data
                 };
             case 'RangeFilter':
-                if (this.data[0] > this.data[1]) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
                     data: { gte: this.data[0], lte: this.data[1] }
                 };
             case 'MultipleChoiceFilter':
-                if (this.data.selected.length === 0) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
@@ -183,9 +174,6 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
                     upper = this.filter.upper.valueOf(),
                     min = this.data.min && this.data.min.valueOf() || lower,
                     max = this.data.max && this.data.max.valueOf() || upper;
-                let localMin = Math.max(min, lower);
-                let localMax = Math.min(max, upper);
-                if (localMin > localMax) this.isBottleneck = true;
                 return {
                     fieldName: this.field.name,
                     filterName: this.filter.name,
@@ -200,8 +188,10 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     /**
      * Trigger a change event.
      */
-    update(reset = false) {
-        this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
+    update() {
+        this.useAsFilter = true;
+        console.log(this.queryModel.filters, this.getFilterData());
+        this.updateEmitter.emit(this.queryModel);
     }
 
     /**
