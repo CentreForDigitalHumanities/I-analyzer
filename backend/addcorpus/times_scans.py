@@ -7,7 +7,7 @@ from datetime import datetime
 from progress.bar import Bar
 import sys
 
-es = Elasticsearch()
+
 updated_docs = 0
 bar = None
 
@@ -17,13 +17,63 @@ LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 # BASE_DIR = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009'
 # LOG_LOCATION = '/Users/3248526/Documents'
 
-START_YEAR = 1785
-END_YEAR = 1785
+START_YEAR = 1806
+END_YEAR = 1900
 
 
 class ProgressBar(Bar):
     message = 'Updating index'
     suffix = '%(percent).1f%% - %(eta)ds'
+
+
+def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
+    es = Elasticsearch()
+    nr_of_docs = es.count(
+        index=['times'],
+        body={
+            "query": {
+                "bool": {
+                    "must": {
+                        "range": {
+                            "date": {
+                                "gte": "{}-01-01".format(year),
+                                "lte": "{}-12-31".format(year)
+                            }
+                        }
+                    }
+                },
+            }
+        }
+    )['count']
+
+    # progress bar
+    global bar
+    bar = ProgressBar(max=nr_of_docs)
+
+    # Collect initial page
+    page = init_search(es, index, doc_type, page_size,
+                       scroll, year)
+    total_hits = page['hits']['total']
+    scroll_size = len(page['hits']['hits'])
+
+    logging.warning("Starting collection of images for {} documents in index '{}', year {}".format(
+        total_hits, index, year))
+
+    while scroll_size > 0:
+        # Get the current scroll ID
+        sid = page['_scroll_id']
+        # Process current batch of hits
+        process_hits(page['hits']['hits'], es, index, doc_type, corpus_dir)
+        # Scroll to next page
+        page = es.scroll(scroll_id=sid, scroll=scroll)
+        # Get the number of results in current page to control loop
+        scroll_size = len(page['hits']['hits'])
+
+    bar.finish()
+    global updated_docs
+    logging.warning(
+        "Updated {}/{} documents for year {}.".format(updated_docs, total_hits, year))
+    updated_docs = 0
 
 
 def add_images(page_size, start_year, end_year):
@@ -32,32 +82,16 @@ def add_images(page_size, start_year, end_year):
     corpus_dir = BASE_DIR
     scroll = '3m'
 
-    # Collect initial page
-    page = init_search(index, doc_type, page_size,
-                       scroll, start_year, end_year)
-    total_hits = page['hits']['total']
-    scroll_size = len(page['hits']['hits'])
-
-    logging.warning("Starting collection of images for {} documents in index '{}'".format(
-        total_hits, index))
-
-    print(page)
-
-    while scroll_size > 0:
-        # Get the current scroll ID
-        sid = page['_scroll_id']
-        # Process current batch of hits
-        process_hits(page['hits']['hits'], index, doc_type, corpus_dir)
-        # Scroll to next page
-        page = es.scroll(scroll_id=sid, scroll=scroll)
-        # Get the number of results in current page to control loop
-        scroll_size = len(page['hits']['hits'])
-
-    global updated_docs
-    logging.warning("Updated {} documents".format(updated_docs))
+    if end_year == start_year:
+        update_one_year(start_year, index, page_size,
+                        doc_type, corpus_dir, scroll)
+    else:
+        for year in range(start_year, end_year):
+            update_one_year(year, index, page_size,
+                            doc_type, corpus_dir, scroll)
 
 
-def init_search(index, doc_type, page_size, scroll_timeout, start_year, end_year):
+def init_search(es, index, doc_type, page_size, scroll_timeout, year):
     return es.search(
         index=[index],
         body={
@@ -67,8 +101,8 @@ def init_search(index, doc_type, page_size, scroll_timeout, start_year, end_year
                     "must": {
                         "range": {
                             "date": {
-                                "gte": "{}-01-01".format(start_year),
-                                "lte": "{}-12-31".format(end_year)
+                                "gte": "{}-01-01".format(year),
+                                "lte": "{}-12-31".format(year)
                             }
                         }
                     }
@@ -80,13 +114,20 @@ def init_search(index, doc_type, page_size, scroll_timeout, start_year, end_year
     )
 
 
-def process_hits(hits, index, doc_type, corpus_dir):
+def process_hits(hits, es, index, doc_type, corpus_dir):
     for doc in hits:
         date, page = doc['_source']['date'], doc['_source']['page']
         es_doc_id = doc['_id']
-        image_path = compose_image_path(date, page, corpus_dir)
-        if image_path:
-            update_document(index, doc_type, es_doc_id, image_path)
+        try:
+            image_path = compose_image_path(date, page, corpus_dir)
+            if image_path:
+                update_document(es, index, doc_type, es_doc_id, image_path)
+        except Exception as e:
+            page = page if page is not None else 'Unknown'
+            date = date if date is not None else 'Unknown'
+            logging.warning('Error updating doc {}. Date: {}, page: {}'.format(
+                doc['_id'], date, page))
+            logging.warning(e)
         global bar
         bar.next()
 
@@ -116,42 +157,15 @@ def compose_image_path(date_string, page, corpus_dir):
         return None
 
 
-def update_document(index, doc_type, doc_id, image_path):
+def update_document(es, index, doc_type, doc_id, image_path):
     body = {"doc": {"image_path": image_path}}
-    # es.update(index=index, doc_type=doc_type, id=doc_id, body=body)
+    es.update(index=index, doc_type=doc_type, id=doc_id, body=body)
     global updated_docs
     updated_docs += 1
 
 
 if __name__ == "__main__":
-    nr_of_docs = es.count(
-        index=['times'],
-        body={
-            "query": {
-                "bool": {
-                    "must": {
-                        "range": {
-                            "date": {
-                                "gte": "{}-01-01".format(START_YEAR),
-                                "lte": "{}-12-31".format(END_YEAR)
-                            }
-                        }
-                    }
-                },
-            }
-        }
-    )['count']
-    if nr_of_docs == 0:
-        print("no docs")
-        sys.exit()
-
-    print('docs: {}'.format(nr_of_docs))
-
-    global bar
-    bar = ProgressBar(max=nr_of_docs)
     logfile = 'indexupdate.log'
     logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'indexupdate.log'),
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.WARNING)
-
     add_images(100, START_YEAR, END_YEAR)
-    bar.finish()
