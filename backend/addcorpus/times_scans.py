@@ -14,9 +14,6 @@ bar = None
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 
-# BASE_DIR = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009'
-# LOG_LOCATION = '/Users/3248526/Documents'
-
 START_YEAR = 1806
 END_YEAR = 1900
 

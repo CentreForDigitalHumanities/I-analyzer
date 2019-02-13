@@ -8,9 +8,7 @@ from PIL import Image
 from progress.bar import Bar
 
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
-# LOG_LOCATION = '/home/jvboheemen/convert_scripts'
-
-# BASE_DIR = '/Users/3248526/corpora/times/TDA_GDA/TDA_GDA_1785-2009'
+LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 
 
 class ProgressBar(Bar):
@@ -26,9 +24,8 @@ def convert_image(filepath, output_format='png', quality=50):
             with Image.open(filepath) as image:
                 image.save(fp=out_file, format=output_format.upper(),
                            quality=quality)
-            # shutil.chown(out_file, user='root', group='digitalhumanities')
+            shutil.chown(out_file, user='root', group='digitalhumanities')
         except Exception as e:
-            # logging.warning('file {} failed to convert'.format(out_file))
             logging.error(e)
 
 
@@ -69,8 +66,8 @@ def convert_year_range(start_year, end_year):
 
 
 if __name__ == '__main__':
-    # logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'convert.log'),
-    #                     format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.INFO)
-    # logging.info('Start converting...')
+    logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'convert.log'),
+                        format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.INFO)
+    logging.info('Start converting...')
 
-    convert_year_range(1987, 1987)
+    convert_year_range(1900, 1920)
