@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -90,8 +90,6 @@ export class SearchComponent implements OnInit {
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
 
-    private corpusChanged: boolean = false;
-
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
         private downloadService: DownloadService,
@@ -116,6 +114,7 @@ export class SearchComponent implements OnInit {
                 return { corpus, params };
             }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
+                console.log(params.get('corpus'), corpus.name);
                 if (params.get('corpus')===corpus.name) {
                     this.queryText = params.get('query');
                     if (this.corpus != corpus) {
@@ -125,7 +124,6 @@ export class SearchComponent implements OnInit {
                     this.setSortFromParams(this.corpus.fields, params);
                     if (this.queryText || fieldsSet) {
                         this.createQueryModel();
-                        console.log(this.queryModel);
                         this.performSearch();
                     }
                 }
@@ -173,7 +171,6 @@ export class SearchComponent implements OnInit {
     private performSearch() {
         this.hasModifiedFilters = false;
         this.isSearching = true;
-        this.corpusChanged = false;
 
         Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
             let output: AggregateData = {};
@@ -184,6 +181,7 @@ export class SearchComponent implements OnInit {
             this.showFilters = true;
             this.dataService.pushNewFilterData(this.multipleChoiceData);
         });
+        this.isSearching = false;
     }
 
     async getMultipleChoiceFilterOptions(filter: { name: string, size: number }): Promise<AggregateData> {
@@ -271,6 +269,10 @@ export class SearchComponent implements OnInit {
         this.isDownloading = false;
     }
 
+    /**
+     * Event triggered from search-filter.component
+     * @param filterData 
+     */
     public updateFilterData(filterData: SearchFilterData) {
         let index = this.filterData.findIndex(f => f.fieldName === filterData.fieldName);
         if (index >= 0) {
@@ -286,20 +288,12 @@ export class SearchComponent implements OnInit {
         }
         this.resetFilters = false;
         this.search();
-        // let previousData = this.queryField[name].data;
-        // this.queryField[name].data = data;
-        // if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
-        //     // empty multiple choice filters are automatically deactivated
-        //     console.log("deactivating filter: ", name);
-        //     this.applyFilter(name, false);
-        // }
-        // else if (previousData != null && previousData != data) {
-        //     console.log("activating filter: ", name)
-        //     this.applyFilter(name, true);
-        // }
-        // this.changeDetectorRef.detectChanges();
     }
 
+    /**
+     * Event triggered from search-results.component
+     * @param input
+     */
     public onSearched(input: ResultOverview) {
         this.isSearching = false;
         this.hasSearched = true;
@@ -356,7 +350,7 @@ export class SearchComponent implements OnInit {
     }
 
     /**
-     * Sets the field data from the query parameters and return whether any fields were actually set.
+     * Set the field data from the query parameters and return whether any fields were actually set.
      */
     private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
         let fieldsSet = false;
@@ -365,7 +359,6 @@ export class SearchComponent implements OnInit {
             queryRestriction = params.get('fields').split(',');
             this.selectedFields = [];
         }
-
         for (let field of corpusFields) {
             let param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
@@ -375,29 +368,29 @@ export class SearchComponent implements OnInit {
                 fieldsSet = true;
                 let filterSettings = params.get(param).split(',');
                 if (filterSettings[0] == "") filterSettings = [];
-                this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
-                    useAsFilter: true,
-                    visible: false
-                }, field);
-            } else {
-                // this field is not found in the route
-                let auxField = Object.assign({
-                    data: null,
-                    useAsFilter: false,
-                    visible: false
-                }, field);
-                // in case there have been some settings before (i.e., from a deactivated filter), retain them
-                if (this.queryField[field.name]) {
-                    this.queryField[field.name].useAsFilter = false;
-                }
-                else {
-                    this.queryField[field.name] = auxField;
-                }
-                if (queryRestriction.includes(field.name)) {
-                    this.selectedFields.push(auxField);
-                }
+                let filter = this.filterComponents.find( filter => filter.filterData.fieldName == field.name);
+                console.log(filter.filterData);
+                filter.filterData.data = searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings);
+                console.log(filter.filterData);
             }
+            // } else {
+            //     // this field is not found in the route
+            //     let auxField = Object.assign({
+            //         data: null,
+            //         useAsFilter: false,
+            //         visible: false
+            //     }, field);
+            //     // in case there have been some settings before (i.e., from a deactivated filter), retain them
+            //     if (this.queryField[field.name]) {
+            //         this.queryField[field.name].useAsFilter = false;
+            //     }
+            //     else {
+            //         this.queryField[field.name] = auxField;
+            //     }
+            //     if (queryRestriction.includes(field.name)) {
+            //         this.selectedFields.push(auxField);
+            //     }
+            // }
         }
         this.availableSearchFields = Object.values(this.queryField).filter(field => field.searchable);
         this.availableCsvFields = Object.values(this.queryField).filter(field => field.downloadable);

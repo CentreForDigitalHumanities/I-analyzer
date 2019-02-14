@@ -39,7 +39,6 @@ export class SearchFilterComponent implements OnChanges, OnDestroy {
 
     public greyedOut: boolean = false;
     public useAsFilter: boolean = false;
-    public enabled: boolean = false;
 
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
