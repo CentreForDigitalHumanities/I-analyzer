@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { DataService, SearchService } from '../services';
 
@@ -7,7 +7,7 @@ import { DataService, SearchService } from '../services';
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnInit, OnChanges {
+export class SearchResultsComponent implements OnDestroy, OnChanges {
     /**
      * The search queryModel to use
      */
@@ -45,13 +45,15 @@ export class SearchResultsComponent implements OnInit, OnChanges {
 
     constructor(private searchService: SearchService, private dataService: DataService) { }
 
-    ngOnInit() {
-
+    ngOnChanges() {
+        if (this.queryModel !== null) {
+            this.queryText = this.queryModel.queryText;
+            this.search();
+        }
     }
 
-    ngOnChanges() {
-        this.queryText = this.queryModel.queryText;
-        this.search();
+    ngOnDestroy() {
+        this.searchService.clearESScroll(this.corpus, this.results);
     }
 
     private search() {

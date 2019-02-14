@@ -89,21 +89,21 @@
                             <h4 class="title">Filters</h4>
                         </div>
                         <p class="control" style="float:right">
-                            <span *ngIf="activeFilterSet.size > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+                            <span *ngIf="filterData.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
                                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-trash"></i>
                             </span>
-                            <span *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)" class="button icon filter-icon is-inverted is-round"
-                                [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}" (click)="toggleActiveFilters()"
-                                iaBalloon="{{(activeFilterSet.size>0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                            <span *ngIf="filterData.length > 0" class="button icon filter-icon is-inverted is-round"
+                                [ngClass]="{'is-primary is-medium': filterData.length > 0}" (click)="toggleActiveFilters()"
+                                iaBalloon="{{(filterData.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-filter"></i>
                             </span>
                         </p>
                     </div>
                     <ng-container *ngFor="let field of corpus.fields">
-                        <search-filter *ngIf="field.searchFilter" [field]="field" [queryModel]="queryModel" (update)="updateFilterData($event)">
+                        <search-filter *ngIf="field.searchFilter" [field]="field" [filterCommand]="resetFilters" (update)="updateFilterData($event)">
                         </search-filter>
                     </ng-container>
                 </div>

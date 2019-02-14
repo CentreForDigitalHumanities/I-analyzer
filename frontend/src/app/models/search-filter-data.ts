@@ -2,7 +2,7 @@ import { CorpusField } from './corpus';
 import { SearchFilterName } from './index';
 
 export type SearchFilterData =
-    { fieldName: string } & (
+    { fieldName: string, useAsFilter: boolean } & (
         {
             filterName: "BooleanFilter",
             data: boolean
