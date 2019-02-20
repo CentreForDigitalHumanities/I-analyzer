@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, SearchResponse } from 'elasticsearch';
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -258,23 +258,23 @@ export class ElasticSearchService {
     /**
     * Convert filters from query model into elasticsearch form
     */
-    private mapFilters(filters: SearchFilterData[]) {
+    private mapFilters(filters: SearchFilter[]) {
         return filters.map(filter => {
-            switch (filter.filterName) {
+            switch (filter.currentData.filterType) {
                 case "BooleanFilter":
-                    return { 'term': { [filter.fieldName]: filter.data } };
+                    return { 'term': { [filter.fieldName]: filter.currentData.checked } };
                 case "MultipleChoiceFilter":
-                    return { 'terms': { [filter.fieldName]: filter.data } };
+                    return { 'terms': { [filter.fieldName]: filter.currentData.selected } };
                 case "RangeFilter":
                     return {
                         'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte }
+                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max }
                         }
                     }
                 case "DateFilter":
                     return {
                         'range': {
-                            [filter.fieldName]: { gte: filter.data.gte, lte: filter.data.lte, format: 'yyyy-MM-dd' }
+                            [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max, format: 'yyyy-MM-dd' }
                         }
                     }
             }

@@ -1,57 +1,61 @@
-import { CorpusField } from './corpus';
-import { SearchFilterName } from './index';
+import { CorpusField, SearchFilter } from './corpus';
+import { AggregateResult } from './search-results';
 
-export type SearchFilterData =
-    { fieldName: string, useAsFilter: boolean } & (
-        {
-            filterName: "BooleanFilter",
-            data: boolean
-        } | {
-            filterName: "MultipleChoiceFilter",
-            data: string[]
-        } | {
-            filterName: "RangeFilter",
-            data: { gte: number, lte: number }
-        } | {
-            filterName: "DateFilter",
-            data: {
-                /** greater than or equal, format: yyyy-MM-dd */
-                gte: string,
-                /** less than or equal, format: yyyy-MM-dd */
-                lte: string
-            }
-        });
+export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
 
-export type SearchFilterName = SearchFilterData["filterName"];
+export type BooleanFilterData = { 
+    filterType: 'BooleanFilter', 
+    checked: boolean
+};
+export type MultipleChoiceFilterData = {
+    filterType: 'MultipleChoiceFilter' 
+    options: string[], 
+    selected: string[],
+    optionsAndCounts?: AggregateResult[]
+};
+export type RangeFilterData = {
+    filterType: 'RangeFilter',
+    min: number, 
+    max: number 
+};
+export type DateFilterData = {
+    filterType: 'DateFilter',
+    /** minimum of date range, format: yyyy-MM-dd */
+    min: string,
+    /** maximum of date range, format: yyyy-MM-dd */
+    max: string
+};
 
-export function searchFilterDataToParam(data: SearchFilterData): string | string[] {
-    switch (data.filterName) {
+export type SearchFilterType = SearchFilterData["filterType"];
+
+export function searchFilterDataToParam(filter: SearchFilter): string | string[] {
+    switch (filter.currentData.filterType) {
         case "BooleanFilter":
-            return `${data.data}`;
+            return `${filter.currentData}`;
         case "MultipleChoiceFilter":
-            return data.data as string[];
+            return filter.currentData.selected as string[];
         case "RangeFilter": {
-            return `${data.data.gte}:${data.data.lte}`;
+            return `${filter.currentData.min}:${filter.currentData.max}`;
         }
         case "DateFilter": {
-            return `${data.data.gte}:${data.data.lte}`;
+            return `${filter.currentData.min}:${filter.currentData.max}`;
         }
     }
 }
 
-export function searchFilterDataFromParam(fieldName: string, filterName: SearchFilterName, value: string[]): SearchFilterData {
-    switch (filterName) {
+export function searchFilterDataFromParam(fieldName: string, filterType: SearchFilterType, value: string[]): SearchFilterData {
+    switch (filterType) {
         case "BooleanFilter":
-            return { fieldName, filterName, data: value[0] === 'true' };
+            return { filterType, checked: value[0] === 'true' };
         case "MultipleChoiceFilter":
-            return { fieldName, filterName, data: value };
+            return { filterType, options: [], selected: value };
         case "RangeFilter": {
-            let [gte, lte] = value[0].split(':');
-            return { fieldName, filterName, data: { lte: parseFloat(lte), gte: parseFloat(gte) } };
+            let [min, max] = value[0].split(':');
+            return { filterType, min: parseFloat(min), max: parseFloat(max) };
         }
         case "DateFilter": {
-            let [gte, lte] = value[0].split(':');
-            return { fieldName, filterName, data: { lte, gte } };
+            let [min, max] = value[0].split(':');
+            return { filterType, min: min, max: max };
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { DataService, SearchService } from '../services';
 
@@ -7,7 +7,7 @@ import { DataService, SearchService } from '../services';
     templateUrl: './search-results.component.html',
     styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnDestroy, OnChanges {
+export class SearchResultsComponent implements OnChanges {
     /**
      * The search queryModel to use
      */
@@ -50,10 +50,6 @@ export class SearchResultsComponent implements OnDestroy, OnChanges {
             this.queryText = this.queryModel.queryText;
             this.search();
         }
-    }
-
-    ngOnDestroy() {
-        this.searchService.clearESScroll(this.corpus, this.results);
     }
 
     private search() {

@@ -6,6 +6,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
+import { SearchFilterData } from '../models';
+import { stringify } from '@angular/compiler/src/util';
 
 @Injectable()
 export class CorpusService {
@@ -80,39 +82,47 @@ export class CorpusService {
             searchable: data.searchable,
             downloadable: data.downloadable,
             name: data.name,
-            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter']) : null
+            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null
         }
     }
 
-    private parseSearchFilter(filter: any): SearchFilter {
+    private parseSearchFilter(filter: any, fieldName: string): SearchFilter {
+        let defaultData: any;
         switch (filter.name) {
             case 'BooleanFilter':
-                return {
-                    description: filter.description,
-                    name: filter.name,
-                    falseText: filter['false'],
-                    trueText: filter['true']
+                defaultData = {
+                    filterType: filter.name,
+                    checked: false
                 }
+                break;
             case 'MultipleChoiceFilter':
-                return {
-                    description: filter.description,
-                    name: filter.name,
-                    options: filter.options
+                defaultData = {
+                    filterType: filter.name,
+                    options: filter.options,
+                    selected: []
                 }
+                break;
             case 'RangeFilter':
-                return {
-                    description: filter.description,
-                    name: filter.name,
-                    lower: filter.lower,
-                    upper: filter.upper
+                defaultData = {
+                    filterType: filter.name,
+                    min: filter.lower,
+                    max: filter.upper
                 }
+                break;
             case 'DateFilter':
-                return {
-                    description: filter.description,
-                    name: filter.name,
-                    lower: new Date(filter.lower),
-                    upper: new Date(filter.upper)
+                defaultData = {
+                    filterType: filter.name,
+                    min: new Date(filter.lower),
+                    max: new Date(filter.upper)
                 }
+                break;
+        }
+        return {
+            fieldName: fieldName,
+            description: filter.description,
+            useAsFilter: false,
+            defaultData: defaultData,
+            currentData: defaultData
         }
     }
 

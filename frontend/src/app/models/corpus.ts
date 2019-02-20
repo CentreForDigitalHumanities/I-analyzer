@@ -63,32 +63,39 @@ export type QueryField = CorpusField & {
     visible: boolean
 };
 
-export type SearchFilter = BooleanFilter | MultipleChoiceFilter | RangeFilter | DateFilter;
-
-type BooleanFilter = {
+export type SearchFilter = {
+    fieldName: string,
     description: string,
-    name: 'BooleanFilter',
-    falseText: string,
-    trueText: string
+    useAsFilter: boolean,
+    defaultData: SearchFilterData,
+    currentData: SearchFilterData
 }
+// BooleanFilter | MultipleChoiceFilter | RangeFilter | DateFilter;
 
-export type MultipleChoiceFilter = {
-    description: string
-    name: 'MultipleChoiceFilter',
-    options: string[],
-    counts?: any[]
-}
+// type BooleanFilter = {
+//     description: string,
+//     name: 'BooleanFilter',
+//     falseText: string,
+//     trueText: string
+// }
 
-type RangeFilter = {
-    description: string
-    name: 'RangeFilter',
-    lower: number,
-    upper: number
-}
+// export type MultipleChoiceFilter = {
+//     description: string
+//     name: 'MultipleChoiceFilter',
+//     options: string[],
+//     counts?: any[]
+// }
 
-type DateFilter = {
-    description: string
-    name: 'DateFilter',
-    lower: Date,
-    upper: Date
-}
+// type RangeFilter = {
+//     description: string
+//     name: 'RangeFilter',
+//     lower: number,
+//     upper: number
+// }
+
+// type DateFilter = {
+//     description: string
+//     name: 'DateFilter',
+//     lower: Date,
+//     upper: Date
+// }

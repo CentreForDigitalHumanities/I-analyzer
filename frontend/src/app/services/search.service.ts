@@ -8,7 +8,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -42,7 +42,7 @@ export class SearchService {
      * @param fields Optional list of fields to restrict the queryString to.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
+    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilter[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
         let model: QueryModel = {
             queryText: queryText,
             filters: filters,

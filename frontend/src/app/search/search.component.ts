@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, QueryList, AfterViewInit, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -6,11 +6,11 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, QueryField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilterData, QueryField, ResultOverview, SearchFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
-import { Fieldset } from 'primeng/primeng';
-import { SearchFilterComponent } from './search-filter.component';
 import { tickStep } from 'd3';
+import { c } from '@angular/core/src/render3';
+import { SelectFieldComponent } from './select-field.component';
 
 @Component({
     selector: 'ia-search',
@@ -22,9 +22,7 @@ export class SearchComponent implements OnInit {
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    @ViewChildren(SearchFilterComponent) filterComponents;
     public corpus: Corpus;
-    public availableCorpora: Promise<Corpus[]>;
 
     /**
      * The filters have been modified.
@@ -45,8 +43,6 @@ export class SearchComponent implements OnInit {
      * The document to view separately.
      */
     public viewDocument: FoundDocument;
-    public showVisualization: boolean = false;
-    public showVisualizationButton: boolean = false;
     /**
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
@@ -61,7 +57,8 @@ export class SearchComponent implements OnInit {
      */
     public availableSearchFields: CorpusField[];
     public availableCsvFields: CorpusField[];
-    public selectedFields: CorpusField[];
+    public selectedSearchFields: CorpusField[];
+    public selectedCsvFields: CorpusField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -72,19 +69,14 @@ export class SearchComponent implements OnInit {
      * it might differ from what the user is currently typing in the query input field.
      */
     public searchQueryText: string;
-    public results: SearchResults;
-
-    public multipleChoiceData: AggregateData = {};
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
-    private multipleChoiceFilters: { name: string, size: number }[];
-
     private resultsCount: number = 0;
     private tabIndex: number;
 
-    private filterData: SearchFilterData[] = [];
+    private searchFilters: SearchFilter [] = [];
     public resetFilters: boolean = false;
 
     public isModalActive: boolean = false;
@@ -98,15 +90,12 @@ export class SearchComponent implements OnInit {
         private dialogService: DialogService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
-        private changeDetectorRef: ChangeDetectorRef,
         private router: Router,
         private title: Title) {
-    }
+        }
 
     async ngOnInit() {
-        this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
-        // the search to perform is specified in the query parameters
         Observable.combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
@@ -114,18 +103,15 @@ export class SearchComponent implements OnInit {
                 return { corpus, params };
             }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
-                console.log(params.get('corpus'), corpus.name);
-                if (params.get('corpus')===corpus.name) {
-                    this.queryText = params.get('query');
-                    if (this.corpus != corpus) {
-                        this.setCorpus(corpus);
-                    }
-                    let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
-                    this.setSortFromParams(this.corpus.fields, params);
-                    if (this.queryText || fieldsSet) {
-                        this.createQueryModel();
-                        this.performSearch();
-                    }
+                this.queryText = params.get('query');
+                this.setCorpus(corpus);
+                this.setFiltersFromParams(this.searchFilters, params);
+                this.setSearchFieldsFromParams(params);
+                this.setSortFromParams(this.corpus.fields, params);
+                let queryModel = this.createQueryModel();
+                if (this.queryModel !== queryModel) {
+                    this.queryModel = queryModel;
+                    this.aggregateSearchForMultipleChoiceFilters();
                 }
             });
     }
@@ -137,18 +123,17 @@ export class SearchComponent implements OnInit {
     }
 
     public toggleActiveFilters() {
-        this.filterData = [];
-        this.filterComponents.forEach(filter => filter.useAsFilter = false);
+        this.searchFilters.forEach(filter => filter.useAsFilter=false);
+        this.dataService.pushNewFilterData(this.searchFilters);
         this.search();
     }
 
     public resetAllFilters() {
-        this.resetFilters = true;
+        this.searchFilters.forEach(filter => filter.currentData = filter.defaultData);
         this.toggleActiveFilters();
     }
 
     public changeSorting(event: SortEvent) {
-        console.log("changing sorting");
         this.sortField = event.field;
         this.sortAscending = event.ascending;
         this.search();
@@ -162,39 +147,40 @@ export class SearchComponent implements OnInit {
             { relativeTo: this.activatedRoute },
         ));
         if (this.router.url === url) {
-            this.performSearch();
+            this.aggregateSearchForMultipleChoiceFilters();
         } else {
             this.router.navigateByUrl(url);
         }
     }
 
-    private performSearch() {
-        this.hasModifiedFilters = false;
-        this.isSearching = true;
-
-        Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
-            let output: AggregateData = {};
-            filters.forEach(filter => {
-                Object.assign(output, filter);
+    private aggregateSearchForMultipleChoiceFilters() {
+        let multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType==="MultipleChoiceFilter");
+        let aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
+        Promise.all(aggregateResultPromises).then(results => {
+            results.forEach(result => {
+                let filter = multipleChoiceFilters.find(f => f.fieldName===Object.keys(result)[0])
+                let currentData = filter.currentData as MultipleChoiceFilterData;
+                currentData.optionsAndCounts = result[filter.fieldName];
             })
-            this.multipleChoiceData = output;
-            this.showFilters = true;
-            this.dataService.pushNewFilterData(this.multipleChoiceData);
+            console.log(JSON.stringify(this.searchFilters));
+            this.dataService.pushNewFilterData(this.searchFilters);
         });
-        this.isSearching = false;
     }
 
-    async getMultipleChoiceFilterOptions(filter: { name: string, size: number }): Promise<AggregateData> {
-        let filters = _.cloneDeep(this.filterData);
+    async getMultipleChoiceFilterOptions(filter: SearchFilter): Promise<AggregateData> {
+        let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter===true));
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
-        if (filters) {
-            let index = filters.findIndex(f => f.fieldName == filter.name);
+        if (filters.length>0) {
+            let index = filters.findIndex(f => f.fieldName == filter.fieldName);
             if (index >= 0) {
                 filters.splice(index, 1);
             }
         }
+        else filters = null;
         let queryModel = this.searchService.createQueryModel(this.queryText, this.getQueryFields(), filters);
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
+        let defaultData = filter.defaultData as MultipleChoiceFilterData;
+        let aggregator = {name: filter.fieldName, size: defaultData.options.length}
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
             console.trace(error);
@@ -273,19 +259,9 @@ export class SearchComponent implements OnInit {
      * Event triggered from search-filter.component
      * @param filterData 
      */
-    public updateFilterData(filterData: SearchFilterData) {
-        let index = this.filterData.findIndex(f => f.fieldName === filterData.fieldName);
-        if (index >= 0) {
-            if (filterData.useAsFilter === false) {
-                this.filterData.splice(index, 1)
-            }
-            else this.filterData[index] = filterData;
-        }
-        else {
-            if (filterData.useAsFilter) {
-                this.filterData.push(filterData);
-            }
-        }
+    public updateFilterData(filter: SearchFilter) {
+        let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
+        this.searchFilters[index] = filter;
         this.resetFilters = false;
         this.search();
     }
@@ -316,17 +292,21 @@ export class SearchComponent implements OnInit {
     }
 
     private getCsvFields(): CorpusField[] {
-        return Object.values(this.corpus.fields).filter(field => !field.hidden && field.downloadable);
+        if (this.selectedCsvFields === undefined) {
+            return this.corpus.fields.filter(field => field.csvCore);
+        }
+        else return this.selectedCsvFields;
     }
 
     private getQueryFields(): string[] | null {
-        let fields = this.selectedFields.map(field => field.name);
+        let fields = this.selectedSearchFields.map(field => field.name);
         if (!fields.length) return null;
         return fields;
     }
 
     private createQueryModel() {
-        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.filterData, this.sortField, this.sortAscending);
+        let searchFilters = this.searchFilters.filter(filter => filter.useAsFilter)
+        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), searchFilters, this.sortField, this.sortAscending);
     }
 
     /**
@@ -335,66 +315,44 @@ export class SearchComponent implements OnInit {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
-            this.selectedFields = [];
-            this.showFilters = true;
             this.corpus = corpus;
-            this.queryField = {};
+            this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+            this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
+            this.selectedSearchFields = [];
             this.queryModel = null;
-            this.title.setTitle(this.corpus.name);
-            this.filterData = [];
-            // calculate multiple choice filters for this corpus
-            this.multipleChoiceFilters = this.corpus.fields
-                .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
-                .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
+            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
         }
     }
 
     /**
-     * Set the field data from the query parameters and return whether any fields were actually set.
+     * Set the filter data from the query parameters and return whether any filters were actually set.
      */
-    private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
-        let fieldsSet = false;
-        let queryRestriction: string[] = [];
-        if (params.has('fields')) {
-            queryRestriction = params.get('fields').split(',');
-            this.selectedFields = [];
-        }
-        for (let field of corpusFields) {
-            let param = this.searchService.getParamForFieldName(field.name);
+    private setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+        searchFilters.forEach( f => {
+            let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;
                 }
-                fieldsSet = true;
                 let filterSettings = params.get(param).split(',');
                 if (filterSettings[0] == "") filterSettings = [];
-                let filter = this.filterComponents.find( filter => filter.filterData.fieldName == field.name);
-                console.log(filter.filterData);
-                filter.filterData.data = searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings);
-                console.log(filter.filterData);
+                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
+                f.useAsFilter = true;
             }
-            // } else {
-            //     // this field is not found in the route
-            //     let auxField = Object.assign({
-            //         data: null,
-            //         useAsFilter: false,
-            //         visible: false
-            //     }, field);
-            //     // in case there have been some settings before (i.e., from a deactivated filter), retain them
-            //     if (this.queryField[field.name]) {
-            //         this.queryField[field.name].useAsFilter = false;
-            //     }
-            //     else {
-            //         this.queryField[field.name] = auxField;
-            //     }
-            //     if (queryRestriction.includes(field.name)) {
-            //         this.selectedFields.push(auxField);
-            //     }
-            // }
+            else {
+                f.useAsFilter = false;
+            }
+        })
+    }
+
+    private setSearchFieldsFromParams(params: ParamMap) {
+        if (params.has('fields')) {
+            let queryRestriction = params.get('fields').split(',');
+            this.selectedSearchFields = queryRestriction.map(
+                fieldName => this.corpus.fields.find(
+                    field => field.name === fieldName)
+                );
         }
-        this.availableSearchFields = Object.values(this.queryField).filter(field => field.searchable);
-        this.availableCsvFields = Object.values(this.queryField).filter(field => field.downloadable);
-        return fieldsSet;
     }
 
     private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
@@ -412,16 +370,11 @@ export class SearchComponent implements OnInit {
     }
 
     private selectSearchFieldsEvent(selection: CorpusField[]) {
-        this.selectedFields = selection;
-        this.hasModifiedFilters = true;
+        this.selectedSearchFields = selection;
+        //this.hasModifiedFilters = true;
     }
 
     private selectCsvFieldsEvent(selection: CorpusField[]) {
-        let fields = selection.map(field => field.name);
-        // set first that no fields are downloaded, then set only the selected ones to download
-        Object.values(this.queryField).forEach(field => field.downloadInCsv = false);
-        Object.values(this.queryField).filter(
-            field => _.indexOf(fields, field.name) != -1).forEach(
-                field => field.downloadInCsv = true);
+        this.selectedCsvFields = selection;
     }
 }

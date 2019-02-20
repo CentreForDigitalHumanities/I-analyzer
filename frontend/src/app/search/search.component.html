@@ -44,8 +44,8 @@
                                     <div class="control" iaBalloon="Click here to limit your search to specific fields"
                                         iaBalloonLength="medium">
                                         <ia-select-field [availableFields]="availableSearchFields" [filterCriterion]=" 'searchField' "
-                                            [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
-                                            [showSelectedFields]="true">
+                                            [label]=" 'All fields' " (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
                                         </ia-select-field>
                                     </div>
                                 </div>
@@ -83,20 +83,20 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <div *ngIf="corpus && showFilters">
+                <div *ngIf="corpus">
                     <div class="field has-addons">
                         <div class="control is-expanded">
                             <h4 class="title">Filters</h4>
                         </div>
                         <p class="control" style="float:right">
-                            <span *ngIf="filterData.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+                            <span *ngIf="searchFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
                                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-trash"></i>
                             </span>
-                            <span *ngIf="filterData.length > 0" class="button icon filter-icon is-inverted is-round"
-                                [ngClass]="{'is-primary is-medium': filterData.length > 0}" (click)="toggleActiveFilters()"
-                                iaBalloon="{{(filterData.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                            <span *ngIf="searchFilters.length > 0" class="button icon filter-icon is-inverted is-round"
+                                [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
+                                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-filter"></i>
                             </span>

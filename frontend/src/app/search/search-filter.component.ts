@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
-import { CorpusField, QueryModel, MultipleChoiceFilter, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 import { DataService } from '../services/index';
 
 @Component({
@@ -11,7 +11,7 @@ import { DataService } from '../services/index';
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnChanges, OnDestroy {
+export class SearchFilterComponent implements OnInit, OnDestroy {
     @Input()
     public field: CorpusField;
 
@@ -19,40 +19,46 @@ export class SearchFilterComponent implements OnChanges, OnDestroy {
     public filterCommand: boolean;
 
     @Output('update')
-    public updateEmitter = new EventEmitter<SearchFilterData>();
+    public updateEmitter = new EventEmitter<SearchFilter>();
 
-    public get filter() {
-        return this.field.searchFilter;
-    }
-
-    private filterData: SearchFilterData;
+    public filter: SearchFilter;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
      */
-    public data: any;
-    public options: {label: string, value: string}[];
+    public data: any; // holds the user data
 
     public subscription: Subscription;
 
-    public aggregateData: AggregateData;
-
     public greyedOut: boolean = false;
     public useAsFilter: boolean = false;
+    public minYear: number;
+    public maxYear: number;
 
     constructor(private dataService: DataService) {
+        if (this.field) {
+            this.filter = this.field.searchFilter;
+            this.data = this.getDisplayData(this.filter);
+        }
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
-                if (this.field && this.filter.name === 'MultipleChoiceFilter') {
-                    this.aggregateData = data;
-                    this.updateMultipleChoiceFilters();
+                if (this.field && data!==undefined) {               
+                    this.filter = data.find(f => f.fieldName === this.field.name);
+                    this.greyedOut = false;
+                    this.data = this.getDisplayData(this.filter);
+                    this.useAsFilter = this.filter.useAsFilter;
                 }
             });
     }
 
-    ngOnChanges() {
+    ngOnInit() {
         if (this.field) {
-            this.filterData = this.defaultFilterData(this.filter);
+            this.filter = this.field.searchFilter;
+            this.data = this.defaultFilterData(this.filter);
+            if (this.filter.defaultData.filterType === 'DateFilter') {
+                this.minYear = new Date(this.filter.defaultData.min).getFullYear();
+                this.maxYear = new Date(this.filter.defaultData.max).getFullYear();
+            }
             this.data = this.getDisplayData(this.filter);
         }
     }
@@ -62,124 +68,76 @@ export class SearchFilterComponent implements OnChanges, OnDestroy {
     }
 
     defaultFilterData(filter: SearchFilter): SearchFilterData {
-        // unfortunately this isn't typed, so be careful here
-        let fieldName = this.field.name;
-
-        switch (filter.name) {
-            case 'BooleanFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    useAsFilter: false,
-                    data: false
-                };
-            case 'MultipleChoiceFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    useAsFilter: false,
-                    data: []
-                };
-            case 'RangeFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    useAsFilter: false,
-                    data: { gte: filter.lower, lte: filter.upper }
-                };
-            case 'DateFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    useAsFilter: false,
-                    data: {
-                        gte: this.formatDate(filter.lower),
-                        lte: this.formatDate(filter.upper)
-                    }
-                };
-        }
+        return filter.defaultData;
     }
 
     getDisplayData(filter: SearchFilter) {
-        switch (this.filterData.filterName) {
+        switch (filter.currentData.filterType) {
             case 'BooleanFilter':
-                return this.filterData.data;
+                return filter.currentData.checked;
             case 'RangeFilter':
-                return [this.filterData.data['gte'], this.filterData.data['lte']];
-            case 'MultipleChoiceFilter':
+                return [filter.currentData.min, filter.currentData.max];
+            case 'MultipleChoiceFilter':    
                 let options = [];
-                options = this.filterData.data.map(x => { return { 'label': x, 'value': x } });
-                return { options: options, selected: this.filterData.data };
+                if (filter.currentData.optionsAndCounts) {
+                    options = filter.currentData.optionsAndCounts.map( x => {
+                        return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
+                    });
+                }
+                else options = filter.currentData.options.map(x => { return { 'label': x, 'value': x } });
+                if (options.length === 0) {
+                    this.greyedOut = true;
+                }
+                return { options: options, selected: filter.currentData.selected };
 
             case 'DateFilter':
-                if (filter.name == this.filterData.filterName) {
-                    return {
-                        min: new Date(this.filterData.data.gte),
-                        max: new Date(this.filterData.data.lte),
-                        minYear: new Date(filter.lower).getFullYear(),
-                        maxYear: new Date(filter.upper).getFullYear()
-                    };
+                return {
+                    min: new Date(filter.currentData.min),
+                    max: new Date(filter.currentData.max),
+                    minYear: this.minYear,
+                    maxYear: this.maxYear
                 }
-                break;
         }
 
-        console.error(['Unexpected combination of filter and filterData', filter, this.filterData]);
+        console.error(['Unexpected combination of filter and filterData', filter, this.data]);
     }
 
     /**
      * Create a new version of the filter data from the user input.
      */
-    getFilterData(): SearchFilterData {
-        switch (this.filter.name) {
+    getFilterData(): SearchFilter {
+        this.useAsFilter = true;
+        let filterType = this.filter.currentData.filterType;
+        switch (filterType) {
             case 'BooleanFilter':
-                return {
-                    fieldName: this.field.name,
-                    useAsFilter: this.useAsFilter,
-                    filterName: this.filter.name,
-                    data: this.data
+                this.filter.currentData = {
+                    filterType: filterType,
+                    checked: this.data
                 };
+                break;
             case 'RangeFilter':
-                return {
-                    fieldName: this.field.name,
-                    useAsFilter: this.useAsFilter,
-                    filterName: this.filter.name,
-                    data: { gte: this.data[0], lte: this.data[1] }
+                this.filter.currentData = {
+                    filterType: filterType,
+                    min: this.data[0], 
+                    max: this.data[1] 
                 };
+                break;
             case 'MultipleChoiceFilter':
-                return {
-                    fieldName: this.field.name,
-                    useAsFilter: this.useAsFilter,
-                    filterName: this.filter.name,
-                    data: this.data.selected
+                this.filter.currentData = {
+                    filterType: filterType,
+                    options: this.data.options,
+                    selected: this.data.selected
                 };
+                break;
             case 'DateFilter':
-                return {
-                    fieldName: this.field.name,
-                    useAsFilter: this.useAsFilter,
-                    filterName: this.filter.name,
-                    data: {
-                        gte: this.formatDate(this.data.min || this.filter.lower),
-                        lte: this.formatDate(this.data.max || this.filter.upper)
-                    }
+                this.filter.currentData = {
+                    filterType: filterType,
+                    min: this.formatDate(this.data.min || this.filter.defaultData.min),
+                    max: this.formatDate(this.data.max || this.filter.defaultData.max)
                 };
+                break;
         }
-    }
-
-    updateMultipleChoiceFilters() {
-        if (this.aggregateData != null) {
-            this.greyedOut = false;
-            let options = _.sortBy(
-                this.aggregateData[this.filterData.fieldName], x => x.key
-            ).map(
-                x => {
-                    return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
-                });
-            if (options.length === 0) {
-                //this.greyedOutEmitter.emit(true);
-                this.greyedOut = true;
-            }
-            else this.data.options = options;
-        }         
+        return this.filter;
     }
 
     /**
@@ -189,12 +147,14 @@ export class SearchFilterComponent implements OnChanges, OnDestroy {
         // check if filter was activated by toggle
         if (toggleOrReset == "toggle") {
             this.useAsFilter = !this.useAsFilter;
+            console.log("toggled", this.useAsFilter);
         }
         if (toggleOrReset == "reset") {
             this.useAsFilter = false;
-            this.filterData = this.defaultFilterData(this.filter);
+            this.data = this.defaultFilterData(this.filter);
         }
         else this.useAsFilter = true;
+        this.filter.useAsFilter = this.useAsFilter;
         this.updateEmitter.emit(this.getFilterData());
     }
 
