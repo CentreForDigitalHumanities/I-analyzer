@@ -25,6 +25,7 @@ def convert_image(filepath, output_format='png', quality=50):
                 image.save(fp=out_file, format=output_format.upper(),
                            quality=quality)
             shutil.chown(out_file, user='root', group='digitalhumanities')
+            os.chmod(out_file, 0o775)
         except Exception as e:
             logging.error(e)
 
@@ -70,4 +71,4 @@ if __name__ == '__main__':
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.INFO)
     logging.info('Start converting...')
 
-    convert_year_range(1900, 1920)
+    convert_year_range(1921, 1950)
