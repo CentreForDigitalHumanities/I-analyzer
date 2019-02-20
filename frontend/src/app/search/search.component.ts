@@ -71,7 +71,6 @@ export class SearchComponent implements OnInit {
 
     private searchFilters: SearchFilter [] = [];
     private activeFilters: SearchFilter [] = [];
-    public resetFilters: boolean = false;
 
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
@@ -254,7 +253,6 @@ export class SearchComponent implements OnInit {
     public updateFilterData(filter: SearchFilter) {
         let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
         this.searchFilters[index] = filter;
-        this.resetFilters = false;
         this.search();
     }
 
@@ -313,6 +311,7 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            console.log(JSON.stringify(this.searchFilters));
         }
     }
 

@@ -103,7 +103,7 @@
                         </p>
                     </div>
                     <ng-container *ngFor="let field of corpus.fields">
-                        <search-filter *ngIf="field.searchFilter" [field]="field" [filterCommand]="resetFilters" (update)="updateFilterData($event)">
+                        <search-filter *ngIf="field.searchFilter" [field]="field" (update)="updateFilterData($event)">
                         </search-filter>
                     </ng-container>
                 </div>

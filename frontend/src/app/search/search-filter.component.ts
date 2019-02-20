@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
@@ -6,17 +6,18 @@ import * as moment from 'moment';
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 import { DataService } from '../services/index';
 
+/**
+ * Filter component receives the corpus fields containing search filters as input
+ * Filter data from parameters and after search are pushed via a DataService observable
+ */
 @Component({
     selector: 'search-filter',
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnInit, OnDestroy {
+export class SearchFilterComponent implements OnDestroy, OnInit {
     @Input()
     public field: CorpusField;
-
-    @Input()
-    public filterCommand: boolean;
 
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter>();
@@ -36,10 +37,6 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     public maxYear: number;
 
     constructor(private dataService: DataService) {
-        if (this.field) {
-            this.filter = this.field.searchFilter;
-            this.data = this.getDisplayData(this.filter);
-        }
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
                 if (this.field && data!==undefined) {               
@@ -54,7 +51,7 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (this.field) {
             this.filter = this.field.searchFilter;
-            this.data = this.defaultFilterData(this.filter);
+            this.filter.currentData = this.defaultFilterData(this.filter);
             if (this.filter.defaultData.filterType === 'DateFilter') {
                 this.minYear = new Date(this.filter.defaultData.min).getFullYear();
                 this.maxYear = new Date(this.filter.defaultData.max).getFullYear();
