@@ -23,15 +23,12 @@ export class HistoryQueryDisplayComponent implements OnInit {
         if (typeof this.queryModel=="string") {
             this.queryModel = JSON.parse(this.queryModel);
         }
-
         if (this.queryModel.filters.length>0) {
             this.queryModel.filters.forEach(filter => {
-                this.formattedFilters += filter.filterName + ": <b>" + filter.fieldName + "</b>: " +
+                this.formattedFilters += filter.defaultData.filterType + ": <b>" + filter.fieldName + "</b>: " +
                 searchFilterDataToParam(filter) + "<br>"
             });
         }
-
-
     }
 
 }

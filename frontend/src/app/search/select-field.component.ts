@@ -28,7 +28,7 @@ export class SelectFieldComponent implements OnInit {
             if (this.selectAll) {
                 this.selectedQueryFields = this.optionsFields;
             }
-            else {
+            else if (this.fieldsFromParams === undefined) {
                 this.selectedQueryFields = [];
             }
         }       
@@ -37,7 +37,6 @@ export class SelectFieldComponent implements OnInit {
     ngOnChanges() {
         if (this.fieldsFromParams !== undefined) {
             this.selectedQueryFields = this.fieldsFromParams;
-            console.log(this.selectedQueryFields);
         }
     }
 

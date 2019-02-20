@@ -89,12 +89,12 @@
                             <h4 class="title">Filters</h4>
                         </div>
                         <p class="control" style="float:right">
-                            <span *ngIf="searchFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
                                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-trash"></i>
                             </span>
-                            <span *ngIf="searchFilters.length > 0" class="button icon filter-icon is-inverted is-round"
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
                                 [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
                                 iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                                 iaBalloonPosition="down-left">

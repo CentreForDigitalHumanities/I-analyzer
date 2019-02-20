@@ -1,16 +1,12 @@
-import { Component, ElementRef, QueryList, AfterViewInit, OnInit, ViewChild, HostListener } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilterData, QueryField, ResultOverview, SearchFilter, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilterData, ResultOverview, SearchFilter, AggregateData, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
-import { tickStep } from 'd3';
-import { c } from '@angular/core/src/render3';
-import { SelectFieldComponent } from './select-field.component';
 
 @Component({
     selector: 'ia-search',
@@ -48,9 +44,6 @@ export class SearchComponent implements OnInit {
      */
     public showFilters: boolean | undefined;
     public user: User;
-    public queryField: {
-        [name: string]: QueryField
-    };
 
     /**
      * The next two members facilitate a p-multiSelect in the template.
@@ -77,6 +70,7 @@ export class SearchComponent implements OnInit {
     private tabIndex: number;
 
     private searchFilters: SearchFilter [] = [];
+    private activeFilters: SearchFilter [] = [];
     public resetFilters: boolean = false;
 
     public isModalActive: boolean = false;
@@ -90,8 +84,7 @@ export class SearchComponent implements OnInit {
         private dialogService: DialogService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
-        private router: Router,
-        private title: Title) {
+        private router: Router) {
         }
 
     async ngOnInit() {
@@ -162,7 +155,6 @@ export class SearchComponent implements OnInit {
                 let currentData = filter.currentData as MultipleChoiceFilterData;
                 currentData.optionsAndCounts = result[filter.fieldName];
             })
-            console.log(JSON.stringify(this.searchFilters));
             this.dataService.pushNewFilterData(this.searchFilters);
         });
     }
@@ -305,8 +297,8 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
-        let searchFilters = this.searchFilters.filter(filter => filter.useAsFilter)
-        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), searchFilters, this.sortField, this.sortAscending);
+        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter)
+        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
     }
 
     /**
@@ -350,8 +342,9 @@ export class SearchComponent implements OnInit {
             let queryRestriction = params.get('fields').split(',');
             this.selectedSearchFields = queryRestriction.map(
                 fieldName => this.corpus.fields.find(
-                    field => field.name === fieldName)
-                );
+                    field => field.name === fieldName
+                )
+            );
         }
     }
 
@@ -371,7 +364,7 @@ export class SearchComponent implements OnInit {
 
     private selectSearchFieldsEvent(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
-        //this.hasModifiedFilters = true;
+        this.search();
     }
 
     private selectCsvFieldsEvent(selection: CorpusField[]) {

@@ -106,7 +106,6 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
      * Create a new version of the filter data from the user input.
      */
     getFilterData(): SearchFilter {
-        this.useAsFilter = true;
         let filterType = this.filter.currentData.filterType;
         switch (filterType) {
             case 'BooleanFilter':
@@ -132,8 +131,8 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
             case 'DateFilter':
                 this.filter.currentData = {
                     filterType: filterType,
-                    min: this.formatDate(this.data.min || this.filter.defaultData.min),
-                    max: this.formatDate(this.data.max || this.filter.defaultData.max)
+                    min: this.formatDate(this.data.min),
+                    max: this.formatDate(this.data.max)
                 };
                 break;
         }
@@ -144,16 +143,15 @@ export class SearchFilterComponent implements OnInit, OnDestroy {
      * Trigger a change event.
      */
     update(toggleOrReset: string = null) {
-        // check if filter was activated by toggle
+        // check if filter was toggled or reset
         if (toggleOrReset == "toggle") {
             this.useAsFilter = !this.useAsFilter;
-            console.log("toggled", this.useAsFilter);
         }
-        if (toggleOrReset == "reset") {
+        else if (toggleOrReset == "reset") {
             this.useAsFilter = false;
             this.data = this.defaultFilterData(this.filter);
         }
-        else this.useAsFilter = true;
+        else this.useAsFilter = true; // update called through user input
         this.filter.useAsFilter = this.useAsFilter;
         this.updateEmitter.emit(this.getFilterData());
     }

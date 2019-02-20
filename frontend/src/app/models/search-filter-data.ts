@@ -8,7 +8,7 @@ export type BooleanFilterData = {
     checked: boolean
 };
 export type MultipleChoiceFilterData = {
-    filterType: 'MultipleChoiceFilter' 
+    filterType: 'MultipleChoiceFilter', 
     options: string[], 
     selected: string[],
     optionsAndCounts?: AggregateResult[]
