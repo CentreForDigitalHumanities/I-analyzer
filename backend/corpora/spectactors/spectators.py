@@ -30,7 +30,7 @@ class Spectators(XMLCorpus):
     es_index = current_app.config['SPECTATORS_ES_INDEX']
     es_doctype = current_app.config['SPECTATORS_ES_DOCTYPE']
     es_settings = None
-    language = ''
+
     tag_toplevel = 'article'
     tag_entry = 'content'
 
