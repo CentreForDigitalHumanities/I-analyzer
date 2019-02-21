@@ -1,4 +1,4 @@
-import { SearchFilterData } from './search-filter-data';
+import { SearchFilter } from './search-filter';
 
 export class Corpus implements ElasticSearchIndex {
     constructor(
@@ -55,12 +55,4 @@ export type CorpusField = {
     downloadable: boolean,
     name: string,
     searchFilter: SearchFilter | null
-}
-
-export type SearchFilter = {
-    fieldName: string,
-    description: string,
-    useAsFilter: boolean,
-    defaultData: SearchFilterData,
-    currentData: SearchFilterData
 }

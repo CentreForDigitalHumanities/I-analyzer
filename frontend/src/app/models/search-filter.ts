@@ -1,5 +1,12 @@
-import { CorpusField, SearchFilter } from './corpus';
 import { AggregateResult } from './search-results';
+
+export type SearchFilter = {
+    fieldName: string,
+    description: string,
+    useAsFilter: boolean,
+    defaultData: SearchFilterData,
+    currentData: SearchFilterData
+}
 
 export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
 
