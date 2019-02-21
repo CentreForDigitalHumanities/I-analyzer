@@ -102,8 +102,8 @@ export class SearchComponent implements OnInit {
                 this.setSortFromParams(this.corpus.fields, params);
                 let queryModel = this.createQueryModel();
                 if (this.queryModel !== queryModel) {
-                    this.queryModel = queryModel;
                     this.aggregateSearchForMultipleChoiceFilters();
+                    this.queryModel = queryModel;
                 }
             });
     }
@@ -295,7 +295,7 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
-        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter)
+        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
     }
 
@@ -317,7 +317,7 @@ export class SearchComponent implements OnInit {
     /**
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
-    private setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+    setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
         searchFilters.forEach( f => {
             let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {

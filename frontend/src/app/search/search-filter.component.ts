@@ -5,6 +5,7 @@ import * as moment from 'moment';
 
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 import { DataService } from '../services/index';
+import { CommentStmt } from '@angular/compiler';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -33,6 +34,8 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
 
     public greyedOut: boolean = false;
     public useAsFilter: boolean = false;
+    public minDate: Date;
+    public maxDate: Date;
     public minYear: number;
     public maxYear: number;
 
@@ -51,10 +54,11 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     ngOnInit() {
         if (this.field) {
             this.filter = this.field.searchFilter;
-            this.filter.currentData = this.defaultFilterData(this.filter);
             if (this.filter.defaultData.filterType === 'DateFilter') {
-                this.minYear = new Date(this.filter.defaultData.min).getFullYear();
-                this.maxYear = new Date(this.filter.defaultData.max).getFullYear();
+                this.minDate = new Date(this.filter.defaultData.min);
+                this.maxDate = new Date(this.filter.defaultData.max);
+                this.minYear = this.minDate.getFullYear();
+                this.maxYear = this.maxDate.getFullYear();
             }
             this.data = this.getDisplayData(this.filter);
         }
@@ -62,10 +66,6 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
 
     ngOnDestroy() {
         this.subscription.unsubscribe();
-    }
-
-    defaultFilterData(filter: SearchFilter): SearchFilterData {
-        return filter.defaultData;
     }
 
     getDisplayData(filter: SearchFilter) {
@@ -86,7 +86,6 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
                     this.greyedOut = true;
                 }
                 return { options: options, selected: filter.currentData.selected };
-
             case 'DateFilter':
                 return {
                     min: new Date(filter.currentData.min),
@@ -146,7 +145,8 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
         }
         else if (toggleOrReset == "reset") {
             this.useAsFilter = false;
-            this.data = this.defaultFilterData(this.filter);
+            this.filter.currentData = this.filter.defaultData;
+            this.data = this.getDisplayData(this.filter);
         }
         else this.useAsFilter = true; // update called through user input
         this.filter.useAsFilter = this.useAsFilter;

@@ -32,9 +32,9 @@
             <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.defaultData.min" [max]="filter.defaultData.max" (onSlideEnd)="update()"></p-slider>
         </div>
         <div class="daterange" *ngIf="filter.defaultData.filterType == 'DateFilter'">
-            <p-calendar [(ngModel)]="data.min" [minDate]="filter.defaultData.min" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+            <p-calendar [(ngModel)]="data.min" [minDate]="minDate" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
                 (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
-            <p-calendar [(ngModel)]="data.max" [maxDate]="filter.defaultData.max" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+            <p-calendar [(ngModel)]="data.max" [maxDate]="maxDate" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
                 (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
         </div>
     </ng-container>

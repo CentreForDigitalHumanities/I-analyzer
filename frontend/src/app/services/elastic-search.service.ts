@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Client, SearchResponse } from 'elasticsearch';
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchFilterData, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 

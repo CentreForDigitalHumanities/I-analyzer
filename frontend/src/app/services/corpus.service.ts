@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+import * as moment from 'moment';
+
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, SearchFilter } from '../models/corpus';
-import { SearchFilterData } from '../models';
-import { stringify } from '@angular/compiler/src/util';
+import { Corpus, CorpusField, SearchFilter } from '../models/index';
 
 @Injectable()
 export class CorpusService {
@@ -112,8 +111,8 @@ export class CorpusService {
             case 'DateFilter':
                 defaultData = {
                     filterType: filter.name,
-                    min: new Date(filter.lower),
-                    max: new Date(filter.upper)
+                    min: this.formatDate(new Date(filter.lower)),
+                    max: this.formatDate(new Date(filter.upper))
                 }
                 break;
         }
@@ -129,5 +128,12 @@ export class CorpusService {
     private parseDate(date: any): Date {
         // months are zero-based!
         return new Date(date.year, date.month - 1, date.day, date.hour, date.minute);
+    }
+
+    /**
+     * Return a string of the form 0123-04-25.
+     */
+    private formatDate(date: Date): string {
+        return moment(date).format().slice(0, 10);
     }
 }
