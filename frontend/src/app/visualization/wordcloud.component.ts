@@ -39,7 +39,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
             d3.selectAll('svg').remove();
             let inputRange = d3.extent(significantText.map(d => d.doc_count)) as number[];
-            let outputRange = [10, 100];
+            let outputRange = [20, 80];
             this.scaleFontSize.domain(inputRange).range(outputRange);
             this.drawWordCloud(significantText);
         }
