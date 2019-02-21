@@ -33,7 +33,8 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
         query_term,
         number_similar)
     if not word_list:
-        return "The query term is not in the word models' vocabulary."
+        return "The query term is not in the word models' vocabulary. \
+        Is your query field empty, does it contain multiple words, or did you search for a stop word?"
     times = []
     words = [word['key'] for word in word_list]
     word_data = [{'label': word, 'data': []} for word in words]

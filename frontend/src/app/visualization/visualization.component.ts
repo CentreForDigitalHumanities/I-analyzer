@@ -14,7 +14,6 @@ import { SearchService, DataService } from '../services/index';
 
 export class VisualizationComponent implements OnInit, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public multipleChoiceFilters: { name: string, size: number }[];
 
     public visualizedFields: CorpusField[];
 
@@ -140,8 +139,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 });
         }
         else {
-            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === this.visualizedField.name);
-            aggregator = aggregator ? aggregator : { name: this.visualizedField.name, size: this.defaultSize };
+            let aggregator = {name: this.visualizedField.name, size: this.defaultSize};
             this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
