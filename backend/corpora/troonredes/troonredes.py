@@ -64,6 +64,23 @@ class Troonredes(XMLCorpus):
 
     fields = [
         Field(
+            name='date',
+            display_name='Date',
+            description='Date of the speech',
+            extractor=extract.XML(tag='date'),
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            results_overview=True,
+            csv_core=True,
+            search_filter=filters.DateFilter(
+                min_date,
+                max_date,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+            sortable=True
+        ),
+        Field(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
@@ -110,23 +127,6 @@ class Troonredes(XMLCorpus):
                 ),
                 options=SPEECH_TYPES
             ),
-        ),
-        Field(
-            name='date',
-            display_name='Date',
-            description='Date of the speech',
-            extractor=extract.XML(tag='date'),
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            results_overview=True,
-            csv_core=True,
-            search_filter=filters.DateFilter(
-                min_date,
-                max_date,
-                description=(
-                    'Accept only speeches held between the given dates.'
-                )
-            ),
-            sortable=True
         ),
         Field(
             name='content',

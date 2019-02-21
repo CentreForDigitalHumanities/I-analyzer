@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 
 import { AggregateData } from '../models/index';
 import { DialogService } from '../services/index';
+import { log } from 'util';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -19,6 +20,9 @@ export class WordcloudComponent implements OnChanges, OnInit {
 
     private width: number = 600;
     private height: number = 400;
+    private scaleFontSize = d3.scaleLinear();
+    private inputRange: number[] = [];
+    private outputRange: number[] = [];
 
     private chartElement: any; 
     private svg: any;
@@ -29,12 +33,15 @@ export class WordcloudComponent implements OnChanges, OnInit {
        
     }
 
-    ngOnChanges(changes: SimpleChanges) {  
+    ngOnChanges(changes: SimpleChanges) {
         this.chartElement = this.chartContainer.nativeElement;     
         let significantText = changes.significantText.currentValue;
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
             d3.selectAll('svg').remove();
-            this.drawWordCloud(this.significantText);
+            let inputRange = d3.extent(significantText.map(d => d.doc_count)) as number[];
+            let outputRange = [10, 100];
+            this.scaleFontSize.domain(inputRange).range(outputRange);
+            this.drawWordCloud(significantText);
         }
     }
 
@@ -60,7 +67,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
           .padding(5)
           .rotate(function() { return ~~(Math.random() * 2) * 90; })
           .font("Impact")
-          .fontSize(function(d) { return d.doc_count * 20; })
+          .fontSize(d => this.scaleFontSize((d.doc_count)))
           .on("end", function(words) {
                 // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
             chart
