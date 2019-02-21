@@ -33,7 +33,7 @@ class DutchNewspapers(XMLCorpus):
     es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
-    language = 'dutch'
+
     tag_toplevel = 'text'
     tag_entry = 'p'
 
