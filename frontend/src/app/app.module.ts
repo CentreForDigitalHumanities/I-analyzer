@@ -39,14 +39,13 @@ import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
-import { SearchHistoryComponent, QueryTextPipe } from './search-history/index';
+import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './search/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { QueryFiltersComponent } from './search-history/query-filters.component';
 
 const appRoutes: Routes = [
     {

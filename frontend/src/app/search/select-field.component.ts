@@ -14,6 +14,7 @@ export class SelectFieldComponent implements OnInit {
     @Input() public label: string;
     @Input() public selectAll: boolean;
     @Input() public showSelectedFields: boolean;
+    @Input() public fieldsFromParams: CorpusField[];
     @Output() selectedFields = new EventEmitter<CorpusField[]>();
     public allVisible: boolean = false;
     public selectedQueryFields: CorpusField[];
@@ -27,10 +28,16 @@ export class SelectFieldComponent implements OnInit {
             if (this.selectAll) {
                 this.selectedQueryFields = this.optionsFields;
             }
-            else {
+            else if (this.fieldsFromParams === undefined) {
                 this.selectedQueryFields = [];
             }
         }       
+    }
+
+    ngOnChanges() {
+        if (this.fieldsFromParams !== undefined) {
+            this.selectedQueryFields = this.fieldsFromParams;
+        }
     }
 
     public toggleAllFields() {

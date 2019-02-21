@@ -77,8 +77,7 @@ export class MenuComponent implements OnDestroy, OnInit {
             this.menuCorporaItems = corpora.map(corpus => ({
                 label: corpus.title,
                 command: (click) => 
-                    this.router.navigate(['/search', corpus.name])
-                
+                    this.router.navigate(['/search', corpus.name])             
             }));
         });
 

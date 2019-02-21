@@ -122,7 +122,7 @@ class Troonredes(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only speeches of'
+                    'Accept only speeches of '
                     'the relevant type.'
                 ),
                 options=SPEECH_TYPES

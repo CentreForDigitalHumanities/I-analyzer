@@ -303,7 +303,7 @@ class Times(XMLCorpus):
             description='Whether the article is on the front page.',
             es_mapping={'type': 'boolean'},
             search_filter=filters.BooleanFilter(
-                true='Cover page',
+                true='Front page',
                 false='Other',
                 description=(
                     'Accept only articles that are on the front page. '
