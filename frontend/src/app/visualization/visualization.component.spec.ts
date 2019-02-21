@@ -65,6 +65,10 @@ describe('VisualizationComponent', () => {
     it('should be created', () => {
         expect(component).toBeTruthy();
     });
+    
+    afterAll(() => {
+        fixture.destroy();
+    });
 });
 
 function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
