@@ -54,6 +54,7 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     ngOnInit() {
         if (this.field) {
             this.filter = this.field.searchFilter;
+            this.filter.currentData = this.filter.defaultData;
             if (this.filter.defaultData.filterType === 'DateFilter') {
                 this.minDate = new Date(this.filter.defaultData.min);
                 this.maxDate = new Date(this.filter.defaultData.max);
