@@ -30,7 +30,7 @@ class Tml(HTMLCorpus):
     es_doctype = current_app.config['TML_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['TML_IMAGE']
-
+    language = 'latin'
     tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags
     tag_entry = ''
 
