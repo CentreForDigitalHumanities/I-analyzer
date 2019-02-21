@@ -9,7 +9,7 @@ import { UserService } from './user.service';
 import { UserServiceMock } from './user.service.mock';
 
 import { Corpus } from '../models/corpus';
-import { CorpusField } from '../models/index';
+import { CorpusField, SearchFilterData } from '../models/index';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -105,8 +105,18 @@ describe('CorpusService', () => {
                     "visualization_sort": "key",
                     "search_filter": {
                         "description": "Search only within these banks.",
-                        "name": "MultipleChoiceFilter",
-                        "options": ['A', 'B', 'C']
+                        "fieldName": "bank",
+                        "useAsFilter": true,
+                        "defaultData": {
+                            "filterType": "MultipleChoiceFilter",
+                            "options": ['A', 'B', 'C'],
+                            "selected": []
+                        },
+                        "currentData": {
+                            "filterType": "MultipleChoiceFilter",
+                            "options": ['A', 'B', 'C'],
+                            "selected": []
+                        },                       
                     }
                 },
                 {
@@ -126,15 +136,34 @@ describe('CorpusService', () => {
                     "visualization_sort": "key",
                     "search_filter": {
                         "description": "Restrict the years from which search results will be returned.",
-                        "lower": 1785,
-                        "name": "RangeFilter",
-                        "upper": 2010
+                        "fieldName": "year",
+                        "useAsFilter": true,
+                        "defaultData": {
+                            "filterType": "RangeFilter",
+                            "min": 1785,
+                            "max": 2010
+                        },
+                        "currentData": {
+                            "filterType": "RangeFilter",
+                            "min": 1785,
+                            "max": 2010
+                        }
                     }
                 }]
             },
         };
 
         return service.get().then((items) => {
+            let mockMultipleChoiceData: SearchFilterData  = {
+                filterType: 'MultipleChoiceFilter',
+                options: ['A', 'B', 'C'],
+                selected: []
+            };
+            let mockRangeData: SearchFilterData = {
+                filterType: 'RangeFilter',
+                min: 1785,
+                max: 2010
+            };
             let allFields: CorpusField[] = [{
                 description: "Banking concern to which the report belongs.",
                 hidden: true,
@@ -151,8 +180,10 @@ describe('CorpusService', () => {
                 visualizationSort: "key",
                 searchFilter: {
                     description: "Search only within these banks.",
-                    name: "MultipleChoiceFilter",
-                    options: ['A', 'B', 'C']
+                    fieldName: "bank",
+                    useAsFilter: true,
+                    defaultData: mockMultipleChoiceData,
+                    currentData: mockMultipleChoiceData
                 }
             }, {
                 description: "Year of the financial report.",
@@ -170,9 +201,10 @@ describe('CorpusService', () => {
                 visualizationSort: "key",
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
-                    name: "RangeFilter",
-                    lower: 1785,
-                    upper: 2010
+                    fieldName: 'year',
+                    useAsFilter: true,
+                    defaultData: mockRangeData,
+                    currentData: mockRangeData
                 }
             }];
             expect(items).toEqual([new Corpus(

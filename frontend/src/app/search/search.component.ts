@@ -1,31 +1,24 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewChildren, HostListener, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilter, ResultOverview, SearchFilterData, AggregateData, SearchResults, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, MultipleChoiceFilterData, ResultOverview, SearchFilter, AggregateData, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
 import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
-import { Fieldset } from 'primeng/primeng';
-import { SearchFilterComponent } from './search-filter.component';
-import { tickStep } from 'd3';
 
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit, OnDestroy {
+export class SearchComponent implements OnInit {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
 
-    @ViewChildren(SearchFilterComponent) filterComponents;
-
     public corpus: Corpus;
-    public availableCorpora: Promise<Corpus[]>;
 
     /**
      * The filters have been modified.
@@ -46,28 +39,19 @@ export class SearchComponent implements OnInit, OnDestroy {
      * The document to view separately.
      */
     public viewDocument: FoundDocument;
-    public showVisualization: boolean = false;
-    public showVisualizationButton: boolean = false;
     /**
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
     public showFilters: boolean | undefined;
     public user: User;
-    public queryField: {
-        [name: string]: QueryField
-    };
 
-    /**
-     * Two sets to hold indices of filters that are active or slumbered (recently deactivated)
-     */
-    public activeFilterSet: Set<string> = new Set(null);
-    public slumberedFilterSet: Set<string> = new Set(null);
     /**
      * The next two members facilitate a p-multiSelect in the template.
      */
     public availableSearchFields: CorpusField[];
     public availableCsvFields: CorpusField[];
-    public selectedFields: CorpusField[];
+    public selectedSearchFields: CorpusField[];
+    public selectedCsvFields: CorpusField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -78,18 +62,15 @@ export class SearchComponent implements OnInit, OnDestroy {
      * it might differ from what the user is currently typing in the query input field.
      */
     public searchQueryText: string;
-    public results: SearchResults;
-
-    public multipleChoiceData: AggregateData = {};
 
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
-    public searchResults: { [fieldName: string]: any }[];
-    private multipleChoiceFilters: { name: string, size: number }[];
-
     private resultsCount: number = 0;
     private tabIndex: number;
+
+    private searchFilters: SearchFilter [] = [];
+    private activeFilters: SearchFilter [] = [];
 
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
@@ -102,16 +83,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         private dialogService: DialogService,
         private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
-        private changeDetectorRef: ChangeDetectorRef,
-        private router: Router,
-        private title: Title) {
-    }
+        private router: Router) {
+        }
 
     async ngOnInit() {
-
-        this.availableCorpora = this.corpusService.get();
         this.user = await this.userService.getCurrentUser();
-        // the search to perform is specified in the query parameters
         Observable.combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
@@ -121,20 +97,15 @@ export class SearchComponent implements OnInit, OnDestroy {
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
-                let fieldsSet = this.setFieldsFromParams(this.corpus.fields, params);
+                this.setFiltersFromParams(this.searchFilters, params);
+                this.setSearchFieldsFromParams(params);
                 this.setSortFromParams(this.corpus.fields, params);
-                // find which fields are multiple choice fields (so we can show their options when searching)
-                this.multipleChoiceFilters = this.corpus.fields
-                    .filter(field => field.searchFilter && field.searchFilter.name == "MultipleChoiceFilter")
-                    .map(d => ({ name: d.name, size: (<MultipleChoiceFilter>d.searchFilter).options.length }));
-                if (fieldsSet || params.has('query')) {
-                    this.performSearch();
+                let queryModel = this.createQueryModel();
+                if (this.queryModel !== queryModel) {
+                    this.aggregateSearchForMultipleChoiceFilters();
+                    this.queryModel = queryModel;
                 }
             });
-    }
-
-    ngOnDestroy() {
-        this.searchService.clearESScroll(this.corpus, this.results);
     }
 
     @HostListener("window:scroll", [])
@@ -143,72 +114,15 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
     }
 
-
-    /**
-     * turn a filter on/off via the filter icon
-     */
-    public toggleFilter(name: string) {
-        let field = this.queryField[name];
-        let activated = !field.useAsFilter;
-        this.applyFilter(name, activated)
-    }
-
-    public applyFilter(name: string, activated: boolean) {
-        let field = this.queryField[name];
-        field.useAsFilter = activated;
-        if (activated) {
-            this.activeFilterSet.add(name);
-        }
-        else {
-            this.activeFilterSet.delete(name);
-        }
-        this.search();
-    }
-
-    public resetFilter(name: string) {
-        // reset the filter to its default data
-        let filter = this.filterComponents.find(f => f.field.name === name)
-        filter.update(true);
-
-        // turn the filter off
-        this.queryField[name].useAsFilter = false;
-        this.activeFilterSet.delete(name);
-        this.search();
-    }
-
     public toggleActiveFilters() {
-        //if any filters are active, disable them and put them in 'slumber'
-        if (this.activeFilterSet.size > 0) {
-            this.activeFilterSet.forEach(f => {
-                this.queryField[f].useAsFilter = false;
-                this.slumberedFilterSet.add(f);
-                this.activeFilterSet.delete(f);
-            })
-        }
-        // if no filters are active, activate any slumbered filters
-        else {
-            this.slumberedFilterSet.forEach(f => {
-                this.queryField[f].useAsFilter = true;
-                this.activeFilterSet.add(f)
-                this.slumberedFilterSet.delete(f);
-            })
-        }
+        this.searchFilters.forEach(filter => filter.useAsFilter=false);
+        this.dataService.pushNewFilterData(this.searchFilters);
         this.search();
     }
 
     public resetAllFilters() {
-        // reset all filters to their default data
-        this.filterComponents.forEach(f => {
-            f.update(true)
-        });
-
-        // deactivate all filters, do not slumber them
-        let filters = Object.values(this.queryField);
-        _.mapValues(filters, f => { f.useAsFilter = false });
-
-        this.activeFilterSet = new Set(null);
-        this.slumberedFilterSet = new Set(null);
-        this.search();
+        this.searchFilters.forEach(filter => filter.currentData = filter.defaultData);
+        this.toggleActiveFilters();
     }
 
     public changeSorting(event: SortEvent) {
@@ -218,46 +132,46 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     public search() {
-        let queryModel = this.createQueryModel();
-
-        let route = this.searchService.queryModelToRoute(queryModel);
+        this.queryModel = this.createQueryModel();
+        let route = this.searchService.queryModelToRoute(this.queryModel);
         let url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
             { relativeTo: this.activatedRoute },
         ));
         if (this.router.url === url) {
-            this.performSearch();
+            this.aggregateSearchForMultipleChoiceFilters();
         } else {
             this.router.navigateByUrl(url);
         }
     }
 
-    private performSearch() {
-        this.queryModel = this.createQueryModel();
-        this.hasModifiedFilters = false;
-        this.isSearching = true;
-
-        Promise.all(this.multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter))).then(filters => {
-            let output: AggregateData = {};
-            filters.forEach(filter => {
-                Object.assign(output, filter);
+    private aggregateSearchForMultipleChoiceFilters() {
+        let multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType==="MultipleChoiceFilter");
+        let aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
+        Promise.all(aggregateResultPromises).then(results => {
+            results.forEach(result => {
+                let filter = multipleChoiceFilters.find(f => f.fieldName===Object.keys(result)[0])
+                let currentData = filter.currentData as MultipleChoiceFilterData;
+                currentData.optionsAndCounts = result[filter.fieldName];
             })
-            this.multipleChoiceData = output;
-            this.showFilters = true;
-            this.dataService.pushNewFilterData(this.multipleChoiceData);
+            this.dataService.pushNewFilterData(this.searchFilters);
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: { name: string, size: number }): Promise<AggregateData> {
-        let queryModel = _.cloneDeep(this.queryModel);
+    async getMultipleChoiceFilterOptions(filter: SearchFilter): Promise<AggregateData> {
+        let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter===true));
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
-        if (queryModel.filters) {
-            let index = queryModel.filters.findIndex(f => f.fieldName == filter.name);
+        if (filters.length>0) {
+            let index = filters.findIndex(f => f.fieldName == filter.fieldName);
             if (index >= 0) {
-                queryModel.filters.splice(index, 1);
+                filters.splice(index, 1);
             }
         }
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [filter]).then(results => {
+        else filters = null;
+        let queryModel = this.searchService.createQueryModel(this.queryText, this.getQueryFields(), filters);
+        let defaultData = filter.defaultData as MultipleChoiceFilterData;
+        let aggregator = {name: filter.fieldName, size: defaultData.options.length}
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
             console.trace(error);
@@ -332,23 +246,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isDownloading = false;
     }
 
-    public updateFilterData(name: string, data: SearchFilterData) {
-        let previousData = this.queryField[name].data;
-        this.queryField[name].data = data;
-        if (data.filterName == 'MultipleChoiceFilter' && data.data.length == 0) {
-            // empty multiple choice filters are automatically deactivated
-            this.applyFilter(name, false);
-        }
-        else if (previousData != null && previousData != data) {
-            this.applyFilter(name, true);
-        }
-        this.changeDetectorRef.detectChanges();
+    /**
+     * Event triggered from search-filter.component
+     * @param filterData 
+     */
+    public updateFilterData(filter: SearchFilter) {
+        let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
+        this.searchFilters[index] = filter;
+        this.search();
     }
 
-    public toggleGreyOutFilter(name: string, greyedOut: boolean) {
-        this.queryField[name].greyedOut = greyedOut;
-    }
-
+    /**
+     * Event triggered from search-results.component
+     * @param input
+     */
     public onSearched(input: ResultOverview) {
         this.isSearching = false;
         this.hasSearched = true;
@@ -371,28 +282,21 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private getCsvFields(): CorpusField[] {
-        return Object.values(this.queryField).filter(field => !field.hidden && field.downloadInCsv);
+        if (this.selectedCsvFields === undefined) {
+            return this.corpus.fields.filter(field => field.csvCore);
+        }
+        else return this.selectedCsvFields;
     }
 
     private getQueryFields(): string[] | null {
-        let fields = this.selectedFields.map(field => field.name);
+        let fields = this.selectedSearchFields.map(field => field.name);
         if (!fields.length) return null;
         return fields;
     }
 
-    private getFilterData(): SearchFilterData[] {
-        let data: SearchFilterData[] = [];
-        for (let fieldName of Object.keys(this.queryField)) {
-            let field = this.queryField[fieldName];
-            if (field.useAsFilter) {
-                data.push(field.data);
-            }
-        }
-        return data;
-    }
-
     private createQueryModel() {
-        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.getFilterData(), this.sortField, this.sortAscending);
+        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
+        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
     }
 
     /**
@@ -401,64 +305,45 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name != corpus.name) {
-            if (!this.queryField) {
-                this.queryField = {};
-                this.selectedFields = [];
-            }
             this.corpus = corpus;
-            this.title.setTitle(this.corpus.name);
+            this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+            this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
+            this.selectedSearchFields = [];
+            this.queryModel = null;
+            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
         }
     }
 
     /**
-     * Sets the field data from the query parameters and return whether any fields were actually set.
+     * Set the filter data from the query parameters and return whether any filters were actually set.
      */
-    private setFieldsFromParams(corpusFields: CorpusField[], params: ParamMap) {
-        let fieldsSet = false;
-        let queryRestriction: string[] = [];
-        if (params.has('fields')) {
-            queryRestriction = params.get('fields').split(',');
-            this.selectedFields = [];
-        }
-
-        for (let field of corpusFields) {
-            let param = this.searchService.getParamForFieldName(field.name);
+    setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+        searchFilters.forEach( f => {
+            let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;
                 }
-                fieldsSet = true;
                 let filterSettings = params.get(param).split(',');
                 if (filterSettings[0] == "") filterSettings = [];
-                this.queryField[field.name] = Object.assign({
-                    data: searchFilterDataFromParam(field.name, field.searchFilter.name, filterSettings),
-                    useAsFilter: true,
-                    downloadInCsv: true,
-                    greyedOut: false
-                }, field);
-            } else {
-                // this field is not found in the route
-                let auxField = Object.assign({
-                    data: null,
-                    useAsFilter: false,
-                    downloadInCsv: true,
-                    greyedOut: false
-                }, field);
-                // in case there have been some settings before (i.e., from a deactivated filter), retain them
-                if (this.queryField[field.name]) {
-                    this.queryField[field.name].useAsFilter = false;
-                }
-                else {
-                    this.queryField[field.name] = auxField;
-                }
-                if (queryRestriction.includes(field.name)) {
-                    this.selectedFields.push(auxField);
-                }
+                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
+                f.useAsFilter = true;
             }
+            else {
+                f.useAsFilter = false;
+            }
+        })
+    }
+
+    private setSearchFieldsFromParams(params: ParamMap) {
+        if (params.has('fields')) {
+            let queryRestriction = params.get('fields').split(',');
+            this.selectedSearchFields = queryRestriction.map(
+                fieldName => this.corpus.fields.find(
+                    field => field.name === fieldName
+                )
+            );
         }
-        this.availableSearchFields = Object.values(this.queryField).filter(field => field.searchable);
-        this.availableCsvFields = Object.values(this.queryField).filter(field => field.downloadable);
-        return fieldsSet;
     }
 
     private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
@@ -476,23 +361,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     private selectSearchFieldsEvent(selection: CorpusField[]) {
-        this.selectedFields = selection;
-        this.hasModifiedFilters = true;
+        this.selectedSearchFields = selection;
+        this.search();
     }
 
     private selectCsvFieldsEvent(selection: CorpusField[]) {
-        let fields = selection.map(field => field.name);
-        // set first that no fields are downloaded, then set only the selected ones to download
-        Object.values(this.queryField).forEach(field => field.downloadInCsv = false);
-        Object.values(this.queryField).filter(
-            field => _.indexOf(fields, field.name) != -1).forEach(
-                field => field.downloadInCsv = true);
+        this.selectedCsvFields = selection;
     }
 }
-
-type QueryField = CorpusField & {
-    data: SearchFilterData,
-    useAsFilter: boolean,
-    downloadInCsv: boolean,
-    greyedOut: boolean
-};

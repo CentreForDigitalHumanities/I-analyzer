@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, OnDestroy } from '@angular/core';
+import { Input, Component, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
@@ -12,9 +12,8 @@ import { SearchService, DataService } from '../services/index';
     styleUrls: ['./visualization.component.scss'],
 })
 
-export class VisualizationComponent implements OnInit, OnDestroy {
+export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     @Input() public corpus: Corpus;
-    @Input() public multipleChoiceFilters: { name: string, size: number }[];
 
     public visualizedFields: CorpusField[];
 
@@ -54,40 +53,41 @@ export class VisualizationComponent implements OnInit, OnDestroy {
     constructor(private searchService: SearchService, private dataService: DataService) {
     }
 
-    ngOnInit() {
-        // Initial values
-        this.visualizedFields = this.corpus && this.corpus.fields ?
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['corpus']){
+            this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
-        this.visDropdown = this.visualizedFields.map(field => ({
-            label: field.displayName,
-            value: field.name
-        }))
-        // this is very hacky:
-        // word models only exist for dutch annual reports for now
-        if (this.corpus.word_models_present == true) {
-            this.visDropdown.push({
-                label: 'Related Words',
-                value: 'relatedwords'
-            })
+            this.visDropdown = this.visualizedFields.map(field => ({
+                label: field.displayName,
+                value: field.name
+            }))
+            if (this.corpus.word_models_present == true) {
+                this.visDropdown.push({
+                    label: 'Related Words',
+                    value: 'relatedwords'
+                })
+            }
+            if (this.visualizedFields === undefined) {
+                this.noVisualizations = true;
+            }
+            else {
+                this.noVisualizations = false;
+                this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
+            }   
         }
-        if (this.visualizedFields === undefined) {
-            this.noVisualizations = true;
-        }
-        else {
-            this.noVisualizations = false;
-            this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
-            // subscribe to data service pushing new search results
-            this.subscription = this.dataService.searchResults$.subscribe(results => {
-                if (results.total > 0) {
-                    this.searchResults = results;
-                    this.setVisualizedField(this.visualizedField.name);
-                }
-                else {
-                    this.aggResults = [];
-                }
-            });
-            this.showTableButtons = true;
-        }
+    }
+
+    ngOnInit() {
+        this.subscription = this.dataService.searchResults$.subscribe(results => {
+            if (results.total > 0) {
+                this.searchResults = results;
+                this.setVisualizedField(this.visualizedField.name);
+            }
+            else {
+                this.aggResults = [];
+            }
+        });
+        this.showTableButtons = true;
     }
 
     ngOnDestroy() {
@@ -112,7 +112,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
             if (textFieldContent.length > 0) {
                 this.searchService.getWordcloudData(this.visualizedField.name, textFieldContent).then(result => {
                     // slice is used so the child component fires OnChange
-                    this.aggResults = result[this.visualizedField.name].slice(0);
+                    this.aggResults = result[this.visualizedField.name];
                 })
                     .catch(error => {
                         this.foundNoVisualsMessage = this.noResults;
@@ -140,8 +140,7 @@ export class VisualizationComponent implements OnInit, OnDestroy {
                 });
         }
         else {
-            let aggregator = this.multipleChoiceFilters.find(filter => filter.name === this.visualizedField.name);
-            aggregator = aggregator ? aggregator : { name: this.visualizedField.name, size: this.defaultSize };
+            let aggregator = {name: this.visualizedField.name, size: this.defaultSize};
             this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });

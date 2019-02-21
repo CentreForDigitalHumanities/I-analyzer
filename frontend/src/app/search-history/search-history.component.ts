@@ -5,7 +5,6 @@ import { SelectItem } from 'primeng/primeng';
 import { User, Query } from '../models/index'
 import { SearchService, UserService, QueryService } from '../services/index';
 
-
 @Component({
     selector: 'search-history',
     templateUrl: './search-history.component.html',
@@ -13,11 +12,9 @@ import { SearchService, UserService, QueryService } from '../services/index';
 })
 export class SearchHistoryComponent implements OnInit {
     private user: User;
-    private backupQueries: Query[];
     public queries: Query[];
     public displayCorpora: boolean = false;
     private corpora: SelectItem[];
-    private selectedCorpora: string[] = [];
     constructor(private searchService: SearchService, private userService: UserService, private queryService: QueryService, private router: Router) { }
 
     async ngOnInit() {
@@ -27,6 +24,7 @@ export class SearchHistoryComponent implements OnInit {
             this.corpora = this.user.role.corpora.map(corpus => {
                 return { 'label': corpus.name, 'value': corpus.name };
             });
+            this.corpora.unshift({label: 'All corpora', value: null})
         }
 
         this.queryService.retrieveQueries().then(
@@ -47,16 +45,5 @@ export class SearchHistoryComponent implements OnInit {
             window.scrollTo(0, 0);
         }
     }
-
-    queriesForCorpora() {
-        if (this.selectedCorpora.length > 0) {
-            if (this.backupQueries) {
-                this.queries = this.backupQueries;
-            }
-            this.backupQueries = this.queries;
-            this.queries = this.queries.filter(query => this.selectedCorpora.includes(query.corpusName));
-        }
-    }
-
 
 }

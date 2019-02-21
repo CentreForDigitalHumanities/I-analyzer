@@ -44,8 +44,8 @@
                                     <div class="control" iaBalloon="Click here to limit your search to specific fields"
                                         iaBalloonLength="medium">
                                         <ia-select-field [availableFields]="availableSearchFields" [filterCriterion]=" 'searchField' "
-                                            [label]=" 'All fields'" (selectedFields)="selectSearchFieldsEvent($event)"
-                                            [showSelectedFields]="true">
+                                            [label]=" 'All fields' " (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
                                         </ia-select-field>
                                     </div>
                                 </div>
@@ -83,51 +83,28 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <div *ngIf="corpus && showFilters">
+                <div *ngIf="corpus">
                     <div class="field has-addons">
                         <div class="control is-expanded">
                             <h4 class="title">Filters</h4>
                         </div>
                         <p class="control" style="float:right">
-                            <span *ngIf="activeFilterSet.size > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
                                 (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-trash"></i>
                             </span>
-                            <span *ngIf="(activeFilterSet.size > 0 || slumberedFilterSet.size > 0)" class="button icon filter-icon is-inverted is-round"
-                                [ngClass]="{'is-primary is-medium': activeFilterSet.size > 0}" (click)="toggleActiveFilters()"
-                                iaBalloon="{{(activeFilterSet.size>0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
+                                [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
+                                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                                 iaBalloonPosition="down-left">
                                 <i class="fa fa-filter"></i>
                             </span>
                         </p>
                     </div>
                     <ng-container *ngFor="let field of corpus.fields">
-                        <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': queryField[field.name].useAsFilter}">
-                            <div class="field has-addons">
-                                <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
-                                    iaBalloonPosition="up-left" iaBalloonLength="fit">
-                                    <label class="label" [for]="'filter' + field.name">{{ field.displayName
-                                        }}</label>
-                                </div>
-                                <p class="control">
-                                    <span *ngIf="queryField[field.name].useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
-                                        (click)="resetFilter(field.name)" iaBalloon="Reset this filter to its default values"
-                                        iaBalloonPosition="down-left">
-                                        <i class="fa fa-trash"></i>
-                                    </span>
-                                    <span class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': queryField[field.name].useAsFilter}"
-                                        (click)="toggleFilter(field.name)" iaBalloon="{{queryField[field.name].useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
-                                        iaBalloonPosition="down-left">
-                                        <i class="fa fa-filter"></i>
-                                    </span>
-                                </p>
-                            </div>
-                            <search-filter [field]="field" [enabled]="queryField[field.name].useAsFilter" [filterData]="queryField[field.name].data"
-                                [warnBottleneck]="hasSearched && !isSearching && queryField[field.name].useAsFilter && results && results.total == 0"
-                                (greyedOut)="toggleGreyOutFilter(field.name, $event)" (update)="updateFilterData(field.name, $event)">
-                            </search-filter>
-                        </div>
+                        <search-filter *ngIf="field.searchFilter" [field]="field" (update)="updateFilterData($event)">
+                        </search-filter>
                     </ng-container>
                 </div>
             </div>
@@ -149,7 +126,7 @@
                     <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
                         <ng-template pTemplate="content">
                             <div class="column">
-                                <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [multipleChoiceFilters]="multipleChoiceFilters"></ia-visualization>
+                                <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus"></ia-visualization>
                             </div>
                         </ng-template>
                     </p-tabPanel>

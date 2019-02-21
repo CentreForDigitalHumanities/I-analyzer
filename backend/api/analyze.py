@@ -16,7 +16,8 @@ def make_wordcloud_data(list_of_content):
     for content in list_of_content:
         if content != '':
             list_of_content.remove(content)
-    cv = CountVectorizer(stop_words="english", max_features=50)
+    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
+    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
     counts = cv.fit_transform(list_of_content).toarray().ravel()
     words = cv.get_feature_names()
     output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
@@ -32,7 +33,8 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
         query_term,
         number_similar)
     if not word_list:
-        return "The query term is not in the word models' vocabulary."
+        return "The query term is not in the word models' vocabulary. \
+        Is your query field empty, does it contain multiple words, or did you search for a stop word?"
     times = []
     words = [word['key'] for word in word_list]
     word_data = [{'label': word, 'data': []} for word in words]
