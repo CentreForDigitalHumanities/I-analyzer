@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, QueryModel } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -49,7 +49,7 @@ export class ApiService extends Resource {
         path: '/get_wordcloud_data'
     })
     public getWordcloudData: ResourceMethod<
-        { content_list: string[] },
+        { query_model: QueryModel },
         { data: AggregateResult[] }>;
 
     @ResourceAction({

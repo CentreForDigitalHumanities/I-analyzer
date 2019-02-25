@@ -108,9 +108,9 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[this.visualizedField.name]);
-            if (textFieldContent.length > 0) {
-                this.searchService.getWordcloudData(this.visualizedField.name, textFieldContent).then(result => {
+            let queryModel = this.searchResults.queryModel;
+            if (queryModel) {
+                this.searchService.getWordcloudData(this.visualizedField.name, queryModel).then(result => {
                     // slice is used so the child component fires OnChange
                     this.aggResults = result[this.visualizedField.name];
                 })

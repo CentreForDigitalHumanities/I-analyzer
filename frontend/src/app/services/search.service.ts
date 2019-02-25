@@ -143,8 +143,8 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
-        return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
+    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel): Promise<any>{
+        return this.apiService.getWordcloudData({'query_model': queryModel}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
                     resolve({[fieldName]: result['data']});

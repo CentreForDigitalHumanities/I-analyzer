@@ -384,7 +384,8 @@ def api_search_history():
 def api_get_wordcloud_data():
     if not request.json:
         abort(400)
-    word_counts = analyze.make_wordcloud_data(request.json['content_list'])
+    list_of_texts = download.get_first_thousand(request.json['query_model'])
+    word_counts = analyze.make_wordcloud_data()
     return jsonify({'data': word_counts})
 
 
