@@ -11,7 +11,6 @@ import { SearchService, DataService } from '../services/index';
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-
 export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     @Input() public corpus: Corpus;
 
@@ -108,17 +107,7 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            let queryModel = this.searchResults.queryModel;
-            if (queryModel) {
-                this.searchService.getWordcloudData(this.visualizedField.name, queryModel).then(result => {
-                    // slice is used so the child component fires OnChange
-                    this.aggResults = result[this.visualizedField.name];
-                })
-                    .catch(error => {
-                        this.foundNoVisualsMessage = this.noResults;
-                        this.errorMessage = error['message'];
-                    });
-            }
+            this.loadWordcloudData(1000);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
@@ -144,6 +133,22 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
             this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
+        }
+    }
+
+    loadWordcloudData(size: number = null){
+        console.log("requesting word cloud data");
+        let queryModel = this.searchResults.queryModel;
+        if (queryModel) {
+            this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
+                // slice is used so the child component fires OnChange
+                this.aggResults = result[this.visualizedField.name];
+                console.log(this.aggResults);
+            })
+                .catch(error => {
+                    this.foundNoVisualsMessage = this.noResults;
+                    this.errorMessage = error['message'];
+                });
         }
     }
 

@@ -28,7 +28,7 @@
     		</ia-barchart>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
     		[asPercent]="asPercentage"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" (loadAll)="loadWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="searchResults.queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
         </ng-container>
     </ng-container>

@@ -49,7 +49,7 @@ export class ApiService extends Resource {
         path: '/get_wordcloud_data'
     })
     public getWordcloudData: ResourceMethod<
-        { query_model: QueryModel },
+        { esQuery: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
         { data: AggregateResult[] }>;
 
     @ResourceAction({

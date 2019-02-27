@@ -7,7 +7,8 @@ from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from es import es_forward
+import analyze
+from es import es_forward, download
 from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,18 @@ def download_csv(self, request_json, email, instance_path, download_size):
     filepath = instance_path + "/" + filename
     create_csv(result, filepath)
     send_mail(filename, email)
+
+
+@celery.task()
+def get_wordcloud_data(request):
+    list_of_texts = download.scroll(request.json['corpus'], request.json['es_query'])
+    return list_of_texts
+
+
+@celery.task()
+def make_wordcloud_data(list_of_texts, request):
+    word_counts = analyze.make_wordcloud_data(list_of_texts, request.json['field'])
+    return word_counts
 
 
 def create_filename(request_json):

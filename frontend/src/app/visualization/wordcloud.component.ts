@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
@@ -17,6 +17,8 @@ import { log } from 'util';
 export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
     @Input('searchData') public significantText: AggregateData;
+    @Output('loadAll')
+    public loadAllDataEmitter = new EventEmitter();
 
     private width: number = 600;
     private height: number = 400;
@@ -47,6 +49,11 @@ export class WordcloudComponent implements OnChanges, OnInit {
 
     showWordcloudDocumentation() {
         this.dialogService.showManualPage('wordcloud');
+    }
+
+    loadAllData() {
+        console.log("clickedButton");
+        this.loadAllDataEmitter.emit();
     }
 
     drawWordCloud(significantText: AggregateData) {

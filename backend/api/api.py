@@ -23,6 +23,7 @@ from flask_login import LoginManager, login_required, login_user, \
 from flask_mail import Mail, Message
 
 from ianalyzer import models
+from es import download
 from addcorpus.load_corpus import load_all_corpora, load_corpus
 
 from . import security
@@ -384,8 +385,11 @@ def api_search_history():
 def api_get_wordcloud_data():
     if not request.json:
         abort(400)
-    list_of_texts = download.get_first_thousand(request.json['query_model'])
-    word_counts = analyze.make_wordcloud_data()
+    if request.json['size']==1000:
+        list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
+    else:
+        list_of_texts = tasks.get_wordcloud_data(request)   
+    word_counts = tasks.make_wordcloud_data(list_of_texts, request)
     return jsonify({'data': word_counts})
 
 
