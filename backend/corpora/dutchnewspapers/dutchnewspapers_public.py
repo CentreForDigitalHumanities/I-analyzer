@@ -86,12 +86,11 @@ class DutchNewspapersPublic(XMLCorpus):
                             'id': record_id
                         })
                         yield full_path, meta_dict
+    
     titlefile = join(dirname(current_app.config['CORPORA']['dutchnewspapers-public']),
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
-    print(titlefile)
     with open(titlefile) as f:
         papers = f.readlines()
-    print(papers)
 
     distribution = {
         'Landelijk': 'National',
@@ -104,22 +103,24 @@ class DutchNewspapersPublic(XMLCorpus):
     }
 
     fields = [
-        # Field(
-        #     name="url",
-        #     display_name="Delpher URL",
-        #     description="Link to record on Delpher",
-        #     extractor=Combined(
-        #         Metadata(key="id"),
-        #         XML(tag='identifier',
-        #             toplevel=True,
-        #             recursive=True,
-        #             external_file={
-        #                 'file_tag': 'definition',
-        #                 'xml_tag_toplevel': 'DIDL',
-        #                 'xml_tag_entry': 'Item'
-        #             })
-        #     )
-        # ),
+        Field(
+            name="url",
+            display_name="Delpher URL",
+            description="Link to record on Delpher",
+            extractor=XML(tag='identifier',
+                                  toplevel=True,
+                                  recursive=True,
+                                  multiple=False,
+                                  secondary_tag={
+                                      'tag': 'recordIdentifier',
+                                      'match': 'id'
+                                  },
+                                  external_file={
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'dcx'
+                                  }
+            )
+        ),
         Field(
             name='date',
             display_name='Date',
@@ -136,6 +137,28 @@ class DutchNewspapersPublic(XMLCorpus):
                 )
             ),
             extractor=Metadata('date')
+        ),
+        Field(
+            name='ocr',
+            display_name='OCR confidence',
+            description='OCR confidence level.',
+            es_mapping={'type': 'float'},
+            search_filter=filters.RangeFilter(0, 100,
+                                              description=(
+                                                  'Accept only articles for which the Opitical Character Recognition confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=XML(tag='OCRConfidencelevel',
+                toplevel=True,
+                recursive=True,
+                external_file={
+                    'xml_tag_toplevel': 'DIDL',
+                    'xml_tag_entry': 'dcx'
+                },
+                transform=lambda x: float(x)*100
+            ),
+            sortable=True
         ),
         Field(
             name='newspaper_title',
@@ -206,11 +229,6 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            visualization_type='term_frequency',
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these newspapers.',
-                options=['nl', 'fr']
-            ),
             extractor=Metadata('language')
         ),
         Field(
@@ -266,3 +284,6 @@ class DutchNewspapersPublic(XMLCorpus):
                                   flatten=True, toplevel=True)
         ),
     ]
+
+
+

@@ -11,6 +11,7 @@ from ianalyzer import config_fallback as config
 from ianalyzer.models import User, Role, db, Corpus
 from ianalyzer.entry import entry
 from ianalyzer.factories import flask_app, elasticsearch
+from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_forward import es
 from es.es_index import perform_indexing

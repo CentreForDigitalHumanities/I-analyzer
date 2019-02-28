@@ -76,9 +76,7 @@ CORPUS_SERVER_NAMES = {
 
 CORPUS_DEFINITIONS = {}
 
-DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
-DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 
