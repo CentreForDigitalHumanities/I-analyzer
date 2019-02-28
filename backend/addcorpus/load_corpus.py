@@ -3,7 +3,6 @@ from importlib import util
 from importlib.machinery import SourceFileLoader
 import logging
 import re
-
 from os.path import isfile
 
 from flask import current_app
@@ -33,7 +32,7 @@ def load_corpus(corpus_name):
 
     corpus_spec.loader.exec_module(corpus_mod)
     # assume the class name of the endpoint is the same as the corpus name,
-    # allowing for differences in camel case vs. lower case, and non letter characters
+    # allowing for differences in camel case vs. lower case
     regex = re.compile('[^a-zA-Z]')
     corpus_name = regex.sub('', corpus_name)
     endpoint = next((attr for attr in dir(corpus_mod) if attr.lower() == corpus_name), None)
