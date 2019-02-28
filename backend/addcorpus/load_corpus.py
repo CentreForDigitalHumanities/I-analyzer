@@ -37,6 +37,7 @@ def load_corpus(corpus_name):
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 
+
 def load_all_corpora():
     for corpus_name in current_app.config['CORPORA'].keys():
         corpus = load_corpus(corpus_name)
