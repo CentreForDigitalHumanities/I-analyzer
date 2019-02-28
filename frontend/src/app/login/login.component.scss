@@ -1,0 +1,24 @@
+.notification {
+    transition: opacity 0.5s;
+
+    &.is-loading {
+        opacity: 0.5;
+        transition: none;
+    }
+}
+
+.container.is-login {
+    max-width: 400px !important;
+}
+
+.box {
+    padding: 0.35rem;
+}
+
+img {
+    vertical-align: middle !important;
+}
+
+span {
+    vertical-align: middle !important;
+}

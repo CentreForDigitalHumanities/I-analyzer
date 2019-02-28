@@ -1,0 +1,178 @@
+<!-- Toggle filter button, search bar, visualize and download buttons -->
+<section class="section title-section">
+    <div class="container is-readable">
+        <h1 class="title">
+            Search
+            <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+            <sup>
+                <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
+                    <i class="moreInfoLink fa fa-info-circle info-icon"></i>
+                </span>
+            </sup>
+        </h1>
+    </div>
+</section>
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
+    <div class="container is-readable">
+        <div class="columns">
+            <div class="column is-6">
+                <nav class="level">
+                    <div class="level-left search-controls">
+                        <div class="level-item">
+                            <form (ngSubmit)="search()" *ngIf="corpus">
+                                <div class="field has-addons">
+                                    <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
+                                        <a class="button" (click)="showQueryDocumentation()">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-question-circle"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                    <div class="control">
+                                        <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text"
+                                            placeholder="Query" />
+                                    </div>
+                                    <div class="control" iaBalloon="Perform a search to apply the changed filters"
+                                        [iaBalloonVisible]="hasSearched && hasModifiedFilters" iaBalloonLength="medium">
+                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                                            <span class="icon is-small">
+                                                <i class="fa fa-search"></i>
+                                            </span>
+                                            <span>Search</span>
+                                        </button>
+                                    </div>
+                                    <div class="control" iaBalloon="Click here to limit your search to specific fields"
+                                        iaBalloonLength="medium">
+                                        <ia-select-field [availableFields]="availableSearchFields" [filterCriterion]=" 'searchField' "
+                                            [label]=" 'All fields' " (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
+                                        </ia-select-field>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="level-item">
+                            <div class="field has-addons">
+                                <p class="control" iaBalloon="Only the first {{user.downloadLimit}} results will be in the file!"
+                                    [iaBalloonVisible]="hasLimitedResults ? undefined : false" iaBalloonLength="fit">
+                                    <button class="button is-primary" [ngClass]="{'is-loading':isDownloading}" type="download"
+                                        (click)="choose_download_method()" [disabled]="howManyResults==0">
+                                        <span class="icon is-small">
+                                            <i class="fa fa-download"></i>
+                                        </span>
+                                        <span>Download csv</span>
+                                    </button>
+                                </p>
+                                <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
+                                    <ia-select-field [availableFields]="availableCsvFields" [filterCriterion]=" 'csv' "
+                                        [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
+                                        (selectedFields)="selectCsvFieldsEvent($event)">
+                                    </ia-select-field>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section search-results">
+    <div class="container is-readable">
+        <!-- filters and search results -->
+        <div class="columns">
+            <!-- Filters, on left -->
+            <div class="column is-3">
+                <div *ngIf="corpus">
+                    <div class="field has-addons">
+                        <div class="control is-expanded">
+                            <h4 class="title">Filters</h4>
+                        </div>
+                        <p class="control" style="float:right">
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
+                                (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
+                                iaBalloonPosition="down-left">
+                                <i class="fa fa-trash"></i>
+                            </span>
+                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
+                                [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
+                                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                                iaBalloonPosition="down-left">
+                                <i class="fa fa-filter"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <ng-container *ngFor="let field of corpus.fields">
+                        <search-filter *ngIf="field.searchFilter" [field]="field" (update)="updateFilterData($event)">
+                        </search-filter>
+                    </ng-container>
+                </div>
+            </div>
+            <!-- search results, on right -->
+            <div class="is-boxed column is-9" *ngIf="queryModel">
+                <p-tabView styleClass="is-content" (onChange)="tabChange($event)">
+                    <p-tabPanel header="Search Results" leftIcon="fa fa-list">
+                        <div class="column">
+                            <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user" (view)="onViewDocument($event)"
+                                (searched)="onSearched($event)">
+                                <div class="field">
+                                    <label class="label">Sort By</label>
+                                </div>
+                                <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
+                                    (onChange)="changeSorting($event)"></ia-search-sorting>
+                            </ia-search-results>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
+                        <ng-template pTemplate="content">
+                            <div class="column">
+                                <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus"></ia-visualization>
+                            </div>
+                        </ng-template>
+                    </p-tabPanel>
+                </p-tabView>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- show the selected document -->
+<p-dialog header="Document {{viewDocument.position}} of {{resultsCount}}" [(visible)]="showDocument" width="100%"
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
+    *ngIf="viewDocument">
+    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText" [corpus]="corpus"></ia-document-view>
+</p-dialog>
+
+
+<!-- modal that shows if download csv api returns succes is True -->
+<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActive }">
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head modal-card-head_success">
+            <p class="modal-card-title">Your csv file is being created...</p>
+            <button class="delete" aria-label="close" (click)="toggleModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            When your csv file is ready, you will recieve an email on the address associated with your account.
+            This email contains a link to your file. Please click this link to download.
+        </section>
+        <footer class="modal-card-foot">
+        </footer>
+    </div>
+</div>
+
+<!-- modal that shows if download csv api returns False -->
+<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActiveError }">
+    <div class="modal-background" (click)="toggleModal()"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head modal-card-head_error">
+            <p class="modal-card-title">Something went wrong...</p>
+            <button class="delete" aria-label="close" (click)="toggleModalError()"></button>
+        </header>
+        <section class="modal-card-body">
+            Sorry, your CSV file could not be created. Please contact the web adminstrator.
+        </section>
+        <footer class="modal-card-foot">
+        </footer>
+    </div>
+</div>
