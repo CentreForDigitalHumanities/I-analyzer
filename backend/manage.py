@@ -10,12 +10,13 @@ from flask_migrate import Migrate
 from ianalyzer import config_fallback as config
 from ianalyzer.models import User, Role, db, Corpus
 from ianalyzer.entry import entry
-from ianalyzer.factories import flask_app, elasticsearch
+from ianalyzer.factories import flask_app 
+from ianalyzer.elasticsearch import elasticsearch
 import corpora
 from es.es_forward import es
 from es.es_index import perform_indexing
-from api.api import api
-from saml.saml import saml
+from api import api
+from saml import saml
 
 app = flask_app(config)
 migrate = Migrate(app, db)

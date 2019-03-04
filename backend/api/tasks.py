@@ -7,13 +7,13 @@ from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-import analyze
+from api import analyze
 from es import es_forward, download
 from ianalyzer import config_fallback as config
 
 logger = logging.getLogger(__name__)
 # celery = Celery('tasks', broker=lambda:current_app.config['BROKER_URL'])
-celery = Celery('tasks', broker=config.BROKER_URL)
+celery = Celery('tasks', broker=config.CELERY_BROKER_URL, backend=config.CELERY_BACKEND)
 
 @celery.task(bind=True)
 def download_csv(self, request_json, email, instance_path, download_size):
@@ -46,8 +46,8 @@ def download_csv(self, request_json, email, instance_path, download_size):
 
 
 @celery.task()
-def get_wordcloud_data(request):
-    list_of_texts = download.scroll(request.json['corpus'], request.json['es_query'])
+def get_wordcloud_data(request_json):
+    list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'])
     return list_of_texts
 
 

@@ -1,10 +1,11 @@
 from elasticsearch import Elasticsearch
 from flask import current_app
 
-import ianalyzer
+from ianalyzer.elasticsearch import elasticsearch
 
 def scroll(corpus, query_model, download_size=None):
-    client = ianalyzer.factories.elasticsearch(corpus)
+    #client = ianalyzer.factories.elasticsearch(corpus)
+    client = elasticsearch(corpus)
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
     size = current_app.config['SERVERS'][server]['scroll_page_size']
@@ -29,7 +30,8 @@ def scroll(corpus, query_model, download_size=None):
 
 
 def search_thousand(corpus, query_model):
-    client = ianalyzer.factories.elasticsearch(corpus)
+    #client = ianalyzer.factories.elasticsearch(corpus)
+    client = elasticsearch(corpus)
     size = 1000
     search_results = client.search(
         index=corpus,

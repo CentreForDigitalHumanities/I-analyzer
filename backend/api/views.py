@@ -29,11 +29,10 @@ from addcorpus.load_corpus import load_all_corpora, load_corpus
 from . import security
 from . import analyze
 from . import tasks
+from . import api
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(message)s')
-
-api = Blueprint('api', __name__)
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -388,9 +387,10 @@ def api_get_wordcloud_data():
     if request.json['size']==1000:
         list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
     else:
-        list_of_texts = tasks.get_wordcloud_data(request)   
-    word_counts = tasks.make_wordcloud_data(list_of_texts, request)
-    return jsonify({'data': word_counts})
+        list_of_texts = tasks.get_wordcloud_data.delay(request.json)   
+        print(list_of_texts)
+    #word_counts = tasks.make_wordcloud_data(list_of_texts, request)
+    return jsonify({'data': None})
 
 
 @api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])

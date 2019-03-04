@@ -10,13 +10,13 @@ from flask_mail import Mail
 from flask_login import LoginManager
 from flask_seasurf import SeaSurf
 
-from api.api import api
+from api import api
 from .models import db
 from admin.admin import admin_instance
 from .entry import entry, login_manager
 from es.es_forward import es
-from saml.saml import saml_auth # SamlAuth from python3-saml
-from saml.saml import saml # blueprint
+from saml.views import saml_auth # SamlAuth from python3-saml
+from saml import saml # blueprint
 
 from ianalyzer import config_fallback as config
 
