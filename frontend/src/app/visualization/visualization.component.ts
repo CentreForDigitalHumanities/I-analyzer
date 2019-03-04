@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, SearchResults } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, SearchResults, QueryModel } from '../models/index';
 import { SearchService, DataService } from '../services/index';
 
 @Component({
@@ -13,6 +13,8 @@ import { SearchService, DataService } from '../services/index';
 })
 export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     @Input() public corpus: Corpus;
+    @Input() public queryModel: QueryModel;
+    @Input() public resultsCount: number;
 
     public visualizedFields: CorpusField[];
 
@@ -74,23 +76,29 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
                 this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
             }   
         }
+        else if (changes['queryModel']){
+            if (this.resultsCount > 0) {
+                this.setVisualizedField(this.visualizedField.name);
+            }
+            else this.aggResults = [];
+        }
     }
 
     ngOnInit() {
-        this.subscription = this.dataService.searchResults$.subscribe(results => {
-            if (results.total > 0) {
-                this.searchResults = results;
-                this.setVisualizedField(this.visualizedField.name);
-            }
-            else {
-                this.aggResults = [];
-            }
-        });
+        // this.subscription = this.dataService.searchResults$.subscribe(results => {
+        //     if (results.total > 0) {
+        //         this.searchResults = results;
+        //         this.setVisualizedField(this.visualizedField.name);
+        //     }
+        //     else {
+        //         this.aggResults = [];
+        //     }
+        // });
         this.showTableButtons = true;
     }
 
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        // this.subscription.unsubscribe();
     }
 
     setVisualizedField(selectedField: string) {
@@ -107,16 +115,17 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            this.loadWordcloudData(1000);
+            this.loadWordcloudData(this.resultsCount);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
+            console.log(this.queryModel);
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
-            this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
+            this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
             })
@@ -130,14 +139,14 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         else {
             let aggregator = {name: this.visualizedField.name, size: this.defaultSize};
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
     }
 
     loadWordcloudData(size: number = null){
-        let queryModel = this.searchResults.queryModel;
+        let queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
                 // slice is used so the child component fires OnChange
@@ -151,7 +160,7 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     setErrorMessage(message: string) {
-        this.searchResults = null;
+        this.queryModel = null;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
     }

@@ -22,9 +22,8 @@ export class WordcloudComponent implements OnChanges, OnInit {
 
     private width: number = 600;
     private height: number = 400;
-    private scaleFontSize = d3.scaleLinear();
-    private inputRange: number[] = [];
-    private outputRange: number[] = [];
+    private scaleFontSize = d3.scaleLinear();;
+    public isLoading: boolean = false;
 
     private chartElement: any; 
     private svg: any;
@@ -39,6 +38,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
         this.chartElement = this.chartContainer.nativeElement;     
         let significantText = changes.significantText.currentValue;
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
+            this.isLoading = false;
             d3.selectAll('svg').remove();
             let inputRange = d3.extent(significantText.map(d => d.doc_count)) as number[];
             let outputRange = [20, 80];
@@ -53,6 +53,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
 
     loadAllData() {
         this.loadAllDataEmitter.emit();
+        this.isLoading = true;
     }
 
     drawWordCloud(significantText: AggregateData) {

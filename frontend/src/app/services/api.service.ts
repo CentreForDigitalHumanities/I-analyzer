@@ -49,8 +49,8 @@ export class ApiService extends Resource {
         path: '/get_wordcloud_data'
     })
     public getWordcloudData: ResourceMethod<
-        { esQuery: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
-        { data: AggregateResult[] }>;
+        { esQuery: EsQuery | EsQuerySorted, corpus: string, field: string, size?: number },
+        { data: AggregateResult[] | undefined }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
