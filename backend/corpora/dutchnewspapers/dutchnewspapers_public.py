@@ -51,6 +51,8 @@ class DutchNewspapersPublic(XMLCorpus):
     def sources(self, start=min_date, end=max_date):
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
+            if directory.startswith("."):
+                continue # don't go through directories from snapshots
             definition_file = next((join(directory, filename) for filename in filenames if 
                                 self.definition_pattern.match(filename)), None)
             if not definition_file:
