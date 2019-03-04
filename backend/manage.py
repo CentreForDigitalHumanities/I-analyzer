@@ -10,8 +10,8 @@ from flask_migrate import Migrate
 from ianalyzer import config_fallback as config
 from ianalyzer.models import User, Role, db, Corpus
 from ianalyzer.entry import entry
-from ianalyzer.factories import flask_app 
-from ianalyzer.elasticsearch import elasticsearch
+from ianalyzer.factories.app import flask_app 
+from ianalyzer.factories.elasticsearch import elasticsearch
 import corpora
 from es.es_forward import es
 from es.es_index import perform_indexing

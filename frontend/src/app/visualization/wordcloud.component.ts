@@ -52,7 +52,6 @@ export class WordcloudComponent implements OnChanges, OnInit {
     }
 
     loadAllData() {
-        console.log("clickedButton");
         this.loadAllDataEmitter.emit();
     }
 

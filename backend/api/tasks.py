@@ -10,10 +10,11 @@ from requests.exceptions import Timeout, ConnectionError, HTTPError
 from api import analyze
 from es import es_forward, download
 from ianalyzer import config_fallback as config
+from ianalyzer import celery
 
 logger = logging.getLogger(__name__)
 # celery = Celery('tasks', broker=lambda:current_app.config['BROKER_URL'])
-celery = Celery('tasks', broker=config.CELERY_BROKER_URL, backend=config.CELERY_BACKEND)
+#celery = Celery('tasks', broker=config.CELERY_BROKER_URL, backend=config.CELERY_BACKEND)
 
 @celery.task(bind=True)
 def download_csv(self, request_json, email, instance_path, download_size):
@@ -52,8 +53,8 @@ def get_wordcloud_data(request_json):
 
 
 @celery.task()
-def make_wordcloud_data(list_of_texts, request):
-    word_counts = analyze.make_wordcloud_data(list_of_texts, request.json['field'])
+def make_wordcloud_data(list_of_texts, request_json):
+    word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
     return word_counts
 
 

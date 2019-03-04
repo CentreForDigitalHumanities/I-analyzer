@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
 from flask import current_app
 
-from ianalyzer.elasticsearch import elasticsearch
+from ianalyzer.factories.elasticsearch import elasticsearch
 
 def scroll(corpus, query_model, download_size=None):
     #client = ianalyzer.factories.elasticsearch(corpus)

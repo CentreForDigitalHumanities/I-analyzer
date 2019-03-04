@@ -137,13 +137,11 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     loadWordcloudData(size: number = null){
-        console.log("requesting word cloud data");
         let queryModel = this.searchResults.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
                 // slice is used so the child component fires OnChange
                 this.aggResults = result[this.visualizedField.name];
-                console.log(this.aggResults);
             })
                 .catch(error => {
                     this.foundNoVisualsMessage = this.noResults;
