@@ -8,13 +8,13 @@ import random
 import re
 import sys
 from datetime import datetime, timedelta
-from os.path import join, dirname, isfile, splitext
+from os.path import join, dirname, isfile, split, splitext
 import os
 import logging
 
 from flask import current_app
 
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus import filters
 from addcorpus.extract import Combined, Metadata, XML
 
@@ -49,10 +49,17 @@ class DutchNewspapersPublic(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
+        consolidate_start_end_years(start, end, self.min_date, self.max_date)
+        year_matcher = re.compile(r'[0-9]{4}')
         logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
-            if directory.startswith("."):
+            _body, tail = split(directory)
+            if tail.startswith("."):
                 continue # don't go through directories from snapshots
+            elif year_matcher.match(tail) and (int(tail) > end.year or int(tail) < start.year):
+                # don't walk further if the year is not within the limits specified by the user
+                del _[0]
+                continue
             definition_file = next((join(directory, filename) for filename in filenames if 
                                 self.definition_pattern.match(filename)), None)
             if not definition_file:

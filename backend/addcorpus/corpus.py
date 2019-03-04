@@ -573,3 +573,18 @@ def after(year):
         date = metadata.get('date')
         return date and date.year > year
     return f
+
+
+def consolidate_start_end_years(start, end, min_date, max_date):
+    if isinstance(start, int):
+        start = datetime(year=start, month=1, day=1)
+    if isinstance(end, int):
+        end = datetime(year=end, month=12, day=31)
+    if start > end:
+        tmp = start
+        start = end
+        end = tmp
+    if start < min_date:
+        start = min_date
+    if end > max_date:
+        end = max_date
