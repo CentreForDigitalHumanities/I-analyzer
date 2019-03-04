@@ -1,4 +1,5 @@
 from flask import current_app
+from datetime import datetime
 
 from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
 

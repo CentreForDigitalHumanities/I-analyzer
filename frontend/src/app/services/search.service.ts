@@ -85,17 +85,16 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
-
-        let querySave = this.queryService.save(query, true);
+        await this.queryService.save(query, true);
         let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
-        querySave.then((savedQuery) => {
-            // update the last saved query object, it might have changed on the server
-            if (!results.completed) {
-                savedQuery.aborted = true;
-            }
-            savedQuery.transferred = results.total;
-            this.queryService.save(savedQuery, undefined, results.completed);
-        });
+        // querySave.then((savedQuery) => {
+        //     // update the last saved query object, it might have changed on the server
+        //     if (!results.completed) {
+        //         savedQuery.aborted = true;
+        //     }
+        //     savedQuery.transferred = results.total;
+        //     this.queryService.save(savedQuery, undefined, results.completed);
+        // });
 
         return <SearchResults>{
             completed: results.completed,
