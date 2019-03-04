@@ -28,7 +28,7 @@ class DutchNewspapersPublic(XMLCorpus):
     title = "Public Dutch Newspapers"
     description = "Publicly available collection of Dutch newspapers by the KB"
     min_date = datetime(year=1600, month=1, day=1)
-    max_date = datetime(year=2018, month=12, day=31)
+    max_date = datetime(year=1876, month=12, day=31)
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
     es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']

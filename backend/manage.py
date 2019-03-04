@@ -84,7 +84,7 @@ def guest(corpora):
     '--end', '-e',
     help='Set the date where indexing should end' +
     'The input format is YYYY-MM-DD.' +
-    'If not set, indexing will start from corpus maximum date.'
+    'If not set, indexing will stop at corpus maximum date.'
 )
 @click.option(
     '--delete', '-d',
