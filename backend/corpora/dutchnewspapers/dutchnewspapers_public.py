@@ -89,7 +89,7 @@ class DutchNewspapersPublic(XMLCorpus):
     
     titlefile = join(dirname(current_app.config['CORPORA']['dutchnewspapers-public']),
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
-    with open(titlefile) as f:
+    with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
 
     distribution = {
