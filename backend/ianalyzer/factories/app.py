@@ -11,7 +11,7 @@ from flask_seasurf import SeaSurf
 from api import api #blueprint
 from ianalyzer.models import db
 from admin.admin import admin_instance
-from ianalyzer.entry import entry, login_manager
+from ianalyzer.views import entry, login_manager
 from es import es #blueprint
 from saml.views import saml_auth # SamlAuth from python3-saml
 from saml import saml # blueprint
