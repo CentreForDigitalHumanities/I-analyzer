@@ -51,14 +51,15 @@ class DutchNewspapersPublic(XMLCorpus):
     def sources(self, start=min_date, end=max_date):
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
         year_matcher = re.compile(r'[0-9]{4}')
-        logger = logging.getLogger(__name__)
-        for directory, _, filenames in os.walk(self.data_directory):
+        for directory, subdirs, filenames in os.walk(self.data_directory):
             _body, tail = split(directory)
             if tail.startswith("."):
-                continue # don't go through directories from snapshots
+                # don't go through directories from snapshots
+                subdirs[:] = []
+                continue
             elif year_matcher.match(tail) and (int(tail) > end.year or int(tail) < start.year):
                 # don't walk further if the year is not within the limits specified by the user
-                del _[0]
+                subdirs[:] = []
                 continue
             definition_file = next((join(directory, filename) for filename in filenames if 
                                 self.definition_pattern.match(filename)), None)
