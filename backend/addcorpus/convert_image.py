@@ -71,4 +71,4 @@ if __name__ == '__main__':
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.INFO)
     logging.info('Start converting...')
 
-    convert_year_range(1921, 1950)
+    convert_year_range(1986, 2000)

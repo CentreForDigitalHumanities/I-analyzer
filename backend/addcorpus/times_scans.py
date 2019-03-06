@@ -14,8 +14,8 @@ bar = None
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 
-START_YEAR = 1806
-END_YEAR = 1900
+START_YEAR = 1900
+END_YEAR = 1960
 
 
 class ProgressBar(Bar):
