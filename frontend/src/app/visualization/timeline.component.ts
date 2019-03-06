@@ -41,6 +41,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        console.log(this.searchData);
         if (this.chartElement == undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
         }

@@ -17,6 +17,7 @@ import { log } from 'util';
 export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
     @Input('searchData') public significantText: AggregateData;
+    @Input('greyOutLoadMore') public greyOutLoadMore: boolean;
     @Output('loadAll')
     public loadAllDataEmitter = new EventEmitter();
 

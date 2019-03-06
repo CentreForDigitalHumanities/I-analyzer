@@ -45,6 +45,7 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         [word: string]: number
     }
     public searchResults: SearchResults;
+    public disableWordCloudLoadMore: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -55,6 +56,8 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        this.disableWordCloudLoadMore = false;
+        console.log(changes);
         if (changes['corpus']){
             this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
@@ -76,11 +79,8 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
                 this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
             }   
         }
-        else if (changes['queryModel']){
-            if (this.resultsCount > 0) {
-                this.setVisualizedField(this.visualizedField.name);
-            }
-            else this.aggResults = [];
+        else if (changes['queryModel']) {
+            this.checkResults();
         }
     }
 
@@ -94,11 +94,25 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         //         this.aggResults = [];
         //     }
         // });
+        this.checkResults();
         this.showTableButtons = true;
     }
 
     ngOnDestroy() {
         // this.subscription.unsubscribe();
+    }
+
+    checkResults() {
+        console.log("changes in query model");
+        if (this.resultsCount > 0) {
+            this.setVisualizedField(this.visualizedField.name);
+        }
+        else {
+            console.log("no results");
+            this.aggResults = [];
+            this.foundNoVisualsMessage = this.noResults;
+        }
+        console.log(this.aggResults);
     }
 
     setVisualizedField(selectedField: string) {
@@ -116,15 +130,19 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
             this.loadWordcloudData(this.resultsCount);
+            if (this.resultsCount < 1000) {
+                this.disableWordCloudLoadMore = true;
+            }
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
-            console.log(this.queryModel);
+            console.log("in timeline");
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
             this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
+            console.log("related words");
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -133,7 +151,6 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
                     this.relatedWordsGraph = undefined;
                     this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
-                    console.log(error['message']);
                     this.errorMessage = error['message'];
                 });
         }
