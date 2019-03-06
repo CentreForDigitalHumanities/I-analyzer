@@ -19,10 +19,11 @@ def scroll(corpus, query_model, download_size=None):
     output.extend(search_results['hits']['hits'])
     download_size = download_size or search_results['hits']['total']
     num_results = len(search_results['hits']['hits'])
+    scroll_id = search_results['_scroll_id']
     while num_results < download_size:
-        scroll_id = search_results['_scroll_id']
         search_results = client.scroll(scroll_id = scroll_id,
             scroll=scroll_timeout)
+        scroll_id = search_results['_scroll_id']
         num_results += len(search_results['hits']['hits'])
         output.extend(search_results['hits']['hits'])
     client.clear_scroll(scroll_id=scroll_id)

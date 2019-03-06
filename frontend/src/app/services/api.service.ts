@@ -50,7 +50,15 @@ export class ApiService extends Resource {
     })
     public getWordcloudData: ResourceMethod<
         { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size?: number },
-        { data: AggregateResult[] | undefined }>;
+        { data: AggregateResult[] | undefined, task_ids?: string[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/abort_wordcloud'
+    })
+    public abortWordCloud: ResourceMethod<
+    { task_ids: string[] }, 
+    { success: boolean }>
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

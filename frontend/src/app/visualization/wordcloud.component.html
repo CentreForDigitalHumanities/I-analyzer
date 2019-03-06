@@ -4,7 +4,6 @@
         <i class="fa fa-question-circle"></i>
     </span>
 </a>
-<a class="button" [ngClass]="{'is-loading': isLoading}" (click)="loadAllData()">
-    <span iaBalloon="Testing if this works">Load all results</span>
-    <!-- Load all results -->
-</a>
+<button class="button" [ngClass]="{'is-loading': isLoading}" [attr.disabled]="greyOutLoadMore? '' : null" (click)="loadAllData()">
+    <span iaBalloon="Load all results to your search query." iaBalloonLength="medium">Load all results</span>
+</button>

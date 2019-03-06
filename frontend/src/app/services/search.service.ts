@@ -148,7 +148,7 @@ export class SearchService {
         return this.apiService.getWordcloudData({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, size: size}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
-                    resolve({[fieldName]: result['data']});
+                    resolve({data: {[fieldName]: result['data']}, task_ids: result['task_ids']});
                 }
                 else {
                     reject({'message': 'No word cloud data could be extracted from your search results.'});
@@ -223,6 +223,10 @@ export class SearchService {
 
 
 
+    }
+
+    public abortWordCloud(task_ids: string[]) {
+        this.apiService.abortWordCloud({task_ids: task_ids});
     }
 
     /**

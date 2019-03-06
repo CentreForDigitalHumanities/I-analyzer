@@ -1,17 +1,16 @@
-import { Input, Component, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, SearchResults, QueryModel } from '../models/index';
-import { SearchService, DataService } from '../services/index';
+import { Corpus, CorpusField, AggregateResult, QueryModel } from '../models/index';
+import { SearchService } from '../services/index';
 
 @Component({
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
+export class VisualizationComponent implements OnInit, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
@@ -44,20 +43,18 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     public relatedWordsTable: {
         [word: string]: number
     }
-    public searchResults: SearchResults;
     public disableWordCloudLoadMore: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
 
-    public subscription: Subscription;
+    private tasksToCancel: string[] = [];
 
-    constructor(private searchService: SearchService, private dataService: DataService) {
+    constructor(private searchService: SearchService) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
         this.disableWordCloudLoadMore = false;
-        console.log(changes);
         if (changes['corpus']){
             this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
@@ -85,37 +82,26 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnInit() {
-        // this.subscription = this.dataService.searchResults$.subscribe(results => {
-        //     if (results.total > 0) {
-        //         this.searchResults = results;
-        //         this.setVisualizedField(this.visualizedField.name);
-        //     }
-        //     else {
-        //         this.aggResults = [];
-        //     }
-        // });
         this.checkResults();
         this.showTableButtons = true;
     }
 
-    ngOnDestroy() {
-        // this.subscription.unsubscribe();
-    }
-
     checkResults() {
-        console.log("changes in query model");
         if (this.resultsCount > 0) {
             this.setVisualizedField(this.visualizedField.name);
+            this.disableWordCloudLoadMore = this.resultsCount < 1000 ? true : false;
         }
         else {
-            console.log("no results");
             this.aggResults = [];
             this.foundNoVisualsMessage = this.noResults;
         }
-        console.log(this.aggResults);
     }
 
     setVisualizedField(selectedField: string) {
+        if (this.tasksToCancel.length > 0) {
+            this.searchService.abortWordCloud(this.tasksToCancel);
+            this.tasksToCancel = [];
+        }
         this.aggResults = [];
         this.errorMessage = '';
         if (selectedField == 'relatedwords') {
@@ -129,20 +115,15 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            this.loadWordcloudData(this.resultsCount);
-            if (this.resultsCount < 1000) {
-                this.disableWordCloudLoadMore = true;
-            }
+            this.loadWordcloudData(1000);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
-            console.log("in timeline");
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
             this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
-            console.log("related words");
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -167,7 +148,8 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
                 // slice is used so the child component fires OnChange
-                this.aggResults = result[this.visualizedField.name];
+                this.aggResults = result['data'][this.visualizedField.name];
+                this.tasksToCancel = result['task_ids']
             })
                 .catch(error => {
                     this.foundNoVisualsMessage = this.noResults;
