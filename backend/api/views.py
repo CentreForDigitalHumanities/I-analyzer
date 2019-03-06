@@ -13,7 +13,6 @@ from os.path import dirname, split, join, isfile, getsize
 import sys
 import tempfile
 from io import BytesIO
-from celery import app
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
@@ -23,7 +22,7 @@ from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
 from flask_mail import Mail, Message
 
-from ianalyzer import models
+from ianalyzer import models, celery_app
 from es import download
 from addcorpus.load_corpus import load_all_corpora, load_corpus
 
@@ -401,9 +400,11 @@ def api_get_wordcloud_data():
 @login_required
 def api_abort_wordcloud():
     current_wordcloud_tasks = request.json['task_ids']
-    print(list(current_wordcloud_tasks))
-    for uid in current_wordcloud_tasks:
-        app.control.revoke(uid, terminate=True)
+    inspector = celery_app.control.inspect()
+    print(inspector.ping())
+    # print(current_tasks)
+    # for uid in current_wordcloud_tasks:
+    #     app.control.revoke(uid, terminate=True)
     return jsonify({'success': True})
 
 

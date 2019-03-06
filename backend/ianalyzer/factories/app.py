@@ -17,7 +17,7 @@ from saml.views import saml_auth # SamlAuth from python3-saml
 from saml import saml # blueprint
 
 from ianalyzer import config_fallback as config
-from ianalyzer import celery
+from ianalyzer import celery_app
 from ianalyzer.factories.celery import init_celery
 
 def flask_app(cfg=config):
@@ -31,7 +31,7 @@ def flask_app(cfg=config):
     csrf = SeaSurf()
     csrf.exempt_urls(('/es', '/saml'))
     mail = Mail()
-    init_celery(app, celery=celery)
+    init_celery(app, celery=celery_app)
 
     app.register_blueprint(entry)
     app.register_blueprint(api, url_prefix='/api')
