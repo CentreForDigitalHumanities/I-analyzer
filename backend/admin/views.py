@@ -71,6 +71,12 @@ class UserView(ModelView):
         queries=None,
     )
 
+    form_args = dict(
+        username=dict(validators=[Required()]),
+        password=dict(validators=[Required()]),
+        email=dict(validators=[Required()])
+    )
+
     form_widget_args = dict(
         email=dict(type="email"),
         username=dict(autocomplete="off"),
