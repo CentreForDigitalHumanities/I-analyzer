@@ -41,6 +41,11 @@ class QueryView(admin_sqla.ModelView):
 class CorpusView(ModelView):
     can_create = False
     can_edit = True
+    
+    form_widget_args = dict(
+        name=dict(readonly=True),
+        description=dict(readonly=True)
+    )
 
 class RoleView(ModelView):
     # specifies the fields and order in the create- and edit view
@@ -48,11 +53,6 @@ class RoleView(ModelView):
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
-    
-    form_widget_args = dict(
-        name=dict(readonly=True),
-        description=dict(readonly=True)
-    )
     
     def on_form_prefill(self, form, id):
         ''' Ensure the existence of roles with certain names '''
