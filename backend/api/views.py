@@ -16,7 +16,6 @@ from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from celery import chain
-from celery.result import AsyncResult
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
@@ -380,19 +379,6 @@ def api_search_history():
         } for query in queries]
     })
 
-
-# @api.route('/get_wordcloud_data', methods=['POST'])
-# @login_required
-# def api_get_wordcloud_data():
-#     if not request.json:
-#         abort(400)
-#     if request.json['size']==1000:
-#         list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
-#     else:
-#         list_of_texts_promise = tasks.get_wordcloud_data.delay(request.json)
-#         list_of_texts = list_of_texts_promise.get()
-#     word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
-#     return jsonify({'data': word_counts.get()})
 
 @api.route('/wordcloud', methods=['POST'])
 @login_required
