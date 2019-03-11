@@ -49,6 +49,11 @@ class RoleView(ModelView):
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
     
+    form_widget_args = dict(
+        name=dict(readonly=True),
+        description=dict(readonly=True)
+    )
+    
     def on_form_prefill(self, form, id):
         ''' Ensure the existence of roles with certain names '''
         if (form.data['name'] == 'basic' or form.data['name'] == 'admin' or form.data['name'] == 'uu'):
