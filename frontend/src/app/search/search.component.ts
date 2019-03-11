@@ -100,10 +100,12 @@ export class SearchComponent implements OnInit {
                 this.setFiltersFromParams(this.searchFilters, params);
                 this.setSearchFieldsFromParams(params);
                 this.setSortFromParams(this.corpus.fields, params);
+                let searchFilters = this.searchFilters;
                 let queryModel = this.createQueryModel();
                 if (this.queryModel !== queryModel) {
                     this.aggregateSearchForMultipleChoiceFilters();
                     this.queryModel = queryModel;
+                    this.searchFilters = searchFilters;
                 }
             });
     }
