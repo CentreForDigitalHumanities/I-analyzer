@@ -15,6 +15,8 @@ import tempfile
 from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
+from celery import chain
+from celery.result import AsyncResult
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
@@ -379,33 +381,53 @@ def api_search_history():
     })
 
 
-@api.route('/get_wordcloud_data', methods=['POST'])
+# @api.route('/get_wordcloud_data', methods=['POST'])
+# @login_required
+# def api_get_wordcloud_data():
+#     if not request.json:
+#         abort(400)
+#     if request.json['size']==1000:
+#         list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
+#     else:
+#         list_of_texts_promise = tasks.get_wordcloud_data.delay(request.json)
+#         list_of_texts = list_of_texts_promise.get()
+#     word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
+#     return jsonify({'data': word_counts.get()})
+
+@api.route('/wordcloud', methods=['POST'])
 @login_required
-def api_get_wordcloud_data():
+def api_wordcloud():
     if not request.json:
         abort(400)
-    task_ids = []
     if request.json['size']==1000:
         list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
+        word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
+        return jsonify({'data': word_counts.get()})
     else:
-        list_of_texts_promise = tasks.get_wordcloud_data.delay(request.json)
-        list_of_texts = list_of_texts_promise.get()
-        task_ids.append(list_of_texts_promise.id) 
-    word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
-    task_ids.append(word_counts.id)
-    return jsonify({'data': word_counts.get(), 'task_ids': task_ids })
+        word_counts_task = chain(tasks.get_wordcloud_data.s(request.json), tasks.make_wordcloud_data.s(request.json))
+        word_counts = word_counts_task.apply_async()
+        return jsonify({'task_ids': [word_counts.id, word_counts.parent.id]})
 
 
-@api.route('/abort_wordcloud', methods=['POST'])
+@api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
-def api_abort_wordcloud():
-    current_wordcloud_tasks = request.json['task_ids']
-    inspector = celery_app.control.inspect()
-    print(inspector.ping())
-    # print(current_tasks)
-    # for uid in current_wordcloud_tasks:
-    #     app.control.revoke(uid, terminate=True)
-    return jsonify({'success': True})
+def api_task_outcome(task_id):
+    results = celery_app.AsyncResult(id=task_id)
+    return jsonify({'success': True, 'results': results.get()})
+
+
+@api.route('/abort_tasks', methods=['POST'])
+@login_required
+def api_abort_tasks():
+    if not request.json:
+        abort(400)
+    else:
+        task_ids = request.json['task_ids']
+        try:
+            celery_app.control.revoke(task_ids, terminate=True)
+        except:
+            return jsonify({'success': False})
+        return jsonify({'success': True})
 
 
 @api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])

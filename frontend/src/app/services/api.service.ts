@@ -46,17 +46,26 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_wordcloud_data'
+        path: '/wordcloud'
     })
-    public getWordcloudData: ResourceMethod<
+    public wordcloud: ResourceMethod<
         { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size?: number },
-        { data: AggregateResult[] | undefined, task_ids?: string[] }>;
+        { success: boolean, data?: AggregateResult[], task_ids?: string[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/task_outcome/{task_id}'
+    })
+    public getTaskOutcome: ResourceMethod<
+    { task_id: string},
+    { success: boolean, results?: AggregateResult[] }
+    >
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/abort_wordcloud'
+        path: '/abort_tasks/'
     })
-    public abortWordCloud: ResourceMethod<
+    public abortTasks: ResourceMethod<
     { task_ids: string[] }, 
     { success: boolean }>
 

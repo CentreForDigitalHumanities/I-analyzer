@@ -145,10 +145,13 @@ export class SearchService {
 
     public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getWordcloudData({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, size: size}).then( result => {
+        return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
-                    resolve({data: {[fieldName]: result['data']}, task_ids: result['task_ids']});
+                    resolve({[fieldName]: result['data']});
+                }
+                else if (result['task_ids']) {
+                    resolve({task_ids: result['task_ids']});
                 }
                 else {
                     reject({'message': 'No word cloud data could be extracted from your search results.'});

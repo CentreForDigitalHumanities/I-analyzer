@@ -3,7 +3,7 @@ import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, AggregateResult, QueryModel } from '../models/index';
-import { SearchService } from '../services/index';
+import { SearchService, ApiService } from '../services/index';
 
 @Component({
     selector: 'ia-visualization',
@@ -50,7 +50,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     private tasksToCancel: string[] = [];
 
-    constructor(private searchService: SearchService) {
+    constructor(private searchService: SearchService, private apiService: ApiService) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -99,8 +99,12 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     setVisualizedField(selectedField: string) {
         if (this.tasksToCancel.length > 0) {
-            this.searchService.abortWordCloud(this.tasksToCancel);
-            this.tasksToCancel = [];
+            // the user requests other data, so revoke all running celery tasks
+            this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
+                if (result['success']===true) {
+                    this.tasksToCancel = [];
+                }
+            });
         }
         this.aggResults = [];
         this.errorMessage = '';
@@ -147,9 +151,24 @@ export class VisualizationComponent implements OnInit, OnChanges {
         let queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
-                // slice is used so the child component fires OnChange
-                this.aggResults = result['data'][this.visualizedField.name];
-                this.tasksToCancel = result['task_ids']
+                if (result[this.visualizedField.name]) {
+                    this.aggResults = result[this.visualizedField.name];
+                }
+                else if (result['task_ids']) {
+                    // > 1000 result task, so task_id is returned
+                    // first result in the list is the task at the end of chain
+                    // wait for results unless tasks are aborted by OnChanges
+                    this.tasksToCancel = result['task_ids'];
+                    let childTask = result['task_ids'][0];
+                    this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
+                        if (outcome['success'] === true) {
+                                this.aggResults = outcome['results']
+                            }
+                        else {
+                            this.foundNoVisualsMessage = 'No word cloud data could be generated.'
+                        }
+                    });
+                }
             })
                 .catch(error => {
                     this.foundNoVisualsMessage = this.noResults;
