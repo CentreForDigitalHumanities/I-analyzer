@@ -16,7 +16,7 @@ from flask import current_app
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 
 
 # Source files ################################################################
@@ -45,22 +45,7 @@ class Times(XMLCorpus):
         Specifically, returns an iterator of tuples that each contain a string
         filename and a dictionary of metadata (in this case, the date).
         '''
-
-        if isinstance(start, int):
-            start = datetime(year=start, month=1, day=1)
-        if isinstance(end, int):
-            end = datetime(year=end, month=12, day=31)
-
-        if start > end:
-            tmp = start
-            start = end
-            end = tmp
-
-        if start < self.min_date:
-            start = self.min_date
-        if end > self.max_date:
-            end = self.max_date
-
+        consolidate_start_end_years(start, end, self.min_date, self.max_date)
         date = start
         delta = timedelta(days=1)
         while date <= end:

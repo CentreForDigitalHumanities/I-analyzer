@@ -6,16 +6,17 @@ locations.
 from pprint import pprint
 import random
 import re
+import sys
 from datetime import datetime, timedelta
-from os.path import join, isfile, splitext
+from os.path import join, dirname, isfile, split, splitext
 import os
 import logging
 
 from flask import current_app
 
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus import filters
-from addcorpus import extract
+from addcorpus.extract import Combined, Metadata, XML
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class DutchNewspapersPublic(XMLCorpus):
     title = "Public Dutch Newspapers"
     description = "Publicly available collection of Dutch newspapers by the KB"
     min_date = datetime(year=1600, month=1, day=1)
-    max_date = datetime(year=2018, month=12, day=31)
+    max_date = datetime(year=1876, month=12, day=31)
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
     es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
@@ -48,9 +49,34 @@ class DutchNewspapersPublic(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
-        logger = logging.getLogger(__name__)
-        for directory, _, filenames in os.walk(self.data_directory):
-            d = []
+        consolidate_start_end_years(start, end, self.min_date, self.max_date)
+        year_matcher = re.compile(r'[0-9]{4}')
+        for directory, subdirs, filenames in os.walk(self.data_directory):
+            _body, tail = split(directory)
+            if tail.startswith("."):
+                # don't go through directories from snapshots
+                subdirs[:] = []
+                continue
+            elif year_matcher.match(tail) and (int(tail) > end.year or int(tail) < start.year):
+                # don't walk further if the year is not within the limits specified by the user
+                subdirs[:] = []
+                continue
+            definition_file = next((join(directory, filename) for filename in filenames if 
+                                self.definition_pattern.match(filename)), None)
+            if not definition_file:
+                continue
+            meta_dict = self.metadata_from_xml(definition_file, tags=[
+                    "title", 
+                    "date", 
+                    "publisher", 
+                    {"tag": "spatial", "save_as":"distribution"},
+                    "source",
+                    "issuenumber",
+                    "language",
+                    "isVersionOf",
+                    "temporal",
+                    {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
+            ])
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)
@@ -58,71 +84,23 @@ class DutchNewspapersPublic(XMLCorpus):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    def_match = self.definition_pattern.match(name)
+                    #def_match = self.definition_pattern.match(name)
                     article_match = self.article_pattern.match(name)
-                    if def_match:
-                        d.append((full_path, {'file_tag': 'definition'}))
                     if article_match:
-                        id = os.path.basename(os.path.dirname(
+                        identifier = os.path.basename(os.path.dirname(
                             full_path)) + article_match.group(1)
-                        d.append((full_path, {'id': id}))
-            if d != []:
-                yield d
-
-    papers = ['Advertentieblad, bekendmakingen en onderscheidene berigten van Groningen', 'Advertentieblad van het departement van de Wester-Eems', "Affiches, annonces et avis divers d'Amsterdam = Advertentiën, aankondigingen en verschillende berigten van Amsterdam", 'Affiches, annonces et avis divers de Leyde = Advertentiën, aankondigingen en berigten van Leyden', 'Affiches, annonces et avis divers de Rotterdam = Advertentien, aankondigingen en berigten van Rotterdam', 'Algemeen Handelsblad', 'Algemeen Nederlandsch nieuws- en advertentie-blad', 'Amsterdamsche courant', 'Amsterdamse courant', 'Apeldoornsche courant', 'Arnhemsche courant', 'Avec privilège de nos-seigneurs les Etats de Hollande et de West-Frise', 'Bataafsche Leeuwarder courant', 'Bataafsche staats-courant', 'Bataviaasch advertentie-blad', 'Bataviaasch handelsblad', 'Bataviasche courant', 'Bataviasche koloniale courant', 'Bataviase nouvelles', 'Binnenlandsche Bataafsche courant', 'Bossche vaderlandsche courant', 'Bredasche courant', 'Constitutioneele oprechte Bataafsche courant / door M. Bos', 'Courante uyt Italien, Duytslandt, &c.', "Courrier d'Amsterdam = Courier van Amsterdam", 'Dagblad der provincie Braband', 'Dagblad van het departement der monden van den Rhyn', "Dagblad van 's Gravenhage", "Dagblad van Zuidholland en 's Gravenhage", 'De avondbode : algemeen nieuwsblad voor staatkunde, handel, nijverheid, landbouw, kunsten, wetenschappen, enz. / doorCh.G. Withuys', "De constitutioneel : nieuwe 's-Gravenhaagsche courant", 'De Curaçaosche courant', 'De Curaçaosche courant', 'De Gooi- en Eemlander : nieuws- en advertentieblad', 'De grondwet', 'De kolonist : dagblad toegewyd aan de belangen van Suriname', 'Delfsche courant', 'Delftsche courant : nieuwsblad voor Delft en Delfland', 'De locomotief : Samarangsch handels- en advertentie-blad', 'De maasbode', 'De Nederlander : nieuwe Utrechtsche courant : (staatkundig- nieuws-, handels- en advertentie-blad) / onder red. van J. van Hall', 'De nieuwe Haagse Nederlandse courant', 'De nieuwe Nederlandsche courant', 'De Noord-Brabanter : staat- en letterkundig dagblad', 'De Oostpost : letterkundig, wetenschappelĳken commercieel nieuws- en advertentieblad', 'De Sheboygan Nieuwsbode', 'De standaard', 'De Surinaamsche nieuwsvertelder', 'De Tĳd : godsdienstig-staatkundig dagblad', 'De Tijd : godsdienstig-staatkundig dagblad', 'De Volksvriend', 'De voorheen Stichtsche nu Rhynlandsche courant', 'De weeklyksche ... Surinaamse Courant', 'De West-Indiër : dagblad toegewĳd aan de belangen van Nederlandsch Guyana', 'Diemer- of Watergraafs-meersche courant', 'Drentsche courant', 'Duinkerksche historische courant', 'Europische : ... courant', "Feuille d'affiches, annonces et avis diversde Groningue = Advertentieblad, bekendmakingen en onderscheidene berigten van Groningen", "Feuille politique du département de l'Issel-supérieur = Staatkundig dagblad van het departement van den Boven-Ĳssel", 'Feuille politique du département du Zuiderzee = Staatkundig dagblad van hetDepartement der Zuiderzee', 'Friesche courant : gelykheid, vryheid en broederschap', "Gazette d'Amsterdam = Amsterdamsche courant", 'Gazette de Frise = Vriesche courant', 'Gazette de Groningue = Groninger courant', 'Gazette de Leuwarde = Leeuwarder courant', 'Gazette de Middelbourg = Middelburgsche courant', 'Gazette de Rotterdam', "Gazette du département de l'Ems occidental = Courant van het departement van de Wester Eems", "Gazette d'Utrecht = Utrechtsche courant", "Gazette ordinaire d'Amsterdam", 'Geldersche historische courant', 'Generaliteits-courant', 'Geoctrojeerde Groninger courant', 'Geprivilegeerde Surinaamsche courant', 'Goudasche courant', 'Groninger courant', 'Haagsche courant', 'Haarlemse Courant', 'Haeghsche post-tydingen', 'Haegse post-tydinge', 'Haerlemse courante', 'Het Amsterdamsch handels- en effectenblad', 'Het nieuws van den dag : kleine courant', 'Historisch dagblad van Zeeland / onder red. van S. Dassevael', 'Hof courant', 'Hollandsche courant', 'Hollandsche historische courant',
-              'Java-bode : nieuws, handels- en advertentieblad voor Nederlandsch-Indie', 'Java government gazette', 'Javasche courant', "Journal d'Amsterdam", 'Journal de La Haye', 'Journal de la province de Limbourg', 'Journal du département de la Frise = Dagblad van het departement Vriesland', "Journal du département des bouches de l'Escaut = Dagblad van het departement van de Schelde", 'Journal du département des bouches du Rhin', 'Journal historique', 'Keesings historisch archief : geïllustreerd dagboek van het hedendaagsch wereldgebeuren met voortdurend bijgewerkten alphabetischen index', 'Koloniaal nieuwsblad', 'Koninglyke staats-courant', 'Koninklĳke courant', "La gazette d'Amsterdam", "L'éclaireur : journal politique, commercial et littéraire de Maestricht", "L'éclaireur politique : journal de la province du Limbourg", 'Leeuwarder courant', 'Leydse courant', 'Markt en aankondigingsberichten', "Memoires qui doivent servir à la composition de la Gazette d'Amsterdam", 'Middelburgsche courant', "Moniteur d'Amsterdam = Moniteur van Amsterdam", 'Nationaale courant', 'Nederlandsche courant', 'Nederlandsche staatscourant', 'Nederlandsch-Indisch handelsblad', 'Nieuw Amsterdamsch handels- en effectenblad', 'Nieuwe Apeldoornsche courant', 'Nieuwe Rotterdamsche courant : staats-, handels-, nieuws- en advertentieblad', 'Nieuwe Surinaamsche courant', 'Nieuwe Surinaamsche courant en letterkundig dagblad', 'Nieuwe Veendammer courant', 'Nieuw Israelietisch weekblad', 'Nieuws- en advertentie-blad voor de provincie Drenthe', 'Nieuw weekblad : Venlooschecourant', 'Noord-Brabander', 'Noordhollandsche courant', 'Nouvelles de divers quartiers', 'Nouvelles extraordinaires de divers endroits', 'Nouvelles politiques, publiées à Leyde', 'Ommelander courant', 'Oprechte Haarlemsche courant', 'Oprechte Haarlemse courant', 'Oprechte Haerlemschecourant', 'Oprechte nationaale courant / red. J.H. Redelinghuys', 'Oprechte Nederlandsche courant', 'Opregte Groninger courant', 'Opregte Haarlemsche Courant', 'Opregte Leydse courant', 'Opregte nieuwe Groninger courant', 'Ordinaire Leydse courant', 'Ordinaris dingsdaeghse courante', 'Ordinarisse middel-weeckse courante', 'Overĳsselsche courant', 'Padangsch nieuws- en advertentie-blad', "Post-tydingen uyt 's Graven-hage", "Provinciaal dagblad van Noord-Braband en 's Hertogenbossche stads-courant", 'Provinciale Drentsche en Asser courant', "Provinciale Noordbrabantsche en 's Hertogenbossche courant", 'Provinciale Overijsselsche en Zwolsche courant', 'Provinciale Overĳsselsche en Zwolsche courant : staats-,handels-, nieuws- en advertentieblad', 'Rosendaalsche courant', 'Rotterdamsche courant', 'Rotterdamse courant', 'Samarangsch advertentie-blad', 'Saturdagsche courant van nieuws, smaak en vernuft', "'s Gravenhaagsche courant", "'s Gravenhaegse courant", "'s Hertogenbossche courant", "'s Hertogenbossche vaderlandsche courant", 'Soerabaijasch handelsblad', 'Staatkundig dagblad der monden van de Maas', 'Staatkundig dagblad van de Rhyn-monden', 'Staatkundig dagblad van de Zuiderzee', "Suite des nouvelles d'Amsterdam", 'Sumatra-courant : nieuws- en advertentieblad', 'Surinaamsche courant', 'Surinaamsche courant en algemeene nieuwstijdingen', 'Surinaamsche courant en Gouvernements advertentie blad', 'Surinaamsche courant : letterkundig dagblad', 'Surinaamsch weekblad', 'Suriname : koloniaal nieuws- en advertentieblad', 'Tĳdinghe uyt verscheyde quartieren', 'Tilburgsche courant', 'Traduction libre des gazettes flamandes et autres', 'Tubantia', 'Utrechtsche courant', 'Utrechtsche provinciale enstads-courant : algemeen advertentieblad', 'Utrechtsch provinciaal en stedelĳk dagblad : algemeen advertentie-blad', 'Utrechtse courant', 'Utrechts volksblad : sociaal-democratisch dagblad', 'Vaderlandsche Bossche courant', 'Veendammer courant', 'Venloosch weekblad', 'Vlissingsche courant', 'Vriesche courant', 'VVeeckelycke courante van Europa', 'Watergraafsmeer courant', 'Weekblad van Tilburg', 'Weeklykche Woensdaagsche Surinaamsche Courant', 'Zuid-Hollandsche courant / [Johan Christiaan ten Noever]']
-
-    libs = [
-        "Archief Eemland",
-        "Bibliotheek Arnhem",
-        "Calvin College Archives, Michigan",
-        "Gelders Archief",
-        "Gemeentearchief Hulst",
-        "Gemeentearchief Sluis",
-        "Groninger Archieven",
-        "Herzog August Bibliothek, Wolfenbüttel",
-        "Historisch Centrum Overijssel",
-        "Joint Archives of Holland, Michigan",
-        "Koninklijk Instituut voor de Tropen (KIT)",
-        "Koninklijk Instituut voor Taal-, Land- en Volkenkunde (KITLV)",
-        "Koninklijke Bibliotheek",
-        "Kungliga Biblioteket, Stockholm",
-        "L'Archivio Segreto Vaticano",
-        "Museum Enschede",
-        "Museum Meermanno",
-        "Nationaal Archief Suriname, Paramaribo",
-        "Niedersächsiches Landesarchiv – Staatsarchiv, Oldenburg",
-        "NIOD",
-        "Northwestern College, Orange City",
-        "Noord-Hollands Archief",
-        "Persmuseum",
-        "Privécollectie André de Rijck",
-        "Radboud Universiteit Nijmegen",
-        "Regionaal Archief Alkmaar",
-        "Regionaal Archief Leiden",
-        "Roosevelt Institute for American Studies (RIAS)",
-        "Russisch Staatsarchief voor Oude Akten (RGADA) Moskou",
-        "Rutgers University Library, New Brunswick",
-        "SGP-bureau",
-        "Sociaal Historisch Centrum voor Limburg",
-        "Stadsarchief 's-Hertogenbosch",
-        "Stadsarchief Rotterdam",
-        "Stadsbibliotheek Maastricht",
-        "The National Archives Kew, Richmond",
-        "Tresoar – Fries Historisch en Letterkundig Centrum",
-        "Trinity Christian College, Palos Heights",
-        "Universiteitsbibliotheek Gent",
-        "Universiteitsbibliotheek Groningen",
-        "Universiteitsbibliotheek Leiden",
-        "Universiteitsbibliotheek Tilburg",
-        "Universiteitsbibliotheek Amsterdam (UvA)",
-        "Universiteitsbibliotheek VU Amsterdam",
-        "Waterlands Archief",
-        "Wisconsin Historical Society, Madison",
-        "Zeeuws Archief",
-        "ZB| Planbureau en Bibliotheek van Zeeland",
-        "Zentralbibliothek, Zürich"
-    ]
+                        record_id = identifier[4:-4].replace("_",":") +\
+                          ":a" + identifier[-4:]
+                        meta_dict.update({
+                            'external_file': definition_file,
+                            'id': record_id
+                        })
+                        yield full_path, meta_dict
+    
+    titlefile = join(dirname(current_app.config['CORPORA']['dutchnewspapers-public']),
+     current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
+    with open(titlefile, encoding='utf-8') as f:
+        papers = f.readlines()
 
     distribution = {
         'Landelijk': 'National',
@@ -135,6 +113,24 @@ class DutchNewspapersPublic(XMLCorpus):
     }
 
     fields = [
+        Field(
+            name="url",
+            display_name="Delpher URL",
+            description="Link to record on Delpher",
+            extractor=XML(tag='identifier',
+                                  toplevel=True,
+                                  recursive=True,
+                                  multiple=False,
+                                  secondary_tag={
+                                      'tag': 'recordIdentifier',
+                                      'match': 'id'
+                                  },
+                                  external_file={
+                                      'xml_tag_toplevel': 'DIDL',
+                                      'xml_tag_entry': 'dcx'
+                                  }
+            )
+        ),
         Field(
             name='date',
             display_name='Date',
@@ -150,16 +146,29 @@ class DutchNewspapersPublic(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.XML(tag='date',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  transform=lambda x: str(x)
-                                  )
+            extractor=Metadata('date')
+        ),
+        Field(
+            name='ocr',
+            display_name='OCR confidence',
+            description='OCR confidence level.',
+            es_mapping={'type': 'float'},
+            search_filter=filters.RangeFilter(0, 100,
+                                              description=(
+                                                  'Accept only articles for which the Opitical Character Recognition confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=XML(tag='OCRConfidencelevel',
+                toplevel=True,
+                recursive=True,
+                external_file={
+                    'xml_tag_toplevel': 'DIDL',
+                    'xml_tag_entry': 'dcx'
+                },
+                transform=lambda x: float(x)*100
+            ),
+            sortable=True
         ),
         Field(
             name='newspaper_title',
@@ -173,29 +182,14 @@ class DutchNewspapersPublic(XMLCorpus):
                 description='Accept only articles in these newspapers.',
                 options=papers
             ),
-            extractor=extract.XML(tag='title',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('title')
         ),
         Field(
             name='version_of',
             display_name='Version of',
             description='The newspaper is a version of this newspaper.',
-            extractor=extract.XML(tag='isVersionOf',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            es_mapping={'type': 'keyword'},
+            extractor=Metadata('isVersionOf')
         ),
         Field(
             name='issue_number',
@@ -203,16 +197,7 @@ class DutchNewspapersPublic(XMLCorpus):
             description='Issue number of the newspaper',
             csv_core=True,
             es_mapping={'type': 'integer'},
-            extractor=extract.XML(tag='issuenumber',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  ),
-            sortable=True
+            extractor=Metadata('issuenumber')
         ),
         Field(
             name='category',
@@ -220,13 +205,17 @@ class DutchNewspapersPublic(XMLCorpus):
             description='Whether the item is an article, advertisment, etc.',
             csv_core=True,
             es_mapping={'type': 'keyword'},
-            extractor=extract.XML(tag='subject',
+            extractor=XML(tag='subject',
                                   toplevel=True,
                                   recursive=True,
+                                  multiple=False,
+                                  secondary_tag={
+                                      'tag': 'recordIdentifier',
+                                      'match': 'id'
+                                  },
                                   external_file={
-                                      'file_tag': 'definition',
                                       'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
+                                      'xml_tag_entry': 'dcx'
                                   }
                                   )
         ),
@@ -236,52 +225,21 @@ class DutchNewspapersPublic(XMLCorpus):
             description='The area in which the newspaper was distributed.',
             es_mapping={'type': 'keyword'},
             csv_core=True,
-            extractor=extract.XML(tag='spatial',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('spatial')
         ),
         Field(
             name='publisher',
             display_name='Publisher',
             description='Publisher',
             search_field_core=True,
-            extractor=extract.XML(tag='publisher',
-                                  toplevel=True,
-                                  multiple=True,
-                                  flatten=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('publisher')
         ),
         Field(
             name='language',
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            visualization_type='term_frequency',
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in these newspapers.',
-                options=['nl', 'fr']
-            ),
-            extractor=extract.XML(tag='language',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('language')
         ),
         Field(
             name='article_title',
@@ -289,54 +247,27 @@ class DutchNewspapersPublic(XMLCorpus):
             description='Article title',
             results_overview=True,
             search_field_core=True,
-            extractor=extract.XML(tag='title', flatten=True, toplevel=True)
+            extractor=XML(tag='title', flatten=True, toplevel=True)
         ),
         Field(
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
-            extractor=extract.Metadata('id')
+            extractor=Metadata('id')
         ),
         Field(
             name='source',
             display_name='Source',
             description='Library or archive which keeps the hard copy of this newspaper.',
             es_mapping={'type': 'keyword'},
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles from these libraries or archives.',
-                options=libs
-            ),
-            extractor=extract.XML(tag='source',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  }
-                                  )
+            extractor=Metadata('source')
         ),
         Field(
-            name='spatial',
-            display_name='Distribution',
-            description='Distribution area of the newspaper.',
-            results_overview=True,
-            csv_core=True,
+            name='pub_place',
+            display_name='Publication Place',
+            description='Where the newspaper was published',
             es_mapping={'type': 'keyword'},
-            visualization_type='term_frequency',
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this distribution area.',
-                options=list(distribution.keys())
-            ),
-            extractor=extract.XML(tag='spatial',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  )
+            extractor=Metadata('pub_place')
         ),
         Field(
             name='temporal',
@@ -350,15 +281,7 @@ class DutchNewspapersPublic(XMLCorpus):
                 description='Accept only articles in newspapers with this publication frequency.',
                 options=['Dag', 'Week', 'Maand'],
             ),
-            extractor=extract.XML(tag='temporal',
-                                  toplevel=True,
-                                  recursive=True,
-                                  external_file={
-                                      'file_tag': 'definition',
-                                      'xml_tag_toplevel': 'DIDL',
-                                      'xml_tag_entry': 'Item'
-                                  },
-                                  )
+            extractor=Metadata('temporal')
         ),
         Field(
             name='content',
@@ -367,7 +290,10 @@ class DutchNewspapersPublic(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
-            extractor=extract.XML(tag='p', multiple=True,
+            extractor=XML(tag='p', multiple=True,
                                   flatten=True, toplevel=True)
         ),
     ]
+
+
+

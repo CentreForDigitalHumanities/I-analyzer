@@ -331,6 +331,15 @@ def api_query():
         abort(400)
 
     query_json = request.json['query']
+    if 'filters' in query_json:
+        query_model = json.loads(query_json)
+        for search_filter in query_model['filters']:
+            # no need to save defaults in database
+            del search_filter['defaultData']
+            if 'options' in search_filter['currentData']:
+                # options can be lengthy, just save user settings
+                del search_filter['currentData']['options']
+        query_json = json.dumps(query_model)
     corpus_name = request.json['corpus_name']
 
     if 'id' in request.json:
