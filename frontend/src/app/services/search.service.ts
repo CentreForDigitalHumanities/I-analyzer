@@ -87,14 +87,6 @@ export class SearchService {
         let query = new Query(queryModel, corpus.name, user.id);
         await this.queryService.save(query, true);
         let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
-        // querySave.then((savedQuery) => {
-        //     // update the last saved query object, it might have changed on the server
-        //     if (!results.completed) {
-        //         savedQuery.aborted = true;
-        //     }
-        //     savedQuery.transferred = results.total;
-        //     this.queryService.save(savedQuery, undefined, results.completed);
-        // });
 
         return <SearchResults>{
             completed: results.completed,

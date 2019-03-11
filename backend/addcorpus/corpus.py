@@ -576,6 +576,11 @@ def after(year):
 
 
 def consolidate_start_end_years(start, end, min_date, max_date):
+    ''' given a start and end date provided by the user, make sure 
+    - that start is not before end
+    - that start is not before min_date (corpus variable)
+    - that end is not after max_date (corpus variable)
+    '''
     if isinstance(start, int):
         start = datetime(year=start, month=1, day=1)
     if isinstance(end, int):
