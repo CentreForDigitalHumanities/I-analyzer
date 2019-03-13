@@ -4,7 +4,7 @@ export type SearchFilter = {
     fieldName: string,
     description: string,
     useAsFilter: boolean,
-    defaultData: SearchFilterData,
+    defaultData?: SearchFilterData,
     currentData: SearchFilterData
 }
 
@@ -16,7 +16,7 @@ export type BooleanFilterData = {
 };
 export type MultipleChoiceFilterData = {
     filterType: 'MultipleChoiceFilter', 
-    options: string[], 
+    options?: string[], 
     selected: string[],
     optionsAndCounts?: AggregateResult[]
 };

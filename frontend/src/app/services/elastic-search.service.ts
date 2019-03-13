@@ -5,6 +5,7 @@ import { Client, SearchResponse } from 'elasticsearch';
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
+import { CorpusSelectionComponent } from '../corpus-selection/corpus-selection.component';
 
 type Connections = { [serverName: string]: Connection };
 

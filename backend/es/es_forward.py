@@ -93,7 +93,7 @@ def forward_scroll(server_name):
 def forward_search(server_name, corpus_name, document_type):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
-    host = get_es_host_or_404(server_name)
+    host = get_es_host_or_404(server_name) 
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
 
