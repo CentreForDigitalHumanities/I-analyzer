@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 
 from flask import json
 
-from ianalyzer.factories import flask_app
+from ianalyzer.factories.app import flask_app
 from ianalyzer.models import db as database, User, Role
 from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
 import ianalyzer.default_config as config

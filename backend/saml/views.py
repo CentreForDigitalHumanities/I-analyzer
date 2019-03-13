@@ -12,10 +12,11 @@ logger = logging.getLogger(__name__)
 
 from ianalyzer.models import User, db
 from api.security import login_user, get_token, get_original_token_input, logout_user
-from api.api import api, add_uu_user, create_success_response
+from api import api
+from api.views import add_uu_user, create_success_response
 from .saml_auth import SamlAuth, SamlAuthError
+from . import saml
 
-saml = Blueprint('saml', __name__)
 saml_auth = SamlAuth()
 
 @api.route('/init_solislogin/', methods=['GET'])

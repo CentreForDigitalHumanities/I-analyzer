@@ -84,7 +84,6 @@ export class SearchResultsComponent implements OnChanges {
 
     public searched(queryText: string, resultsCount: number) {
         // push searchResults to dataService observable, observed by visualization component
-        this.dataService.pushNewSearchResults(this.results);
         this.searchedEvent.next({ queryText: queryText, resultsCount: resultsCount });
         this.isLoading = false;
     }

@@ -134,14 +134,29 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
-        return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
+    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
                     resolve({[fieldName]: result['data']});
+                }              
+                else {
+                    reject({error: result['message']});
+                }
+            });
+        });
+    }
+
+    public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<any>{
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success']===true) {
+                    resolve({taskIds: result['task_ids']});
                 }
                 else {
-                    reject({'message': 'No word cloud data could be extracted from your search results.'});
+                    reject({error: result['message']});
                 }
             });
         });

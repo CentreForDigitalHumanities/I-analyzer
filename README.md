@@ -42,8 +42,8 @@ http.cors.allow-origin: "*"
 ```
 npm install
 ```
-4. Create the file `api/ianalyzer/config.py` (see `api/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
-5. Go to `/api`. See instructions below for Python package installation and dependency management.
+4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
+5. Go to `/backend`. See instructions below for Python package installation and dependency management.
 6. Define that the startup code for the Flask application is located within manage.py by exporting / setting the environment variable:
 - Mac/Linux:
 ```
@@ -59,7 +59,8 @@ set FLASK_APP=manage.py
 10. Set up the database and migrations by running `flask db upgrade`.
 11. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 12. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
-13. Go to `/web-ui` and follow the instructions in the README to start it.
+13. Make sure you have rabbitmq installed for celery to work. Then, on a separte terminal window, from the `/backend` directory, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and word cloud).
+14. Go to `/frontend` and follow the instructions in the README to start it.
 
 ### Python package management
 

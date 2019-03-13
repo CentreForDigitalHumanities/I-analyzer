@@ -1,19 +1,19 @@
-import { Input, Component, OnInit, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, SearchResults } from '../models/index';
-import { SearchService, DataService } from '../services/index';
+import { Corpus, CorpusField, AggregateResult, QueryModel } from '../models/index';
+import { SearchService, ApiService } from '../services/index';
 
 @Component({
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-
-export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
+export class VisualizationComponent implements OnInit, OnChanges {
     @Input() public corpus: Corpus;
+    @Input() public queryModel: QueryModel;
+    @Input() public resultsCount: number;
 
     public visualizedFields: CorpusField[];
 
@@ -43,17 +43,19 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
     public relatedWordsTable: {
         [word: string]: number
     }
-    public searchResults: SearchResults;
+    public disableWordCloudLoadMore: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
+    private batchSizeWordcloud: number = 1000;
 
-    public subscription: Subscription;
+    private tasksToCancel: string[] = [];
 
-    constructor(private searchService: SearchService, private dataService: DataService) {
+    constructor(private searchService: SearchService, private apiService: ApiService) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        this.disableWordCloudLoadMore = false;
         if (changes['corpus']){
             this.visualizedFields = this.corpus && this.corpus.fields ?
             this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
@@ -75,26 +77,36 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
                 this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
             }   
         }
+        else if (changes['queryModel']) {
+            this.checkResults();
+        }
     }
 
     ngOnInit() {
-        this.subscription = this.dataService.searchResults$.subscribe(results => {
-            if (results.total > 0) {
-                this.searchResults = results;
-                this.setVisualizedField(this.visualizedField.name);
-            }
-            else {
-                this.aggResults = [];
-            }
-        });
+        this.checkResults();
         this.showTableButtons = true;
     }
 
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
+    checkResults() {
+        if (this.resultsCount > 0) {
+            this.setVisualizedField(this.visualizedField.name);
+            this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
+        }
+        else {
+            this.aggResults = [];
+            this.foundNoVisualsMessage = this.noResults;
+        }
     }
 
     setVisualizedField(selectedField: string) {
+        if (this.tasksToCancel.length > 0) {
+            // the user requests other data, so revoke all running celery tasks
+            this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
+                if (result['success']===true) {
+                    this.tasksToCancel = [];
+                }
+            });
+        }
         this.aggResults = [];
         this.errorMessage = '';
         if (selectedField == 'relatedwords') {
@@ -108,26 +120,16 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            let textFieldContent = this.searchResults.documents.map(d => d.fieldValues[this.visualizedField.name]);
-            if (textFieldContent.length > 0) {
-                this.searchService.getWordcloudData(this.visualizedField.name, textFieldContent).then(result => {
-                    // slice is used so the child component fires OnChange
-                    this.aggResults = result[this.visualizedField.name];
-                })
-                    .catch(error => {
-                        this.foundNoVisualsMessage = this.noResults;
-                        this.errorMessage = error['message'];
-                    });
-            }
+            this.loadWordcloudData(this.batchSizeWordcloud);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, aggregator).then(visual => {
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
-            this.searchService.getRelatedWords(this.searchResults.queryModel.queryText, this.corpus.name).then(results => {
+            this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
             })
@@ -135,20 +137,50 @@ export class VisualizationComponent implements OnInit, OnChanges, OnDestroy {
                     this.relatedWordsGraph = undefined;
                     this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
-                    console.log(error['message']);
                     this.errorMessage = error['message'];
                 });
         }
         else {
             let aggregator = {name: this.visualizedField.name, size: this.defaultSize};
-            this.searchService.aggregateSearch(this.corpus, this.searchResults.queryModel, [aggregator]).then(visual => {
+            this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
         }
     }
 
+    loadWordcloudData(size: number = null){
+        let queryModel = this.queryModel;
+        if (queryModel) {
+            this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
+                this.aggResults = result[this.visualizedField.name];
+            })
+            .catch(error => {
+                this.foundNoVisualsMessage = this.noResults;
+                this.errorMessage = error['message'];
+            });
+        }
+    }
+
+    loadAllWordcloudData() {
+        let queryModel = this.queryModel;
+        if (queryModel) {
+            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
+                this.tasksToCancel = result['taskIds'];
+                    let childTask = result['taskIds'][0];
+                    this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
+                        if (outcome['success'] === true) {
+                            this.aggResults = outcome['results']
+                        }
+                        else {
+                            this.foundNoVisualsMessage = this.noResults;
+                        }
+                    });
+            })
+        }
+    }
+
     setErrorMessage(message: string) {
-        this.searchResults = null;
+        this.queryModel = null;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
     }
