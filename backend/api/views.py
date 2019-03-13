@@ -277,11 +277,7 @@ def create_success_response(user):
         'id': user.id,
         'username': user.username,
         'role': role,
-        'downloadLimit': user.download_limit,
-        'queries': [{
-            'query': query.query_json,
-            'corpusName': query.corpus_name
-        } for query in user.queries]
+        'downloadLimit': user.download_limit
     })
 
     return response

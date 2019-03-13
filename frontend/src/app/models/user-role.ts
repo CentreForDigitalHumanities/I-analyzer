@@ -1,4 +1,3 @@
-
 export type UserRole = {
     name: string,
     description: string,
@@ -6,7 +5,7 @@ export type UserRole = {
 }
 
 // reflects access right to a given corpus
-type AccessibleCorpus = {
+export type AccessibleCorpus = {
     name: string,
     description: string
 };
