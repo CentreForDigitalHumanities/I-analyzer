@@ -13,7 +13,7 @@ from ianalyzer.models import db
 from admin.admin import admin_instance
 from ianalyzer.views import entry, login_manager
 from es import es #blueprint
-from saml.views import saml_auth # SamlAuth from python3-saml
+from saml.views import saml_auth # DHLab wrapper around python3-saml
 from saml import saml # blueprint
 
 from ianalyzer import config_fallback as config

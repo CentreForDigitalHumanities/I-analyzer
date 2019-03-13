@@ -17,13 +17,13 @@ import { log } from 'util';
 export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
     @Input('searchData') public significantText: AggregateData;
-    @Input('greyOutLoadMore') public greyOutLoadMore: boolean;
+    @Input('disableLoadMore') public disableLoadMore: boolean;
     @Output('loadAll')
     public loadAllDataEmitter = new EventEmitter();
 
     private width: number = 600;
     private height: number = 400;
-    private scaleFontSize = d3.scaleLinear();;
+    private scaleFontSize = d3.scaleLinear();
     public isLoading: boolean = false;
 
     private chartElement: any; 

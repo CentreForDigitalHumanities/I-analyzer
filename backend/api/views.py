@@ -5,7 +5,6 @@ import json
 import base64
 import logging
 import math
-logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
@@ -383,23 +382,41 @@ def api_search_history():
 @api.route('/wordcloud', methods=['POST'])
 @login_required
 def api_wordcloud():
+    ''' get the results for a small batch of results right away '''
     if not request.json:
         abort(400)
-    if request.json['size']==1000:
-        list_of_texts = download.search_thousand(request.json['corpus'], request.json['es_query'])
+    else:
+        list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
         word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
-        return jsonify({'data': word_counts.get()})
+        if not word_counts:
+            return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
+        else:
+            return jsonify({'success': True, 'data': word_counts.get()})
+
+
+@api.route('/wordcloud_tasks', methods=['POST'])
+@login_required
+def api_wordcloud_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
     else:
         word_counts_task = chain(tasks.get_wordcloud_data.s(request.json), tasks.make_wordcloud_data.s(request.json))
         word_counts = word_counts_task.apply_async()
-        return jsonify({'task_ids': [word_counts.id, word_counts.parent.id]})
+        if not word_counts:
+            return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
+        else:
+            return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
 
 
 @api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
 def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
-    return jsonify({'success': True, 'results': results.get()})
+    if not results:
+        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+    else:        
+        return jsonify({'success': True, 'results': results.get()})
 
 
 @api.route('/abort_tasks', methods=['POST'])
@@ -411,7 +428,8 @@ def api_abort_tasks():
         task_ids = request.json['task_ids']
         try:
             celery_app.control.revoke(task_ids, terminate=True)
-        except:
+        except Exception as e:
+            logger.critical(e)
             return jsonify({'success': False})
         return jsonify({'success': True})
 

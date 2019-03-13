@@ -49,8 +49,16 @@ export class ApiService extends Resource {
         path: '/wordcloud'
     })
     public wordcloud: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size?: number },
-        { success: boolean, data?: AggregateResult[], task_ids?: string[] }>;
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
+        { success: false, message: string } | { success: true, data: AggregateResult[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/wordcloud_tasks'
+    })
+    public wordcloudTasks: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
     
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -58,7 +66,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { success: boolean, results?: AggregateResult[] }
+    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
     >
 
     @ResourceAction({

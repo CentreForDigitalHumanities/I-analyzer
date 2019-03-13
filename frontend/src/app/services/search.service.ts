@@ -149,12 +149,23 @@ export class SearchService {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
                     resolve({[fieldName]: result['data']});
+                }              
+                else {
+                    reject({error: result['message']});
                 }
-                else if (result['task_ids']) {
-                    resolve({task_ids: result['task_ids']});
+            });
+        });
+    }
+
+    public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<any>{
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success']===true) {
+                    resolve({taskIds: result['task_ids']});
                 }
                 else {
-                    reject({'message': 'No word cloud data could be extracted from your search results.'});
+                    reject({error: result['message']});
                 }
             });
         });
@@ -226,10 +237,6 @@ export class SearchService {
 
 
 
-    }
-
-    public abortWordCloud(task_ids: string[]) {
-        this.apiService.abortWordCloud({task_ids: task_ids});
     }
 
     /**

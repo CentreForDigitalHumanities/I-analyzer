@@ -4,7 +4,6 @@ from flask import current_app
 from ianalyzer.factories.elasticsearch import elasticsearch
 
 def scroll(corpus, query_model, download_size=None):
-    #client = ianalyzer.factories.elasticsearch(corpus)
     client = elasticsearch(corpus)
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
@@ -21,7 +20,7 @@ def scroll(corpus, query_model, download_size=None):
     num_results = len(search_results['hits']['hits'])
     scroll_id = search_results['_scroll_id']
     while num_results < download_size:
-        search_results = client.scroll(scroll_id = scroll_id,
+        search_results = client.scroll(scroll_id=scroll_id,
             scroll=scroll_timeout)
         scroll_id = search_results['_scroll_id']
         num_results += len(search_results['hits']['hits'])
@@ -30,10 +29,8 @@ def scroll(corpus, query_model, download_size=None):
     return output
 
 
-def search_thousand(corpus, query_model):
-    #client = ianalyzer.factories.elasticsearch(corpus)
+def normal_search(corpus, query_model, size):
     client = elasticsearch(corpus)
-    size = 1000
     search_results = client.search(
         index=corpus,
         size = size,

@@ -47,6 +47,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
+    private batchSizeWordcloud: number = 1000;
 
     private tasksToCancel: string[] = [];
 
@@ -89,7 +90,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     checkResults() {
         if (this.resultsCount > 0) {
             this.setVisualizedField(this.visualizedField.name);
-            this.disableWordCloudLoadMore = this.resultsCount < 1000 ? true : false;
+            this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         }
         else {
             this.aggResults = [];
@@ -119,7 +120,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
-            this.loadWordcloudData(1000);
+            this.loadWordcloudData(this.batchSizeWordcloud);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
@@ -151,29 +152,30 @@ export class VisualizationComponent implements OnInit, OnChanges {
         let queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
-                if (result[this.visualizedField.name]) {
-                    this.aggResults = result[this.visualizedField.name];
-                }
-                else if (result['task_ids']) {
-                    // > 1000 result task, so task_id is returned
-                    // first result in the list is the task at the end of chain
-                    // wait for results unless tasks are aborted by OnChanges
-                    this.tasksToCancel = result['task_ids'];
-                    let childTask = result['task_ids'][0];
+                this.aggResults = result[this.visualizedField.name];
+            })
+            .catch(error => {
+                this.foundNoVisualsMessage = this.noResults;
+                this.errorMessage = error['message'];
+            });
+        }
+    }
+
+    loadAllWordcloudData() {
+        let queryModel = this.queryModel;
+        if (queryModel) {
+            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
+                this.tasksToCancel = result['taskIds'];
+                    let childTask = result['taskIds'][0];
                     this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
-                                this.aggResults = outcome['results']
-                            }
+                            this.aggResults = outcome['results']
+                        }
                         else {
-                            this.foundNoVisualsMessage = 'No word cloud data could be generated.'
+                            this.foundNoVisualsMessage = this.noResults;
                         }
                     });
-                }
             })
-                .catch(error => {
-                    this.foundNoVisualsMessage = this.noResults;
-                    this.errorMessage = error['message'];
-                });
         }
     }
 
