@@ -2,7 +2,8 @@
 Collect corpus-specific information, that is, data structures and file
 locations.
 '''
-
+import logging
+logger = logging.getLogger(__name__)
 from pprint import pprint
 import random
 import re
@@ -10,15 +11,12 @@ import sys
 from datetime import datetime, timedelta
 from os.path import join, dirname, isfile, split, splitext
 import os
-import logging
 
 from flask import current_app
 
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus import filters
 from addcorpus.extract import Combined, Metadata, XML
-
-logger = logging.getLogger(__name__)
 
 
 # Source files ################################################################
@@ -77,6 +75,7 @@ class DutchNewspapersPublic(XMLCorpus):
                     "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
+            print(meta_dict)
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)
