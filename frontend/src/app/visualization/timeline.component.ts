@@ -165,7 +165,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             if (!d3.event.sourceEvent.selection) {
                 if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
                 // resetting everything to first view
-                this.selectedData = _.cloneDeep(this.zoomedOutData);
+                this.selectedData = this.zoomedOutData;
                 this.currentTimeCategory = 'year';
                 this.dataService.pushCurrentTimelineData({data: this.selectedData, timeInterval: this.currentTimeCategory});
                 this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
