@@ -34,6 +34,12 @@ export type AggregateResult = {
     key_as_string?: string
 }
 
+
+export type DateFrequencyPair = {
+    date: Date;
+    doc_count: number;
+}
+
 export type AggregateData = {
     [fieldName: string]: AggregateResult[]
 }

@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import * as _ from "lodash";
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { AggregateResult, Corpus, QueryModel } from '../models/index';
+import { Corpus, DateFrequencyPair, QueryModel } from '../models/index';
 import { default as scaleTimeCustom }from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
@@ -73,6 +73,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     async prepareTimeline() {
         await this.requestTimeData();
+        this.dataService.pushCurrentTimelineData(this.selectedData);
         this.setDomains();
     }
 
@@ -80,8 +81,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         let min = new Date(this.visualizedField.searchFilter.currentData.min);
         let max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
-        this.xScale.domain(this.xDomain);  
-        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.xScale.domain(this.xDomain);
     }
 
     rescaleX() {
@@ -111,8 +111,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     calculateY() {
         /**
-        * calculate bins and y dimensions
+        * calculate y dimensions
         */
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
         this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
         this.yAxis.call(this.yAxisClass);
@@ -165,6 +166,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
                 // resetting everything to first view
                 this.selectedData = _.cloneDeep(this.zoomedOutData);
+                this.dataService.pushCurrentTimelineData(this.selectedData);
                 this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
                 this.setDomains();
                 this.calculateDomains();
@@ -268,10 +270,5 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             }, hintHidingMinDelay);
         }
     }
-
 }
 
-type DateFrequencyPair = {
-    date: Date;
-    doc_count: number;
-}

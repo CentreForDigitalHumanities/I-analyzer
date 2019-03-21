@@ -27,7 +27,7 @@ export class BarChartComponent implements OnChanges {
     public height: number;
     private correction: number = 0;
     public xScale: any; // can be either ordinal or time scale
-    public yScale: d3.ScaleLinear<number, number>;
+    public yScale: d3.ScaleLinear<number, number> = d3.scaleLinear();
     public xAxis: d3.Selection<any, any, any, any>;
     public yAxis: d3.Selection<any, any, any, any>;
     public xAxisClass: any;
@@ -74,11 +74,11 @@ export class BarChartComponent implements OnChanges {
 
     calculateDomains() {
         /**
-         adjust the x and y ranges
+         adjust the y range
          */
         this.yDomain = [0, this.yMax];
         this.yTicks = this.yDomain[1] > 10 ? 10 : this.yMax;
-        this.yScale = d3.scaleLinear().domain(this.yDomain).range([this.height, 0]);
+        this.yScale.domain(this.yDomain).range([this.height, 0]);
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
 

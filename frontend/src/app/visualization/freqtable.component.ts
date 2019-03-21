@@ -16,13 +16,11 @@ import { DataService } from '../services/index';
 export class FreqtableComponent implements OnChanges, OnDestroy {
     @Input('searchData')
     public searchData: {
-        key: any,
+        key?: string,
+        date?: Date,
         doc_count?: number,
         key_as_string?: string,
-        similarity?: number,
-        // x0 and x1 are information for drawing in d3, added by d3.histogram
-        x0?: Date,
-        x1?: Date
+        similarity?: number
     }[];
     @Input() public visualizedField;
     @Input() public asPercent: boolean;
@@ -41,7 +39,7 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         this.subscription = this.dataService.timelineData$.subscribe(results => {
             if (results !== undefined) {
                 this.searchData = results;
-                this.searchData.map(d => d.key = moment(d[0].date).format("YYYY-MM-DD"));
+                this.searchData.map(d => d.key = moment(d.date).format("YYYY-MM-DD"));
                 this.createTable();
             }
         });
