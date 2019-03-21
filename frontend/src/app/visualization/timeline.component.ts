@@ -73,7 +73,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     async prepareTimeline() {
         await this.requestTimeData();
-        this.dataService.pushCurrentTimelineData(this.selectedData);
+        this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDomains();
     }
 
@@ -166,12 +166,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
                 // resetting everything to first view
                 this.selectedData = _.cloneDeep(this.zoomedOutData);
-                this.dataService.pushCurrentTimelineData(this.selectedData);
+                this.currentTimeCategory = 'year';
+                this.dataService.pushCurrentTimelineData({data: this.selectedData, timeInterval: this.currentTimeCategory});
                 this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
                 this.setDomains();
                 this.calculateDomains();
                 this.rescaleX();
-                this.currentTimeCategory = 'year';
                 this.calculateY();
                 this.rescaleY();
                 this.drawChartData();

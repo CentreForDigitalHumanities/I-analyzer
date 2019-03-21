@@ -40,11 +40,16 @@ export type DateFrequencyPair = {
     doc_count: number;
 }
 
+export type TimelineData = {
+    data: DateFrequencyPair[];
+    timeInterval: string;
+}
+
 export type AggregateData = {
     [fieldName: string]: AggregateResult[]
 }
 
-type WordSimilarity = {
+export type WordSimilarity = {
     key: string,
     similarity: number
 }

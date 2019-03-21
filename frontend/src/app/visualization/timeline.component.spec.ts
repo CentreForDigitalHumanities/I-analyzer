@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { DataService } from '../services/index';
+import { DataService, SearchService } from '../services/index';
 import { TimelineComponent } from './timeline.component';
 
 describe('TimelineComponent', () => {
@@ -11,7 +11,7 @@ describe('TimelineComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ FormsModule ],
-      providers: [DataService],
+      providers: [DataService, SearchService ],
       declarations: [ TimelineComponent ]
     })
     .compileComponents();

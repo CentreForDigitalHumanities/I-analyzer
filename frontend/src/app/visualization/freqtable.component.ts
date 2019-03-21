@@ -1,10 +1,11 @@
-import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subscription }   from 'rxjs';
 
 import * as _ from "lodash";
 import * as moment from 'moment';
 
 import { DataService } from '../services/index';
+import { AggregateResult, WordSimilarity } from '../models/index';
 
 
 @Component({
@@ -19,7 +20,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         key?: string,
         date?: Date,
         doc_count?: number,
-        key_as_string?: string,
         similarity?: number
     }[];
     @Input() public visualizedField;
@@ -38,8 +38,20 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.timelineData$.subscribe(results => {
             if (results !== undefined) {
-                this.searchData = results;
-                this.searchData.map(d => d.key = moment(d.date).format("YYYY-MM-DD"));
+                let format: string;
+                switch(results.timeInterval) {
+                    case 'year':
+                        format = "YYYY";
+                        break
+                    case 'month':
+                        format = "MMMM YYYY";
+                        break
+                    default:
+                        format = "YYYY-MM-DD";
+                        break
+                }
+                this.searchData = results.data;
+                this.searchData.map(d => d.key = moment(d.date).format(format));
                 this.createTable();
             }
         });
