@@ -33,7 +33,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
-    private zoomedOutData: Array<DateFrequencyPair>;
     private scaleDownThreshold: number = 10;
     private timeFormat: any = d3.timeFormat("%Y-%m-%d");
 
@@ -54,7 +53,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .range([0, this.width])
             .clamp(true);
         this.prepareTimeline().then( () => {
-            this.zoomedOutData = _.cloneDeep(this.selectedData);
             this.calculateDomains();
             this.createChart();
             this.rescaleY();
@@ -165,16 +163,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             if (!d3.event.sourceEvent.selection) {
                 if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
                 // resetting everything to first view
-                this.selectedData = this.zoomedOutData;
-                this.currentTimeCategory = 'year';
-                this.dataService.pushCurrentTimelineData({data: this.selectedData, timeInterval: this.currentTimeCategory});
-                this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
-                this.setDomains();
-                this.calculateDomains();
-                this.rescaleX();
-                this.calculateY();
-                this.rescaleY();
-                this.drawChartData();
+                this.zoomOut();
             }
 
         } else {
@@ -213,6 +202,20 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.drawChartData();
             });
         }
+    }
+
+    zoomOut() {
+        this.currentTimeCategory = 'year';
+        this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
+        this.prepareTimeline().then( () => {
+            this.setDomains();
+            this.calculateDomains();
+            this.rescaleX();
+            this.calculateY();
+            this.rescaleY();
+            this.drawChartData();
+            this.dataService.pushCurrentTimelineData({data: this.selectedData, timeInterval: this.currentTimeCategory});
+        });
     }
 
     calculateTimeCategory(min: Date, max: Date) {
