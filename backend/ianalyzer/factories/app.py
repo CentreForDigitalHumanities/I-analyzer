@@ -20,17 +20,6 @@ from ianalyzer import config_fallback as config
 from ianalyzer import celery_app
 from ianalyzer.factories.celery import init_celery
 
-def elasticsearch(corpus_name, cfg=config):
-    '''
-    Create ElasticSearch instance with default configuration.
-    '''
-    server_name = config.CORPUS_SERVER_NAMES[corpus_name]
-    server_config = config.SERVERS[server_name]
-    node = {'host': server_config['host'],
-            'port': server_config['port']}
-    if server_config['username']:
-        node['http_auth'] = (server_config['username'], server_config['password'])
-    return Elasticsearch([node])
 
 def flask_app(cfg=config):
     '''
