@@ -8,7 +8,7 @@ from flask_mail import Mail
 from flask_login import LoginManager
 from flask_seasurf import SeaSurf
 
-from api import api #blueprint
+from api import api, mail #blueprint and mail object
 from ianalyzer.models import db
 from admin.admin import admin_instance
 from ianalyzer.views import entry, login_manager
@@ -20,7 +20,6 @@ from ianalyzer import config_fallback as config
 from ianalyzer import celery_app
 from ianalyzer.factories.celery import init_celery
 
-
 def flask_app(cfg=config):
     '''
     Create Flask instance, with given configuration and flask_admin, flask_login,
@@ -31,7 +30,6 @@ def flask_app(cfg=config):
     app.config.from_object(cfg)
     csrf = SeaSurf()
     csrf.exempt_urls(('/es', '/saml'))
-    mail = Mail()
     init_celery(app, celery=celery_app)
 
     app.register_blueprint(entry)
