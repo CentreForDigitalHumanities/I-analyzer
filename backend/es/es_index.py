@@ -8,13 +8,11 @@ import sys
 import logging
 from datetime import datetime
 
-import elasticsearch as es
 import elasticsearch.helpers as es_helpers
 
 from flask import current_app
 
-from ianalyzer import factories
-
+from ianalyzer.factories.elasticsearch import elasticsearch
 
 def create(client, corpus_definition, clear):
     '''
@@ -87,7 +85,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear):
     ))
 
     # Create and populate the ES index
-    client = factories.elasticsearch(corpus_name)
+    client = elasticsearch(corpus_name)
     create(client, corpus_definition, clear)
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)

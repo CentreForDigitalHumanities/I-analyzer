@@ -41,6 +41,11 @@ class QueryView(admin_sqla.ModelView):
 class CorpusView(ModelView):
     can_create = False
     can_edit = True
+    
+    form_widget_args = dict(
+        name=dict(readonly=True),
+        description=dict(readonly=True)
+    )
 
 class RoleView(ModelView):
     # specifies the fields and order in the create- and edit view
@@ -69,6 +74,12 @@ class UserView(ModelView):
     form_overrides = dict(
         password=forms.PasswordField,
         queries=None,
+    )
+
+    form_args = dict(
+        username=dict(validators=[Required()]),
+        password=dict(validators=[Required()]),
+        email=dict(validators=[Required()])
     )
 
     form_widget_args = dict(

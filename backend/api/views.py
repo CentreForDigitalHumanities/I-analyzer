@@ -5,7 +5,6 @@ import json
 import base64
 import logging
 import math
-logger = logging.getLogger(__name__)
 import functools
 import logging
 logging.basicConfig(format='%(message)s')
@@ -15,6 +14,8 @@ import tempfile
 from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
+from celery import chain
+from werkzeug.security import generate_password_hash
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
@@ -22,17 +23,18 @@ from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
 from flask_mail import Mail, Message
 
-from ianalyzer import models
+from ianalyzer import models, celery_app
+from es import download
 from addcorpus.load_corpus import load_all_corpora, load_corpus
 
+from . import mail
 from . import security
 from . import analyze
 from . import tasks
+from . import api
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(message)s')
-
-api = Blueprint('api', __name__)
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -79,16 +81,13 @@ def send_registration_mail(email, username):
     Returns a boolean specifying whether the email was sent succesfully
     '''
     token = security.get_token(email)
-
     msg = Message(current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
                   sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
-
     msg.html = render_template('new_user_mail.html',
                                username=username,
                                confirmation_link=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
                                url_i_analyzer=current_app.config['BASE_URL'],
                                logo_link=current_app.config['LOGO_LINK'])
-
     try:
         mail.send(msg)
         return True
@@ -331,6 +330,15 @@ def api_query():
         abort(400)
 
     query_json = request.json['query']
+    if 'filters' in query_json:
+        query_model = json.loads(query_json)
+        for search_filter in query_model['filters']:
+            # no need to save defaults in database
+            del search_filter['defaultData']
+            if 'options' in search_filter['currentData']:
+                # options can be lengthy, just save user settings
+                del search_filter['currentData']['options']
+        query_json = json.dumps(query_model)
     corpus_name = request.json['corpus_name']
 
     if 'id' in request.json:
@@ -379,13 +387,59 @@ def api_search_history():
     })
 
 
-@api.route('/get_wordcloud_data', methods=['POST'])
+@api.route('/wordcloud', methods=['POST'])
 @login_required
-def api_get_wordcloud_data():
+def api_wordcloud():
+    ''' get the results for a small batch of results right away '''
     if not request.json:
         abort(400)
-    word_counts = analyze.make_wordcloud_data(request.json['content_list'])
-    return jsonify({'data': word_counts})
+    else:
+        list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
+        word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
+        if not word_counts:
+            return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
+        else:
+            return jsonify({'success': True, 'data': word_counts.get()})
+
+
+@api.route('/wordcloud_tasks', methods=['POST'])
+@login_required
+def api_wordcloud_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
+    else:
+        word_counts_task = chain(tasks.get_wordcloud_data.s(request.json), tasks.make_wordcloud_data.s(request.json))
+        word_counts = word_counts_task.apply_async()
+        if not word_counts:
+            return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
+        else:
+            return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
+
+
+@api.route('/task_outcome/<task_id>', methods=['GET'])
+@login_required
+def api_task_outcome(task_id):
+    results = celery_app.AsyncResult(id=task_id)
+    if not results:
+        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+    else:        
+        return jsonify({'success': True, 'results': results.get()})
+
+
+@api.route('/abort_tasks', methods=['POST'])
+@login_required
+def api_abort_tasks():
+    if not request.json:
+        abort(400)
+    else:
+        task_ids = request.json['task_ids']
+        try:
+            celery_app.control.revoke(task_ids, terminate=True)
+        except Exception as e:
+            logger.critical(e)
+            return jsonify({'success': False})
+        return jsonify({'success': True})
 
 
 @api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])

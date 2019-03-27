@@ -14,7 +14,7 @@
 	</button>
 </div>
 
-<ng-container *ngIf="searchResults && (aggResults && aggResults.length>0 || relatedWordsGraph); else noVisualsMessage">
+<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph); else noVisualsMessage">
     <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords') || (freqtable && visualizedField.visualizationType != 'relatedwords')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
@@ -28,7 +28,7 @@
     		</ia-barchart>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [searchData]="aggResults" [visualizedField]="visualizedField"
     		[asPercent]="asPercentage"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults"></ia-wordcloud>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadAll)="loadAllWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="searchResults.queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
         </ng-container>
     </ng-container>

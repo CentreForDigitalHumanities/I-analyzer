@@ -3,34 +3,22 @@ For creation of Flask and ElasticSearch objects.
 '''
 import os
 
-from elasticsearch import Elasticsearch
-
 from flask import Flask
 from flask_mail import Mail
 from flask_login import LoginManager
 from flask_seasurf import SeaSurf
 
-from api.api import api
-from .models import db
+from api import api, mail #blueprint and mail object
+from ianalyzer.models import db
 from admin.admin import admin_instance
-from .entry import entry, login_manager
-from es.es_forward import es
-from saml.saml import saml_auth # SamlAuth from python3-saml
-from saml.saml import saml # blueprint
+from ianalyzer.views import entry, login_manager
+from es import es #blueprint
+from saml.views import saml_auth # DHLab wrapper around python3-saml
+from saml import saml # blueprint
 
 from ianalyzer import config_fallback as config
-
-def elasticsearch(corpus_name, cfg=config):
-    '''
-    Create ElasticSearch instance with default configuration.
-    '''
-    server_name = config.CORPUS_SERVER_NAMES[corpus_name]
-    server_config = config.SERVERS[server_name]
-    node = {'host': server_config['host'],
-            'port': server_config['port']}
-    if server_config['username']:
-        node['http_auth'] = (server_config['username'], server_config['password'])
-    return Elasticsearch([node])
+from ianalyzer import celery_app
+from ianalyzer.factories.celery import init_celery
 
 def flask_app(cfg=config):
     '''
@@ -38,11 +26,12 @@ def flask_app(cfg=config):
     and csrf (SeaSurf) instances.
     '''
     app = Flask(__name__)
-    csrf = SeaSurf()
-    csrf.exempt_urls(('/es', '/saml'))
-    mail = Mail()
 
     app.config.from_object(cfg)
+    csrf = SeaSurf()
+    csrf.exempt_urls(('/es', '/saml'))
+    init_celery(app, celery=celery_app)
+
     app.register_blueprint(entry)
     app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(es, url_prefix='/es')

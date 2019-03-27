@@ -27,7 +27,6 @@ describe('VisualizationComponent', () => {
             declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
             providers: [
                 { provide: SearchService, useValue: new SearchServiceMock() },
-                { provide: DataService, useValue: { searchResults$: Observable.of({}) } },
                 { provide: ApiService, useValue: new ApiServiceMock() }]
         }).compileComponents();
     }));
@@ -39,25 +38,6 @@ describe('VisualizationComponent', () => {
             fields: [{
                 displayName: 'Test Field', name: 'test_field'
             }]
-        };
-        component.searchResults = {
-            completed: true,
-            documents: [createDocument({
-                'a': '1',
-                'b': '2',
-                'c': 'Hide-and-seek!'
-            }, '1', 1, 1),
-            createDocument({
-                'a': '3',
-                'b': '4',
-                'c': 'Wally is here'
-            }, '2', 0.5, 2)],
-            retrieved: 2,
-            total: 2,
-            queryModel: {
-                queryText: '',
-                filters: []
-            }
         };
         fixture.detectChanges();
     });

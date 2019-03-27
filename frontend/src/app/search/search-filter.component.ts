@@ -42,7 +42,7 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
-                if (this.field && data!==undefined) {               
+                if (this.field && data!==undefined) {              
                     this.filter = data.find(f => f.fieldName === this.field.name);
                     this.greyedOut = false;
                     this.data = this.getDisplayData(this.filter);
@@ -54,7 +54,6 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     ngOnInit() {
         if (this.field) {
             this.filter = this.field.searchFilter;
-            this.filter.currentData = this.filter.defaultData;
             if (this.filter.defaultData.filterType === 'DateFilter') {
                 this.minDate = new Date(this.filter.defaultData.min);
                 this.maxDate = new Date(this.filter.defaultData.max);

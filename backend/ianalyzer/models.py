@@ -61,7 +61,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     password = db.Column(db.String(MAX_LENGTH_PASSWORD))
-    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
+    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True, unique=True)
 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
     '''
@@ -164,7 +164,7 @@ class Query(db.Model):
 
     query_json = db.Column('query', db.Text)
     '''
-    JSON string sent out to ElasticSearch for this query.
+    JSON string representing this query.
     '''
 
     corpus_name = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))

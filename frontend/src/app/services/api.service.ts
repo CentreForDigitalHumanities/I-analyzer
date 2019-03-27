@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, QueryModel } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -46,11 +46,36 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_wordcloud_data'
+        path: '/wordcloud'
     })
-    public getWordcloudData: ResourceMethod<
-        { content_list: string[] },
-        { data: AggregateResult[] }>;
+    public wordcloud: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
+        { success: false, message: string } | { success: true, data: AggregateResult[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/wordcloud_tasks'
+    })
+    public wordcloudTasks: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/task_outcome/{task_id}'
+    })
+    public getTaskOutcome: ResourceMethod<
+    { task_id: string},
+    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
+    >
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/abort_tasks/'
+    })
+    public abortTasks: ResourceMethod<
+    { task_ids: string[] }, 
+    { success: boolean }>
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
