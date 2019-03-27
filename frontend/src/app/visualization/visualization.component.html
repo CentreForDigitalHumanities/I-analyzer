@@ -23,9 +23,9 @@
     </div>  
     <ng-container *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-barchart *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+            <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
     		 [asPercent]="asPercentage">
-    		</ia-barchart>
+    		</ia-term-frequency>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		[asPercent]="asPercentage"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadAll)="loadAllWordcloudData()"></ia-wordcloud>

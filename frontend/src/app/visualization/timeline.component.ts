@@ -22,7 +22,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
-    @Input() asPercent;
+    @Input() asPercent: boolean = false;
 
     public xScale: d3.ScaleTime<any, any>;
 
@@ -43,20 +43,19 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     ngOnChanges(changes: SimpleChanges) {
         if (this.chartElement == undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
+            this.calculateCanvas();
         }
         let min = new Date(this.visualizedField.searchFilter.currentData.min);
         let max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
-        this.calculateTimeCategory(min, max);    
-        this.calculateCanvas();
+        this.calculateTimeCategory(min, max);
         this.xScale = scaleTimeCustom()
             .range([0, this.width])
             .clamp(true);
         this.prepareTimeline().then( () => {
-            this.calculateDomains();
-            this.createChart();
-            this.rescaleY();
-            this.calculateY();
+            this.setupYScale();
+            this.rescaleY(this.asPercent);
+            this.createChart(this.visualizedField.displayName);
             this.drawChartData();
             this.setupBrushBehaviour();
         });
@@ -64,7 +63,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         //listen for changes in 'asPercent'
         if (changes['asPercent'] != undefined) {
             if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
-                this.rescaleY();
+                this.rescaleY(this.asPercent);
             }
         }
     }
@@ -72,10 +71,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     async prepareTimeline() {
         await this.requestTimeData();
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
-        this.setDomains();
+        this.setDateRange();
+        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
     }
 
-    setDomains() {   
+    setDateRange() {   
         let min = new Date(this.visualizedField.searchFilter.currentData.min);
         let max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
@@ -105,16 +105,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             });
         });
         this.selectedData = await dataPromise;
-    }
-
-    calculateY() {
-        /**
-        * calculate y dimensions
-        */
-        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
-        this.yDomain = [0, this.yMax];
-        this.yScale.domain(this.yDomain);
-        this.yAxis.call(this.yAxisClass);
     }
 
     drawChartData() {
@@ -196,9 +186,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             filter.currentData = { filterType: "DateFilter", min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
             this.queryModel.filters.push(filter);
             this.prepareTimeline().then( () => {
-                this.calculateDomains();
-                this.calculateY();
-                this.rescaleY();
+                this.setupYScale();
+                this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+                this.rescaleY(this.asPercent);
                 this.drawChartData();
             });
         }
@@ -208,11 +198,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.currentTimeCategory = 'year';
         this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
         this.prepareTimeline().then( () => {
-            this.setDomains();
-            this.calculateDomains();
+            this.setDateRange();
+            this.setupYScale();
+            this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+            this.rescaleY(this.asPercent);
             this.rescaleX();
-            this.calculateY();
-            this.rescaleY();
             this.drawChartData();
             this.dataService.pushCurrentTimelineData({data: this.selectedData, timeInterval: this.currentTimeCategory});
         });
