@@ -11,10 +11,12 @@ import { BarChartComponent } from './barchart.component';
   styleUrls: ['./term-frequency.component.scss']
 })
 export class TermFrequencyComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('term-frequency') private termFreqContainer: ElementRef;
+    @ViewChild('termfrequency') private termFreqContainer: ElementRef;
     @Input() searchData: AggregateResult[];
     @Input() visualizedField;
     @Input() asPercent: boolean = false;
+
+    private xBarWidth: number;
 
     ngOnInit() {
     }
@@ -28,9 +30,9 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
         if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.prepareTermFrequency();
             this.setupYScale();
-            this.rescaleY(this.asPercent);
             this.createChart(this.visualizedField.displayName);
-            this.drawChartData(this.searchData);
+            this.rescaleY(this.asPercent);
+            this.drawChartData();
         }
 
         //listen for changes in 'asPercent'
@@ -61,12 +63,12 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
 
-    drawChartData(inputData) {
+    drawChartData() {
         /**
         * bind data to chart, remove or update existing bars, add new bars
         */
         const update = this.chart.selectAll('.bar')
-            .data(inputData);
+            .data(this.searchData);
 
         // remove exiting bars
         update.exit().remove();

@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, QueryModel } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;

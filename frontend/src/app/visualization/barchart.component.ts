@@ -33,8 +33,6 @@ export class BarChartComponent {
     public chartElement: any;
     public correction: number = 0;
 
-    public xBarWidth: number;
-
     // dataService is needed for pushing filtered data from timeline component
     constructor(public dataService: DataService, public searchService: SearchService){}
 

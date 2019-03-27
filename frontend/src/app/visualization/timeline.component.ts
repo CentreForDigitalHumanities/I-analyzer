@@ -54,8 +54,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .clamp(true);
         this.prepareTimeline().then( () => {
             this.setupYScale();
-            this.rescaleY(this.asPercent);
             this.createChart(this.visualizedField.displayName);
+            this.rescaleY(this.asPercent);
             this.drawChartData();
             this.setupBrushBehaviour();
         });
