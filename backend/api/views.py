@@ -15,6 +15,7 @@ from io import BytesIO
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from celery import chain
+from werkzeug.security import generate_password_hash
 from flask import Flask, Blueprint, Response, request, abort, current_app, \
     render_template, url_for, jsonify, redirect, flash, send_file, stream_with_context, send_from_directory, session, make_response
 import flask_admin as admin
@@ -26,6 +27,7 @@ from ianalyzer import models, celery_app
 from es import download
 from addcorpus.load_corpus import load_all_corpora, load_corpus
 
+from . import mail
 from . import security
 from . import analyze
 from . import tasks
@@ -79,16 +81,13 @@ def send_registration_mail(email, username):
     Returns a boolean specifying whether the email was sent succesfully
     '''
     token = security.get_token(email)
-
     msg = Message(current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
                   sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
-
     msg.html = render_template('new_user_mail.html',
                                username=username,
                                confirmation_link=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
                                url_i_analyzer=current_app.config['BASE_URL'],
                                logo_link=current_app.config['LOGO_LINK'])
-
     try:
         mail.send(msg)
         return True
