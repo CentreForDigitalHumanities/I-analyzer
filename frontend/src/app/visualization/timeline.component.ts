@@ -24,6 +24,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() visualizedField;
     @Input() asPercent: boolean = false;
 
+    private queryModelCopy;
+
     public xScale: d3.ScaleTime<any, any>;
 
     private brush: any;
@@ -45,6 +47,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.chartElement = this.timelineContainer.nativeElement;
             this.calculateCanvas();
         }
+        this.queryModelCopy = _.cloneDeep(this.queryModel);
         let min = new Date(this.visualizedField.searchFilter.currentData.min);
         let max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
@@ -96,7 +99,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         /* date fields are returned with keys containing identifiers by elasticsearch
          replace with string representation, contained in 'key_as_string' field
         */
-        let dataPromise = this.searchService.dateHistogramSearch(this.corpus, this.queryModel, this.visualizedField.name, this.currentTimeCategory).then( result => {
+        let dataPromise = this.searchService.dateHistogramSearch(this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then( result => {
             return result.aggregations[this.visualizedField.name].filter( cat => cat.doc_count > 0).map( cat => {
                 return {
                     date: new Date(cat.key_as_string),
@@ -173,7 +176,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         let previousTimeCategory = this.currentTimeCategory;
         this.calculateTimeCategory(xExtent[0], xExtent[1]);
         // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
-        if (this.currentTimeCategory == 'day' || previousTimeCategory == this.currentTimeCategory) {
+        if (this.currentTimeCategory == 'day' && previousTimeCategory == this.currentTimeCategory) {
             // zoom in without rearranging underlying data
             this.chart.selectAll('.bar')
                 .transition().duration(750)
@@ -184,7 +187,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         else {
             let filter = this.visualizedField.searchFilter;
             filter.currentData = { filterType: "DateFilter", min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
-            this.queryModel.filters.push(filter);
+            this.queryModelCopy.filters.push(filter);
             this.prepareTimeline().then( () => {
                 this.setupYScale();
                 this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
