@@ -175,27 +175,44 @@ def api_corpus_document(corpus, document_name):
     return send_from_directory(corpus_dir, 'documents/{}'.format(document_name))
 
 
-# endpoint for backend handling of large csv files
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
-    response=jsonify({'success': False})
     if not request.json:
-        return response
+        abort(400)
     elif request.mimetype != 'application/json':
+        return jsonify({'success': False, 'message': 'unknown header'})
+    elif not ('es_query' or 'corpus' or 'fields') in request.json.keys():
+        return jsonify({'success': False, 'message': 'missing arguments'})
+    else:
+        search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
+        filepath = tasks.make_csv.delay(search_results, request.json)
+        csv_file = filepath.get()
+        response = make_response(send_file(csv_file, mimetype='text/csv'))
+        response.headers['filename'] = split(csv_file)[1]
         return response
-    elif not 'esQuery' in request.json.keys():
-        return response
-    elif not 'corpus' in request.json.keys():
-        return response
+
+
+# endpoint for backend handling of large csv files
+@api.route('/download_task', methods=['POST'])
+@login_required
+def api_download_task():
+    if not request.json:
+        abort(400)
+    elif request.mimetype != 'application/json':
+        return jsonify({'success': False, 'message': 'unknown header'})
+    elif not ('es_query' or 'corpus' or 'fields') in request.json.keys():
+        return jsonify({'success': False, 'message': 'missing arguments'})
     elif not current_user.email:
-        return response
-    elif not current_user.download_limit:
-        return response
-    # Celery task    
-    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
-    response=jsonify({'success': True})
-    return response
+        return jsonify({'success': False, 'message': 'There is no user email registered'})
+    # Celery task
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json))
+    csvs = csv_task.apply_async()
+    if not csvs:
+        return jsonify({'success': False, 'message': 'Could not create csvs.'})
+    else:
+        return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
+
     
 
 # endpoint for link send in email to download csv file

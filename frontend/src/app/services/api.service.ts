@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, QueryModel } from '../models/index';
+import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, CorpusField } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -157,11 +157,21 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/download'
+        path: '/download',
+        responseBodyType: ResourceResponseBodyType.Blob, 
+        asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: Corpus, esQuery: EsQuery | EsQuerySorted, size: number },
-        { success: boolean }>;
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        { success: false, message: string } | any >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download_task'
+    })
+    public downloadTask: ResourceMethod<
+        { corpus: Corpus, es_query: EsQuery | EsQuerySorted, fields: CorpusField[] },
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

@@ -1,19 +1,39 @@
 import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
-
+import { ApiService } from './api.service';
+import { ElasticSearchService } from './elastic-search.service';
+import { LogService } from './log.service';
+import { Corpus, CorpusField, QueryModel } from '../models/index';
 
 @Injectable()
 export class DownloadService {
 
     constructor(
-        //private queryService: QueryService,
-        //private userService: UserService,
-
+        private apiService: ApiService,
+        private elasticSearchService: ElasticSearchService,
+        private logService: LogService
     ) {
 
     }
 
+    /**
+     * download csv via api service. In backend csv is saved, link sent to user per email
+     */
+    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<boolean> {
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
+        let result = await this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
+        if (result.success!==undefined) {
+            return result.success;
+        }
+        else {
+            let filename = result.headers.filename;
+            saveAs(result.body, filename);
+            return true;
+        }
+    }
+
+    public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){
     /**
      * Downloads the given tabular data as a CSV file.
      * @param filename Filename to present to the user downloading the file.
@@ -22,25 +42,6 @@ export class DownloadService {
      * @param separator Cell separator to use.
      */
 
-
-    public downloadCsv(filename: string, values: string[][], header: string[], separator = ','): void {
-        const newline = '\n';
-
-        let headerRow = header.map(value => this.csvCell(value, separator)).join(separator) + newline;
-        let rows: string[] = [headerRow];
-
-        for (let row of values) {
-            rows.push(row.map(cell => this.csvCell(cell, separator)).join(separator) + newline);
-        }
-
-        saveAs(new Blob(rows, { type: "text/csv;charset=utf-8" }), filename);
     }
-
-    public csvCell(value: string, separator: string) {
-        // escape "
-        let escaped = value.indexOf('"') >= 0 ? `${value.replace(/"/g, '""')}` : value;
-
-        // values containing the separator, " or newlines should be surrounded with "
-        return new RegExp(`["\n${separator}]`).test(escaped) ? `"${escaped}"` : escaped;
-    }
+    
 }

@@ -25,7 +25,6 @@ export class SearchComponent implements OnInit {
      */
     public hasModifiedFilters: boolean = false;
     public isSearching: boolean;
-    public isDownloading: boolean;
     public hasSearched: boolean;
     /**
      * Whether the total number of hits exceeds the download limit.
@@ -49,9 +48,7 @@ export class SearchComponent implements OnInit {
      * The next two members facilitate a p-multiSelect in the template.
      */
     public availableSearchFields: CorpusField[];
-    public availableCsvFields: CorpusField[];
     public selectedSearchFields: CorpusField[];
-    public selectedCsvFields: CorpusField[];
     public queryModel: QueryModel;
     /**
      * This is the query text currently entered in the interface.
@@ -71,9 +68,6 @@ export class SearchComponent implements OnInit {
 
     private searchFilters: SearchFilter [] = [];
     private activeFilters: SearchFilter [] = [];
-
-    public isModalActive: boolean = false;
-    public isModalActiveError: boolean = false;
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
@@ -179,72 +173,7 @@ export class SearchComponent implements OnInit {
         })
     }
 
-    /**
-     * called by download csv button. Large files are rendered in backend via Celery async task and an email is send with download link from backend
-     */
-    public choose_download_method() {
-        if (this.resultsCount < 1000) {
-            this.download();
-        }
-        else {
-            this.download_asc();
-        }
-    }
-
-    /**
-     * backend async downloading of csv
-     */
-    public download_asc() {
-        this.searchService.download_async(this.corpus, this.queryModel).then(result => {
-            if (result) {
-                this.toggleModal();
-            }
-            else {
-                this.toggleModalError();
-            }
-
-        }, error => {
-            console.trace(error);
-        });
-    }
-
-    /**
-     * modal pops up after connecting to backend api to start creating csv
-     */
-    toggleModal() {
-        this.isModalActive = !this.isModalActive;
-    }
-
-    /**
-     * modal pops up after connecting to backend api and there was an error
-     */
-    toggleModalError() {
-        this.isModalActiveError = !this.isModalActiveError;
-    }
-
-    /**
-     * direct download for less than x results
-     */
-    public async download() {
-        this.isDownloading = true;
-        let fields = this.getCsvFields();
-        let rows = await this.searchService.searchAsTable(
-            this.corpus,
-            this.queryModel,
-            fields);
-
-        if (this.hasLimitedResults) {
-            this.notificationService.showMessage(`The download has been limited to the first ${rows.length} results!`);
-        }
-
-        let minDate = this.corpus.minDate.toISOString().split('T')[0];
-        let maxDate = this.corpus.maxDate.toISOString().split('T')[0];
-        let queryPart = this.searchQueryText ? '-' + this.searchQueryText.replace(/[^a-zA-Z0-9]/g, "").substr(0, 12) : '';
-        let filename = `${this.corpus.name}-${minDate}-${maxDate}${queryPart}.csv`;
-
-        this.downloadService.downloadCsv(filename, rows, fields.map(field => field.displayName));
-        this.isDownloading = false;
-    }
+    
 
     /**
      * Event triggered from search-filter.component
@@ -281,13 +210,6 @@ export class SearchComponent implements OnInit {
         this.dialogService.showDescriptionPage(corpus);
     }
 
-    private getCsvFields(): CorpusField[] {
-        if (this.selectedCsvFields === undefined) {
-            return this.corpus.fields.filter(field => field.csvCore);
-        }
-        else return this.selectedCsvFields;
-    }
-
     private getQueryFields(): string[] | null {
         let fields = this.selectedSearchFields.map(field => field.name);
         if (!fields.length) return null;
@@ -307,7 +229,6 @@ export class SearchComponent implements OnInit {
         if (!this.corpus || this.corpus.name != corpus.name) {
             this.corpus = corpus;
             this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
-            this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
@@ -363,9 +284,5 @@ export class SearchComponent implements OnInit {
     private selectSearchFieldsEvent(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
-    }
-
-    private selectCsvFieldsEvent(selection: CorpusField[]) {
-        this.selectedCsvFields = selection;
     }
 }
