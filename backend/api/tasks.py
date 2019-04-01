@@ -7,9 +7,8 @@ from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from api import analyze
+from api import analyze, mail
 from es import es_forward, download
-from ianalyzer import config_fallback as config
 from ianalyzer import celery_app
 
 logger = logging.getLogger(__name__)
@@ -22,10 +21,15 @@ def download_scroll(request_json, download_size=10000):
 
 
 @celery_app.task()
-def make_csv(results, request_json):
+def make_csv(results, request_json, email=None):
     filename = create_filename(request_json)
     filepath = create_csv(results, request_json['fields'], filename)
-    return filepath
+    if email:
+        # we are sending the results to the user by email
+        send_mail(filepath, email)
+        return None
+    else:
+        return filepath
 
 
 @celery_app.task()
@@ -72,27 +76,25 @@ def create_csv(results, fields, filename):
     # newline='' to prevent empty double lines
     with open(filepath, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fields, dialect='myDialect')
+        writer.writeheader()
         for row in entries:
             writer.writerow(row)
     return filepath
 
 
 def send_mail(filename, email):
-    app = Flask(__name__)  # context is not available in celery task
-    mail = Mail(app)
-    with app.app_context():
-        msg = Message(config.MAIL_CSV_SUBJECT_LINE,
-                      sender=config.MAIL_FROM_ADRESS, recipients=[email])
-        msg.html = render_template('send_csv_mail.html',
-                                   # link to the api endpoint where csv will be downloaded
-                                   download_link=config.BASE_URL + "/api/csv/" + filename,
-                                   url_i_analyzer=config.BASE_URL,
-                                   logo_link=config.LOGO_LINK)
-        try:
-            mail.send(msg)
-            return True
-        except Exception as e:
-            logger.error(
-                "An error occured sending an email to {}:".format(email))
-            logger.error(e)
-            return False
+    msg = Message(current_app.config['MAIL_CSV_SUBJECT_LINE'],
+                sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
+    msg.html = render_template('send_csv_mail.html',
+                # link to the api endpoint where csv will be downloaded
+                download_link=current_app.config['BASE_URL'] + "/api/csv/" + filename,
+                url_i_analyzer=current_app.config['BASE_URL'],
+                logo_link=current_app.config['LOGO_LINK'])
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        logger.error(
+            "An error occured sending an email to {}:".format(email))
+        logger.error(e)
+        return False

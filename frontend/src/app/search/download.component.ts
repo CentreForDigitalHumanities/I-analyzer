@@ -36,11 +36,13 @@ export class DownloadComponent implements OnInit {
             this.isDownloading = true;
             this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount).then( result => {
                 this.isDownloading = false;
-                console.log(result);
+                // to do: handle errors
             });
         }
         else {
-            this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields());
+            this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields()).then( results => {
+                console.log(results);
+            });
         }
     }
 

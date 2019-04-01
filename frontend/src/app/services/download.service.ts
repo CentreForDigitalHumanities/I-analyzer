@@ -20,28 +20,29 @@ export class DownloadService {
     /**
      * download csv via api service. In backend csv is saved, link sent to user per email
      */
-    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<boolean> {
+    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<{success: boolean, message?: string}> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
         let result = await this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
         if (result.success!==undefined) {
-            return result.success;
+            return {success: result.success, message: result.message};
         }
         else {
             let filename = result.headers.filename;
             saveAs(result.body, filename);
-            return true;
+            return {success: true};
         }
     }
 
     public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){
     /**
-     * Downloads the given tabular data as a CSV file.
-     * @param filename Filename to present to the user downloading the file.
-     * @param values The rows and cells containing the data to download.
-     * @param header The column names to place at the beginning of the file.
-     * @param separator Cell separator to use.
+     * Downloads the given tabular data as a CSV file on the backend.
+     * @param corpus Corpus to be queried for constructing the file.
+     * @param queryModel QueryModel for which download is requested. 
+     * @param fields The fields to appear as columns in the csv.
      */
-
+    let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
+    let result = await this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) });
+    return result;
     }
     
 }

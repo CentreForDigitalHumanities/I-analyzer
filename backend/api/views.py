@@ -206,7 +206,7 @@ def api_download_task():
     elif not current_user.email:
         return jsonify({'success': False, 'message': 'There is no user email registered'})
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json))
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json, current_user.email))
     csvs = csv_task.apply_async()
     if not csvs:
         return jsonify({'success': False, 'message': 'Could not create csvs.'})
