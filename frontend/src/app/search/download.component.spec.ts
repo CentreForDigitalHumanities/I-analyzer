@@ -1,6 +1,17 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+
+import { MultiSelectModule } from 'primeng/primeng';
+
+import * as corpus from '../../mock-data/corpus';
+import { ApiService, DownloadService, ElasticSearchService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
+import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 
 import { DownloadComponent } from './download.component';
+import { SelectFieldComponent } from './select-field.component';
+
+import { BalloonDirective } from '../balloon.directive';
 
 describe('DownloadComponent', () => {
   let component: DownloadComponent;
@@ -8,7 +19,19 @@ describe('DownloadComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DownloadComponent ]
+        declarations: [ BalloonDirective, DownloadComponent, SelectFieldComponent ],
+        imports: [ FormsModule, MultiSelectModule ],
+        providers: [
+            {
+                provide: ApiService, useValue: new ApiServiceMock({
+                    ['corpus']: corpus.MockCorpusResponse
+                })
+            },
+            DownloadService,
+            {
+                provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
+            },
+        ]
     })
     .compileComponents();
   }));

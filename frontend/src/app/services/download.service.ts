@@ -11,8 +11,7 @@ export class DownloadService {
 
     constructor(
         private apiService: ApiService,
-        private elasticSearchService: ElasticSearchService,
-        private logService: LogService
+        private elasticSearchService: ElasticSearchService
     ) {
 
     }
@@ -22,7 +21,7 @@ export class DownloadService {
      */
     public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<{success: boolean, message?: string}> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        let result = await this.apiService.download({'corpus': corpus.name});//, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
+        let result = await this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
         if (result.headers.message) {
             return {success: false, message: result.headers.message[0]};
         }

@@ -71,7 +71,6 @@ export class SearchComponent implements OnInit {
 
     constructor(private corpusService: CorpusService,
         private dataService: DataService,
-        private downloadService: DownloadService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,

@@ -10,7 +10,7 @@ import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 import { DialogServiceMock } from '../services/dialog.service.mock';
@@ -23,6 +23,7 @@ import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
 import { SearchSortingComponent } from './search-sorting.component';
 import { SelectFieldComponent } from './select-field.component';
+import { DownloadComponent } from './download.component';
 
 import { BalloonDirective } from '../balloon.directive';
 import { DocumentViewComponent } from '../document-view/document-view.component';
@@ -43,7 +44,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
@@ -54,7 +55,6 @@ describe('SearchComponent', () => {
                     })
                 },
                 DataService,
-                DownloadService,
                 {
                     provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
                 },
