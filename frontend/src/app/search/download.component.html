@@ -18,36 +18,3 @@
         </p>
     </div>
 </div>
-
-<!-- modal that shows if download csv api returns succes is True -->
-<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActive }">
-    <div class="modal-background" (click)="toggleModal()"></div>
-    <div class=" modal-content modal-card">
-        <header class="modal-card-head modal-card-head_success">
-            <p class="modal-card-title">Your csv file is being created...</p>
-            <button class="delete" aria-label="close" (click)="toggleModal()"></button>
-        </header>
-        <section class="modal-card-body">
-            When your csv file is ready, you will recieve an email on the address associated with your account.
-            This email contains a link to your file. Please click this link to download.
-        </section>
-        <footer class="modal-card-foot">
-        </footer>
-    </div>
-</div>
-
-<!-- modal that shows if download csv api returns False -->
-<div class="modal modal-full-screen" [ngClass]="{ 'is-active' : isModalActiveError }">
-    <div class="modal-background" (click)="toggleModal()"></div>
-    <div class=" modal-content modal-card">
-        <header class="modal-card-head modal-card-head_error">
-            <p class="modal-card-title">Something went wrong...</p>
-            <button class="delete" aria-label="close" (click)="toggleModalError()"></button>
-        </header>
-        <section class="modal-card-body">
-            Sorry, your CSV file could not be created. Please contact the web adminstrator.
-        </section>
-        <footer class="modal-card-foot">
-        </footer>
-    </div>
-</div>

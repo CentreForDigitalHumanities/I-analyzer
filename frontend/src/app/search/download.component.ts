@@ -53,22 +53,6 @@ export class DownloadComponent implements OnInit {
         }
     }
 
-    // infbaia
-    
-    /**
-     * modal pops up after connecting to backend api to start creating csv
-     */
-    toggleModal() {
-        this.isModalActive = !this.isModalActive;
-    }
-
-    /**
-     * modal pops up after connecting to backend api and there was an error
-     */
-    toggleModalError() {
-        this.isModalActiveError = !this.isModalActiveError;
-    }
-
     private selectCsvFieldsEvent(selection: CorpusField[]) {
         this.selectedCsvFields = selection;
     }
