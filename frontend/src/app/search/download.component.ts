@@ -34,14 +34,21 @@ export class DownloadComponent implements OnInit {
     public choose_download_method() {
         if (this.resultsCount < 1000) {
             this.isDownloading = true;
-            this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount).then( result => {
+            this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount).then( results => {
                 this.isDownloading = false;
-                // to do: handle errors
+                if (results['success']===false) {
+                    this.notificationService.showMessage(results.message);
+                }
             });
         }
         else {
             this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields()).then( results => {
-                console.log(results);
+                if (results.success===false) {
+                    this.notificationService.showMessage(results.message);
+                }
+                else {
+                    this.notificationService.showMessage("Downloading CSV file... A link will be sent to your email address shortly.", 'success');
+                }
             });
         }
     }

@@ -178,12 +178,16 @@ def api_corpus_document(corpus, document_name):
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
+    error_response = make_response()
+    error_response.headers['message'] = "Download failed: "
     if not request.json:
         abort(400)
     elif request.mimetype != 'application/json':
-        return jsonify({'success': False, 'message': 'unknown header'})
-    elif not ('es_query' or 'corpus' or 'fields') in request.json.keys():
-        return jsonify({'success': False, 'message': 'missing arguments'})
+        error_response.headers.message += 'unknown request header.'
+        return error_response
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+        error_response.headers['message'] += 'missing arguments.'
+        return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
         filepath = tasks.make_csv.delay(search_results, request.json)
@@ -197,14 +201,15 @@ def api_download():
 @api.route('/download_task', methods=['POST'])
 @login_required
 def api_download_task():
+    message = "Download failed: "
     if not request.json:
         abort(400)
     elif request.mimetype != 'application/json':
-        return jsonify({'success': False, 'message': 'unknown header'})
-    elif not ('es_query' or 'corpus' or 'fields') in request.json.keys():
-        return jsonify({'success': False, 'message': 'missing arguments'})
+        return jsonify({'success': False, 'message': message + 'unknown header'})
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+        return jsonify({'success': False, 'message': message + 'missing arguments'})
     elif not current_user.email:
-        return jsonify({'success': False, 'message': 'There is no user email registered'})
+        return jsonify({'success': False, 'message': message + 'user email not known'})
     # Celery task
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json, current_user.email))
     csvs = csv_task.apply_async()

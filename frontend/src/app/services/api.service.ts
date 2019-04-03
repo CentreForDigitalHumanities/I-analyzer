@@ -162,7 +162,8 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        //  { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        { corpus: string },
         { success: false, message: string } | any >;
 
     @ResourceAction({

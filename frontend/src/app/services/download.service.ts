@@ -22,9 +22,9 @@ export class DownloadService {
      */
     public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<{success: boolean, message?: string}> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        let result = await this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
-        if (result.success!==undefined) {
-            return {success: result.success, message: result.message};
+        let result = await this.apiService.download({'corpus': corpus.name});//, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
+        if (result.headers.message) {
+            return {success: false, message: result.headers.message[0]};
         }
         else {
             let filename = result.headers.filename;
@@ -42,7 +42,8 @@ export class DownloadService {
      */
     let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
     let result = await this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) });
-    return result;
+    return result    
+
     }
     
 }
