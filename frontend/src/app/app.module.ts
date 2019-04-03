@@ -194,7 +194,7 @@ export function csrfProviderFactory(injector: Injector, provider: ApiService, co
         if (!cookieService.check('csrf_token')) { 
             provider.ensureCsrf().then(result => {                 
                 if (!result || !result.success) {
-                    throw new Error("CSRF token could not be collected.");
+                    provider.logout();
                 }
             })
         }
