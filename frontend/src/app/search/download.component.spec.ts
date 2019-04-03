@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/primeng';
 
 import * as corpus from '../../mock-data/corpus';
-import { ApiService, DownloadService, ElasticSearchService } from '../services/index';
+import { ApiService, DownloadService, ElasticSearchService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
 
@@ -31,6 +31,7 @@ describe('DownloadComponent', () => {
             {
                 provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
             },
+            NotificationService
         ]
     })
     .compileComponents();
