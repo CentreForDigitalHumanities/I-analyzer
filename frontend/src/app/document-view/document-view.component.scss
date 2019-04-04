@@ -1,6 +1,12 @@
+@import "../../_utilities";
+
 table {
     word-wrap:break-word;
     table-layout: fixed;
+
+    ::ng-deep a {
+        color: $primary;
+    }
 }
 
 .src-img {
