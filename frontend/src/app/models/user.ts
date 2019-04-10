@@ -1,11 +1,11 @@
-import { Query, UserRole } from '../models/index';
+import { UserRole } from '../models/index';
 
 export class User {
     constructor(public id, public name, public role: UserRole,
         /**
          * The download limit for this user, will be 0 if there is no limit.
          */
-        public downloadLimit: number = 0, public queries: Query[], public isSolisLogin: boolean) {
+        public downloadLimit: number = 0, public isSolisLogin: boolean) {
   
     }
 

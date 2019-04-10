@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { DropdownModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table'
 
-import { ApiService, ApiRetryService, LogService, SearchService, QueryService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, LogService, QueryService, SearchService, UserService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { SearchServiceMock } from '../services/search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
@@ -26,6 +26,7 @@ describe('SearchHistoryComponent', () => {
                     })
                 },
                 ApiRetryService,
+                CorpusService,
                 LogService,
                 QueryService,
                 {
