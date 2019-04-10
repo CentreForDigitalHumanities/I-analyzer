@@ -27,11 +27,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     private queryModelCopy;
 
     public xScale: d3.ScaleTime<any, any>;
-
-    private brush: any;
-    idleTimeout: any;
-    idleDelay: number;
-    showHint: boolean;
+    public showHint: boolean;
 
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
@@ -85,16 +81,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale.domain(this.xDomain);
     }
 
-    rescaleX() {
-        let t = this.svg.transition().duration(750);
-        this.xAxis.transition(t).call(this.xAxisClass);
-        this.xAxis.selectAll('text')
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-35)");
-    }
-
     async requestTimeData() {
         /* date fields are returned with keys containing identifiers by elasticsearch
          replace with string representation, contained in 'key_as_string' field
@@ -141,34 +127,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .attr('height', d => this.height - this.yScale(d.doc_count));
     }
 
-    setupBrushBehaviour() {
-        this.brush = d3.brushX().on("end", this.brushended.bind(this));
-        this.idleDelay = 350;
 
-        this.svg.append("g")
-            .attr("class", "brush")
-            .call(this.brush);
-    }
-
-    brushended() {
-        let s = d3.event.selection;
-        if (!s) {
-            if (!d3.event.sourceEvent.selection) {
-                if (!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
-                // resetting everything to first view
-                this.zoomOut();
-            }
-
-        } else {
-            this.xScale.domain([s[0] - this.margin.left, s[1] - this.margin.left].map(this.xScale.invert, this.xScale));
-            this.svg.select(".brush").call(this.brush.move, null);
-            this.zoomIn();
-        }
-    }
-
-    idled() {
-        this.idleTimeout = null;
-    }
 
     zoomIn() {
         this.rescaleX();
