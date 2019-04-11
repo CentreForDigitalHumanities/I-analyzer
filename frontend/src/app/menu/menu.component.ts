@@ -49,7 +49,6 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     private checkCurrentUser() {
         this.userService.getCurrentUser().then(currentUser => {
-            console.log(currentUser);
             if (currentUser) {                
                 if (currentUser == this.currentUser) {
                     // nothing changed
