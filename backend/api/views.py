@@ -178,15 +178,19 @@ def api_corpus_document(corpus, document_name):
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
-    error_response = make_response()
+    error_response = make_response("", 400)
     error_response.headers['message'] = "Download failed: "
     if not request.json:
-        abort(400)
+        error_response.headers.message += 'missing request body.'
+        return error_response
     elif request.mimetype != 'application/json':
-        error_response.headers.message += 'unknown request header.'
+        error_response.headers.message += 'unknown mime type.'
         return error_response
     elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
         error_response.headers['message'] += 'missing arguments.'
+        return error_response
+    elif response.json['size']>1000:
+        error_response.headers['message'] += 'too many documents requested.'
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
