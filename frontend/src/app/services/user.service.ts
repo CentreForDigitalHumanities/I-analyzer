@@ -16,45 +16,19 @@ export class UserService implements OnDestroy {
     public static loginActivated = false;
     private deserializedCurrentUser: User | false = false;
     private sessionExpiredSubscription: Subscription;
-    /**
-     * Is it possible to login as guest without a password? Assume this is true, until proven otherwise
-     */
-    private supportGuest = true;
     // Basic behavior:
     // - If the session on the API server hasn't been checked for 10 seconds it will be checked again.
     // - If the user logs on or off, the value is directly updated.
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
     private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
-    // The session on the API server might have expired (or the admin could have logged off)
-    private requestSessionCheck = new Subject();
-    private sessionCheckSubscription = this.requestSessionCheck.throttleTime(sessionCheckInterval)
-        .subscribe(async () => {
-            let currentUser = await this.getCurrentUserOrFallback();
-            this.sessionCheckPromise = !currentUser
-                ? Promise.resolve(false)
-                : this.apiService.checkSession({ username: currentUser.name })
-                    .then(response => {
-                        if (!response.success) {
-                            return false;
-                        }
-                        return true;
-                    }).catch(() => {
-                        return false;
-                    }).then((result) => {
-                        if (!result) {
-                            this.currentUser = false;
-                        }
-
-                        return result;
-                    });
-        });
+ 
 
     /**
-     * Get the current user or fallback to guest
+     * Get the current user
      */
     private async getCurrentUserOrFallback() {
         await this.sessionCheckPromise;
-        return this.currentUser || this.supportGuest && await this.loginAsGuest() || false;
+        return this.currentUser || false;
     }
 
     private get currentUser(): User | false {
@@ -96,7 +70,7 @@ export class UserService implements OnDestroy {
     }
 
     /**
-     * Gets the current user, fallback to guest (if possible) and reject if no user is available.
+     * Gets the current user, and reject if no user is available.
      */
     public async getCurrentUser(fallback = false): Promise<User> {
         if (!fallback) {
@@ -116,13 +90,7 @@ export class UserService implements OnDestroy {
     public login(username: string, password: string = null): Promise<User | false> {
         let loginPromise = this.apiService.login({ username, password }).then(result => {
             if (result.success) {                
-                if (username == 'guest') {
-                    this.supportGuest = !password;
-                }
-
                 return this.processLoginSucces(result);
-            } else if (username == 'guest' && !password) {
-                this.supportGuest = false;
             }
 
             return false;
@@ -177,31 +145,15 @@ export class UserService implements OnDestroy {
         return this.apiService.register({ username, email, password })
     }
 
-
-    public async loginAsGuest() {
-        await this.sessionCheckPromise;
-        if (this.supportGuest) {
-            return this.login('guest');
-        } else {
-            return false;
-        }
-    }
-
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
-        let guestUser = await this.loginAsGuest();
         let isSolisLogin = false;
         
-        if (guestUser) {
-            // switched back to guest user
-            this.currentUser = guestUser;
-        } else {
-            if (this.currentUser) { 
-                isSolisLogin = this.currentUser.isSolisLogin; 
-            }
-            
-            this.currentUser = false;
-            this.sessionCheckPromise = Promise.resolve(false);
+        if (this.currentUser) { 
+            isSolisLogin = this.currentUser.isSolisLogin; 
         }
+        
+        this.currentUser = false;
+        this.sessionCheckPromise = Promise.resolve(false);
 
         if (isSolisLogin) {
             window.location.href = 'api/init_solislogout'
@@ -215,7 +167,7 @@ export class UserService implements OnDestroy {
             }
         }
 
-        return guestUser || undefined;
+        return undefined;
     }
 
     public showLogin(returnUrl?: string) {

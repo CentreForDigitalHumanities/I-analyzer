@@ -15,7 +15,6 @@ export class MenuComponent implements OnDestroy, OnInit {
     public menuCorporaItems: MenuItem[];
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
-    public isGuest: boolean = true;
     public menuAdminItems: MenuItem[];
     menuOpen: boolean = false;
     
@@ -50,6 +49,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     private checkCurrentUser() {
         this.userService.getCurrentUser().then(currentUser => {
+            console.log(currentUser);
             if (currentUser) {                
                 if (currentUser == this.currentUser) {
                     // nothing changed
@@ -57,12 +57,9 @@ export class MenuComponent implements OnDestroy, OnInit {
                 }
                 this.currentUser = currentUser as User;
                 this.isAdmin = this.currentUser.hasRole('admin');
-                this.isGuest = this.currentUser.hasRole('guest');
             } else {
                 this.isAdmin = false;
-                this.isGuest = true;
             }
-
             this.setMenuItems();
         }).catch(() => {
             this.currentUser = undefined;
@@ -96,16 +93,11 @@ export class MenuComponent implements OnDestroy, OnInit {
                         icon: 'fa fa-cogs',
                         command: (click) => this.gotoAdmin(),
                     }] : [],
-            this.isGuest
-                ? {
-                    label: 'Sign in',
-                    icon: 'fa fa-sign-in',
-                    command: (onclick) => this.login()
-                } : {
-                    label: 'Logout',
-                    icon: 'fa fa-sign-out',
-                    command: (onclick) => this.logout()
-                }
+            {
+                label: 'Logout',
+                icon: 'fa fa-sign-out',
+                command: (onclick) => this.logout()
+            }
         ];
 
     }
