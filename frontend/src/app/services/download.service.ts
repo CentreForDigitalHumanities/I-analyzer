@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { reject } from 'q';
 
 @Injectable()
 export class DownloadService {
@@ -19,17 +20,14 @@ export class DownloadService {
     /**
      * download csv via api service. In backend csv is saved, link sent to user per email
      */
-    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<{success: boolean, message?: string}> {
+    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<string | void> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        let result = await this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults });
-        if (result.headers.message) {
-            return {success: false, message: result.headers.message[0]};
-        }
-        else {
+        this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults }).then( result => {
             let filename = result.headers.filename;
             saveAs(result.body, filename);
-            return {success: true};
-        }
+        }).catch( error => {
+            return reject(error.headers.message[0]);
+        })
     }
 
     public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){

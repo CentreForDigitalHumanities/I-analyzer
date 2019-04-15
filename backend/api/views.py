@@ -184,12 +184,12 @@ def api_download():
         error_response.headers.message += 'missing request body.'
         return error_response
     elif request.mimetype != 'application/json':
-        error_response.headers.message += 'unknown mime type.'
+        error_response.headers.message += 'unsupported mime type.'
         return error_response
     elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
-    elif response.json['size']>1000:
+    elif request.json['size']>1000:
         error_response.headers['message'] += 'too many documents requested.'
         return error_response
     else:
