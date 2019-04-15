@@ -33,7 +33,7 @@ export class BarChartComponent {
     public chartElement: any;
     public correction: number = 0;
 
-    private brush: any;
+    public brush: any;
     private idleTimeout: any;
     private idleDelay: number;
 
@@ -100,8 +100,19 @@ export class BarChartComponent {
 
         this.svg.selectAll('g').remove();
         this.svg.selectAll('text').remove();
+
+        // clipPath
+        // when zooming, data outside the coordinate system will be masked
+        this.svg.append('defs')
+            .append('clipPath')
+            .attr('id', 'clip')
+            .append('rect')
+            .attr('width', this.width)
+            .attr('height', this.height)
+        
         // chart plot area
         this.chart = this.svg.append('g')
+            .attr('clip-path', "url(#clip)")
             .attr('class', 'bars')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
@@ -129,7 +140,7 @@ export class BarChartComponent {
             .attr('class', 'axis-y')
             .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`)
             .call(d3.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(d3.format("d")));
-
+        
         // adding axis labels
         let xLabelText = xAxisLabel;
         let yLabelText = "Frequency";
