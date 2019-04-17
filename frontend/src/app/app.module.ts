@@ -125,7 +125,7 @@ const appRoutes: Routes = [
         RelatedWordsComponent,
         ScanPdfComponent,
         QueryFiltersComponent,
-        DownloadComponent
+        DownloadComponent,
         TermFrequencyComponent
     ],
     imports: [
