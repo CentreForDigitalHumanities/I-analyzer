@@ -55,7 +55,7 @@ export class DownloadComponent implements OnInit {
         }
     }
 
-    private selectCsvFields(selection: CorpusField[]) {
+    public selectCsvFields(selection: CorpusField[]) {
         this.selectedCsvFields = selection;
     }
 
