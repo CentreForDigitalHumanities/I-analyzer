@@ -389,6 +389,8 @@ def api_wordcloud():
     ''' get the results for a small batch of results right away '''
     if not request.json:
         abort(400)
+    if request.json['size']>1000:
+        abort(400)
     else:
         list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
         word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)

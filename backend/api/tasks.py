@@ -45,7 +45,7 @@ def download_csv(self, request_json, email, instance_path, download_size):
 
 @celery_app.task()
 def get_wordcloud_data(request_json):
-    list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'])
+    list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
     return list_of_texts
 
 
