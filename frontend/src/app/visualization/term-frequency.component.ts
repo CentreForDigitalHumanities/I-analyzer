@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, SimpleChang
 import * as d3 from 'd3';
 import * as _ from "lodash";
 
-import { AggregateResult } from '../models/index';
+import { AggregateResult, searchFilterDataFromParam } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -18,6 +18,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
     private xBarWidth: number;
     private tooltip: any;
+    private maxCategories: number = 30;
 
     ngOnInit() {
     }
@@ -33,9 +34,9 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);
             this.rescaleY(this.asPercent);
-            this.setupTooltip();
-            this.drawChartData();
             this.setupBrushBehaviour();
+            this.drawChartData();
+            this.setupTooltip();
         }
 
         //listen for changes in 'asPercent'
@@ -65,8 +66,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
     drawChartData() {
         /**
         * bind data to chart, remove or update existing bars, add new bars
-        */
-       
+        */  
 
         const update = this.chart
             .selectAll('.bar')
@@ -77,15 +77,14 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
         update.exit().remove();
 
         this.xAxisClass.tickValues(this.searchData.map(d => d.key)).tickFormat(d3.format("s"));
-
-        // x axis ticks
-        this.xAxis.selectAll('text')
-            .data(this.searchData)
-            .text(d => d.key)
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-35)");
+            // x axis ticks
+            this.xAxis.selectAll('text')
+                .data(this.searchData)
+                .text(d => d.key)
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-35)");
 
         // update existing bars
         this.chart.selectAll('.bar').transition()
@@ -94,42 +93,51 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             .attr('width', this.xBarWidth)
             .attr('height', d => this.height - this.yScale(d.doc_count));
 
-        // add new bars
-        update
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', (d,i) => this.xScale(i) - this.xBarWidth/2)
-            .attr('width', this.xBarWidth)
-            // .attr('y', this.yScale(0)) //set to zero first for smooth transition
-            // .attr('height', 0)
-            // .on('mouseover', d => { 
-            //     this.tooltip
-            //         .text(d.key)
-            //         .attr("x", this.xScale(d.key))
-            //         .attr("y", this.yScale(d.doc_count))
-            //         .style("visibility", "visible");
-            //     return this.tooltip })
-            //.on("mousemove", () => { return this.tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-            // .on('mouseout', () => { return this.tooltip.style("visibility", "hidden");})
-            // .transition().duration(750)
-            // .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('height', d => this.height - this.yScale(d.doc_count))
-            .enter().append('span').attr('class', 'tooltiptext').attr('content', d => d.key);
-            // .append("title")
-            //     .text( d => d.key);
-            //     //.attr('data-balloon', d => d.key);
+        
+        if (this.searchData.length > this.maxCategories) {
+            // remove axis ticks
+            this.svg.selectAll(".tick").remove();
 
+            // add new bars, with tooltips
+            update
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                .attr('x', (d,i) => this.xScale(i) - this.xBarWidth/2)
+                .attr('width', this.xBarWidth)
+                .attr('y', this.yScale(0)) //set to zero first for smooth transition
+                .attr('height', 0)
+                .on("mouseover", d => {
+                    this.tooltip.text(d.key).style("visibility", "visible");
+                })
+                .on("mousemove", () => this.tooltip.style("top", (d3.event.pageY-290)+"px").style("left",(d3.event.pageX-70)+"px"))
+                .on("mouseout", () => this.tooltip.style("visibility", "hidden"))
+                .transition().duration(750)
+                .delay((d, i) => i * 10)
+                .attr('y', d => this.yScale(d.doc_count))
+                .attr('height', d => this.height - this.yScale(d.doc_count))
+        }
+        
+        else {
+            // add new bars, without tooltips
+            update
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                .attr('x', (d,i) => this.xScale(i) - this.xBarWidth/2)
+                .attr('width', this.xBarWidth)
+                .attr('y', this.yScale(0)) //set to zero first for smooth transition
+                .attr('height', 0)
+                .transition().duration(750)
+                .delay((d, i) => i * 10)
+                .attr('y', d => this.yScale(d.doc_count))
+                .attr('height', d => this.height - this.yScale(d.doc_count))
+        }
     }
 
     setupTooltip() {
-        this.tooltip = this.chart.append("div")
-            .style("position", "absolute")
-            .style("z-index", "50")
-            //.style("visibility", "hidden")
-            .style("background-color", "red")
-            .text("a simple tooltip");
+        // select the tooltip in the template
+        this.tooltip = d3.select(".tooltip");
     }
 
 

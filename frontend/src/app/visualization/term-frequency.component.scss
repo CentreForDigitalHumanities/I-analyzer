@@ -1,40 +1,23 @@
 @import "barchart.component";
 
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-  }
-  
-  .rect .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: #555;
+div.tooltip {
+    line-height: 1;
+    font-size: 12px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 1);
+    opacity: .8;
     color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
+    border-radius: 2px;
     position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
+    visibility: hidden;
+}
   
-  .rect .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-  }
-  
-  .rect:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
+  /* Creates a small triangle extender for the tooltip */
+div.tooltip::after {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black;
+    opacity: .8;
   }

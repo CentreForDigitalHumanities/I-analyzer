@@ -165,8 +165,9 @@ export class BarChartComponent {
         this.brush = d3.brushX().on("end", this.brushended.bind(this));
         this.idleDelay = 350;
 
-        this.svg.append("g")
+        this.chart.append("g")
             .attr("class", "brush")
+            .style("pointer-events", "none")
             .call(this.brush);
     }
 
