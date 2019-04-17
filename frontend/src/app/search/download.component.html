@@ -13,7 +13,7 @@
         <p class="control" iaBalloon="Click here to select which fields should appear in the csv" iaBalloonLength="medium">
             <ia-select-field [availableFields]="availableCsvFields" [filterCriterion]=" 'csv' "
                 [label]=" 'Customize' " [selectAll]=" 'true' " [showSelectedFields]="false"
-                (selectedFields)="selectCsvFieldsEvent($event)">
+                (selectedFields)="selectCsvFields($event)">
             </ia-select-field>
         </p>
     </div>

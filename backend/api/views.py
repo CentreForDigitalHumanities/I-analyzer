@@ -205,15 +205,20 @@ def api_download():
 @api.route('/download_task', methods=['POST'])
 @login_required
 def api_download_task():
-    message = "Download failed: "
+    error_response = make_response("", 400)
+    error_response.headers['message'] = "Download failed: "
     if not request.json:
-        abort(400)
+        error_response.headers.message += 'missing request body.'
+        return error_response
     elif request.mimetype != 'application/json':
-        return jsonify({'success': False, 'message': message + 'unknown header'})
+        error_response.headers.message += 'unsupported mime type.'
+        return error_response
     elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
-        return jsonify({'success': False, 'message': message + 'missing arguments'})
+        error_response.headers['message'] += 'missing arguments.'
+        return error_response
     elif not current_user.email:
-        return jsonify({'success': False, 'message': message + 'user email not known'})
+        error_response.headers['message'] += 'user email not known.'
+        return error_response
     # Celery task
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json, current_user.email))
     csvs = csv_task.apply_async()

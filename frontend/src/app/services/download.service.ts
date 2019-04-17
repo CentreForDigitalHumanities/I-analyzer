@@ -6,6 +6,7 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
 import { reject } from 'q';
+import { resolve } from 'path';
 
 @Injectable()
 export class DownloadService {
@@ -18,29 +19,35 @@ export class DownloadService {
     }
 
     /**
-     * download csv via api service. In backend csv is saved, link sent to user per email
+     * download csv directly via api service.
      */
     public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<string | void> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults }).then( result => {
-            let filename = result.headers.filename;
-            saveAs(result.body, filename);
+        return this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults }).then( result => {
+            if (result.status === 200) {
+                let filename = result.headers.filename;
+                saveAs(result.body, filename);
+                return("success");
+            }  
         }).catch( error => {
-            return reject(error.headers.message[0]);
-        })
+            throw new Error(error.headers.message[0]);          
+        });
     }
 
     public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){
     /**
      * Downloads the given tabular data as a CSV file on the backend.
+     * Link to CSV is sent to user per email
      * @param corpus Corpus to be queried for constructing the file.
      * @param queryModel QueryModel for which download is requested. 
      * @param fields The fields to appear as columns in the csv.
      */
     let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-    let result = await this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) });
-    return result    
-
+    return this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) }).then( result => {
+        return result;
+    }).catch( error => {
+        throw new Error(error.headers.message[0]);
+    })
     }
     
 }
