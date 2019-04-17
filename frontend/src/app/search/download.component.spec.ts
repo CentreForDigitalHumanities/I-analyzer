@@ -24,7 +24,7 @@ describe('DownloadComponent', () => {
         providers: [
             {
                 provide: ApiService, useValue: new ApiServiceMock({
-                    ['corpus']: corpus.MockCorpusResponse
+                    ['corpus']: corpus.MockCorpusResponse['test1']
                 })
             },
             DownloadService,

@@ -3,10 +3,7 @@ import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { LogService } from './log.service';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
-import { reject } from 'q';
-import { resolve } from 'path';
 
 @Injectable()
 export class DownloadService {
