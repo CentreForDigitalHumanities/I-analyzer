@@ -157,11 +157,21 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/download'
+        path: '/download',
+        responseBodyType: ResourceResponseBodyType.Blob, 
+        asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: Corpus, esQuery: EsQuery | EsQuerySorted, size: number },
-        { success: boolean }>;
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        any >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download_task'
+    })
+    public downloadTask: ResourceMethod<
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[] },
+        { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

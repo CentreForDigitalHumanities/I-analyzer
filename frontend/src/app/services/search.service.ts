@@ -113,23 +113,6 @@ export class SearchService {
     }
 
 
-    /**
-     * download csv via api service. In backend csv is saved, link send to user per email
-     */
-    public async download_async(corpus: Corpus, queryModel: QueryModel): Promise<boolean> {
-        let completed = false;
-        let totalTransferred = 0;
-        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        // Log the query to the database
-        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
-
-        let result = await this.apiService.download(
-            { corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit }
-        );
-        return result.success;
-    }
-
-
     public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }

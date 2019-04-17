@@ -1,46 +1,53 @@
 import { Injectable } from '@angular/core';
 
 import { saveAs } from 'file-saver';
-
+import { ApiService } from './api.service';
+import { ElasticSearchService } from './elastic-search.service';
+import { LogService } from './log.service';
+import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { reject } from 'q';
+import { resolve } from 'path';
 
 @Injectable()
 export class DownloadService {
 
     constructor(
-        //private queryService: QueryService,
-        //private userService: UserService,
-
+        private apiService: ApiService,
+        private elasticSearchService: ElasticSearchService
     ) {
 
     }
 
     /**
-     * Downloads the given tabular data as a CSV file.
-     * @param filename Filename to present to the user downloading the file.
-     * @param values The rows and cells containing the data to download.
-     * @param header The column names to place at the beginning of the file.
-     * @param separator Cell separator to use.
+     * download csv directly via api service.
      */
-
-
-    public downloadCsv(filename: string, values: string[][], header: string[], separator = ','): void {
-        const newline = '\n';
-
-        let headerRow = header.map(value => this.csvCell(value, separator)).join(separator) + newline;
-        let rows: string[] = [headerRow];
-
-        for (let row of values) {
-            rows.push(row.map(cell => this.csvCell(cell, separator)).join(separator) + newline);
-        }
-
-        saveAs(new Blob(rows, { type: "text/csv;charset=utf-8" }), filename);
+    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<string | void> {
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
+        return this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults }).then( result => {
+            if (result.status === 200) {
+                let filename = result.headers.filename;
+                saveAs(result.body, filename);
+                return("success");
+            }  
+        }).catch( error => {
+            throw new Error(error.headers.message[0]);          
+        });
     }
 
-    public csvCell(value: string, separator: string) {
-        // escape "
-        let escaped = value.indexOf('"') >= 0 ? `${value.replace(/"/g, '""')}` : value;
-
-        // values containing the separator, " or newlines should be surrounded with "
-        return new RegExp(`["\n${separator}]`).test(escaped) ? `"${escaped}"` : escaped;
+    public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){
+    /**
+     * Downloads the given tabular data as a CSV file on the backend.
+     * Link to CSV is sent to user per email
+     * @param corpus Corpus to be queried for constructing the file.
+     * @param queryModel QueryModel for which download is requested. 
+     * @param fields The fields to appear as columns in the csv.
+     */
+    let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
+    return this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) }).then( result => {
+        return result;
+    }).catch( error => {
+        throw new Error(error.headers.message[0]);
+    })
     }
+    
 }
