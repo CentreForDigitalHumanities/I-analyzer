@@ -1,10 +1,11 @@
-import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subscription }   from 'rxjs';
 
 import * as _ from "lodash";
 import * as moment from 'moment';
 
 import { DataService } from '../services/index';
+import { AggregateResult, WordSimilarity } from '../models/index';
 
 
 @Component({
@@ -16,13 +17,10 @@ import { DataService } from '../services/index';
 export class FreqtableComponent implements OnChanges, OnDestroy {
     @Input('searchData')
     public searchData: {
-        key: any,
+        key?: string,
+        date?: Date,
         doc_count?: number,
-        key_as_string?: string,
-        similarity?: number,
-        // x0 and x1 are information for drawing in d3, added by d3.histogram
-        x0?: Date,
-        x1?: Date
+        similarity?: number
     }[];
     @Input() public visualizedField;
     @Input() public asPercent: boolean;
@@ -40,8 +38,20 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.timelineData$.subscribe(results => {
             if (results !== undefined) {
-                this.searchData = results;
-                this.searchData.map(d => d.key = moment(d[0].date).format("YYYY-MM-DD"));
+                let format: string;
+                switch(results.timeInterval) {
+                    case 'year':
+                        format = "YYYY";
+                        break
+                    case 'month':
+                        format = "MMMM YYYY";
+                        break
+                    default:
+                        format = "YYYY-MM-DD";
+                        break
+                }
+                this.searchData = results.data;
+                this.searchData.map(d => d.key = moment(d.date).format(format));
                 this.createTable();
             }
         });

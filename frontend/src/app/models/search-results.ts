@@ -34,11 +34,22 @@ export type AggregateResult = {
     key_as_string?: string
 }
 
+
+export type DateFrequencyPair = {
+    date: Date;
+    doc_count: number;
+}
+
+export type TimelineData = {
+    data: DateFrequencyPair[];
+    timeInterval: string;
+}
+
 export type AggregateData = {
     [fieldName: string]: AggregateResult[]
 }
 
-type WordSimilarity = {
+export type WordSimilarity = {
     key: string,
     similarity: number
 }

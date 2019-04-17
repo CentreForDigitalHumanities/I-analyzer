@@ -65,7 +65,7 @@ export class UserService implements OnDestroy {
         let value = localStorage.getItem(localStorageKey);
         if (value) {
             let parsed = JSON.parse(value);
-            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['queries'], parsed['isSolisLogin']);
+            return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['isSolisLogin']);
         } else {
             return false;
         }
@@ -92,6 +92,9 @@ export class UserService implements OnDestroy {
     ngOnDestroy() {
         if (this.sessionExpiredSubscription) {
             this.sessionExpiredSubscription.unsubscribe();
+        }
+        if (this.sessionCheckSubscription) {
+            this.sessionCheckSubscription.unsubscribe();
         }
     }
 
@@ -162,7 +165,6 @@ export class UserService implements OnDestroy {
             result.username,
             result.role,
             result.downloadLimit == null ? 0 : result.downloadLimit,
-            result.queries,
             isSolisLogin);
 
         return this.currentUser;

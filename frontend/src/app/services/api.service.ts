@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, CorpusField } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -128,7 +128,7 @@ export class ApiService extends Resource {
     })
     public login: ResourceMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
+        { success: boolean, id: number, username: string, corpora: AccessibleCorpus[], downloadLimit: number | null }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

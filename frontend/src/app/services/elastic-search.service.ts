@@ -176,6 +176,28 @@ export class ElasticSearchService {
         }
     }
 
+    public async dateHistogramSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
+        let agg = { [fieldName]: {
+            date_histogram: {
+                field: fieldName,
+                interval: timeInterval
+            }
+        }}
+        let esQuery = this.makeEsQuery(queryModel);
+        let aggregationModel = Object.assign({ aggs: agg }, esQuery);
+        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        let aggregateData = {}
+        Object.keys(result.aggregations).forEach(fieldName => {
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+        })
+        return {
+            completed: true,
+            aggregations: aggregateData
+        }
+    }
+
+
+
     public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
         let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);

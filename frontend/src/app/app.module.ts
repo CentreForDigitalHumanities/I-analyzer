@@ -47,6 +47,7 @@ import { RelatedWordsComponent } from './visualization/related-words.component';
 import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './search/download.component';
+import { TermFrequencyComponent } from './visualization/term-frequency.component';
 
 const appRoutes: Routes = [
     {
@@ -125,6 +126,7 @@ const appRoutes: Routes = [
         ScanPdfComponent,
         QueryFiltersComponent,
         DownloadComponent
+        TermFrequencyComponent
     ],
     imports: [
         BrowserAnimationsModule,

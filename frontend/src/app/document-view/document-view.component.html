@@ -12,7 +12,10 @@
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
-                            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td *ngIf="field.name!='url'" data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td *ngIf="field.name=='url'">
+                                <a href={{document.fieldValues[field.name]}} target="_blank">{{document.fieldValues[field.name]}}</a>
+                            </td>
                         </tr>
                     </ng-container>
                 </table>
