@@ -181,7 +181,7 @@ export class BarChartComponent {
             }
 
         } else {
-            this.xScale.domain([s[0] - this.margin.left, s[1] - this.margin.left].map(this.xScale.invert, this.xScale));
+            this.xScale.domain([s[0], s[1]].map(this.xScale.invert, this.xScale));
             this.svg.select(".brush").call(this.brush.move, null);
             this.zoomIn();
         }

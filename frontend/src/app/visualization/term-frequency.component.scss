@@ -11,3 +11,14 @@ div.tooltip {
     position: absolute;
     visibility: hidden;
 }
+  
+  /* Creates a small triangle extender for the tooltip 
+  Not currently working */
+div.tooltip::after {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid black;
+    opacity: .8;
+  }
