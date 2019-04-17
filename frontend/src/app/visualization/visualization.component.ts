@@ -164,7 +164,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
     }
 
-    loadAllWordcloudData() {
+    loadMoreWordcloudData() {
         let queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
