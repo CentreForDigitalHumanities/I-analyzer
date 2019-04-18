@@ -12,7 +12,8 @@ export class ApiRetryService {
     }
 
     /**
-     * Require a login, if this isn't present or expired a fallback to the guest user is attempted.
+     * Require a login, if there is no session, or if it's expired, throw error
+     * user then gets redirected to login
      * @param method The API method to call
      */
     public async requireLogin<T, K>(method: (api: ApiService) => Promise<T>) {
@@ -25,13 +26,8 @@ export class ApiRetryService {
             }).catch(async (response: Response) => {
                 if (response.status == 401) {
                     // session expired
-                    if (await this.userService.loginAsGuest()) {
-                        return method(this.apiService);
-                    } else {
-                        // not allowed to fallback to guest
-                        SessionService.markExpired();
-                        throw 'Expired!';
-                    }
+                    SessionService.markExpired();
+                    throw 'Expired!';
                 } else {
                     // some other server error
                     this.logService.error(`${response.status}: ${response.statusText}`);
