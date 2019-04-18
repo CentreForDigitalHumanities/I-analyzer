@@ -26,7 +26,7 @@ def make_csv(results, request_json, email=None):
     filepath = create_csv(results, request_json['fields'], filename)
     if email:
         # we are sending the results to the user by email
-        send_mail(filepath, email)
+        send_mail(filename, email)
         return None
     else:
         return filepath
