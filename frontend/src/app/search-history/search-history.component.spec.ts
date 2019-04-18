@@ -9,6 +9,7 @@ import { ApiServiceMock } from '../services/api.service.mock';
 import { SearchServiceMock } from '../services/search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
 import { SearchHistoryComponent, QueryTextPipe, QueryFiltersComponent } from './index';
+import { MockCorpusResponse } from '../../mock-data/corpus';
 
 
 describe('SearchHistoryComponent', () => {
@@ -22,7 +23,8 @@ describe('SearchHistoryComponent', () => {
             providers: [
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
-                        'search_history': { queries: [] }
+                        'search_history': { queries: [] },
+                        ['corpus']: MockCorpusResponse
                     })
                 },
                 ApiRetryService,

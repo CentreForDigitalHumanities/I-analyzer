@@ -23,9 +23,7 @@ describe('DownloadComponent', () => {
         imports: [ FormsModule, MultiSelectModule ],
         providers: [
             {
-                provide: ApiService, useValue: new ApiServiceMock({
-                    ['corpus']: corpus.MockCorpusResponse['test1']
-                })
+                provide: ApiService, useValue: new ApiServiceMock()
             },
             DownloadService,
             {
@@ -40,6 +38,11 @@ describe('DownloadComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DownloadComponent);
     component = fixture.componentInstance;
+    component.corpus = <any>{
+        fields: [{
+            displayName: 'Test Field', name: 'test_field'
+        }]
+    };
     fixture.detectChanges();
   });
 

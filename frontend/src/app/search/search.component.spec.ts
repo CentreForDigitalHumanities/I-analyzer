@@ -33,6 +33,7 @@ import { RelatedWordsComponent } from '../visualization/related-words.component'
 import { TimelineComponent } from '../visualization/timeline.component';
 import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { FreqtableComponent } from '../visualization/freqtable.component';
+import { TermFrequencyComponent } from '../visualization/term-frequency.component';
 import { VisualizationComponent } from '../visualization/visualization.component';
 import { UserServiceMock } from '../services/user.service.mock';
 import { ScanPdfComponent } from '../document-view/scan-pdf.component'
@@ -44,7 +45,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TermFrequencyComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,

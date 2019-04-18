@@ -20,6 +20,8 @@ export class SearchHistoryComponent implements OnInit {
     async ngOnInit() {
         this.corpusService.get().then((items) => {
             this.corpora = items.map(corpus => {return { 'label': corpus.name, 'value': corpus.name } });
+        }).catch(error => {
+            console.log(error);
         });
         this.queryService.retrieveQueries().then(
             searchHistory => {
