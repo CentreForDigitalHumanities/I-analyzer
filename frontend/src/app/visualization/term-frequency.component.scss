@@ -8,8 +8,9 @@ div.tooltip {
     opacity: .8;
     color: #fff;
     border-radius: 2px;
-    position: absolute;
+    position: relative;
     visibility: hidden;
+    width: fit-content;
 }
   
   /* Creates a small triangle extender for the tooltip 
