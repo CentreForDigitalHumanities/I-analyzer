@@ -31,7 +31,6 @@ export class BarChartComponent {
     public yDomain: Array<number>;
     public yAxisLabel: any;
     public chartElement: any;
-    public correction: number = 0;
 
     public brush: any;
     private idleTimeout: any;
@@ -126,7 +125,7 @@ export class BarChartComponent {
         }
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis-x')
-            .attr('transform', `translate(${this.margin.left + this.correction}, ${this.margin.top + this.height})`)
+            .attr('transform', `translate(${this.margin.left}, ${this.margin.top + this.height})`)
             .call(this.xAxisClass);
 
         // set style of x tick marks
