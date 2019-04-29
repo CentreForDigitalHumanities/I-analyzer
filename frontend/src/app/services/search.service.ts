@@ -13,7 +13,7 @@ import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataT
 @Injectable()
 export class SearchService {
     constructor(private apiService: ApiService,
-        private elasticSearchService: Elasti" SearchService,
+        private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
         private logService: LogService) {
