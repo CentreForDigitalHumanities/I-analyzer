@@ -247,6 +247,17 @@ export class ElasticSearchService {
     }
 
     /**
+     * Loads results for requested page
+     */
+    public async loadResults(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
+        let connection = (await this.connections)[corpusDefinition.serverName];
+        let esQuery = this.makeEsQuery(queryModel);
+        // Perform the search
+        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        return this.parseResponse(response, queryModel, 0);
+    }
+
+    /**
      * Extract relevant information from dictionary returned by ES
      * @param response
      * @param queryModel

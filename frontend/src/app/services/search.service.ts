@@ -13,7 +13,7 @@ import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataT
 @Injectable()
 export class SearchService {
     constructor(private apiService: ApiService,
-        private elasticSearchService: ElasticSearchService,
+        private elasticSearchService: Elasti" SearchService,
         private queryService: QueryService,
         private userService: UserService,
         private logService: LogService) {
@@ -27,6 +27,13 @@ export class SearchService {
         this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
         let results = await this.elasticSearchService.loadMore(corpus, existingResults);
         return this.limitResults(results);
+    }
+
+    public async loadResults(corpus: Corpus, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(queryModel)}`);
+        console.log(from, size);
+        let results = await this.elasticSearchService.loadResults(corpus, queryModel, from, size);
+        return results;
     }
 
     /**

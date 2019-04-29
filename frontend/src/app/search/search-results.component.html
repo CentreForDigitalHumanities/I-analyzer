@@ -18,6 +18,33 @@
         Showing {{results.documents.length}} results:
     </h2>
     <ng-content></ng-content>
+    <nav class="pagination" role="navigation" aria-label="pagination">
+        <a class="pagination-previous" aria-label="Previous page" (click)="loadResults(currentPage-1)" [attr.disabled]="currentPage==1? true : null">Previous</a>
+        <a class="pagination-next" aria-label="Next page" (click)="loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? true : null">Next page</a>
+        <ul class="pagination-list">
+            <li *ngIf="currentPages[0]>1">
+                <a class="pagination-link" (click)="loadResults(1)" aria-label="Goto page 1">1</a>
+            </li>
+            <li *ngIf="currentPages[0]>2">
+                <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+            <li>
+                <a [ngClass]="{'is-current': currentPages[0]==1 && !isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
+            </li>
+            <li>
+                <a [ngClass]="{'is-current': isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
+            </li>
+            <li>
+                <a [ngClass]="{'is-current': currentPages[2]==totalPages && !isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
+            </li>
+            <li *ngIf="currentPages[2]<totalPages-1">
+                <span class="pagination-ellipsis">&hellip;</span>
+            </li>
+            <li *ngIf="currentPages[2]<totalPages">
+                <a class="pagination-link" aria-label="Goto last page" (click)="loadResults(totalPages)">{{totalPages}}</a>
+            </li>
+        </ul>
+      </nav>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
