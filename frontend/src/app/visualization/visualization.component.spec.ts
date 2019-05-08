@@ -13,9 +13,11 @@ import { FreqtableComponent } from './freqtable.component'
 import { TimelineComponent } from './timeline.component';
 import { RelatedWordsComponent } from './related-words.component';
 import { VisualizationComponent } from './visualization.component';
-import { ApiService, DataService, SearchService } from '../services/index';
+import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
-import { SearchServiceMock } from '../services/search.service.mock';
+import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
+import { UserServiceMock } from '../services/user.service.mock';
+import { TermFrequencyComponent } from './term-frequency.component';
 
 describe('VisualizationComponent', () => {
     let component: VisualizationComponent;
@@ -24,10 +26,23 @@ describe('VisualizationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, ChartModule, SharedModule, DropdownModule, TableModule],
-            declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
+            declarations: [BarChartComponent, FreqtableComponent, RelatedWordsComponent, TermFrequencyComponent, TimelineComponent, WordcloudComponent, VisualizationComponent],
             providers: [
-                { provide: SearchService, useValue: new SearchServiceMock() },
-                { provide: ApiService, useValue: new ApiServiceMock() }]
+                {
+
+                    provide: ApiService, useValue: new ApiServiceMock()
+                },
+                ApiRetryService,
+                {
+                    provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
+                },
+                LogService,
+                QueryService,
+                SearchService,
+                {
+                    provide: UserService, useValue: new UserServiceMock()
+                }
+            ],
         }).compileComponents();
     }));
 

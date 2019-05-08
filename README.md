@@ -1,24 +1,26 @@
 I-analyzer
 ===============================================================================
 
-`ianalyzer/api` is a Python package that provides the following:
+`ianalyzer/backend` is a Python package that provides the following:
 
 - the models (user, role, corpus) and configuration files (in module ianalyzer)
 
 - an 'api' module that enables users to search through an ElasticSearch index of a text corpus, and stream search results into a CSV file. `Flask` is used for serving the interface and generating results.
 
-- A 'corpora' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+- An 'addcorpus' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+
+- A 'corpora' module containing corpus definitions and metadata of the currently implemented coprora 
 
 - An 'admin' module which describes the views for the admin interface (served through Flask)
 
 - migragtion files and utitilies (using flask-migrate)
 
-`ianalyzer/web-ui` is an [Angular 4](https://angular.io/) web interface.
+`ianalyzer/frontend` is an [Angular 4](https://angular.io/) web interface.
 
 Project layout
 -------------------------------------------------------------------------------
 
-Each corpus is defined by subclassing the `Corpus` class, found in `timestextmining/corpora/common.py`, and registering that class in `timestextmining/corpora/__init__.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+Each corpus is defined by subclassing the `Corpus` class, found in `addcorpus/common.py`, and registering that class in `backend/ianalyzer/config.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
 
 Prerequisites
 -------------------------------------------------------------------------------
@@ -26,6 +28,7 @@ Prerequisites
 * Python 3.4 or Python 3.5
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
+* RabbitMQ (used by Celery)
 
 Running
 -------------------------------------------------------------------------------

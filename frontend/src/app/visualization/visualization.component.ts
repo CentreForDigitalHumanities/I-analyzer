@@ -44,6 +44,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         [word: string]: number
     }
     public disableWordCloudLoadMore: boolean = false;
+    public timeline: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -99,6 +100,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
 
     setVisualizedField(selectedField: string) {
+        this.timeline = false;
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
@@ -123,10 +125,11 @@ export class VisualizationComponent implements OnInit, OnChanges {
             this.loadWordcloudData(this.batchSizeWordcloud);
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
-            let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                this.aggResults = visual.aggregations[this.visualizedField.name];
-            });
+            this.timeline = true;
+            // let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
+            // this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
+            //     this.aggResults = visual.aggregations[this.visualizedField.name];
+            // });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
@@ -161,7 +164,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
     }
 
-    loadAllWordcloudData() {
+    loadMoreWordcloudData() {
         let queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {

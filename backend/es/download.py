@@ -13,7 +13,8 @@ def scroll(corpus, query_model, download_size=None):
         index=corpus,
         size = size,
         scroll = scroll_timeout,
-        body = query_model
+        body = query_model,
+        timeout = '60s'
     )
     output.extend(search_results['hits']['hits'])
     download_size = download_size or search_results['hits']['total']

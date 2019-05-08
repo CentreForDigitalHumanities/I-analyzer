@@ -121,3 +121,5 @@ MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 # Word model information for related words visualization
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
+
+WORDCLOUD_LIMIT = 100000;

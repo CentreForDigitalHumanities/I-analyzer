@@ -18,8 +18,8 @@ export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
     @Input('searchData') public significantText: AggregateData;
     @Input('disableLoadMore') public disableLoadMore: boolean;
-    @Output('loadAll')
-    public loadAllDataEmitter = new EventEmitter();
+    @Output('loadMore')
+    public loadMoreDataEmitter = new EventEmitter();
 
     private width: number = 600;
     private height: number = 400;
@@ -52,8 +52,8 @@ export class WordcloudComponent implements OnChanges, OnInit {
         this.dialogService.showManualPage('wordcloud');
     }
 
-    loadAllData() {
-        this.loadAllDataEmitter.emit();
+    loadMoreData() {
+        this.loadMoreDataEmitter.emit();
         this.isLoading = true;
     }
 

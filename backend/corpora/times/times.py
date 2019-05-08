@@ -103,21 +103,21 @@ class Times(XMLCorpus):
                                            '%Y-%m-%d')
                                        )
         ),
-        Field(indexed=False,
-              name='issue-id',
-              display_name='Issue ID',
-              description='Issue identifier.',
-              extractor=extract.XML(tag='id', toplevel=True)
-              ),
-        Field(indexed=False,
-              name='journal',
-              display_name='Journal',
-              description='Journal name.',
-              extractor=extract.XML(
-                  tag='jn', toplevel=True,
-                  applicable=until(1985)
-              )
-              ),
+        # Field(indexed=False,
+        #       name='issue-id',
+        #       display_name='Issue ID',
+        #       description='Issue identifier.',
+        #       extractor=extract.XML(tag='id', toplevel=True)
+        #       ),
+        # Field(indexed=False,
+        #       name='journal',
+        #       display_name='Journal',
+        #       description='Journal name.',
+        #       extractor=extract.XML(
+        #           tag='jn', toplevel=True,
+        #           applicable=until(1985)
+        #       )
+        #       ),
         Field(
             name='source',
             display_name='Source',
@@ -127,15 +127,15 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(indexed=False,
-              name='newspaperID',
-              display_name='Newspaper ID',
-              description='Publication code',
-              extractor=extract.XML(
-                  tag=['metadatainfo', 'newspaperID'], toplevel=True,
-                  applicable=after(1985)
-              )
-              ),
+        # Field(indexed=False,
+        #       name='newspaperID',
+        #       display_name='Newspaper ID',
+        #       description='Publication code',
+        #       extractor=extract.XML(
+        #           tag=['metadatainfo', 'newspaperID'], toplevel=True,
+        #           applicable=after(1985)
+        #       )
+        #       ),
         Field(
             name='edition',
             display_name='Edition',
@@ -210,15 +210,15 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(indexed=False,
-              name='weekday',
-              display_name='Weekday',
-              description='Day of the week.',
-              extractor=extract.XML(
-                  tag='dw', toplevel=True,
-                  applicable=after(1985)
-              )
-        ),
+        # Field(indexed=False,
+        #       name='weekday',
+        #       display_name='Weekday',
+        #       description='Day of the week.',
+        #       extractor=extract.XML(
+        #           tag='dw', toplevel=True,
+        #           applicable=after(1985)
+        #       )
+        # ),
         Field(
             name='page-count',
             display_name='Image count',
@@ -229,21 +229,21 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(indexed=False,
-              name='copyright',
-              display_name='Copyright',
-              description='Copyright holder and year.',
-              extractor=extract.Choice(
-                  extract.XML(
-                      tag='cp', toplevel=True,
-                      applicable=until(1985)
-                  ),
-                  extract.XML(
-                      tag='copyright', toplevel=True,
-                      applicable=after(1985)
-                  )
-              )
-              ),
+        # Field(indexed=False,
+        #       name='copyright',
+        #       display_name='Copyright',
+        #       description='Copyright holder and year.',
+        #       extractor=extract.Choice(
+        #           extract.XML(
+        #               tag='cp', toplevel=True,
+        #               applicable=until(1985)
+        #           ),
+        #           extract.XML(
+        #               tag='copyright', toplevel=True,
+        #               applicable=after(1985)
+        #           )
+        #       )
+        #       ),
         Field(
             name='page-type',
             display_name='Page type',

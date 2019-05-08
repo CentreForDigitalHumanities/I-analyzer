@@ -11,3 +11,4 @@ lib/
 instance/
 set
 corpora/*/wm/*
+api/csv_files/*.csv

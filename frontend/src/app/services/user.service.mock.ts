@@ -1,14 +1,9 @@
-import { User, Query } from '../models/index';
-
-import { MockCorpusRoles } from '../../mock-data/corpus';
-import { UserService } from '.';
+import { User } from '../models/index';
 
 export class UserServiceMock {
-    public query: Query = new Query({ queryText: "The ultimate question for life, the universe and everything" },
-        "times", 42);
     public currentUser: User = new User(42, "mouse", { name: "superuser", description: "users who can access deep thought", 
         corpora:[{name: "deep thought", description: "supercomputer database"}]}, 10000,
-        [this.query], false);
+        false);
 
     public getCurrentUser(): Promise<User> {
         return Promise.resolve(this.currentUser);

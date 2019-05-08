@@ -175,27 +175,58 @@ def api_corpus_document(corpus, document_name):
     return send_from_directory(corpus_dir, 'documents/{}'.format(document_name))
 
 
-# endpoint for backend handling of large csv files
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
-    response=jsonify({'success': False})
+    error_response = make_response("", 400)
+    error_response.headers['message'] = "Download failed: "
     if not request.json:
-        return response
+        error_response.headers.message += 'missing request body.'
+        return error_response
     elif request.mimetype != 'application/json':
+        error_response.headers.message += 'unsupported mime type.'
+        return error_response
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+        error_response.headers['message'] += 'missing arguments.'
+        return error_response
+    elif request.json['size']>1000:
+        error_response.headers['message'] += 'too many documents requested.'
+        return error_response
+    else:
+        search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
+        filepath = tasks.make_csv.delay(search_results, request.json)
+        csv_file = filepath.get()
+        response = make_response(send_file(csv_file, mimetype='text/csv'))
+        response.headers['filename'] = split(csv_file)[1]
         return response
-    elif not 'esQuery' in request.json.keys():
-        return response
-    elif not 'corpus' in request.json.keys():
-        return response
+
+
+# endpoint for backend handling of large csv files
+@api.route('/download_task', methods=['POST'])
+@login_required
+def api_download_task():
+    error_response = make_response("", 400)
+    error_response.headers['message'] = "Download failed: "
+    if not request.json:
+        error_response.headers.message += 'missing request body.'
+        return error_response
+    elif request.mimetype != 'application/json':
+        error_response.headers.message += 'unsupported mime type.'
+        return error_response
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+        error_response.headers['message'] += 'missing arguments.'
+        return error_response
     elif not current_user.email:
-        return response
-    elif not current_user.download_limit:
-        return response
-    # Celery task    
-    tasks.download_csv.apply_async(args=[request.json, current_user.email, current_app.instance_path, current_user.download_limit] ) 
-    response=jsonify({'success': True})
-    return response
+        error_response.headers['message'] += 'user email not known.'
+        return error_response
+    # Celery task
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json, current_user.email))
+    csvs = csv_task.apply_async()
+    if not csvs:
+        return jsonify({'success': False, 'message': 'Could not create csvs.'})
+    else:
+        return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
+
     
 
 # endpoint for link send in email to download csv file
@@ -276,11 +307,7 @@ def create_success_response(user):
         'id': user.id,
         'username': user.username,
         'role': role,
-        'downloadLimit': user.download_limit,
-        'queries': [{
-            'query': query.query_json,
-            'corpusName': query.corpus_name
-        } for query in user.queries]
+        'downloadLimit': user.download_limit
     })
 
     return response
@@ -392,6 +419,8 @@ def api_search_history():
 def api_wordcloud():
     ''' get the results for a small batch of results right away '''
     if not request.json:
+        abort(400)
+    if request.json['size']>1000:
         abort(400)
     else:
         list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
