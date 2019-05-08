@@ -155,7 +155,7 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
-        return this.parseResponse(response, 0);
+        return this.parseResponse(response);
     }
     
 
@@ -167,7 +167,7 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
-        return this.parseResponse(response, from);
+        return this.parseResponse(response);
     }
 
     /**
@@ -177,9 +177,8 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>, alreadyRetrieved: number = 0, pageSize: number | null = null): SearchResults {
-        let hits = pageSize != null && response.hits.hits.length > pageSize ? response.hits.hits.slice(0, pageSize) : response.hits.hits;
-        let retrieved = alreadyRetrieved + (pageSize != null ? Math.min(pageSize, hits.length) : hits.length);
+    private parseResponse(response: SearchResponse<{}>): SearchResults {
+        let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
             total: response.hits.total
