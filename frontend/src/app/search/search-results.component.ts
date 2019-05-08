@@ -32,9 +32,10 @@ export class SearchResultsComponent implements OnChanges {
     public results: SearchResults;
     public totalResults: number;
     public totalPages: number;
+    public fromIndex: number = 0;
     public resultsPerPage: number = 20;
     public currentPages: number[];
-    public currentPage: number;
+    public currentPage: number = 1;
 
     public isMediumPage: boolean;
 
@@ -71,7 +72,7 @@ export class SearchResultsComponent implements OnChanges {
             this.results = results;
             this.searched(this.queryModel.queryText, this.results.total);
             this.totalResults = this.results.total <= 10000? this.results.total : 10000;
-            this.totalPages = Math.floor(this.totalResults / this.resultsPerPage);
+            this.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -84,19 +85,16 @@ export class SearchResultsComponent implements OnChanges {
         });
     }
 
-    public async loadMore() {
-        this.isLoading = true;
-        this.results = await this.searchService.loadMore(this.corpus, this.results);
-        this.searched(this.queryModel.queryText, this.results.total);
-    }
-
     public async loadResults(page: number) {
         if (this.currentPage == page) {
-            return false;
+            return true;
         }
+        this.isLoading = true;
         this.currentPage = page;
-        let from = (this.currentPage - 1) * this.resultsPerPage;
-        this.searchService.loadResults(this.corpus, this.queryModel, from, this.resultsPerPage);
+        this.fromIndex = (this.currentPage - 1) * this.resultsPerPage;
+        this.results = await this.searchService.loadResults(this.corpus, this.queryModel, this.fromIndex, this.resultsPerPage);
+        this.isLoading = false;
+        // setting variables for pagination view
         if (page == 1) {
             this.currentPages = [1, 2, 3];
             this.isMediumPage = false;
@@ -116,7 +114,7 @@ export class SearchResultsComponent implements OnChanges {
     }
 
     public searched(queryText: string, resultsCount: number) {
-        // push searchResults to dataService observable, observed by visualization component
+        // emit searchedEvent to search component
         this.searchedEvent.next({ queryText: queryText, resultsCount: resultsCount });
         this.isLoading = false;
     }

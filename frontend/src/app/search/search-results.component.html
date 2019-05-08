@@ -11,11 +11,8 @@
         {results.total, plural, =1 {1 hit} other {{{results.total}} hits}}
     </h2>
     <h2 class="subtitle" *ngIf="results.total > 5">
-        {{results.total}} hits.
-        <ng-container *ngIf="user.downloadLimit">
-            Your download limit is {{user.downloadLimit}}.
-        </ng-container>
-        Showing {{results.documents.length}} results:
+        {{results.total}} results.
+        Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage}}:
     </h2>
     <ng-content></ng-content>
     <nav class="pagination" role="navigation" aria-label="pagination">
@@ -29,13 +26,13 @@
                 <span class="pagination-ellipsis">&hellip;</span>
             </li>
             <li>
-                <a [ngClass]="{'is-current': currentPages[0]==1 && !isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
+                <a [ngClass]="{'is-current': currentPage==currentPages[0]}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
             </li>
             <li>
-                <a [ngClass]="{'is-current': isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
+                <a [ngClass]="{'is-current': currentPage==currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
             </li>
             <li>
-                <a [ngClass]="{'is-current': currentPages[2]==totalPages && !isMediumPage}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
+                <a [ngClass]="{'is-current': currentPage==currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
             </li>
             <li *ngIf="currentPages[2]<totalPages-1">
                 <span class="pagination-ellipsis">&hellip;</span>
@@ -44,7 +41,7 @@
                 <a class="pagination-link" aria-label="Goto last page" (click)="loadResults(totalPages)">{{totalPages}}</a>
             </li>
         </ul>
-      </nav>
+    </nav>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
@@ -72,15 +69,6 @@
             
         </div>
         
-    </div>
-    <div class="levels load-more" *ngIf="results.total > 5">
-        <div class="level-item buttons" *ngIf="!results.completed">
-            <span class="button is-primary" [ngClass]="{'is-loading': isLoadingMore}" (click)="loadMore()">Load more</span>
-        </div>
-        <div class="level-item buttons" *ngIf="results.completed">
-            <em *ngIf="results.total == results.retrieved">{results.total, plural, other {Retrieved all {{results.total}} results.}}</em>
-            <em *ngIf="results.total > results.retrieved">{results.retrieved, plural, other {Results limited to {{results.retrieved}} results.}}</em>
-        </div>
     </div>
 </ng-template>
 <!-- inform the user about a failed search -->

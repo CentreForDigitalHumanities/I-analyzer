@@ -12,7 +12,9 @@ import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataT
 
 @Injectable()
 export class SearchService {
-    constructor(private apiService: ApiService,
+    
+    constructor(
+        private apiService: ApiService,
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
@@ -21,26 +23,13 @@ export class SearchService {
     }
 
     /**
-     * Loads more results and returns an object containing the existing and newly found documents.
+     * Load results for requested page
      */
-    public async loadMore(corpus: Corpus, existingResults: SearchResults): Promise<SearchResults> {
-        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
-        let results = await this.elasticSearchService.loadMore(corpus, existingResults);
-        return this.limitResults(results);
-    }
-
     public async loadResults(corpus: Corpus, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
         this.logService.info(`Requested additional results for: ${JSON.stringify(queryModel)}`);
-        console.log(from, size);
         let results = await this.elasticSearchService.loadResults(corpus, queryModel, from, size);
+        results.fields = corpus.fields.filter(field => field.resultsOverview);
         return results;
-    }
-
-    /**
-     * Clear ES's scrollId and resources
-     */
-    public async clearESScroll(corpus: Corpus, existingResults: SearchResults): Promise<void> {
-        return this.elasticSearchService.clearScroll(corpus, existingResults);
     }
 
     /**
@@ -93,32 +82,14 @@ export class SearchService {
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
         await this.queryService.save(query, true);
-        let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
+        let results = await  this.elasticSearchService.search(corpus, queryModel);
 
         return <SearchResults>{
-            completed: results.completed,
             fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
-            documents: results.documents,
-            queryModel: queryModel,
-            retrieved: results.retrieved,
-            scrollId: results.scrollId
+            documents: results.documents
         };
     }
-
-
-    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
-        let completed = false;
-        let totalTransferred = 0;
-
-        // Log the query to the database
-        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
-
-        // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable(
-            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
-    }
-
 
     public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
@@ -189,72 +160,6 @@ export class SearchService {
                 }
             })
         });
-    }
-
-    /**
-     * Search and return a simple two-dimensional string array containing the values.
-     */
-    public async searchAsTable(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[] = []): Promise<string[][]> {
-        let totalTransferred = 0;
-
-        this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
-
-
-
-
-        return new Promise<string[][]>(async (resolve, reject) => {
-            let rows: string[][] = [];
-            (await this.searchObservable(corpus, queryModel))
-                .subscribe(
-                    result => {
-                        rows.push(...
-                            result.documents.map(document =>
-                                this.documentRow(document, fields.map(field => field.name))
-                            )
-                        );
-
-                        totalTransferred = result.retrieved;
-                    },
-                    (error) => reject(error),
-                    () => resolve(rows));
-        });
-
-
-
-
-    }
-
-    /**
-     * Iterate through some dictionaries and yield for each dictionary the values
-     * of the selected fields, in given order.
-     */
-    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(
-            field => this.documentFieldValue(document.fieldValues[field])
-        );
-    }
-
-    private documentFieldValue(value: any) {
-        if (!value) {
-            return '';
-        }
-        if (Array.isArray(value)) {
-            return value.join(', ');
-        }
-        if (value instanceof Date) {
-            return value.toISOString().split('T')[0];
-        }
-
-        return String(value);
-    }
-
-    private async limitResults(results: SearchResults) {
-        let downloadLimit = (await this.userService.getCurrentUser()).downloadLimit;
-        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
-            // download limit exceeded
-            results.completed = true;
-        }
-        return results;
     }
 
     public getParamForFieldName(fieldName: string) {
