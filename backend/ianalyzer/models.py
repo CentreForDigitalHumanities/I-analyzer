@@ -17,15 +17,14 @@ MAX_LENGTH_CORPUS_NAME = 254
 db = SQLAlchemy()
 
 
-# connects corpus id to role id
+'''
+   connects corpus id to role id 
+'''
 corpora_roles = db.Table(
     'corpora_roles',
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id')),
     db.Column('corpus_id', db.Integer(), db.ForeignKey('corpus.id'))
 )
-'''
-   connects corpus id to role id 
-'''
 
 
 class Role(db.Model):

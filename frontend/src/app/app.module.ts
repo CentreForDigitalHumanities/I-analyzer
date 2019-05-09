@@ -48,6 +48,8 @@ import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './search/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { RequestResetComponent } from './reset-password/request-reset.component';
 
 const appRoutes: Routes = [
     {
@@ -66,6 +68,10 @@ const appRoutes: Routes = [
     {
         path: 'registration',
         component: RegistrationComponent
+    },
+    {
+        path: 'reset',
+        component: RequestResetComponent
     },
     {
         path: 'privacy',
@@ -126,7 +132,9 @@ const appRoutes: Routes = [
         ScanPdfComponent,
         QueryFiltersComponent,
         DownloadComponent,
-        TermFrequencyComponent
+        TermFrequencyComponent,
+        ResetPasswordComponent,
+        RequestResetComponent
     ],
     imports: [
         BrowserAnimationsModule,
