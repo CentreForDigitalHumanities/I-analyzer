@@ -2,7 +2,7 @@ import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, QueryModel } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, QueryModel } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
 
 @Component({
@@ -126,10 +126,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
-            // let aggregator = [{ name: this.visualizedField.name, size: this.defaultSize }];
-            // this.searchService.aggregateSearch(this.corpus, this.queryModel, aggregator).then(visual => {
-            //     this.aggResults = visual.aggregations[this.visualizedField.name];
-            // });
         }
         else if (this.visualizedField.visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
@@ -144,7 +140,8 @@ export class VisualizationComponent implements OnInit, OnChanges {
                 });
         }
         else {
-            let aggregator = {name: this.visualizedField.name, size: this.defaultSize};
+            let searchFilterData = this.visualizedField.searchFilter.defaultData as MultipleChoiceFilterData;
+            let aggregator = {name: this.visualizedField.name, size: searchFilterData.options.length};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });
