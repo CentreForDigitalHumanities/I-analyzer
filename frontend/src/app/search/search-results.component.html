@@ -16,8 +16,8 @@
     </h2>
     <ng-content></ng-content>
     <nav class="pagination" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" aria-label="Previous page" (click)="loadResults(currentPage-1)" [attr.disabled]="currentPage==1? true : null">Previous</a>
-        <a class="pagination-next" aria-label="Next page" (click)="loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? true : null">Next page</a>
+        <a class="pagination-previous" aria-label="Previous page" (click)="currentPage==1 ? false : loadResults(currentPage-1)" [attr.disabled]="currentPage==1? '' : null">Previous</a>
+        <a class="pagination-next" aria-label="Next page" (click)="currentPage==totalPages ? false :loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? '' : null">Next page</a>
         <ul class="pagination-list">
             <li *ngIf="currentPages[0]>1">
                 <a class="pagination-link" (click)="loadResults(1)" aria-label="Goto page 1">1</a>
