@@ -5,8 +5,6 @@ import { Client, SearchResponse } from 'elasticsearch';
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
-import { CorpusSelectionComponent } from '../corpus-selection/corpus-selection.component';
-import { from } from 'rxjs/observable/from';
 
 type Connections = { [serverName: string]: Connection };
 
@@ -186,7 +184,7 @@ export class ElasticSearchService {
     }
 
     /**
-     * @param index 0-based index of this document
+     * return the id, relevance and field values of a given document
      */
     private hitToDocument(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
         return <FoundDocument>{
