@@ -111,8 +111,9 @@ class DutchNewspapersPublic(XMLCorpus):
         'onbekend': 'unknown',
     }
 
-    fields = [
-        Field(
+    @property
+    def fields(self):
+        return [Field(
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
@@ -139,8 +140,8 @@ class DutchNewspapersPublic(XMLCorpus):
             csv_core=True,
             visualization_type='timeline',
             search_filter=filters.DateFilter(
-                min_date,
-                max_date,
+                self.min_date,
+                self.max_date,
                 description=(
                     'Accept only articles with publication date in this range.'
                 )
@@ -179,7 +180,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
-                options=papers
+                options=self.papers
             ),
             extractor=Metadata('title')
         ),

@@ -13,10 +13,6 @@ def validate_user(username, password):
         # User doesn't exist, or no password has been given or set
         return None
 
-    # Guest user is allowed to have no password
-    if user.password is None and user.role.name == "guest":
-        return user
-
     if not password or user.password is None:
         return None
 

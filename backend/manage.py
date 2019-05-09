@@ -41,31 +41,6 @@ def admin(name, pwd):
 
 
 @app.cli.command()
-@click.option('--corpora', '-c', help='Corpus to be accessible without login (can be defined multiple times)', multiple=True, required=False)
-def guest(corpora):
-    ''' Create a guest account and role without access to any corpus.
-    '''
-    user = create_user("guest")
-    user.authenticated = True
-    user.download_limit = 0
-    if user == None:
-        logging.critical('Guest user already exists.')
-        return None
-
-    append_role(user, 'guest', 'Guest access')
-
-    existing_corpora = list(config.CORPORA.keys())
-
-    for corpus in corpora:
-        if corpus not in existing_corpora:
-            logging.critical('Corpus {0} does not exist.'.format(corpus))
-            return None
-        append_corpus_role(user, corpus)
-
-    return db.session.commit()
-
-
-@app.cli.command()
 @click.option(
     '--corpus', '-c', help='Sets which corpus should be indexed' +
     'If not set, first corpus of CORPORA in config.py will be indexed'
