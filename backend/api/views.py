@@ -114,6 +114,20 @@ def api_register_confirmation(token):
 
     return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
 
+@api.route('/request_reset', methods=['POST'])
+def api_request_reset():
+    if not request.json:
+        abort(400)
+    email = request.json['email']
+    users = models.User.query.filter_by(email=email).all()
+    if len(users)>1:
+        user = next((user for user in users if user.saml==False), None)
+    else:
+        user = users[0]
+    if not user:
+        return jsonify({success: False})
+    return jsonify({'success': True})
+
 
 @api.route('/es_config', methods=['GET'])
 @login_required

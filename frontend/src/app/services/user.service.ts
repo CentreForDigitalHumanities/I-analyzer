@@ -55,7 +55,6 @@ export class UserService implements OnDestroy {
     }
 
 
-
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case

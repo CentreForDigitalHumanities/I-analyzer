@@ -60,7 +60,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     password = db.Column(db.String(MAX_LENGTH_PASSWORD))
-    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True, unique=True)
+    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
+    saml = db.Column(db.Boolean, nullable=True, default=False)
 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
     '''
@@ -104,6 +105,7 @@ class User(db.Model):
         self.authenticated = authenticated
         self.download_limit = download_limit
         self.role_id=role_id
+        self.saml=saml
 
     def __repr__(self):
         return self.username

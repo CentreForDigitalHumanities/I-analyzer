@@ -63,13 +63,13 @@ class RoleView(ModelView):
 class UserView(ModelView):
     # specifies the columns and the order in users view
     column_list = ['username', 'role', 'email',
-                   'active', 'authenticated', 'download_limit']
+                   'active', 'authenticated', 'download_limit', 'saml']
 
     # specifies the fields and their order in create and edit views
     form_create_rules = (
-        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
     form_edit_rules = (
-        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit')
+        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
 
     form_overrides = dict(
         password=forms.PasswordField,
