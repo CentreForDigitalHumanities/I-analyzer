@@ -67,9 +67,6 @@ export class UserService implements OnDestroy {
         if (this.sessionExpiredSubscription) {
             this.sessionExpiredSubscription.unsubscribe();
         }
-        if (this.sessionCheckSubscription) {
-            this.sessionCheckSubscription.unsubscribe();
-        }
     }
 
     /**
