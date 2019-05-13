@@ -53,6 +53,11 @@ def api_register():
     email = request.json['email']
     is_valid_username = security.is_unique_username(username)
     is_valid_email = security.is_unique_email(email)
+    if not is_valid_email:
+        user = models.User.query.filter_by(email=email).first()
+        if user.saml==True:
+            # if the user has registered via saml before, permit making an account
+            is_valid_email = True
         
     if not is_valid_username or not is_valid_email:
         return jsonify({
@@ -269,7 +274,7 @@ def api_login():
 def add_basic_user(username, password, email, is_active):
     ''' Add a user with the role 'basic' to the database '''
 
-    basic_role = models.Role.query.filter_by(name='basic').first()  
+    basic_role = models.Role.query.filter_by(name='basic').first()
     pw_hash = None
     if (password):
         pw_hash = generate_password_hash(password)    
@@ -288,8 +293,7 @@ def add_basic_user(username, password, email, is_active):
 def add_uu_user(username, password, email, is_active):
     ''' Add a user with the role 'uu' to the database
     Solis-id users get this role by default
-    '''
-
+    '''  
     uu_role = models.Role.query.filter_by(name='uu').first()  
     pw_hash = None
     if (password):
