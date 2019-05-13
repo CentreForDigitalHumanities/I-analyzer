@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import { DialogModule } from 'primeng/primeng';
 
@@ -10,6 +11,7 @@ import { ElasticSearchServiceMock } from '../services/elastic-search.service.moc
 import { UserServiceMock } from '../services/user.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
+import { PaginationComponent } from './pagination.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -22,8 +24,8 @@ describe('Search Results Component', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, SearchRelevanceComponent, SearchResultsComponent],
-            imports: [DialogModule, HttpClientModule],
+            declarations: [HighlightPipe, PaginationComponent, SearchRelevanceComponent, SearchResultsComponent],
+            imports: [DialogModule, FormsModule, HttpClientModule],
             providers: [
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
@@ -68,10 +70,7 @@ describe('Search Results Component', () => {
             fields
         };
         component.fromIndex = 0;
-        component.currentPages = [1,2,3];
-        component.currentPage = 1;
         component.resultsPerPage = 20;
-
         fixture.detectChanges();
     });
 

@@ -48,6 +48,7 @@ import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './search/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { PaginationComponent } from './search/pagination.component';
 
 const appRoutes: Routes = [
     {
@@ -126,7 +127,8 @@ const appRoutes: Routes = [
         ScanPdfComponent,
         QueryFiltersComponent,
         DownloadComponent,
-        TermFrequencyComponent
+        TermFrequencyComponent,
+        PaginationComponent
     ],
     imports: [
         BrowserAnimationsModule,

@@ -12,36 +12,22 @@
     </h2>
     <h2 class="subtitle" *ngIf="results.total > 5">
         {{results.total}} results.
-        Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage}}:
+        Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
     </h2>
-    <ng-content></ng-content>
-    <nav class="pagination" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" aria-label="Previous page" (click)="currentPage==1 ? false : loadResults(currentPage-1)" [attr.disabled]="currentPage==1? '' : null">Previous</a>
-        <a class="pagination-next" aria-label="Next page" (click)="currentPage==totalPages ? false :loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? '' : null">Next page</a>
-        <ul class="pagination-list">
-            <li *ngIf="currentPages[0]>1">
-                <a class="pagination-link" (click)="loadResults(1)" aria-label="Goto page 1">1</a>
-            </li>
-            <li *ngIf="currentPages[0]>2">
-                <span class="pagination-ellipsis">&hellip;</span>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[0]}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
-            </li>
-            <li *ngIf="currentPages[2]<totalPages-1">
-                <span class="pagination-ellipsis">&hellip;</span>
-            </li>
-            <li *ngIf="currentPages[2]<totalPages">
-                <a class="pagination-link" aria-label="Goto last page" (click)="loadResults(totalPages)">{{totalPages}}</a>
-            </li>
-        </ul>
-    </nav>
+    <div class="level">
+    <div class="level-left has-text-centered">
+        <div>
+            <p class="heading">Sort By</p>
+            <ng-content></ng-content>
+        </div>
+    </div>
+    <div class="level-right has-text-centered" *ngIf="results.total > resultsPerPage" >
+        <div>
+            <p class="heading">Pages</p>
+            <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
+        </div>
+        </div>
+    </div>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
@@ -70,7 +56,9 @@
         </div>
         
     </div>
+    <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
 </ng-template>
+
 <!-- inform the user about a failed search -->
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">
     <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>

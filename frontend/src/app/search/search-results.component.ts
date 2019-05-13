@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { User, Corpus, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
+import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { DataService, SearchService } from '../services';
 
 @Component({
@@ -30,14 +30,12 @@ export class SearchResultsComponent implements OnChanges {
     public isLoading = false;
 
     public results: SearchResults;
-    public totalResults: number;
-    public totalPages: number;
-    public fromIndex: number = 0;
-    public resultsPerPage: number = 20;
-    public currentPages: number[];
-    public currentPage: number = 1;
 
-    public isMediumPage: boolean;
+    public resultsPerPage: number = 20;
+    public totalResults: number;
+    private maximumDisplayed: number = 10000;
+
+    public fromIndex: number = 0;
 
     public queryText: string;
 
@@ -57,9 +55,8 @@ export class SearchResultsComponent implements OnChanges {
     ngOnChanges() {
         if (this.queryModel !== null) {
             this.queryText = this.queryModel.queryText;
+            this.fromIndex = 0;
             this.search();
-            this.currentPages = [1, 2, 3];
-            this.isMediumPage = false;
         }
     }
 
@@ -71,8 +68,7 @@ export class SearchResultsComponent implements OnChanges {
         ).then(results => {
             this.results = results;
             this.searched(this.queryModel.queryText, this.results.total);
-            this.totalResults = this.results.total <= 10000? this.results.total : 10000;
-            this.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
+            this.totalResults = this.results.total <= this.maximumDisplayed? this.results.total : this.maximumDisplayed;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -85,28 +81,12 @@ export class SearchResultsComponent implements OnChanges {
         });
     }
 
-    public async loadResults(page: number) {
-        if (this.currentPage == page) {
-            return true;
-        }
+    public async loadResults(searchParameters: SearchParameters) {
         this.isLoading = true;
-        this.currentPage = page;
-        this.fromIndex = (this.currentPage - 1) * this.resultsPerPage;
-        this.results = await this.searchService.loadResults(this.corpus, this.queryModel, this.fromIndex, this.resultsPerPage);
+        this.fromIndex = searchParameters.from;
+        this.resultsPerPage = searchParameters.size;
+        this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
         this.isLoading = false;
-        // setting variables for pagination view
-        if (page == 1) {
-            this.currentPages = [1, 2, 3];
-            this.isMediumPage = false;
-        }
-        else if (page == this.totalPages) {
-            this.currentPages = [this.totalPages-2, this.totalPages-1, this.totalPages];
-            this.isMediumPage = false;
-        }
-        else {
-            this.isMediumPage = true;
-            this.currentPages = [page-1, page, page+1];
-        }
     }
 
     public view(document: FoundDocument) {
