@@ -55,3 +55,9 @@ export type QueryModel = {
     sortBy?: string,
     sortAscending?: boolean
 };
+
+/** These are the from / size parameters emitted by the pagination component */
+export type SearchParameters = {
+    from: number,
+    size: number
+}
