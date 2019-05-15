@@ -1,27 +1,27 @@
 <nav class="pagination" role="navigation" aria-label="pagination">
-        <a class="pagination-previous" aria-label="Previous page" (click)="currentPage==1 ? false : loadResults(currentPage-1)" [attr.disabled]="currentPage==1? '' : null"><</a>
-        <a class="pagination-next" aria-label="Next page" (click)="currentPage==totalPages ? false :loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? '' : null">></a>
-        <ul class="pagination-list">
-            <li *ngIf="currentPages[0]>1">
-                <a class="pagination-link" (click)="loadResults(1)" aria-label="Goto page 1">1</a>
-            </li>
-            <li *ngIf="currentPages[0]>2">
-                <span class="pagination-ellipsis">&hellip;</span>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[0]}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
-            </li>
-            <li>
-                <a [ngClass]="{'is-current': currentPage==currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
-            </li>
-            <li *ngIf="currentPages[2]<totalPages-1">
-                <span class="pagination-ellipsis">&hellip;</span>
-            </li>
-            <li *ngIf="currentPages[2]<totalPages">
-                <a class="pagination-link" aria-label="Goto last page" (click)="loadResults(totalPages)">{{totalPages}}</a>
-            </li>
-        </ul>
-    </nav>
+    <a class="pagination-previous" aria-label="Previous page" (click)="currentPage==1 ? false : loadResults(currentPage-1)" [attr.disabled]="currentPage==1? '' : null"><</a>
+    <a class="pagination-next" aria-label="Next page" (click)="currentPage==totalPages ? false :loadResults(currentPage+1)" [attr.disabled]="currentPage==totalPages? '' : null">></a>
+    <ul class="pagination-list">
+        <li *ngIf="currentPages[0]>1">
+            <a class="pagination-link" (click)="loadResults(1)" aria-label="Goto page 1">1</a>
+        </li>
+        <li *ngIf="currentPages[0]>2">
+            <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li>
+            <a [ngClass]="{'is-current': currentPage==currentPages[0]}" class="pagination-link" (click)="loadResults(currentPages[0])">{{currentPages[0]}}</a>
+        </li>
+        <li>
+            <a [ngClass]="{'is-current': currentPage==currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
+        </li>
+        <li>
+            <a [ngClass]="{'is-current': currentPage==currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
+        </li>
+        <li *ngIf="currentPages[2]<totalPages-1">
+            <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li *ngIf="currentPages[2]<totalPages">
+            <a class="pagination-link" aria-label="Goto last page" (click)="loadResults(totalPages)">{{totalPages}}</a>
+        </li>
+    </ul>
+</nav>

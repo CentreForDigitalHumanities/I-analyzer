@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { DataService, SearchService } from '../services';
@@ -12,6 +12,9 @@ export class SearchResultsComponent implements OnChanges {
     /**
      * The search queryModel to use
      */
+    @ViewChild('resultsNavigation')
+    public resultsNavigation: ElementRef;
+
     @Input()
     public queryModel: QueryModel;
 
@@ -21,6 +24,9 @@ export class SearchResultsComponent implements OnChanges {
     @Input()
     public corpus: Corpus;
 
+    @Input()
+    public parentElement: HTMLElement;
+
     @Output('view')
     public viewEvent = new EventEmitter<FoundDocument>();
 
@@ -28,12 +34,13 @@ export class SearchResultsComponent implements OnChanges {
     public searchedEvent = new EventEmitter<ResultOverview>();
 
     public isLoading = false;
+    public isScrolledDown: boolean;
 
     public results: SearchResults;
 
     public resultsPerPage: number = 20;
     public totalResults: number;
-    private maximumDisplayed: number = 10000;
+    private maximumDisplayed: number;
 
     public fromIndex: number = 0;
 
@@ -56,8 +63,16 @@ export class SearchResultsComponent implements OnChanges {
         if (this.queryModel !== null) {
             this.queryText = this.queryModel.queryText;
             this.fromIndex = 0;
+            this.maximumDisplayed = this.user.downloadLimit | 10000;
             this.search();
         }
+    }
+
+    @HostListener("window:scroll", [])
+    onWindowScroll() {
+        // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
+        // this introduces a box shadow
+        this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y == 68;
     }
 
     private search() {

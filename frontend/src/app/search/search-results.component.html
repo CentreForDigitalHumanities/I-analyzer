@@ -1,6 +1,3 @@
-<h2 class="title">
-    Search results
-</h2>
 <ng-container *ngIf="results===undefined || !results.total; else resultsBlock">
     <h2 class="subtitle">
         0 hits
@@ -14,6 +11,7 @@
         {{results.total}} results.
         Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
     </h2>
+    <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
     <div class="level">
     <div class="level-left has-text-centered">
         <div>
@@ -28,6 +26,7 @@
         </div>
         </div>
     </div>
+    </section>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
             <div class="columns is-gapless">
@@ -50,13 +49,9 @@
                     <search-relevance [value]="document.relevance"></search-relevance>
                     <img *ngIf="corpus.scan_image_type=='png'" class="src-thumbnail" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}" onerror="this.style.display='none'"/>
                 </div>
-                
             </div>
-            
         </div>
-        
     </div>
-    <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
 </ng-template>
 
 <!-- inform the user about a failed search -->
