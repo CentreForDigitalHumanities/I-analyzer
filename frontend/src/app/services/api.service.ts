@@ -187,7 +187,16 @@ export class ApiService extends Resource {
     })
     public requestReset: ResourceMethod<
         { email: string },
-        { success: boolean, is_valid_email: boolean }>;
+        { success: boolean, message:string }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/password_reset'
+    })
+    public resetPassword: ResourceMethod<
+        { password: string },
+        { success: boolean }
+    >
     
 
     @ResourceAction({

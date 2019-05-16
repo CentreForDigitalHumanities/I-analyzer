@@ -8,7 +8,7 @@ import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
 from api import analyze
-from api.mail import send_user_mail
+from api.user_mail import send_user_mail
 from es import es_forward, download
 from ianalyzer import celery_app
 

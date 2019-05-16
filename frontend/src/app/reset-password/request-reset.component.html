@@ -8,7 +8,7 @@
                         <div class="field">
                             <label for="email">Email</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
+                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" (input)="disableNotification()"/>
                                 <span class="icon is-small is-left">
                                     <i class="fa fa-user"></i>
                                 </span>
@@ -19,9 +19,7 @@
                             <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors?.pattern && email.touched">
                                 Please enter a valid email address.
                             </div>
-                            <div *ngIf="!isValidEmail" > 
-                                <div class="notification is-danger">No account for this email address found. Please register.</div>
-                            </div>
+                            <div *ngIf="showMessage && message" class="notification" [ngClass]="{'is-danger': !success, 'is-success': success}">{{message}}</div>
                         </div>
 
                         <div class="field">
