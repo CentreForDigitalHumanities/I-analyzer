@@ -44,10 +44,14 @@ def is_unique_username(username):
     return user is None
 
 
-def is_unique_email(email):
+def is_unique_non_solis_email(email):
     ''' Check if email address is unique '''
     user = models.User.query.filter_by(email=email).first()
-    return user is None
+    if user and user.saml==True:
+        # if the user has registered via saml before, permit making an account
+        return True
+    else:
+        return user is None
 
 
 def get_token(input):
