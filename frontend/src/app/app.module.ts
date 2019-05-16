@@ -50,6 +50,7 @@ import { DownloadComponent } from './search/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
+import { PaginationComponent } from './search/pagination.component';
 
 const appRoutes: Routes = [
     {
@@ -139,7 +140,8 @@ const appRoutes: Routes = [
         DownloadComponent,
         TermFrequencyComponent,
         ResetPasswordComponent,
-        RequestResetComponent
+        RequestResetComponent,
+        PaginationComponent
     ],
     imports: [
         BrowserAnimationsModule,
