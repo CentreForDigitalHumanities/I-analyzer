@@ -2,6 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { UserService } from '../services/user.service';
+import { DialogService } from '../services/dialog.service';
+import { DialogServiceMock } from '../services/dialog.service.mock';
 
 import { RegistrationComponent } from './registration.component';
 import { PrivacyComponent } from '../privacy/privacy.component';
@@ -16,6 +18,7 @@ describe('RegistrationComponent', () => {
       declarations: [ RegistrationComponent, PrivacyComponent ],
       providers: [
         { provide: UserService, useValue: {} },
+        { provide: DialogService, useClass: DialogServiceMock }
       ]
     })
     .compileComponents();
