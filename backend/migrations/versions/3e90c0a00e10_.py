@@ -25,7 +25,6 @@ role = sa.sql.table(
 
 
 def upgrade():
-
     op.bulk_insert(role,
                    [
                        {'name': 'basic', 'description': 'corpora for public access'},

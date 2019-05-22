@@ -17,15 +17,14 @@ MAX_LENGTH_CORPUS_NAME = 254
 db = SQLAlchemy()
 
 
-# connects corpus id to role id
+'''
+   connects corpus id to role id 
+'''
 corpora_roles = db.Table(
     'corpora_roles',
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id')),
     db.Column('corpus_id', db.Integer(), db.ForeignKey('corpus.id'))
 )
-'''
-   connects corpus id to role id 
-'''
 
 
 class Role(db.Model):
@@ -61,7 +60,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
     password = db.Column(db.String(MAX_LENGTH_PASSWORD))
-    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True, unique=True)
+    email = db.Column(db.String(MAX_LENGTH_EMAIL), nullable=True)
+    saml = db.Column(db.Boolean, nullable=True, default=False)
 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
     '''
@@ -97,7 +97,7 @@ class User(db.Model):
     Which queries the user has performed.
     '''
 
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None):
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None, saml=False):
         self.username = username
         self.password = password
         self.email = email
@@ -105,6 +105,7 @@ class User(db.Model):
         self.authenticated = authenticated
         self.download_limit = download_limit
         self.role_id=role_id
+        self.saml=saml
 
     def __repr__(self):
         return self.username
