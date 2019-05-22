@@ -16,6 +16,12 @@ export class DialogServiceMock {
         this.behavior.next({ status: 'hide' });
     }
 
+    public async getManualPage(identifier: string) {
+        let title = 'Test title';
+        let html = '<p>This is a test.</p>';
+        return { html, title };
+    }
+
     /**
      * Requests that a manual page should be shown to the user.
      * @param identifier Name of the page

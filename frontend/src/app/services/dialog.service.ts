@@ -29,7 +29,7 @@ export class DialogService {
         let pagePromise = fetch(path).then(response => this.parseResponse(response));
 
         let [html, manifest] = await Promise.all([pagePromise, this.getManifest()]);
-        let title = "Manual: " + manifest.find(page => page.id == identifier).title;
+        let title = manifest.find(page => page.id == identifier).title;
 
         return { html, title };
     }
