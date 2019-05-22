@@ -4,11 +4,10 @@
                 <form (ngSubmit)="requestReset(requestResetForm)" class="container is-readable" #requestResetForm="ngForm">
                     <div class="container is-login">
                         <h1 class="title">Reset password</h1>
-                        Enter the e-mail address with which you registered for I-Analyzer.
                         <div class="field">
                             <label for="email">Email</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" (input)="disableNotification()"/>
+                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" placeholder="Enter the e-mail address with which you registered for I-Analyzer." (input)="disableNotification()"/>
                                 <span class="icon is-small is-left">
                                     <i class="fa fa-user"></i>
                                 </span>

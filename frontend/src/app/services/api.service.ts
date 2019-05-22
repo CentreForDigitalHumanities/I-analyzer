@@ -191,7 +191,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/password_reset'
+        path: '/reset_password'
     })
     public resetPassword: ResourceMethod<
         { password: string },

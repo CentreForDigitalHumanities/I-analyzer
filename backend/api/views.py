@@ -148,11 +148,14 @@ def api_login_for_reset(token):
 
 @login_required
 @api.route('/reset_password', methods=['POST'])
-def api_reset_password(password):
+def api_reset_password():
     user = current_user
-    if not user:
+    if not request.json or not 'password' in request.json:
         return jsonify({'success': False})
-    user.password = password
+    elif not user:
+        abort(403)
+    password = request.json['password']
+    user.password = generate_password_hash(password)
     models.db.session.commit()
     return jsonify({'success': True})
 

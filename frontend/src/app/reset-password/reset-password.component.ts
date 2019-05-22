@@ -9,9 +9,9 @@ import { ApiService } from '../services/index';
   styleUrls: ['./reset-password.component.scss']
 })
 export class ResetPasswordComponent implements OnInit {
+    public submitted: boolean;
     public resetSucceeded: boolean;
-
-    public isModalActive: boolean = false;
+    public isLoading: boolean;
 
     constructor(private apiService: ApiService) { }
 
@@ -19,9 +19,17 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     reset(resetForm: NgForm) {
+        this.submitted = true;
         let password = resetForm.value.password;
-        this.apiService.resetPassword(password).then( result => {
+        this.isLoading = true;
+        this.apiService.resetPassword({password: password}).then( result => {
             this.resetSucceeded = result.success;
+            this.isLoading = false;
+        }).catch( () => {
+            // no current user found, log out user
+            this.resetSucceeded = false;
+            this.isLoading = false;
+            this.apiService.logout();
         });
     }
     

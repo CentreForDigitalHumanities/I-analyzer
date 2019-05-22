@@ -9,8 +9,9 @@ from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_r
 from flask_login import current_user
 import logging
 logger = logging.getLogger(__name__)
+from werkzeug.security import generate_password_hash
 
-from ianalyzer.models import User, db
+from ianalyzer.models import User, Role, db
 from api.security import login_user, get_token, get_original_token_input, logout_user
 from api import api
 from api.views import create_success_response
@@ -99,17 +100,18 @@ def add_uu_user(username, password, email, is_active):
     ''' Add a user with the role 'uu' to the database
     Solis-id users get this role by default
     '''  
-    uu_role = models.Role.query.filter_by(name='uu').first()  
+    uu_role = Role.query.filter_by(name='uu').first()  
     pw_hash = None
     if (password):
         pw_hash = generate_password_hash(password)    
-    new_user = models.User(
+    new_user = User(
         username=username,
         email=email,
         active=is_active,
         password=pw_hash,
         role_id=uu_role.id,
+        saml=True
     )
-    models.db.session.add(new_user)
-    models.db.session.commit()
+    db.session.add(new_user)
+    db.session.commit()
     return new_user
