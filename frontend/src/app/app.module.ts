@@ -49,6 +49,7 @@ import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './search/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { PaginationComponent } from './search/pagination.component';
+import { ImageViewComponent } from './document-view/image-view.component';
 
 const appRoutes: Routes = [
     {
@@ -128,7 +129,8 @@ const appRoutes: Routes = [
         QueryFiltersComponent,
         DownloadComponent,
         TermFrequencyComponent,
-        PaginationComponent
+        PaginationComponent,
+        ImageViewComponent
     ],
     imports: [
         BrowserAnimationsModule,
