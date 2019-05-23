@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DialogService, ManualPageMetaData, HighlightService } from '../services';
 import "rxjs/add/observable/combineLatest";
 

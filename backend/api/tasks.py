@@ -7,7 +7,8 @@ from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from api import analyze, mail
+from api import analyze
+from api.user_mail import send_user_mail
 from es import es_forward, download
 from ianalyzer import celery_app
 
@@ -21,12 +22,21 @@ def download_scroll(request_json, download_size=10000):
 
 
 @celery_app.task()
-def make_csv(results, request_json, email=None):
+def make_csv(results, request_json, username, email=None):
     filename = create_filename(request_json)
     filepath = create_csv(results, request_json['fields'], filename)
     if email:
         # we are sending the results to the user by email
-        send_mail(filename, email)
+        send_user_mail(
+            username,
+            email,
+            "I-Analyzer csv download",
+            "Download CSV",
+            "Your .csv file is ready for download.",
+            "Click on the link below.",
+            current_app.config['BASE_URL'] + "/api/csv/" + filename,
+            "Download .csv file"
+            )
         return None
     else:
         return filepath
@@ -80,21 +90,3 @@ def create_csv(results, fields, filename):
         for row in entries:
             writer.writerow(row)
     return filepath
-
-
-def send_mail(filename, email):
-    msg = Message(current_app.config['MAIL_CSV_SUBJECT_LINE'],
-                sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
-    msg.html = render_template('send_csv_mail.html',
-                # link to the api endpoint where csv will be downloaded
-                download_link=current_app.config['BASE_URL'] + "/api/csv/" + filename,
-                url_i_analyzer=current_app.config['BASE_URL'],
-                logo_link=current_app.config['LOGO_LINK'])
-    try:
-        mail.send(msg)
-        return True
-    except Exception as e:
-        logger.error(
-            "An error occured sending an email to {}:".format(email))
-        logger.error(e)
-        return False

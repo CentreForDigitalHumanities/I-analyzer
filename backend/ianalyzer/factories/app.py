@@ -31,7 +31,7 @@ def flask_app(cfg=config):
     csrf = SeaSurf()
     csrf.exempt_urls(('/es', '/saml'))
     init_celery(app, celery=celery_app)
-
+    
     app.register_blueprint(entry)
     app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(es, url_prefix='/es')

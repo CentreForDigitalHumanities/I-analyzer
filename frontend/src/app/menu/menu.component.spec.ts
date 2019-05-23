@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule, Router } from '@angular/router';
 
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { ButtonModule, MenuModule } from 'primeng/primeng';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, LogService, UserService, } from '../services/index';
@@ -21,7 +21,7 @@ describe('MenuComponent', () => {
 
             providers: [
                 ApiRetryService,
-                { provide: Router, useValue: { events: Observable.of({}) } },
+                { provide: Router, useValue: { events: of({}) } },
                 { provide: ConfigService, useValue: {} },
                 {
                     provide: UserService, useValue: new UserServiceMock()
