@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, OnDestroy } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { CorpusField } from '../models';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
     selector: 'ia-dropdown',
@@ -35,7 +35,7 @@ export class DropdownComponent<T> implements OnDestroy {
     constructor(private elementRef: ElementRef) {
         // don't trigger a lot of events when a user is quickly looping through the options
         // for example using the keyboard arrows
-        this.changeSubscription = this.changeSubject.debounceTime(100).subscribe(value => this.onChange.next(value));
+        this.changeSubscription = this.changeSubject.pipe(debounceTime(100)).subscribe(value => this.onChange.next(value));
     }
 
     ngOnDestroy() {

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
-import { MarkdownService } from 'ngx-md';
+import { NgxMdService } from 'ngx-md';
 import { ApiService } from "./api.service";
 
 import { Corpus } from '../models/index';
@@ -16,7 +16,7 @@ export class DialogService {
 
     public constructor(
         private domSanitizer: DomSanitizer, 
-        private markdownService: MarkdownService,
+        private markdownService: NgxMdService,
         private apiService: ApiService) {
     }
 
