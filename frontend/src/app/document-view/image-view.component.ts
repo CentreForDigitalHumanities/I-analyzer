@@ -12,6 +12,8 @@ export class ImageViewComponent implements OnInit {
     @ViewChild('zoomedImage') zoomedImage: ElementRef;
 
     public backgroundImageStyle: SafeStyle;
+    public top: string;
+    public left: string;
     
     constructor(private sanitizer: DomSanitizer) { }
 
@@ -27,7 +29,8 @@ export class ImageViewComponent implements OnInit {
     }
 
     @HostListener('mousemove', ['$event']) onmousemove(event: MouseEvent) {
-        console.log(event.offsetX, event.offsetY);
+        this.left = event.clientX.toString() + "px";
+        this.top = event.offsetY.toString() + "px";
     }
 
     setZoomImage(path: string) {
