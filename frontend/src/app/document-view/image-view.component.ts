@@ -10,10 +10,13 @@ export class ImageViewComponent implements OnInit {
     @Input() public imgPath: string;
 
     @ViewChild('zoomedImage') zoomedImage: ElementRef;
+    @ViewChild('sourceImage') public sourceImage: ElementRef;
 
     public backgroundImageStyle: SafeStyle;
-    public top: string;
-    public left: string;
+    public top: number;
+    public left: number;
+    public backgroundPosition: string;
+    private lensWidth: number = 40;
     
     constructor(private sanitizer: DomSanitizer) { }
 
@@ -29,8 +32,13 @@ export class ImageViewComponent implements OnInit {
     }
 
     @HostListener('mousemove', ['$event']) onmousemove(event: MouseEvent) {
-        this.left = event.clientX.toString() + "px";
-        this.top = event.offsetY.toString() + "px";
+        let sourceImageRect = this.sourceImage.nativeElement;//.getBoundingClientRect();
+        this.left = event.clientX - this.lensWidth/2;
+        console.log(window.top);
+        this.top = event.clientY - sourceImageRect.offsetTop - this.lensWidth/2;
+        console.log(this.left, this.top);
+        this.backgroundPosition = "-"+event.offsetX.toString()+"px -"+event.offsetY.toString()+"px";
+        console.log(this.backgroundPosition);
     }
 
     setZoomImage(path: string) {

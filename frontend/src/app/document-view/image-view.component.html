@@ -1,6 +1,6 @@
 <div class="image-container">
-    <img class="src-img" src={{imgPath}}/>
-    <div class="zoom-lens" [ngStyle]="{'top': top, 'left': left}"></div>
+    <img class="src-img" #sourceImage src={{imgPath}}/>
+    <div class="zoom-lens" [ngStyle]="{'top.px': top, 'left.px': left}"></div>
 </div>
 
-<div #zoomedImage class="zoom-img" [style]="backgroundImageStyle"></div>
+<div #zoomedImage class="zoom-img" [style]="backgroundImageStyle" [ngStyle]="{'background-position': backgroundPosition}"></div>
