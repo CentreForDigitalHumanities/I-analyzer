@@ -9,7 +9,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
-import { MarkdownModule } from 'ngx-md';
+import { NgxMdModule } from 'ngx-md';
 import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
@@ -158,7 +158,7 @@ const appRoutes: Routes = [
             headerName: 'X-XSRF-Token'
         }),
         RouterModule.forRoot(appRoutes),
-        MarkdownModule,
+        NgxMdModule.forRoot(),
         MultiSelectModule,
         SliderModule,
         MenuModule,

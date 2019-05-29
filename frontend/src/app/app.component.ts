@@ -1,8 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
-
-import { Subscription } from 'rxjs/Subscription';
-
-import { DialogService } from './services/dialog.service';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-root',

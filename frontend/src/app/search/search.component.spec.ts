@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { ChartModule } from 'primeng/chart'
@@ -69,7 +69,7 @@ describe('SearchComponent', () => {
                 SearchService,
                 {
                     provide: ActivatedRoute, useValue: {
-                        paramMap: Observable.of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).map(convertToParamMap)
+                        paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).map(convertToParamMap)
                     }
                 },
                 SessionService,
