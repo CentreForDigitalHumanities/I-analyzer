@@ -10,4 +10,4 @@ We don’t store your data for longer than is lawfully permitted and/or necessar
 
 We have taken appropriate technological and organizational measures to protect your data. We keep up to date with the current situation regarding data protection. We will do everything possible to prevent the loss or unlawful use of personal data. However, we cannot guarantee this protection, due to continual technological advances
 
-If you have questions or requests about our processing of your personal data then contact: dhlab (at) uu.nl
+If you have questions or requests about our processing of your personal data then contact: digitalhumanities (at) uu.nl
