@@ -19,7 +19,4 @@ numpy
 responses
 python3-saml
 pypdf2
-<<<<<<< HEAD
 mysqlclient>=1.3.12,<1.4.0
-=======
->>>>>>> parent of a85a2fc... replacing mysqlclient with PyMySQL
