@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
 import { DialogService, UserService } from '../services/index';
-import { Dialog } from 'primeng/primeng';
 
 @Component({
   selector: 'ia-privacy',
@@ -8,15 +8,18 @@ import { Dialog } from 'primeng/primeng';
   styleUrls: ['./privacy.component.scss']
 })
 export class PrivacyComponent implements OnInit {
-
-  constructor(private dialogService: DialogService) { 
+    public title: string | undefined;
+    public manualHtml: SafeHtml | undefined;
+    constructor(private dialogService: DialogService) { 
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
-    UserService.loginActivated = true;
-
-  }
+        UserService.loginActivated = true;
+    }
 
   ngOnInit() {
-      this.dialogService.getManualPage('privacy');
+    this.dialogService.getManualPage('privacy').then( page => {
+        this.manualHtml = page.html;
+        this.title = page.title;
+    });
   }
 
 }

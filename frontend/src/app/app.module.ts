@@ -9,7 +9,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { HttpClientXsrfModule } from '@angular/common/http'
 import { RouterModule, Routes } from '@angular/router';
 
-import { MarkdownModule } from 'ngx-md';
+import { NgxMdModule } from 'ngx-md';
 import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
@@ -50,6 +50,7 @@ import { DownloadComponent } from './search/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
+import { PaginationComponent } from './search/pagination.component';
 
 const appRoutes: Routes = [
     {
@@ -72,6 +73,11 @@ const appRoutes: Routes = [
     {
         path: 'reset',
         component: RequestResetComponent
+    },
+    {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
+        canActivate: [LoggedOnGuard]
     },
     {
         path: 'privacy',
@@ -134,7 +140,8 @@ const appRoutes: Routes = [
         DownloadComponent,
         TermFrequencyComponent,
         ResetPasswordComponent,
-        RequestResetComponent
+        RequestResetComponent,
+        PaginationComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -151,7 +158,7 @@ const appRoutes: Routes = [
             headerName: 'X-XSRF-Token'
         }),
         RouterModule.forRoot(appRoutes),
-        MarkdownModule,
+        NgxMdModule.forRoot(),
         MultiSelectModule,
         SliderModule,
         MenuModule,

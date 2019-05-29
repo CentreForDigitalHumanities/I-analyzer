@@ -97,7 +97,7 @@ class User(db.Model):
     Which queries the user has performed.
     '''
 
-    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None):
+    def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None, saml=False):
         self.username = username
         self.password = password
         self.email = email

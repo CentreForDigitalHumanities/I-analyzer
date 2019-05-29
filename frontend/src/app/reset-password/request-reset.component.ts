@@ -10,8 +10,10 @@ import { ApiService } from '../services/api.service';
 })
 export class RequestResetComponent implements OnInit {
     public email: string;
+    public success: boolean;
+    public showMessage: boolean;
+    public message: string;
 
-    public isValidEmail: boolean = true;
     constructor(private apiService: ApiService) {
     }
 
@@ -21,8 +23,14 @@ export class RequestResetComponent implements OnInit {
     requestReset(requestResetForm: NgForm) {
         let email: string = requestResetForm.value.email;
         this.apiService.requestReset({email: email}).then( response => {
-            console.log(response);
+            this.success = response.success;
+            this.message = response.message;
+            this.showMessage = true;
         });
+    }
+
+    disableNotification() {
+        this.showMessage = false;
     }
 
 }

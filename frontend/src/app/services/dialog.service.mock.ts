@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 import { DialogPageEvent } from './dialog.service';
 
@@ -14,6 +14,12 @@ export class DialogServiceMock {
 
     public closePage() {
         this.behavior.next({ status: 'hide' });
+    }
+
+    public async getManualPage(identifier: string) {
+        let title = 'Test title';
+        let html = '<p>This is a test.</p>';
+        return { html, title };
     }
 
     /**

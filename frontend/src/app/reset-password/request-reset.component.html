@@ -1,14 +1,13 @@
 <section class="section">
         <div class="columns is-centered">    
-            <div *ngIf="!reset_succeeded && !error">
+            <div>
                 <form (ngSubmit)="requestReset(requestResetForm)" class="container is-readable" #requestResetForm="ngForm">
                     <div class="container is-login">
                         <h1 class="title">Reset password</h1>
-                        Enter the e-mail address with which you registered for I-Analyzer.
                         <div class="field">
                             <label for="email">Email</label>
                             <p class="control has-icons-left">
-                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" />
+                                <input class="input" type="email" name="email" ngModel #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" placeholder="Enter the e-mail address with which you registered for I-Analyzer." (input)="disableNotification()"/>
                                 <span class="icon is-small is-left">
                                     <i class="fa fa-user"></i>
                                 </span>
@@ -19,14 +18,12 @@
                             <div class="notification is-warning" class="notification is-warning" *ngIf="email.errors?.pattern && email.touched">
                                 Please enter a valid email address.
                             </div>
-                            <div *ngIf="!isValidEmail" > 
-                                <div class="notification is-danger">No account for this email address found. Please register.</div>
-                            </div>
+                            <div *ngIf="showMessage && message" class="notification" [ngClass]="{'is-danger': !success, 'is-success': success}">{{message}}</div>
                         </div>
 
                         <div class="field">
                             <p class="control">
-                                <button class="button is-primary" [disabled]="!requestResetForm.form.valid" [ngClass]="{'is-loading':isLoading}">Request password reset<link rel="stylesheet" href=""></button>
+                                <button class="button is-primary" [disabled]="!requestResetForm.form.valid">Request password reset<link rel="stylesheet" href=""></button>
                             </p>
                         </div>
                     </div>

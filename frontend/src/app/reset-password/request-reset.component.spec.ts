@@ -1,5 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { ApiService } from '../services/api.service';
+import { ApiServiceMock } from '../services/api.service.mock';
 import { RequestResetComponent } from './request-reset.component';
 
 describe('RequestResetComponent', () => {
@@ -8,7 +11,11 @@ describe('RequestResetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RequestResetComponent ]
+        imports: [ FormsModule, ReactiveFormsModule ],
+        declarations: [ RequestResetComponent ],
+        providers: [
+            { provide: ApiService, useValue: new ApiServiceMock() },
+        ]
     })
     .compileComponents();
   }));

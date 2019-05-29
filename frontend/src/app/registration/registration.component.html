@@ -86,7 +86,7 @@
                         </label>
                     </div>
                     <div class="notification is-warning" *ngIf="agree.errors?.required && (agree.dirty || agree.touched)">
-                        You need to agree with the privacy statement
+                        You need to agree with the privacy statement.
                     </div>
                     <br><br>
                     
@@ -107,8 +107,7 @@
         </div>
 
         <div class="notification is-danger container" *ngIf=error>
-            <p class="title">Oops!</p>
-            <p>A problem occured on our side. Please contact the Digital Humanities Lab (<b>digitalhumanities [at] uu [dot] nl</b>), so that we can fix it for you.</p>
+            <p>A problem occurred on our side. Please contact the Digital Humanities Lab (<b>digitalhumanities [at] uu [dot] nl</b>), so that we can fix it for you.</p>
         </div>
     </div>
 </section>
