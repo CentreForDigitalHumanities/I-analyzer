@@ -25,20 +25,18 @@ export class ImageViewComponent implements OnInit {
     }
 
     @HostListener('mouseenter') onMouseEnter() {
+        console.log(this.sourceImage.nativeElement.getBoundingClientRect());
     }
 
     @HostListener('mouseleave') onMouseLeave() {
-        //this.setZoomImage(null);
     }
 
     @HostListener('mousemove', ['$event']) onmousemove(event: MouseEvent) {
         let sourceImageRect = this.sourceImage.nativeElement;//.getBoundingClientRect();
         this.left = event.clientX - this.lensWidth/2;
-        console.log(window.top);
-        this.top = event.clientY - sourceImageRect.offsetTop - this.lensWidth/2;
-        console.log(this.left, this.top);
+        //console.log(event.clientY, sourceImageRect.offsetTop, sourceImageRect.scrollTop);
+        this.top = event.clientY - sourceImageRect.offsetTop - this.lensWidth;
         this.backgroundPosition = "-"+event.offsetX.toString()+"px -"+event.offsetY.toString()+"px";
-        console.log(this.backgroundPosition);
     }
 
     setZoomImage(path: string) {
