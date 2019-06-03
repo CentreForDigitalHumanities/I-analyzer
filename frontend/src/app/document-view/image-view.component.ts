@@ -1,6 +1,9 @@
 import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
+// import { DocumentContainerDirective } from '../document-view/document-container.directive';
+import { DocumentViewComponent } from '../document-view/document-view.component';
+
 @Component({
   selector: 'ia-image-view',
   templateUrl: './image-view.component.html',
@@ -15,28 +18,35 @@ export class ImageViewComponent implements OnInit {
     public backgroundImageStyle: SafeStyle;
     public top: number;
     public left: number;
+    public topPos: string;
+    public leftPos: string;
     public backgroundPosition: string;
+    public backgroundSize: string;
+    public zoomVisible: string = 'hidden';
     private lensWidth: number = 40;
+    private dialogScroll: number = 0;
+    private zoomFactor = 300 / 40; // size of zoomed image, divided by lens size
+    private sourceImageEl: any;
+    private sourceImageRect: any;
     
-    constructor(private sanitizer: DomSanitizer) { }
+    constructor(private sanitizer: DomSanitizer, private _documentDialog: DocumentViewComponent) { } //DocumentContainerDirective) { }
 
     ngOnInit() {
-        this.backgroundImageStyle = this.setZoomImage(this.imgPath);
+        this.backgroundImageStyle = this.setZoomImage(this.imgPath); 
     }
 
-    @HostListener('mouseenter') onMouseEnter() {
-        console.log(this.sourceImage.nativeElement.getBoundingClientRect());
-    }
-
-    @HostListener('mouseleave') onMouseLeave() {
-    }
-
-    @HostListener('mousemove', ['$event']) onmousemove(event: MouseEvent) {
-        let sourceImageRect = this.sourceImage.nativeElement;//.getBoundingClientRect();
-        this.left = event.clientX - this.lensWidth/2;
-        //console.log(event.clientY, sourceImageRect.offsetTop, sourceImageRect.scrollTop);
-        this.top = event.clientY - sourceImageRect.offsetTop - this.lensWidth;
-        this.backgroundPosition = "-"+event.offsetX.toString()+"px -"+event.offsetY.toString()+"px";
+    onMouseMove(event: MouseEvent) {
+        this.sourceImageEl = this.sourceImage.nativeElement;
+        this.sourceImageRect = this.sourceImageEl.getBoundingClientRect();
+        this.backgroundSize = (this.sourceImageRect.width * this.zoomFactor).toString()+"px " + 
+            (this.sourceImageRect.height * this.zoomFactor).toString()+"px";
+        this.backgroundPosition = "-"+(event.offsetX * this.zoomFactor - this.zoomFactor * this.lensWidth/2).toString()+"px -"+
+            (event.offsetY * this.zoomFactor - this.zoomFactor * this.lensWidth/2).toString()+"px";
+        this._documentDialog.getScroll().then( scroll => {
+            this.dialogScroll = scroll;
+            this.left = event.clientX - this.lensWidth/2;
+            this.top = event.clientY - this.lensWidth - this.sourceImageEl.offsetTop + this.dialogScroll;
+        });
     }
 
     setZoomImage(path: string) {

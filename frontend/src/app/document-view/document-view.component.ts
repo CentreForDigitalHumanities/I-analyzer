@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, ElementRef } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { ApiService } from '../services';
 import { zipProto } from 'rxjs/operator/zip';
@@ -34,12 +34,18 @@ export class DocumentViewComponent implements OnChanges {
     public imgNotFound: boolean;
     public imgPath: string;
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService, private el: ElementRef) { }
 
     ngOnChanges() {
         if (this.corpus.scan_image_type=="png") {
             this.imgPath = "/api/get_scan_image/" + this.corpus.index + this.document.fieldValues.image_path;
         }
+    }
+
+    async getScroll() {
+        // need to know how far the dialog has been scrolled for zoom
+        // document view's parent has the relevant scrollTop value
+        return this.el.nativeElement.parentElement.scrollTop;
     }
 
 }
