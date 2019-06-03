@@ -1,7 +1,5 @@
 import { Component, Input, OnChanges, ElementRef } from '@angular/core';
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
-import { ApiService } from '../services';
-import { zipProto } from 'rxjs/operator/zip';
 
 
 @Component({
@@ -34,7 +32,7 @@ export class DocumentViewComponent implements OnChanges {
     public imgNotFound: boolean;
     public imgPath: string;
 
-    constructor(private apiService: ApiService, private el: ElementRef) { }
+    constructor(private el: ElementRef) { }
 
     ngOnChanges() {
         if (this.corpus.scan_image_type=="png") {

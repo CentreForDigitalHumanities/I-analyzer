@@ -12,7 +12,6 @@ import { DocumentViewComponent } from '../document-view/document-view.component'
 export class ImageViewComponent implements OnInit {
     @Input() public imgPath: string;
 
-    @ViewChild('zoomedImage') zoomedImage: ElementRef;
     @ViewChild('sourceImage') public sourceImage: ElementRef;
 
     public backgroundImageStyle: SafeStyle;

@@ -1,6 +1,8 @@
+import { ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImageViewComponent } from './image-view.component';
+import { DocumentViewComponent } from './document-view.component';
 
 describe('ImageViewComponent', () => {
   let component: ImageViewComponent;
@@ -8,7 +10,8 @@ describe('ImageViewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ImageViewComponent ]
+      declarations: [ ImageViewComponent ],
+      providers: [ DocumentViewComponent, {provide: ElementRef, useClass: MockElementRef} ]
     })
     .compileComponents();
   }));
@@ -23,3 +26,5 @@ describe('ImageViewComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+export class MockElementRef { nativeElement = {}; }
