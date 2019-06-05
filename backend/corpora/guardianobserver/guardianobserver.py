@@ -9,7 +9,7 @@ import glob
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 import os.path as op
 from datetime import datetime, timedelta
-from zipfile import ZipFile, ZipExtFile
+from zipfile import ZipFile
 
 from flask import current_app
 
@@ -49,8 +49,8 @@ class GuardianObserver(XMLCorpus):
             with ZipFile(str(zfile), mode='r') as zipped:
                 for xml in xmls:
                     with zipped.open(xml) as xmlfile:
-                        print(isinstance(xmlfile, ZipExtFile))
-                        yield xmlfile
+                        data = xmlfile.read()
+                    yield data
 
     fields = [
         Field(

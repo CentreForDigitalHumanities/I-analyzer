@@ -1,4 +1,4 @@
-""" 
+"""
 This module regulates authentication via SAML.
 It defines its own blueprint, saml, but also uses the api blueprint.
 This to ensure that some methods will send a CSRF tokens.
@@ -31,7 +31,7 @@ def solislogin():
     ''' SAML login step 3. Called by frontend to retrieve user instance '''
     solis_id = get_original_token_input(session['solislogin_token'], 30)
 
-    user = User.query.filter_by(username=solis_id).first()    
+    user = User.query.filter_by(username=solis_id).first()
 
     # if someone attempts to login with 'solislogin=true' in the url user shall be None
     if user is None:
@@ -55,7 +55,7 @@ def process_login_result():
         saml_auth.process_login_result(request, session)
     except SamlAuthError as e:
         logger.error(e)
-        redirect_to = 'login?hasError=true'
+        redirect_to = '{}/login?hasError=true'.format(request.host_url)
         return redirect(redirect_to)
 
     solis_id = saml_auth.get_solis_id(request, session)
@@ -67,7 +67,7 @@ def process_login_result():
 
     session['solislogin_token'] = get_token(solis_id)
 
-    redirect_to = 'login?solislogin=true'
+    redirect_to = '{}/login?solislogin=true'.format(request.host_url)
     return redirect(redirect_to)
 
 
@@ -85,7 +85,7 @@ def process_logout_result():
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
-    return redirect('')
+    return redirect(request.host_url)
 
 
 @saml.route('/metadata/', methods=['GET'])
@@ -99,11 +99,11 @@ def metadata():
 def add_uu_user(username, password, email, is_active):
     ''' Add a user with the role 'uu' to the database
     Solis-id users get this role by default
-    '''  
-    uu_role = Role.query.filter_by(name='uu').first()  
+    '''
+    uu_role = Role.query.filter_by(name='uu').first()
     pw_hash = None
     if (password):
-        pw_hash = generate_password_hash(password)    
+        pw_hash = generate_password_hash(password)
     new_user = User(
         username=username,
         email=email,
