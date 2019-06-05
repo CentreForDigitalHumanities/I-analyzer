@@ -5,11 +5,11 @@ locations.
 
 import logging
 logger = logging.getLogger(__name__)
-import os
-import os.path
-import re
+import glob
+from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
+import os.path as op
 from datetime import datetime, timedelta
-from zipfile import ZipFile
+from zipfile import ZipFile, ZipExtFile
 
 from flask import current_app
 
@@ -32,7 +32,7 @@ class GuardianObserver(XMLCorpus):
     es_settings = None
     image = current_app.config['GO_IMAGE']
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
-    description_page = current_app.config['GO_DESCRIPTION_PAGE']
+    #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
@@ -44,14 +44,13 @@ class GuardianObserver(XMLCorpus):
         Specifically, return an iterator of tuples that each contain a string
         filename and a dictionary of metadata (in this case, the date).
         '''
-        zipfiles = os.listdir(os.path.join(self.data_directory, "")) + os.listdir(os.path.join(self.data_directory, ""))
-        go_pattern = re.compile(r'GO_')
-        for zfile in zipfiles:
-            if go_pattern.match(zfile):
-                xmls = ZipFile(zfile).namelist()
-                with ZipFile(zfile) as zipped:
-                    for xml in xmls:
-                        yield zipped.open(xml)  
+        for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
+            xmls = ZipFile(str(zfile)).namelist()
+            with ZipFile(str(zfile), mode='r') as zipped:
+                for xml in xmls:
+                    with zipped.open(xml) as xmlfile:
+                        print(isinstance(xmlfile, ZipExtFile))
+                        yield xmlfile
 
     fields = [
         Field(
@@ -75,6 +74,7 @@ class GuardianObserver(XMLCorpus):
                 ).strftime(
                     '%Y-%m-%d'
                 )
+                )
             )
         ),
         Field(
@@ -88,24 +88,16 @@ class GuardianObserver(XMLCorpus):
             )
         ),
         Field(
-            name='ocr',
-            display_name='OCR confidence',
-            description='OCR confidence level.',
-            es_mapping={'type': 'float'},
-            search_filter=filters.RangeFilter(0, 100,
-                                              description=(
-                                                  'Accept only articles for which the Opitical Character Recognition confidence '
-                                                  'indicator is in this range.'
-                                              )
-                                              ),
-            extractor=extract.XML(tag='ocr', transform=float),
-            sortable=True
-        ),
-        Field(
             name='id',
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='RecordID')
+        ),
+        Field(
+            name='pub_id',
+            display_name='Publication ID',
+            description='Publication identifier',
+            extractor=extract.XML(tag='PublicationID')
         ),
         Field(
             name='page',
@@ -129,6 +121,18 @@ class GuardianObserver(XMLCorpus):
             extractor=extract.XML(
                 tag='Title'
             )
+        ),
+        Field(
+            name='place',
+            display_name='Place',
+            description='Place in which the article was published',
+            extractor=extract.XML(tag='Qualifier')
+        ),
+        Field(
+            name='author',
+            display_name='Author',
+            description='Article author',
+            extractor=extract.XML(tag='PersonName')
         ),
         Field(
             name='category',
@@ -180,5 +184,5 @@ class GuardianObserver(XMLCorpus):
             extractor=extract.XML(
                 tag=['FullText']
             )
-        ),
+        )
     ]

@@ -111,6 +111,9 @@ TML_IMAGE = 'tml.jpg'
 
 TROONREDES_IMAGE = 'troon.jpg'
 
+GO_SCAN_IMAGE_TYPE = 'pdf'
+GO_IMAGE = 'guardian.jpg'
+
 #################
 
 #Celery configuration
