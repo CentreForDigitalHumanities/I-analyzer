@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 // import { DocumentContainerDirective } from '../document-view/document-container.directive';
@@ -9,7 +9,7 @@ import { DocumentViewComponent } from '../document-view/document-view.component'
   templateUrl: './image-view.component.html',
   styleUrls: ['./image-view.component.scss']
 })
-export class ImageViewComponent implements OnInit {
+export class ImageViewComponent implements OnChanges {
     @Input() public imgPath: string;
 
     @ViewChild('sourceImage') public sourceImage: ElementRef;
@@ -19,19 +19,29 @@ export class ImageViewComponent implements OnInit {
     public left: number;
     public topPos: string;
     public leftPos: string;
+    private backgroundX: number;
+    private backgroundY: number;
     public backgroundPosition: string;
     public backgroundSize: string;
     public zoomVisible: string = 'hidden';
-    private lensWidth: number = 40;
-    private dialogScroll: number = 0;
-    private zoomFactor = 300 / 40; // size of zoomed image, divided by lens size
+    public lensWidth: number = 92;
+    private margins: number = 5; // zoom image and lens borders
+    private srcMargins: number = 10; // src image border and margin
+    private mouseY: number;
+    private zoomFactor: number = 300 / this.lensWidth; // size of zoomed image, divided by lens size
     private sourceImageEl: any;
     private sourceImageRect: any;
     
     constructor(private sanitizer: DomSanitizer, private _documentDialog: DocumentViewComponent) { } //DocumentContainerDirective) { }
 
-    ngOnInit() {
+    ngOnChanges() {
         this.backgroundImageStyle = this.setZoomImage(this.imgPath); 
+    }
+
+    onScroll() {
+        this._documentDialog.getScroll().then( scroll => {
+            this.top = this.mouseY + scroll;
+        });
     }
 
     onMouseMove(event: MouseEvent) {
@@ -39,13 +49,13 @@ export class ImageViewComponent implements OnInit {
         this.sourceImageRect = this.sourceImageEl.getBoundingClientRect();
         this.backgroundSize = (this.sourceImageRect.width * this.zoomFactor).toString()+"px " + 
             (this.sourceImageRect.height * this.zoomFactor).toString()+"px";
-        this.backgroundPosition = "-"+(event.offsetX * this.zoomFactor - this.zoomFactor * this.lensWidth/2).toString()+"px -"+
-            (event.offsetY * this.zoomFactor - this.zoomFactor * this.lensWidth/2).toString()+"px";
-        this._documentDialog.getScroll().then( scroll => {
-            this.dialogScroll = scroll;
-            this.left = event.clientX - this.lensWidth/2;
-            this.top = event.clientY - this.lensWidth - this.sourceImageEl.offsetTop + this.dialogScroll;
-        });
+        this.backgroundX = event.offsetX * this.zoomFactor - this.zoomFactor * this.lensWidth/2;
+        this.backgroundY = event.offsetY * this.zoomFactor - this.zoomFactor * this.lensWidth/2;
+        this.backgroundPosition = "-"+this.backgroundX.toString()+"px -"+
+            this.backgroundY.toString()+"px";
+        this.left = event.clientX - this.lensWidth/2 - this.srcMargins;
+        this.mouseY = event.clientY - this.lensWidth/2 - this.sourceImageEl.offsetTop + this.srcMargins + this.margins;
+        this.onScroll();
     }
 
     setZoomImage(path: string) {

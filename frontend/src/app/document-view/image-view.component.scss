@@ -1,9 +1,9 @@
 .zoom-lens {
     position: absolute;
-    border: 1px solid #d4d4d4;
+    border: 2px solid #d4d4d4;
     /*set the size of the lens:*/
-    width: 40px;
-    height: 40px;
+    width: 92px;
+    height: 92px;
     pointer-events: none;
   }
   
@@ -14,7 +14,15 @@
     height: 300px;
     z-index: 1000;
     background-repeat: no-repeat;
-    position: absolute;
-    top: 80px;
+    position: fixed;
+    top: 120px;
     left: 150px;
+    background-color: white;
+}
+
+.src-img {
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 
+                0 0 0 1px rgba(10, 10, 10, 0.1);
+    margin-top: 5px;
 }
