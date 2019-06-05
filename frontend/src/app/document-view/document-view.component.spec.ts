@@ -41,10 +41,9 @@ describe('DocumentViewComponent', () => {
             downloadable: true
         }];
         component.document = {
-            relevance: 0.5,
-            fieldValues: { 'test': 'Hello world!' },
             id: 'test',
-            position: 1
+            relevance: 0.5,
+            fieldValues: { 'test': 'Hello world!' }
         };
         fixture.detectChanges();
     });

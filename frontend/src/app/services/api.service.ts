@@ -182,6 +182,24 @@ export class ApiService extends Resource {
         { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
 
     @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/request_reset'
+    })
+    public requestReset: ResourceMethod<
+        { email: string },
+        { success: boolean, message:string }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/reset_password'
+    })
+    public resetPassword: ResourceMethod<
+        { password: string },
+        { success: boolean }
+    >
+    
+
+    @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/solislogin'
     })

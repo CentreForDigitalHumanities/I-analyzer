@@ -65,7 +65,3 @@ describe('VisualizationComponent', () => {
         fixture.destroy();
     });
 });
-
-function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
-    return { id, relevance, fieldValues, position };
-}

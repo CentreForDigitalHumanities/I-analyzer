@@ -1,12 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilterData, ResultOverview, SearchFilter, AggregateData, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, DataService, SearchService, DialogService, DownloadService, UserService, NotificationService } from '../services/index';
+import { CorpusService, DataService, SearchService, DialogService, UserService, NotificationService } from '../services/index';
 
 @Component({
     selector: 'ia-search',
@@ -65,6 +65,7 @@ export class SearchComponent implements OnInit {
 
     private resultsCount: number = 0;
     private tabIndex: number;
+    public searchBarHeight: number;
 
     private searchFilters: SearchFilter [] = [];
     private activeFilters: SearchFilter [] = [];

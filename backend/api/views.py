@@ -21,13 +21,13 @@ from flask import Flask, Blueprint, Response, request, abort, current_app, \
 import flask_admin as admin
 from flask_login import LoginManager, login_required, login_user, \
     logout_user, current_user
-from flask_mail import Mail, Message
+from flask_mail import Message
 
 from ianalyzer import models, celery_app
 from es import download
 from addcorpus.load_corpus import load_all_corpora, load_corpus
 
-from . import mail
+from api.user_mail import send_user_mail
 from . import security
 from . import analyze
 from . import tasks
@@ -52,7 +52,7 @@ def api_register():
     username = request.json['username']
     email = request.json['email']
     is_valid_username = security.is_unique_username(username)
-    is_valid_email = security.is_unique_email(email)
+    is_valid_email = security.is_unique_non_solis_email(email)
         
     if not is_valid_username or not is_valid_email:
         return jsonify({
@@ -60,9 +60,20 @@ def api_register():
             'is_valid_username': is_valid_username,
             'is_valid_email': is_valid_email
         })
-
+    token = security.get_token(username)
     # try sending the email
-    if not send_registration_mail(email, username):
+    if not send_user_mail(
+        email,
+        username,
+        "Thank you for signing up at I-analyzer",
+        "User registration",
+        "Thank you for creating an I-analyzer account.",
+        "Please click the link below to confirm " + \
+        "your email address and finish your registration.",
+        current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
+        "Confirm registration",
+        True
+    ):
         return jsonify({
             'success': False,
             'is_valid_username': True,
@@ -72,47 +83,81 @@ def api_register():
     # if email was succesfully sent, add user to db
     add_basic_user(username, request.json['password'], email, False)
 
-    return jsonify({'success': True})
-
-
-def send_registration_mail(email, username):
-    '''
-    Send an email with a confirmation token to a new user
-    Returns a boolean specifying whether the email was sent succesfully
-    '''
-    token = security.get_token(email)
-    msg = Message(current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
-                  sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
-    msg.html = render_template('new_user_mail.html',
-                               username=username,
-                               confirmation_link=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
-                               url_i_analyzer=current_app.config['BASE_URL'],
-                               logo_link=current_app.config['LOGO_LINK'])
-    try:
-        mail.send(msg)
-        return True
-    except Exception as e:
-        logger.error("An error occured sending an email to {}:".format(email))
-        logger.error(e)
-        return False
-    
+    return jsonify({'success': True})    
 
 # endpoint for the confirmation of user if link in email is clicked.
 @api.route('/registration_confirmation/<token>', methods=['GET'])
 def api_register_confirmation(token):
 
     expiration = 60*60*72  # method does not return email after this limit
-    email = security.get_original_token_input(token, expiration)
+    username = security.get_original_token_input(token, expiration)
     
-    if not email:
+    if not username:
         flash('The confirmation link is invalid or has expired.', 'danger')
 
-    user = models.User.query.filter_by(email=email).first_or_404()
+    user = models.User.query.filter_by(username=username).first_or_404()
     user.active = True
     models.db.session.add(user)
     models.db.session.commit()
 
     return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
+
+@api.route('/request_reset', methods=['POST'])
+def api_request_reset():
+    if not request.json:
+        abort(400)
+    email = request.json['email']
+    users = models.User.query.filter_by(email=email).all()
+    message = 'No registered user for this e-mail address.'
+    if not users:
+        return jsonify({
+            'success': False,
+            'message': message
+        })
+    user = next((user for user in users if user.saml==False), None)
+    if not user:
+        return jsonify({
+            'success': False,
+            'message': message + " Log in via your Solis-ID or make a new account."})
+    token = security.get_token(user.username)
+    if not send_user_mail(
+        email, 
+        user.username,
+        "Your password can be reset",
+        "Password reset",
+        "You requested a password reset.",
+        "Please click the link below to enter " + \
+        "and confirm your new password.",
+        current_app.config['BASE_URL']+'/api/login_for_reset/'+token,
+        "Reset password"
+        ):
+        return jsonify({'success': False, 'message': 'Email could not be sent.'})
+    return jsonify({'success': True, 'message': 'An email was sent to your address.'})
+
+# endpoint for the confirmation of user if link in email is clicked.
+@api.route('/login_for_reset/<token>', methods=['GET'])
+def api_login_for_reset(token):
+    expiration = 60*60*72  # method does not return email after this limit
+    username = security.get_original_token_input(token, expiration)  
+    if not username:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+    user = models.User.query.filter_by(username=username).first_or_404()
+    security.login_user(user)
+    return redirect(current_app.config['BASE_URL']+'/reset-password/')
+
+
+@login_required
+@api.route('/reset_password', methods=['POST'])
+def api_reset_password():
+    user = current_user
+    if not request.json or not 'password' in request.json:
+        return jsonify({'success': False})
+    elif not user:
+        abort(403)
+    password = request.json['password']
+    user.password = generate_password_hash(password)
+    models.db.session.commit()
+    return jsonify({'success': True})
 
 
 @api.route('/es_config', methods=['GET'])
@@ -194,7 +239,7 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filepath = tasks.make_csv.delay(search_results, request.json)
+        filepath = tasks.make_csv.delay(search_results, request.json, current_user.username)
         csv_file = filepath.get()
         response = make_response(send_file(csv_file, mimetype='text/csv'))
         response.headers['filename'] = split(csv_file)[1]
@@ -220,7 +265,8 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), tasks.make_csv.s(request.json, current_user.email))
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), 
+        tasks.make_csv.s(request.json, current_user.username, current_user.email))
     csvs = csv_task.apply_async()
     if not csvs:
         return jsonify({'success': False, 'message': 'Could not create csvs.'})
@@ -255,7 +301,7 @@ def api_login():
 def add_basic_user(username, password, email, is_active):
     ''' Add a user with the role 'basic' to the database '''
 
-    basic_role = models.Role.query.filter_by(name='basic').first()  
+    basic_role = models.Role.query.filter_by(name='basic').first()
     pw_hash = None
     if (password):
         pw_hash = generate_password_hash(password)    
@@ -265,27 +311,6 @@ def add_basic_user(username, password, email, is_active):
         active=is_active,
         password=pw_hash,
         role_id=basic_role.id,
-    )
-    models.db.session.add(new_user)
-    models.db.session.commit()
-    return new_user
-
-
-def add_uu_user(username, password, email, is_active):
-    ''' Add a user with the role 'uu' to the database
-    Solis-id users get this role by default
-    '''
-
-    uu_role = models.Role.query.filter_by(name='uu').first()  
-    pw_hash = None
-    if (password):
-        pw_hash = generate_password_hash(password)    
-    new_user = models.User(
-        username=username,
-        email=email,
-        active=is_active,
-        password=pw_hash,
-        role_id=uu_role.id,
     )
     models.db.session.add(new_user)
     models.db.session.commit()

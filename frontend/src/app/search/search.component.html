@@ -96,9 +96,6 @@
                         <div class="column">
                             <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user" (view)="onViewDocument($event)"
                                 (searched)="onSearched($event)">
-                                <div class="field">
-                                    <label class="label">Sort By</label>
-                                </div>
                                 <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
                                     (onChange)="changeSorting($event)"></ia-search-sorting>
                             </ia-search-results>
