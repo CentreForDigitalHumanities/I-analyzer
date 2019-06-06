@@ -34,8 +34,8 @@ class GuardianObserver(XMLCorpus):
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
-    tag_toplevel = 'issue'
-    tag_entry = 'article'
+    tag_toplevel = 'Record'
+    tag_entry = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
