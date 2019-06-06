@@ -31,14 +31,13 @@ class Extractor(object):
         '''
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
-
-            try:
-                if self.transform:
+            if self.transform:
+                try:
                     return self.transform(result)
-            except Exception:
-                logging.critical("Value {v} could not be converted."
+                except Exception:
+                    logging.critical("Value {v} could not be converted."
                                  .format(v=result))
-                return None
+                    return None
             else:
                 return result
         else:
