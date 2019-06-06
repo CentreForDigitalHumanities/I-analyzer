@@ -313,7 +313,7 @@ class XMLCorpus(Corpus):
                 ))
         else:
             logger.warning(
-                'Top-level tag not found in `{}`'.format(filename or soup))
+                'Top-level tag not found in `{}`'.format(filename))
 
     def external_source2dict(self, external_fields, metadata):
         ''' 
