@@ -13,7 +13,7 @@ def send_user_mail(email, username, subject_line, email_title, message, prompt, 
     Send an email with a confirmation token to a new user
     Returns a boolean specifying whether the email was sent succesfully
     '''
-    msg = Message(subject_line=subject_line,
+    msg = Message(subject=subject_line,
                   sender=current_app.config['MAIL_FROM_ADRESS'], recipients=[email])
     msg.html = render_template('user_mail.html',
                                email_title=email_title,
