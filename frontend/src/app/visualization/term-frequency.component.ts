@@ -161,12 +161,12 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             .attr('y', d => this.yScale(d.doc_count))
             .attr('width', this.xBarWidth);
 
-        this.xAxis
-            .call(d3.axisBottom(this.xScale).ticks(selection.length))
-            .selectAll('.tick text')
-            .text((d, i) => selection[i].key)
-            .attr("text-anchor", "right")
-            .attr("transform", "rotate(-35)");  
+        // this.xAxis
+        //     .call(d3.axisBottom(this.xScale).ticks(selection.length))
+        //     .selectAll('.tick text')
+        //     .text((d, i) => selection[i].key)
+        //     .attr("text-anchor", "right")
+        //     .attr("transform", "rotate(-35)");  
     }
 
     zoomOut() {
