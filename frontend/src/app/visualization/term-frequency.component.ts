@@ -165,9 +165,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             .call(d3.axisBottom(this.xScale).ticks(selection.length))
             .selectAll('.tick text')
             .text((d, i) => selection[i].key)
-            .attr("text-anchor", "middle")
-            .attr("x", this.width / 2)
-            .attr("y", this.height + this.margin.bottom)
+            .attr("text-anchor", "right")
             .attr("transform", "rotate(-35)");  
     }
 

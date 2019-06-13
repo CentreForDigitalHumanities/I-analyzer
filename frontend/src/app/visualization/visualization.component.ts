@@ -45,6 +45,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
+    public isLoading: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -100,6 +101,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
 
     setVisualizedField(selectedField: string) {
+        this.isLoading = true;
         this.timeline = false;
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
@@ -123,6 +125,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
+            this.isLoading = false;
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
@@ -131,12 +134,14 @@ export class VisualizationComponent implements OnInit, OnChanges {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
+                this.isLoading = false;
             })
                 .catch(error => {
                     this.relatedWordsGraph = undefined;
                     this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
                     this.errorMessage = error['message'];
+                    this.isLoading = false;
                 });
         }
         else {
@@ -150,6 +155,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
             let aggregator = {name: this.visualizedField.name, size: size};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
+                this.isLoading = false;
             });
         }
     }
@@ -197,5 +203,9 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     showChart() {
         this.freqtable = false;
+    }
+
+    isLoadingEvent(event: boolean) {
+        this.isLoading = event;
     }
 }
