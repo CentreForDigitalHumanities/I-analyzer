@@ -21,7 +21,7 @@
     		as Percentage
     	</label>
     </div>  
-    <ng-container *ngIf="!freqtable">
+    <div [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
     		 [asPercent]="asPercentage">
@@ -31,7 +31,7 @@
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
         </ng-container>
-    </ng-container>
+    </div>
     <ng-container *ngIf="freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
         	<ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [asPercent]="asPercentage">
