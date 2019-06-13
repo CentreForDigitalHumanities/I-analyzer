@@ -72,7 +72,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
-        this.isLoading = false;
     }
 
     setDateRange() {   

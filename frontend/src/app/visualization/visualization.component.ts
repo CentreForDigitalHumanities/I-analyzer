@@ -52,8 +52,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     private tasksToCancel: string[] = [];
 
-    public isLoading: boolean = false;
-
     constructor(private searchService: SearchService, private apiService: ApiService) {
     }
 
@@ -102,7 +100,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
 
     setVisualizedField(selectedField: string) {
-        this.isLoading = true;
         this.timeline = false;
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
@@ -126,7 +123,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
-            this.isLoading = false;
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
@@ -135,15 +131,13 @@ export class VisualizationComponent implements OnInit, OnChanges {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
-                this.isLoading = false;
             })
-            .catch(error => {
-                this.relatedWordsGraph = undefined;
-                this.relatedWordsTable = undefined;
-                this.foundNoVisualsMessage = this.noResults;
-                this.errorMessage = error['message'];
-                this.isLoading = false;
-            });
+                .catch(error => {
+                    this.relatedWordsGraph = undefined;
+                    this.relatedWordsTable = undefined;
+                    this.foundNoVisualsMessage = this.noResults;
+                    this.errorMessage = error['message'];
+                });
         }
         else {
             let size = 0;
@@ -156,7 +150,6 @@ export class VisualizationComponent implements OnInit, OnChanges {
             let aggregator = {name: this.visualizedField.name, size: size};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
-                this.isLoading = false;
             });
         }
     }
