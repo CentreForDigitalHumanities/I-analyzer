@@ -1,6 +1,6 @@
 '''
-Collect corpus-specific information, that is, data structures and file
-locations.
+Collect information from the Guardian-Observer corpus: the articles are contained in 
+separate xml-files, zipped.
 '''
 
 import logging
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 import glob
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 import os.path as op
-from datetime import datetime, timedelta
+from datetime import date, datetime
 from zipfile import ZipFile
 
 from flask import current_app
@@ -35,14 +35,12 @@ class GuardianObserver(XMLCorpus):
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
     tag_toplevel = 'Record'
-    tag_entry = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
         '''
         Obtain source files for the Guardian-Observer data.
 
-        Specifically, return an iterator of tuples that each contain a string
-        filename and a dictionary of metadata (in this case, the date).
+        Specifically, return the data contained in an xml file within a zip archive.
         '''
         for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
             xmls = ZipFile(str(zfile)).namelist()
@@ -69,13 +67,8 @@ class GuardianObserver(XMLCorpus):
             ),
             extractor=extract.XML(
                 tag='NumericPubDate', toplevel=True, 
-                transform=lambda x: datetime.datetime(
-                    int(x[:4]), int(x[4:6], int(x[6:7])
-                ).strftime(
-                    '%Y-%m-%d'
+                transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
                 )
-                )
-            )
         ),
         Field(
             name='date-pub',
@@ -91,19 +84,19 @@ class GuardianObserver(XMLCorpus):
             name='id',
             display_name='ID',
             description='Article identifier.',
-            extractor=extract.XML(tag='RecordID')
+            extractor=extract.XML(tag='RecordID', toplevel=True)
         ),
         Field(
             name='pub_id',
             display_name='Publication ID',
             description='Publication identifier',
-            extractor=extract.XML(tag='PublicationID')
+            extractor=extract.XML(tag='PublicationID', toplevel=True)
         ),
         Field(
             name='page',
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
-            extractor=extract.XML(tag='StartPage')
+            extractor=extract.XML(tag='StartPage', toplevel=True)
         ),
         Field(
             name='title',
@@ -112,27 +105,25 @@ class GuardianObserver(XMLCorpus):
             search_field_core=True,
             visualization_type='wordcloud',
             description='Article title.',
-            extractor=extract.XML(tag='RecordTitle')
+            extractor=extract.XML(tag='RecordTitle', toplevel=True)
         ),
         Field(
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
-            extractor=extract.XML(
-                tag='Title'
-            )
+            extractor=extract.XML(tag='Title', toplevel=True)
         ),
         Field(
             name='place',
             display_name='Place',
             description='Place in which the article was published',
-            extractor=extract.XML(tag='Qualifier')
+            extractor=extract.XML(tag='Qualifier', toplevel=True)
         ),
         Field(
             name='author',
             display_name='Author',
             description='Article author',
-            extractor=extract.XML(tag='PersonName')
+            extractor=extract.XML(tag='PersonName', toplevel=True)
         ),
         Field(
             name='category',
@@ -170,7 +161,7 @@ class GuardianObserver(XMLCorpus):
                     'Weather'
                 ]
             ),
-            extractor=extract.XML(tag='ObjectType'),
+            extractor=extract.XML(tag='ObjectType', toplevel=True),
             csv_core=True
         ),
         Field(
@@ -181,8 +172,6 @@ class GuardianObserver(XMLCorpus):
             description='Raw OCR\'ed text (content).',
             results_overview=True,
             search_field_core=True,
-            extractor=extract.XML(
-                tag=['FullText']
-            )
+            extractor=extract.XML(tag='FullText', toplevel=True)
         )
     ]
