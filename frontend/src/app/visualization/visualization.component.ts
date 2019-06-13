@@ -2,7 +2,7 @@ import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, QueryModel } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
 
 @Component({
@@ -140,8 +140,14 @@ export class VisualizationComponent implements OnInit, OnChanges {
                 });
         }
         else {
-            let searchFilterData = this.visualizedField.searchFilter.defaultData as MultipleChoiceFilterData;
-            let aggregator = {name: this.visualizedField.name, size: searchFilterData.options.length};
+            let size = 0;
+            if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
+                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).options.length;
+            }
+            else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
+                size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
+            }
+            let aggregator = {name: this.visualizedField.name, size: size};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
             });

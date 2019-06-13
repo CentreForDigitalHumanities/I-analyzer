@@ -130,13 +130,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
 
     zoomIn() {
-        this.rescaleX();
         let xExtent = this.xScale.domain();
         let previousTimeCategory = this.currentTimeCategory;
         this.calculateTimeCategory(xExtent[0], xExtent[1]);
         // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
         if (this.currentTimeCategory == 'day' && previousTimeCategory == this.currentTimeCategory) {
             // zoom in without rearranging underlying data
+            this.rescaleX();
             this.chart.selectAll('.bar')
                 .transition().duration(750)
                 .attr('x', d => this.xScale(d.date))
@@ -152,6 +152,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
                 this.rescaleY(this.asPercent);
                 this.drawChartData();
+                this.rescaleX();
             });
         }
     }
