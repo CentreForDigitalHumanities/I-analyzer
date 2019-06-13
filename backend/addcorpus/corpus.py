@@ -10,6 +10,7 @@ import bs4
 import json
 import inspect
 import itertools
+from zipfile import ZipExtFile
 
 from . import extract
 
@@ -272,10 +273,13 @@ class XMLCorpus(Corpus):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
         # extract information from external xml files first, if applicable
+        metadata = {}
         if isinstance(source, str):
             # no metadata
             filename = source
-            metadata = {}
+        elif isinstance(source, bytes): 
+            soup = self.soup_from_data(source)
+            filename = soup.find('RecordID')
         else:
             filename = source[0]
             metadata = source[1] or None
@@ -289,7 +293,8 @@ class XMLCorpus(Corpus):
         else:
             regular_fields = self.fields
             external_dict = {}
-        soup = self.soup_from_xml(filename)
+        if not soup:
+            soup = self.soup_from_xml(filename)
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)
@@ -342,9 +347,13 @@ class XMLCorpus(Corpus):
         logger.info('Reading XML file {} ...'.format(filename))
         with open(filename, 'rb') as f:
             data = f.read()
-        # Parsing XML
         logger.info('Loaded {} into memory...'.format(filename))
-
+        return self.soup_from_data(data)
+        
+    def soup_from_data(self, data):    
+        '''
+        Parses content of a xml file
+        '''
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
     def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
