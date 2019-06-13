@@ -1,6 +1,6 @@
 '''
-Collect corpus-specific information, that is, data structures and file
-locations.
+Collect information from the Guardian-Observer corpus: the articles are contained in 
+separate xml-files, zipped.
 '''
 
 import logging
@@ -40,8 +40,7 @@ class GuardianObserver(XMLCorpus):
         '''
         Obtain source files for the Guardian-Observer data.
 
-        Specifically, return an iterator of tuples that each contain a string
-        filename and a dictionary of metadata (in this case, the date).
+        Specifically, return the data contained in an xml file within a zip archive.
         '''
         for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
             xmls = ZipFile(str(zfile)).namelist()
