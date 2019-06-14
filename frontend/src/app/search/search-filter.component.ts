@@ -42,7 +42,7 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
-                if (this.field && data!==undefined) {              
+                if (this.field && data !== undefined) {
                     this.filter = data.find(f => f.fieldName === this.field.name);
                     this.greyedOut = false;
                     this.data = this.getDisplayData(this.filter);
@@ -74,12 +74,14 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
                 return filter.currentData.checked;
             case 'RangeFilter':
                 return [filter.currentData.min, filter.currentData.max];
-            case 'MultipleChoiceFilter':    
+            case 'MultipleChoiceFilter':
                 let options = [];
                 if (filter.currentData.optionsAndCounts) {
-                    options = filter.currentData.optionsAndCounts.map( x => {
-                        return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
-                    });
+                    options = _.sortBy(
+                        filter.currentData.optionsAndCounts.map(x => {
+                            return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
+                        }),
+                        o => { return o.label; });
                 }
                 else options = filter.currentData.options.map(x => { return { 'label': x, 'value': x } });
                 if (options.length === 0) {
@@ -113,8 +115,8 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
             case 'RangeFilter':
                 this.filter.currentData = {
                     filterType: filterType,
-                    min: this.data[0], 
-                    max: this.data[1] 
+                    min: this.data[0],
+                    max: this.data[1]
                 };
                 break;
             case 'MultipleChoiceFilter':

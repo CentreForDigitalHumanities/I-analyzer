@@ -4,6 +4,17 @@
     max-width: 300px;
 }
 
+::ng-deep .ui-multiselect-item > label {
+    white-space: pre-line !important;
+    vertical-align: top;
+    // word-break: break-all;
+}
+
+::ng-deep .ui-multiselect-panel .ui-multiselect-item .ui-chkbox {
+    display: inline-block;
+    vertical-align: top;
+}
+
 ::ng-deep .ui-inputtext {
     border: 1px solid $primary;
     width: 80%;
