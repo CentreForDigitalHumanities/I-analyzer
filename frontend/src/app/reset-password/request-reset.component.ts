@@ -24,14 +24,8 @@ export class RequestResetComponent implements OnInit {
     requestReset(requestResetForm: NgForm) {
         let email: string = requestResetForm.value.email;
         this.apiService.requestReset({email: email}).then( response => {
-            this.success = response.success;
-            if (this.success===true) {
-                this.router.navigate(['/reset-password']);
-            }
-            else {
-                this.message = response.message;
-                this.showMessage = true;
-            }
+            this.message = response.message;
+            this.showMessage = true;
         });
     }
 
