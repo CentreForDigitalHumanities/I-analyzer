@@ -1,9 +1,6 @@
 import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-// import { DocumentContainerDirective } from '../document-view/document-container.directive';
-import { DocumentViewComponent } from '../document-view/document-view.component';
-
 @Component({
   selector: 'ia-image-view',
   templateUrl: './image-view.component.html',
@@ -25,23 +22,14 @@ export class ImageViewComponent implements OnChanges {
     public backgroundSize: string;
     public zoomVisible: string = 'hidden';
     public lensWidth: number = 92;
-    private margins: number = 5; // zoom image and lens borders
-    private srcMargins: number = 10; // src image border and margin
-    private mouseY: number;
     private zoomFactor: number = 300 / this.lensWidth; // size of zoomed image, divided by lens size
     private sourceImageEl: any;
     private sourceImageRect: any;
     
-    constructor(private sanitizer: DomSanitizer, private _documentDialog: DocumentViewComponent) { } //DocumentContainerDirective) { }
+    constructor(private sanitizer: DomSanitizer) { }
 
     ngOnChanges() {
         this.backgroundImageStyle = this.setZoomImage(this.imgPath); 
-    }
-
-    onScroll() {
-        this._documentDialog.getScroll().then( scroll => {
-            this.top = this.mouseY + scroll;
-        });
     }
 
     onMouseMove(event: MouseEvent) {
@@ -53,9 +41,8 @@ export class ImageViewComponent implements OnChanges {
         this.backgroundY = event.offsetY * this.zoomFactor - this.zoomFactor * this.lensWidth/2;
         this.backgroundPosition = "-"+this.backgroundX.toString()+"px -"+
             this.backgroundY.toString()+"px";
-        this.left = event.clientX - this.lensWidth/2 - this.srcMargins;
-        this.mouseY = event.clientY - this.lensWidth/2 - this.sourceImageEl.offsetTop + this.srcMargins + this.margins;
-        this.onScroll();
+        this.left = event.offsetX - this.lensWidth/2;
+        this.top =  event.offsetY - this.lensWidth/2;
     }
 
     setZoomImage(path: string) {

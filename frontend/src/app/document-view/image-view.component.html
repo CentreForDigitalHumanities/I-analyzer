@@ -1,6 +1,6 @@
 <div class="image-container">
-    <img class="src-img" #sourceImage src="{{imgPath}}" (wheel)="onScroll()" (mousemove)="onMouseMove($event)" (mouseover)="zoomVisible = 'visible'" (mouseout)="zoomVisible = 'hidden'"/>
     <div class="zoom-lens" [ngStyle]="{'top.px': top, 'left.px': left, 'visibility': zoomVisible}"></div>
+    <div class="src-img-div"><img class="src-img" #sourceImage src="{{imgPath}}" (mousemove)="onMouseMove($event)" (mouseover)="zoomVisible = 'visible'" (mouseout)="zoomVisible = 'hidden'"/></div>
 </div>
 
 <div #zoomedImage class="zoom-img" [style]="backgroundImageStyle" 

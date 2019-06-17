@@ -1,10 +1,11 @@
 .zoom-lens {
-    position: absolute;
+    position: relative;
     border: 2px solid #d4d4d4;
     /*set the size of the lens:*/
     width: 92px;
     height: 92px;
     pointer-events: none;
+    z-index: 2000;
   }
   
 .zoom-img {
@@ -24,5 +25,8 @@
     border-radius: 5px;
     box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 
                 0 0 0 1px rgba(10, 10, 10, 0.1);
-    margin-top: 5px;
+}
+
+.src-img-div {
+    margin-top: -92px;
 }
