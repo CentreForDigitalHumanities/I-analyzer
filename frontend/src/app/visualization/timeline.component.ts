@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as _ from "lodash";
@@ -23,6 +23,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
     @Input() asPercent: boolean = false;
+
+    @Output() isLoading = new EventEmitter<boolean>();
 
     private queryModelCopy;
 
@@ -68,10 +70,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async prepareTimeline() {
+        this.isLoading.emit(true);
         await this.requestTimeData();
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
         this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.isLoading.emit(false);
     }
 
     setDateRange() {   
@@ -130,13 +134,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
 
     zoomIn() {
-        this.rescaleX();
         let xExtent = this.xScale.domain();
         let previousTimeCategory = this.currentTimeCategory;
         this.calculateTimeCategory(xExtent[0], xExtent[1]);
         // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
         if (this.currentTimeCategory == 'day' && previousTimeCategory == this.currentTimeCategory) {
             // zoom in without rearranging underlying data
+            this.rescaleX();
             this.chart.selectAll('.bar')
                 .transition().duration(750)
                 .attr('x', d => this.xScale(d.date))
@@ -152,6 +156,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
                 this.rescaleY(this.asPercent);
                 this.drawChartData();
+                this.rescaleX();
             });
         }
     }

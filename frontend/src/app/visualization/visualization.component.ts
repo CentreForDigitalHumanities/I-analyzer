@@ -2,7 +2,7 @@ import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, QueryModel } from '../models/index';
+import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
 
 @Component({
@@ -45,6 +45,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
+    public isLoading: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -100,6 +101,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     }
 
     setVisualizedField(selectedField: string) {
+        this.isLoading = true;
         this.timeline = false;
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
@@ -123,6 +125,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
         this.foundNoVisualsMessage = "Retrieving data..."
         if (this.visualizedField.visualizationType === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
+            this.isLoading = false;
         }
         else if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
@@ -131,19 +134,28 @@ export class VisualizationComponent implements OnInit, OnChanges {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
+                this.isLoading = false;
             })
                 .catch(error => {
                     this.relatedWordsGraph = undefined;
                     this.relatedWordsTable = undefined;
                     this.foundNoVisualsMessage = this.noResults;
                     this.errorMessage = error['message'];
+                    this.isLoading = false;
                 });
         }
         else {
-            let searchFilterData = this.visualizedField.searchFilter.defaultData as MultipleChoiceFilterData;
-            let aggregator = {name: this.visualizedField.name, size: searchFilterData.options.length};
+            let size = 0;
+            if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
+                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).options.length;
+            }
+            else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
+                size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
+            }
+            let aggregator = {name: this.visualizedField.name, size: size};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
+                this.isLoading = false;
             });
         }
     }
@@ -191,5 +203,9 @@ export class VisualizationComponent implements OnInit, OnChanges {
 
     showChart() {
         this.freqtable = false;
+    }
+
+    isLoadingEvent(event: boolean) {
+        this.isLoading = event;
     }
 }

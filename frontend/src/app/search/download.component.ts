@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
@@ -8,7 +8,7 @@ import { Corpus, CorpusField, QueryModel } from '../models/index';
   templateUrl: './download.component.html',
   styleUrls: ['./download.component.scss']
 })
-export class DownloadComponent implements OnInit {
+export class DownloadComponent implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
@@ -22,9 +22,11 @@ export class DownloadComponent implements OnInit {
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
     
+    private resultsCutoff = 1000;
+    
     constructor(private downloadService: DownloadService, private notificationService: NotificationService) { }
 
-    ngOnInit() {
+    ngOnChanges() {
         this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
     }
 
@@ -32,7 +34,7 @@ export class DownloadComponent implements OnInit {
      * called by download csv button. Large files are rendered in backend via Celery async task and an email is send with download link from backend
      */
     public choose_download_method() {
-        if (this.resultsCount < 1000) {
+        if (this.resultsCount < this.resultsCutoff) {
             this.isDownloading = true;
             this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount).then( results => { 
                 this.isDownloading = false;

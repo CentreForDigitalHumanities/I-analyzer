@@ -239,7 +239,7 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filepath = tasks.make_csv.delay(search_results, request.json)
+        filepath = tasks.make_csv.delay(search_results, request.json, current_user.username)
         csv_file = filepath.get()
         response = make_response(send_file(csv_file, mimetype='text/csv'))
         response.headers['filename'] = split(csv_file)[1]
