@@ -24,26 +24,14 @@
             <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
             {{data | json | titlecase }}
         </div>
-
-
-
         <div class="mc" *ngIf="filter.defaultData.filterType == 'MultipleChoiceFilter'">
-            <p-multiSelect 
-            [disabled]="greyedOut" 
-            [filter]="data.options.length>=6" 
-            [options]="data.options" 
-            [maxSelectedLabels]=1 
-            [(ngModel)]="data.selected" 
-            (onPanelHide)="update()">
-            <ng-template let-item pTemplate="item">
-                <div class="select-label">{{item.value}}</div>
-                <div class="select-count">{{item.doc_count}}</div>     
-            </ng-template>
-        </p-multiSelect>
+            <p-multiSelect [disabled]="greyedOut" [filter]="data.options.length>=6" [options]="data.options" [maxSelectedLabels]=1 [(ngModel)]="data.selected" (onPanelHide)="update()">
+                <ng-template let-item pTemplate="item">
+                    <div class="select-label">{{item.value}}</div>
+                    <div class="select-count">{{item.doc_count}}</div>     
+                </ng-template>
+            </p-multiSelect>
         </div>
-
-
-
         <div class="range" *ngIf="filter.defaultData.filterType == 'RangeFilter'">
             <span>{{data[0]}} - {{data[1]}}</span>
             <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.defaultData.min" [max]="filter.defaultData.max" (onSlideEnd)="update()"></p-slider>
