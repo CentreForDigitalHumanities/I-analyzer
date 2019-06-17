@@ -7,8 +7,8 @@ Flask-SeaSurf
 Flask-Mail
 Werkzeug
 WTForms
-mysqlclient
-elasticsearch
+celery
+elasticsearch>=6.0, <7.0
 beautifulsoup4
 lxml
 pytest
@@ -19,3 +19,4 @@ numpy
 responses
 python3-saml
 pypdf2
+mysqlclient>=1.3.12,<1.4.0
