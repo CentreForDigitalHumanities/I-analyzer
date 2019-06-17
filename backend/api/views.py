@@ -356,7 +356,7 @@ def api_log():
 @api.route('/logout', methods=['POST'])
 def api_logout():
     if current_user.is_authenticated:
-        security.logout_user(current_user)
+        logout_user()
     return jsonify({'success': True})
 
 
