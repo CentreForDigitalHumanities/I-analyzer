@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { ApiService, UserService } from '../services/index';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'ia-reset-password',
@@ -17,7 +17,7 @@ export class ResetPasswordComponent implements OnInit {
 
     private token: string;
 
-    constructor(private apiService: ApiService, private activatedRoute: ActivatedRoute, private userService: UserService) { }
+    constructor(private apiService: ApiService, private activatedRoute: ActivatedRoute, private router: Router, private userService: UserService) { }
 
     ngOnInit() {
         this.activatedRoute.queryParams.subscribe( params => {
@@ -35,6 +35,9 @@ export class ResetPasswordComponent implements OnInit {
             if (this.resetSucceeded === false) {
                 this.message = result.message;
                 setTimeout(() => this.userService.showLogin(), 3000);
+            }
+            else {
+                this.router.navigate(['/home']);
             }
         });
     }
