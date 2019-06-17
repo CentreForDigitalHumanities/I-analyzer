@@ -16,6 +16,7 @@ export class ResetPasswordComponent implements OnInit {
     constructor(private apiService: ApiService) { }
 
     ngOnInit() {
+        this.apiService.checkSession();
     }
 
     reset(resetForm: NgForm) {

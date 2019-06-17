@@ -120,19 +120,22 @@ def api_request_reset():
             'success': False,
             'message': message + " Log in via your Solis-ID or make a new account."})
     token = security.get_token(user.username)
-    if not send_user_mail(
-        email, 
-        user.username,
-        "Your password can be reset",
-        "Password reset",
-        "You requested a password reset.",
-        "Please click the link below to enter " + \
-        "and confirm your new password.",
-        current_app.config['BASE_URL']+'/api/login_for_reset/'+token,
-        "Reset password"
-        ):
-        return jsonify({'success': False, 'message': 'Email could not be sent.'})
-    return jsonify({'success': True, 'message': 'An email was sent to your address.'})
+    # if not send_user_mail(
+    #     email, 
+    #     user.username,
+    #     "Your password can be reset",
+    #     "Password reset",
+    #     "You requested a password reset.",
+    #     "Please click the link below to enter " + \
+    #     "and confirm your new password.",
+    #     current_app.config['BASE_URL']+'/api/login_for_reset/'+token,
+    #     "Reset password"
+    #     ):
+    #     return jsonify({'success': False, 'message': 'Email could not be sent.'})
+    # return jsonify({'success': True, 'message': 'An email was sent to your address.'})
+    user = models.User.query.filter_by(username=user.username).first_or_404()
+    security.login_user(user)
+    return create_success_response(user)
 
 # endpoint for the confirmation of user if link in email is clicked.
 @api.route('/login_for_reset/<token>', methods=['GET'])

@@ -76,8 +76,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'reset-password',
-        component: ResetPasswordComponent,
-        canActivate: [LoggedOnGuard]
+        component: ResetPasswordComponent
     },
     {
         path: 'privacy',
