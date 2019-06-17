@@ -68,6 +68,15 @@
     }
 }
 
+::ng-deep p-dialog {
+    .ui-dialog-content {
+        max-height: 600px;
+        min-height: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
+
 // .field.has-addons .control:last-child .button {
 //     border-radius: 2px;
 // }

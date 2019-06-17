@@ -16,6 +16,7 @@ import { ElasticSearchServiceMock } from '../services/elastic-search.service.moc
 import { DialogServiceMock } from '../services/dialog.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
+import { ImageViewComponent } from '../document-view/image-view.component';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { PaginationComponent } from './pagination.component';
 import { SearchComponent } from './search.component';
@@ -46,7 +47,7 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ScanPdfComponent, PaginationComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TermFrequencyComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ImageViewComponent, ScanPdfComponent, PaginationComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TermFrequencyComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
             imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,

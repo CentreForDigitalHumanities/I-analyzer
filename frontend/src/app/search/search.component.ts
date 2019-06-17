@@ -16,6 +16,7 @@ import { CorpusService, DataService, SearchService, DialogService, UserService, 
 export class SearchComponent implements OnInit {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
+
     public isScrolledDown: boolean;
 
     public corpus: Corpus;
