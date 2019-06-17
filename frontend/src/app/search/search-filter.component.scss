@@ -2,17 +2,7 @@
 
 ::ng-deep .ui-multiselect-panel {
     max-width: 300px;
-}
-
-::ng-deep .ui-multiselect-item > label {
-    white-space: pre-line !important;
-    vertical-align: top;
-    // word-break: break-all;
-}
-
-::ng-deep .ui-multiselect-panel .ui-multiselect-item .ui-chkbox {
-    display: inline-block;
-    vertical-align: top;
+    width: 300px;
 }
 
 ::ng-deep .ui-inputtext {
@@ -37,4 +27,20 @@
 
 .filter-icon {
     border: none;
+}
+
+.select-count {
+    width:24px;
+    float: right;
+    align-content: right;
+    vertical-align: top;
+}
+
+.select-label {
+    // font-size:14px;
+    display: inline-block;
+    // margin-top:4px;
+    white-space: pre-line;
+    max-width: 200px;
+    vertical-align: top;
 }

@@ -79,7 +79,7 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
                 if (filter.currentData.optionsAndCounts) {
                     options = _.sortBy(
                         filter.currentData.optionsAndCounts.map(x => {
-                            return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
+                            return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key, 'doc_count': x.doc_count }
                         }),
                         o => { return o.label; });
                 }
