@@ -37,7 +37,7 @@ export class DocumentViewComponent implements OnChanges {
     ngOnChanges() {
         if (this.corpus.scan_image_type=="png") {
             if (this.document.fieldValues.image_path){
-                this.imgPath = "/api/get_scan_image/" + this.corpus.index + this.document.fieldValues.image_path;
+                this.imgPath = "/api/get_scan_image/" + this.corpus.index + '/' + this.document.fieldValues.image_path;
                 this.imgNotFound = false;
             }
             else {
