@@ -20,7 +20,7 @@ export class ResetPasswordComponent implements OnInit {
     constructor(private apiService: ApiService, private activatedRoute: ActivatedRoute, private router: Router, private userService: UserService) { }
 
     ngOnInit() {
-        this.activatedRoute.queryParams.subscribe( params => {
+        this.activatedRoute.params.subscribe( params => {
             this.token = params['token'];
         })
     }
@@ -29,7 +29,7 @@ export class ResetPasswordComponent implements OnInit {
         this.submitted = true;
         let password = resetForm.value.password;
         this.isLoading = true;
-        this.apiService.resetPassword({token: this.token, password: password}).then( result => {
+        this.apiService.resetPassword({password: password, token: this.token}).then( result => {
             this.resetSucceeded = result.success;
             this.isLoading = false;
             if (this.resetSucceeded === false) {
@@ -37,7 +37,8 @@ export class ResetPasswordComponent implements OnInit {
                 setTimeout(() => this.userService.showLogin(), 3000);
             }
             else {
-                this.router.navigate(['/home']);
+                this.userService.login(result.username, password);
+                //this.router.navigate(['/home']);
             }
         });
     }

@@ -195,7 +195,7 @@ export class ApiService extends Resource {
     })
     public resetPassword: ResourceMethod<
         { password: string, token: string },
-        { success: boolean, message?: string }
+        { success: boolean, message?: string, username?: string }
     >
     
 

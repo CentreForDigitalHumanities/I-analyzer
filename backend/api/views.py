@@ -128,7 +128,7 @@ def api_request_reset():
         "You requested a password reset.",
         "Please click the link below to enter " + \
         "and confirm your new password.",
-        current_app.config['BASE_URL']+'/reset-password/token?'+token,
+        current_app.config['BASE_URL']+'/reset-password/'+token,
         "Reset password"
         ):
         return jsonify({'success': False, 'message': 'Email could not be sent.'})
@@ -137,10 +137,10 @@ def api_request_reset():
 
 @api.route('/reset_password', methods=['POST'])
 def api_reset_password():
-    if not request.json or not all(x in ['password', 'token'] for x in request.json):
+    if not request.json or not all(x in request.json for x in ['password', 'token']):
         return jsonify({'success': False, 'message': 'Errors during request'})
     expiration = 60*60*72  # method does not return email after this limit
-    username = security.get_original_token_input(token, expiration)  
+    username = security.get_original_token_input(request.json['token'], expiration)
     if not username:
         return jsonify({'success': False, 'message': 'Your token is not valid or has expired.'})
     user = models.User.query.filter_by(username=username).first_or_404()
@@ -150,7 +150,7 @@ def api_reset_password():
     password = request.json['password']
     user.password = generate_password_hash(password)
     models.db.session.commit()
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'username': username})
 
 
 @api.route('/es_config', methods=['GET'])
@@ -375,6 +375,7 @@ def api_query():
         abort(400)
 
     query_json = request.json['query']
+    print(query_json)
     if 'filters' in query_json:
         query_model = json.loads(query_json)
         for search_filter in query_model['filters']:
