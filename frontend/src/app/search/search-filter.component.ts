@@ -78,10 +78,10 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
                 let options = [];
                 if (filter.currentData.optionsAndCounts) {
                     options = filter.currentData.optionsAndCounts.map(x => {
-                        return { 'label': x.key + " (" + x.doc_count + ")", 'value': encodeURIComponent(x.key) }
+                        return { 'label': x.key, 'value': encodeURIComponent(x.key), 'doc_count': x.doc_count };
                     });
                 }
-                else options = filter.currentData.options.map(x => { return { 'label': x, 'value': x } });
+                else options = filter.currentData.options.map(x => { return { 'label': x, 'value': encodeURIComponent(x) } });
                 if (options.length === 0) {
                     this.greyedOut = true;
                 }
