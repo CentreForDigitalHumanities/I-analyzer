@@ -5,6 +5,8 @@ import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, Aggregate
 
 import { ApiRetryService } from './api-retry.service';
 
+import * as _ from 'lodash';
+
 type Connections = { [serverName: string]: Connection };
 
 @Injectable()
@@ -126,12 +128,14 @@ export class ElasticSearchService {
     }
 
     public async dateHistogramSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
-        let agg = { [fieldName]: {
-            date_histogram: {
-                field: fieldName,
-                interval: timeInterval
+        let agg = {
+            [fieldName]: {
+                date_histogram: {
+                    field: fieldName,
+                    interval: timeInterval
+                }
             }
-        }}
+        }
         let esQuery = this.makeEsQuery(queryModel);
         let aggregationModel = Object.assign({ aggs: agg }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
@@ -154,7 +158,7 @@ export class ElasticSearchService {
         let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response);
     }
-    
+
 
     /**
      * Load results for requested page
@@ -202,7 +206,13 @@ export class ElasticSearchService {
                 case "BooleanFilter":
                     return { 'term': { [filter.fieldName]: filter.currentData.checked } };
                 case "MultipleChoiceFilter":
-                    return { 'terms': { [filter.fieldName]: filter.currentData.selected } };
+                    return {
+                        'terms': {
+                            [filter.fieldName]: _.map(filter.currentData.selected, f => {
+                                return decodeURIComponent(f);
+                            })
+                        }
+                    };
                 case "RangeFilter":
                     return {
                         'range': {
