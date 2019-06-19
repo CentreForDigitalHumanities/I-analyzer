@@ -25,16 +25,7 @@ def validate_user(username, password):
 def login_user(user):
     """Login a user, make sure it has already been validated!"""
     user.authenticated = True
-    models.db.session.add(user)
-    models.db.session.commit()
     flask_login_user(user)
-
-
-def logout_user(user):
-    user.authenticated = True
-    models.db.session.add(user)
-    models.db.session.commit()
-    flask_logout_user()
 
 
 def is_unique_username(username):

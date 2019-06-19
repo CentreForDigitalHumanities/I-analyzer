@@ -4,8 +4,7 @@ import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import { User } from '../models/user';
 
-import { Subject, Subscription } from 'rxjs';
-import { LoginComponent } from '../login/login.component';
+import { Subscription } from 'rxjs';
 
 const localStorageKey = 'currentUser';
 const sessionCheckInterval = 10000;

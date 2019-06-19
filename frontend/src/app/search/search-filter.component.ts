@@ -77,11 +77,9 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
             case 'MultipleChoiceFilter':
                 let options = [];
                 if (filter.currentData.optionsAndCounts) {
-                    options = _.sortBy(
-                        filter.currentData.optionsAndCounts.map(x => {
-                            return { 'label': x.key, 'value': x.key, 'doc_count': x.doc_count }
-                        }),
-                        o => { return o.label; });
+                    options = filter.currentData.optionsAndCounts.map(x => {
+                        return { 'label': x.key, 'value': encodeURIComponent(x.key) }
+                    });
                 }
                 else options = filter.currentData.options.map(x => { return { 'label': x, 'value': x } });
                 if (options.length === 0) {

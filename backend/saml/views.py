@@ -6,13 +6,13 @@ The 'saml' route is CSRF exempt.
 """
 
 from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response
-from flask_login import current_user
+from flask_login import current_user, logout_user
 import logging
 logger = logging.getLogger(__name__)
 from werkzeug.security import generate_password_hash
 
 from ianalyzer.models import User, Role, db
-from api.security import login_user, get_token, get_original_token_input, logout_user
+from api.security import login_user, get_token, get_original_token_input
 from api import api
 from api.views import create_success_response
 from .saml_auth import SamlAuth, SamlAuthError
@@ -81,7 +81,7 @@ def process_logout_result():
     try:
         saml_auth.process_logout_result(request, session) #TODO local: SAMLing doesn't work with this
         if current_user.is_authenticated:
-            logout_user(current_user)
+            logout_user()
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
