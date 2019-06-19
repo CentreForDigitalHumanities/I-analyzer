@@ -97,7 +97,6 @@ def api_register_confirmation(token):
 
     user = models.User.query.filter_by(username=username).first_or_404()
     user.active = True
-    models.db.session.add(user)
     models.db.session.commit()
 
     return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
