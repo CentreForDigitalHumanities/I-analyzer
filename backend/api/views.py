@@ -128,36 +128,30 @@ def api_request_reset():
         "You requested a password reset.",
         "Please click the link below to enter " + \
         "and confirm your new password.",
-        current_app.config['BASE_URL']+'/api/login_for_reset/'+token,
+        current_app.config['BASE_URL']+'/reset-password/'+token,
         "Reset password"
         ):
         return jsonify({'success': False, 'message': 'Email could not be sent.'})
     return jsonify({'success': True, 'message': 'An email was sent to your address.'})
 
-# endpoint for the confirmation of user if link in email is clicked.
-@api.route('/login_for_reset/<token>', methods=['GET'])
-def api_login_for_reset(token):
-    expiration = 60*60*72  # method does not return email after this limit
-    username = security.get_original_token_input(token, expiration)  
-    if not username:
-        flash('The confirmation link is invalid or has expired.', 'danger')
-    user = models.User.query.filter_by(username=username).first_or_404()
-    security.login_user(user)
-    return redirect(current_app.config['BASE_URL']+'/reset-password/')
 
-
-@login_required
 @api.route('/reset_password', methods=['POST'])
 def api_reset_password():
-    user = current_user
-    if not request.json or not 'password' in request.json:
-        return jsonify({'success': False})
-    elif not user:
-        abort(403)
+    if not request.json or not all(x in request.json for x in ['password', 'token']):
+        return jsonify({'success': False, 'message': 'Errors during request'})
+    expiration = 60*60  # method does not return username after an hour
+    username = security.get_original_token_input(request.json['token'], expiration)
+    if not username:
+        return jsonify({'success': False, 'message': 'Your token is not valid or has expired.'})
+    user = models.User.query.filter_by(username=username).first_or_404()
+    if not user:
+        return jsonify({'success': False, 'message': 'User doesn\'t exist.'})
+    user = models.User.query.filter_by(username=username).first_or_404()
+    security.login_user(user) 
     password = request.json['password']
     user.password = generate_password_hash(password)
     models.db.session.commit()
-    return jsonify({'success': True})
+    return jsonify({'success': True, 'username': username})
 
 
 @api.route('/es_config', methods=['GET'])
@@ -356,7 +350,7 @@ def api_log():
 @api.route('/logout', methods=['POST'])
 def api_logout():
     if current_user.is_authenticated:
-        security.logout_user(current_user)
+        logout_user()
     return jsonify({'success': True})
 
 
