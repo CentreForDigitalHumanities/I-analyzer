@@ -25,6 +25,7 @@ def validate_user(username, password):
 def login_user(user):
     """Login a user, make sure it has already been validated!"""
     user.authenticated = True
+    models.db.session.commit()
     flask_login_user(user)
 
 
