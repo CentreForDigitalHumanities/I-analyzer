@@ -194,8 +194,8 @@ export class ApiService extends Resource {
         path: '/reset_password'
     })
     public resetPassword: ResourceMethod<
-        { password: string },
-        { success: boolean }
+        { password: string, token: string },
+        { success: boolean, message?: string, username?: string }
     >
     
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ApiService } from '../services/api.service';
 
@@ -14,7 +15,7 @@ export class RequestResetComponent implements OnInit {
     public showMessage: boolean;
     public message: string;
 
-    constructor(private apiService: ApiService) {
+    constructor(private apiService: ApiService, private router: Router) {
     }
 
     ngOnInit() {

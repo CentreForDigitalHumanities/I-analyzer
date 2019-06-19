@@ -51,6 +51,7 @@ import { TermFrequencyComponent } from './visualization/term-frequency.component
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination.component';
+import { ImageViewComponent } from './document-view/image-view.component';
 
 const appRoutes: Routes = [
     {
@@ -75,9 +76,8 @@ const appRoutes: Routes = [
         component: RequestResetComponent
     },
     {
-        path: 'reset-password',
-        component: ResetPasswordComponent,
-        canActivate: [LoggedOnGuard]
+        path: 'reset-password/:token',
+        component: ResetPasswordComponent
     },
     {
         path: 'privacy',
@@ -139,9 +139,10 @@ const appRoutes: Routes = [
         QueryFiltersComponent,
         DownloadComponent,
         TermFrequencyComponent,
+        PaginationComponent,
+        ImageViewComponent,
         ResetPasswordComponent,
-        RequestResetComponent,
-        PaginationComponent
+        RequestResetComponent
     ],
     imports: [
         BrowserAnimationsModule,
