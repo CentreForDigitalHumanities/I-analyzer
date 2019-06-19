@@ -139,13 +139,14 @@ def api_request_reset():
 def api_reset_password():
     if not request.json or not all(x in request.json for x in ['password', 'token']):
         return jsonify({'success': False, 'message': 'Errors during request'})
-    expiration = 60*60*72  # method does not return email after this limit
+    expiration = 60*60  # method does not return username after an hour
     username = security.get_original_token_input(request.json['token'], expiration)
     if not username:
         return jsonify({'success': False, 'message': 'Your token is not valid or has expired.'})
     user = models.User.query.filter_by(username=username).first_or_404()
     if not user:
         return jsonify({'success': False, 'message': 'User doesn\'t exist.'})
+    user = models.User.query.filter_by(username=username).first_or_404()
     security.login_user(user) 
     password = request.json['password']
     user.password = generate_password_hash(password)

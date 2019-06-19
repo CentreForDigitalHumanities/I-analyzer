@@ -37,8 +37,9 @@ export class ResetPasswordComponent implements OnInit {
                 setTimeout(() => this.userService.showLogin(), 3000);
             }
             else {
-                this.userService.login(result.username, password);
-                //this.router.navigate(['/home']);
+                this.userService.login(result.username, password).then( () => {
+                    this.router.navigate(['/home']);
+                })
             }
         });
     }
