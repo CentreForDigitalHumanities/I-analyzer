@@ -375,7 +375,6 @@ def api_query():
         abort(400)
 
     query_json = request.json['query']
-    print(query_json)
     if 'filters' in query_json:
         query_model = json.loads(query_json)
         for search_filter in query_model['filters']:
