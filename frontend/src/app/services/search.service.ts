@@ -80,8 +80,9 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
-        await this.queryService.save(query, true);
         let results = await this.elasticSearchService.search(corpus, queryModel);
+        query.totalResults = results.total;
+        await this.queryService.save(query, true);
 
         return <SearchResults>{
             fields: corpus.fields.filter(field => field.resultsOverview),

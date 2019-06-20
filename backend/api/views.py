@@ -93,11 +93,11 @@ def api_register_confirmation(token):
     username = security.get_original_token_input(token, expiration)
     
     if not username:
-        flash('The confirmation link is invalid or has expired.', 'danger')
+        flash('The confirmation link is invalid or has expired.', 'danger')        
+        abort(403)
 
     user = models.User.query.filter_by(username=username).first_or_404()
     user.active = True
-    models.db.session.add(user)
     models.db.session.commit()
 
     return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
@@ -392,7 +392,8 @@ def api_query():
     else:
         query = models.Query(
             query=query_json, corpus_name=corpus_name, user=current_user)
-
+    
+    query.total_results = request.json['total_results']
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
         else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)
@@ -428,7 +429,8 @@ def api_search_history():
             'corpusName': query.corpus_name,
             'started': query.started,
             'completed': query.completed,
-            'transferred': query.transferred
+            'transferred': query.transferred,
+            'totalResults': query.total_results
         } for query in queries]
     })
 

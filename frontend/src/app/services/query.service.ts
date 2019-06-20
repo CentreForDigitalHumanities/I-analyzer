@@ -17,7 +17,8 @@ export class QueryService {
             started: query.started,
             completed: query.completed,
             aborted: query.aborted,
-            transferred: query.transferred
+            transferred: query.transferred,
+            total_results: query.totalResults
         };
 
         let response = await this.apiRetryService.requireLogin(api => api.query(queryCommand));
@@ -30,7 +31,8 @@ export class QueryService {
             completed: response.completed ? new Date(response.completed) : undefined,
             aborted: response.aborted,
             userId: response.userID,
-            transferred: response.transferred
+            transferred: response.transferred,
+            totalResults: response.total_results
         }
     }
 

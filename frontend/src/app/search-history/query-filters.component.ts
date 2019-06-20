@@ -22,7 +22,7 @@ export class QueryFiltersComponent implements OnInit {
 
         if (this.queryModel.filters.length>0) {
             this.formattedFilters = this.queryModel.filters.map(filter => {
-                return {name: filter.currentData.filterType, formattedData: searchFilterDataToParam(filter)}
+                return {name: filter.fieldName, formattedData: searchFilterDataToParam(filter)}
             });
         }
     }
