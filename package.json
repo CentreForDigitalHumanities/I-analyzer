@@ -1,6 +1,6 @@
 {
     "name": "i-analyzer",
-    "version": "0.9.9",
+    "version": "1.0.0",
     "license": "MIT",
     "scripts": {
         "postinstall": "npm run install-backend && npm run install-frontend",
