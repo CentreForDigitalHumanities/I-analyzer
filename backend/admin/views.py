@@ -69,7 +69,7 @@ class UserView(ModelView):
     form_create_rules = (
         'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
     form_edit_rules = (
-        'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
+        'username', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
 
     form_overrides = dict(
         password=forms.PasswordField,

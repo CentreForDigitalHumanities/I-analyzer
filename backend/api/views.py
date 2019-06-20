@@ -93,11 +93,11 @@ def api_register_confirmation(token):
     username = security.get_original_token_input(token, expiration)
     
     if not username:
-        flash('The confirmation link is invalid or has expired.', 'danger')
+        flash('The confirmation link is invalid or has expired.', 'danger')        
+        abort(403)
 
     user = models.User.query.filter_by(username=username).first_or_404()
     user.active = True
-    models.db.session.add(user)
     models.db.session.commit()
 
     return redirect(current_app.config['BASE_URL']+'/login?isActivated=true')
