@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ApiService } from '../services/api.service';
 import { ApiServiceMock } from '../services/api.service.mock';
@@ -15,6 +16,9 @@ describe('RequestResetComponent', () => {
         declarations: [ RequestResetComponent ],
         providers: [
             { provide: ApiService, useValue: new ApiServiceMock() },
+            {
+                provide: Router, useValue: {}
+            },
         ]
     })
     .compileComponents();
