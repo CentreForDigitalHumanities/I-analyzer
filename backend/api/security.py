@@ -46,7 +46,7 @@ def is_unique_non_solis_email(email):
         # if the user has registered via saml before, permit making an account
         return True
     else:
-        return users is None
+        return len(users)==0
 
 
 def get_token(input):
