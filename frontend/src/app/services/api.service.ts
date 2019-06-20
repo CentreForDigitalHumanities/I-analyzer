@@ -17,7 +17,8 @@ type QueryDb<TDateType> = {
     started?: TDateType,
     completed?: TDateType,
     aborted: boolean,
-    transferred: number
+    transferred: number,
+    total_results: number
 }
 
 @Injectable()

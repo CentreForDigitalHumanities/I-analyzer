@@ -199,6 +199,13 @@ class Query(db.Model):
     does not say anything about the size of those documents.
     '''
 
+    total_results = db.Column(db.BigInteger, nullable=True, default=None)
+    '''
+    Number of total results available for a given query.
+    '''
+
+
+
     def __init__(self, query, corpus_name, user):
         self.corpus_name = corpus_name
         self.query_json = query

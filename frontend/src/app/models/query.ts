@@ -44,7 +44,12 @@ export class Query {
     /**
      * Number of transferred (e.g. actually downloaded) documents. Note that this does not say anything about the size of those documents.
      */
-    public transferred: number = 0
+    public transferred: number = 0;
+
+    /**
+     * Number of total results available for the query.
+     */
+    public totalResults: number = 0;
 }
 
 /** This is the client's representation of the query by the user, shared between components */
