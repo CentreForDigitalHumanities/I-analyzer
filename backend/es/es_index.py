@@ -71,7 +71,6 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
 
 def perform_indexing(corpus_name, corpus_definition, start, end, clear):
-
     # Log to a specific file
     logfile = 'indexing-{}-{}.log'.format(
         start.strftime('%Y%m%d'),
