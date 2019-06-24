@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
-
 from datetime import datetime
 import click
 
@@ -15,6 +13,20 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
+
+import logging
+from logging import FileHandler, Formatter
+file_handler = FileHandler(
+    config.LOG_FILE,
+    maxBytes=131071
+)
+file_handler.setFormatter(Formatter(
+    '\n --> %(asctime)s %(levelname)s in %(pathname)s:%(lineno)d\n' 
+    '%(message)s'
+))
+file_handler.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger(__name__)
+logger.addHandler(file_handler)
 
 app = flask_app(config)
 migrate = Migrate(app, db)

@@ -76,7 +76,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear):
         start.strftime('%Y%m%d'),
         end.strftime('%Y%m%d')
     )
-    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'])
+    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'], filemode='w+')
     logging.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),

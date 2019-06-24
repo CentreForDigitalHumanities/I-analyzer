@@ -7,7 +7,8 @@ import logging
 import math
 import functools
 import logging
-logging.basicConfig(format='%(message)s')
+logger = logging.getLogger(__name__)
+
 from os.path import dirname, split, join, isfile, getsize
 import sys
 import tempfile
@@ -32,9 +33,6 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(message)s')
 
 
 @api.route('/ensure_csrf', methods=['GET'])

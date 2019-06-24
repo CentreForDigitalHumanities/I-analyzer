@@ -6,7 +6,6 @@ from flask_mail import Message
 from . import mail
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(message)s')
 
 def send_user_mail(email, username, subject_line, email_title, message, prompt, link_url, link_text, login=False):
     '''
