@@ -2,6 +2,7 @@ import importlib
 from importlib import util
 from importlib.machinery import SourceFileLoader
 import logging
+logging.getLogger(__name__)
 import re
 from os.path import isfile
 
@@ -24,7 +25,7 @@ def load_corpus(corpus_name):
             filepath
         ).load_module()
     except FileNotFoundError:
-        logging.critical(
+        logger.critical(
             'No module describing the corpus "{0}" found in the specified file path:\
             {1}'.format(corpus_name, filepath)
         )

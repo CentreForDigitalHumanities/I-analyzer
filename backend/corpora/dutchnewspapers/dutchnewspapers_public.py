@@ -75,7 +75,7 @@ class DutchNewspapersPublic(XMLCorpus):
                     "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
-            print(meta_dict)
+            logger.debug(meta_dict)
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)

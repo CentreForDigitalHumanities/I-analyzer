@@ -1,11 +1,10 @@
 import logging
+logger = logging.getLogger(__name__)
 
 from flask import current_app, render_template
 from flask_mail import Message
 
 from . import mail
-
-logger = logging.getLogger(__name__)
 
 def send_user_mail(email, username, subject_line, email_title, message, prompt, link_url, link_text, login=False):
     '''
@@ -28,6 +27,6 @@ def send_user_mail(email, username, subject_line, email_title, message, prompt, 
         mail.send(msg)
         return True
     except Exception as e:
-        logger.error("An error occured sending an email to {}:".format(email))
-        logger.error(e)
+        current_app.logger.error("An error occured sending an email to {}:".format(email))
+        current_app.logger.error(e)
         return False

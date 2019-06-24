@@ -9,7 +9,6 @@ import re
 import html
 import bs4
 
-
 class Extractor(object):
     '''
     An extractor contains a method that can be applied to some number arguments
@@ -36,7 +35,7 @@ class Extractor(object):
                 if self.transform:
                     return self.transform(result)
             except Exception:
-                logging.critical("Value {v} could not be converted."
+                logger.critical("Value {v} could not be converted."
                                  .format(v=result))
                 return None
             else:

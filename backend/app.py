@@ -3,6 +3,39 @@
 from datetime import datetime
 import click
 
+import logging
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    # 'disable_existing_loggers': False,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {
+        'app': {
+            'class': 'logging.FileHandler',
+            'filename': 'ianalyzer.log',
+            'formatter': 'default'
+        },
+        'werkzeug': {
+            'class': 'logging.FileHandler',
+            'filename': 'requests.log',
+            'formatter': 'default'
+        }
+    },
+    'loggers': {
+        'flask.app': {
+            'level': 'INFO',
+            'handlers': ['app']
+        },
+        'werkzeug': {
+            'level': 'INFO',
+            'handlers': ['werkzeug']
+    }
+    }
+})
+
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
@@ -13,20 +46,6 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
-
-import logging
-from logging import FileHandler, Formatter
-file_handler = FileHandler(
-    config.LOG_FILE,
-    maxBytes=131071
-)
-file_handler.setFormatter(Formatter(
-    '\n --> %(asctime)s %(levelname)s in %(pathname)s:%(lineno)d\n' 
-    '%(message)s'
-))
-file_handler.setLevel(config.LOG_LEVEL)
-logger = logging.getLogger(__name__)
-logger.addHandler(file_handler)
 
 app = flask_app(config)
 migrate = Migrate(app, db)
