@@ -13,7 +13,6 @@ export class LogService {
     }
 
     public info(msg: string): void {
-        console.log(msg);
         this.apiService.log({ msg, type: 'info' });
     }
 }
