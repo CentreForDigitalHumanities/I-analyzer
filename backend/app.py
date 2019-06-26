@@ -2,39 +2,10 @@
 
 from datetime import datetime
 import click
+import json
 
 import logging
-from logging.config import dictConfig
-
-dictConfig({
-    'version': 1,
-    # 'disable_existing_loggers': False,
-    'formatters': {'default': {
-        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
-    }},
-    'handlers': {
-        'app': {
-            'class': 'logging.FileHandler',
-            'filename': 'ianalyzer.log',
-            'formatter': 'default'
-        },
-        'werkzeug': {
-            'class': 'logging.FileHandler',
-            'filename': 'requests.log',
-            'formatter': 'default'
-        }
-    },
-    'loggers': {
-        'flask.app': {
-            'level': 'INFO',
-            'handlers': ['app']
-        },
-        'werkzeug': {
-            'level': 'INFO',
-            'handlers': ['werkzeug']
-    }
-    }
-})
+import logging.config
 
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
@@ -49,6 +20,10 @@ from es.es_index import perform_indexing
 
 app = flask_app(config)
 migrate = Migrate(app, db)
+
+with open(config.LOG_CONFIG, 'rt') as f:
+        log_config = json.load(f)
+        logging.config.dictConfig(log_config)
 
 @app.cli.command()
 @click.option('--name', '-n', help='Name of superuser', required=True)
