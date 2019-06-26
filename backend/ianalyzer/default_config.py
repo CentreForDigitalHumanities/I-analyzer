@@ -112,7 +112,7 @@ TML_IMAGE = 'tml.jpg'
 TROONREDES_IMAGE = 'troon.jpg'
 
 GO_SCAN_IMAGE_TYPE = 'pdf'
-GO_IMAGE = 'guardianobserver.png'
+GO_IMAGE = 'guardianobserver.jpg'
 
 #################
 
