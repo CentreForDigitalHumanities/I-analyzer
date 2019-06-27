@@ -28,14 +28,14 @@ def make_csv(results, request_json, username, email=None):
     if email:
         # we are sending the results to the user by email
         send_user_mail(
-            username,
-            email,
-            "I-Analyzer csv download",
-            "Download CSV",
-            "Your .csv file is ready for download.",
-            "Click on the link below.",
-            current_app.config['BASE_URL'] + "/api/csv/" + filename,
-            "Download .csv file"
+            email=email,
+            username=username,
+            subject_line="I-Analyzer csv download",
+            email_title="Download CSV",
+            message="Your .csv file is ready for download.",
+            prompt="Click on the link below.",
+            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename,
+            link_text="Download .csv file"
             )
         return None
     else:

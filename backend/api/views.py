@@ -63,16 +63,16 @@ def api_register():
     token = security.get_token(username)
     # try sending the email
     if not send_user_mail(
-        email,
-        username,
-        "Thank you for signing up at I-analyzer",
-        "User registration",
-        "Thank you for creating an I-analyzer account.",
-        "Please click the link below to confirm " + \
+        email=email,
+        username=username,
+        subject_line="Thank you for signing up at I-analyzer",
+        email_title="User registration",
+        message="Thank you for creating an I-analyzer account.",
+        prompt="Please click the link below to confirm " + \
         "your email address and finish your registration.",
-        current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
-        "Confirm registration",
-        True
+        link_url=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
+        link_text="Confirm registration",
+        login=True
     ):
         return jsonify({
             'success': False,
@@ -121,15 +121,15 @@ def api_request_reset():
             'message': message + " Log in via your Solis-ID or make a new account."})
     token = security.get_token(user.username)
     if not send_user_mail(
-        email, 
-        user.username,
-        "Your password can be reset",
-        "Password reset",
-        "You requested a password reset.",
-        "Please click the link below to enter " + \
+        email=email, 
+        username=user.username,
+        subject_line="Your password can be reset",
+        email_title="Password reset",
+        message="You requested a password reset.",
+        prompt="Please click the link below to enter " + \
         "and confirm your new password.",
-        current_app.config['BASE_URL']+'/reset-password/'+token,
-        "Reset password"
+        link_url=current_app.config['BASE_URL']+'/reset-password/'+token,
+        link_text="Reset password"
         ):
         return jsonify({'success': False, 'message': 'Email could not be sent.'})
     return jsonify({'success': True, 'message': 'An email was sent to your address.'})
