@@ -181,7 +181,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
                     let childTask = result['taskIds'][0];
                     this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
-                            this.aggResults = outcome['results']
+                            this.aggResults = outcome['results'];
                         }
                         else {
                             this.foundNoVisualsMessage = this.noResults;
