@@ -101,7 +101,6 @@ class GuardianObserver(XMLCorpus):
         Field(
             name='title',
             display_name='Title',
-            results_overview=True,
             search_field_core=True,
             visualization_type='wordcloud',
             description='Article title.',
@@ -134,31 +133,8 @@ class GuardianObserver(XMLCorpus):
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
                 options=[
-                    'Classified Advertising',
-                    'Display Advertising',
-                    'Property',
-                    'News',
-                    'News in Brief',
-                    'Index',
-                    'Law',
-                    'Politics and Parliament',
-                    'Court and Social',
-                    'Business and Finance',
-                    'Shipping News',
-                    'Stock Exchange Tables',
-                    'Births',
-                    'Business Appointments',
-                    'Deaths',
-                    'Marriages',
-                    'Obituaries',
-                    'Official Appointments and Notices',
-                    'Editorials/Leaders',
-                    'Feature Articles (aka Opinion)',
-                    'Letters to the Editor',
-                    'Arts and Entertainment',
-                    'Reviews',
-                    'Sport',
-                    'Weather'
+                    'default',
+                    'options'
                 ]
             ),
             extractor=extract.XML(tag='ObjectType', toplevel=True),
