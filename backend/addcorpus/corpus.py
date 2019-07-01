@@ -283,6 +283,7 @@ class XMLCorpus(Corpus):
         else:
             filename = source[0]
             metadata = source[1] or None
+            soup = self.soup_from_xml(filename)
         if 'external_file' in metadata:
             external_fields = [field for field in self.fields if 
                  isinstance(field.extractor, extract.XML) and 
@@ -293,8 +294,6 @@ class XMLCorpus(Corpus):
         else:
             regular_fields = self.fields
             external_dict = {}
-        if not soup:
-            soup = self.soup_from_xml(filename)
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)

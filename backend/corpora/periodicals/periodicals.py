@@ -53,15 +53,22 @@ class Periodicals(XMLCorpus):
             metadict['title'] = row[0]
             if row[1].startswith('['):
                 date = row[1][1:-1]
-            else date = row[1]
+            else: date = row[1]
             metadict['date_full'] = date
-            metadict['date'] = datetime.strptime(date, '%B %d, %Y')
-            metadict['image_path'] = join(row[2].split("\"))
-            issueid = row[3].split("_")[0]
+            if date=='Date Unknown':
+                metadict['date'] = None
+            else:
+                metadict['date'] = datetime.strptime(date, '%B %d, %Y')
+            metadict['image_path'] = join(row[2].split("\\"))
+            issueid = row[4].split("_")[0]
             metadict['issue_id'] = issueid
             xmlfile = issueid + "_Text.xml"
-            filename = join(join(row[3].split("\")), xmlfile)
-            print(metadict, filename)
+            # the star here upacks the list as an argument list
+            filename = join(self.data_directory, join(*row[3].split("\\")), xmlfile)
+            if not isfile(filename):
+                print(str.format("File {} not found", filename))
+                continue
+            yield filename, metadict
 
     fields = [
         Field(
@@ -80,7 +87,7 @@ class Periodicals(XMLCorpus):
             ),
             extractor=extract.Metadata('date', transform=lambda x: x.strftime(
                                            '%Y-%m-%d')
-                                       )),
+                                       ),
             csv_core=True
         ),
         Field(
@@ -92,7 +99,6 @@ class Periodicals(XMLCorpus):
         Field(
             name='issue',
             display_name='Issue number',
-            es_mapping={'type': 'integer'},
             description='Source issue number.',
             results_overview=False,
             extractor=extract.Metadata('issue_id'),
@@ -106,7 +112,8 @@ class Periodicals(XMLCorpus):
             es_mapping={'type': 'keyword'},
             description='Periodical name.',
             search_filter=filters.MultipleChoiceFilter(
-                description='Search only within these magazines.'
+                description='Search only within these periodicals.',
+                options = ['default', 'options']
             ),
             extractor=extract.Metadata('title'),
             csv_core=True
