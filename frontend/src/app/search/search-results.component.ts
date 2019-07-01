@@ -72,7 +72,9 @@ export class SearchResultsComponent implements OnChanges {
     onWindowScroll() {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
         // this introduces a box shadow
-        this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y == 68;
+        if (this.resultsNavigation != undefined) {
+            this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y == 68;
+        }
     }
 
     private search() {
