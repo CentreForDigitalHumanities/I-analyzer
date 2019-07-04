@@ -1,8 +1,9 @@
-<div class="image-container">
+<!-- <div class="image-container">
     <div class="zoom-lens" [ngStyle]="{'top.px': top, 'left.px': left, 'visibility': zoomVisible}"></div>
     <div class="src-img-div"><img class="src-img" #sourceImage src="{{imgPath}}" (mousemove)="onMouseMove($event)" (mouseover)="zoomVisible = 'visible'" (mouseout)="zoomVisible = 'hidden'"/></div>
 </div>
 
 <div class="zoom-img" [style]="backgroundImageStyle" 
     [ngStyle]="{'background-position': backgroundPosition, 'background-size': backgroundSize, 'visibility': zoomVisible}">
-</div>
+</div> -->
+<app-image-viewer [images]="['https://nccscurriculum.org/wp-content/uploads/2015/02/test-button.jpg', 'https://nccscurriculum.org/wp-content/uploads/2015/02/test-button.jpg']" [idContainer]="'idOnHTML'" [loadOnInit]="true"></app-image-viewer>

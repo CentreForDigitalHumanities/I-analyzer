@@ -25,11 +25,14 @@ export class ImageViewComponent implements OnChanges {
     private zoomFactor: number = 300 / this.lensWidth; // size of zoomed image, divided by lens size
     private sourceImageEl: any;
     private sourceImageRect: any;
+    public images: string[];
     
     constructor(private sanitizer: DomSanitizer) { }
 
     ngOnChanges() {
-        this.backgroundImageStyle = this.setZoomImage(this.imgPath); 
+        this.backgroundImageStyle = this.setZoomImage(this.imgPath);
+        this.images = [this.imgPath];
+        console.log(this.images);
     }
 
     onMouseMove(event: MouseEvent) {

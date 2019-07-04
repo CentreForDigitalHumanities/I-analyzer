@@ -24,7 +24,7 @@ export class ScanPdfComponent implements OnChanges, OnInit {
     @Input()
     public query: string;
 
-    public pdfSrc: ArrayBuffer;
+    public pdfSrc: ArrayBuffer[];
 
     public pdfFile: any;
 
@@ -51,7 +51,7 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
             this.page = this.pdfInfo.homePageIndex; //1-indexed
             this.startPage = this.page;
-            this.pdfSrc = pdfResponse.body;
+            this.pdfSrc = [pdfResponse.body];
         }
         catch (e) {
             this.pdfNotFound = true;

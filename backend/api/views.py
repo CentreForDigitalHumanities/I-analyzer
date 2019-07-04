@@ -498,7 +498,8 @@ def api_abort_tasks():
 def api_get_scan_image(corpus_index, image_path):
     backend_corpus = load_corpus(corpus_index)
     if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        absolute_path = join(backend_corpus.data_directory, image_path)
+        # absolute_path = join(backend_corpus.data_directory, image_path)
+        absolute_path = join('/', image_path)
         if not isfile(absolute_path):
             abort(404)
         else:

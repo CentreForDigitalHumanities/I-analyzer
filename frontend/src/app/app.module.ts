@@ -16,6 +16,7 @@ import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
+import { ImageViewerModule } from 'ng2-image-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
@@ -158,6 +159,7 @@ const appRoutes: Routes = [
             cookieName: 'csrf_token',
             headerName: 'X-XSRF-Token'
         }),
+        ImageViewerModule,
         RouterModule.forRoot(appRoutes),
         NgxMdModule.forRoot(),
         MultiSelectModule,
