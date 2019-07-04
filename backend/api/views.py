@@ -473,8 +473,12 @@ def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
-    else:        
-        return jsonify({'success': True, 'results': results.get()})
+    else:
+        try:
+            outcome = results.get()
+        except Exception as e:
+            return jsonify({'success': False, 'message': 'Task canceled.'})  
+        return jsonify({'success': True, 'results': outcome})
 
 
 @api.route('/abort_tasks', methods=['POST'])

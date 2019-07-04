@@ -217,7 +217,11 @@ class DutchNewspapersPublic(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'dcx'
                                   }
-                                  )
+                                  ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in these categories.',
+                options=['test', 'options']
+            ),
         ),
         Field(
             name='circulation',
@@ -225,7 +229,11 @@ class DutchNewspapersPublic(XMLCorpus):
             description='The area in which the newspaper was distributed.',
             es_mapping={'type': 'keyword'},
             csv_core=True,
-            extractor=Metadata('spatial')
+            extractor=Metadata('spatial'),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles appearing in specific areas.',
+                options=self.distribution
+            ),
         ),
         Field(
             name='publisher',
@@ -239,7 +247,11 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            extractor=Metadata('language')
+            extractor=Metadata('language'),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in this language.',
+                options=['nl', 'fr'],
+            ),
         ),
         Field(
             name='article_title',
@@ -291,7 +303,8 @@ class DutchNewspapersPublic(XMLCorpus):
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
-                                  flatten=True, toplevel=True)
+                                  flatten=True, toplevel=True),
+            visualization_type="word_cloud"
         ),
     ]
 

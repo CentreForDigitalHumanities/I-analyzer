@@ -17,7 +17,8 @@ def scroll(corpus, query_model, download_size=None):
         timeout = '60s'
     )
     output.extend(search_results['hits']['hits'])
-    download_size = download_size or search_results['hits']['total']
+    if not download_size or download_size > search_results['hits']['total']:
+        download_size = search_results['hits']['total']
     num_results = len(search_results['hits']['hits'])
     scroll_id = search_results['_scroll_id']
     while num_results < download_size:
