@@ -1,13 +1,13 @@
 '''
 Present the data to the user through a web interface.
 '''
+import logging
+logger = logging.getLogger(__name__)
 import json
 import base64
-import logging
 import math
 import functools
-import logging
-logging.basicConfig(format='%(message)s')
+
 from os.path import dirname, split, join, isfile, getsize
 import sys
 import tempfile
@@ -32,9 +32,6 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(message)s')
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -340,9 +337,9 @@ def api_log():
     msg = request.json['msg']
 
     if msg_type == 'info':
-        logger.info(msg)
+        current_app.logger.info(msg)
     else:
-        logger.error(msg)
+        current_app.logger.error(msg)
 
     return jsonify({'success': True})
 
@@ -491,7 +488,7 @@ def api_abort_tasks():
         try:
             celery_app.control.revoke(task_ids, terminate=True)
         except Exception as e:
-            logger.critical(e)
+            current_app.logger.critical(e)
             return jsonify({'success': False})
         return jsonify({'success': True})
 

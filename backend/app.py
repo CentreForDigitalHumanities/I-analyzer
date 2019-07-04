@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-import logging
 from datetime import datetime
 import click
+import json
+
+import logging
+import logging.config
 
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
@@ -17,6 +20,10 @@ from es.es_index import perform_indexing
 
 app = flask_app(config)
 migrate = Migrate(app, db)
+
+with open(config.LOG_CONFIG, 'rt') as f:
+        log_config = json.load(f)
+        logging.config.dictConfig(log_config)
 
 @app.cli.command()
 @click.option('--name', '-n', help='Name of superuser', required=True)

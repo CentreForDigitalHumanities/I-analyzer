@@ -4,11 +4,10 @@ object such as a dictionary or a BeautifulSoup XML node.
 '''
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('indexing')
 import re
 import html
 import bs4
-
 
 class Extractor(object):
     '''
@@ -36,7 +35,7 @@ class Extractor(object):
                 if self.transform:
                     return self.transform(result)
             except Exception:
-                logging.critical("Value {v} could not be converted."
+                logger.critical("Value {v} could not be converted."
                                  .format(v=result))
                 return None
             else:
