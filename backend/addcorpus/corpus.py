@@ -258,7 +258,7 @@ class XMLCorpus(Corpus):
 
     def source2dicts(self, source):
         '''
-        Generate a document dictionaries from a given XML file. This is the
+        Generate document dictionaries from a given XML file. This is the
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
@@ -277,6 +277,7 @@ class XMLCorpus(Corpus):
         if isinstance(source, str):
             # no metadata
             filename = source
+            soup = self.soup_from_xml(filename)
         elif isinstance(source, bytes): 
             soup = self.soup_from_data(source)
             filename = soup.find('RecordID')
@@ -290,26 +291,27 @@ class XMLCorpus(Corpus):
                  field.extractor.external_file]
             regular_fields = [field for field in self.fields if 
                  field not in external_fields]
-            external_dict = self.external_source2dict(external_fields, source[1])
         else:
             regular_fields = self.fields
-            external_dict = {}
+            external_fields = None
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)
         if bowl:
             for spoon in bowl.find_all(tag):
-                # yield the union of external fields and document fields
-                yield dict(itertools.chain(external_dict.items(),  {
-                    field.name: field.extractor.apply(
+                regular_field_dict = {field.name: field.extractor.apply(
                         # The extractor is put to work by simply throwing at it
                         # any and all information it might need
                         soup_top=bowl,
                         soup_entry=spoon,
                         metadata=metadata
-                    ) for field in regular_fields if field.indexed
-                }.items()
-                ))
+                    ) for field in regular_fields if field.indexed}
+                external_dict = {}
+                if external_fields:
+                    metadata.update(regular_field_dict)
+                    external_dict = self.external_source2dict(external_fields, metadata)        
+                # yield the union of external fields and document fields
+            yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
@@ -326,7 +328,14 @@ class XMLCorpus(Corpus):
         for field in external_fields:
             bowl = self.bowl_from_soup(
                 soup, field.extractor.external_file['xml_tag_toplevel'])
-            spoon = field.extractor.external_file['xml_tag_entry']
+            spoon = None
+            if field.extractor.secondary_tag:
+                # find a specific subtree in the xml tree identified by matching a secondary tag
+                spoon = bowl.find(
+                    field.extractor.secondary_tag['tag'],
+                    string=metadata[field.extractor.secondary_tag['match']]).parent
+            if not spoon:
+                spoon = field.extractor.external_file['xml_tag_entry']
             if bowl:
                 external_dict[field.name] = field.extractor.apply(
                     soup_top=bowl,

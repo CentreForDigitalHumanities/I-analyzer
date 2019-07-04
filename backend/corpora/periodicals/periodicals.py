@@ -31,6 +31,7 @@ class Periodicals(XMLCorpus):
     es_index = current_app.config['PERIODICALS_ES_INDEX']
     es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
     es_settings = None
+    image = '/still/need/image.jpg'
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -59,14 +60,16 @@ class Periodicals(XMLCorpus):
                 metadict['date'] = None
             else:
                 metadict['date'] = datetime.strptime(date, '%B %d, %Y')
-            metadict['image_path'] = join(row[2].split("\\"))
+            # the star upacks the list as an argument list
+            metadict['image_path'] = join(*row[2].split("\\"))
+            ext_filename = join(self.data_directory, join(*row[3].split("\\")), row[4])
             issueid = row[4].split("_")[0]
             metadict['issue_id'] = issueid
             xmlfile = issueid + "_Text.xml"
-            # the star here upacks the list as an argument list
+            metadict['external_file'] = ext_filename
             filename = join(self.data_directory, join(*row[3].split("\\")), xmlfile)
             if not isfile(filename):
-                print(str.format("File {} not found", filename))
+                # print(str.format("File {} not found", filename))
                 continue
             yield filename, metadict
 
@@ -94,7 +97,9 @@ class Periodicals(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
-            extractor=extract.XML(tag='artInfo', toplevel=True),
+            extractor=extract.XML(tag=None,
+                                  toplevel=False,
+                                  attribute='id'),
         ),
         Field(
             name='issue',
@@ -119,18 +124,132 @@ class Periodicals(XMLCorpus):
             csv_core=True
         ),
         Field(
-            name='editors',
-            display_name='Editors',
-            description='Magazine editor(s).',
-            extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
-        ),
-        Field(
             name='content',
             display_name='Content',
             display_type='text_content',
             description='Text content.',
             results_overview=True,
-            extractor=extract.XML(tag='ocrText', multiple=True, flatten=True),
-            search_field_core=True
+            extractor=extract.XML(tag='ocrText', toplevel=True, flatten=True, recursive=True),
+            search_field_core=True,
+            visualization_type="word_cloud"
+        ),
+        Field(
+            name='ocr',
+            display_name='OCR confidence',
+            description='OCR confidence level.',
+            es_mapping={'type': 'float'},
+            search_filter=filters.RangeFilter(0, 100,
+                                              description=(
+                                                  'Accept only articles for which the Opitical Character Recognition confidence '
+                                                  'indicator is in this range.'
+                                              )
+                                              ),
+            extractor=extract.XML(tag='ocr',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            ),
+            sortable=True
+        ),
+        Field(
+            name='title',
+            display_name='Article title',
+            description='Title of the article.',
+            extractor=extract.XML(tag='ti',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            )
+        ),
+        Field(
+            name='start_column',
+            display_name='Starting column',
+            description='Which column the article starts in.',
+            extractor=extract.XML(tag='sc',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            )
+        ),
+        Field(
+            name='page_count',
+            display_name='Page count',
+            description='How many pages the article covers.',
+            es_mapping={'type': 'integer'},
+            extractor=extract.XML(tag='pc',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            )
+        ),
+        Field(
+            name='word_count',
+            display_name='Word count',
+            description='Number of words in the article.',
+            es_mapping={'type': 'integer'},
+            extractor=extract.XML(tag='wordCount',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            )
+        ),
+        Field(
+            name='category',
+            display_name='Category',
+            description='Number of words in the article.',
+            es_mapping={'type': 'keyword'},
+            extractor=extract.XML(tag='ct',
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                }
+            )
+        ),
+        Field(
+            name='page_no',
+            display_name='Page number',
+            description='At which page the article starts.',
+            #es_mapping={'type': 'integer'},
+            extractor=extract.XML(tag='pa',
+                parent_level=1,
+                external_file={
+                    'xml_tag_toplevel': 'issue',
+                    'xml_tag_entry': 'article'
+                },
+                secondary_tag = {
+                    'tag': 'id',
+                    'match': 'id'
+                },
+                #transform=lambda x: re.sub(r'\[\]', '', x)
+            )
         ),
     ]
