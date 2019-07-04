@@ -31,7 +31,7 @@ class Periodicals(XMLCorpus):
     es_index = current_app.config['PERIODICALS_ES_INDEX']
     es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
     es_settings = None
-    image = '/still/need/image.jpg'
+    image = current_app.config['PERIODICALS_IMAGE']
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
