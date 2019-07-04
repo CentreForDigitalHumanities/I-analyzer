@@ -4,7 +4,7 @@ object such as a dictionary or a BeautifulSoup XML node.
 '''
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('indexing')
 import re
 import html
 import bs4

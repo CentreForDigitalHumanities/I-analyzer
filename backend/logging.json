@@ -10,9 +10,9 @@
             "filename": ".log/ianalyzer.log",
             "formatter": "default"
         },
-        "werkzeug": {
+        "es": {
             "class": "logging.FileHandler",
-            "filename": ".log/requests.log",
+            "filename": ".log/indexing.log",
             "formatter": "default"
         }
     },
@@ -22,8 +22,8 @@
             "handlers": ["app"]
         },
         "werkzeug": {
-            "level": "INFO",
-            "handlers": ["werkzeug"]
+            "level": "WARNING",
+            "handlers": ["app"]
         },
         "sqlalchemy": {
             "level": "ERROR",
@@ -32,6 +32,10 @@
         "flask-admin": {
             "level": "ERROR",
             "handlers": ["app"]
+        },
+        "indexing": {
+            "level": "INFO",
+            "handlers": ["es"]
         }
     }
 }

@@ -2,7 +2,7 @@ import importlib
 from importlib import util
 from importlib.machinery import SourceFileLoader
 import logging
-logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 import re
 from os.path import isfile
 

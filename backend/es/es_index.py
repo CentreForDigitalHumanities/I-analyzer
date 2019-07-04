@@ -5,8 +5,7 @@ Script to index the data into ElasticSearch.
 '''
 
 import sys
-import logging
-logger = logging.getLogger(__name__)
+
 from datetime import datetime
 
 import elasticsearch.helpers as es_helpers
@@ -14,6 +13,9 @@ import elasticsearch.helpers as es_helpers
 from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
+
+import logging
+logger = logging.getLogger('indexing')
 
 def create(client, corpus_definition, clear):
     '''

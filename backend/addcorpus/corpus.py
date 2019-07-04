@@ -4,7 +4,7 @@ Module contains the base classes from which corpora can derive;
 
 from datetime import datetime, timedelta
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('indexing')
 
 import bs4
 import json

@@ -6,8 +6,6 @@ import logging
 from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta
 
-LOG_LEVEL = logging.INFO
-
 # Flask
 DEBUG = False
 TESTING = False
