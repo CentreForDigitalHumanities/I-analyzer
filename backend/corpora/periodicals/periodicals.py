@@ -129,7 +129,7 @@ class Periodicals(XMLCorpus):
             display_type='text_content',
             description='Text content.',
             results_overview=True,
-            extractor=extract.XML(tag='ocrText', toplevel=True, flatten=True, recursive=True),
+            extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
             visualization_type="word_cloud"
         ),
@@ -238,7 +238,6 @@ class Periodicals(XMLCorpus):
             name='page_no',
             display_name='Page number',
             description='At which page the article starts.',
-            #es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='pa',
                 parent_level=1,
                 external_file={
@@ -249,7 +248,7 @@ class Periodicals(XMLCorpus):
                     'tag': 'id',
                     'match': 'id'
                 },
-                #transform=lambda x: re.sub(r'\[\]', '', x)
+                transform=lambda x: re.sub('[\[\]]', '', x)
             )
         ),
     ]

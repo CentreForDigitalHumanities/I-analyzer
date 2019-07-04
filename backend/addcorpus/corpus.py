@@ -291,6 +291,7 @@ class XMLCorpus(Corpus):
                  field.extractor.external_file]
             regular_fields = [field for field in self.fields if 
                  field not in external_fields]
+            external_soup = self.soup_from_xml(metadata['external_file'])
         else:
             regular_fields = self.fields
             external_fields = None
@@ -309,22 +310,20 @@ class XMLCorpus(Corpus):
                 external_dict = {}
                 if external_fields:
                     metadata.update(regular_field_dict)
-                    external_dict = self.external_source2dict(external_fields, metadata)        
+                    external_dict = self.external_source2dict(external_soup, external_fields, metadata)        
                 # yield the union of external fields and document fields
-            yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
+                yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
 
-    def external_source2dict(self, external_fields, metadata):
+    def external_source2dict(self, soup, external_fields, metadata):
         ''' 
         given an external xml file with metadata,
         return a dictionary with tags which were found in that metadata
         wrt to the current source.
         '''
         external_dict = {}
-        filename = metadata['external_file']
-        soup = self.soup_from_xml(filename)
         for field in external_fields:
             bowl = self.bowl_from_soup(
                 soup, field.extractor.external_file['xml_tag_toplevel'])
