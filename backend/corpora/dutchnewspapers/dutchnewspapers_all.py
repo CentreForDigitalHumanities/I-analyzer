@@ -10,7 +10,9 @@ class DutchNewsPapersAll(DutchNewspapersPublic):
     es_index = current_app.config['DUTCHNEWSPAPERS_ALL_ES_INDEX']
     max_date = datetime(year=1995, month=12, day=31)
 
-    def update_body(self, doc):
+    def update_body(self, doc=None):
+        if not doc:
+            return True
         url = "http://resolver.kb.nl/resolve?urn=ddd:{}:mpeg21:{}".format(*doc['_id'].split(":"))
         return {
             "doc": {

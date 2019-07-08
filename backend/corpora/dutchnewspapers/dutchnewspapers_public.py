@@ -50,7 +50,6 @@ class DutchNewspapersPublic(XMLCorpus):
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
         year_matcher = re.compile(r'[0-9]{4}')
         for directory, subdirs, filenames in os.walk(self.data_directory):
-            print(directory)
             _body, tail = split(directory)
             if tail.startswith("."):
                 # don't go through directories from snapshots

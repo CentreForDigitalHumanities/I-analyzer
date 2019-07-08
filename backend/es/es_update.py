@@ -37,7 +37,7 @@ def update_index(corpus, corpus_definition, query_model):
         for doc in results['hits']['hits']:
             update_document(client, corpus, corpus_definition, doc_type, doc)
         results = client.scroll(scroll_id=scroll_id,
-            scroll_timeout=scroll_timeout)
+            timeout=scroll_timeout)
         hits += len(results['hits']['hits'])
         logger.info("Updated {} of {} documents".format(hits, total_hits))
 

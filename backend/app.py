@@ -101,7 +101,13 @@ def es(corpus, start, end, delete=False, update=False):
     
     if update:
         try:
-            update_index(corpus, this_corpus, this_corpus.update_query(start_index.strftime('%Y-%m-%d'), end_index.strftime('%Y-%m-%d')))
+            if not this_corpus.update_body():
+                logging.critical("No update_body specified: doing nothing")
+                return None
+            update_index(corpus, this_corpus, this_corpus.update_query(
+                min_date=start_index.strftime('%Y-%m-%d'), max_date=end_index.strftime('%Y-%m-%d')
+                )
+            )
         except Exception as e:
             logging.critical(e)
             raise
