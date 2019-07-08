@@ -7,7 +7,15 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 import logging
 logger = logging.getLogger('indexing')
 
-def collect_documents(corpus, corpus_definition, queryModel = {}):
+def update_index(corpus, corpus_definition, query_model):
+    ''' update information for fields in the index 
+    requires the definition of the functions 
+    - update_query 
+    (restricts which documents are updated)
+    - update_body 
+    (defines which fields should be updated with which value)
+    in the corpus definition class
+    '''
     client = elasticsearch(corpus)
     doc_type = corpus_definition.es_doctype
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
@@ -17,23 +25,24 @@ def collect_documents(corpus, corpus_definition, queryModel = {}):
         index=corpus,
         size = scroll_size,
         scroll = scroll_timeout,
-        body = queryModel,
+        body = query_model,
         timeout = '60s'
     )
     hits = len(results['hits']['hits'])
     total_hits = results['hits']['total']
-    while len(hits)<total_hits:       
+    for doc in results['hits']['hits']:
+        update_document(client, corpus, corpus_definition, doc_type, doc)
+    while hits<total_hits:       
         scroll_id = results['_scroll_id']
-        for doc in results:
-            es_doc_id = doc['_id']
-            update_document(corpus, doc_type, es_doc_id, queryModel)
+        for doc in results['hits']['hits']:
+            update_document(client, corpus, corpus_definition, doc_type, doc)
         results = client.scroll(scroll_id=scroll_id,
             scroll_timeout=scroll_timeout)
         hits += len(results['hits']['hits'])
+        logger.info("Updated {} of {} documents".format(hits, total_hits))
 
 
-def update_document(client, index, doc_type, doc_id, body):
-    client.update(index=index, doc_type=doc_type, id=doc_id, body=body)
-    logger.info("Updated document with id '{}'".format(doc_id))
-    global updated_docs
-    updated_docs += 1
+def update_document(client, index, corpus_definition, doc_type, doc):
+    update_body = corpus_definition.update_body(doc)
+    doc_id = doc['_id']
+    client.update(index=index, doc_type=doc_type, id=doc_id, body=update_body)

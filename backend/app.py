@@ -17,6 +17,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
+from es.es_update import update_index
 
 app = flask_app(config)
 migrate = Migrate(app, db)
@@ -69,7 +70,12 @@ def admin(name, pwd):
     help='Define whether the current index should be deleted' +
     '(turned off by default)'
 )
-def es(corpus, start, end, delete=False):
+@click.option(
+    '--update', '-u',
+    help='Set this to true to update an index' +
+    '(adding / changing fields in documents)'
+)
+def es(corpus, start, end, delete=False, update=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -92,8 +98,15 @@ def es(corpus, start, end, delete=False):
             'Example call: flask es -c times -s 1785-01-01 -e 2010-12-31'
         )
         raise
-
-    perform_indexing(corpus, this_corpus, start_index, end_index, delete)
+    
+    if update:
+        try:
+            update_index(corpus, this_corpus, this_corpus.update_query(start_index.strftime('%Y-%m-%d'), end_index.strftime('%Y-%m-%d')))
+        except Exception as e:
+            logging.critical(e)
+            raise
+    else:
+        perform_indexing(corpus, this_corpus, start_index, end_index, delete)
 
 
 def create_user(name, password=None):
