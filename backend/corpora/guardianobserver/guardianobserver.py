@@ -90,7 +90,7 @@ class GuardianObserver(XMLCorpus):
             name='pub_id',
             display_name='Publication ID',
             description='Publication identifier',
-            extractor=extract.XML(tag='PublicationID', toplevel=True)
+            extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
