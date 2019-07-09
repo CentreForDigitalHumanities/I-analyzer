@@ -42,11 +42,11 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     async get_pdf() {
         this.pdfNotFound = false;
+        console.log(this.document.fieldValues);
         try {
             const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
                 corpus_index: this.corpus.index,
-                image_path: this.document.fieldValues.image_path,
-                page: this.document.fieldValues.page - 1
+                document: this.document
             })
             this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
             this.page = this.pdfInfo.homePageIndex; //1-indexed

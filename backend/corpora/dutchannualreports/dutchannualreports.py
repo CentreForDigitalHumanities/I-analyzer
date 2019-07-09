@@ -10,6 +10,7 @@ from flask import current_app
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.image_processing import retrieve_pdf, pdf_pages, build_partial_pdf
 
 
 class DutchAnnualReports(XMLCorpus):
@@ -211,3 +212,18 @@ class DutchAnnualReports(XMLCorpus):
             hidden=True,
         )
     ]
+
+    def get_image(self, document):
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
+        home_page = document['fieldValues']['page'] - 1 #the page corresponding to the document
+        image_path = document['fieldValues']['image_path']
+        absolute_path = op.join(self.data_directory, image_path)
+
+        if not op.isfile(absolute_path):
+            return None
+
+        input_pdf, pdf_info = retrieve_pdf(absolute_path)
+        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
+        out = build_partial_pdf(pages, input_pdf)
+        return out, home_page_index
+        

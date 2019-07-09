@@ -164,7 +164,6 @@ class XML(Extractor):
                 if not soup:
                     return None
             tag = self.tag[-1]
-
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:

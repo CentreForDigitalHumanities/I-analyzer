@@ -90,7 +90,7 @@ class GuardianObserver(XMLCorpus):
             name='pub_id',
             display_name='Publication ID',
             description='Publication identifier',
-            extractor=extract.XML(tag='PublicationID', toplevel=True)
+            extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
@@ -151,3 +151,14 @@ class GuardianObserver(XMLCorpus):
             extractor=extract.XML(tag='FullText', toplevel=True)
         )
     ]
+
+    def get_image(self, document):
+        field_vals = document['fieldValues']
+        if field_vals['date']<'1909-31-12':
+            path = op.join(self.data_directory, '1791-1909', 'PDF')
+            filename = "_".join(field_vals['date'].split("-")[:2]) + '.zip'
+        else:
+            path = op.join(self.data_directory, '1910-2003', 'PDF')
+            
+        zipfile = op.join(path, field_vals['pub_id'], filename)
+        

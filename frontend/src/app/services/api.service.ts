@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -227,7 +227,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public sourcePdf: IResourceMethodFull<
-        { corpus_index: string, image_path: string, page: number },
+        { corpus_index: string, document: FoundDocument },
         any>;
 
     @ResourceAction({
