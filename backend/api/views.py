@@ -514,16 +514,11 @@ def api_get_pdf():
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
     else:
-        out, home_page_index = backend_corpus.get_image(request.json['document'])
+        out, pdf_info = backend_corpus.get_image(request.json['document'])
+        pdf_header = json.dumps(pdf_info)
         if not out:
             abort(404)
         response = make_response(send_file(out, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
-        pdf_header = json.dumps({
-            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
-            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
-            "fileName": pdf_info['filename'],
-            "fileSize": pdf_info['filesize']
-        })
         response.headers['pdfinfo'] = pdf_header
     return response
 

@@ -225,5 +225,11 @@ class DutchAnnualReports(XMLCorpus):
         input_pdf, pdf_info = retrieve_pdf(absolute_path)
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         out = build_partial_pdf(pages, input_pdf)
-        return out, home_page_index
+        pdf_info = {
+            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
+            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
+            "fileName": pdf_info['filename'],
+            "fileSize": pdf_info['filesize']
+        }
+        return out, pdf_info
         

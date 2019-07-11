@@ -6,10 +6,11 @@ separate xml-files, zipped.
 import logging
 logger = logging.getLogger(__name__)
 import glob
+import re
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 import os.path as op
 from datetime import date, datetime
-from zipfile import ZipFile
+from zipfile import ZipFile, ZipInfo
 
 from flask import current_app
 
@@ -154,11 +155,42 @@ class GuardianObserver(XMLCorpus):
 
     def get_image(self, document):
         field_vals = document['fieldValues']
-        if field_vals['date']<'1909-31-12':
+        target_filename = "{}_{}_{}.pdf".format(
+            field_vals['pub_id'],
+            field_vals['date'].strip("-"),
+            field_vals['id']             
+        )
+        pdf_info = {
+            "pageNumbers": [1], #change from 0-indexed to real page
+            "homePageIndex": 1, #change from 0-indexed to real page
+            "fileName": target_filename
+        }
+        if 'img_path' in field_vals.keys():
+            zipname = field_vals['img_path']
+            with ZipFile(zipname, mode='r') as zipped:
+                with zipped.open(target_filename) as pdf_file:
+                    return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
+        elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF')
-            filename = "_".join(field_vals['date'].split("-")[:2]) + '.zip'
+            zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
+            with ZipFile(zipname, mode='r') as zipped:
+                with zipped.open(target_filename) as pdf_file:
+                    return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
-            
-        zipfile = op.join(path, field_vals['pub_id'], filename)
+            zipname_pattern = "**/{}_*_{}.zip".format(
+                field_vals['date'][:4],
+                field_vals['pub_id']
+            )
+            zipnames = Path(path).glob(zipname_pattern)
+            for zipfile in zipnames:
+                pdfs = ZipFile(str(zipfile)).namelist()
+                target_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
+                if target_file:
+                    # update index?
+                    with ZipFile(zipname, mode='r') as zipped:
+                        with zipped.open(target_filename) as pdf_file:
+                            return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
+        return None
+        
         
