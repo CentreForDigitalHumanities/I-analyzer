@@ -130,6 +130,26 @@ class Corpus(object):
         URL to markdown document with a comprehensive description
         '''
         return None
+    
+    def update_body(self, **kwargs):
+        ''' given one document in the index, give an instruction 
+        of how to update the index
+        (based on script or partial data)
+        '''
+        return None
+    
+    def update_query(self, **kwargs):
+        ''' given the min date and max date of the 
+        time period for which the update should be performed,
+        return a query restricting the result set
+        Default is a match_all query.
+        '''
+        return {
+            "query": {
+                "match_all": {}
+            }
+        }
+
 
     def es_mapping(self):
         '''
