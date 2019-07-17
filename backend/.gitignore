@@ -5,6 +5,7 @@ indexing*
 .cache
 *.egg-info
 *.egg
+*.log
 build/
 dist/
 lib/

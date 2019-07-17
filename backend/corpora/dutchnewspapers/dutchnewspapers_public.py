@@ -3,7 +3,6 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import logging
-logger = logging.getLogger(__name__)
 from pprint import pprint
 import random
 import re
@@ -47,6 +46,7 @@ class DutchNewspapersPublic(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
+        logger = logging.getLogger(__name__)
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
         year_matcher = re.compile(r'[0-9]{4}')
         for directory, subdirs, filenames in os.walk(self.data_directory):
@@ -75,7 +75,7 @@ class DutchNewspapersPublic(XMLCorpus):
                     "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
-            print(meta_dict)
+            logger.debug(meta_dict)
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)

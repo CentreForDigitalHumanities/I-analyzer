@@ -5,7 +5,7 @@ Script to index the data into ElasticSearch.
 '''
 
 import sys
-import logging
+
 from datetime import datetime
 
 import elasticsearch.helpers as es_helpers
@@ -14,16 +14,19 @@ from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
 
+import logging
+logger = logging.getLogger('indexing')
+
 def create(client, corpus_definition, clear):
     '''
     Initialise an ElasticSearch index.
     '''
 
     if clear:
-        logging.info('Attempting to clean old index...')
+        logger.info('Attempting to clean old index...')
         client.indices.delete(index=corpus_definition.es_index, ignore=[400, 404])
 
-    logging.info('Attempting to create index...')
+    logger.info('Attempting to create index...')
     client.indices.create(
         index=corpus_definition.es_index,
         body=corpus_definition.es_mapping(),
@@ -36,7 +39,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
     Populate an ElasticSearch index from the corpus' source files.
     '''
 
-    logging.info('Attempting to populate index...')
+    logger.info('Attempting to populate index...')
 
     # Obtain source documents
     files = corpus_definition.sources(
@@ -67,18 +70,11 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         timeout=corpus_server['bulk_timeout'],
         stats_only=True, # We want to know how many documents were added
     ):
-        logging.info('Indexed documents ({}).'.format(result))
+        logger.info('Indexed documents ({}).'.format(result))
 
 
 def perform_indexing(corpus_name, corpus_definition, start, end, clear):
-
-    # Log to a specific file
-    logfile = 'indexing-{}-{}.log'.format(
-        start.strftime('%Y%m%d'),
-        end.strftime('%Y%m%d')
-    )
-    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'])
-    logging.info('Started indexing `{}` from {} to {}...'.format(
+    logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),
         end.strftime('%Y-%m-%d')
@@ -90,4 +86,4 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear):
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
-    logging.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
+    logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
