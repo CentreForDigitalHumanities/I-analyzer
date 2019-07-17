@@ -14,6 +14,8 @@ from zipfile import ZipFile, ZipInfo
 
 from flask import current_app
 
+from es.es_update import update_document
+
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
@@ -187,7 +189,12 @@ class GuardianObserver(XMLCorpus):
                 pdfs = ZipFile(str(zipfile)).namelist()
                 target_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
                 if target_file:
-                    # update index?
+                    update_body = {
+                        "doc": {
+                            "img_path" : target_file
+                        }
+                    }
+                    update_document(self.es_index, self.doc_type, document, update_body)
                     with ZipFile(zipname, mode='r') as zipped:
                         with zipped.open(target_filename) as pdf_file:
                             return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
