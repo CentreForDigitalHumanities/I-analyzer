@@ -159,7 +159,7 @@ class GuardianObserver(XMLCorpus):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
-            field_vals['date'].strip("-"),
+            re.sub('-', '', field_vals['date']),
             field_vals['id']             
         )
         pdf_info = {
@@ -173,11 +173,12 @@ class GuardianObserver(XMLCorpus):
                 with zipped.open(target_filename) as pdf_file:
                     return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
         elif field_vals['date']<'1909-31-12':
-            path = op.join(self.data_directory, '1791-1909', 'PDF')
+            path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
             with ZipFile(op.join(path, zipname), mode='r') as zipped:
-                with zipped.open(target_filename) as pdf_file:
-                    return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
+                archived_file = op.join(zipname[:4], zipname[5:7], target_filename)
+                with zipped.open(archived_file) as pdf_file:
+                    return pdf_file, pdf_info.update({'fileSize': zipped.getinfo(archived_file).file_size})
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
