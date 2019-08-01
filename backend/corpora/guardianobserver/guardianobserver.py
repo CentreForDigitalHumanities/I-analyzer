@@ -175,7 +175,7 @@ class GuardianObserver(XMLCorpus):
         elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF')
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
-            with ZipFile(zipname, mode='r') as zipped:
+            with ZipFile(op.join(path, zipname), mode='r') as zipped:
                 with zipped.open(target_filename) as pdf_file:
                     return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
         else:
@@ -198,6 +198,6 @@ class GuardianObserver(XMLCorpus):
                     with ZipFile(zipname, mode='r') as zipped:
                         with zipped.open(target_filename) as pdf_file:
                             return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
-        return None
+        return None, None
         
         
