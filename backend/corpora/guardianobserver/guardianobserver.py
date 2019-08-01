@@ -10,7 +10,9 @@ import re
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 import os.path as op
 from datetime import date, datetime
-from zipfile import ZipFile, ZipInfo
+from zipfile import ZipFile
+
+from io import BytesIO
 
 from flask import current_app
 
@@ -171,15 +173,14 @@ class GuardianObserver(XMLCorpus):
             zipname = field_vals['img_path']
             with ZipFile(zipname, mode='r') as zipped:
                 with zipped.open(target_filename) as pdf_file:
-                    return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
+                    return pdf_file, pdf_info.update({'fileSize': zipped.getinfo(target_filename).file_size})
         elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
-            with ZipFile(op.join(path, zipname), mode='r') as zipped:
-                archived_file = op.join(zipname[:4], zipname[5:7], target_filename)
-                zip_info = zipped.getinfo(archived_file)
-                with zipped.open(zip_info) as pdf_file:
-                    return pdf_file, pdf_info.update({'fileSize': zip_info.file_size})
+            with ZipFile(op.join(path, zipname), mode='r') as zipped: 
+                zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
+                pdf_data = zipped.read(zip_info)
+            return BytesIO(pdf_data), pdf_info.update({'fileSize': zip_info.file_size})
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
@@ -199,7 +200,7 @@ class GuardianObserver(XMLCorpus):
                     update_document(self.es_index, self.doc_type, document, update_body)
                     with ZipFile(zipname, mode='r') as zipped:
                         with zipped.open(target_filename) as pdf_file:
-                            return pdf_file, pdf_info.update({'fileSize': ZipInfo(pdf_file).file_size})
+                            return pdf_file.read(), pdf_info.update({'fileSize': zipped.getinfo(target_filename).file_size})
         return None, None
         
         
