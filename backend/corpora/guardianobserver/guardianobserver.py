@@ -177,8 +177,9 @@ class GuardianObserver(XMLCorpus):
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
             with ZipFile(op.join(path, zipname), mode='r') as zipped:
                 archived_file = op.join(zipname[:4], zipname[5:7], target_filename)
-                with zipped.open(archived_file) as pdf_file:
-                    return pdf_file, pdf_info.update({'fileSize': zipped.getinfo(archived_file).file_size})
+                zip_info = zipped.getinfo(archived_file)
+                with zipped.open(zip_info) as pdf_file:
+                    return pdf_file, pdf_info.update({'fileSize': zip_info.file_size})
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
