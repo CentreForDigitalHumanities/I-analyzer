@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { ImageViewerComponent } from 'ng2-image-viewer';
 
 @Component({
   selector: 'ia-image-view',

@@ -36,16 +36,16 @@ export class DocumentViewComponent implements OnChanges {
     constructor(private el: ElementRef) { }
 
     ngOnChanges() {
-        if (this.corpus.scan_image_type=="png") {
-            if (this.document.fieldValues.image_path){
-                this.imgPath = "/api/get_scan_image/" + this.corpus.index + this.document.fieldValues.image_path;
-                this.imgNotFound = false;
-            }
-            else {
-                this.imgPath = undefined;
-                this.imgNotFound = true;
-            }
-        }
+        // if (this.corpus.scan_image_type=="png") {
+        //     if (this.document.fieldValues.image_path){
+        //         this.imgPath = "/api/get_scan_image/" + this.corpus.index + this.document.fieldValues.image_path;
+        //         this.imgNotFound = false;
+        //     }
+        //     else {
+        //         this.imgPath = undefined;
+        //         this.imgNotFound = true;
+        //     }
+        // }
     }
 
     async getScroll() {

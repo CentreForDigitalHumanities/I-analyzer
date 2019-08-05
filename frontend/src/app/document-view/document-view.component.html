@@ -32,11 +32,12 @@
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
-                    <ia-image-view *ngIf="corpus.scan_image_type=='png' && imgPath" [imgPath]="imgPath"></ia-image-view>
-                    <div *ngIf="imgNotFound">Image not available.</div>
+                    <!-- <ia-image-view *ngIf="corpus.scan_image_type=='png' && imgPath" [imgPath]="imgPath"></ia-image-view> -->
+                    <!-- <div *ngIf="imgNotFound">Image not available.</div>
                     <ng-template *ngIf="corpus.scan_image_type=='pdf'" pTemplate="content">
                         <ia-scan-pdf [corpus]="corpus" [document]="document" [query]="query"></ia-scan-pdf>
-                    </ng-template>
+                    </ng-template> -->
+                    <ia-image-view></ia-image-view>
             </p-tabPanel>
         </p-tabView>
         </div>

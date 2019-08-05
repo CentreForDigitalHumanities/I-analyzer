@@ -6,4 +6,17 @@
 <div class="zoom-img" [style]="backgroundImageStyle" 
     [ngStyle]="{'background-position': backgroundPosition, 'background-size': backgroundSize, 'visibility': zoomVisible}">
 </div> -->
-<app-image-viewer [images]="['https://nccscurriculum.org/wp-content/uploads/2015/02/test-button.jpg', 'https://nccscurriculum.org/wp-content/uploads/2015/02/test-button.jpg']" [idContainer]="'idOnHTML'" [loadOnInit]="true"></app-image-viewer>
+<app-image-viewer 
+    [images]="['/Users/janss089/DATA/19thCenturyPeriodicals/19thCenturyUKP_New_Readerships/Images/NEWSPAPERS/1SWB/NCBP1120-00243/NCBP1120-00243-0001.JPG']"
+    [idContainer]="'idOnHTML'" 
+    [loadOnInit]="true" 
+    [rotate]="false" 
+    [showPDFOnlyOption]="false" 
+    [fullscreen]="false">
+</app-image-viewer>
+<!-- <img src='https://picsum.photos/900/500/?random'> -->
+<!-- <div ngxViewer>
+    <img src="https://picsum.photos/2000/1500/?random=1" alt="Image 1">
+    <img src="https://picsum.photos/2000/1500/?random=2" alt="Image 2">
+    <img src="https://picsum.photos/2000/1500/?random=3" alt="Image 3">
+  </div> -->
