@@ -197,11 +197,11 @@ class GuardianObserver(XMLCorpus):
                 if correct_file:
                     update_body = {
                         "doc": {
-                            "img_path": zipfile
+                            "img_path": str(zipfile)
                         }
                     }
                     update_document(self.es_index, self.es_doctype, document, update_body)
-                    with ZipFile(zipfile, mode='r') as zipped:
+                    with ZipFile(op.join(path, str(zipfile)), mode='r') as zipped:
                         zip_info = zipped.getinfo(correct_file)
                         pdf_data = zipped.read(zip_info)
         if pdf_data:
