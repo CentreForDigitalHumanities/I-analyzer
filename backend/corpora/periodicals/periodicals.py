@@ -42,7 +42,6 @@ class Periodicals(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
-        logger = logging.getLogger(__name__)
         metafile = join(self.data_directory, "19thCenturyUKP_NewReaderships.xlsx")
         wb = openpyxl.load_workbook(filename=metafile)
         sheet = wb['19thCenturyUKP_NewReaderships']
@@ -61,7 +60,7 @@ class Periodicals(XMLCorpus):
             else:
                 metadict['date'] = datetime.strptime(date, '%B %d, %Y')
             # the star upacks the list as an argument list
-            metadict['image_path'] = join(*row[2].split("\\"))
+            metadict['image_path'] = join(*row[2].split("\\")).strip()
             ext_filename = join(self.data_directory, join(*row[3].split("\\")), row[4])
             issueid = row[4].split("_")[0]
             metadict['issue_id'] = issueid
@@ -250,5 +249,12 @@ class Periodicals(XMLCorpus):
                 },
                 transform=lambda x: re.sub('[\[\]]', '', x)
             )
+        ),
+        Field(
+            name='image_path',
+            display_name='Image path',
+            es_mapping={'type': 'keyword'},
+            description='Path of scan.',
+            extractor=extract.Metadata('image_path'),
         ),
     ]
