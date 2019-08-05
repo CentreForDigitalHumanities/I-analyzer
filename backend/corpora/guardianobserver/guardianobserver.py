@@ -170,17 +170,20 @@ class GuardianObserver(XMLCorpus):
             "fileName": target_filename
         }
         if 'img_path' in field_vals.keys():
+            # we stored which of the zip archives holds the target file
+            # applicable for post-1910 data
             zipname = field_vals['img_path']
             with ZipFile(zipname, mode='r') as zipped:
-                with zipped.open(target_filename) as pdf_file:
-                    return pdf_file, pdf_info.update({'fileSize': zipped.getinfo(target_filename).file_size})
+                zip_info = zipped.getinfo(target_filename)
+                pdf_data = zipped.read(zip_info)
         elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
             with ZipFile(op.join(path, zipname), mode='r') as zipped: 
                 zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
                 pdf_data = zipped.read(zip_info)
-            return BytesIO(pdf_data), pdf_info.update({'fileSize': zip_info.file_size})
+            pdf_info.update({'fileSize': zip_info.file_size})
+            return BytesIO(pdf_data), pdf_info
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
@@ -190,17 +193,21 @@ class GuardianObserver(XMLCorpus):
             zipnames = Path(path).glob(zipname_pattern)
             for zipfile in zipnames:
                 pdfs = ZipFile(str(zipfile)).namelist()
-                target_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
-                if target_file:
+                correct_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
+                if correct_file:
                     update_body = {
                         "doc": {
-                            "img_path" : target_file
+                            "img_path": zipfile
                         }
                     }
-                    update_document(self.es_index, self.doc_type, document, update_body)
-                    with ZipFile(zipname, mode='r') as zipped:
-                        with zipped.open(target_filename) as pdf_file:
-                            return pdf_file.read(), pdf_info.update({'fileSize': zipped.getinfo(target_filename).file_size})
-        return None, None
+                    update_document(self.es_index, self.es_doctype, document, update_body)
+                    with ZipFile(zipfile, mode='r') as zipped:
+                        zip_info = zipped.getinfo(correct_file)
+                        pdf_data = zipped.read(zip_info)
+        if pdf_data:
+            pdf_info.update({'fileSize': zip_info.file_size})
+            return BytesIO(pdf_data), pdf_info
+        else:
+            return None, None
         
         
