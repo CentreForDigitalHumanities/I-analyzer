@@ -509,9 +509,7 @@ def api_get_scan_image(corpus_index, image_path):
 @api.route('/test_images', methods=['GET'])
 @login_required
 def api_test_images():
-    image_path = '/Users/janss089/DATA/19thCenturyPeriodicals/19thCenturyUKP_New_Readerships/Images/NEWSPAPERS/1SWB/NCBP1120-00243/NCBP1120-00243-0001.JPG'
-    with open(image_path, "rb") as f:
-        data = base64.b64encode(f.read())
+    
     return send_file(BytesIO(data), mimetype='image/jpeg')
 
 @api.route('/source_pdf', methods=['POST'])

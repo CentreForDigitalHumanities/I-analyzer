@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 import re
 from pprint import pprint
 import openpyxl
+import base64
 
 from flask import current_app
 
@@ -258,3 +259,18 @@ class Periodicals(XMLCorpus):
             extractor=extract.Metadata('image_path'),
         ),
     ]
+
+    def get_image(self, document):
+        field_vals = document['fieldValues']
+        image_directory = field_vals['image_path']
+        starting_page = field_vals['_id'][:-4]
+        start_index = int(starting_page.split("-")[-1])
+        page_count = field_vals['page_count']
+        image_list = []
+        for page in range(page_count):
+            page_no = str(start_index + page).zfill(4)
+            image_name = '{}-{}.jpg'.format(starting_page[:-5], page_no)
+            with open(join(image_directory, image_name), "rb") as f:
+                data = base64.b64encode(f.read())
+                image_list.append('data:image/jpg;base64,{}'.format(data))
+        return image_list
