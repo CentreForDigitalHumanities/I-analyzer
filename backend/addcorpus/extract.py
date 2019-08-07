@@ -31,7 +31,6 @@ class Extractor(object):
         '''
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
-
             try:
                 if self.transform:
                     return self.transform(result)
