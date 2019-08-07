@@ -60,7 +60,7 @@ class DutchNewspapersPublic(XMLCorpus):
                 subdirs[:] = []
                 continue
             definition_file = next((join(directory, filename) for filename in filenames if 
-                                self.definition_pattern.match(filename)), None)
+                                self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
             meta_dict = self.metadata_from_xml(definition_file, tags=[
@@ -86,10 +86,9 @@ class DutchNewspapersPublic(XMLCorpus):
                     #def_match = self.definition_pattern.match(name)
                     article_match = self.article_pattern.match(name)
                     if article_match:
-                        identifier = os.path.basename(os.path.dirname(
-                            full_path)) + article_match.group(1)
-                        record_id = identifier[4:-4].replace("_",":") +\
-                          ":a" + identifier[-4:]
+                        parts = name.split("_")
+                        record_id = parts[1] + \
+                          ":a" + parts[2]
                         meta_dict.update({
                             'external_file': definition_file,
                             'id': record_id
