@@ -47,16 +47,16 @@ class GuardianObserver(XMLCorpus):
         with open(PROCESSED, 'r') as f:
             processed = f.readlines()
         for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
+            if str(zfile) in processed:
+                continue
             xmls = ZipFile(str(zfile)).namelist()
             with ZipFile(str(zfile), mode='r') as zipped:
                 for xml in xmls:
-                    if xml in processed:
-                        continue
                     with zipped.open(xml) as xmlfile:
                         data = xmlfile.read()
-                    with open(PROCESSED, 'a') as f:
-                        f.write('{}\n'.format(xml))
                     yield data
+            with open(PROCESSED, 'a') as f:
+                f.write('{}\n'.format(str(zfile)))
 
     fields = [
         Field(
