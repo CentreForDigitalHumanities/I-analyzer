@@ -232,6 +232,16 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
+        path: '/test_images',
+        responseBodyType: ResourceResponseBodyType.Text
+    })
+    public testImages: ResourceMethod<
+        void,
+        string
+        >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/download_pdf/{corpus_index}/{filepath}',
     })
     public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
