@@ -114,9 +114,14 @@ class XML(Extractor):
     '''
 
     def __init__(self,
-                 # Tag to select. When this is a list, read as a path (e.g.
+                 # Tag to select. When this is a list, read as a path
+                 # e.g. to select successive children; makes sense when recursive=False)
+                 # Pass None if the information is in the attribute of the
+                 # current head of the tree
                  tag=[],
-                 # select successive children; makes sense when recursive=False)
+                 # whether to ascend the tree to find the indicated tag
+                 # useful when a part of the tree has been selected with secondary_tag
+                 parent_level=None,
                  attribute=None,  # Which attribute, if any, to select
                  flatten=False,  # Flatten the text content of a non-text children?
                  toplevel=False,  # Tag to select for search: top-level or entry tag
@@ -135,6 +140,7 @@ class XML(Extractor):
     ):
 
         self.tag = tag
+        self.parent_level = parent_level
         self.attribute = attribute
         self.flatten = flatten
         self.toplevel = toplevel
@@ -151,6 +157,8 @@ class XML(Extractor):
         '''
         # If the tag was a path, walk through it before continuing
         tag = self.tag
+        if not tag:
+            return soup
         if isinstance(self.tag, list):
             if len(tag) == 0:
                 return soup
@@ -165,18 +173,18 @@ class XML(Extractor):
                     return None
             tag = self.tag[-1]
 
-        # Find and return a tag which is a sibling of a secondary tag
-        # e.g., we need a category tag associated with a specific id
-        if self.secondary_tag:
-            sibling = soup.find(self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
-            if sibling:
-                return sibling.parent.find(tag)
-
         # Find and return (all) relevant BeautifulSoup element(s)
         if self.multiple:
             return soup.find_all(tag, recursive=self.recursive)
+        elif self.parent_level:
+            count = 0
+            while count < self.parent_level:
+                soup = soup.parent
+                count += 1
+            return soup.find(tag, recursive=self.recursive)
         else:
             return soup.find(tag, recursive=self.recursive)
+        
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
@@ -220,11 +228,13 @@ class XML(Extractor):
 
         _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
         _newlines = re.compile('\n+')
+        _tabs = re.compile('\t+')
 
         return html.unescape(
             _newlines.sub('\n',
-                          _softbreak.sub(' ', text)
-                          ).strip()
+                          _softbreak.sub(' ', 
+                          _tabs.sub('', text)
+                          )).strip()
         )
 
     def _attr(self, soup):
