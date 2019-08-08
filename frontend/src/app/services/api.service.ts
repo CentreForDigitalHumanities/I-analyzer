@@ -227,7 +227,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public sourcePdf: IResourceMethodFull<
-        { corpus_index: string, image_path: string, page: number },
+        { corpus_index: string, document: FoundDocument },
         any>;
 
     @ResourceAction({

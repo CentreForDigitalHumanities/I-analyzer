@@ -40,13 +40,29 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public pdfNotFound: boolean = false;
 
+    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private http: HttpClient) { }
+
+    ngOnInit() {
+        this.get_pdf();
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.document) {
+            if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
+                this.isLoaded = false;
+                this.page = null;
+                this.startPage = null;
+                this.get_pdf();
+            }
+        }
+    }
+
     async get_pdf() {
         this.pdfNotFound = false;
         try {
             const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
                 corpus_index: this.corpus.index,
-                image_path: this.document.fieldValues.image_path,
-                page: this.document.fieldValues.page - 1
+                document: this.document
             })
             this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
             this.page = this.pdfInfo.homePageIndex; //1-indexed
@@ -94,25 +110,7 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             },
             reject: () => {
             }
-        });
-    }
-
-    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private http: HttpClient) { }
-
-    ngOnInit() {
-        this.get_pdf();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.document) {
-            if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
-                this.isLoaded = false;
-                this.page = null;
-                this.startPage = null;
-                this.get_pdf();
-            }
-        }
-
+        })
     }
 
 }
