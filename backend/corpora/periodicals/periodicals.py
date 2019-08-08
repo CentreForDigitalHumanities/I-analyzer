@@ -43,6 +43,8 @@ class Periodicals(XMLCorpus):
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
+    mimetype = 'image/jpeg'
+
     def sources(self, start=min_date, end=max_date):
         metafile = join(self.data_directory, "19thCenturyUKP_NewReaderships.xlsx")
         wb = openpyxl.load_workbook(filename=metafile)
@@ -262,10 +264,9 @@ class Periodicals(XMLCorpus):
         ),
     ]
 
-    def get_image(self, document):
+    def get_media(self, document):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
-        print(image_directory)
         starting_page = field_vals['id'][:-4]
         start_index = int(starting_page.split("-")[-1])
         page_count = int(field_vals['page_count'])

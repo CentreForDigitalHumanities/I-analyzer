@@ -41,6 +41,8 @@ class GuardianObserver(XMLCorpus):
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
+    mimetype = 'application/pdf'
+
     tag_toplevel = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
@@ -165,7 +167,7 @@ class GuardianObserver(XMLCorpus):
         )
     ]
 
-    def get_image(self, document):
+    def get_media(self, document):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
@@ -177,6 +179,8 @@ class GuardianObserver(XMLCorpus):
             "homePageIndex": 1, #change from 0-indexed to real page
             "fileName": target_filename
         }
+        pdf_data = None
+        
         if 'img_path' in field_vals.keys():
             # we stored which of the zip archives holds the target file
             # applicable for post-1910 data

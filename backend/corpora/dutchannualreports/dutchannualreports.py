@@ -40,6 +40,8 @@ class DutchAnnualReports(XMLCorpus):
         )
     )
 
+    mimetype = 'application/pdf'
+
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
     tag_entry = 'Page'
@@ -213,7 +215,7 @@ class DutchAnnualReports(XMLCorpus):
         )
     ]
 
-    def get_image(self, document):
+    def get_media(self, document):
         pages_returned = 5 #number of pages that is displayed. must be odd number.
         home_page = document['fieldValues']['page'] - 1 #the page corresponding to the document
         image_path = document['fieldValues']['image_path']
@@ -231,5 +233,6 @@ class DutchAnnualReports(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
+        print(pdf_info)
         return out, pdf_info
         
