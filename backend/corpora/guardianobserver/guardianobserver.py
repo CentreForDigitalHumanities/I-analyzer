@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 import glob
 from pathlib import Path # needed for Python 3.4, as glob does not support recursive argument
 import os.path as op
+from os import getcwd
 from datetime import date, datetime
 from zipfile import ZipFile
 
@@ -17,6 +18,7 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 
+PROCESSED = "corpora/guardianobserver/processed.txt"
 
 # Source files ################################################################
 
@@ -42,13 +44,19 @@ class GuardianObserver(XMLCorpus):
 
         Specifically, return the data contained in an xml file within a zip archive.
         '''
+        with open(PROCESSED, 'r') as f:
+            processed = f.readlines()
         for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
+            if str(zfile) in processed:
+                continue
             xmls = ZipFile(str(zfile)).namelist()
             with ZipFile(str(zfile), mode='r') as zipped:
                 for xml in xmls:
                     with zipped.open(xml) as xmlfile:
                         data = xmlfile.read()
                     yield data
+            with open(PROCESSED, 'a') as f:
+                f.write('{}\n'.format(str(zfile)))
 
     fields = [
         Field(
@@ -90,7 +98,7 @@ class GuardianObserver(XMLCorpus):
             name='pub_id',
             display_name='Publication ID',
             description='Publication identifier',
-            extractor=extract.XML(tag='PublicationID', toplevel=True)
+            extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
