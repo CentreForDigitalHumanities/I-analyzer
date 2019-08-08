@@ -506,11 +506,28 @@ def api_get_scan_image(corpus_index, image_path):
             return send_file(absolute_path, mimetype='image/png')
 
 
-@api.route('/test_images', methods=['GET'])
+@api.route('/test_images', methods=['POST'])
 @login_required
 def api_test_images():
-    
-    return send_file(BytesIO(data), mimetype='image/jpeg')
+    corpus_index = request.json['corpus_index']
+    backend_corpus = load_corpus(corpus_index)
+    data = backend_corpus.get_image(request.json['document'])
+    if len(data)==0:
+        return jsonify({'success': False})
+    return jsonify({'success': True, 'images': data})
+
+@api.route('/get_single_image/<corpus_index>/<path:image_path>', methods=['GET'])
+@login_required
+def api_get_single_image(corpus_index, image_path):
+    backend_corpus = load_corpus(corpus_index)
+    if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        absolute_path = join(backend_corpus.data_directory, image_path)
+        print(absolute_path)
+        if not isfile(absolute_path):
+            abort(404)
+        else:
+            return send_file(absolute_path, mimetype="image/jpeg")
+
 
 @api.route('/source_pdf', methods=['POST'])
 @login_required

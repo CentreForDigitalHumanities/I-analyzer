@@ -37,7 +37,7 @@
                     <ng-template *ngIf="corpus.scan_image_type=='pdf'" pTemplate="content">
                         <ia-scan-pdf [corpus]="corpus" [document]="document" [query]="query"></ia-scan-pdf>
                     </ng-template> -->
-                    <ia-image-view></ia-image-view>
+                    <ia-image-view [corpus]="corpus.name" [document]="document"></ia-image-view>
             </p-tabPanel>
         </p-tabView>
         </div>

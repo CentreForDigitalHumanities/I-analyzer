@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -231,13 +231,12 @@ export class ApiService extends Resource {
         any>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/test_images',
-        responseBodyType: ResourceResponseBodyType.Text
+        method: ResourceRequestMethod.Post,
+        path: '/test_images'
     })
     public testImages: ResourceMethod<
-        void,
-        string
+        { corpus_index: string, document: FoundDocument },
+        { success: false } | { success: true, images: string[] }
         >;
 
     @ResourceAction({

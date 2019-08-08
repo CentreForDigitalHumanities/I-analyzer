@@ -33,6 +33,7 @@ class Periodicals(XMLCorpus):
     es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['PERIODICALS_IMAGE']
+    scan_image_type = current_app.config['PERIODICALS_SCAN_IMAGE_TYPE']
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -257,20 +258,27 @@ class Periodicals(XMLCorpus):
             es_mapping={'type': 'keyword'},
             description='Path of scan.',
             extractor=extract.Metadata('image_path'),
+            hidden=True
         ),
     ]
 
     def get_image(self, document):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
-        starting_page = field_vals['_id'][:-4]
+        print(image_directory)
+        starting_page = field_vals['id'][:-4]
         start_index = int(starting_page.split("-")[-1])
-        page_count = field_vals['page_count']
+        page_count = int(field_vals['page_count'])
         image_list = []
         for page in range(page_count):
             page_no = str(start_index + page).zfill(4)
             image_name = '{}-{}.jpg'.format(starting_page[:-5], page_no)
-            with open(join(image_directory, image_name), "rb") as f:
-                data = base64.b64encode(f.read())
-                image_list.append('data:image/jpg;base64,{}'.format(data))
+            if isfile(join(self.data_directory, image_directory, image_name)):
+                image_list.append('/api/get_single_image/{}/{}'.format(
+                    self.es_index,
+                    join(image_directory, image_name)
+                    )
+                )
+            else:
+                continue
         return image_list
