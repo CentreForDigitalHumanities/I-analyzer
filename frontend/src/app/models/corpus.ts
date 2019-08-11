@@ -1,5 +1,6 @@
-import { SearchFilterData } from './search-filter-data';
+import { SearchFilter } from './search-filter';
 
+// corresponds to the corpus definition on the backend.
 export class Corpus implements ElasticSearchIndex {
     constructor(
         public serverName,
@@ -23,6 +24,7 @@ export class Corpus implements ElasticSearchIndex {
         public image: string,
         public scan_image_type: string,
         public allow_image_download: boolean,
+        public word_models_present: boolean,
         public descriptionpage?: string) { }
 
 }
@@ -54,40 +56,4 @@ export type CorpusField = {
     downloadable: boolean,
     name: string,
     searchFilter: SearchFilter | null
-}
-
-export type QueryField = CorpusField & {
-    data: SearchFilterData,
-    useAsFilter: boolean,
-    visible: boolean
-};
-
-export type SearchFilter = BooleanFilter | MultipleChoiceFilter | RangeFilter | DateFilter;
-
-type BooleanFilter = {
-    description: string,
-    name: 'BooleanFilter',
-    falseText: string,
-    trueText: string
-}
-
-export type MultipleChoiceFilter = {
-    description: string
-    name: 'MultipleChoiceFilter',
-    options: string[],
-    counts?: any[]
-}
-
-type RangeFilter = {
-    description: string
-    name: 'RangeFilter',
-    lower: number,
-    upper: number
-}
-
-type DateFilter = {
-    description: string
-    name: 'DateFilter',
-    lower: Date,
-    upper: Date
 }

@@ -1,19 +1,46 @@
-<ng-container *ngIf="filter">
-    <div class="bool" *ngIf="filter.name == 'BooleanFilter'">
-        <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
-        {{data | json | titlecase }}
+
+<div class="box filter-container" [ngClass]="{'on': useAsFilter}">
+    <div class="field has-addons">
+        <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
+            iaBalloonPosition="up-left" iaBalloonLength="fit">
+            <label class="label" [for]="'filter' + field.name">{{ field.displayName
+                }}</label>
+        </div>
+        <p class="control">
+            <span *ngIf="useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                (click)="resetFilter()" iaBalloon="Reset this filter to its default values"
+                iaBalloonPosition="down-left">
+                <i class="fa fa-trash"></i>
+            </span>
+            <span class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': useAsFilter}"
+                (click)="toggleFilter()" iaBalloon="{{useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
+                iaBalloonPosition="down-left">
+                <i class="fa fa-filter"></i>
+            </span>
+        </p>
     </div>
-    <div class="mc" *ngIf="filter.name == 'MultipleChoiceFilter'" iaBalloon="This filter is preventing your query from returning any results. Please choose at least one option." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
-        <p-multiSelect [disabled]="greyedOut" [filter]="data.options.length>=6" [options]="data.options" [maxSelectedLabels]=1 [(ngModel)]="data.selected" (onPanelHide)="update()"></p-multiSelect>
-    </div>
-    <div class="range" *ngIf="filter.name == 'RangeFilter'" iaBalloon="This filter is preventing your query from returning any results. Please ensure that the minimum is not larger than the maximum." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
-        <span>{{data[0]}} - {{data[1]}}</span>
-        <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.lower" [max]="filter.upper" (onChange)="update()"></p-slider>
-    </div>
-    <div class="daterange" *ngIf="filter.name == 'DateFilter'" iaBalloon="This filter is preventing your query from returning any results. Please ensure that the first date in the range is not after the last date." [iaBalloonVisible]="warnBottleneck && isBottleneck" iaBalloonPosition="right" iaBalloonLength="fit">
-        <p-calendar [(ngModel)]="data.min" [minDate]="filter.lower" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
-            (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
-        <p-calendar [(ngModel)]="data.max" [maxDate]="filter.upper" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
-            (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
-    </div>
-</ng-container>
+    <ng-container *ngIf="filter">
+        <div class="bool" *ngIf="filter.defaultData.filterType == 'BooleanFilter'">
+            <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
+            {{data | json | titlecase }}
+        </div>
+        <div class="mc" *ngIf="filter.defaultData.filterType == 'MultipleChoiceFilter'">
+            <p-multiSelect [disabled]="greyedOut" [filter]="data.options.length>=6" [options]="data.options" [maxSelectedLabels]=1 [(ngModel)]="data.selected" (onPanelHide)="update()">
+                <ng-template let-item pTemplate="item">
+                    <div class="select-label">{{item.label}}</div>
+                    <div class="select-count">{{item.doc_count}}</div>     
+                </ng-template>
+            </p-multiSelect>
+        </div>
+        <div class="range" *ngIf="filter.defaultData.filterType == 'RangeFilter'">
+            <span>{{data[0]}} - {{data[1]}}</span>
+            <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.defaultData.min" [max]="filter.defaultData.max" (onSlideEnd)="update()"></p-slider>
+        </div>
+        <div class="daterange" *ngIf="filter.defaultData.filterType == 'DateFilter'">
+            <p-calendar [(ngModel)]="data.min" [minDate]="minDate" [maxDate]="data.max" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+                (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
+            <p-calendar [(ngModel)]="data.max" [maxDate]="maxDate" [minDate]="data.min" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{data.minYear}}:{{data.maxYear}}" (onSelect)="update()"
+                (onClose)="update()" dateFormat="dd-mm-yy"></p-calendar>
+        </div>
+    </ng-container>
+</div>

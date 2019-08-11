@@ -3,6 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ApiService, ConfigService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
+import { MockCorpusResponse } from '../../mock-data/corpus';
 import { ScanPdfComponent } from './scan-pdf.component';
 import { ConfirmDialogModule } from 'primeng/primeng';
 import { ResourceModule } from '@ngx-resource/handler-ngx-http';
@@ -15,7 +17,11 @@ describe('ScanPdfComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ScanPdfComponent, PdfViewerComponent],
       providers: [
-        ApiService,
+        {
+            provide: ApiService, useValue: new ApiServiceMock({
+                ['corpus']: MockCorpusResponse
+            })
+        },
         ConfigService,
       ],
       imports: [ConfirmDialogModule, HttpModule, HttpClientModule, ResourceModule],

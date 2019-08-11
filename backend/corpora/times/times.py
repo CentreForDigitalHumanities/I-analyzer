@@ -16,7 +16,7 @@ from flask import current_app
 
 from addcorpus import extract
 from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 
 
 # Source files ################################################################
@@ -45,22 +45,7 @@ class Times(XMLCorpus):
         Specifically, returns an iterator of tuples that each contain a string
         filename and a dictionary of metadata (in this case, the date).
         '''
-
-        if isinstance(start, int):
-            start = datetime(year=start, month=1, day=1)
-        if isinstance(end, int):
-            end = datetime(year=end, month=12, day=31)
-
-        if start > end:
-            tmp = start
-            start = end
-            end = tmp
-
-        if start < self.min_date:
-            start = self.min_date
-        if end > self.max_date:
-            end = self.max_date
-
+        consolidate_start_end_years(start, end, self.min_date, self.max_date)
         date = start
         delta = timedelta(days=1)
         while date <= end:
@@ -118,21 +103,21 @@ class Times(XMLCorpus):
                                            '%Y-%m-%d')
                                        )
         ),
-        Field(indexed=False,
-              name='issue-id',
-              display_name='Issue ID',
-              description='Issue identifier.',
-              extractor=extract.XML(tag='id', toplevel=True)
-              ),
-        Field(indexed=False,
-              name='journal',
-              display_name='Journal',
-              description='Journal name.',
-              extractor=extract.XML(
-                  tag='jn', toplevel=True,
-                  applicable=until(1985)
-              )
-              ),
+        # Field(indexed=False,
+        #       name='issue-id',
+        #       display_name='Issue ID',
+        #       description='Issue identifier.',
+        #       extractor=extract.XML(tag='id', toplevel=True)
+        #       ),
+        # Field(indexed=False,
+        #       name='journal',
+        #       display_name='Journal',
+        #       description='Journal name.',
+        #       extractor=extract.XML(
+        #           tag='jn', toplevel=True,
+        #           applicable=until(1985)
+        #       )
+        #       ),
         Field(
             name='source',
             display_name='Source',
@@ -142,15 +127,15 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(indexed=False,
-              name='newspaperID',
-              display_name='Newspaper ID',
-              description='Publication code',
-              extractor=extract.XML(
-                  tag=['metadatainfo', 'newspaperID'], toplevel=True,
-                  applicable=after(1985)
-              )
-              ),
+        # Field(indexed=False,
+        #       name='newspaperID',
+        #       display_name='Newspaper ID',
+        #       description='Publication code',
+        #       extractor=extract.XML(
+        #           tag=['metadatainfo', 'newspaperID'], toplevel=True,
+        #           applicable=after(1985)
+        #       )
+        #       ),
         Field(
             name='edition',
             display_name='Edition',
@@ -225,15 +210,15 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        Field(indexed=False,
-              name='weekday',
-              display_name='Weekday',
-              description='Day of the week.',
-              extractor=extract.XML(
-                  tag='dw', toplevel=True,
-                  applicable=after(1985)
-              )
-        ),
+        # Field(indexed=False,
+        #       name='weekday',
+        #       display_name='Weekday',
+        #       description='Day of the week.',
+        #       extractor=extract.XML(
+        #           tag='dw', toplevel=True,
+        #           applicable=after(1985)
+        #       )
+        # ),
         Field(
             name='page-count',
             display_name='Image count',
@@ -244,21 +229,21 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        Field(indexed=False,
-              name='copyright',
-              display_name='Copyright',
-              description='Copyright holder and year.',
-              extractor=extract.Choice(
-                  extract.XML(
-                      tag='cp', toplevel=True,
-                      applicable=until(1985)
-                  ),
-                  extract.XML(
-                      tag='copyright', toplevel=True,
-                      applicable=after(1985)
-                  )
-              )
-              ),
+        # Field(indexed=False,
+        #       name='copyright',
+        #       display_name='Copyright',
+        #       description='Copyright holder and year.',
+        #       extractor=extract.Choice(
+        #           extract.XML(
+        #               tag='cp', toplevel=True,
+        #               applicable=until(1985)
+        #           ),
+        #           extract.XML(
+        #               tag='copyright', toplevel=True,
+        #               applicable=after(1985)
+        #           )
+        #       )
+        #       ),
         Field(
             name='page-type',
             display_name='Page type',
@@ -303,7 +288,7 @@ class Times(XMLCorpus):
             description='Whether the article is on the front page.',
             es_mapping={'type': 'boolean'},
             search_filter=filters.BooleanFilter(
-                true='Cover page',
+                true='Front page',
                 false='Other',
                 description=(
                     'Accept only articles that are on the front page. '

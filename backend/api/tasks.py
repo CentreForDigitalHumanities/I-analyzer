@@ -1,111 +1,92 @@
 import requests
 import csv
 import json
-from celery import Celery
+import os.path as op
 from flask import Flask, abort, current_app, render_template
 from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 
-from es import es_forward
-from ianalyzer import config_fallback as config
+from api import analyze
+from api.user_mail import send_user_mail
+from es import es_forward, download
+from ianalyzer import celery_app
 
 logger = logging.getLogger(__name__)
-# celery = Celery('tasks', broker=lambda:current_app.config['BROKER_URL'])
-celery = Celery('tasks', broker=config.BROKER_URL)
 
-@celery.task(bind=True)
-def download_csv(self, request_json, email, instance_path, download_size):
-    corpus = request_json['corpus']
-    host = es_forward.get_es_host_or_404(corpus['serverName'])
-    address = host + "/".join(["",  corpus['index'],
-                               corpus['doctype'], '_search'])
-    params = {'size': download_size}
-    kwargs = {}
-    kwargs['json'] = request_json['esQuery']
+
+@celery_app.task()
+def download_scroll(request_json, download_size=10000):
+    results = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    return results
+
+
+@celery_app.task()
+def make_csv(results, request_json, username, email=None):
     filename = create_filename(request_json)
-    try:
-        response = requests.request('POST',
-                                    address,
-                                    params=params,
-                                    stream=True,
-                                    timeout=30,
-                                    **kwargs
-                                    )
-    except HTTPError:
-        abort(502)
-    except ConnectionError:
-        abort(503)
-    except Timeout:
-        abort(504)
-    result = json.loads(response.text)
-    filepath = instance_path + "/" + filename
-    create_csv(result, filepath)
-    send_mail(filename, email)
+    filepath = create_csv(results, request_json['fields'], filename)
+    if email:
+        # we are sending the results to the user by email
+        send_user_mail(
+            email=email,
+            username=username,
+            subject_line="I-Analyzer csv download",
+            email_title="Download CSV",
+            message="Your .csv file is ready for download.",
+            prompt="Click on the link below.",
+            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename,
+            link_text="Download .csv file"
+            )
+        return None
+    else:
+        return filepath
+
+
+@celery_app.task()
+def get_wordcloud_data(request_json):
+    list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
+    return list_of_texts
+
+
+@celery_app.task()
+def make_wordcloud_data(list_of_texts, request_json):
+    word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+    return word_counts
 
 
 def create_filename(request_json):
     query = 'query_match_all'
-    if (request_json['esQuery']['query']['bool']['must'] != {'match_all': {}}):
-        query = request_json['esQuery']['query']['bool']['must']['simple_query_string']['query']
-    filename = request_json['corpus']['index'] + "_" + query
-    if not request_json['esQuery']['query']['bool']['filter']:
+    if (request_json['es_query']['query']['bool']['must'] != {'match_all': {}}):
+        query = request_json['es_query']['query']['bool']['must']['simple_query_string']['query']
+    filename = request_json['corpus'] + "_" + query
+    if not request_json['es_query']['query']['bool']['filter']:
         filename += "_" + 'no_filters'
     else:
-        for filter in request_json['esQuery']['query']['bool']['filter']:
-            if filter.get('range') != None and filter['range'].get('date') != None:
+        for filter_name in request_json['es_query']['query']['bool']['filter']:
+            if filter_name.get('range') != None and filter_name['range'].get('date') != None:
                 filename += "_" + \
-                    filter['range']['date']['gte'] + "_" + \
-                    filter['range']['date']['lte']
+                    filter_name['range']['date']['gte'] + "_" + \
+                    filter_name['range']['date']['lte']
             # iterate through terms, find name of filter term, get value of filter term and append to file name
-            if filter.get('terms') != None:
-                for term in filter['terms']:
-                    filename += "_" + str(filter['terms'].get(term))
+            if filter_name.get('terms') != None:
+                for term in filter_name['terms']:
+                    filename += "_" + str(filter_name['terms'].get(term))
     filename += '.csv'
     return filename
 
 
-def create_csv(result, filepath):
-    result_hits = result['hits']['hits']  # results we need are in here
+def create_csv(results, fields, filename):
     entries = []
-    counter = 0
-    for entry in result_hits:
-        entry_s = entry['_source']
-        list = []
-        if counter == 0:  # key names in first row
-            for key in entry_s:
-                list.append(key)
-        else:
-            for value in entry_s.values():
-                list.append(value)
-        entries.append(list)
-        counter += 1
+    for result in results:
+        entry = {field: result['_source'][field] for field in fields}
+        entries.append(entry)
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
-                         quoting=csv.QUOTE_ALL, skipinitialspace=True)
+                         quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
+    filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
     # newline='' to prevent empty double lines
     with open(filepath, 'w', newline='') as f:
-        writer = csv.writer(f, dialect='myDialect')
+        writer = csv.DictWriter(f, fieldnames=fields, dialect='myDialect')
+        writer.writeheader()
         for row in entries:
             writer.writerow(row)
-    f.close()
-
-
-def send_mail(filename, email):
-    app = Flask(__name__)  # context is not available in celery task
-    mail = Mail(app)
-    with app.app_context():
-        msg = Message(config.MAIL_CSV_SUBJECT_LINE,
-                      sender=config.MAIL_FROM_ADRESS, recipients=[email])
-        msg.html = render_template('send_csv_mail.html',
-                                   # link to the api endpoint where csv will be downloaded
-                                   download_link=config.BASE_URL + "/api/csv/" + filename,
-                                   url_i_analyzer=config.BASE_URL,
-                                   logo_link=config.LOGO_LINK)
-        try:
-            mail.send(msg)
-            return True
-        except Exception as e:
-            logger.error(
-                "An error occured sending an email to {}:".format(email))
-            logger.error(e)
-            return False
+    return filepath

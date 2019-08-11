@@ -13,7 +13,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ScanPdfComponent implements OnChanges, OnInit {
     @ViewChild(PdfViewerComponent)
-
     private pdfComponent: PdfViewerComponent;
 
     @Input()

@@ -3,17 +3,17 @@ import logging
 import requests
 from requests.exceptions import Timeout, ConnectionError
 
-from flask import Blueprint, current_app, request, json, abort, Response
+from flask import current_app, request, json, abort, Response
 from flask_login import login_required, current_user
 
 from ianalyzer import config_fallback as config
+from . import es
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
 
 logger = logging.getLogger(__name__)
 
-es = Blueprint('es', __name__)
 
 def ensure_http(hostname):
     """ If hostname does not include the http scheme, prepend it. """
@@ -70,8 +70,6 @@ def proxy_es(address):
             for key in PASSTHROUGH_HEADERS if key in es_response.headers
         },
     )
- 
-
 
 @es.route('/<server_name>', methods=['HEAD'])
 @login_required
@@ -95,7 +93,7 @@ def forward_scroll(server_name):
 def forward_search(server_name, corpus_name, document_type):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
-    host = get_es_host_or_404(server_name)
+    host = get_es_host_or_404(server_name) 
     address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
     return proxy_es(address)
 

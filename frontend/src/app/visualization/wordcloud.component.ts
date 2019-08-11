@@ -1,10 +1,11 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 import { AggregateData } from '../models/index';
 import { DialogService } from '../services/index';
+import { log } from 'util';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -16,9 +17,14 @@ import { DialogService } from '../services/index';
 export class WordcloudComponent implements OnChanges, OnInit {
     @ViewChild('wordcloud') private chartContainer: ElementRef;
     @Input('searchData') public significantText: AggregateData;
+    @Input('disableLoadMore') public disableLoadMore: boolean;
+    @Output('loadMore')
+    public loadMoreDataEmitter = new EventEmitter();
 
     private width: number = 600;
     private height: number = 400;
+    private scaleFontSize = d3.scaleLinear();
+    public isLoading: boolean = false;
 
     private chartElement: any; 
     private svg: any;
@@ -29,17 +35,26 @@ export class WordcloudComponent implements OnChanges, OnInit {
        
     }
 
-    ngOnChanges(changes: SimpleChanges) {  
+    ngOnChanges(changes: SimpleChanges) {
         this.chartElement = this.chartContainer.nativeElement;     
         let significantText = changes.significantText.currentValue;
         if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
+            this.isLoading = false;
             d3.selectAll('svg').remove();
-            this.drawWordCloud(this.significantText);
+            let inputRange = d3.extent(significantText.map(d => d.doc_count)) as number[];
+            let outputRange = [20, 80];
+            this.scaleFontSize.domain(inputRange).range(outputRange);
+            this.drawWordCloud(significantText);
         }
     }
 
     showWordcloudDocumentation() {
         this.dialogService.showManualPage('wordcloud');
+    }
+
+    loadMoreData() {
+        this.loadMoreDataEmitter.emit();
+        this.isLoading = true;
     }
 
     drawWordCloud(significantText: AggregateData) {
@@ -60,7 +75,7 @@ export class WordcloudComponent implements OnChanges, OnInit {
           .padding(5)
           .rotate(function() { return ~~(Math.random() * 2) * 90; })
           .font("Impact")
-          .fontSize(function(d) { return d.doc_count * 20; })
+          .fontSize(d => this.scaleFontSize((d.doc_count)))
           .on("end", function(words) {
                 // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
             chart

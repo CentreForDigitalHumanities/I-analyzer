@@ -6,8 +6,6 @@ import logging
 from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta
 
-LOG_LEVEL = logging.INFO
-
 # Flask
 DEBUG = False
 TESTING = False
@@ -26,6 +24,8 @@ SAML_MAIL_KEY = "mail"
 # SQLAlchemy
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+LOG_CONFIG = 'logging.json'
 
 # the corpora dictionary provides the file path of the corpus definition
 # this information can be anywhere on the file system
@@ -76,25 +76,26 @@ CORPUS_SERVER_NAMES = {
 
 CORPUS_DEFINITIONS = {}
 
-DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
-DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
-DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
-DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
-DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
+###### CORPUS VARIABLES #######
 
-DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers'
+DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
+DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
+DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
+DUTCHANNUALREPORTS_MAP = {}
+DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
+
 DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
-DUTCHNEWSPAPERS_DATA = '/mnt/dutchnewspapers'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
+DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
+DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
+DUTCHNEWSPAPERS_DATA = '/directory/to/data' # remember to set this in config.py
+
+DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
+DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data' # remember to set this in config.py
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
-
-TML_ES_INDEX = 'tml'
-TML_ES_DOCTYPE = 'article'
-TML_DATA = '/mnt/tml'
-TML_IMAGE = 'tml.jpg'
 
 TIMES_ES_INDEX = 'times'
 TIMES_ES_DOCTYPE = 'article'
@@ -103,29 +104,25 @@ TIMES_IMAGE = 'times.jpg'
 TIMES_SCAN_IMAGE_TYPE = 'png'
 TIMES_DESCRIPTION_PAGE = 'times.md'
 
+TML_ES_INDEX = 'tml'
+TML_ES_DOCTYPE = 'article'
+TML_DATA = '/mnt/tml'
+TML_IMAGE = 'tml.jpg'
+
 TROONREDES_IMAGE = 'troon.jpg'
 
-DUTCHANNUALREPORTS_TITLE = "Dutch Annual Reports"
-DUTCHANNUALREPORTS_DESCRIPTION = "Annual reports of Dutch financial institutes"
-DUTCHANNUALREPORTS_ES_INDEX = 'dutchannualreports'
-DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
-DUTCHANNUALREPORTS_DATA = '/mnt/times/dutchannualreports'
-DUTCHANNUALREPORTS_MIN_DATE = datetime(year=1957, month=1, day=1)
-DUTCHANNUALREPORTS_MAX_DATE = datetime(year=2008, month=12, day=31)
-DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
-DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
-DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
-DUTCHANNUALREPORTS_MAP_FP = 'ianalyzer/corpora/dutchannualreports_mapping.csv'
-DUTCHANNUALREPORTS_MAP = {}
+GO_SCAN_IMAGE_TYPE = 'pdf'
+GO_IMAGE = 'guardianobserver.jpg'
 
-
-JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
+#################
 
 #Celery configuration
-BROKER_URL = 'amqp://'
+CELERY_BROKER_URL = 'amqp://'
+CELERY_BACKEND = 'amqp'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
+
+WORDCLOUD_LIMIT = 10000;

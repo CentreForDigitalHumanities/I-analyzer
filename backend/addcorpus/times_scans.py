@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import logging
-from elasticsearch import Elasticsearch
-import os
-from datetime import datetime
-from progress.bar import Bar
 import sys
+from progress.bar import Bar
+from datetime import datetime
+import os
+from elasticsearch import Elasticsearch
+import logging
+logger = logging.getLogger(__name__)
 
 
 updated_docs = 0

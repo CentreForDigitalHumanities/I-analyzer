@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { CorpusField } from '../models/index';
 
 import * as _ from "lodash";
@@ -8,12 +8,13 @@ import * as _ from "lodash";
     templateUrl: './select-field.component.html',
     styleUrls: ['./select-field.component.scss'],
 })
-export class SelectFieldComponent implements OnInit {
+export class SelectFieldComponent implements OnChanges {
     @Input() public availableFields: CorpusField[];
     @Input() public filterCriterion: string;
     @Input() public label: string;
     @Input() public selectAll: boolean;
     @Input() public showSelectedFields: boolean;
+    @Input() public fieldsFromParams: CorpusField[];
     @Output() selectedFields = new EventEmitter<CorpusField[]>();
     public allVisible: boolean = false;
     public selectedQueryFields: CorpusField[];
@@ -21,16 +22,19 @@ export class SelectFieldComponent implements OnInit {
 
     constructor() { }
 
-    ngOnInit() {
+    ngOnChanges() {
         if (this.availableFields !== undefined && this.filterCriterion !== undefined) {
             this.filterCoreFields();
             if (this.selectAll) {
                 this.selectedQueryFields = this.optionsFields;
             }
-            else {
+            else if (this.fieldsFromParams === undefined) {
                 this.selectedQueryFields = [];
             }
-        }       
+        } 
+        if (this.fieldsFromParams !== undefined) {
+            this.selectedQueryFields = this.fieldsFromParams;
+        }     
     }
 
     public toggleAllFields() {

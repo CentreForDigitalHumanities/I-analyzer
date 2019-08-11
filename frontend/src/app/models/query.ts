@@ -1,4 +1,4 @@
-import { SearchFilterData } from '../models/index';
+import {SearchFilter } from '../models/index';
 
 /** This is the query object as it is saved in the database.*/
 export class Query {
@@ -44,14 +44,25 @@ export class Query {
     /**
      * Number of transferred (e.g. actually downloaded) documents. Note that this does not say anything about the size of those documents.
      */
-    public transferred: number = 0
+    public transferred: number = 0;
+
+    /**
+     * Number of total results available for the query.
+     */
+    public totalResults: number = 0;
 }
 
 /** This is the client's representation of the query by the user, shared between components */
 export type QueryModel = {
     queryText: string,
     fields?: string[],
-    filters?: SearchFilterData[],
+    filters?: SearchFilter[],
     sortBy?: string,
     sortAscending?: boolean
 };
+
+/** These are the from / size parameters emitted by the pagination component */
+export type SearchParameters = {
+    from: number,
+    size: number
+}

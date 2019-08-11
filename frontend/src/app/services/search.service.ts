@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/map';
 
@@ -8,11 +7,13 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilterData, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback } from '../models/index';
 
 @Injectable()
 export class SearchService {
-    constructor(private apiService: ApiService,
+    
+    constructor(
+        private apiService: ApiService,
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
@@ -21,19 +22,13 @@ export class SearchService {
     }
 
     /**
-     * Loads more results and returns an object containing the existing and newly found documents.
+     * Load results for requested page
      */
-    public async loadMore(corpus: Corpus, existingResults: SearchResults): Promise<SearchResults> {
-        this.logService.info(`Requested additional results for: ${JSON.stringify(existingResults.queryModel)}`);
-        let results = await this.elasticSearchService.loadMore(corpus, existingResults);
-        return this.limitResults(results);
-    }
-
-    /**
-     * Clear ES's scrollId and resources
-     */
-    public async clearESScroll(corpus: Corpus, existingResults: SearchResults): Promise<void> {
-        return this.elasticSearchService.clearScroll(corpus, existingResults);
+    public async loadResults(corpus: Corpus, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
+        this.logService.info(`Requested additional results for: ${JSON.stringify(queryModel)}`);
+        let results = await this.elasticSearchService.loadResults(corpus, queryModel, from, size);
+        results.fields = corpus.fields.filter(field => field.resultsOverview);
+        return results;
     }
 
     /**
@@ -42,7 +37,7 @@ export class SearchService {
      * @param fields Optional list of fields to restrict the queryString to.
      * @param filters A list of dictionaries representing the ES DSL.
      */
-    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilterData[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
+    public createQueryModel(queryText: string = '', fields: string[] | null = null, filters: SearchFilter[] = [], sortField: CorpusField = null, sortAscending = false): QueryModel {
         let model: QueryModel = {
             queryText: queryText,
             filters: filters,
@@ -85,72 +80,48 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         let user = await this.userService.getCurrentUser();
         let query = new Query(queryModel, corpus.name, user.id);
-
-        let querySave = this.queryService.save(query, true);
-        let results = await this.limitResults(await this.elasticSearchService.search(corpus, queryModel));
-        querySave.then((savedQuery) => {
-            // update the last saved query object, it might have changed on the server
-            if (!results.completed) {
-                savedQuery.aborted = true;
-            }
-            savedQuery.transferred = results.total;
-            this.queryService.save(savedQuery, undefined, results.completed);
-        });
+        let results = await this.elasticSearchService.search(corpus, queryModel);
+        query.totalResults = results.total;
+        await this.queryService.save(query, true);
 
         return <SearchResults>{
-            completed: results.completed,
             fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
-            documents: results.documents,
-            queryModel: queryModel,
-            retrieved: results.retrieved,
-            scrollId: results.scrollId
+            documents: results.documents
         };
     }
-
-
-    public async searchObservable(corpus: Corpus, queryModel: QueryModel): Promise<Observable<SearchResults>> {
-        let completed = false;
-        let totalTransferred = 0;
-
-        // Log the query to the database
-        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
-
-        // Perform the search and obtain output stream
-        return this.elasticSearchService.searchObservable(
-            corpus, queryModel, (await this.userService.getCurrentUser()).downloadLimit);
-    }
-
-
-    /**
-     * download csv via api service. In backend csv is saved, link send to user per email
-     */
-    public async download_async(corpus: Corpus, queryModel: QueryModel): Promise<boolean> {
-        let completed = false;
-        let totalTransferred = 0;
-        let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        // Log the query to the database
-        this.logService.info(`Requested observable results for query: ${JSON.stringify(queryModel)}`);
-
-        let result = await this.apiService.download(
-            { corpus, esQuery, size: (await this.userService.getCurrentUser()).downloadLimit }
-        );
-        return result.success;
-    }
-
 
     public async aggregateSearch<TKey>(corpus: Corpus, queryModel: QueryModel, aggregators: any): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async getWordcloudData<TKey>(fieldName: string, textContent: string[]): Promise<any>{
-        return this.apiService.getWordcloudData({'content_list': textContent}).then( result => {
+    public async dateHistogramSearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
+        return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
+    }
+
+    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['data']) {
                     resolve({[fieldName]: result['data']});
+                }              
+                else {
+                    reject({error: result['message']});
+                }
+            });
+        });
+    }
+
+    public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<any>{
+        let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success']===true) {
+                    resolve({taskIds: result['task_ids']});
                 }
                 else {
-                    reject({'message': 'No word cloud data could be extracted from your search results.'});
+                    reject({error: result['message']});
                 }
             });
         });
@@ -189,72 +160,6 @@ export class SearchService {
                 }
             })
         });
-    }
-
-    /**
-     * Search and return a simple two-dimensional string array containing the values.
-     */
-    public async searchAsTable(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[] = []): Promise<string[][]> {
-        let totalTransferred = 0;
-
-        this.logService.info(`Requested tabular data for query: ${JSON.stringify(queryModel)}`);
-
-
-
-
-        return new Promise<string[][]>(async (resolve, reject) => {
-            let rows: string[][] = [];
-            (await this.searchObservable(corpus, queryModel))
-                .subscribe(
-                    result => {
-                        rows.push(...
-                            result.documents.map(document =>
-                                this.documentRow(document, fields.map(field => field.name))
-                            )
-                        );
-
-                        totalTransferred = result.retrieved;
-                    },
-                    (error) => reject(error),
-                    () => resolve(rows));
-        });
-
-
-
-
-    }
-
-    /**
-     * Iterate through some dictionaries and yield for each dictionary the values
-     * of the selected fields, in given order.
-     */
-    private documentRow<T>(document: { [id: string]: T }, fieldNames: string[] = []): string[] {
-        return fieldNames.map(
-            field => this.documentFieldValue(document.fieldValues[field])
-        );
-    }
-
-    private documentFieldValue(value: any) {
-        if (!value) {
-            return '';
-        }
-        if (Array.isArray(value)) {
-            return value.join(', ');
-        }
-        if (value instanceof Date) {
-            return value.toISOString().split('T')[0];
-        }
-
-        return String(value);
-    }
-
-    private async limitResults(results: SearchResults) {
-        let downloadLimit = (await this.userService.getCurrentUser()).downloadLimit;
-        if (downloadLimit && !results.completed && results.retrieved >= downloadLimit) {
-            // download limit exceeded
-            results.completed = true;
-        }
-        return results;
     }
 
     public getParamForFieldName(fieldName: string) {

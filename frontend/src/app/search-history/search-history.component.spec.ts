@@ -1,14 +1,15 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MultiSelectModule } from 'primeng/primeng';
+import { DropdownModule } from 'primeng/primeng';
+import { TableModule } from 'primeng/table'
 
-import * as corpus from '../../mock-data/corpus';
-import { ApiService, ApiRetryService, LogService, SearchService, QueryService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, CorpusService, LogService, QueryService, SearchService, UserService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
 import { SearchServiceMock } from '../services/search.service.mock';
 import { UserServiceMock } from '../services/user.service.mock';
-import { HistoryQueryDisplayComponent, SearchHistoryComponent } from './index';
+import { SearchHistoryComponent, QueryTextPipe, QueryFiltersComponent } from './index';
+import { MockCorpusResponse } from '../../mock-data/corpus';
 
 
 describe('SearchHistoryComponent', () => {
@@ -17,15 +18,17 @@ describe('SearchHistoryComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, MultiSelectModule],
-            declarations: [HistoryQueryDisplayComponent, SearchHistoryComponent],
+            imports: [FormsModule, DropdownModule, TableModule],
+            declarations: [QueryFiltersComponent, QueryTextPipe, SearchHistoryComponent],
             providers: [
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
-                        'search_history': { queries: [] }
+                        'search_history': { queries: [] },
+                        ['corpus']: MockCorpusResponse
                     })
                 },
                 ApiRetryService,
+                CorpusService,
                 LogService,
                 QueryService,
                 {

@@ -9,7 +9,8 @@ import { UserService } from './user.service';
 import { UserServiceMock } from './user.service.mock';
 
 import { Corpus } from '../models/corpus';
-import { CorpusField } from '../models/index';
+import { CorpusField, SearchFilterData } from '../models/index';
+import { Fieldset } from 'primeng/primeng';
 
 describe('CorpusService', () => {
     let service: CorpusService;
@@ -48,7 +49,10 @@ describe('CorpusService', () => {
                 "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
-                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
+                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "scan_image_type": "png",
+                "allow_image_download": false,
+                "word_models_present": false
             },
             "test2": {
                 "title": "Test 2",
@@ -59,7 +63,10 @@ describe('CorpusService', () => {
                 "overview_fields": [],
                 "fields": [],
                 "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
-                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
+                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "scan_image_type": "jpg",
+                "allow_image_download": true,
+                "word_models_present": true
             },
         };
         service.get().then((items) => {
@@ -75,12 +82,6 @@ describe('CorpusService', () => {
                 "description": "This is a description.",
                 "es_doctype": "article",
                 "es_index": "times",
-                "es_settings": null,
-                "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
-                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
-                "image": "/static/no-image.jpg",
-                "scan_image_type": "png",
-                "allow_image_download": false,
                 "fields": [{
                     "description": "Banking concern to which the report belongs.",
                     "es_mapping": { "type": "keyword" },
@@ -88,7 +89,6 @@ describe('CorpusService', () => {
                     "sortable": false,
                     "searchable": true,
                     "downloadable": false,
-                    "indexed": false,
                     "name": "bank",
                     "display_name": "Bank",
                     "results_overview": false,
@@ -97,9 +97,11 @@ describe('CorpusService', () => {
                     "visualization_type": "term_frequency",
                     "visualization_sort": "key",
                     "search_filter": {
-                        "description": "Search only within these banks.",
                         "name": "MultipleChoiceFilter",
-                        "options": ['A', 'B', 'C']
+                        "description": "Search only within these banks.",
+                        "fieldName": "bank",
+                        "useAsFilter": false,
+                        "options": ['A', 'B', 'C']               
                     }
                 },
                 {
@@ -109,7 +111,6 @@ describe('CorpusService', () => {
                     "sortable": true,
                     "searchable": false,
                     "downloadable": true,
-                    "indexed": true,
                     "name": "year",
                     "results_overview": true,
                     "csv_core": true,
@@ -118,23 +119,36 @@ describe('CorpusService', () => {
                     "visualization_type": "term_frequency",
                     "visualization_sort": "key",
                     "search_filter": {
-                        "description": "Restrict the years from which search results will be returned.",
-                        "lower": 1785,
                         "name": "RangeFilter",
+                        "description": "Restrict the years from which search results will be returned.",
+                        "fieldName": "year",
+                        "useAsFilter": false,
+                        "lower": 1785,
                         "upper": 2010
                     }
-                }]
+                }],
+                "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 },
+                "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
+                "image": "/static/no-image.jpg",
+                "scan_image_type": "png",
+                "allow_image_download": false,
+                "word_models_present": true,
             },
         };
 
         return service.get().then((items) => {
+            let mockMultipleChoiceData: SearchFilterData  = {
+                filterType: 'MultipleChoiceFilter',
+                options: ['A', 'B', 'C'],
+                selected: []
+            };
+            let mockRangeData: SearchFilterData = {
+                filterType: 'RangeFilter',
+                min: 1785,
+                max: 2010
+            };
             let allFields: CorpusField[] = [{
                 description: "Banking concern to which the report belongs.",
-                hidden: true,
-                sortable: false,
-                searchable: false,
-                downloadable: true,
-                name: 'bank',
                 displayName: 'Bank',
                 displayType: 'keyword',
                 resultsOverview: false,
@@ -142,10 +156,17 @@ describe('CorpusService', () => {
                 searchFieldCore: false,
                 visualizationType: 'term_frequency',
                 visualizationSort: "key",
+                hidden: true,
+                sortable: false,
+                searchable: true,
+                downloadable: false,
+                name: 'bank',
                 searchFilter: {
                     description: "Search only within these banks.",
-                    name: "MultipleChoiceFilter",
-                    options: ['A', 'B', 'C']
+                    fieldName: "bank",
+                    useAsFilter: false,
+                    defaultData: mockMultipleChoiceData,
+                    currentData: mockMultipleChoiceData
                 }
             }, {
                 description: "Year of the financial report.",
@@ -163,9 +184,10 @@ describe('CorpusService', () => {
                 visualizationSort: "key",
                 searchFilter: {
                     description: "Restrict the years from which search results will be returned.",
-                    name: "RangeFilter",
-                    lower: 1785,
-                    upper: 2010
+                    fieldName: 'year',
+                    useAsFilter: false,
+                    defaultData: mockRangeData,
+                    currentData: mockRangeData
                 }
             }];
             expect(items).toEqual([new Corpus(
@@ -180,7 +202,8 @@ describe('CorpusService', () => {
                 new Date(2010, 11, 31, 0, 0),
                 '/static/no-image.jpg',
                 'png',
-                false
+                false,
+                true
             )]);
         });
     });

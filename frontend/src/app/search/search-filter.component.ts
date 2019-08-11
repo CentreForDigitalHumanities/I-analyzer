@@ -1,207 +1,164 @@
-import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
-import { CorpusField, SearchFilter, SearchFilterData, AggregateData } from '../models/index';
+import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 import { DataService } from '../services/index';
+import { CommentStmt } from '@angular/compiler';
 
+/**
+ * Filter component receives the corpus fields containing search filters as input
+ * Filter data from parameters and after search are pushed via a DataService observable
+ */
 @Component({
     selector: 'search-filter',
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnInit, OnDestroy {
+export class SearchFilterComponent implements OnDestroy, OnInit {
     @Input()
     public field: CorpusField;
 
-    @Input()
-    public enabled: boolean;
-
-    @Input()
-    public filterData: SearchFilterData;
-
-    @Input()
-    public warnBottleneck: boolean;
-
     @Output('update')
-    public updateEmitter = new EventEmitter<SearchFilterData>();
+    public updateEmitter = new EventEmitter<SearchFilter>();
 
-    @Output('greyedOut')
-    public greyedOutEmitter = new EventEmitter<boolean>();
-
-    public isBottleneck: boolean = false;
-
-    public get filter() {
-        return this.field.searchFilter;
-    }
+    public filter: SearchFilter;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
      */
-    public data: any;
+    public data: any; // holds the user data
 
     public subscription: Subscription;
 
-    public aggregateData: AggregateData;
-
     public greyedOut: boolean = false;
+    public useAsFilter: boolean = false;
+    public minDate: Date;
+    public maxDate: Date;
+    public minYear: number;
+    public maxYear: number;
 
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
             data => {
-                if (this.field) {
-                    this.aggregateData = data;
-                    this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+                if (this.field && data !== undefined) {
+                    this.filter = data.find(f => f.fieldName === this.field.name);
+                    this.greyedOut = false;
+                    this.data = this.getDisplayData(this.filter);
+                    this.useAsFilter = this.filter.useAsFilter;
                 }
             });
     }
 
     ngOnInit() {
         if (this.field) {
-            this.data = this.getDisplayData(this.filter, this.filterData, this.aggregateData);
+            this.filter = this.field.searchFilter;
+            if (this.filter.defaultData.filterType === 'DateFilter') {
+                this.minDate = new Date(this.filter.defaultData.min);
+                this.maxDate = new Date(this.filter.defaultData.max);
+                this.minYear = this.minDate.getFullYear();
+                this.maxYear = this.maxDate.getFullYear();
+            }
+            this.data = this.getDisplayData(this.filter);
         }
-
-        // default values should also work as a filter: notify the parent
-        this.update();
     }
 
     ngOnDestroy() {
         this.subscription.unsubscribe();
     }
 
-    defaultFilterData(filter: SearchFilter): SearchFilterData {
-        // unfortunately this isn't typed, so be careful here
-        let fieldName = this.field.name;
-
-        switch (filter.name) {
+    getDisplayData(filter: SearchFilter) {
+        switch (filter.currentData.filterType) {
             case 'BooleanFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    data: false
-                };
-            case 'MultipleChoiceFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    data: []
-                };
+                return filter.currentData.checked;
             case 'RangeFilter':
-                return {
-                    fieldName,
-                    filterName: filter.name,
-                    data: { gte: filter.lower, lte: filter.upper }
-                };
+                return [filter.currentData.min, filter.currentData.max];
+            case 'MultipleChoiceFilter':
+                let options = [];
+                if (filter.currentData.optionsAndCounts) {
+                    options = _.sortBy(filter.currentData.optionsAndCounts.map(x => {
+                        return { 'label': x.key, 'value': encodeURIComponent(x.key), 'doc_count': x.doc_count };
+                    }), o => o.label);
+                }
+                else options = _.sortBy(filter.currentData.options.map(x => { return { 'label': x, 'value': encodeURIComponent(x) } }), o => o.label);
+                if (options.length === 0) {
+                    this.greyedOut = true;
+                }
+                return { options: options, selected: filter.currentData.selected };
             case 'DateFilter':
                 return {
-                    fieldName,
-                    filterName: filter.name,
-                    data: {
-                        gte: this.formatDate(filter.lower),
-                        lte: this.formatDate(filter.upper)
-                    }
-                };
-        }
-    }
-
-    getDisplayData(filter: SearchFilter, filterData: SearchFilterData = null, aggregateData: AggregateData = null) {
-        if (filterData == null) {
-            filterData = this.defaultFilterData(filter);
-        }
-        switch (filterData.filterName) {
-            case 'BooleanFilter':
-                return filterData.data;
-            case 'RangeFilter':
-                return [filterData.data.gte, filterData.data.lte];
-            case 'MultipleChoiceFilter':
-                if (filter.name == filterData.filterName) {
-                    let options = [];
-                    if (aggregateData != null) {
-                        this.greyedOutEmitter.emit(false);
-                        this.greyedOut = false;
-                        options = _.sortBy(
-                            aggregateData[filterData.fieldName], x => x.key
-                        ).map(
-                            x => {
-                                return { 'label': x.key + " (" + x.doc_count + ")", 'value': x.key }
-                            });
-                        if (options.length === 0) {
-                            this.greyedOutEmitter.emit(true);
-                            this.greyedOut = true;
-                        }
-                    }
-                    else {
-                        options = filter.options.map(x => { return { 'label': x, 'value': x } });
-                    };
-                    return { options: options, selected: filterData.data };
+                    min: new Date(filter.currentData.min),
+                    max: new Date(filter.currentData.max),
+                    minYear: this.minYear,
+                    maxYear: this.maxYear
                 }
-                break;
-            case 'DateFilter':
-                if (filter.name == filterData.filterName) {
-                    return {
-                        min: new Date(filterData.data.gte),
-                        max: new Date(filterData.data.lte),
-                        minYear: new Date(filter.lower).getFullYear(),
-                        maxYear: new Date(filter.upper).getFullYear()
-                    };
-                }
-                break;
         }
 
-        console.error(['Unexpected combination of filter and filterData', filter, filterData]);
+        console.error(['Unexpected combination of filter and filterData', filter, this.data]);
     }
 
     /**
      * Create a new version of the filter data from the user input.
      */
-    getFilterData() {
-        this.isBottleneck = false;
-        switch (this.filter.name) {
+    getFilterData(): SearchFilter {
+        let filterType = this.filter.currentData.filterType;
+        switch (filterType) {
             case 'BooleanFilter':
-                return {
-                    fieldName: this.field.name,
-                    filterName: this.filter.name,
-                    data: this.data
+                this.filter.currentData = {
+                    filterType: filterType,
+                    checked: this.data
                 };
+                break;
             case 'RangeFilter':
-                if (this.data[0] > this.data[1]) this.isBottleneck = true;
-                return {
-                    fieldName: this.field.name,
-                    filterName: this.filter.name,
-                    data: { gte: this.data[0], lte: this.data[1] }
+                this.filter.currentData = {
+                    filterType: filterType,
+                    min: this.data[0],
+                    max: this.data[1]
                 };
+                break;
             case 'MultipleChoiceFilter':
-                if (this.data.selected.length === 0) this.isBottleneck = true;
-                return {
-                    fieldName: this.field.name,
-                    filterName: this.filter.name,
-                    data: this.data.selected
+                this.filter.currentData = {
+                    filterType: filterType,
+                    options: this.data.options,
+                    selected: this.data.selected
                 };
+                break;
             case 'DateFilter':
-                let lower = this.filter.lower.valueOf(),
-                    upper = this.filter.upper.valueOf(),
-                    min = this.data.min && this.data.min.valueOf() || lower,
-                    max = this.data.max && this.data.max.valueOf() || upper;
-                let localMin = Math.max(min, lower);
-                let localMax = Math.min(max, upper);
-                if (localMin > localMax) this.isBottleneck = true;
-                return {
-                    fieldName: this.field.name,
-                    filterName: this.filter.name,
-                    data: {
-                        gte: this.formatDate(this.data.min || this.filter.lower),
-                        lte: this.formatDate(this.data.max || this.filter.upper)
-                    }
+                this.filter.currentData = {
+                    filterType: filterType,
+                    min: this.formatDate(this.data.min),
+                    max: this.formatDate(this.data.max)
                 };
+                break;
         }
+        return this.filter;
     }
 
     /**
      * Trigger a change event.
      */
-    update(reset = false) {
-        this.updateEmitter.emit(reset ? this.defaultFilterData(this.filter) : this.getFilterData());
+    update(toggleOrReset: string = null) {
+        // check if filter was toggled or reset
+        if (toggleOrReset == "toggle") {
+            this.useAsFilter = !this.useAsFilter;
+        }
+        else if (toggleOrReset == "reset") {
+            this.useAsFilter = false;
+            this.filter.currentData = this.filter.defaultData;
+            this.data = this.getDisplayData(this.filter);
+        }
+        else this.useAsFilter = true; // update called through user input
+        this.filter.useAsFilter = this.useAsFilter;
+        this.updateEmitter.emit(this.getFilterData());
+    }
+
+    toggleFilter() {
+        this.update("toggle");
+    }
+
+    resetFilter() {
+        this.update("reset");
     }
 
     /**

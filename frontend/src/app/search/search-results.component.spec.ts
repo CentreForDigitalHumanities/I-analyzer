@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import { DialogModule } from 'primeng/primeng';
 
@@ -10,9 +11,11 @@ import { ElasticSearchServiceMock } from '../services/elastic-search.service.moc
 import { UserServiceMock } from '../services/user.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
+import { PaginationComponent } from './pagination.component';
 import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
 import { HttpClientModule } from '@angular/common/http';
+import { componentRefresh } from '@angular/core/src/render3/instructions';
 
 
 describe('Search Results Component', () => {
@@ -21,8 +24,8 @@ describe('Search Results Component', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, SearchRelevanceComponent, SearchResultsComponent],
-            imports: [DialogModule, HttpClientModule],
+            declarations: [HighlightPipe, PaginationComponent, SearchRelevanceComponent, SearchResultsComponent],
+            imports: [DialogModule, FormsModule, HttpClientModule],
             providers: [
                 {
                     provide: ApiService, useValue: new ApiServiceMock({
@@ -50,29 +53,24 @@ describe('Search Results Component', () => {
         let fields = ['a', 'b', 'c'].map(createField);
         component = fixture.componentInstance;
         component.results = {
-            completed: true,
             fields,
             documents: [createDocument({
                 'a': '1',
                 'b': '2',
                 'c': 'Hide-and-seek!'
-            }, '1', 1, 1),
+            }, '1', 1),
             createDocument({
                 'a': '3',
                 'b': '4',
                 'c': 'Wally is here'
-            }, '2', 0.5, 2)],
-            retrieved: 2,
-            total: 2,
-            queryModel: {
-                queryText: '',
-                filters: []
-            }
+            }, '2', 0.5)],
+            total: 2
         };
         component.corpus = <any>{
             fields
         };
-
+        component.fromIndex = 0;
+        component.resultsPerPage = 20;
         fixture.detectChanges();
     });
 
@@ -90,8 +88,8 @@ describe('Search Results Component', () => {
         };
     }
 
-    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number, position) {
-        return { id, relevance, fieldValues, position };
+    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number) {
+        return { id, relevance, fieldValues };
     }
 
     it('should be created', () => {

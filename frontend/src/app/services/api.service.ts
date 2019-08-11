@@ -3,8 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-//import { SearchFilterData, AggregateResult, RelatedWordsResults, UserRole, Query, User, Corpus } from '../models/index';
-import { AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -18,7 +17,8 @@ type QueryDb<TDateType> = {
     started?: TDateType,
     completed?: TDateType,
     aborted: boolean,
-    transferred: number
+    transferred: number,
+    total_results: number
 }
 
 @Injectable()
@@ -47,11 +47,36 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_wordcloud_data'
+        path: '/wordcloud'
     })
-    public getWordcloudData: ResourceMethod<
-        { content_list: string[] },
-        { data: AggregateResult[] }>;
+    public wordcloud: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
+        { success: false, message: string } | { success: true, data: AggregateResult[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/wordcloud_tasks'
+    })
+    public wordcloudTasks: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
+    
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/task_outcome/{task_id}'
+    })
+    public getTaskOutcome: ResourceMethod<
+    { task_id: string},
+    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
+    >
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/abort_tasks/'
+    })
+    public abortTasks: ResourceMethod<
+    { task_ids: string[] }, 
+    { success: boolean }>
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -104,7 +129,7 @@ export class ApiService extends Resource {
     })
     public login: ResourceMethod<
         { username: string, password: string },
-        { success: boolean, id: number, username: string, role: UserRole, downloadLimit: number | null, queries: Query[] }>;
+        { success: boolean, id: number, username: string, corpora: AccessibleCorpus[], downloadLimit: number | null }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -133,11 +158,21 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/download'
+        path: '/download',
+        responseBodyType: ResourceResponseBodyType.Blob, 
+        asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: Corpus, esQuery: EsQuery | EsQuerySorted, size: number },
-        { success: boolean }>;
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        any >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/download_task'
+    })
+    public downloadTask: ResourceMethod<
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[] },
+        { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -146,6 +181,24 @@ export class ApiService extends Resource {
     public register: ResourceMethod<
         { username: string, email: string, password: string },
         { success: boolean, is_valid_username: boolean, is_valid_email: boolean }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/request_reset'
+    })
+    public requestReset: ResourceMethod<
+        { email: string },
+        { success: boolean, message:string }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/reset_password'
+    })
+    public resetPassword: ResourceMethod<
+        { password: string, token: string },
+        { success: boolean, message?: string, username?: string }
+    >
+    
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

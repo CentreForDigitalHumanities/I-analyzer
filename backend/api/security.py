@@ -13,10 +13,6 @@ def validate_user(username, password):
         # User doesn't exist, or no password has been given or set
         return None
 
-    # Guest user is allowed to have no password
-    if user.password is None and user.role.name == "guest":
-        return user
-
     if not password or user.password is None:
         return None
 
@@ -29,16 +25,8 @@ def validate_user(username, password):
 def login_user(user):
     """Login a user, make sure it has already been validated!"""
     user.authenticated = True
-    models.db.session.add(user)
     models.db.session.commit()
     flask_login_user(user)
-
-
-def logout_user(user):
-    user.authenticated = True
-    models.db.session.add(user)
-    models.db.session.commit()
-    flask_logout_user()
 
 
 def is_unique_username(username):
@@ -48,10 +36,17 @@ def is_unique_username(username):
     return user is None
 
 
-def is_unique_email(email):
-    ''' Check if email address is unique '''
-    user = models.User.query.filter_by(email=email).first()
-    return user is None
+def is_unique_non_solis_email(email):
+    ''' 
+    Check if email address is unique.
+    Permit making an account if the user has registered via SAML before
+    '''
+    users = models.User.query.filter_by(email=email).all()
+    if len(users)==1 and users[0].saml==True:
+        # if the user has registered via saml before, permit making an account
+        return True
+    else:
+        return len(users)==0
 
 
 def get_token(input):

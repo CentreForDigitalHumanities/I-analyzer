@@ -1,20 +1,36 @@
 <section class="section">
-  <div class="container is-readable">
-    <div class="column is-12">
-      <p class="title" align="center"> Showing search history </p>
-      <table is-hoverable>
-        <thead>
-          <th class="title is-6">Timestamp</th>
-          <th class="title is-6">Query</th>
-          <th class="title is-6">Filters</th>
-          <th class="title is-6">Results</th>
-          <th *ngIf="displayCorpora"> <p-multiSelect [options]="corpora" [(ngModel)]="selectedCorpora" defaultLabel="Corpus" (onChange)="queriesForCorpora()"> </p-multiSelect> </th>
-        </thead>
-        <tbody>
-          <tr history-query-display *ngFor="let query of queries" (click)="returnToSavedQuery(query)" [timeStamp]="query.started" [queryModel]="query.query" [numberResults]="query.transferred" [displayCorpora]="displayCorpora" [corpus]="query.corpusName" >
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <p-table #dt *ngIf="queries" [value]="queries" [paginator]="true" [rows]="10">
+        <ng-template pTemplate="caption">
+            <div style="text-align: left">        
+                Search History
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Timestamp</th>
+                <th>Query</th>
+                <th>Filters</th>
+                <th>Results</th>
+                <th>Corpus</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>
+                    <p-dropdown [options]="corpora" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value, 'corpusName', 'equals')"></p-dropdown>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-query>
+            <tr (click)="returnToSavedQuery(query)">
+                <td>{{query.started}}</td>
+                <td>{{query.query | formatQueryText }}</td>
+                <td ia-query-filters [queryModel]="query.query"></td>
+                <td>{{query.totalResults}}</td>
+                <td>{{query.corpusName}}</td>
+            </tr>
+        </ng-template>
+    </p-table>            
 </section>

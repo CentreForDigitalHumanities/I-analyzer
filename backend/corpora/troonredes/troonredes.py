@@ -6,7 +6,7 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import join, isfile, splitext
+from os.path import dirname, join, isfile, splitext, isfile
 from datetime import datetime, timedelta
 import re
 import random
@@ -35,6 +35,13 @@ class Troonredes(XMLCorpus):
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['TROONREDES_IMAGE']
+    word_models_present = isfile(
+        join(
+            dirname(current_app.config['CORPORA']['dutchannualreports']),
+            current_app.config['WM_PATH'], 
+            current_app.config['WM_BINNED_FN']
+        )
+    )
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
@@ -52,10 +59,26 @@ class Troonredes(XMLCorpus):
                     if extension != '.xml':
                         logger.debug(self.non_xml_msg.format(full_path))
                         continue
-                    # print(full_path, {'id': name})
                     yield full_path, {'id': name}
 
     fields = [
+        Field(
+            name='date',
+            display_name='Date',
+            description='Date of the speech',
+            extractor=extract.XML(tag='date'),
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            results_overview=True,
+            csv_core=True,
+            search_filter=filters.DateFilter(
+                min_date,
+                max_date,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+            sortable=True
+        ),
         Field(
             name='id',
             display_name='ID',
@@ -98,28 +121,11 @@ class Troonredes(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description=(
-                    'Accept only speeches of'
+                    'Accept only speeches of '
                     'the relevant type.'
                 ),
                 options=SPEECH_TYPES
             ),
-        ),
-        Field(
-            name='date',
-            display_name='Date',
-            description='Date of the speech',
-            extractor=extract.XML(tag='date'),
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            results_overview=True,
-            csv_core=True,
-            search_filter=filters.DateFilter(
-                min_date,
-                max_date,
-                description=(
-                    'Accept only articles with publication date in this range.'
-                )
-            ),
-            sortable=True
         ),
         Field(
             name='content',

@@ -40,16 +40,6 @@
     z-index: 20;
 }
 
-.filter-container{
-    &:hover{
-        box-shadow: 0 0 0 1px $primary;
-    }
-}
-
-.filter-container.on{
-    box-shadow: 0 0 0 2px $primary;
-}
-
 .filter-icon {
     border: none;
 }
@@ -75,6 +65,15 @@
 
     .ui-multiselect  .ui-multiselect-trigger {
         padding: 0px 0.75em;
+    }
+}
+
+::ng-deep p-dialog {
+    .ui-dialog-content {
+        max-height: 600px;
+        min-height: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 }
 

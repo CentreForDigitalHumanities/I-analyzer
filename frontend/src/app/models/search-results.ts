@@ -1,21 +1,10 @@
 import { CorpusField } from './corpus';
-import { QueryModel } from './query';
 import { FoundDocument } from './found-document';
 
 export type SearchResults = {
-    completed: boolean,
     fields?: CorpusField[],
     documents: FoundDocument[],
-    /**
-     * Total number of retrieved documents for this search.
-     */
-    retrieved: number,
-    total: number,
-    queryModel: QueryModel,
-    /**
-     * Id identifying this search, to be able to get more results
-     */
-    scrollId?: string
+    total: number
 }
 
 export type ResultOverview = {
@@ -34,11 +23,22 @@ export type AggregateResult = {
     key_as_string?: string
 }
 
+
+export type DateFrequencyPair = {
+    date: Date;
+    doc_count: number;
+}
+
+export type TimelineData = {
+    data: DateFrequencyPair[];
+    timeInterval: string;
+}
+
 export type AggregateData = {
     [fieldName: string]: AggregateResult[]
 }
 
-type WordSimilarity = {
+export type WordSimilarity = {
     key: string,
     similarity: number
 }

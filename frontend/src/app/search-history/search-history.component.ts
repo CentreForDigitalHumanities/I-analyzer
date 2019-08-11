@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import * as _ from "lodash";
 import { SelectItem } from 'primeng/primeng';
 import { User, Query } from '../models/index'
-import { SearchService, UserService, QueryService } from '../services/index';
-
+import { CorpusService, SearchService, QueryService } from '../services/index';
 
 @Component({
     selector: 'search-history',
@@ -13,22 +12,17 @@ import { SearchService, UserService, QueryService } from '../services/index';
 })
 export class SearchHistoryComponent implements OnInit {
     private user: User;
-    private backupQueries: Query[];
     public queries: Query[];
     public displayCorpora: boolean = false;
     private corpora: SelectItem[];
-    private selectedCorpora: string[] = [];
-    constructor(private searchService: SearchService, private userService: UserService, private queryService: QueryService, private router: Router) { }
+    constructor(private searchService: SearchService, private corpusService: CorpusService, private queryService: QueryService, private router: Router) { }
 
     async ngOnInit() {
-        this.user = await this.userService.getCurrentUser();
-        if (this.user.role.corpora.length > 1) {
-            this.displayCorpora = true;
-            this.corpora = this.user.role.corpora.map(corpus => {
-                return { 'label': corpus.name, 'value': corpus.name };
-            });
-        }
-
+        this.corpusService.get().then((items) => {
+            this.corpora = items.map(corpus => {return { 'label': corpus.name, 'value': corpus.name } });
+        }).catch(error => {
+            console.log(error);
+        });
         this.queryService.retrieveQueries().then(
             searchHistory => {
                 let sortedQueries = searchHistory.sort(function (a, b) {
@@ -47,16 +41,4 @@ export class SearchHistoryComponent implements OnInit {
             window.scrollTo(0, 0);
         }
     }
-
-    queriesForCorpora() {
-        if (this.selectedCorpora.length > 0) {
-            if (this.backupQueries) {
-                this.queries = this.backupQueries;
-            }
-            this.backupQueries = this.queries;
-            this.queries = this.queries.filter(query => this.selectedCorpora.includes(query.corpusName));
-        }
-    }
-
-
 }

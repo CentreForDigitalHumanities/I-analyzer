@@ -15,7 +15,7 @@ admin_instance.add_view(views.UserView(
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))
 
-admin_instance.add_view(views.CorpusViewAdmin(
+admin_instance.add_view(views.CorpusView(
     models.Corpus, models.db.session, name='Corpora', endpoint='corpus'))
 
 admin_instance.add_view(views.QueryView(

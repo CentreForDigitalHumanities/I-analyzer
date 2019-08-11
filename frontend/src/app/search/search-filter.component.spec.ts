@@ -5,6 +5,7 @@ import { CalendarModule, CheckboxModule, SelectButtonModule, SliderModule, Multi
 import { SearchFilterComponent } from './search-filter.component';
 import { BalloonDirective } from '../balloon.directive';
 import { DataService } from '../services/index';
+import { BooleanFilterData, SearchFilterData } from '../models';
 
 describe('SearchFilterComponent', () => {
     let component: SearchFilterComponent;
@@ -28,6 +29,10 @@ describe('SearchFilterComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchFilterComponent);
         component = fixture.componentInstance;
+        let mockData: SearchFilterData = {
+            filterType: 'BooleanFilter',
+            checked: true
+        }
         component.field = {
             description: 'test',
             displayName: 'Test',
@@ -38,13 +43,14 @@ describe('SearchFilterComponent', () => {
             downloadable: true,
             name: 'name',
             searchFilter: {
+                fieldName: 'isWaldo',
                 description: 'description',
-                falseText: 'FALSE',
-                trueText: 'TRUE',
-                name: 'BooleanFilter'
+                useAsFilter: true,
+                defaultData: mockData,
+                currentData: mockData
             }
         };
-        component.enabled = true;
+        component.useAsFilter = true;
         fixture.detectChanges();
     });
 

@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
+import { DialogService, SearchService } from '../services/index';
+import { DialogServiceMock } from '../services/dialog.service.mock';
+import { SearchServiceMock } from '../services/search.service.mock';
 import { WordcloudComponent } from './wordcloud.component';
 
 describe('WordcloudComponent', () => {
@@ -10,7 +13,11 @@ describe('WordcloudComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [ WordcloudComponent ]
+      declarations: [ WordcloudComponent ],
+      providers: [
+        { provide: SearchService, useValue: new SearchServiceMock()},
+        { provide: DialogService, useClass: DialogServiceMock },
+      ]
     })
     .compileComponents();
   }));

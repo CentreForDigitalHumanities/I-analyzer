@@ -12,7 +12,10 @@
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
-                            <td data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td *ngIf="field.name!='url'" data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
+                            <td *ngIf="field.name=='url'">
+                                <a href={{document.fieldValues[field.name]}} target="_blank">{{document.fieldValues[field.name]}}</a>
+                            </td>
                         </tr>
                     </ng-container>
                 </table>
@@ -29,7 +32,7 @@
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
-                    <img *ngIf="corpus.scan_image_type=='png' && !imgNotFound" class="src-img" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}" (error)="imgNotFound=true"/>
+                    <ia-image-view *ngIf="corpus.scan_image_type=='png' && imgPath" [imgPath]="imgPath"></ia-image-view>
                     <div *ngIf="imgNotFound">Image not available.</div>
                     <ng-template *ngIf="corpus.scan_image_type=='pdf'" pTemplate="content">
                         <ia-scan-pdf [corpus]="corpus" [document]="document" [query]="query"></ia-scan-pdf>

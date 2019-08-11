@@ -8,7 +8,7 @@
                           <p>Success</p>
                         </div>
                         <div class="message-body">
-                           Your registration is complete. You can now log in
+                           Your registration is complete. You can now log in.
                         </div>
                       </article>
                       <br>
@@ -32,16 +32,29 @@
                 </span> 
                 </p>
             </div>
-            <div class="field">
+            <div class="level">
+                <div class="level-left">
+                <div class="level-item">
                 <p class="control">
                     <button class="button is-primary" [ngClass]="{'is-loading':isLoading}">Login</button>
-                <a class="navbar-item pull-right" [routerLinkActive]="'is-active'" [routerLink]="['/registration']">
+                </p>
+                </div>
+                </div>
+                <div class=level-right>
+                <div class="level-item">
+                <a [routerLinkActive]="'is-active'" [routerLink]="['/reset']">
+                    Forgot password?
+                </a>
+                </div>
+                <div class="level-item">
+                <a [routerLinkActive]="'is-active'" [routerLink]="['/registration']">
                     <span class="icon">
                         <i class="fa fa-user"></i>
                     </span>
                     Sign Up
                 </a>
-                </p>
+                </div>
+                </div>
             </div>
             <div class="field">
                 <p class="control">
