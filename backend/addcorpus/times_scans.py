@@ -14,6 +14,7 @@ bar = None
 
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
+node = {'host': 'im-linux-elasticsearch01.im.hum.uu.nl', 'port': '9200'}
 
 START_YEAR = 1915
 END_YEAR = 1916
@@ -48,7 +49,7 @@ class ProgressBar(Bar):
 
 
 def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
-    es = Elasticsearch()
+    es = Elasticsearch([node])
     nr_of_docs = es.count(
         index=['times'],
         body={
