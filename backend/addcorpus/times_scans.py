@@ -15,13 +15,36 @@ bar = None
 BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 
-START_YEAR = 1900
-END_YEAR = 1960
+START_YEAR = 1915
+END_YEAR = 1916
 
 
 class ProgressBar(Bar):
     message = 'Updating index'
     suffix = '%(percent).1f%% - %(eta)ds'
+
+    def roman_to_int(input_num):
+        """Convert a Roman numeral to an integer.
+        Via https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s24.html"""
+        if not isinstance(input_num, type("")):
+            raise TypeError, "expected string, got %s" % type(input_num)
+        input_num = input_num.upper()
+        nums = {'M': 1000, 'D': 500, 'C': 100,
+                'L': 50, 'X': 10, 'V': 5, 'I': 1}
+        sum = 0
+        for i in range(len(input_num)):
+            try:
+                value = nums[input_num[i]]
+                if i+1 < len(input_num) and nums[input_num[i+1]] > value:
+                    sum -= value
+                else:
+                    sum += value
+            except KeyError:
+                raise ValueError, 'input_num is not a valid Roman numeral: %s' % input_num
+        if int_to_roman(sum) == input_num:
+            return sum
+        else:
+            return input_num
 
 
 def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
@@ -138,6 +161,10 @@ def compose_image_path(date_string, page, corpus_dir):
     date_obj = datetime.strptime(date_string, '%Y-%m-%d')
     year, month, day = str(date_obj.year), '{0:02d}'.format(
         date_obj.month), "{0:02d}".format(date_obj.day)
+
+    if not page.isdigit():
+        page = roman_to_int(page)
+
     if int(year) > 1985:
         page_str = '{0:04d}'.format(int(page))
         file_name = '0FFO-{}-{}{}-{}'.format(year, month, day, page_str)+'.png'
