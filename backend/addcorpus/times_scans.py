@@ -16,36 +16,59 @@ BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 node = {'host': 'im-linux-elasticsearch01.im.hum.uu.nl', 'port': '9200'}
 
-START_YEAR = 1915
-END_YEAR = 1916
+START_YEAR = 1981
+END_YEAR = 2010
 
 
 class ProgressBar(Bar):
     message = 'Updating index'
     suffix = '%(percent).1f%% - %(eta)ds'
 
-    def roman_to_int(input_num):
-        """Convert a Roman numeral to an integer.
-        Via https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s24.html"""
-        if not isinstance(input_num, type("")):
-            raise TypeError, "expected string, got %s" % type(input_num)
-        input_num = input_num.upper()
-        nums = {'M': 1000, 'D': 500, 'C': 100,
-                'L': 50, 'X': 10, 'V': 5, 'I': 1}
-        sum = 0
-        for i in range(len(input_num)):
-            try:
-                value = nums[input_num[i]]
-                if i+1 < len(input_num) and nums[input_num[i+1]] > value:
-                    sum -= value
-                else:
-                    sum += value
-            except KeyError:
-                raise ValueError, 'input_num is not a valid Roman numeral: %s' % input_num
-        if int_to_roman(sum) == input_num:
-            return sum
-        else:
+
+def int_to_roman(input):
+    """ Convert an integer to a Roman numeral. """
+
+    if not isinstance(input, type(1)):
+        # raise TypeError, "expected integer, got %s" % type(input)
+        return None
+    if not 0 < input < 4000:
+        # raise ValueError, "Argument must be between 1 and 3999"
+        return None
+    ints = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
+    nums = ('M',  'CM', 'D', 'CD', 'C', 'XC',
+            'L', 'XL', 'X', 'IX', 'V', 'IV', 'I')
+    result = []
+    for i in range(len(ints)):
+        count = int(input / ints[i])
+        result.append(nums[i] * count)
+        input -= ints[i] * count
+    return ''.join(result)
+
+
+def roman_to_int(input_num):
+    """Convert a Roman numeral to an integer.
+    Via https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s24.html"""
+    if not isinstance(input_num, type("")):
+        return input_num
+        # raise TypeError, "expected string, got %s" % type(input_num)
+    input_num = input_num.upper()
+    nums = {'M': 1000, 'D': 500, 'C': 100,
+            'L': 50, 'X': 10, 'V': 5, 'I': 1}
+    sum = 0
+    for i in range(len(input_num)):
+        try:
+            value = nums[input_num[i]]
+            if i+1 < len(input_num) and nums[input_num[i+1]] > value:
+                sum -= value
+            else:
+                sum += value
+        except KeyError:
             return input_num
+            # raise ValueError, 'input_num is not a valid Roman numeral: %s' % input_num
+    if int_to_roman(sum) == input_num:
+        return sum
+    else:
+        return input_num
 
 
 def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
