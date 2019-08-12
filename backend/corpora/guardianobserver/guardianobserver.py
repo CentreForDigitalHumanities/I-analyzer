@@ -45,7 +45,7 @@ class GuardianObserver(XMLCorpus):
         Specifically, return the data contained in an xml file within a zip archive.
         '''
         with open(PROCESSED, 'r') as f:
-            processed = f.readlines()
+            processed = f.read().splitlines()
         for zfile in Path(self.data_directory).glob('**/GO_*.zip'):
             if str(zfile) in processed:
                 continue
