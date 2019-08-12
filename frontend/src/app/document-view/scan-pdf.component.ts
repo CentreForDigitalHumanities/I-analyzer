@@ -1,9 +1,6 @@
 import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
-import { Corpus, FoundDocument } from '../models/index';
-import { ApiService } from '../services';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ConfirmationService } from 'primeng/api';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'ia-scan-pdf',
@@ -16,15 +13,9 @@ export class ScanPdfComponent implements OnChanges, OnInit {
     private pdfComponent: PdfViewerComponent;
 
     @Input()
-    public corpus: Corpus;
+    public pdfData: PdfResponse;
 
-    @Input()
-    public document: FoundDocument;
-
-    @Input()
-    public query: string;
-
-    public pdfSrc: ArrayBuffer[];
+    public pdfSrc: ArrayBuffer;
 
     public pdfFile: any;
 
@@ -36,42 +27,25 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public isLoaded: boolean = false;
 
-    public pdfInfo: pdfHeader;
+    public pdfInfo: PdfHeader;
 
     public pdfNotFound: boolean = false;
 
-    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private http: HttpClient) { }
+    constructor(private confirmationService: ConfirmationService) { }
 
     ngOnInit() {
-        this.get_pdf();
+        this.formatPdfResponse();
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.document) {
-            if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
-                this.isLoaded = false;
-                this.page = null;
-                this.startPage = null;
-                this.get_pdf();
-            }
-        }
+        this.formatPdfResponse();
     }
 
-    async get_pdf() {
-        this.pdfNotFound = false;
-        try {
-            const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
-                corpus_index: this.corpus.index,
-                document: this.document
-            })
-            this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
-            this.page = this.pdfInfo.homePageIndex; //1-indexed
-            this.startPage = this.page;
-            this.pdfSrc = [pdfResponse.body];
-        }
-        catch (e) {
-            this.pdfNotFound = true;
-        }
+    formatPdfResponse() {
+        this.pdfInfo = <PdfHeader>JSON.parse(this.pdfData.headers.pdfinfo);
+        this.page = this.pdfInfo.homePageIndex; //1-indexed
+        this.startPage = this.page;
+        this.pdfSrc = this.pdfData.body;
     }
 
     /**
@@ -79,7 +53,6 @@ export class ScanPdfComponent implements OnChanges, OnInit {
          * fires after all pdf data is received and loaded by the viewer.
          */
     afterLoadComplete(pdfData: any) {
-
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
@@ -106,7 +79,7 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             header: "Confirm download",
             accept: () => {
                 // this.apiService.downloadPdf({corpus_index: this.corpus.index, filepath: this.document.fieldValues.image_path})
-                window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
+                //window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
             },
             reject: () => {
             }
@@ -115,14 +88,14 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
 }
 
-interface pdfHeader {
+interface PdfHeader {
     pageNumbers: number[];
     homePageIndex: number;
     fileName: string;
     fileSize: string;
 }
 
-interface pdfResponse {
+interface PdfResponse {
     status: number;
     body: ArrayBuffer;
     headers: any;

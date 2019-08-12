@@ -222,21 +222,21 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/source_pdf',
+        path: '/request_pdf',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
         asResourceResponse: true
     })
-    public sourcePdf: IResourceMethodFull<
+    public requestPdf: IResourceMethodFull<
         { corpus_index: string, document: FoundDocument },
         any>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/test_images'
+        path: '/request_images'
     })
-    public testImages: ResourceMethod<
+    public requestImages: ResourceMethod<
         { corpus_index: string, document: FoundDocument },
-        { success: false } | { success: true, images: string[] }
+        { success: false } | { success: true, media: string[] }
         >;
 
     @ResourceAction({

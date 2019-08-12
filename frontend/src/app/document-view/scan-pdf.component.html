@@ -11,14 +11,14 @@
         </button>
         
     </div>
-    <button *ngIf="corpus.allow_image_download" class="button download is-primary is-small" (click)="confirmDownload()">
+    <!-- <button *ngIf="corpus.allow_image_download" class="button download is-primary is-small" (click)="confirmDownload()">
         <i class="fa fa-download" aria-hidden="true"></i>
-    </button>
+    </button> -->
 </div>
 
 <div *ngIf="!pdfNotFound" class="pdf" [ngClass]="{'is-loading':!isLoaded}">
     <ng-container *ngIf="page">
-        <!-- <pdf-viewer
+        <pdf-viewer
             [src]="pdfSrc"
             [render-text]="true"
             [original-size]="false"
@@ -28,8 +28,7 @@
             (after-load-complete)="afterLoadComplete($event)"
             (error)="onError($event)"
             style="display:block;">
-        </pdf-viewer> -->
-        <!-- <app-image-viewer [images]="pdfSrc" [loadOnInit]="true"></app-image-viewer> -->
+        </pdf-viewer>
     </ng-container>
 </div>
 <div *ngIf="pdfNotFound">Image not available.</div>

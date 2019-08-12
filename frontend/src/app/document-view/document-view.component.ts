@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
+import { ApiService } from '../services';
 
 
 @Component({
@@ -32,11 +33,26 @@ export class DocumentViewComponent implements OnChanges {
 
     public imgNotFound: boolean;
     public imgPath: string;
-    public images: string[];
+    public media: string[];
+    public pdfData: any;
 
-    constructor() { }
+    constructor(private apiService: ApiService) { }
 
     ngOnChanges() {
+        this.media = undefined;
+        this.pdfData = undefined;
+        if (this.corpus.scan_image_type && this.corpus.scan_image_type=='application/pdf'){
+            this.apiService.requestPdf({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                this.pdfData = response;
+            })
+        }
+        else {
+            this.apiService.requestImages({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                if (response.success) {
+                    this.media = response.media;
+                }
+            })
+        }
     }
 
 }

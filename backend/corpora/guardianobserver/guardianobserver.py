@@ -41,8 +41,6 @@ class GuardianObserver(XMLCorpus):
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
-    mimetype = 'application/pdf'
-
     tag_toplevel = 'Record'
 
     def sources(self, start=datetime.min, end=datetime.max):
@@ -195,7 +193,6 @@ class GuardianObserver(XMLCorpus):
                 zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
                 pdf_data = zipped.read(zip_info)
             pdf_info.update({'fileSize': zip_info.file_size})
-            return BytesIO(pdf_data), pdf_info
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
@@ -218,8 +215,6 @@ class GuardianObserver(XMLCorpus):
                         pdf_data = zipped.read(zip_info)
         if pdf_data:
             pdf_info.update({'fileSize': zip_info.file_size})
-            return BytesIO(pdf_data), pdf_info
+            return {'media': pdf_data, 'pdf_info': pdf_info}
         else:
-            return None, None
-        
-        
+            return None

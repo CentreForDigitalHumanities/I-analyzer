@@ -1,11 +1,3 @@
-<!-- <div class="image-container">
-    <div class="zoom-lens" [ngStyle]="{'top.px': top, 'left.px': left, 'visibility': zoomVisible}"></div>
-    <div class="src-img-div"><img class="src-img" #sourceImage src="{{imgPath}}" (mousemove)="onMouseMove($event)" (mouseover)="zoomVisible = 'visible'" (mouseout)="zoomVisible = 'hidden'"/></div>
-</div>
-
-<div class="zoom-img" [style]="backgroundImageStyle" 
-    [ngStyle]="{'background-position': backgroundPosition, 'background-size': backgroundSize, 'visibility': zoomVisible}">
-</div> -->
 <app-image-viewer 
     [images]="images" 
     [idContainer]="'idOnHTML'" 
@@ -14,4 +6,3 @@
     [showPDFOnlyOption]="false" 
     [fullscreen]="false">
 </app-image-viewer>
-<!-- <img src='/api/get_single_image/periodicals/19thCenturyUKP_New_Readerships/Images/NEWSPAPERS/1SWB/NCBP1120-00243/NCBP1120-00243-0008.jpg'> -->

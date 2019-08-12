@@ -81,7 +81,7 @@ CORPUS_DEFINITIONS = {}
 DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
@@ -101,7 +101,7 @@ TIMES_ES_INDEX = 'times'
 TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
-TIMES_SCAN_IMAGE_TYPE = 'png'
+TIMES_SCAN_IMAGE_TYPE = 'image/png'
 TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TML_ES_INDEX = 'tml'
@@ -111,10 +111,10 @@ TML_IMAGE = 'tml.jpg'
 
 TROONREDES_IMAGE = 'troon.jpg'
 
-GO_SCAN_IMAGE_TYPE = 'pdf'
+GO_SCAN_IMAGE_TYPE = 'application/pdf'
 GO_IMAGE = 'guardianobserver.jpg'
 
-PERIODICALS_SCAN_IMAGE_TYPE = 'jpg'
+PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
 PERIODICALS_IMAGE = 'Fleet_Street.jpg'
 
 #################

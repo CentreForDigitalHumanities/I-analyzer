@@ -504,15 +504,16 @@ def api_get_scan_image(corpus_index, image_path):
             return send_file(absolute_path, mimetype='image/png')
 
 
-@api.route('/test_images', methods=['POST'])
+@api.route('/request_images', methods=['POST'])
 @login_required
-def api_test_images():
+def api_request_images():
     corpus_index = request.json['corpus_index']
     backend_corpus = load_corpus(corpus_index)
     data = backend_corpus.get_media(request.json['document'])
     if len(data)==0:
         return jsonify({'success': False})
-    return jsonify({'success': True, 'images': data})
+    output = {'success': True, 'media': data}
+    return jsonify(output)
 
 @api.route('/get_single_image/<corpus_index>/<path:image_path>', methods=['GET'])
 @login_required
@@ -523,10 +524,10 @@ def api_get_single_image(corpus_index, image_path):
         if not isfile(absolute_path):
             abort(404)
         else:
-            return send_file(absolute_path, mimetype=backend_corpus.mimetype)
+            return send_file(absolute_path, mimetype=backend_corpus.scan_image_type)
 
 
-@api.route('/source_pdf', methods=['POST'])
+@api.route('/request_pdf', methods=['POST'])
 @login_required
 def api_get_pdf():
     if not request.json:
@@ -538,7 +539,7 @@ def api_get_pdf():
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(400)
     else:
-        out, pdf_info = backend_corpus.get_image(request.json['document'])
+        out, pdf_info = backend_corpus.get_media(request.json['document'])
         pdf_header = json.dumps(pdf_info)
         if not out:
             abort(404)
