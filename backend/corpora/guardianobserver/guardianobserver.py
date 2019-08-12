@@ -215,6 +215,6 @@ class GuardianObserver(XMLCorpus):
                         pdf_data = zipped.read(zip_info)
         if pdf_data:
             pdf_info.update({'fileSize': zip_info.file_size})
-            return {'media': pdf_data, 'pdf_info': pdf_info}
+            return pdf_data, pdf_info
         else:
-            return None
+            return None, None

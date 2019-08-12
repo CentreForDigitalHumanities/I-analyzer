@@ -233,6 +233,6 @@ class DutchAnnualReports(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
-        print(pdf_info)
+        
         return out, pdf_info
         

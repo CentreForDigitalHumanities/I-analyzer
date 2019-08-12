@@ -1,5 +1,4 @@
-import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
-import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { Component, HostListener, OnChanges, OnInit, Input} from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
@@ -9,11 +8,11 @@ import { ConfirmationService } from 'primeng/api';
     providers: [ConfirmationService]
 })
 export class ScanPdfComponent implements OnChanges, OnInit {
-    @ViewChild(PdfViewerComponent)
-    private pdfComponent: PdfViewerComponent;
-
     @Input()
     public pdfData: PdfResponse;
+
+    @Input()
+    public downloadPath: string;
 
     public pdfSrc: ArrayBuffer;
 
@@ -31,13 +30,16 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public pdfNotFound: boolean = false;
 
+    public zoomFactor: number = 1.0;
+    private maxZoomFactor: number = 1.7;
+
     constructor(private confirmationService: ConfirmationService) { }
 
     ngOnInit() {
         this.formatPdfResponse();
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges() {
         this.formatPdfResponse();
     }
 
@@ -79,11 +81,30 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             header: "Confirm download",
             accept: () => {
                 // this.apiService.downloadPdf({corpus_index: this.corpus.index, filepath: this.document.fieldValues.image_path})
-                //window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
+                window.location.href = this.downloadPath;
             },
             reject: () => {
             }
         })
+    }
+
+    // @HostListener('mousewheel', ['$event']) onMousewheel(event) {
+    //     if(event.wheelDelta>0){
+    //        this.zoomIn(); 
+    //     }
+    //     if(event.wheelDelta<0){
+    //         this.zoomOut();
+    //     }
+    // }
+
+    zoomIn() {
+        if (this.zoomFactor <= this.maxZoomFactor) {
+            this.zoomFactor += .1;
+        }
+    }
+
+    zoomOut() {
+        this.zoomFactor -= .1;
     }
 
 }

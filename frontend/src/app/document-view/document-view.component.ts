@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 import { ApiService } from '../services';
@@ -35,23 +35,35 @@ export class DocumentViewComponent implements OnChanges {
     public imgPath: string;
     public media: string[];
     public pdfData: any;
+    public downloadPath: string;
 
     constructor(private apiService: ApiService) { }
 
-    ngOnChanges() {
+    ngOnChanges(changes: SimpleChanges) {
         this.media = undefined;
         this.pdfData = undefined;
-        if (this.corpus.scan_image_type && this.corpus.scan_image_type=='application/pdf'){
-            this.apiService.requestPdf({corpus_index: this.corpus.name, document: this.document}).then( response => {
-                this.pdfData = response;
-            })
+        if (changes.corpus) {
+            if (this.corpus.allow_image_download) {
+                this.downloadPath = `api/get_image/${this.corpus.index}/${this.document.fieldValues.image_path}`;
+            }
+            else {
+                this.downloadPath = undefined;
+            }
         }
-        else {
-            this.apiService.requestImages({corpus_index: this.corpus.name, document: this.document}).then( response => {
-                if (response.success) {
-                    this.media = response.media;
-                }
-            })
+        if (changes.document &&  
+            changes.document.previousValue != changes.document.currentValue) {
+            if (this.corpus.scan_image_type && this.corpus.scan_image_type=='application/pdf'){
+                this.apiService.requestPdf({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                    this.pdfData = response;
+                })
+            }
+            else {
+                this.apiService.requestImages({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                    if (response.success) {
+                        this.media = response.media;
+                    }
+                })
+            }
         }
     }
 

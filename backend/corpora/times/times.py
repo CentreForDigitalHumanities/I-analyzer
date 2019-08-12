@@ -503,3 +503,11 @@ class Times(XMLCorpus):
             )
         ),
     ]
+
+    def get_media(self, document):
+        field_values = document['fieldValues']
+        path = '{}/api/get_image/{}/{}'.format(
+            current_app.config['BASE_URL'],
+            self.es_index, 
+            field_values['image_path'])
+        return [path]  
