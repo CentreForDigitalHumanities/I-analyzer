@@ -17,11 +17,6 @@ describe('ScanPdfComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ScanPdfComponent, PdfViewerComponent],
       providers: [
-        {
-            provide: ApiService, useValue: new ApiServiceMock({
-                ['corpus']: MockCorpusResponse
-            })
-        },
         ConfigService,
       ],
       imports: [ConfirmDialogModule, HttpModule, HttpClientModule, ResourceModule],
@@ -32,6 +27,16 @@ describe('ScanPdfComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScanPdfComponent);
     component = fixture.componentInstance;
+    component.pdfData = {
+        status: 200,
+        body: new ArrayBuffer(42),
+        headers: { pdfinfo: JSON.stringify({
+            fileName: 'Super interesting PDF', 
+            fileSize: '42MB', 
+            pageNumbers: [2, 3, 4, 5, 6],
+            homePageIndex: 4
+        })}
+    };
     fixture.detectChanges();
   });
 

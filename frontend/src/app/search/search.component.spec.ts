@@ -9,6 +9,9 @@ import { CalendarModule, CheckboxModule, DialogModule, DropdownModule, SelectBut
 import { ChartModule } from 'primeng/chart'
 import { TableModule } from 'primeng/table';
 
+import { ImageViewerModule } from 'ng2-image-viewer'; 
+import { PdfViewerComponent } from 'ng2-pdf-viewer';
+
 import * as corpus from '../../mock-data/corpus';
 import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
 import { ApiServiceMock } from '../services/api.service.mock';
@@ -17,7 +20,6 @@ import { DialogServiceMock } from '../services/dialog.service.mock';
 
 import { HighlightPipe } from './highlight.pipe';
 import { ImageViewComponent } from '../document-view/image-view.component';
-import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { PaginationComponent } from './pagination.component';
 import { SearchComponent } from './search.component';
 import { SearchFilterComponent } from './search-filter.component';
@@ -47,8 +49,8 @@ describe('SearchComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ImageViewComponent, ScanPdfComponent, PaginationComponent, PdfViewerComponent, RelatedWordsComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TermFrequencyComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
-            imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
+            declarations: [BalloonDirective, BarChartComponent, DownloadComponent, FreqtableComponent, HighlightPipe, DocumentViewComponent, DropdownComponent, ImageViewComponent, PaginationComponent, PdfViewerComponent, RelatedWordsComponent, ScanPdfComponent, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent, SelectFieldComponent, TermFrequencyComponent, TimelineComponent, VisualizationComponent, WordcloudComponent],
+            imports: [ChartModule, FormsModule, CalendarModule, CheckboxModule, ConfirmDialogModule, DropdownModule, DialogModule, ImageViewerModule, SelectButtonModule, SliderModule, MultiSelectModule, TabViewModule, TableModule, RouterTestingModule.withRoutes([])],
             providers: [
                 ApiRetryService,
                 CorpusService,
