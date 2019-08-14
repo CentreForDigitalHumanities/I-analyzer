@@ -16,13 +16,50 @@ BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 node = {'host': 'im-linux-elasticsearch01.im.hum.uu.nl', 'port': '9200'}
 
-START_YEAR = 1981
-END_YEAR = 2010
+START_YEAR = 1982
+END_YEAR = 1983
 
 
 class ProgressBar(Bar):
     message = 'Updating index'
     suffix = '%(percent).1f%% - %(eta)ds'
+
+
+def parse_page_number(input):
+    if input.isdigit():
+        return int(input)
+
+    elif roman_to_int(input).isdigit():
+        return roman_to_int(input)
+
+    elif written_to_int(input).isdigit():
+        return written_to_int(input)
+
+    # '[1]'
+    # elif re.match(r'^\[(\d+)\]$', input):
+    #     return int(re.match(r'^\[(\d+)\]$', input).group(1))
+
+    else:
+        return None
+
+
+def written_to_int(input):
+    lookup = {
+        'one': 1,
+        'two': 2,
+        'three': 3,
+        'four': 4,
+        'five': 5,
+        'six': 6,
+        'seven': 7,
+        'eight': 8,
+        'nine': 9,
+        'ten': 10
+    }
+
+    if not input.lower() in lookup.keys():
+        return input
+    return lookup[input.lower()]
 
 
 def int_to_roman(input):
@@ -186,8 +223,11 @@ def compose_image_path(date_string, page, corpus_dir):
     year, month, day = str(date_obj.year), '{0:02d}'.format(
         date_obj.month), "{0:02d}".format(date_obj.day)
 
+    page = parse_page_number(page)
+
     if not page.isdigit():
-        page = roman_to_int(page)
+        page_roman = roman_to_int(page)
+        page_written = written_to_int(page)
 
     if int(year) > 1985:
         page_str = '{0:04d}'.format(int(page))
@@ -206,6 +246,9 @@ def compose_image_path(date_string, page, corpus_dir):
         return None
 
 
+update path here is a path toward the first of the
+
+
 def update_document(es, index, doc_type, doc_id, image_path):
     body = {"doc": {"image_path": image_path}}
     es.update(index=index, doc_type=doc_type, id=doc_id, body=body)
@@ -215,6 +258,6 @@ def update_document(es, index, doc_type, doc_id, image_path):
 
 if __name__ == "__main__":
     logfile = 'indexupdate.log'
-    logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'indexupdate.log'),
+    logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'index_redo_1982.log'),
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.WARNING)
     add_images(100, START_YEAR, END_YEAR)
