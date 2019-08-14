@@ -197,13 +197,7 @@ export const providers: any[] = [
     CorpusGuard,
     LoggedOnGuard,
     TitleCasePipe,
-    CookieService,
-    {
-        provide: APP_INITIALIZER,
-        useFactory: csrfProviderFactory,
-        deps: [Injector, ApiService, CookieService],
-        multi: true
-    },
+    CookieService
 ];
 
 @NgModule({
@@ -217,16 +211,4 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
-}
-
-export function csrfProviderFactory(injector: Injector, provider: ApiService, cookieService: CookieService): Function {    
-    return () => {        
-        if (!cookieService.check('csrf_token')) { 
-            provider.ensureCsrf().then(result => {                 
-                if (!result || !result.success) {
-                    throw new Error("CSRF token could not be collected.");
-                }
-            })
-        }
-    }
 }

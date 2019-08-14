@@ -1,6 +1,11 @@
+import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 
 import { declarations, imports, providers } from './app.module';
+
+import { CookieService } from 'ngx-cookie-service';
 
 import { ApiServiceMock } from '../mock-data/api';
 import { DialogServiceMock } from '../mock-data/dialog';
@@ -19,6 +24,12 @@ export function commonTestBed() {
                 ['corpus']: MockCorpusResponse
             }),
         },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: csrfProviderFactory,
+            deps: [Injector, ApiService, CookieService],
+            multi: true
+        },
         { 
             provide: DialogService, useClass: DialogServiceMock
 
@@ -27,12 +38,14 @@ export function commonTestBed() {
             provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
         },
         {
+            provide: Router, useValue: new RouterMock()
+        },
+        {
             provide: SearchService, useValue: new SearchServiceMock()
         },
         {
             provide: UserService, useValue: new UserServiceMock()
         },
-        
     )
 
     return {
@@ -43,3 +56,17 @@ export function commonTestBed() {
         })
     };
 }
+
+export function csrfProviderFactory(inject: Injector, provider: ApiService, cookieService: CookieService): Function {    
+    return () => {        
+        if (!cookieService.check('csrf_token')) { 
+            provider.ensureCsrf().then(result => {                 
+                if (!result || !result.success) {
+                    throw new Error("CSRF token could not be collected.");
+                }
+            })
+        }
+    }
+}
+
+class RouterMock {}
