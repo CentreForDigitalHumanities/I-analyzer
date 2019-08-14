@@ -219,7 +219,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=['test', 'options']
+                options=['advertentie', 'artikel']
             ),
         ),
         Field(
@@ -231,7 +231,14 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                options=self.distribution
+                options=[
+                    'Landelijk',
+                    'Nederlands-Indië / Indonesië',
+                    'Nederlandse Antillen',
+                    'Regionaal/lokaal',
+                    'Suriname',
+                    'Verenigde Staten',
+                    'onbekend']
             ),
         ),
         Field(
@@ -246,11 +253,7 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            extractor=Metadata('language'),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in this language.',
-                options=['nl', 'fr'],
-            ),
+            extractor=Metadata('language')
         ),
         Field(
             name='article_title',
@@ -282,15 +285,15 @@ class DutchNewspapersPublic(XMLCorpus):
         ),
         Field(
             name='temporal',
-            display_name='Publication frequency',
-            description='publication frequency of the newspaper.',
+            display_name='Edition',
+            description='Newspaper edition for the given date',
             results_overview=True,
             csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this publication frequency.',
-                options=['Dag', 'Week', 'Maand'],
+                description='Accept only articles in newspapers which appeared as a given edition.',
+                options=['Dag', 'Avond', 'Ochtend'],
             ),
             extractor=Metadata('temporal')
         ),
