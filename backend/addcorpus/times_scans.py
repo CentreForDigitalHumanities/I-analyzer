@@ -16,12 +16,11 @@ BASE_DIR = '/its/times/TDA_GDA/TDA_GDA_1785-2009'
 LOG_LOCATION = '/home/jvboheemen/convert_scripts'
 node = {'host': 'im-linux-elasticsearch01.im.hum.uu.nl', 'port': '9200'}
 
-START_YEAR = 1982
-END_YEAR = 1983
+START_YEAR = 1983
+END_YEAR = 1990
 
 
 class ProgressBar(Bar):
-    message = 'Updating index'
     suffix = '%(percent).1f%% - %(eta)ds'
 
 
@@ -29,10 +28,10 @@ def parse_page_number(input):
     if input.isdigit():
         return int(input)
 
-    elif roman_to_int(input).isdigit():
+    elif roman_to_int(input):
         return roman_to_int(input)
 
-    elif written_to_int(input).isdigit():
+    elif written_to_int(input):
         return written_to_int(input)
 
     # '[1]'
@@ -58,7 +57,7 @@ def written_to_int(input):
     }
 
     if not input.lower() in lookup.keys():
-        return input
+        return None
     return lookup[input.lower()]
 
 
@@ -100,12 +99,12 @@ def roman_to_int(input_num):
             else:
                 sum += value
         except KeyError:
-            return input_num
+            return None
             # raise ValueError, 'input_num is not a valid Roman numeral: %s' % input_num
     if int_to_roman(sum) == input_num:
         return sum
     else:
-        return input_num
+        return None
 
 
 def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
@@ -130,7 +129,8 @@ def update_one_year(year, index, page_size, doc_type, corpus_dir, scroll):
 
     # progress bar
     global bar
-    bar = ProgressBar(max=nr_of_docs)
+    bar = Bar(max=nr_of_docs, message=str(year),
+              suffix='%(percent).1f%% - %(eta)ds')
 
     # Collect initial page
     page = init_search(es, index, doc_type, page_size,
@@ -209,7 +209,7 @@ def process_hits(hits, es, index, doc_type, corpus_dir):
             date = date if date is not None else 'Unknown'
             logging.warning('Error updating doc {}. Date: {}, page: {}'.format(
                 doc['_id'], date, page))
-            logging.warning(e)
+            # logging.warning(e)
         global bar
         bar.next()
 
@@ -224,10 +224,8 @@ def compose_image_path(date_string, page, corpus_dir):
         date_obj.month), "{0:02d}".format(date_obj.day)
 
     page = parse_page_number(page)
-
-    if not page.isdigit():
-        page_roman = roman_to_int(page)
-        page_written = written_to_int(page)
+    if not page:
+        return None
 
     if int(year) > 1985:
         page_str = '{0:04d}'.format(int(page))
@@ -246,9 +244,6 @@ def compose_image_path(date_string, page, corpus_dir):
         return None
 
 
-update path here is a path toward the first of the
-
-
 def update_document(es, index, doc_type, doc_id, image_path):
     body = {"doc": {"image_path": image_path}}
     es.update(index=index, doc_type=doc_type, id=doc_id, body=body)
@@ -258,6 +253,6 @@ def update_document(es, index, doc_type, doc_id, image_path):
 
 if __name__ == "__main__":
     logfile = 'indexupdate.log'
-    logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'index_redo_1982.log'),
+    logging.basicConfig(filename=os.path.join(LOG_LOCATION, 'redo_from_1982.log'),
                         format='%(asctime)s\t%(levelname)s:\t%(message)s', datefmt='%c', level=logging.WARNING)
     add_images(100, START_YEAR, END_YEAR)
