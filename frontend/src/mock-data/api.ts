@@ -1,4 +1,3 @@
-import { ApiService } from './api.service';
 import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/operator/toPromise';
 

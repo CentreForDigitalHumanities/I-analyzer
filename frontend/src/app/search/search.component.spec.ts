@@ -11,9 +11,9 @@ import { TableModule } from 'primeng/table';
 
 import * as corpus from '../../mock-data/corpus';
 import { ApiService, ApiRetryService, CorpusService, DataService, DialogService, ElasticSearchService, LogService, QueryService, SearchService, SessionService, UserService, NotificationService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { DialogServiceMock } from '../services/dialog.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
+import { DialogServiceMock } from '../../mock-data/dialog';
 
 import { HighlightPipe } from './highlight.pipe';
 import { ImageViewComponent } from '../document-view/image-view.component';
@@ -37,7 +37,7 @@ import { WordcloudComponent } from '../visualization/wordcloud.component';
 import { FreqtableComponent } from '../visualization/freqtable.component';
 import { TermFrequencyComponent } from '../visualization/term-frequency.component';
 import { VisualizationComponent } from '../visualization/visualization.component';
-import { UserServiceMock } from '../services/user.service.mock';
+import { UserServiceMock } from '../../mock-data/user';
 import { ScanPdfComponent } from '../document-view/scan-pdf.component'
 
 

@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpModule } from '@angular/http';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { ApiService, ConfigService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { MockCorpusResponse } from '../../mock-data/corpus';
 import { ScanPdfComponent } from './scan-pdf.component';
 import { ConfirmDialogModule } from 'primeng/primeng';

@@ -2,6 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
+import { commonTestBed } from '../common-test-bed';
+
 import { DocumentViewComponent } from './document-view.component';
 import { ImageViewComponent } from './image-view.component';
 import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
@@ -18,11 +20,7 @@ describe('DocumentViewComponent', () => {
     let fixture: ComponentFixture<DocumentViewComponent>;
 
     beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [HighlightPipe, DocumentViewComponent, ImageViewComponent, ScanPdfComponent, SearchRelevanceComponent, PdfViewerComponent],
-            imports: [FormsModule, TabViewModule, HttpClientModule, ConfirmDialogModule],
-            providers: [HighlightService]
-        }).compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {
