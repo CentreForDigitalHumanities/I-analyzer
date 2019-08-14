@@ -278,7 +278,7 @@ class Periodicals(XMLCorpus):
                 image_list.append('{}/api/get_image/{}/{}'.format(
                     current_app.config['BASE_URL'],
                     self.es_index,
-                    join(image_directory, image_name)
+                    join(self.data_directory, image_directory, image_name)
                     )
                 )
             else:
