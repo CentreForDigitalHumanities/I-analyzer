@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from "lodash";
 
@@ -10,7 +10,7 @@ import { SearchService, ApiService } from '../services/index';
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements OnInit, OnChanges {
+export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
@@ -46,6 +46,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
     public isLoading: boolean = false;
+    private childComponentLoading: boolean = false;
 
     // aggregate search expects a size argument
     public defaultSize: number = 10000;
@@ -54,6 +55,12 @@ export class VisualizationComponent implements OnInit, OnChanges {
     private tasksToCancel: string[] = [];
 
     constructor(private searchService: SearchService, private apiService: ApiService) {
+    }
+
+    ngDoCheck(){
+        if (this.isLoading != this.childComponentLoading ) {
+            this.isLoading = this.childComponentLoading;
+        }
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -181,7 +188,7 @@ export class VisualizationComponent implements OnInit, OnChanges {
                     let childTask = result['taskIds'][0];
                     this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
-                            this.aggResults = outcome['results']
+                            this.aggResults = outcome['results'];
                         }
                         else {
                             this.foundNoVisualsMessage = this.noResults;
@@ -205,7 +212,8 @@ export class VisualizationComponent implements OnInit, OnChanges {
         this.freqtable = false;
     }
 
-    isLoadingEvent(event: boolean) {
-        this.isLoading = event;
+    onIsLoading(event: boolean) {
+        this.childComponentLoading = event;
     }
+
 }

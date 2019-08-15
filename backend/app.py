@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-import logging
 from datetime import datetime
 import click
+import json
+
+import logging
+import logging.config
 
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
@@ -14,9 +17,14 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
+from es.es_update import update_index
 
 app = flask_app(config)
 migrate = Migrate(app, db)
+
+with open(config.LOG_CONFIG, 'rt') as f:
+        log_config = json.load(f)
+        logging.config.dictConfig(log_config)
 
 @app.cli.command()
 @click.option('--name', '-n', help='Name of superuser', required=True)
@@ -62,7 +70,12 @@ def admin(name, pwd):
     help='Define whether the current index should be deleted' +
     '(turned off by default)'
 )
-def es(corpus, start, end, delete=False):
+@click.option(
+    '--update', '-u',
+    help='Set this to true to update an index' +
+    '(adding / changing fields in documents)'
+)
+def es(corpus, start, end, delete=False, update=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -85,8 +98,21 @@ def es(corpus, start, end, delete=False):
             'Example call: flask es -c times -s 1785-01-01 -e 2010-12-31'
         )
         raise
-
-    perform_indexing(corpus, this_corpus, start_index, end_index, delete)
+    
+    if update:
+        try:
+            if not this_corpus.update_body():
+                logging.critical("No update_body specified: doing nothing")
+                return None
+            update_index(corpus, this_corpus, this_corpus.update_query(
+                min_date=start_index.strftime('%Y-%m-%d'), max_date=end_index.strftime('%Y-%m-%d')
+                )
+            )
+        except Exception as e:
+            logging.critical(e)
+            raise
+    else:
+        perform_indexing(corpus, this_corpus, start_index, end_index, delete)
 
 
 def create_user(name, password=None):

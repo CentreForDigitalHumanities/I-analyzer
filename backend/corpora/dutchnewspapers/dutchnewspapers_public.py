@@ -3,7 +3,6 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import logging
-logger = logging.getLogger(__name__)
 from pprint import pprint
 import random
 import re
@@ -47,6 +46,7 @@ class DutchNewspapersPublic(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
+        logger = logging.getLogger(__name__)
         consolidate_start_end_years(start, end, self.min_date, self.max_date)
         year_matcher = re.compile(r'[0-9]{4}')
         for directory, subdirs, filenames in os.walk(self.data_directory):
@@ -60,7 +60,7 @@ class DutchNewspapersPublic(XMLCorpus):
                 subdirs[:] = []
                 continue
             definition_file = next((join(directory, filename) for filename in filenames if 
-                                self.definition_pattern.match(filename)), None)
+                                self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
             meta_dict = self.metadata_from_xml(definition_file, tags=[
@@ -75,7 +75,7 @@ class DutchNewspapersPublic(XMLCorpus):
                     "temporal",
                     {"tag": "spatial", "attribute": {'type': 'dcx:creation'}, "save_as":"pub_place"}
             ])
-            print(meta_dict)
+            logger.debug(meta_dict)
             for filename in filenames:
                 if filename != '.DS_Store':
                     name, extension = splitext(filename)
@@ -86,10 +86,9 @@ class DutchNewspapersPublic(XMLCorpus):
                     #def_match = self.definition_pattern.match(name)
                     article_match = self.article_pattern.match(name)
                     if article_match:
-                        identifier = os.path.basename(os.path.dirname(
-                            full_path)) + article_match.group(1)
-                        record_id = identifier[4:-4].replace("_",":") +\
-                          ":a" + identifier[-4:]
+                        parts = name.split("_")
+                        record_id = parts[1] + \
+                          ":a" + parts[2]
                         meta_dict.update({
                             'external_file': definition_file,
                             'id': record_id
@@ -217,7 +216,11 @@ class DutchNewspapersPublic(XMLCorpus):
                                       'xml_tag_toplevel': 'DIDL',
                                       'xml_tag_entry': 'dcx'
                                   }
-                                  )
+                                  ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in these categories.',
+                options=['advertentie', 'artikel']
+            ),
         ),
         Field(
             name='circulation',
@@ -225,7 +228,18 @@ class DutchNewspapersPublic(XMLCorpus):
             description='The area in which the newspaper was distributed.',
             es_mapping={'type': 'keyword'},
             csv_core=True,
-            extractor=Metadata('spatial')
+            extractor=Metadata('spatial'),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles appearing in specific areas.',
+                options=[
+                    'Landelijk',
+                    'Nederlands-Indië / Indonesië',
+                    'Nederlandse Antillen',
+                    'Regionaal/lokaal',
+                    'Suriname',
+                    'Verenigde Staten',
+                    'onbekend']
+            ),
         ),
         Field(
             name='publisher',
@@ -271,15 +285,15 @@ class DutchNewspapersPublic(XMLCorpus):
         ),
         Field(
             name='temporal',
-            display_name='Publication frequency',
-            description='publication frequency of the newspaper.',
+            display_name='Edition',
+            description='Newspaper edition for the given date',
             results_overview=True,
             csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this publication frequency.',
-                options=['Dag', 'Week', 'Maand'],
+                description='Accept only articles in newspapers which appeared as a given edition.',
+                options=['Dag', 'Avond', 'Ochtend'],
             ),
             extractor=Metadata('temporal')
         ),
@@ -291,7 +305,8 @@ class DutchNewspapersPublic(XMLCorpus):
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
-                                  flatten=True, toplevel=True)
+                                  flatten=True, toplevel=True),
+            visualization_type="word_cloud"
         ),
     ]
 

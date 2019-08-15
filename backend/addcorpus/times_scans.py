@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+logger = logging.getLogger(__name__)
 from elasticsearch import Elasticsearch
 import os
 from datetime import datetime
@@ -27,7 +28,7 @@ def add_images(corpus_definition, page_size):
     total_hits = page['hits']['total']
     scroll_size = len(page['hits']['hits'])
 
-    logging.info("Starting collection of images for {} documents in index '{}'".format(
+    logger.info("Starting collection of images for {} documents in index '{}'".format(
         total_hits, index))
 
     while scroll_size > 0:
@@ -44,7 +45,7 @@ def add_images(corpus_definition, page_size):
         scroll_size = len(page['hits']['hits'])
 
     global updated_docs
-    logging.info("Updated {} documents".format(updated_docs))
+    logger.info("Updated {} documents".format(updated_docs))
 
 
 def init_search(index, doc_type, size, scroll):
@@ -83,14 +84,14 @@ def compose_image_path(date_string, page, corpus_dir):
 def update_document(index, doc_type, doc_id, image_path):
     body = {"doc": {"image_path": image_path}}
     es.update(index=index, doc_type=doc_type, id=doc_id, body=body)
-    logging.info("Updated document with id '{}'".format(doc_id))
+    logger.info("Updated document with id '{}'".format(doc_id))
     global updated_docs
     updated_docs += 1
 
 
 if __name__ == "__main__":
     logfile = 'times_add_scans'
-    logging.basicConfig(filename=logfile, level=config.LOG_LEVEL)
-    logging.info('Starting adding scans to ES index')
+    logging.basicConfig(filename=logfile, level=current_app.config['LOG_LEVEL'])
+    logger.info('Starting adding scans to ES index')
     this_corpus = corpora.DEFINITIONS['times']
     add_images(this_corpus, 100)

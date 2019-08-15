@@ -6,8 +6,6 @@ import logging
 from os.path import expanduser, realpath, join, dirname, relpath
 from datetime import datetime, timedelta
 
-LOG_LEVEL = logging.INFO
-
 # Flask
 DEBUG = False
 TESTING = False
@@ -26,6 +24,8 @@ SAML_MAIL_KEY = "mail"
 # SQLAlchemy
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+LOG_CONFIG = 'logging.json'
 
 # the corpora dictionary provides the file path of the corpus definition
 # this information can be anywhere on the file system
@@ -128,4 +128,4 @@ MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
 
-WORDCLOUD_LIMIT = 100000;
+WORDCLOUD_LIMIT = 10000;

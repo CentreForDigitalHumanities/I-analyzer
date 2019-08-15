@@ -2,6 +2,7 @@
 For creation of Flask and ElasticSearch objects.
 '''
 import os
+import logging
 
 from flask import Flask
 from flask_mail import Mail
@@ -25,6 +26,7 @@ def flask_app(cfg=config):
     Create Flask instance, with given configuration and flask_admin, flask_login,
     and csrf (SeaSurf) instances.
     '''
+    logging.info("initializing app...")
     app = Flask(__name__)
 
     app.config.from_object(cfg)

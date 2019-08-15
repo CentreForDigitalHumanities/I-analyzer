@@ -1,13 +1,13 @@
 '''
 Present the data to the user through a web interface.
 '''
+import logging
+logger = logging.getLogger(__name__)
 import json
 import base64
-import logging
 import math
 import functools
-import logging
-logging.basicConfig(format='%(message)s')
+
 from os.path import dirname, split, join, isfile, getsize
 import sys
 import tempfile
@@ -32,9 +32,6 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(message)s')
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -63,16 +60,16 @@ def api_register():
     token = security.get_token(username)
     # try sending the email
     if not send_user_mail(
-        email,
-        username,
-        "Thank you for signing up at I-analyzer",
-        "User registration",
-        "Thank you for creating an I-analyzer account.",
-        "Please click the link below to confirm " + \
+        email=email,
+        username=username,
+        subject_line="Thank you for signing up at I-analyzer",
+        email_title="User registration",
+        message="Thank you for creating an I-analyzer account.",
+        prompt="Please click the link below to confirm " + \
         "your email address and finish your registration.",
-        current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
-        "Confirm registration",
-        True
+        link_url=current_app.config['BASE_URL']+'/api/registration_confirmation/'+token,
+        link_text="Confirm registration",
+        login=True
     ):
         return jsonify({
             'success': False,
@@ -121,15 +118,15 @@ def api_request_reset():
             'message': message + " Log in via your Solis-ID or make a new account."})
     token = security.get_token(user.username)
     if not send_user_mail(
-        email, 
-        user.username,
-        "Your password can be reset",
-        "Password reset",
-        "You requested a password reset.",
-        "Please click the link below to enter " + \
+        email=email, 
+        username=user.username,
+        subject_line="Your password can be reset",
+        email_title="Password reset",
+        message="You requested a password reset.",
+        prompt="Please click the link below to enter " + \
         "and confirm your new password.",
-        current_app.config['BASE_URL']+'/reset-password/'+token,
-        "Reset password"
+        link_url=current_app.config['BASE_URL']+'/reset-password/'+token,
+        link_text="Reset password"
         ):
         return jsonify({'success': False, 'message': 'Email could not be sent.'})
     return jsonify({'success': True, 'message': 'An email was sent to your address.'})
@@ -340,9 +337,9 @@ def api_log():
     msg = request.json['msg']
 
     if msg_type == 'info':
-        logger.info(msg)
+        current_app.logger.info(msg)
     else:
-        logger.error(msg)
+        current_app.logger.error(msg)
 
     return jsonify({'success': True})
 
@@ -473,8 +470,12 @@ def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
-    else:        
-        return jsonify({'success': True, 'results': results.get()})
+    else:
+        try:
+            outcome = results.get()
+        except Exception as e:
+            return jsonify({'success': False, 'message': 'Task canceled.'})  
+        return jsonify({'success': True, 'results': outcome})
 
 
 @api.route('/abort_tasks', methods=['POST'])
@@ -487,7 +488,7 @@ def api_abort_tasks():
         try:
             celery_app.control.revoke(task_ids, terminate=True)
         except Exception as e:
-            logger.critical(e)
+            current_app.logger.critical(e)
             return jsonify({'success': False})
         return jsonify({'success': True})
 

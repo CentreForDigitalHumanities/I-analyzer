@@ -5,6 +5,7 @@ indexing*
 .cache
 *.egg-info
 *.egg
+*.log
 build/
 dist/
 lib/
@@ -12,3 +13,4 @@ instance/
 set
 corpora/*/wm/*
 api/csv_files/*.csv
+corpora/guardianobserver/processed.txt

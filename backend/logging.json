@@ -1,0 +1,41 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {"default": {
+        "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    }},
+    "handlers": {
+        "app": {
+            "class": "logging.FileHandler",
+            "filename": ".log/ianalyzer.log",
+            "formatter": "default"
+        },
+        "es": {
+            "class": "logging.FileHandler",
+            "filename": ".log/indexing.log",
+            "formatter": "default"
+        }
+    },
+    "loggers": {
+        "flask.app": {
+            "level": "INFO",
+            "handlers": ["app"]
+        },
+        "werkzeug": {
+            "level": "WARNING",
+            "handlers": ["app"]
+        },
+        "sqlalchemy": {
+            "level": "ERROR",
+            "handlers": ["app"]
+        },
+        "flask-admin": {
+            "level": "ERROR",
+            "handlers": ["app"]
+        },
+        "indexing": {
+            "level": "INFO",
+            "handlers": ["es"]
+        }
+    }
+}

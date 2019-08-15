@@ -40,7 +40,6 @@ class Spectators(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start=min_date, end=max_date):
-        logger = logging.getLogger(__name__)
         for directory, _, filenames in os.walk(self.data_directory):
             for filename in filenames:
                 name, extension = splitext(filename)

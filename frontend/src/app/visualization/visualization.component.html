@@ -27,7 +27,7 @@
     		 [asPercent]="asPercentage">
     		</ia-term-frequency>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		[asPercent]="asPercentage" (isLoading)="isLoading=$event"></ia-timeline>
+    		[asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
         </ng-container>

@@ -4,7 +4,7 @@ Module contains the base classes from which corpora can derive;
 
 from datetime import datetime, timedelta
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('indexing')
 
 import bs4
 import json
@@ -130,6 +130,26 @@ class Corpus(object):
         URL to markdown document with a comprehensive description
         '''
         return None
+    
+    def update_body(self, **kwargs):
+        ''' given one document in the index, give an instruction 
+        of how to update the index
+        (based on script or partial data)
+        '''
+        return None
+    
+    def update_query(self, **kwargs):
+        ''' given the min date and max date of the 
+        time period for which the update should be performed,
+        return a query restricting the result set
+        Default is a match_all query.
+        '''
+        return {
+            "query": {
+                "match_all": {}
+            }
+        }
+
 
     def es_mapping(self):
         '''
@@ -283,6 +303,7 @@ class XMLCorpus(Corpus):
             filename = soup.find('RecordID')
         else:
             filename = source[0]
+            soup = self.soup_from_xml(filename)
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
         if 'external_file' in metadata:
@@ -295,6 +316,7 @@ class XMLCorpus(Corpus):
         else:
             regular_fields = self.fields
             external_fields = None
+            external_dict = {}
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)

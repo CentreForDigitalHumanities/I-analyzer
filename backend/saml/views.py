@@ -5,7 +5,7 @@ This to ensure that some methods will send a CSRF tokens.
 The 'saml' route is CSRF exempt.
 """
 
-from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response
+from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response, current_app
 from flask_login import current_user, logout_user
 import logging
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def process_login_result():
     try:
         saml_auth.process_login_result(request, session)
     except SamlAuthError as e:
-        logger.error(e)
+        current_app.logger.error(e)
         redirect_to = '{}/login?hasError=true'.format(request.host_url)
         return redirect(redirect_to)
 
@@ -84,7 +84,7 @@ def process_logout_result():
             logout_user()
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
-        logger.error(e)
+        current_app.logger.error(e)
     return redirect(request.host_url)
 
 
