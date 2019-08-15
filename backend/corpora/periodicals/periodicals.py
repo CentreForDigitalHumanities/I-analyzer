@@ -224,7 +224,7 @@ class Periodicals(XMLCorpus):
         Field(
             name='category',
             display_name='Category',
-            description='Number of words in the article.',
+            description='Article category.',
             es_mapping={'type': 'keyword'},
             extractor=extract.XML(tag='ct',
                 external_file={
@@ -235,7 +235,11 @@ class Periodicals(XMLCorpus):
                     'tag': 'id',
                     'match': 'id'
                 }
-            )
+            ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in these categories.',
+                options = ['default', 'options']
+            ),
         ),
         Field(
             name='page_no',
