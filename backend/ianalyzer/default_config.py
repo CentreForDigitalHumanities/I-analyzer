@@ -114,6 +114,9 @@ TROONREDES_IMAGE = 'troon.jpg'
 GO_SCAN_IMAGE_TYPE = 'pdf'
 GO_IMAGE = 'guardianobserver.jpg'
 
+PERIODICALS_SCAN_IMAGE_TYPE = 'jpg'
+PERIODICALS_IMAGE = 'Fleet_Street.jpg'
+
 #################
 
 #Celery configuration
