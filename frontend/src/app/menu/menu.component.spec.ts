@@ -1,14 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterModule, Router } from '@angular/router';
-
-import { of } from 'rxjs';
-import { ButtonModule, MenuModule } from 'primeng/primeng';
 
 import { commonTestBed } from '../common-test-bed';
-
-import { ApiService, ApiRetryService, ConfigService, CorpusService, LogService, UserService, } from '../services/index';
+;
 import { MenuComponent } from './menu.component';
-import { MockCorpusResponse } from '../../mock-data/corpus';
 
 describe('MenuComponent', () => {
     let component: MenuComponent;

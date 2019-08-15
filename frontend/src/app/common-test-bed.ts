@@ -1,13 +1,15 @@
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
+import { ElementRef } from '@angular/core';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+
+import { of } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 
 import { declarations, imports, providers } from './app.module';
 
-import { CookieService } from 'ngx-cookie-service';
-
 import { ApiServiceMock } from '../mock-data/api';
+import * as corpus from '../mock-data/corpus';
 import { DialogServiceMock } from '../mock-data/dialog';
 import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
 import { MockCorpusResponse } from '../mock-data/corpus';
@@ -19,6 +21,11 @@ export function commonTestBed() {
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService]));
     filteredProviders.push(
+        {
+            provide: ActivatedRoute, useValue: {
+                paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).map(convertToParamMap)
+            }
+        },
         {
             provide: ApiService, useValue: new ApiServiceMock({
                 ['corpus']: MockCorpusResponse
@@ -38,7 +45,10 @@ export function commonTestBed() {
             provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
         },
         {
-            provide: Router, useValue: new RouterMock()
+            provide: ElementRef, useClass: MockElementRef
+        },
+        {
+            provide: Router, useValue: { events: of({}) } 
         },
         {
             provide: SearchService, useValue: new SearchServiceMock()
@@ -69,4 +79,4 @@ export function csrfProviderFactory(inject: Injector, provider: ApiService, cook
     }
 }
 
-class RouterMock {}
+export class MockElementRef { nativeElement = {}; }

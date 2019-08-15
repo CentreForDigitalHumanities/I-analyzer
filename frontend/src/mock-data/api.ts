@@ -16,6 +16,10 @@ export class ApiServiceMock {
         return this.get('corpus');
     }
 
+    public ensureCsrf(): Promise<any> {
+        return Promise.resolve({'success': true});
+    }
+
     public search_history() {
         return this.get('search_history');
     };

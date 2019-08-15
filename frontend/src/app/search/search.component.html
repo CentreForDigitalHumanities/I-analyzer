@@ -44,7 +44,7 @@
                                     <div class="control" iaBalloon="Click here to limit your search to specific fields"
                                         iaBalloonLength="medium">
                                         <ia-select-field [availableFields]="availableSearchFields" [filterCriterion]=" 'searchField' "
-                                            [label]=" 'All fields' " (selectedFields)="selectSearchFieldsEvent($event)"
+                                            [label]=" 'All fields' " (selectedFields)="selectSearchFields($event)"
                                             [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
                                         </ia-select-field>
                                     </div>
