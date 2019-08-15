@@ -62,7 +62,7 @@ class Periodicals(XMLCorpus):
             if date=='Date Unknown':
                 metadict['date'] = None
             else:
-                metadict['date'] = datetime.strptime(date, '%B %d, %Y')
+                metadict['date'] = datetime.strptime(date, '%B %d, %Y').strftime('%Y-%m-%d')
             # the star upacks the list as an argument list
             metadict['image_path'] = join(*row[2].split("\\")).strip()
             ext_filename = join(self.data_directory, join(*row[3].split("\\")), row[4])
@@ -72,18 +72,17 @@ class Periodicals(XMLCorpus):
             metadict['external_file'] = ext_filename
             filename = join(self.data_directory, join(*row[3].split("\\")), xmlfile)
             if not isfile(filename):
-                # print(str.format("File {} not found", filename))
+                print("File {} not found".format(filename))
                 continue
             yield filename, metadict
 
     fields = [
         Field(
             name='date',
-            display_name='Date',
-            description='Publication date.',
+            display_name='Formatted Date',
+            description='Publication date, formatted from the full date',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
-            results_overview=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -91,10 +90,15 @@ class Periodicals(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.Metadata('date', transform=lambda x: x.strftime(
-                                           '%Y-%m-%d')
-                                       ),
+            extractor=extract.Metadata('date'),
             csv_core=True
+        ),
+        Field(
+            name='date_pub',
+            display_name='Publication Date',
+            description='Publication date as full string, as found in source file',
+            results_overview=True,
+            extractor=extract.Metadata('date_full')
         ),
         Field(
             name='id',
