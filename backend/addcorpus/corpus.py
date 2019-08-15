@@ -315,8 +315,13 @@ class XMLCorpus(Corpus):
             external_soup = self.soup_from_xml(metadata['external_file'])
         else:
             regular_fields = self.fields
+<<<<<<< HEAD
             external_dict = {}
             external_fields = None
+=======
+            external_fields = None
+            external_dict = {}
+>>>>>>> develop
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)
