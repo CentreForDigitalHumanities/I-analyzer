@@ -34,36 +34,22 @@ export class DocumentViewComponent implements OnChanges {
     public imgNotFound: boolean;
     public imgPath: string;
     public media: string[];
-    public pdfData: any;
-    public downloadPath: string;
+    public allowDownload: boolean;
 
     constructor(private apiService: ApiService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         this.media = undefined;
-        this.pdfData = undefined;
         if (changes.corpus) {
-            if (this.corpus.allow_image_download) {
-                this.downloadPath = `api/get_image/${this.corpus.index}/${this.document.fieldValues.image_path}`;
-            }
-            else {
-                this.downloadPath = undefined;
-            }
+            this.allowDownload = this.corpus.allow_image_download;
         }
         if (changes.document &&  
             changes.document.previousValue != changes.document.currentValue) {
-            if (this.corpus.scan_image_type && this.corpus.scan_image_type=='application/pdf'){
-                this.apiService.requestPdf({corpus_index: this.corpus.name, document: this.document}).then( response => {
-                    this.pdfData = response;
-                })
-            }
-            else {
-                this.apiService.requestImages({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                this.apiService.requestMedia({corpus_index: this.corpus.name, document: this.document}).then( response => {
                     if (response.success) {
                         this.media = response.media;
-                    }
+                    };
                 })
-            }
         }
     }
 

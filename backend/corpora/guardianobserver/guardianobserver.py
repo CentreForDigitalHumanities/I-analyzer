@@ -165,34 +165,20 @@ class GuardianObserver(XMLCorpus):
         )
     ]
 
-    def get_media(self, document):
+    def request_media(self, document):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
             re.sub('-', '', field_vals['date']),
             field_vals['id']             
         )
-        pdf_info = {
-            "pageNumbers": [1], #change from 0-indexed to real page
-            "homePageIndex": 1, #change from 0-indexed to real page
-            "fileName": target_filename
-        }
-        pdf_data = None
-        
         if 'img_path' in field_vals.keys():
             # we stored which of the zip archives holds the target file
             # applicable for post-1910 data
             zipname = field_vals['img_path']
-            with ZipFile(zipname, mode='r') as zipped:
-                zip_info = zipped.getinfo(target_filename)
-                pdf_data = zipped.read(zip_info)
         elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
-            zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
-            with ZipFile(op.join(path, zipname), mode='r') as zipped: 
-                zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
-                pdf_data = zipped.read(zip_info)
-            pdf_info.update({'fileSize': zip_info.file_size})
+            zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])       
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
@@ -213,6 +199,24 @@ class GuardianObserver(XMLCorpus):
                     with ZipFile(op.join(path, str(zipfile)), mode='r') as zipped:
                         zip_info = zipped.getinfo(correct_file)
                         pdf_data = zipped.read(zip_info)
+        image_urls = []
+        return image_urls
+    
+
+    def get_media(self, image_path)
+        pdf_info = {
+            "pageNumbers": [1], #change from 0-indexed to real page
+            "homePageIndex": 1, #change from 0-indexed to real page
+            "fileName": image_path
+        }
+        
+        target_file = image_path()
+        zipname = meta_data
+        pdf_data = None
+        with ZipFile(op.join(path, zipname), mode='r') as zipped: 
+            zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
+            pdf_data = zipped.read(zip_info)
+        pdf_info.update({'fileSize': zip_info.file_size})
         if pdf_data:
             pdf_info.update({'fileSize': zip_info.file_size})
             return pdf_data, pdf_info

@@ -1,13 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
+import { NgModule, InjectionToken, Injector, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http'
 import { HttpClientXsrfModule } from '@angular/common/http'
-import { RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterModule, Routes } from '@angular/router';
 
 import { NgxMdModule } from 'ngx-md';
 import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
@@ -53,6 +53,8 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
+
+const ExternalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
 
 const appRoutes: Routes = [
     {
@@ -101,6 +103,12 @@ const appRoutes: Routes = [
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
+    },
+    {
+        path: 'externalRedirect',
+        canActivate: [ExternalUrlProvider],
+        // We need a component here because we cannot define the route otherwise
+        component: HomeComponent,
     }
 ]
 @NgModule({
@@ -185,6 +193,13 @@ const appRoutes: Routes = [
         DialogService,
         DownloadService,
         ElasticSearchService,
+        {
+            provide: ExternalUrlProvider,
+            useValue: (route: ActivatedRouteSnapshot) => {         
+                const externalUrl = route.paramMap.get('externalUrl');
+                window.location.href = externalUrl;
+            },
+        },
         HighlightService,
         LogService,
         NotificationService,

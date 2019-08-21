@@ -13,7 +13,7 @@ from pprint import pprint
 import openpyxl
 import base64
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus import extract
 from addcorpus import filters
@@ -272,7 +272,7 @@ class Periodicals(XMLCorpus):
         ),
     ]
 
-    def get_media(self, document):
+    def request_media(self, document):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
         starting_page = field_vals['id'][:-4]
@@ -283,12 +283,11 @@ class Periodicals(XMLCorpus):
             page_no = str(start_index + page).zfill(4)
             image_name = '{}-{}.jpg'.format(starting_page[:-5], page_no)
             if isfile(join(self.data_directory, image_directory, image_name)):
-                image_list.append('{}/api/get_image/{}/{}'.format(
-                    current_app.config['BASE_URL'],
-                    self.es_index,
-                    join(image_directory, image_name)
-                    )
-                )
+                image_list.append(url_for('api.api_get_media', 
+                    corpus=self.es_index,
+                    image_path=join(image_directory, image_name),
+                    _external=True
+                ))
             else:
                 continue
         return image_list

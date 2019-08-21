@@ -1,4 +1,4 @@
-<app-image-viewer 
+<app-image-viewer *ngIf="mediaType!='application/pdf'"
     [images]="images" 
     [idContainer]="'idOnHTML'" 
     [loadOnInit]="true" 
@@ -6,3 +6,4 @@
     [showPDFOnlyOption]="false" 
     [fullscreen]="false">
 </app-image-viewer>
+<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [allowDownload]="allowDownload"></ia-scan-pdf>

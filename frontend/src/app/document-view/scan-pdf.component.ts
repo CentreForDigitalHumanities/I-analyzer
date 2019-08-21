@@ -1,5 +1,10 @@
-import { Component, HostListener, OnChanges, OnInit, Input} from '@angular/core';
+import { Component, HostListener, OnChanges, Input} from '@angular/core';
+import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
+
+import { ApiService } from '../services';
+import { filter } from 'rxjs-compat/operator/filter';
+
 
 @Component({
     selector: 'ia-scan-pdf',
@@ -7,12 +12,12 @@ import { ConfirmationService } from 'primeng/api';
     styleUrls: ['./scan-pdf.component.scss'],
     providers: [ConfirmationService]
 })
-export class ScanPdfComponent implements OnChanges, OnInit {
+export class ScanPdfComponent implements OnChanges {
     @Input()
-    public pdfData: PdfResponse;
+    public imagePaths: string[];
 
     @Input()
-    public downloadPath: string;
+    public allowDownload: boolean;
 
     public pdfSrc: ArrayBuffer;
 
@@ -32,22 +37,33 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public zoomFactor: number = 1.0;
     private maxZoomFactor: number = 1.7;
+    private path: URL;
 
-    constructor(private confirmationService: ConfirmationService) { }
-
-    ngOnInit() {
-        this.formatPdfResponse();
-    }
+    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private router: Router) { }
 
     ngOnChanges() {
-        this.formatPdfResponse();
+        this.path = new URL(this.imagePaths[0]);
+        this.apiService.getMedia({args: this.path.search}).then( response => {
+            this.pdfNotFound = false;
+            this.formatPdfResponse(response);
+        }).catch( () => this.pdfNotFound = true );
     }
 
-    formatPdfResponse() {
-        this.pdfInfo = <PdfHeader>JSON.parse(this.pdfData.headers.pdfinfo);
+    formatPdfResponse(pdfData) {
+        this.pdfInfo = <PdfHeader>JSON.parse(pdfData.headers.pdfinfo);
         this.page = this.pdfInfo.homePageIndex; //1-indexed
         this.startPage = this.page;
-        this.pdfSrc = this.pdfData.body;
+        this.pdfSrc = pdfData.body;
+    }
+
+    formatSearchParams() {
+        let outParams = new URLSearchParams();
+        this.path.searchParams.forEach( ( value, key ) => {
+            if (['corpus','image_path'].includes(key)){
+                outParams.append(key, value);
+            }
+        })
+        return outParams.toString();
     }
 
     /**
@@ -80,14 +96,19 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                // this.apiService.downloadPdf({corpus_index: this.corpus.index, filepath: this.document.fieldValues.image_path})
-                window.location.href = this.downloadPath;
+                let params = this.formatSearchParams();
+                let url = this.path.pathname + "?" + params;
+                window.location.href = url;
+                //this.router.navigate(['/externalRedirect', {externalUrl: url}]);
             },
             reject: () => {
             }
         })
     }
 
+    // code to implement scrolling with the mouse wheel
+    // this is not currently feasible (container blocks scrolling interaction)
+    // leaving in in case we want to implement this later
     // @HostListener('mousewheel', ['$event']) onMousewheel(event) {
     //     if(event.wheelDelta>0){
     //        this.zoomIn(); 

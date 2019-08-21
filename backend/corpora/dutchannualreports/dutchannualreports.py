@@ -5,7 +5,7 @@ import os.path as op
 import logging
 from datetime import datetime
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
@@ -215,16 +215,25 @@ class DutchAnnualReports(XMLCorpus):
         )
     ]
 
-    def get_media(self, document):
-        pages_returned = 5 #number of pages that is displayed. must be odd number.
-        home_page = document['fieldValues']['page'] - 1 #the page corresponding to the document
-        image_path = document['fieldValues']['image_path']
-        absolute_path = op.join(self.data_directory, image_path)
+    def request_media(self, document):  
+        image_url = url_for('api.api_get_media', 
+            corpus=self.es_index,
+            image_path=document['fieldValues']['image_path'],
+            page_no=document['fieldValues']['page'],
+            _external=True
+        )
+        return [image_url]
 
+       
+    def get_media(self, request_args):
+        image_path = request_args['image_path']
+        home_page = int(request_args['page_no'])
+        absolute_path = op.join(self.data_directory, image_path)
         if not op.isfile(absolute_path):
             return None
-
         input_pdf, pdf_info = retrieve_pdf(absolute_path)
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
+         #the page corresponding to the document       
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         out = build_partial_pdf(pages, input_pdf)
         pdf_info = {
@@ -232,7 +241,6 @@ class DutchAnnualReports(XMLCorpus):
             "homePageIndex": home_page_index+1, #change from 0-indexed to real page
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
-        }
-        
+        }      
         return out, pdf_info
         

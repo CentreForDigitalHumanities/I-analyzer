@@ -8,9 +8,14 @@ import { FoundDocument } from '../models';
   templateUrl: './image-view.component.html',
   styleUrls: ['./image-view.component.scss']
 })
-export class ImageViewComponent {
-    @Input() public images: string[];
+export class ImageViewComponent implements OnChanges {
+    @Input() public imagePaths: string[];
+    @Input() public mediaType: string;
+    @Input() public allowDownload: boolean;
     
     constructor() { }
 
+    ngOnChanges() {
+        
+    }
 }

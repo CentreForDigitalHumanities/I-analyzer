@@ -1,4 +1,15 @@
 <div *ngIf="isLoaded" style="text-align: center;">
+    <div class="buttons is-pulled-left">
+        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="confirmDownload()">
+            <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+        <button class="button is-primary is-inverted" (click)="zoomIn()">
+            <i class="fa fa-search-plus" aria-hidden="true"></i>
+        </button>
+        <button class="button is-primary is-inverted" (click)="zoomOut()">
+            <i class="fa fa-search-minus" aria-hidden="true"></i>
+        </button>
+    </div>
     <div class="field is-grouped">
         <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
@@ -9,17 +20,6 @@
         <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === pdfInfo.pageNumbers.length">
             <i class="fa fa-chevron-right" aria-hidden="true"></i>
         </button>      
-    </div>
-    <div class="buttons is-pulled-left">
-        <button *ngIf="downloadPath" class="button download is-primary is-inverted" (click)="confirmDownload()">
-            <i class="fa fa-download" aria-hidden="true"></i>
-        </button>
-        <button class="button is-primary is-inverted" (click)="zoomIn()">
-            <i class="fa fa-search-plus" aria-hidden="true"></i>
-        </button>
-        <button class="button is-primary is-inverted" (click)="zoomOut()">
-            <i class="fa fa-search-minus" aria-hidden="true"></i>
-        </button>
     </div>
 </div>
 
