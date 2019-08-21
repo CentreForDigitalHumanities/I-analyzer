@@ -15,7 +15,7 @@ from zipfile import ZipFile
 
 from io import BytesIO
 
-from flask import current_app
+from flask import current_app, url_for
 
 from es.es_update import update_document
 
@@ -172,13 +172,17 @@ class GuardianObserver(XMLCorpus):
             re.sub('-', '', field_vals['date']),
             field_vals['id']             
         )
-        if 'img_path' in field_vals.keys():
+        if 'image_path' in field_vals.keys():
             # we stored which of the zip archives holds the target file
             # applicable for post-1910 data
-            zipname = field_vals['img_path']
+            image_path = field_vals['image_path']
+            filename = target_filename
         elif field_vals['date']<'1909-31-12':
             path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
-            zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])       
+            zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
+            image_path = op.join(path, zipname)
+            # pre-1910, the zip archives contain folders year -> month -> pdfs
+            filename = op.join(zipname[:4], zipname[5:7], target_filename)
         else:
             path = op.join(self.data_directory, '1910-2003', 'PDF')
             zipname_pattern = "**/{}_*_{}.zip".format(
@@ -192,31 +196,40 @@ class GuardianObserver(XMLCorpus):
                 if correct_file:
                     update_body = {
                         "doc": {
-                            "img_path": str(zipfile)
+                            "image_path": str(zipfile)
                         }
                     }
                     update_document(self.es_index, self.es_doctype, document, update_body)
-                    with ZipFile(op.join(path, str(zipfile)), mode='r') as zipped:
-                        zip_info = zipped.getinfo(correct_file)
-                        pdf_data = zipped.read(zip_info)
-        image_urls = []
+                    image_path = op.join(path, str(zipfile))
+                    filename = target_filename
+                    break
+        image_urls = [url_for(
+            'api.api_get_media', 
+            corpus=self.es_index,
+            image_path=image_path,
+            filename=filename,
+            _external=True
+        )]
         return image_urls
     
 
-    def get_media(self, image_path)
+    def get_media(self, request_args):
+        '''
+        Given the image path of the zipfile,
+        and the filename of the pdf within the zipfile,
+        retrieve the pdf.
+        '''
+        image_path = request_args['image_path']
+        filename = request_args['filename']
         pdf_info = {
             "pageNumbers": [1], #change from 0-indexed to real page
             "homePageIndex": 1, #change from 0-indexed to real page
             "fileName": image_path
-        }
-        
-        target_file = image_path()
-        zipname = meta_data
+        }   
         pdf_data = None
-        with ZipFile(op.join(path, zipname), mode='r') as zipped: 
-            zip_info = zipped.getinfo(op.join(zipname[:4], zipname[5:7], target_filename))
+        with ZipFile(image_path, mode='r') as zipped: 
+            zip_info = zipped.getinfo(filename)
             pdf_data = zipped.read(zip_info)
-        pdf_info.update({'fileSize': zip_info.file_size})
         if pdf_data:
             pdf_info.update({'fileSize': zip_info.file_size})
             return pdf_data, pdf_info

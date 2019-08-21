@@ -501,7 +501,11 @@ def api_get_media():
         abort(403)
     if len(list(request.args.keys()))>2:
         # there are more arguments, currently used for pdf retrieval only
-        out, info = backend_corpus.get_media(request.args)
+        try:
+            out, info = backend_corpus.get_media(request.args)
+        except Exception as e:
+            current_app.logger.error(e)
+            abort(400)
         header = json.dumps(info)
         if not out:
             abort(404)
@@ -515,6 +519,7 @@ def api_get_media():
         else:
             return send_file(absolute_path, mimetype=backend_corpus.scan_image_type, as_attachment=True)
 
+
 @api.route('/request_media', methods=['POST'])
 @login_required
 def api_request_images():
@@ -523,7 +528,7 @@ def api_request_images():
     corpus_index = request.json['corpus_index']
     backend_corpus = load_corpus(corpus_index)
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        abort(400)
+        abort(403)
     else:
         data = backend_corpus.request_media(request.json['document'])
         if len(data)==0:

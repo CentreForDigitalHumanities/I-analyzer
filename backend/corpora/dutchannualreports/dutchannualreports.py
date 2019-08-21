@@ -223,9 +223,12 @@ class DutchAnnualReports(XMLCorpus):
             _external=True
         )
         return [image_url]
-
        
     def get_media(self, request_args):
+        ''' 
+        Given the image path and page number of the search result,
+        construct a new pdf which contains 2 pages before and after.
+        '''
         image_path = request_args['image_path']
         home_page = int(request_args['page_no'])
         absolute_path = op.join(self.data_directory, image_path)

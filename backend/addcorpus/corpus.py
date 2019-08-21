@@ -149,7 +149,13 @@ class Corpus(object):
                 "match_all": {}
             }
         }
-
+    
+    def request_media(self):
+        '''
+        Get a list of urls from where media associated 
+        with a document can be fetched.
+        '''
+        return []
 
     def es_mapping(self):
         '''
