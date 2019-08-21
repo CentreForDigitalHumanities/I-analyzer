@@ -99,7 +99,6 @@ export class ScanPdfComponent implements OnChanges {
                 let params = this.formatSearchParams();
                 let url = this.path.pathname + "?" + params;
                 window.location.href = url;
-                //this.router.navigate(['/externalRedirect', {externalUrl: url}]);
             },
             reject: () => {
             }
