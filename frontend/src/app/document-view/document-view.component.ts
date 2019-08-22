@@ -60,7 +60,7 @@ export class DocumentViewComponent implements OnChanges {
         }
     }
 
-    private tabChange(event) {
+    public tabChange(event) {
         this.index = event.index;
     }
 
