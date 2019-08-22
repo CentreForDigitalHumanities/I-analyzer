@@ -90,10 +90,11 @@ DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
-DUTCHNEWSPAPERS_DATA = '/directory/to/data' # remember to set this in config.py
+DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
 
 DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
-DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data' # remember to set this in config.py
+# remember to set this in config.py
+DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
@@ -114,9 +115,14 @@ TROONREDES_IMAGE = 'troon.jpg'
 GO_SCAN_IMAGE_TYPE = 'pdf'
 GO_IMAGE = 'guardianobserver.jpg'
 
+ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
+ECCO_ES_INDEX = 'ecco'
+ECCO_ES_DOCTYPE = 'article'
+ECCO_IMAGE = 'ecco.jpg'
+
 #################
 
-#Celery configuration
+# Celery configuration
 CELERY_BROKER_URL = 'amqp://'
 CELERY_BACKEND = 'amqp'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
@@ -125,4 +131,4 @@ MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
 
-WORDCLOUD_LIMIT = 10000;
+WORDCLOUD_LIMIT = 10000

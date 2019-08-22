@@ -3,11 +3,12 @@ This module is a tool to define how to extract specific information from an
 object such as a dictionary or a BeautifulSoup XML node.
 '''
 
+import bs4
+import html
+import re
 import logging
 logger = logging.getLogger('indexing')
-import re
-import html
-import bs4
+
 
 class Extractor(object):
     '''
@@ -36,7 +37,7 @@ class Extractor(object):
                     return self.transform(result)
             except Exception:
                 logger.critical("Value {v} could not be converted."
-                                 .format(v=result))
+                                .format(v=result))
                 return None
             else:
                 return result
@@ -125,14 +126,14 @@ class XML(Extractor):
                  secondary_tag={
                      'tag': None,
                      'match': None
-                 }, # Whether the tag's content should match a given string 
+                 },  # Whether the tag's content should match a given string
                  external_file={  # Whether to search other xml files for this field, and the file tag these files should have
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
                  *nargs,
                  **kwargs
-    ):
+                 ):
 
         self.tag = tag
         self.attribute = attribute
@@ -140,7 +141,7 @@ class XML(Extractor):
         self.toplevel = toplevel
         self.recursive = recursive
         self.multiple = multiple
-        self.secondary_tag = secondary_tag if secondary_tag['tag']!= None else None
+        self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
         super().__init__(*nargs, **kwargs)
 
@@ -149,6 +150,7 @@ class XML(Extractor):
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
         '''
+        print(soup)
         # If the tag was a path, walk through it before continuing
         tag = self.tag
         if isinstance(self.tag, list):
@@ -168,7 +170,8 @@ class XML(Extractor):
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
-            sibling = soup.find(self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
+            sibling = soup.find(
+                self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
             if sibling:
                 return sibling.parent.find(tag)
 
@@ -181,7 +184,8 @@ class XML(Extractor):
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
             # pass along the metadata to the _select method
-            soup = self._select(soup_top if self.toplevel else soup_entry, metadata=kwargs['metadata'])
+            soup = self._select(
+                soup_top if self.toplevel else soup_entry, metadata=kwargs['metadata'])
         # Select appropriate BeautifulSoup element
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
