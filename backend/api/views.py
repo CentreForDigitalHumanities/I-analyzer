@@ -509,7 +509,7 @@ def api_get_media():
         header = json.dumps(info)
         if not out:
             abort(404)
-        response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True))
+        response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True, mimetype=backend_corpus.scan_image_type))
         response.headers['pdfinfo'] = header
         return response
     else:

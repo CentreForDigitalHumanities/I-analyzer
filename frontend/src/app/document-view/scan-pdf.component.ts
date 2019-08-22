@@ -1,9 +1,8 @@
-import { Component, HostListener, OnChanges, Input} from '@angular/core';
+import { Component, HostListener, OnChanges, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 
 import { ApiService } from '../services';
-import { filter } from 'rxjs-compat/operator/filter';
 
 
 @Component({
@@ -18,6 +17,9 @@ export class ScanPdfComponent implements OnChanges {
 
     @Input()
     public allowDownload: boolean;
+
+    @Input()
+    public downloadPath: string;
 
     public pdfSrc: ArrayBuffer;
 
@@ -56,16 +58,6 @@ export class ScanPdfComponent implements OnChanges {
         this.pdfSrc = pdfData.body;
     }
 
-    formatSearchParams() {
-        let outParams = new URLSearchParams();
-        this.path.searchParams.forEach( ( value, key ) => {
-            if (['corpus','image_path'].includes(key)){
-                outParams.append(key, value);
-            }
-        })
-        return outParams.toString();
-    }
-
     /**
          * callback for ng2-pdf-viewer loadcomplete event,
          * fires after all pdf data is received and loaded by the viewer.
@@ -96,8 +88,7 @@ export class ScanPdfComponent implements OnChanges {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                let params = this.formatSearchParams();
-                let url = this.path.pathname + "?" + params;
+                let url = this.downloadPath || this.path.pathname + this.path.search;
                 window.location.href = url;
             },
             reject: () => {
@@ -125,6 +116,10 @@ export class ScanPdfComponent implements OnChanges {
 
     zoomOut() {
         this.zoomFactor -= .1;
+    }
+
+    resetZoom() {
+        this.zoomFactor = 1;
     }
 
 }

@@ -31,17 +31,24 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public corpus: Corpus;
 
+    @Input()
+    private tabIndex: number;
+
+    public index: number;
     public imgNotFound: boolean;
     public imgPath: string;
     public media: string[];
     public allowDownload: boolean;
+    public mediaType: string;
 
     constructor(private apiService: ApiService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         this.media = undefined;
+        this.index = this.tabIndex;
         if (changes.corpus) {
             this.allowDownload = this.corpus.allow_image_download;
+            this.mediaType = this.corpus.scan_image_type;
         }
         if (changes.document &&  
             changes.document.previousValue != changes.document.currentValue) {
@@ -51,6 +58,10 @@ export class DocumentViewComponent implements OnChanges {
                     };
                 })
         }
+    }
+
+    private tabChange(event) {
+        this.index = event.index;
     }
 
 }

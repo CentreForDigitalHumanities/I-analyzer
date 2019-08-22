@@ -28,7 +28,7 @@ export class SearchResultsComponent implements OnChanges {
     public parentElement: HTMLElement;
 
     @Output('view')
-    public viewEvent = new EventEmitter<FoundDocument>();
+    public viewEvent = new EventEmitter<{document: FoundDocument, tabIndex?: number}>();
 
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
@@ -107,7 +107,12 @@ export class SearchResultsComponent implements OnChanges {
     }
 
     public view(document: FoundDocument) {
-        this.viewEvent.next(document);
+        this.viewEvent.next({document: document, tabIndex: 0});
+    }
+
+    public goToScan(document: FoundDocument, event:any) {
+        this.viewEvent.next({document: document, tabIndex: 1});
+        event.stopPropagation();
     }
 
     public searched(queryText: string, resultsCount: number) {
@@ -116,3 +121,5 @@ export class SearchResultsComponent implements OnChanges {
         this.isLoading = false;
     }
 }
+
+

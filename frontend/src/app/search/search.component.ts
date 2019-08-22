@@ -65,7 +65,8 @@ export class SearchComponent implements OnInit {
     public sortField: CorpusField | undefined;
 
     private resultsCount: number = 0;
-    private tabIndex: number;
+    public tabIndex: number;
+    public documentTabIndex: number;
     public searchBarHeight: number;
 
     private searchFilters: SearchFilter [] = [];
@@ -76,7 +77,6 @@ export class SearchComponent implements OnInit {
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
-        private notificationService: NotificationService,
         private activatedRoute: ActivatedRoute,
         private router: Router) {
         }
@@ -198,9 +198,10 @@ export class SearchComponent implements OnInit {
         this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
     }
 
-    public onViewDocument(document: FoundDocument) {
+    public onViewDocument(viewEvent: {document: FoundDocument, tabIndex?: number}) {
         this.showDocument = true;
-        this.viewDocument = document;
+        this.viewDocument = viewEvent.document;
+        this.documentTabIndex = viewEvent.tabIndex;
     }
 
     public showQueryDocumentation() {

@@ -1,6 +1,5 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
-import { SafeResourceUrl } from '@angular/platform-browser';
-import { ApiService } from '../services';
+import { Component, Input, OnChanges } from '@angular/core';
+
 import { FoundDocument } from '../models';
 
 @Component({
@@ -12,10 +11,13 @@ export class ImageViewComponent implements OnChanges {
     @Input() public imagePaths: string[];
     @Input() public mediaType: string;
     @Input() public allowDownload: boolean;
+    @Input() public document: FoundDocument;
+
+    public downloadPath: string; // optional: downloadable content may differ from displayed content
     
     constructor() { }
 
     ngOnChanges() {
-        
+        this.downloadPath = this.document.fieldValues['image_path'];
     }
 }
