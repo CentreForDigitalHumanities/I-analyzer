@@ -12,11 +12,11 @@ import os.path as op
 from os import getcwd
 from datetime import date, datetime
 from zipfile import ZipFile
+from io import BytesIO
 
 from flask import current_app, url_for
 
 from es.es_update import update_document
-
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
@@ -231,6 +231,6 @@ class GuardianObserver(XMLCorpus):
             pdf_data = zipped.read(zip_info)
         if pdf_data:
             pdf_info.update({'fileSize': zip_info.file_size})
-            return pdf_data, pdf_info
+            return BytesIO(pdf_data), pdf_info
         else:
             return None, None
