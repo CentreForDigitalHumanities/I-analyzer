@@ -509,7 +509,7 @@ class Times(XMLCorpus):
         image_urls = [url_for(
             'api.api_get_media', 
             corpus=self.es_index,
-            image_path=image_path,
+            image_path=field_values['image_path'],
             _external=True
         )]
         return image_urls
