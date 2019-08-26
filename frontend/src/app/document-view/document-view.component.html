@@ -25,16 +25,17 @@
 
     <div class="column is-7">
         <div class="box">
-        <p-tabView> 
+        <p-tabView [activeIndex]="index" (onChange)="tabChange($event)"> 
             <p-tabPanel header="" leftIcon="fa fa-book">
                 <ng-container *ngFor="let field of contentFields">
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
-                <ia-scan-pdf *ngIf="pdfData" [pdfData]="pdfData" [downloadPath]="downloadPath"></ia-scan-pdf>
-                <ia-image-view *ngIf="media" [images]="media"></ia-image-view>
-                <p *ngIf="!pdfData && !media">No scan available for this document.</p>
+                <ng-template pTemplate="content">
+                <ia-image-view *ngIf="media" [imagePaths]="media" [mediaType]="corpus.scan_image_type" [allowDownload]="allowDownload" [document]="document"></ia-image-view>
+                <p *ngIf="!media">No scan available for this document.</p>
+                </ng-template>
             </p-tabPanel>
         </p-tabView>
         </div>

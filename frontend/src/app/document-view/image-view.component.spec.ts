@@ -15,7 +15,8 @@ describe('ImageViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ImageViewComponent);
     component = fixture.componentInstance;
-    component.images = ['https://image1.jpg', 'https://image2.jpg'];
+    component.imagePaths = ['https://image1.jpg', 'https://image2.jpg'];
+    component.document = {id: '42', relevance: 42, fieldValues: {image_path: 'great/image/path'}}
     fixture.detectChanges();
   });
 

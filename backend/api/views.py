@@ -267,7 +267,7 @@ def api_download_task():
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])
 def api_csv(filename):
-    return send_from_directory( current_app.instance_path, '{}'.format(filename))
+    return send_from_directory(current_app.instance_path, '{}'.format(filename))
 
 
 @api.route('/login', methods=['POST'])
@@ -491,19 +491,36 @@ def api_abort_tasks():
         return jsonify({'success': True})
 
 
-@api.route('/get_image/<corpus_index>/<path:image_path>', methods=['GET'])
+@api.route('/get_media', methods=['GET'])
 @login_required
-def api_get_image(corpus_index, image_path):
+def api_get_media():
+    corpus_index = request.args['corpus']
+    image_path = request.args['image_path']
     backend_corpus = load_corpus(corpus_index)
-    if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+    if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        abort(403)
+    if len(list(request.args.keys()))>2:
+        # there are more arguments, currently used for pdf retrieval only
+        try:
+            out, info = backend_corpus.get_media(request.args)
+        except Exception as e:
+            current_app.logger.error(e)
+            abort(400)
+        header = json.dumps(info)
+        if not out:
+            abort(404)
+        response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True, mimetype=backend_corpus.scan_image_type))
+        response.headers['pdfinfo'] = header
+        return response
+    else:
         absolute_path = join(backend_corpus.data_directory, image_path)
         if not isfile(absolute_path):
             abort(404)
         else:
-            return send_file(absolute_path, backend_corpus.scan_image_type, as_attachment=True)
+            return send_file(absolute_path, mimetype=backend_corpus.scan_image_type, as_attachment=True)
 
 
-@api.route('/request_images', methods=['POST'])
+@api.route('/request_media', methods=['POST'])
 @login_required
 def api_request_images():
     if not request.json:
@@ -511,34 +528,14 @@ def api_request_images():
     corpus_index = request.json['corpus_index']
     backend_corpus = load_corpus(corpus_index)
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        abort(400)
+        abort(403)
     else:
-        data = backend_corpus.get_media(request.json['document'])
+        data = backend_corpus.request_media(request.json['document'])
+        current_app.logger.info(data)
         if len(data)==0:
             return jsonify({'success': False})
         output = {'success': True, 'media': data}
         return jsonify(output)
-
-
-@api.route('/request_pdf', methods=['POST'])
-@login_required
-def api_get_pdf():
-    if not request.json:
-        abort(400)
-
-    corpus_index = request.json['corpus_index']
-    backend_corpus = load_corpus(corpus_index)
-
-    if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        abort(400)
-    else:
-        out, pdf_info = backend_corpus.get_media(request.json['document'])
-        pdf_header = json.dumps(pdf_info)
-        if not out:
-            abort(404)
-        response = make_response(send_file(out, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
-        response.headers['pdfinfo'] = pdf_header
-    return response
 
 
 @api.route('/get_related_words', methods=['POST'])

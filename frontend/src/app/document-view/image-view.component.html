@@ -1,8 +1,11 @@
-<app-image-viewer 
-    [images]="images" 
+<app-image-viewer *ngIf="mediaType!='application/pdf'"
+    [images]="imagePaths" 
     [idContainer]="'idOnHTML'" 
     [loadOnInit]="true" 
     [rotate]="false" 
     [showPDFOnlyOption]="false" 
-    [fullscreen]="false">
+    [fullscreen]="false"
+    [download]="allowDownload"
+    primaryColor="#303F9F">
 </app-image-viewer>
+<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [allowDownload]="allowDownload" [downloadPath]="downloadPath"></ia-scan-pdf>

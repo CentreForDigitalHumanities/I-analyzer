@@ -54,6 +54,7 @@ import { RequestResetComponent } from './reset-password/request-reset.component'
 import { PaginationComponent } from './search/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
 
+
 const appRoutes: Routes = [
     {
         path: 'search/:corpus',

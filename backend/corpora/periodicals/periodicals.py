@@ -13,7 +13,7 @@ from pprint import pprint
 import openpyxl
 import base64
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus import extract
 from addcorpus import filters
@@ -62,7 +62,7 @@ class Periodicals(XMLCorpus):
             if date=='Date Unknown':
                 metadict['date'] = None
             else:
-                metadict['date'] = datetime.strptime(date, '%B %d, %Y')
+                metadict['date'] = datetime.strptime(date, '%B %d, %Y').strftime('%Y-%m-%d')
             # the star upacks the list as an argument list
             metadict['image_path'] = join(*row[2].split("\\")).strip()
             ext_filename = join(self.data_directory, join(*row[3].split("\\")), row[4])
@@ -72,18 +72,17 @@ class Periodicals(XMLCorpus):
             metadict['external_file'] = ext_filename
             filename = join(self.data_directory, join(*row[3].split("\\")), xmlfile)
             if not isfile(filename):
-                # print(str.format("File {} not found", filename))
+                print("File {} not found".format(filename))
                 continue
             yield filename, metadict
 
     fields = [
         Field(
             name='date',
-            display_name='Date',
-            description='Publication date.',
+            display_name='Formatted Date',
+            description='Publication date, formatted from the full date',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             term_frequency=True,
-            results_overview=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -91,10 +90,15 @@ class Periodicals(XMLCorpus):
                     'Accept only articles with publication date in this range.'
                 )
             ),
-            extractor=extract.Metadata('date', transform=lambda x: x.strftime(
-                                           '%Y-%m-%d')
-                                       ),
+            extractor=extract.Metadata('date'),
             csv_core=True
+        ),
+        Field(
+            name='date_pub',
+            display_name='Publication Date',
+            description='Publication date as full string, as found in source file',
+            results_overview=True,
+            extractor=extract.Metadata('date_full')
         ),
         Field(
             name='id',
@@ -224,7 +228,7 @@ class Periodicals(XMLCorpus):
         Field(
             name='category',
             display_name='Category',
-            description='Number of words in the article.',
+            description='Article category.',
             es_mapping={'type': 'keyword'},
             extractor=extract.XML(tag='ct',
                 external_file={
@@ -235,7 +239,11 @@ class Periodicals(XMLCorpus):
                     'tag': 'id',
                     'match': 'id'
                 }
-            )
+            ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles in these categories.',
+                options = ['default', 'options']
+            ),
         ),
         Field(
             name='page_no',
@@ -264,7 +272,7 @@ class Periodicals(XMLCorpus):
         ),
     ]
 
-    def get_media(self, document):
+    def request_media(self, document):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
         starting_page = field_vals['id'][:-4]
@@ -273,14 +281,13 @@ class Periodicals(XMLCorpus):
         image_list = []
         for page in range(page_count):
             page_no = str(start_index + page).zfill(4)
-            image_name = '{}-{}.jpg'.format(starting_page[:-5], page_no)
+            image_name = '{}-{}.JPG'.format(starting_page[:-5], page_no)
             if isfile(join(self.data_directory, image_directory, image_name)):
-                image_list.append('{}/api/get_image/{}/{}'.format(
-                    current_app.config['BASE_URL'],
-                    self.es_index,
-                    join(image_directory, image_name)
-                    )
-                )
+                image_list.append(url_for('api.api_get_media', 
+                    corpus=self.es_index,
+                    image_path=join(image_directory, image_name),
+                    _external=True
+                ))
             else:
                 continue
         return image_list

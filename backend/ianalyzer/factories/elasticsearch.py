@@ -12,4 +12,4 @@ def elasticsearch(corpus_name, cfg=config):
             'port': server_config['port']}
     if server_config['username']:
         node['http_auth'] = (server_config['username'], server_config['password'])
-    return Elasticsearch([node])
+    return Elasticsearch([node], timeout=30, max_retries=10, retry_on_timeout=True)
