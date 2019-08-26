@@ -123,19 +123,19 @@ class GuardianObserver(XMLCorpus):
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
-            extractor=extract.XML(tag='Title', toplevel=True)
+            extractor=extract.XML(tag='Title', toplevel=True, recursive=True)
         ),
         Field(
             name='place',
             display_name='Place',
             description='Place in which the article was published',
-            extractor=extract.XML(tag='Qualifier', toplevel=True)
+            extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
         ),
         Field(
             name='author',
             display_name='Author',
             description='Article author',
-            extractor=extract.XML(tag='PersonName', toplevel=True)
+            extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
         ),
         Field(
             name='category',
@@ -161,7 +161,7 @@ class GuardianObserver(XMLCorpus):
             description='Raw OCR\'ed text (content).',
             results_overview=True,
             search_field_core=True,
-            extractor=extract.XML(tag='FullText', toplevel=True)
+            extractor=extract.XML(tag='FullText', toplevel=True, flatten=True)
         )
     ]
 
