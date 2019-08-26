@@ -531,6 +531,7 @@ def api_request_images():
         abort(403)
     else:
         data = backend_corpus.request_media(request.json['document'])
+        current_app.logger.info(data)
         if len(data)==0:
             return jsonify({'success': False})
         output = {'success': True, 'media': data}
