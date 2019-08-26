@@ -506,10 +506,12 @@ class Times(XMLCorpus):
 
     def request_media(self, document):
         field_values = document['fieldValues']
-        image_urls = [url_for(
-            'api.api_get_media', 
-            corpus=self.es_index,
-            image_path=field_values['image_path'],
-            _external=True
-        )]
+        if 'image_path' in field_values:
+            image_urls = [url_for(
+                'api.api_get_media', 
+                corpus=self.es_index,
+                image_path=field_values['image_path'],
+                _external=True
+            )]
+        else: image_urls = []
         return image_urls

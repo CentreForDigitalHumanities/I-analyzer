@@ -44,9 +44,9 @@ export class DocumentViewComponent implements OnChanges {
     constructor(private apiService: ApiService) { }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.media = undefined;
         this.index = this.tabIndex;
         if (changes.corpus) {
+            this.media = undefined;
             this.allowDownload = this.corpus.allow_image_download;
             this.mediaType = this.corpus.scan_image_type;
         }
