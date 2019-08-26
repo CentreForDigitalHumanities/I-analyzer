@@ -178,29 +178,30 @@ class GuardianObserver(XMLCorpus):
             image_path = field_vals['image_path']
             filename = target_filename
         elif field_vals['date']<'1909-31-12':
-            path = op.join(self.data_directory, '1791-1909', 'PDF', field_vals['pub_id'])
+            path = op.join('1791-1909', 'PDF', field_vals['pub_id'])
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
             image_path = op.join(path, zipname)
             # pre-1910, the zip archives contain folders year -> month -> pdfs
             filename = op.join(zipname[:4], zipname[5:7], target_filename)
         else:
-            path = op.join(self.data_directory, '1910-2003', 'PDF')
+            path = op.join('1910-2003', 'PDF')
+            global_path = op.join(self.data_directory, path)
             zipname_pattern = "**/{}_*_{}.zip".format(
                 field_vals['date'][:4],
                 field_vals['pub_id']
             )
-            zipnames = Path(path).glob(zipname_pattern)
+            zipnames = Path(global_path).glob(zipname_pattern)
             for zipfile in zipnames:
                 pdfs = ZipFile(str(zipfile)).namelist()
                 correct_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
                 if correct_file:
+                    image_path = op.join(path, op.basename(zipfile))
                     update_body = {
                         "doc": {
-                            "image_path": str(zipfile)
+                            "image_path": image_path
                         }
                     }
                     update_document(self.es_index, self.es_doctype, document, update_body)
-                    image_path = op.join(path, str(zipfile))
                     filename = target_filename
                     break
         image_urls = [url_for(
