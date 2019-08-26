@@ -13,8 +13,6 @@ from os import getcwd
 from datetime import date, datetime
 from zipfile import ZipFile
 
-from io import BytesIO
-
 from flask import current_app, url_for
 
 from es.es_update import update_document
