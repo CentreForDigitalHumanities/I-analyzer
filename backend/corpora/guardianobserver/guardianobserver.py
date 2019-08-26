@@ -223,7 +223,7 @@ class GuardianObserver(XMLCorpus):
         pdf_info = {
             "pageNumbers": [1], #change from 0-indexed to real page
             "homePageIndex": 1, #change from 0-indexed to real page
-            "fileName": image_path
+            "fileName": filename
         }   
         pdf_data = None
         with ZipFile(op.join(self.data_directory, image_path), mode='r') as zipped: 

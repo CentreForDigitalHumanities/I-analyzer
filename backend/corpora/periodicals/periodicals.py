@@ -281,7 +281,7 @@ class Periodicals(XMLCorpus):
         image_list = []
         for page in range(page_count):
             page_no = str(start_index + page).zfill(4)
-            image_name = '{}-{}.jpg'.format(starting_page[:-5], page_no)
+            image_name = '{}-{}.JPG'.format(starting_page[:-5], page_no)
             if isfile(join(self.data_directory, image_directory, image_name)):
                 image_list.append(url_for('api.api_get_media', 
                     corpus=self.es_index,
