@@ -5,9 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { DocumentViewComponent } from './document-view.component';
 import { ImageViewComponent } from './image-view.component';
 import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
-import { HighlightService } from '../services/index';
+import { ApiService, HighlightService } from '../services/index';
+import { ApiServiceMock } from '../services/api.service.mock';
 
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { ImageViewerComponent } from 'ng2-image-viewer';
 import { TabViewModule } from 'primeng/tabview';
 import { HttpClientModule } from '@angular/common/http';
 import { ScanPdfComponent } from './scan-pdf.component';
@@ -19,9 +21,9 @@ describe('DocumentViewComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [HighlightPipe, DocumentViewComponent, ImageViewComponent, ScanPdfComponent, SearchRelevanceComponent, PdfViewerComponent],
+            declarations: [HighlightPipe, DocumentViewComponent, ImageViewComponent, ImageViewerComponent, PdfViewerComponent, ScanPdfComponent, SearchRelevanceComponent],
             imports: [FormsModule, TabViewModule, HttpClientModule, ConfirmDialogModule],
-            providers: [HighlightService]
+            providers: [{provide: ApiService, useValue: new ApiServiceMock()}, HighlightService]
         }).compileComponents();
     }));
 

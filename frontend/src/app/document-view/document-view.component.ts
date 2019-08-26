@@ -1,5 +1,7 @@
-import { Component, Input, OnChanges, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
+import { ApiService } from '../services';
 
 
 @Component({
@@ -29,28 +31,37 @@ export class DocumentViewComponent implements OnChanges {
     @Input()
     public corpus: Corpus;
 
+    @Input()
+    private tabIndex: number;
+
+    public index: number;
     public imgNotFound: boolean;
     public imgPath: string;
+    public media: string[];
+    public allowDownload: boolean;
+    public mediaType: string;
 
-    constructor(private el: ElementRef) { }
+    constructor(private apiService: ApiService) { }
 
-    ngOnChanges() {
-        if (this.corpus.scan_image_type=="png") {
-            if (this.document.fieldValues.image_path){
-                this.imgPath = "/api/get_scan_image/" + this.corpus.index + '/' + this.document.fieldValues.image_path;
-                this.imgNotFound = false;
-            }
-            else {
-                this.imgPath = undefined;
-                this.imgNotFound = true;
-            }
+    ngOnChanges(changes: SimpleChanges) {
+        this.index = this.tabIndex;
+        if (changes.corpus) {
+            this.media = undefined;
+            this.allowDownload = this.corpus.allow_image_download;
+            this.mediaType = this.corpus.scan_image_type;
+        }
+        if (changes.document &&  
+            changes.document.previousValue != changes.document.currentValue) {
+                this.apiService.requestMedia({corpus_index: this.corpus.name, document: this.document}).then( response => {
+                    if (response.success) {
+                        this.media = response.media;
+                    };
+                })
         }
     }
 
-    async getScroll() {
-        // need to know how far the dialog has been scrolled for zoom
-        // document view's parent has the relevant scrollTop value
-        return this.el.nativeElement.parentElement.scrollTop;
+    public tabChange(event) {
+        this.index = event.index;
     }
 
 }

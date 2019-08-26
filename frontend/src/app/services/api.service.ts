@@ -221,21 +221,29 @@ export class ApiService extends Resource {
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/source_pdf',
+        method: ResourceRequestMethod.Get,
+        path: '/get_media{!args}',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
         asResourceResponse: true
     })
-    public sourcePdf: IResourceMethodFull<
-        { corpus_index: string, document: FoundDocument },
+    public getMedia: IResourceMethodFull<
+        {args: string},
         any>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/request_media'
+    })
+    public requestMedia: ResourceMethod<
+        { corpus_index: string, document: FoundDocument },
+        { success: false } | { success: true, media: string[] }
+        >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download_pdf/{corpus_index}/{filepath}',
     })
     public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
-
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

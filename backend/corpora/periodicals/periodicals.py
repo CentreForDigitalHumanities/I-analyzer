@@ -11,8 +11,9 @@ from datetime import datetime, timedelta
 import re
 from pprint import pprint
 import openpyxl
+import base64
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus import extract
 from addcorpus import filters
@@ -32,6 +33,7 @@ class Periodicals(XMLCorpus):
     es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
     es_settings = None
     image = current_app.config['PERIODICALS_IMAGE']
+    scan_image_type = current_app.config['PERIODICALS_SCAN_IMAGE_TYPE']
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -40,6 +42,8 @@ class Periodicals(XMLCorpus):
     filename_pattern = re.compile('[a-zA-z]+_(\d+)_(\d+)')
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+
+    mimetype = 'image/jpeg'
 
     def sources(self, start=min_date, end=max_date):
         metafile = join(self.data_directory, "19thCenturyUKP_NewReaderships.xlsx")
@@ -264,5 +268,26 @@ class Periodicals(XMLCorpus):
             es_mapping={'type': 'keyword'},
             description='Path of scan.',
             extractor=extract.Metadata('image_path'),
+            hidden=True
         ),
     ]
+
+    def request_media(self, document):
+        field_vals = document['fieldValues']
+        image_directory = field_vals['image_path']
+        starting_page = field_vals['id'][:-4]
+        start_index = int(starting_page.split("-")[-1])
+        page_count = int(field_vals['page_count'])
+        image_list = []
+        for page in range(page_count):
+            page_no = str(start_index + page).zfill(4)
+            image_name = '{}-{}.JPG'.format(starting_page[:-5], page_no)
+            if isfile(join(self.data_directory, image_directory, image_name)):
+                image_list.append(url_for('api.api_get_media', 
+                    corpus=self.es_index,
+                    image_path=join(image_directory, image_name),
+                    _external=True
+                ))
+            else:
+                continue
+        return image_list

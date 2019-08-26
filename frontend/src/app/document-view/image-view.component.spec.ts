@@ -1,5 +1,8 @@
 import { ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+
+import { ImageViewerModule } from 'ng2-image-viewer';
 
 import { ImageViewComponent } from './image-view.component';
 import { DocumentViewComponent } from './document-view.component';
@@ -11,6 +14,7 @@ describe('ImageViewComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ ImageViewComponent ],
+      imports: [ FormsModule, ImageViewerModule ],
       providers: [ DocumentViewComponent, {provide: ElementRef, useClass: MockElementRef} ]
     })
     .compileComponents();
@@ -19,6 +23,8 @@ describe('ImageViewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ImageViewComponent);
     component = fixture.componentInstance;
+    component.imagePaths = ['https://image1.jpg', 'https://image2.jpg'];
+    component.document = {id: '42', relevance: 42, fieldValues: {image_path: 'great/image/path'}}
     fixture.detectChanges();
   });
 

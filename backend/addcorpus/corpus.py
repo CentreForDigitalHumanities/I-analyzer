@@ -149,7 +149,13 @@ class Corpus(object):
                 "match_all": {}
             }
         }
-
+    
+    def request_media(self):
+        '''
+        Get a list of urls from where media associated 
+        with a document can be fetched.
+        '''
+        return []
 
     def es_mapping(self):
         '''
@@ -315,8 +321,8 @@ class XMLCorpus(Corpus):
             external_soup = self.soup_from_xml(metadata['external_file'])
         else:
             regular_fields = self.fields
-            external_fields = None
             external_dict = {}
+            external_fields = None
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)
@@ -365,7 +371,7 @@ class XMLCorpus(Corpus):
                 )            
             else:
                 logger.warning(
-                    'Top-level tag not found in `{}`'.format(filename))
+                    'Top-level tag not found in `{}`'.format(bowl))
         return external_dict
 
     def soup_from_xml(self, filename):
