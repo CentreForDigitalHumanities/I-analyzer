@@ -228,7 +228,7 @@ class GuardianObserver(XMLCorpus):
             "fileName": image_path
         }   
         pdf_data = None
-        with ZipFile(image_path, mode='r') as zipped: 
+        with ZipFile(op.join(self.data_directory, image_path), mode='r') as zipped: 
             zip_info = zipped.getinfo(filename)
             pdf_data = zipped.read(zip_info)
         if pdf_data:
