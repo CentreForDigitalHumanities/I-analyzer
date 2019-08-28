@@ -3,12 +3,14 @@ import { FormsModule } from '@angular/forms';
 
 import { DialogModule } from 'primeng/primeng';
 
+import { commonTestBed } from '../common-test-bed';
+
 import * as corpus from '../../mock-data/corpus';
 import { CorpusField } from '../models/index';
 import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
+import { UserServiceMock } from '../../mock-data/user';
 
 import { HighlightPipe } from './highlight.pipe';
 import { PaginationComponent } from './pagination.component';
@@ -23,29 +25,7 @@ describe('Search Results Component', () => {
     let fixture: ComponentFixture<SearchResultsComponent>;
 
     beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [HighlightPipe, PaginationComponent, SearchRelevanceComponent, SearchResultsComponent],
-            imports: [DialogModule, FormsModule, HttpClientModule],
-            providers: [
-                {
-                    provide: ApiService, useValue: new ApiServiceMock({
-                        ['corpus']: corpus.MockCorpusResponse
-                    })
-                },
-                ApiRetryService,
-                {
-                    provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
-                },
-                DataService,
-                HighlightService,
-                LogService,
-                QueryService,
-                SearchService,
-                {
-                    provide: UserService, useValue: new UserServiceMock()
-                }]
-        })
-            .compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

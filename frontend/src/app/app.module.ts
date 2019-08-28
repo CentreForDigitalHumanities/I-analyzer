@@ -104,105 +104,107 @@ const appRoutes: Routes = [
         pathMatch: 'full'
     }
 ]
+
+export const declarations: any[] = [
+    AppComponent,
+    BalloonDirective,
+    DropdownComponent,
+    DialogComponent,
+    HomeComponent,
+    CorpusSelectionComponent,
+    HighlightPipe,
+    QueryTextPipe,
+    SearchComponent,
+    SearchFilterComponent,
+    SearchRelevanceComponent,
+    SearchResultsComponent,
+    SearchSortingComponent,
+    ManualComponent,
+    ManualNavigationComponent,
+    MenuComponent,
+    NotificationsComponent,
+    LoginComponent,
+    ScrollToDirective,
+    BarChartComponent,
+    VisualizationComponent,
+    WordcloudComponent,
+    TimelineComponent,
+    RelatedWordsComponent,
+    DocumentViewComponent,
+    SearchHistoryComponent,
+    FreqtableComponent,
+    SelectFieldComponent,
+    RegistrationComponent,
+    PrivacyComponent,
+    RelatedWordsComponent,
+    ScanPdfComponent,
+    QueryFiltersComponent,
+    DownloadComponent,
+    TermFrequencyComponent,
+    PaginationComponent,
+    ImageViewComponent,
+    ResetPasswordComponent,
+    RequestResetComponent
+];
+
+export const imports: any[] = [
+    BrowserAnimationsModule,
+    BrowserModule,
+    CalendarModule,
+    ChartModule,
+    CheckboxModule,
+    CommonModule,
+    ConfirmDialogModule,
+    DialogModule,
+    DropdownModule,
+    FormsModule,
+    HttpModule,
+    HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+        cookieName: 'csrf_token',
+        headerName: 'X-XSRF-Token'
+    }),
+    ImageViewerModule,
+    MenuModule,
+    MultiSelectModule,
+    NgxMdModule.forRoot(),
+    PdfViewerModule,
+    ResourceModule.forRoot({
+        handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
+    }),
+    RouterModule.forRoot(appRoutes),
+    SharedModule,
+    SliderModule,
+    TableModule,
+    TabViewModule,
+]
+
+export const providers: any[] = [
+    ApiService,
+    ApiRetryService,
+    CorpusService,
+    ConfigService,
+    DataService,
+    DialogService,
+    DownloadService,
+    ElasticSearchService,
+    HighlightService,
+    LogService,
+    NotificationService,
+    QueryService,
+    SearchService,
+    SessionService,
+    UserService,
+    CorpusGuard,
+    LoggedOnGuard,
+    TitleCasePipe,
+    CookieService
+];
+
 @NgModule({
-    declarations: [
-        AppComponent,
-        BalloonDirective,
-        DropdownComponent,
-        DialogComponent,
-        HomeComponent,
-        CorpusSelectionComponent,
-        HighlightPipe,
-        QueryTextPipe,
-        SearchComponent,
-        SearchFilterComponent,
-        SearchRelevanceComponent,
-        SearchResultsComponent,
-        SearchSortingComponent,
-        ManualComponent,
-        ManualNavigationComponent,
-        MenuComponent,
-        NotificationsComponent,
-        LoginComponent,
-        ScrollToDirective,
-        BarChartComponent,
-        VisualizationComponent,
-        WordcloudComponent,
-        TimelineComponent,
-        RelatedWordsComponent,
-        DocumentViewComponent,
-        SearchHistoryComponent,
-        FreqtableComponent,
-        SelectFieldComponent,
-        RegistrationComponent,
-        PrivacyComponent,
-        RelatedWordsComponent,
-        ScanPdfComponent,
-        QueryFiltersComponent,
-        DownloadComponent,
-        TermFrequencyComponent,
-        PaginationComponent,
-        ImageViewComponent,
-        ResetPasswordComponent,
-        RequestResetComponent
-    ],
-    imports: [
-        BrowserAnimationsModule,
-        BrowserModule,
-        CalendarModule,
-        CommonModule,
-        ConfirmDialogModule,
-        DropdownModule,
-        FormsModule,
-        HttpModule,
-        HttpClientModule,
-        HttpClientXsrfModule.withOptions({
-            cookieName: 'csrf_token',
-            headerName: 'X-XSRF-Token'
-        }),
-        ImageViewerModule,
-        RouterModule.forRoot(appRoutes),
-        NgxMdModule.forRoot(),
-        MultiSelectModule,
-        SliderModule,
-        MenuModule,
-        DialogModule,
-        ChartModule,
-        CheckboxModule,
-        SharedModule,
-        TableModule,
-        TabViewModule,
-        ResourceModule.forRoot({
-            handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
-        }),
-        PdfViewerModule,
-    ],
-    providers: [
-        ApiService,
-        ApiRetryService,
-        CorpusService,
-        ConfigService,
-        DataService,
-        DialogService,
-        DownloadService,
-        ElasticSearchService,
-        HighlightService,
-        LogService,
-        NotificationService,
-        QueryService,
-        SearchService,
-        SessionService,
-        UserService,
-        CorpusGuard,
-        LoggedOnGuard,
-        TitleCasePipe,
-        CookieService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: csrfProviderFactory,
-            deps: [Injector, ApiService, CookieService],
-            multi: true
-        }],
+    declarations,
+    imports,
+    providers,
     bootstrap: [AppComponent]
 })
 export class AppModule { }
@@ -210,16 +212,4 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
-}
-
-export function csrfProviderFactory(injector: Injector, provider: ApiService, cookieService: CookieService): Function {    
-    return () => {        
-        if (!cookieService.check('csrf_token')) { 
-            provider.ensureCsrf().then(result => {                 
-                if (!result || !result.success) {
-                    throw new Error("CSRF token could not be collected.");
-                }
-            })
-        }
-    }
 }

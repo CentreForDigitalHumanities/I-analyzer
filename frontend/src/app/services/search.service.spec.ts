@@ -2,10 +2,10 @@ import { TestBed, inject } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { ApiService } from './api.service';
-import { ApiServiceMock } from './api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { ApiRetryService } from './api-retry.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { ElasticSearchServiceMock } from './elastic-search.service.mock';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { SearchService } from './search.service';

@@ -3,10 +3,12 @@ import { FormsModule } from '@angular/forms';
 
 import { MultiSelectModule } from 'primeng/primeng';
 
+import { commonTestBed } from '../common-test-bed';
+
 import * as corpus from '../../mock-data/corpus';
 import { ApiService, DownloadService, ElasticSearchService, NotificationService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 
 import { DownloadComponent } from './download.component';
 import { SelectFieldComponent } from './select-field.component';
@@ -18,21 +20,7 @@ describe('DownloadComponent', () => {
   let fixture: ComponentFixture<DownloadComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-        declarations: [ BalloonDirective, DownloadComponent, SelectFieldComponent ],
-        imports: [ FormsModule, MultiSelectModule ],
-        providers: [
-            {
-                provide: ApiService, useValue: new ApiServiceMock()
-            },
-            DownloadService,
-            {
-                provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
-            },
-            NotificationService
-        ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

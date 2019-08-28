@@ -6,7 +6,7 @@ import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
 import { Corpus, CorpusField, MultipleChoiceFilterData, ResultOverview, SearchFilter, AggregateData, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
-import { CorpusService, DataService, SearchService, DialogService, UserService, NotificationService } from '../services/index';
+import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
     selector: 'ia-search',
@@ -173,9 +173,7 @@ export class SearchComponent implements OnInit {
             return {};
         })
     }
-
     
-
     /**
      * Event triggered from search-filter.component
      * @param filterData 
@@ -283,7 +281,7 @@ export class SearchComponent implements OnInit {
         this.tabIndex = event.index;
     }
 
-    private selectSearchFieldsEvent(selection: CorpusField[]) {
+    private selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
     }

@@ -1,4 +1,3 @@
-import { ApiService } from './api.service';
 import { Subject, Observable } from 'rxjs';
 import 'rxjs/add/operator/toPromise';
 
@@ -15,6 +14,10 @@ export class ApiServiceMock {
 
     public corpus() {
         return this.get('corpus');
+    }
+
+    public ensureCsrf(): Promise<any> {
+        return Promise.resolve({'success': true});
     }
 
     public search_history() {

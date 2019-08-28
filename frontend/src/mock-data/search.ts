@@ -1,4 +1,4 @@
-import { AggregateQueryFeedback, Corpus, QueryModel } from '../models/index';
+import { AggregateQueryFeedback, Corpus, QueryModel } from '../app/models/index';
 
 export class SearchServiceMock {
     public async aggregateSearch(corpus: Corpus, queryModel: QueryModel, aggregator: string): Promise<AggregateQueryFeedback> {

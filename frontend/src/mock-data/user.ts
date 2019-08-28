@@ -1,4 +1,4 @@
-import { User } from '../models/index';
+import { User } from '../app/models/index';
 
 export class UserServiceMock {
     public currentUser: User = new User(42, "mouse", { name: "superuser", description: "users who can access deep thought", 

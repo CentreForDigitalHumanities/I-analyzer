@@ -2,9 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService, ApiRetryService, DataService, ElasticSearchService, LogService, QueryService, SearchService, UserService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
+import { UserServiceMock } from '../../mock-data/user';
 import { TermFrequencyComponent } from './term-frequency.component';
 
 describe('TermFrequencyComponent', () => {

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { BehaviorSubject } from 'rxjs';
 
-import { DialogPageEvent } from './dialog.service';
+import { DialogPageEvent } from '../app/services/dialog.service';
 
 @Injectable()
 export class DialogServiceMock {

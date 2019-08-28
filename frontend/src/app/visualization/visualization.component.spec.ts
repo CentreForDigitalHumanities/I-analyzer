@@ -14,9 +14,9 @@ import { TimelineComponent } from './timeline.component';
 import { RelatedWordsComponent } from './related-words.component';
 import { VisualizationComponent } from './visualization.component';
 import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
+import { UserServiceMock } from '../../mock-data/user';
 import { TermFrequencyComponent } from './term-frequency.component';
 
 describe('VisualizationComponent', () => {

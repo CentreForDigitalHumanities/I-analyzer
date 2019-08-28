@@ -5,9 +5,9 @@ import { DropdownModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table'
 
 import { ApiService, ApiRetryService, CorpusService, LogService, QueryService, SearchService, UserService } from '../services/index';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { SearchServiceMock } from '../services/search.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { SearchServiceMock } from '../../mock-data/search';
+import { UserServiceMock } from '../../mock-data/user';
 import { SearchHistoryComponent, QueryTextPipe, QueryFiltersComponent } from './index';
 import { MockCorpusResponse } from '../../mock-data/corpus';
 
