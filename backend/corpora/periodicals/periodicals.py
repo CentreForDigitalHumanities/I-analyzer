@@ -91,7 +91,8 @@ class Periodicals(XMLCorpus):
                 )
             ),
             extractor=extract.Metadata('date'),
-            csv_core=True
+            csv_core=True,
+            visualization_type='timeline'
         ),
         Field(
             name='date_pub',
@@ -125,10 +126,11 @@ class Periodicals(XMLCorpus):
             description='Periodical name.',
             search_filter=filters.MultipleChoiceFilter(
                 description='Search only within these periodicals.',
-                options = ['default', 'options']
+                options = ['periodical']*90
             ),
             extractor=extract.Metadata('title'),
-            csv_core=True
+            csv_core=True,
+            visualization_type='term_frequency'
         ),
         Field(
             name='content',
@@ -138,7 +140,7 @@ class Periodicals(XMLCorpus):
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
-            visualization_type="word_cloud"
+            visualization_type="wordcloud"
         ),
         Field(
             name='ocr',
@@ -176,7 +178,8 @@ class Periodicals(XMLCorpus):
                     'tag': 'id',
                     'match': 'id'
                 }
-            )
+            ),
+            visualization_type='wordcloud'
         ),
         Field(
             name='start_column',
@@ -242,8 +245,9 @@ class Periodicals(XMLCorpus):
             ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options = ['default', 'options']
+                options = ['cat']*26
             ),
+            visualization_type='term_frequency'
         ),
         Field(
             name='page_no',
