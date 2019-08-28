@@ -150,7 +150,7 @@ class Corpus(object):
             }
         }
     
-    def request_media(self):
+    def request_media(self, document):
         '''
         Get a list of urls from where media associated 
         with a document can be fetched.

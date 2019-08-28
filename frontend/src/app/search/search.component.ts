@@ -169,7 +169,7 @@ export class SearchComponent implements OnInit {
         return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
-            console.trace(error);
+            console.trace(error, aggregator);
             return {};
         })
     }
