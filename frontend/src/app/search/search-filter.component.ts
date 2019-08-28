@@ -148,7 +148,7 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
             this.filter.currentData = this.filter.defaultData;
             this.data = this.getDisplayData(this.filter);
         }
-        else if (this.data.selected.length==0) {
+        else if (this.data.selected && this.data.selected.length==0) {
             this.useAsFilter = false;
         }
         else  {
