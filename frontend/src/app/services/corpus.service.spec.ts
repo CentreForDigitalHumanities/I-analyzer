@@ -101,7 +101,7 @@ describe('CorpusService', () => {
                         "description": "Search only within these banks.",
                         "fieldName": "bank",
                         "useAsFilter": false,
-                        "options_count": 3               
+                        "option_count": 3               
                     }
                 },
                 {
