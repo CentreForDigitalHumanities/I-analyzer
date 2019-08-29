@@ -97,7 +97,7 @@ export class CorpusService {
             case 'MultipleChoiceFilter':
                 defaultData = {
                     filterType: filter.name,
-                    optionsCount: filter.options_counnt,
+                    options: Array.from(Array(filter.option_count)),
                     selected: []
                 }
                 break;

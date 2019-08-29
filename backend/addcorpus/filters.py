@@ -47,8 +47,8 @@ class MultipleChoiceFilter(Filter):
     Filter for keyword values: produces a set of buttons.
     '''
     
-    def __init__(self, options_count, *nargs, **kwargs):
-        self.options_count = options_count
+    def __init__(self, option_count, *nargs, **kwargs):
+        self.option_count = option_count
         super().__init__(*nargs, **kwargs)
 
 

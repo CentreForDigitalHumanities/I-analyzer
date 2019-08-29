@@ -99,6 +99,7 @@ class DutchNewspapersPublic(XMLCorpus):
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
+    paper_count = len(papers)
 
     distribution = {
         'Landelijk': 'National',
@@ -219,7 +220,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                option_count=2
+                option_count=5,
             ),
         ),
         Field(
@@ -231,14 +232,7 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                option_count=[
-                    'Landelijk',
-                    'Nederlands-Indië / Indonesië',
-                    'Nederlandse Antillen',
-                    'Regionaal/lokaal',
-                    'Suriname',
-                    'Verenigde Staten',
-                    'onbekend']
+                option_count=7
             ),
         ),
         Field(

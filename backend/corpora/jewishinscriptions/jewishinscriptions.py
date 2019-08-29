@@ -18,7 +18,7 @@ class JewishInscriptions(XMLCorpus):
     title = "Jewish Funerary Inscriptions"
     description = "A collection of inscriptions on Jewish burial sites"
     min_date = datetime(year=769, month=1, day=1)
-    max_date = datetime(year=848, month=12, day=31)
+    max_date = datetime(year=849, month=12, day=31)
     data_directory = current_app.config['JEWISH_INSCRIPTIONS_DATA']
     es_index = current_app.config['JEWISH_INSCRIPTIONS_ES_INDEX']
     es_doctype = current_app.config['JEWISH_INSCRIPTIONS_ES_DOCTYPE']
@@ -80,7 +80,8 @@ class JewishInscriptions(XMLCorpus):
             csv_core=True,
             sortable=True,
             visualization_type='term_frequency',
-            visualization_sort='key'
+            visualization_sort='key',
+            results_overview=True
         ),
         Field(
             name='date_remarks',
@@ -204,8 +205,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'inscriptionType'],
                 toplevel=False,
             ),
-            csv_core=True,
-            results_overview=True
+            csv_core=True
         ),
         Field(
             name='iconography_type',
