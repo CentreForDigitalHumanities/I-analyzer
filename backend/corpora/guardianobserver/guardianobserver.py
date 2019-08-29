@@ -121,11 +121,12 @@ class GuardianObserver(XMLCorpus):
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
+            es_mapping={'type': 'keyword'},
             extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles from these source papers.',
-                option_count=10
-            ),
+            # search_filter=filters.MultipleChoiceFilter(
+            #     description='Accept only articles from these source papers.',
+            #     option_count=5
+            # ),
         ),
         Field(
             name='place',
@@ -147,7 +148,7 @@ class GuardianObserver(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                option_count=10
+                option_count=2
             ),
             extractor=extract.XML(tag='ObjectType', toplevel=True),
             csv_core=True
