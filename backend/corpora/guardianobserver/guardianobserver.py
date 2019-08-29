@@ -172,6 +172,7 @@ class GuardianObserver(XMLCorpus):
             re.sub('-', '', field_vals['date']),
             field_vals['id']             
         )
+        image_path = None
         if 'image_path' in field_vals.keys():
             # we stored which of the zip archives holds the target file
             # applicable for post-1910 data
@@ -204,6 +205,8 @@ class GuardianObserver(XMLCorpus):
                     update_document(self.es_index, self.es_doctype, document, update_body)
                     filename = target_filename
                     break
+        if not image_path:
+            return []
         image_urls = [url_for(
             'api.api_get_media', 
             corpus=self.es_index,
