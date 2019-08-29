@@ -4,7 +4,10 @@ from importlib import reload
 
 import pytest
 
-from ianalyzer import config_fallback as config, corpora
+from ianalyzer import config_fallback as config
+from addcorpus import load_corpus
+from ianalyzer.tests.conftest import app as test_app
+
 
 
 @pytest.fixture(scope="module")
@@ -18,15 +21,16 @@ def client():
 def configuration(monkeypatch):
     monkeypatch.setattr(config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/test.db')
     monkeypatch.setattr(config, 'TIMES_DATA', realpath(join(dirname(__file__))))
-    monkeypatch.setattr(config, 'CORPORA', {'times': abspath('ianalyzer/corpora/times.py')})
+    monkeypatch.setattr(config, 'CORPORA', {'times': abspath('corpora/times/times.py')})
 
 
-def test_times_source():
+def test_times_source(test_app):
     '''
     Verify that times source files are read correctly.
     '''
     # initialize the corpora module within the testing context
-    reload(corpora)
+    corpora = load_corpus.load_all_corpora()
+    print(corpora)
 
     print(dirname(__file__), corpora.corpus_obj.data_directory)
 

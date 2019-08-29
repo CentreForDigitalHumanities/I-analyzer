@@ -7,7 +7,6 @@ from flask import json
 
 from ianalyzer.factories.app import flask_app
 from ianalyzer.models import db as database, User, Role
-from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
 import ianalyzer.default_config as config
 
 TIMES_USER_PASSWORD = '12345'
@@ -20,7 +19,7 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'times': 'ianalyzer/corpora/times.py',
+        'times': '../corpora/times/times.py',
     }
     SERVERS = {
         'default': config.SERVERS['default']
@@ -28,31 +27,32 @@ class UnittestConfig:
     CORPUS_SERVER_NAMES = {
         'times': 'default',
     }
+    SAML_FOLDER = "saml"
 
 
 @pytest.fixture
 def app():
     """ Provide an instance of the application with Flask's test_client. """
     # The following line needs fixing. See #259 and #261.
-    app = flask_app(blueprint, admin_instance, login_manager, csrf, UnittestConfig)
+    app = flask_app(UnittestConfig)
     app.testing = True
     return app
 
 
-@pytest.fixture
-def db(app):
-    """
-        Enable the database, fully set up and in context.
+# @pytest.fixture
+# def db(app):
+#     """
+#         Enable the database, fully set up and in context.
 
-        Functions that use this fixture, inherit the application context in
-        which the contents of the database are available. DO NOT create your
-        own application context when using this fixture.
-    """
-    database.create_all(app=app)
-    with app.app_context():
-        database.session.begin(subtransactions=True)
-        yield database
-        database.session.rollback()
+#         Functions that use this fixture, inherit the application context in
+#         which the contents of the database are available. DO NOT create your
+#         own application context when using this fixture.
+#     """
+#     database.create_all(app=app)
+#     with app.app_context():
+#         database.session.begin(subtransactions=True)
+#         yield database
+#         database.session.rollback()
 
 
 @pytest.fixture
