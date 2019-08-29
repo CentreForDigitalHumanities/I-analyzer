@@ -136,7 +136,7 @@ class DutchAnnualReports(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(dutchannualreports_map.values()),
+                option_count=len(dutchannualreports_map.values()),
             ),
             extractor=Metadata(
                 key='company',
@@ -153,10 +153,7 @@ class DutchAnnualReports(XMLCorpus):
                 description=(
                     'Accept only financial / non-financial companies'
                 ),
-                options=[
-                    'Financial',
-                    'Non-Financial'
-                ]
+                option_count = 2,
             ),
             extractor=Metadata(key='company_type')
         ),

@@ -126,7 +126,7 @@ class Periodicals(XMLCorpus):
             description='Periodical name.',
             search_filter=filters.MultipleChoiceFilter(
                 description='Search only within these periodicals.',
-                options = ['periodical']*90
+                option_count=90
             ),
             extractor=extract.Metadata('title'),
             csv_core=True,
@@ -245,7 +245,7 @@ class Periodicals(XMLCorpus):
             ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options = ['cat']*26
+                option_count=26
             ),
             visualization_type='term_frequency'
         ),

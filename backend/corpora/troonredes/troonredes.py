@@ -107,7 +107,7 @@ class Troonredes(XMLCorpus):
                     'Accept only speeches given by '
                     'the relevant monarch.'
                 ),
-                options=MONARCHS
+                option_count=len(MONARCHS)
             ),
         ),
         Field(
@@ -124,7 +124,7 @@ class Troonredes(XMLCorpus):
                     'Accept only speeches of '
                     'the relevant type.'
                 ),
-                options=SPEECH_TYPES
+                option_count=len(SPEECH_TYPES)
             ),
         ),
         Field(

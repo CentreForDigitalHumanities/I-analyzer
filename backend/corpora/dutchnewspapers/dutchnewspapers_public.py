@@ -179,7 +179,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
-                options=self.papers
+                option_count=len(self.papers)
             ),
             extractor=Metadata('title')
         ),
@@ -219,7 +219,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=['advertentie', 'artikel']
+                option_count=2
             ),
         ),
         Field(
@@ -231,7 +231,7 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                options=[
+                option_count=[
                     'Landelijk',
                     'Nederlands-Indië / Indonesië',
                     'Nederlandse Antillen',
@@ -293,7 +293,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers which appeared as a given edition.',
-                options=['Dag', 'Avond', 'Ochtend'],
+                option_count=3,
             ),
             extractor=Metadata('temporal')
         ),
