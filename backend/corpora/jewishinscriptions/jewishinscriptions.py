@@ -255,7 +255,7 @@ class JewishInscriptions(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these languages.',
-                option_count = 5
+                option_count = 3
             ),
             extractor=XML(
                 tag=['text', 'body', 'language'],

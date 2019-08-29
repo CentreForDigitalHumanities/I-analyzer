@@ -220,7 +220,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                option_count=5,
+                option_count=2,
             ),
         ),
         Field(
