@@ -47,8 +47,10 @@ class MultipleChoiceFilter(Filter):
     Filter for keyword values: produces a set of buttons.
     '''
     
-    def __init__(self, option_count, *nargs, **kwargs):
+    def __init__(self, option_count=10, *nargs, **kwargs):
         self.option_count = option_count
+        # option_count defines how many buckets are retrieved
+        # for filters and visualizations on front end
         super().__init__(*nargs, **kwargs)
 
 
