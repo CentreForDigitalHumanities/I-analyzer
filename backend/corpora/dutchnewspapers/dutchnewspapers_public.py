@@ -99,6 +99,7 @@ class DutchNewspapersPublic(XMLCorpus):
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
+    paper_count = len(papers)
 
     distribution = {
         'Landelijk': 'National',
@@ -179,7 +180,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
-                options=self.papers
+                option_count=len(self.papers)
             ),
             extractor=Metadata('title')
         ),
@@ -219,7 +220,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=['advertentie', 'artikel']
+                option_count=2,
             ),
         ),
         Field(
@@ -231,14 +232,7 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                options=[
-                    'Landelijk',
-                    'Nederlands-Indië / Indonesië',
-                    'Nederlandse Antillen',
-                    'Regionaal/lokaal',
-                    'Suriname',
-                    'Verenigde Staten',
-                    'onbekend']
+                option_count=7
             ),
         ),
         Field(
@@ -293,7 +287,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers which appeared as a given edition.',
-                options=['Dag', 'Avond', 'Ochtend'],
+                option_count=3,
             ),
             extractor=Metadata('temporal')
         ),

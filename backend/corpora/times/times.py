@@ -254,10 +254,7 @@ class Times(XMLCorpus):
                     'Accept only articles that occur in the relevant '
                     'supplement. Only after 1985.'
                 ),
-                options=[
-                    'Supplement',
-                    'Standard'
-                ]
+                option_count=2
             ),
             extractor=extract.XML(
                 tag=['..', 'pageid'], attribute='isPartOf',
@@ -406,33 +403,7 @@ class Times(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=[
-                    'Classified Advertising',
-                    'Display Advertising',
-                    'Property',
-                    'News',
-                    'News in Brief',
-                    'Index',
-                    'Law',
-                    'Politics and Parliament',
-                    'Court and Social',
-                    'Business and Finance',
-                    'Shipping News',
-                    'Stock Exchange Tables',
-                    'Births',
-                    'Business Appointments',
-                    'Deaths',
-                    'Marriages',
-                    'Obituaries',
-                    'Official Appointments and Notices',
-                    'Editorials/Leaders',
-                    'Feature Articles (aka Opinion)',
-                    'Letters to the Editor',
-                    'Arts and Entertainment',
-                    'Reviews',
-                    'Sport',
-                    'Weather'
-                ]
+                option_count=25
             ),
             extractor=extract.XML(tag='ct', multiple=True),
             csv_core=True
@@ -449,15 +420,7 @@ class Times(XMLCorpus):
                 description=(
                     'Accept only articles associated with these types '
                     'of illustrations.'),
-                options=[
-                    'Cartoon',
-                    'Cartoons',
-                    'Map',
-                    'Drawing-Painting',
-                    'Photograph',
-                    'Graph',
-                    'Table',
-                ]
+                option_count=7
             ),
             extractor=extract.Choice(
                 extract.XML(

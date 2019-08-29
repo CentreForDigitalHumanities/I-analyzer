@@ -121,7 +121,12 @@ class GuardianObserver(XMLCorpus):
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
-            extractor=extract.XML(tag='Title', toplevel=True, recursive=True)
+            extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
+            # need to reindex with es_mapping={'type': 'keyword'} first, otherwise cannot filter
+            # search_filter=filters.MultipleChoiceFilter(
+            #     description='Accept only articles from these source papers.',
+            #     option_count=5
+            # ),
         ),
         Field(
             name='place',
@@ -143,10 +148,7 @@ class GuardianObserver(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=[
-                    'default',
-                    'options'
-                ]
+                option_count=20 # to do: adjust after indexing
             ),
             extractor=extract.XML(tag='ObjectType', toplevel=True),
             csv_core=True
@@ -170,6 +172,7 @@ class GuardianObserver(XMLCorpus):
             re.sub('-', '', field_vals['date']),
             field_vals['id']             
         )
+        image_path = None
         if 'image_path' in field_vals.keys():
             # we stored which of the zip archives holds the target file
             # applicable for post-1910 data
@@ -202,6 +205,8 @@ class GuardianObserver(XMLCorpus):
                     update_document(self.es_index, self.es_doctype, document, update_body)
                     filename = target_filename
                     break
+        if not image_path:
+            return []
         image_urls = [url_for(
             'api.api_get_media', 
             corpus=self.es_index,
