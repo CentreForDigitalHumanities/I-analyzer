@@ -9,21 +9,6 @@ from ianalyzer.tests.conftest import test_app
 from addcorpus import load_corpus
 
 
-
-@pytest.fixture(scope="module")
-def client():
-    from .. import factories
-    return factories.elasticsearch("times")
-
-
-
-# @pytest.fixture(autouse=True)
-# def configuration(monkeypatch):
-#     monkeypatch.setattr(config, 'SQLALCHEMY_DATABASE_URI', 'sqlite:////tmp/test.db')
-#     monkeypatch.setattr(config, 'TIMES_DATA', realpath(join(dirname(__file__))))
-#     monkeypatch.setattr(config, 'CORPORA', {'times': abspath('corpora/times/times.py')})
-
-
 def test_times_source(test_app):
     '''
     Verify that times source files are read correctly.
