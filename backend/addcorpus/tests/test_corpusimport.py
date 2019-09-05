@@ -10,7 +10,7 @@ from addcorpus import load_corpus
 from ianalyzer.tests.conftest import admin_role, db, session, test_app
 
 
-def test_key_error(session, monkeypatch,capsys):
+def test_key_error(session, monkeypatch):
     ''' Verify that exception is correctly raised
     - in case the config.CORPORA variable is empty
     '''
@@ -20,7 +20,7 @@ def test_key_error(session, monkeypatch,capsys):
         current_app.config['CORPUS_DEFINITIONS']['times']
 
 
-def test_import_error(test_app, monkeypatch,capsys):
+def test_import_error(test_app, monkeypatch):
     ''' Verify that exceptions is correctly raised
     - in case the file path in config.CORPORA is faulty
     '''
