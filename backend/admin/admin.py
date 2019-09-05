@@ -1,3 +1,5 @@
+import warnings
+
 import flask_admin as admin
 from flask_admin.base import MenuLink
 
@@ -9,8 +11,10 @@ admin_instance = admin.Admin(
 
 admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
 
-admin_instance.add_view(views.UserView(
-    models.User, models.db.session, name='Users', endpoint='users'))
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    admin_instance.add_view(views.UserView(
+        models.User, models.db.session, name='Users', endpoint='users'))
 
 admin_instance.add_view(views.RoleView(
     models.Role, models.db.session, name='Roles', endpoint='roles'))

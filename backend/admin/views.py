@@ -11,7 +11,7 @@ from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 from wtforms import ValidationError, TextField
-from wtforms.validators import Required, AnyOf
+from wtforms.validators import InputRequired, AnyOf
 
 from ianalyzer import models
 from api import security
@@ -77,9 +77,9 @@ class UserView(ModelView):
     )
 
     form_args = dict(
-        username=dict(validators=[Required()]),
-        password=dict(validators=[Required()]),
-        email=dict(validators=[Required()])
+        username=dict(validators=[InputRequired()]),
+        password=dict(validators=[InputRequired()]),
+        email=dict(validators=[InputRequired()])
     )
 
     form_widget_args = dict(

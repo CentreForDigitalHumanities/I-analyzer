@@ -29,7 +29,7 @@ def load_corpus(corpus_name):
             'No module describing the corpus "{0}" found in the specified file path:\
             {1}'.format(corpus_name, filepath)
         )
-        return None
+        raise
 
     corpus_spec.loader.exec_module(corpus_mod)
     # assume the class name of the endpoint is the same as the corpus name,
