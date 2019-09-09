@@ -41,17 +41,17 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
-import { SelectFieldComponent } from './search/select-field.component';
+import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { DownloadComponent } from './search/download.component';
+import { DownloadComponent } from './download/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
-import { PaginationComponent } from './search/pagination.component';
+import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
 
 

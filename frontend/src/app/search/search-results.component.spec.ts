@@ -1,23 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-
-import { DialogModule } from 'primeng/primeng';
-
 import { commonTestBed } from '../common-test-bed';
 
-import * as corpus from '../../mock-data/corpus';
 import { CorpusField } from '../models/index';
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
-import { ApiServiceMock } from '../../mock-data/api';
-import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
-import { UserServiceMock } from '../../mock-data/user';
 
-import { HighlightPipe } from './highlight.pipe';
-import { PaginationComponent } from './pagination.component';
-import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
-import { HttpClientModule } from '@angular/common/http';
-import { componentRefresh } from '@angular/core/src/render3/instructions';
 
 
 describe('Search Results Component', () => {
