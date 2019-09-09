@@ -4,7 +4,6 @@ from importlib import reload
 
 import pytest
 
-from ianalyzer import config_fallback as config
 from ianalyzer.tests.conftest import test_app
 from addcorpus import load_corpus
 

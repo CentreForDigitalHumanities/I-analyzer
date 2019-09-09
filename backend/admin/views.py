@@ -68,6 +68,8 @@ class UserView(ModelView):
     # specifies the fields and their order in create and edit views
     form_create_rules = (
         'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
+    # don't include password in the edit view (so we can adjust download limit while leaving the password alone)
+    # this causes a warning, overridden in view registration on admin.py
     form_edit_rules = (
         'username', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
 

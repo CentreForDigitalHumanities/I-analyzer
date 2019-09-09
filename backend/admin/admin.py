@@ -11,6 +11,8 @@ admin_instance = admin.Admin(
 
 admin_instance.add_link(MenuLink(name='Frontend', category='', url="/home"))
 
+# this wrapper makes sure we don't get the warning caused by removing the password field
+# from the 'edit user' view
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
     admin_instance.add_view(views.UserView(

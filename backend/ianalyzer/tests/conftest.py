@@ -97,9 +97,9 @@ def session(db, request):
     yield session
 
     # performed after running tests
+    session.remove()
     transaction.rollback()
     connection.close()
-    session.remove()
 
 
 @pytest.fixture
