@@ -269,11 +269,12 @@ class JewishInscriptions(XMLCorpus):
             display_name='Surviving lines',
             description='The amount of lines of text on the incipit that is readable.',
             es_mapping={'type': 'integer'},
-            search_filter=RangeFilter(
-                description='Restrict the amount of lines from which search results will be returned.',
-                lower=0,
-                upper=100,
-            ),
+            # commenting filter out for now, may be uncommented in case we have more documents
+            # search_filter=RangeFilter(
+            #     description='Restrict the amount of lines from which search results will be returned.',
+            #     lower=0,
+            #     upper=100,
+            # ),
             extractor=XML(
                 tag=['text', 'body', 'numberOfLinesSurviving'],
                 toplevel=False,
