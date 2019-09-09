@@ -4,11 +4,12 @@ import responses
 from werkzeug.security import generate_password_hash
 
 from flask import json
+from flask.testing import FlaskClient
+from flask_login import login_user
 
 from ianalyzer.factories.app import flask_app
-from ianalyzer.models import db as database, User, Role
-from ianalyzer.web import blueprint, admin_instance, login_manager, csrf
-import ianalyzer.default_config as config
+from ianalyzer.models import db as _db, Corpus, User, Role
+import ianalyzer.config_fallback as config
 
 TIMES_USER_PASSWORD = '12345'
 
@@ -20,7 +21,7 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'times': 'ianalyzer/corpora/times.py',
+        'times': 'corpora/times/times.py'
     }
     SERVERS = {
         'default': config.SERVERS['default']
@@ -28,52 +29,101 @@ class UnittestConfig:
     CORPUS_SERVER_NAMES = {
         'times': 'default',
     }
+    CORPUS_DEFINITIONS = {}
+    TIMES_DATA = 'addcorpus/tests'
+    TIMES_ES_INDEX = 'times'
+    TIMES_ES_DOCTYPE = 'article'
+    TIMES_IMAGE = 'times.jpg'
+    TIMES_SCAN_IMAGE_TYPE = 'image/png'
+    TIMES_DESCRIPTION_PAGE = 'times.md'
+
+    SAML_FOLDER = "saml"
+    SAML_SOLISID_KEY = "uuShortID"
+    SAML_MAIL_KEY = "mail"  
 
 
-@pytest.fixture
-def app():
+@pytest.fixture(scope='session')
+def test_app(request):
     """ Provide an instance of the application with Flask's test_client. """
-    # The following line needs fixing. See #259 and #261.
-    app = flask_app(blueprint, admin_instance, login_manager, csrf, UnittestConfig)
+    app = flask_app(UnittestConfig)
     app.testing = True
-    return app
+    ctx = app.app_context()
+    ctx.push()
+    yield app
+    
+    # performed after running tests
+    ctx.pop()
+
+
+class CustomTestClient(FlaskClient):
+    def times_login(self):
+        return self.login('times', TIMES_USER_PASSWORD)
+
+    def login(self, user_name, password):
+        return self.post('/api/login', data=json.dumps({
+            'username': user_name,
+            'password': password,
+        }), content_type='application/json')
+
+
+@pytest.fixture()
+def client(test_app):
+    test_app.test_client_class = CustomTestClient
+    with test_app.test_client() as client:
+        yield client
+
+
+@pytest.fixture(scope='session')
+def db(test_app):
+    """Session-wide test database."""
+    _db.app = test_app
+    _db.create_all()
+    yield _db
+
+    # performed after running tests
+    _db.drop_all()
+
+
+@pytest.fixture(scope='function')
+def session(db, request):
+    """Creates a new database session for a test."""
+    connection = db.engine.connect()
+    transaction = connection.begin()
+
+    options = dict(bind=connection, binds={})
+    session = db.create_scoped_session(options=options)
+
+    db.session = session
+    yield session
+
+    # performed after running tests
+    session.remove()
+    transaction.rollback()
+    connection.close()
 
 
 @pytest.fixture
-def db(app):
-    """
-        Enable the database, fully set up and in context.
-
-        Functions that use this fixture, inherit the application context in
-        which the contents of the database are available. DO NOT create your
-        own application context when using this fixture.
-    """
-    database.create_all(app=app)
-    with app.app_context():
-        database.session.begin(subtransactions=True)
-        yield database
-        database.session.rollback()
-
-
-@pytest.fixture
-def times_user(db):
+def times_user(session):
     """ Ensure a user exists who has access to the Times corpus. """
     user = User('times', generate_password_hash(TIMES_USER_PASSWORD))
-    role = Role(name='times')
-    user.roles.append(role)
-    db.session.add(user)
-    db.session.add(role)
-    db.session.commit()
+    role = Role(name='times_access')
+    corpus = Corpus(name='times')
+    role.corpora.append(corpus)
+    user.role = role
+    session.add(user)
+    session.add(corpus)
+    session.add(role)
+    session.commit()
     return user
 
 
 @pytest.fixture
-def login(app, times_user):
-    """ Returns the response to a successful login, including the cookie. """
-    return app.test_client().post('/api/login', data=json.dumps({
-        'username': 'times',
-        'password': TIMES_USER_PASSWORD,
-    }), content_type='application/json')
+def admin_role(session):
+    """ Ensure that there is an admin role present (needed for load_corpus methods) """
+    role = Role(name='admin')
+    session.add(role)
+    session.commit()
+    return role
 
 
 @pytest.fixture

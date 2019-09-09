@@ -43,7 +43,6 @@ def require_access(corpus_name):
 
 
 def proxy_es(address):
-
     """ Forward the current request to ES, forward the response to wsgi. """
     kwargs = {}
     if request.mimetype.count('json'):
