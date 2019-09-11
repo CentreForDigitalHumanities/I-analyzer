@@ -5,7 +5,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, MultipleChoiceFilterData, ResultOverview, SearchFilter, AggregateData, QueryModel, FoundDocument, User, searchFilterDataToParam, searchFilterDataFromParam, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
 import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
@@ -140,50 +140,6 @@ export class SearchComponent implements OnInit {
         }
     }
 
-    private aggregateSearchForMultipleChoiceFilters() {
-        let multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType==="MultipleChoiceFilter");
-        let aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
-        Promise.all(aggregateResultPromises).then(results => {
-            results.forEach(result => {
-                let filter = multipleChoiceFilters.find(f => f.fieldName===Object.keys(result)[0])
-                let currentData = filter.currentData as MultipleChoiceFilterData;
-                currentData.optionsAndCounts = result[filter.fieldName];
-            })
-            this.dataService.pushNewFilterData(this.searchFilters);
-        });
-    }
-
-    async getMultipleChoiceFilterOptions(filter: SearchFilter): Promise<AggregateData> {
-        let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter===true));
-        // get the filter's choices, based on all other filters' choices, but not this filter's choices
-        if (filters.length>0) {
-            let index = filters.findIndex(f => f.fieldName == filter.fieldName);
-            if (index >= 0) {
-                filters.splice(index, 1);
-            }
-        }
-        else filters = null;
-        let queryModel = this.searchService.createQueryModel(this.queryText, this.getQueryFields(), filters);
-        let defaultData = filter.defaultData as MultipleChoiceFilterData;
-        let aggregator = {name: filter.fieldName, size: defaultData.options.length}
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
-            return results.aggregations;
-        }, error => {
-            console.trace(error, aggregator);
-            return {};
-        })
-    }
-    
-    /**
-     * Event triggered from search-filter.component
-     * @param filterData 
-     */
-    public updateFilterData(filter: SearchFilter) {
-        let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
-        this.searchFilters[index] = filter;
-        this.search();
-    }
-
     /**
      * Event triggered from search-results.component
      * @param input
@@ -231,29 +187,7 @@ export class SearchComponent implements OnInit {
             this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
             this.selectedSearchFields = [];
             this.queryModel = null;
-            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
         }
-    }
-
-    /**
-     * Set the filter data from the query parameters and return whether any filters were actually set.
-     */
-    setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
-        searchFilters.forEach( f => {
-            let param = this.searchService.getParamForFieldName(f.fieldName);
-            if (params.has(param)) {
-                if (this.showFilters == undefined) {
-                    this.showFilters = true;
-                }
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] == "") filterSettings = [];
-                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
-                f.useAsFilter = true;
-            }
-            else {
-                f.useAsFilter = false;
-            }
-        })
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {

@@ -53,6 +53,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
+import { FilterManagerComponent } from './filter/filter-manager.component';
 
 
 const appRoutes: Routes = [
@@ -205,7 +206,8 @@ export const providers: any[] = [
     declarations,
     imports,
     providers,
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    declarations: [FilterManagerComponent]
 })
 export class AppModule { }
 

@@ -34,35 +34,3 @@ export type DateFilterData = {
 };
 
 export type SearchFilterType = SearchFilterData["filterType"];
-
-export function searchFilterDataToParam(filter: SearchFilter): string | string[] {
-    switch (filter.currentData.filterType) {
-        case "BooleanFilter":
-            return `${filter.currentData}`;
-        case "MultipleChoiceFilter":
-            return filter.currentData.selected as string[];
-        case "RangeFilter": {
-            return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
-        case "DateFilter": {
-            return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
-    }
-}
-
-export function searchFilterDataFromParam(fieldName: string, filterType: SearchFilterType, value: string[]): SearchFilterData {
-    switch (filterType) {
-        case "BooleanFilter":
-            return { filterType, checked: value[0] === 'true' };
-        case "MultipleChoiceFilter":
-            return { filterType, options: [], selected: value };
-        case "RangeFilter": {
-            let [min, max] = value[0].split(':');
-            return { filterType, min: parseFloat(min), max: parseFloat(max) };
-        }
-        case "DateFilter": {
-            let [min, max] = value[0].split(':');
-            return { filterType, min: min, max: max };
-        }
-    }
-}
