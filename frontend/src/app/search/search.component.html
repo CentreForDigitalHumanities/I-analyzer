@@ -64,7 +64,7 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <ia-filter-manager [corpusFields]="corpus.fields" *ngIf="corpus"></ia-filter-manager>
+                <ia-filter-manager *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel" (filtersChanged)="setActiveFilters($event)"></ia-filter-manager>
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">

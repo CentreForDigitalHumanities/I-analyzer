@@ -113,6 +113,7 @@ export const declarations: any[] = [
     DialogComponent,
     HomeComponent,
     CorpusSelectionComponent,
+    FilterManagerComponent,
     HighlightPipe,
     QueryTextPipe,
     SearchComponent,
@@ -207,7 +208,6 @@ export const providers: any[] = [
     imports,
     providers,
     bootstrap: [AppComponent],
-    declarations: [FilterManagerComponent]
 })
 export class AppModule { }
 

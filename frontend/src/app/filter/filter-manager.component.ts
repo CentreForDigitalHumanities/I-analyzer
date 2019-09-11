@@ -1,23 +1,36 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+
+import * as _ from "lodash";
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter } from '../models/index';
+import { DataService, SearchService } from '../services';
 
 @Component({
     selector: 'ia-filter-manager',
     templateUrl: './filter-manager.component.html',
     styleUrls: ['./filter-manager.component.scss']
 })
-export class FilterManagerComponent implements OnInit {
+export class FilterManagerComponent implements OnInit, OnChanges {
     @Input() private corpus: Corpus;
     @Input() private queryModel: QueryModel;
 
+    @Output('filtersChanged')
+    public filtersChangedEmitter = new EventEmitter<SearchFilter []>()
+
     public searchFilters: SearchFilter [] = [];
+    public activeFilters: SearchFilter [] = [];
+    
     public showFilters: boolean;
 
-    constructor() { }
+    constructor(private dataService: DataService, private searchService: SearchService) {
+     }
 
     ngOnInit() {
+    }
+
+    ngOnChanges() {
         this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+        this.aggregateSearchForMultipleChoiceFilters();
     }
 
     private aggregateSearchForMultipleChoiceFilters() {
@@ -43,35 +56,13 @@ export class FilterManagerComponent implements OnInit {
             }
         }
         else filters = null;
-        let queryModel = this.searchService.createQueryModel(this.queryText, this.getQueryFields(), filters);
         let defaultData = filter.defaultData as MultipleChoiceFilterData;
         let aggregator = {name: filter.fieldName, size: defaultData.options.length}
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
+        return this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
             console.trace(error, aggregator);
             return {};
-        })
-    }
-
-    /**
-     * Set the filter data from the query parameters and return whether any filters were actually set.
-     */
-    setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
-        searchFilters.forEach( f => {
-            let param = this.searchService.getParamForFieldName(f.fieldName);
-            if (params.has(param)) {
-                if (this.showFilters == undefined) {
-                    this.showFilters = true;
-                }
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] == "") filterSettings = [];
-                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
-                f.useAsFilter = true;
-            }
-            else {
-                f.useAsFilter = false;
-            }
         })
     }
 
@@ -82,39 +73,23 @@ export class FilterManagerComponent implements OnInit {
     public updateFilterData(filter: SearchFilter) {
         let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
         this.searchFilters[index] = filter;
-        this.search();
+        this.filtersChanged();
     }
 
-    export function searchFilterDataToParam(filter: SearchFilter): string | string[] {
-        switch (filter.currentData.filterType) {
-            case "BooleanFilter":
-                return `${filter.currentData}`;
-            case "MultipleChoiceFilter":
-                return filter.currentData.selected as string[];
-            case "RangeFilter": {
-                return `${filter.currentData.min}:${filter.currentData.max}`;
-            }
-            case "DateFilter": {
-                return `${filter.currentData.min}:${filter.currentData.max}`;
-            }
-        }
+    public toggleActiveFilters() {
+        this.searchFilters.forEach(filter => filter.useAsFilter=false);
+        this.dataService.pushNewFilterData(this.searchFilters);
+        this.filtersChanged();
     }
-    
-    export function searchFilterDataFromParam(fieldName: string, filterType: SearchFilterType, value: string[]): SearchFilterData {
-        switch (filterType) {
-            case "BooleanFilter":
-                return { filterType, checked: value[0] === 'true' };
-            case "MultipleChoiceFilter":
-                return { filterType, options: [], selected: value };
-            case "RangeFilter": {
-                let [min, max] = value[0].split(':');
-                return { filterType, min: parseFloat(min), max: parseFloat(max) };
-            }
-            case "DateFilter": {
-                let [min, max] = value[0].split(':');
-                return { filterType, min: min, max: max };
-            }
-        }
+
+    public resetAllFilters() {
+        this.searchFilters.forEach(filter => filter.currentData = filter.defaultData);
+        this.toggleActiveFilters();
+    }
+
+    public filtersChanged() {
+        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
+        this.filtersChangedEmitter.emit(this.activeFilters);
     }
 
 }

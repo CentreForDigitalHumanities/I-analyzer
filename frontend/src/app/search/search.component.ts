@@ -5,7 +5,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
 import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
@@ -97,7 +97,6 @@ export class SearchComponent implements OnInit {
                 this.setSortFromParams(this.corpus.fields, params);
                 let queryModel = this.createQueryModel();
                 if (this.queryModel !== queryModel) {
-                    this.aggregateSearchForMultipleChoiceFilters();
                     this.queryModel = queryModel;
                 }
             });
@@ -107,17 +106,6 @@ export class SearchComponent implements OnInit {
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
-    }
-
-    public toggleActiveFilters() {
-        this.searchFilters.forEach(filter => filter.useAsFilter=false);
-        this.dataService.pushNewFilterData(this.searchFilters);
-        this.search();
-    }
-
-    public resetAllFilters() {
-        this.searchFilters.forEach(filter => filter.currentData = filter.defaultData);
-        this.toggleActiveFilters();
     }
 
     public changeSorting(event: SortEvent) {
@@ -133,9 +121,7 @@ export class SearchComponent implements OnInit {
             ['.', route],
             { relativeTo: this.activatedRoute },
         ));
-        if (this.router.url === url) {
-            this.aggregateSearchForMultipleChoiceFilters();
-        } else {
+        if (this.router.url !== url) {
             this.router.navigateByUrl(url);
         }
     }
@@ -173,7 +159,6 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
-        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
     }
 
@@ -188,6 +173,27 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
         }
+    }
+
+    /**
+     * Set the filter data from the query parameters and return whether any filters were actually set.
+     */
+    private setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+        searchFilters.forEach( f => {
+            let param = this.searchService.getParamForFieldName(f.fieldName);
+            if (params.has(param)) {
+                if (this.showFilters == undefined) {
+                    this.showFilters = true;
+                }
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] == "") filterSettings = [];
+                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
+                f.useAsFilter = true;
+            }
+            else {
+                f.useAsFilter = false;
+            }
+        })
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
@@ -209,6 +215,11 @@ export class SearchComponent implements OnInit {
         } else {
             this.sortField = undefined;
         }
+    }
+
+    public setActiveFilters(activeFilters: SearchFilter[]) {
+        this.activeFilters = activeFilters;
+        this.search();
     }
 
     private tabChange(event) {
