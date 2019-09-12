@@ -1,7 +1,8 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { SearchService } from '../services';
+import { ShowError } from '../error/error.component';
 
 @Component({
     selector: 'ia-search-results',
@@ -51,11 +52,7 @@ export class SearchResultsComponent implements OnChanges {
     /**
      * For failed searches.
      */
-    public showError: false | undefined | {
-        date: string,
-        href: string,
-        message: string
-    };
+    public showError: false | undefined | ShowError;
 
     /**
      * Whether a document has been selected to be shown.
@@ -67,7 +64,7 @@ export class SearchResultsComponent implements OnChanges {
     public viewDocument: FoundDocument;
     public documentTabIndex: number;
 
-    constructor(private searchService: SearchService, private dataService: DataService) { }
+    constructor(private searchService: SearchService) { }
 
     ngOnChanges() {
         if (this.queryModel !== null) {
