@@ -28,9 +28,9 @@
     </div>
     </section>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
-        <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
+        <div *ngFor="let document of results.documents" class="document box" role="button">
             <div class="columns">
-                <div class="column is-flex">  
+                <div class="column is-flex" (click)=onViewDocument(document)>  
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">
@@ -55,6 +55,13 @@
         </div>
     </div>
 </ng-template>
+
+<!-- show the selected document -->
+<p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
+    *ngIf="viewDocument">
+    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
+</p-dialog>
 
 <!-- inform the user about a failed search -->
 <p-dialog [(visible)]="showError" width="600" *ngIf="showError">

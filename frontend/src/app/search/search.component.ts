@@ -32,14 +32,6 @@ export class SearchComponent implements OnInit {
      */
     public hasLimitedResults: boolean = false;
     /**
-     * Whether a document has been selected to be shown.
-     */
-    public showDocument: boolean = false;
-    /**
-     * The document to view separately.
-     */
-    public viewDocument: FoundDocument;
-    /**
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
     public showFilters: boolean | undefined;
@@ -64,16 +56,13 @@ export class SearchComponent implements OnInit {
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
-    private resultsCount: number = 0;
+    public resultsCount: number = 0;
     public tabIndex: number;
-    public documentTabIndex: number;
-    public searchBarHeight: number;
 
     private searchFilters: SearchFilter [] = [];
     private activeFilters: SearchFilter [] = [];
 
     constructor(private corpusService: CorpusService,
-        private dataService: DataService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
@@ -136,12 +125,6 @@ export class SearchComponent implements OnInit {
         this.resultsCount = input.resultsCount;
         this.searchQueryText = input.queryText;
         this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
-    }
-
-    public onViewDocument(viewEvent: {document: FoundDocument, tabIndex?: number}) {
-        this.showDocument = true;
-        this.viewDocument = viewEvent.document;
-        this.documentTabIndex = viewEvent.tabIndex;
     }
 
     public showQueryDocumentation() {

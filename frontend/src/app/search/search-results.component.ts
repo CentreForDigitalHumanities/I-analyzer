@@ -57,6 +57,16 @@ export class SearchResultsComponent implements OnChanges {
         message: string
     };
 
+    /**
+     * Whether a document has been selected to be shown.
+     */
+    public showDocument: boolean = false;
+    /**
+     * The document to view separately.
+     */
+    public viewDocument: FoundDocument;
+    public documentTabIndex: number;
+
     constructor(private searchService: SearchService, private dataService: DataService) { }
 
     ngOnChanges() {
@@ -84,6 +94,7 @@ export class SearchResultsComponent implements OnChanges {
             this.corpus
         ).then(results => {
             this.results = results;
+            this.results.documents.map( (d, i) => d.position = i + 1 );
             this.searched(this.queryModel.queryText, this.results.total);
             this.totalResults = this.results.total <= this.maximumDisplayed? this.results.total : this.maximumDisplayed;
         }, error => {
@@ -103,22 +114,26 @@ export class SearchResultsComponent implements OnChanges {
         this.fromIndex = searchParameters.from;
         this.resultsPerPage = searchParameters.size;
         this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
+        this.results.documents.map( (d,i) => d.position = i + searchParameters.from + 1 );
         this.isLoading = false;
-    }
-
-    public view(document: FoundDocument) {
-        this.viewEvent.next({document: document, tabIndex: 0});
-    }
-
-    public goToScan(document: FoundDocument, event:any) {
-        this.viewEvent.next({document: document, tabIndex: 1});
-        event.stopPropagation();
     }
 
     public searched(queryText: string, resultsCount: number) {
         // emit searchedEvent to search component
         this.searchedEvent.next({ queryText: queryText, resultsCount: resultsCount });
         this.isLoading = false;
+    }
+
+    public goToScan(document: FoundDocument, event:any) {
+        this.onViewDocument(document);
+        this.documentTabIndex = 1;
+        event.stopPropagation();
+    }
+
+    public onViewDocument(document: FoundDocument) {
+        this.showDocument = true;
+        this.viewDocument = document;
+        this.documentTabIndex = 0;
     }
 }
 
