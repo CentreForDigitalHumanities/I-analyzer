@@ -32,10 +32,11 @@ Prerequisites
 
 Running
 -------------------------------------------------------------------------------
+Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine.
+1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options. (September 2019: Install vs 6.x of Elastic search, not vs 7.)
 2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
 ```
 http.cors.enabled: true
@@ -49,7 +50,7 @@ npm install
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.
 6. Set up your configuration file. `default_config.py` contains some reasonable defaults. Set the location of the source files of your corpora (which are now available in a separate repository, ianalyzer-corpora).
 7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
-8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell.
+8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
 9. Set up the database and migrations by running `flask db upgrade`.
 10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
