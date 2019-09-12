@@ -1,5 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { commonTestBed } from '../common-test-bed';
+
 import { ErrorComponent } from './error.component';
 
 describe('ErrorComponent', () => {
@@ -7,10 +9,7 @@ describe('ErrorComponent', () => {
   let fixture: ComponentFixture<ErrorComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ErrorComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

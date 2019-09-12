@@ -11,7 +11,7 @@ import { DataService, SearchService } from '../services';
     styleUrls: ['./filter-manager.component.scss']
 })
 export class FilterManagerComponent implements OnInit, OnChanges {
-    @Input() private corpus: Corpus;
+    @Input() public corpus: Corpus;
     @Input() private queryModel: QueryModel;
 
     @Output('filtersChanged')

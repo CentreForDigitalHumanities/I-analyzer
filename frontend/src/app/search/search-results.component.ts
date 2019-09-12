@@ -133,5 +133,3 @@ export class SearchResultsComponent implements OnChanges {
         this.documentTabIndex = 0;
     }
 }
-
-
