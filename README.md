@@ -32,6 +32,7 @@ Prerequisites
 
 Running
 -------------------------------------------------------------------------------
+Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
