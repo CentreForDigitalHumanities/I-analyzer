@@ -178,7 +178,7 @@ class GuardianObserver(XMLCorpus):
             # applicable for post-1910 data
             image_path = field_vals['image_path']
             # define subdirectory in the zip archive
-            filename = op.join(target_filename, field_vals['image_path'].split('/')[2][:-10])
+            filename = op.join(field_vals['image_path'].split('/')[2][:-10], target_filename)
         elif field_vals['date']<'1909-31-12':
             path = op.join('1791-1909', 'PDF', field_vals['pub_id'])
             zipname = "{}_{}.zip".format(*field_vals['date'].split("-")[:2])
