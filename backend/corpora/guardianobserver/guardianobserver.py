@@ -148,7 +148,7 @@ class GuardianObserver(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                option_count=20 # to do: adjust after indexing
+                option_count=19
             ),
             extractor=extract.XML(tag='ObjectType', toplevel=True),
             csv_core=True
