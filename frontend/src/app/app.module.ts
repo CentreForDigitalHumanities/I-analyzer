@@ -55,6 +55,10 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
 import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
+import { BooleanFilterComponent } from './filter/boolean-filter.component';
+import { MultipleChoiceFilterComponent } from './filter/multiple-choice-filter.component';
+import { DateFilterComponent } from './filter/date-filter.component';
+import { RangeFilterComponent } from './filter/range-filter.component';
 
 
 const appRoutes: Routes = [
@@ -110,7 +114,9 @@ const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
+    BooleanFilterComponent,
     CorpusSelectionComponent,
+    DateFilterComponent,
     DialogComponent,
     DownloadComponent,
     DropdownComponent,
@@ -123,9 +129,11 @@ export const declarations: any[] = [
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
+    MultipleChoiceFilterComponent,
     NotificationsComponent,
     QueryTextPipe,
     PaginationComponent,
+    RangeFilterComponent,
     ResetPasswordComponent,
     RequestResetComponent,
     SearchComponent,

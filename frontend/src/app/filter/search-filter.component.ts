@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
-import * as _ from "lodash";
-import * as moment from 'moment';
 
 import { CorpusField, SearchFilter, MultipleChoiceFilterData } from '../models/index';
 import { DataService } from '../services/index';
@@ -34,10 +32,6 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
 
     public greyedOut: boolean = false;
     public useAsFilter: boolean = false;
-    public minDate: Date;
-    public maxDate: Date;
-    public minYear: number;
-    public maxYear: number;
 
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.filterData$.subscribe(
@@ -54,12 +48,6 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     ngOnInit() {
         if (this.field) {
             this.filter = this.field.searchFilter;
-            if (this.filter.defaultData.filterType === 'DateFilter') {
-                this.minDate = new Date(this.filter.defaultData.min);
-                this.maxDate = new Date(this.filter.defaultData.max);
-                this.minYear = this.minDate.getFullYear();
-                this.maxYear = this.maxDate.getFullYear();
-            }
             this.data = this.getDisplayData(this.filter);
         }
     }
@@ -68,71 +56,13 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
         this.subscription.unsubscribe();
     }
 
-    getDisplayData(filter: SearchFilter) {
-        switch (filter.currentData.filterType) {
-            case 'BooleanFilter':
-                return filter.currentData.checked;
-            case 'RangeFilter':
-                return [filter.currentData.min, filter.currentData.max];
-            case 'MultipleChoiceFilter':
-                let options = [];
-                if (filter.currentData.optionsAndCounts) {
-                    options = _.sortBy(filter.currentData.optionsAndCounts.map(x => {
-                        return { 'label': x.key, 'value': encodeURIComponent(x.key), 'doc_count': x.doc_count };
-                    }), o => o.label);
-                }
-                else options = _.sortBy(filter.currentData.options.map(x => { return { 'label': x, 'value': encodeURIComponent(x) } }), o => o.label);
-                if (options.length === 0) {
-                    this.greyedOut = true;
-                }
-                return { options: options, selected: filter.currentData.selected };
-            case 'DateFilter':
-                return {
-                    min: new Date(filter.currentData.min),
-                    max: new Date(filter.currentData.max),
-                    minYear: this.minYear,
-                    maxYear: this.maxYear
-                }
-        }
-
-        console.error(['Unexpected combination of filter and filterData', filter, this.data]);
+    protected getDisplayData(filter: SearchFilter) {
     }
 
     /**
      * Create a new version of the filter data from the user input.
      */
-    getFilterData(): SearchFilter {
-        let filterType = this.filter.currentData.filterType;
-        switch (filterType) {
-            case 'BooleanFilter':
-                this.filter.currentData = {
-                    filterType: filterType,
-                    checked: this.data
-                };
-                break;
-            case 'RangeFilter':
-                this.filter.currentData = {
-                    filterType: filterType,
-                    min: this.data[0],
-                    max: this.data[1]
-                };
-                break;
-            case 'MultipleChoiceFilter':
-                this.filter.currentData = {
-                    filterType: filterType,
-                    options: this.data.options,
-                    selected: this.data.selected
-                };
-                break;
-            case 'DateFilter':
-                this.filter.currentData = {
-                    filterType: filterType,
-                    min: this.formatDate(this.data.min),
-                    max: this.formatDate(this.data.max)
-                };
-                break;
-        }
-        return this.filter;
+    protected getFilterData() {
     }
 
     /**
@@ -164,12 +94,5 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
 
     resetFilter() {
         this.update("reset");
-    }
-
-    /**
-     * Return a string of the form 0123-04-25.
-     */
-    formatDate(date: Date): string {
-        return moment(date).format().slice(0, 10);
     }
 }
