@@ -187,7 +187,7 @@ class GuardianObserver(XMLCorpus):
         else:
             path = op.join('1910-2003', 'PDF')
             global_path = op.join(self.data_directory, path)
-            zipname_pattern = "**/{}_*_{}.zip".format(
+            zipname_pattern = "{}_*_{}.zip".format(
                 field_vals['date'][:4],
                 field_vals['pub_id']
             )
@@ -196,7 +196,7 @@ class GuardianObserver(XMLCorpus):
                 pdfs = ZipFile(str(zipfile)).namelist()
                 correct_file = next((pdf for pdf in pdfs if pdf.split("/")[1]==target_filename), None)
                 if correct_file:
-                    image_path = op.join(path, op.basename(zipfile))
+                    image_path = op.join(path, zipfile.name)
                     update_body = {
                         "doc": {
                             "image_path": image_path
