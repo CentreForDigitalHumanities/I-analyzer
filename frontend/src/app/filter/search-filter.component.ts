@@ -62,7 +62,20 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
     /**
      * Create a new version of the filter data from the user input.
      */
-    protected getFilterData() {
+    protected getFilterData(): SearchFilter {
+        return {
+            fieldName: 'isWaldo',
+            description: 'description',
+            useAsFilter: true,
+            defaultData: {
+                filterType: 'BooleanFilter',
+                checked: true
+            },
+            currentData: {
+                filterType: 'BooleanFilter',
+                checked: true
+            }
+        }
     }
 
     /**

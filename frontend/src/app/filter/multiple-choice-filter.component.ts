@@ -13,6 +13,7 @@ import { SearchFilter, MultipleChoiceFilterData } from '../models';
 export class MultipleChoiceFilterComponent extends SearchFilterComponent implements OnInit {
 
     ngOnInit() {
+        console.log(this.data);
     }
 
     getDisplayData(filter: SearchFilter) {

@@ -18,7 +18,32 @@
         </p>
     </div>
     <ng-container *ngFor="let field of corpus.fields">
-        <search-filter *ngIf="field.searchFilter" [field]="field" (update)="updateFilterData($event)">
-        </search-filter>
+            <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': useAsFilter}">
+                    <div class="field has-addons">
+                        <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
+                            iaBalloonPosition="up-left" iaBalloonLength="fit">
+                            <label class="label" [for]="'filter' + field.name">{{ field.displayName
+                                }}</label>
+                        </div>
+                        <p class="control">
+                            <span *ngIf="useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                                (click)="resetFilter()" iaBalloon="Reset this filter to its default values"
+                                iaBalloonPosition="down-left">
+                                <i class="fa fa-trash"></i>
+                            </span>
+                            <span class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': useAsFilter}"
+                                (click)="toggleFilter()" iaBalloon="{{useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
+                                iaBalloonPosition="down-left">
+                                <i class="fa fa-filter"></i>
+                            </span>
+                        </p>
+                    </div>
+                    <ng-container *ngIf="filter" [ngSwitch]="filter.defaultData.filterType">
+                        <ia-boolean-filter *ngSwitchCase="BooleanFilter" [field]="field" (update)="updateFilterData($event)"></ia-boolean-filter>
+                        <ia-date-filter *ngSwitchCase="DateFilter" [field]="field" (update)="updateFilterData($event)"></ia-date-filter>
+                        <ia-multiple-choice-filter *ngSwitchCase="MultipleChoiceFilter" [field]="field" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
+                        <ia-range-filter *ngSwitchCase="RangeFilter" [field]="field" (update)="updateFilterData($event)"></ia-range-filter>
+                    </ng-container>
+                </div>
     </ng-container>
 </div>
