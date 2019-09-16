@@ -41,18 +41,20 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
-import { SelectFieldComponent } from './search/select-field.component';
+import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
-import { DownloadComponent } from './search/download.component';
+import { DownloadComponent } from './download/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
-import { PaginationComponent } from './search/pagination.component';
+import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
+import { FilterManagerComponent } from './filter/filter-manager.component';
+import { ErrorComponent } from './error/error.component';
 
 
 const appRoutes: Routes = [
@@ -108,21 +110,29 @@ const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
-    DropdownComponent,
-    DialogComponent,
-    HomeComponent,
     CorpusSelectionComponent,
+    DialogComponent,
+    DownloadComponent,
+    DropdownComponent,
+    ErrorComponent,
+    FilterManagerComponent,
+    FreqtableComponent,
+    HomeComponent,
     HighlightPipe,
+    ImageViewComponent,
+    ManualComponent,
+    ManualNavigationComponent,
+    MenuComponent,
+    NotificationsComponent,
     QueryTextPipe,
+    PaginationComponent,
+    ResetPasswordComponent,
+    RequestResetComponent,
     SearchComponent,
     SearchFilterComponent,
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    ManualComponent,
-    ManualNavigationComponent,
-    MenuComponent,
-    NotificationsComponent,
     LoginComponent,
     ScrollToDirective,
     BarChartComponent,
@@ -132,19 +142,13 @@ export const declarations: any[] = [
     RelatedWordsComponent,
     DocumentViewComponent,
     SearchHistoryComponent,
-    FreqtableComponent,
     SelectFieldComponent,
     RegistrationComponent,
     PrivacyComponent,
     RelatedWordsComponent,
     ScanPdfComponent,
     QueryFiltersComponent,
-    DownloadComponent,
     TermFrequencyComponent,
-    PaginationComponent,
-    ImageViewComponent,
-    ResetPasswordComponent,
-    RequestResetComponent
 ];
 
 export const imports: any[] = [
@@ -205,7 +209,7 @@ export const providers: any[] = [
     declarations,
     imports,
     providers,
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
 export class AppModule { }
 

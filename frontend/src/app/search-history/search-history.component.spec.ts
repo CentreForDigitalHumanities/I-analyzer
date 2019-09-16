@@ -9,7 +9,7 @@ import { ApiServiceMock } from '../../mock-data/api';
 import { SearchServiceMock } from '../../mock-data/search';
 import { UserServiceMock } from '../../mock-data/user';
 import { SearchHistoryComponent, QueryTextPipe, QueryFiltersComponent } from './index';
-import { MockCorpusResponse } from '../../mock-data/corpus';
+import { MockCorpusResponse } from '../../mock-data/corpus-response';
 
 
 describe('SearchHistoryComponent', () => {
