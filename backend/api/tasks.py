@@ -30,11 +30,11 @@ def make_csv(results, request_json, username, email=None):
         send_user_mail(
             email=email,
             username=username,
-            subject_line="I-Analyzer csv download",
+            subject_line= current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
             email_title="Download CSV",
             message="Your .csv file is ready for download.",
             prompt="Click on the link below.",
-            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename,
+            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
             link_text="Download .csv file"
             )
         return None
@@ -81,7 +81,7 @@ def create_csv(results, fields, filename):
         entry = {field: result['_source'][field] for field in fields}
         entries.append(entry)
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
-                         quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
+                         quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)                  
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
     # newline='' to prevent empty double lines
     with open(filepath, 'w', newline='') as f:
