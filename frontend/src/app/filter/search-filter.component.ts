@@ -1,9 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { CorpusField, SearchFilter, MultipleChoiceFilterData } from '../models/index';
+import { CorpusField, SearchFilter } from '../models/index';
 import { DataService } from '../services/index';
-import { CommentStmt } from '@angular/compiler';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
@@ -14,7 +13,7 @@ import { CommentStmt } from '@angular/compiler';
     templateUrl: './search-filter.component.html',
     styleUrls: ['./search-filter.component.scss']
 })
-export class SearchFilterComponent implements OnDestroy, OnInit {
+export class SearchFilterComponent implements OnDestroy {
     @Input()
     public field: CorpusField;
 
@@ -45,15 +44,16 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
             });
     }
 
-    ngOnInit() {
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
+    }
+
+    provideFilterData() {
         if (this.field) {
             this.filter = this.field.searchFilter;
             this.data = this.getDisplayData(this.filter);
         }
-    }
-
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
+        console.log(this.filter, this.data);
     }
 
     protected getDisplayData(filter: SearchFilter) {
@@ -83,15 +83,13 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
      */
     update(toggleOrReset: string = null) {
         // check if filter was toggled or reset
-        if (toggleOrReset == "toggle") {
-            this.useAsFilter = !this.useAsFilter;
-        }
-        else if (toggleOrReset == "reset") {
-            this.useAsFilter = false;
-            this.filter.currentData = this.filter.defaultData;
-            this.data = this.getDisplayData(this.filter);
-        }
-        else if (this.data.selected && this.data.selected.length==0) {
+       
+        // else if (toggleOrReset == "reset") {
+        //     this.useAsFilter = false;
+        //     this.filter.currentData = this.filter.defaultData;
+        //     this.data = this.getDisplayData(this.filter);
+        // }
+        if (this.data.selected && this.data.selected.length==0) {
             this.useAsFilter = false;
         }
         else  {
@@ -99,13 +97,5 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
         }
         this.filter.useAsFilter = this.useAsFilter;
         this.updateEmitter.emit(this.getFilterData());
-    }
-
-    toggleFilter() {
-        this.update("toggle");
-    }
-
-    resetFilter() {
-        this.update("reset");
     }
 }

@@ -92,4 +92,15 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         this.filtersChangedEmitter.emit(this.activeFilters);
     }
 
+    toggleFilter(filter: SearchFilter) {
+        console.log(filter);
+        filter.useAsFilter = !filter.useAsFilter;
+        this.filtersChanged();
+    }
+
+    resetFilter(filter: SearchFilter) {
+        filter.useAsFilter = false;
+        filter.currentData = filter.defaultData;
+    }
+
 }

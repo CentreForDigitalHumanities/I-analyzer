@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import * as _ from "lodash";
 
-import { SearchFilterComponent } from '../search';
+import { SearchFilterComponent } from './search-filter.component';
 import { SearchFilter, MultipleChoiceFilterData } from '../models';
 
 @Component({
@@ -11,9 +11,8 @@ import { SearchFilter, MultipleChoiceFilterData } from '../models';
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
 export class MultipleChoiceFilterComponent extends SearchFilterComponent implements OnInit {
-
     ngOnInit() {
-        console.log(this.data);
+        this.provideFilterData();
     }
 
     getDisplayData(filter: SearchFilter) {

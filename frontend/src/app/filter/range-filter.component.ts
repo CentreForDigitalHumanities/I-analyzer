@@ -11,6 +11,7 @@ import { SearchFilterComponent } from './search-filter.component';
 export class RangeFilterComponent extends SearchFilterComponent implements OnInit {
 
     ngOnInit() {
+        this.provideFilterData();
     }
 
     getDisplayData(filter: SearchFilter) {

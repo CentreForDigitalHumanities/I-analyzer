@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { SearchFilterComponent } from '../search';
+import { SearchFilterComponent } from './search-filter.component';
 import { SearchFilter, BooleanFilterData } from '../models';
 
 @Component({
@@ -11,6 +11,7 @@ import { SearchFilter, BooleanFilterData } from '../models';
 export class BooleanFilterComponent extends SearchFilterComponent implements OnInit {
 
     ngOnInit() {
+        this.provideFilterData();
     }
 
     getDisplayData(filter: SearchFilter) {

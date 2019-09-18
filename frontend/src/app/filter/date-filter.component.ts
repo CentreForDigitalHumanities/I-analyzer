@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 
 import { SearchFilter, DateFilterData } from '../models';
-import { SearchFilterComponent } from '../search';
+import { SearchFilterComponent } from './search-filter.component';
 
 @Component({
   selector: 'ia-date-filter',
@@ -17,6 +17,7 @@ export class DateFilterComponent extends SearchFilterComponent implements OnInit
     public maxYear: number;
 
     ngOnInit() {
+        this.provideFilterData();
         if (this.filter.defaultData.filterType === 'DateFilter') {
             this.minDate = new Date(this.filter.defaultData.min);
             this.maxDate = new Date(this.filter.defaultData.max);
