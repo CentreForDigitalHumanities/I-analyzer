@@ -93,7 +93,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     toggleFilter(filter: SearchFilter) {
-        console.log(filter);
         filter.useAsFilter = !filter.useAsFilter;
         this.filtersChanged();
     }
@@ -101,6 +100,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     resetFilter(filter: SearchFilter) {
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
+        this.filtersChanged();
     }
 
 }
