@@ -7,8 +7,6 @@ import pytest
 
 from addcorpus import load_corpus
 
-from ianalyzer.tests.conftest import admin_role, db, session, test_app
-
 
 def test_key_error(session, monkeypatch):
     ''' Verify that exception is correctly raised

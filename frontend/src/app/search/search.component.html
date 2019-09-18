@@ -64,37 +64,14 @@
         <div class="columns">
             <!-- Filters, on left -->
             <div class="column is-3">
-                <div *ngIf="corpus">
-                    <div class="field has-addons">
-                        <div class="control is-expanded">
-                            <h4 class="title">Filters</h4>
-                        </div>
-                        <p class="control" style="float:right">
-                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-primary is-active is-medium is-round"
-                                (click)="resetAllFilters()" iaBalloon="Reset all filters to their default values"
-                                iaBalloonPosition="down-left">
-                                <i class="fa fa-trash"></i>
-                            </span>
-                            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
-                                [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
-                                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
-                                iaBalloonPosition="down-left">
-                                <i class="fa fa-filter"></i>
-                            </span>
-                        </p>
-                    </div>
-                    <ng-container *ngFor="let field of corpus.fields">
-                        <search-filter *ngIf="field.searchFilter" [field]="field" (update)="updateFilterData($event)">
-                        </search-filter>
-                    </ng-container>
-                </div>
+                <ia-filter-manager *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel" (filtersChanged)="setActiveFilters($event)"></ia-filter-manager>
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">
                 <p-tabView styleClass="is-content" (onChange)="tabChange($event)">
                     <p-tabPanel header="Search Results" leftIcon="fa fa-list">
                         <div class="column">
-                            <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user" (view)="onViewDocument($event)"
+                            <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
                                 (searched)="onSearched($event)">
                                 <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
                                     (onChange)="changeSorting($event)"></ia-search-sorting>
@@ -113,10 +90,3 @@
         </div>
     </div>
 </section>
-
-<!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{resultsCount}}" [(visible)]="showDocument" width="100%"
-    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument">
-    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="searchQueryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
-</p-dialog>

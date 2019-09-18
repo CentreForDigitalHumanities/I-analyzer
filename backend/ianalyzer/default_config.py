@@ -116,6 +116,7 @@ GO_IMAGE = 'guardianobserver.jpg'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
 PERIODICALS_IMAGE = 'Fleet_Street.jpg'
+PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
 #################
 

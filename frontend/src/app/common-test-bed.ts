@@ -9,10 +9,10 @@ import { CookieService } from 'ngx-cookie-service';
 import { declarations, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
-import * as corpus from '../mock-data/corpus';
+import * as corpus from '../mock-data/corpus-response';
 import { DialogServiceMock } from '../mock-data/dialog';
 import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
-import { MockCorpusResponse } from '../mock-data/corpus';
+import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
 import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
