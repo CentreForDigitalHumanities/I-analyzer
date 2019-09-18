@@ -220,7 +220,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -247,7 +247,7 @@ def api_download_task():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif not current_user.email:
