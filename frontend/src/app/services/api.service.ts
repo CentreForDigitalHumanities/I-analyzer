@@ -163,7 +163,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
         any >;
 
     @ResourceAction({
@@ -171,7 +171,7 @@ export class ApiService extends Resource {
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[] },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
     @ResourceAction({

@@ -55,23 +55,25 @@ def make_wordcloud_data(list_of_texts, request_json):
 
 
 def create_filename(request_json):
-    query = 'query_match_all'
-    if (request_json['es_query']['query']['bool']['must'] != {'match_all': {}}):
-        query = request_json['es_query']['query']['bool']['must']['simple_query_string']['query']
-    filename = request_json['corpus'] + "_" + query
-    if not request_json['es_query']['query']['bool']['filter']:
-        filename += "_" + 'no_filters'
-    else:
-        for filter_name in request_json['es_query']['query']['bool']['filter']:
-            if filter_name.get('range') != None and filter_name['range'].get('date') != None:
-                filename += "_" + \
-                    filter_name['range']['date']['gte'] + "_" + \
-                    filter_name['range']['date']['lte']
-            # iterate through terms, find name of filter term, get value of filter term and append to file name
-            if filter_name.get('terms') != None:
-                for term in filter_name['terms']:
-                    filename += "_" + str(filter_name['terms'].get(term))
+    # query = 'query_match_all'
+    # if (request_json['es_query']['query']['bool']['must'] != {'match_all': {}}):
+    #     query = request_json['es_query']['query']['bool']['must']['simple_query_string']['query']
+    # filename = request_json['corpus'] + "_" + query
+    # if not request_json['es_query']['query']['bool']['filter']:
+    #     filename += "_" + 'no_filters'
+    # else:
+    #     for filter_name in request_json['es_query']['query']['bool']['filter']:
+    #         if filter_name.get('range') != None and filter_name['range'].get('date') != None:
+    #             filename += "_" + \
+    #                 filter_name['range']['date']['gte'] + "_" + \
+    #                 filter_name['range']['date']['lte']
+    #         # iterate through terms, find name of filter term, get value of filter term and append to file name
+    #         if filter_name.get('terms') != None:
+    #             for term in filter_name['terms']:
+    #                 filename += "_" + str(filter_name['terms'].get(term))
+    filename = str.join(*request_json['route'].split(';')[1:])
     filename += '.csv'
+    print(filename)
     return filename
 
 

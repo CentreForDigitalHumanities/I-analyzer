@@ -268,8 +268,7 @@ def api_download_task():
 @api.route('/csv/<filename>', methods=['get'])
 def api_csv(filename):
     #replace standard 'instance' folder with path to dedicated csv files folder
-    csv_files_dir=dirname(current_app.instance_path) + "/" + current_app.config['CSV_FILES_PATH']
-    print(csv_files_dir)
+    csv_files_dir=dirname(current_app.config['CSV_FILES_PATH'])
     return send_from_directory(csv_files_dir, '{}'.format(filename))
 
 
