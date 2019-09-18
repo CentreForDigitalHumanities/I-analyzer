@@ -7,6 +7,7 @@ import * as _ from "lodash";
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
 import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
+import { query } from '@angular/core/src/render3/query';
 
 @Component({
     selector: 'ia-search',
@@ -155,6 +156,7 @@ export class SearchComponent implements OnInit {
             this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
             this.selectedSearchFields = [];
             this.queryModel = null;
+            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
         }
     }
 
