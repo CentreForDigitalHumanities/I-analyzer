@@ -6,6 +6,7 @@ from flask import Flask, abort, current_app, render_template
 from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
+import re
 
 from api import analyze
 from api.user_mail import send_user_mail
@@ -56,8 +57,9 @@ def make_wordcloud_data(list_of_texts, request_json):
 
 def create_filename(route):
     """ name the file given the route of the search """
-    filename = route.split('/')[2]
+    filename = re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
     filename += '.csv'
+    print(filename)
     return filename
 
 
