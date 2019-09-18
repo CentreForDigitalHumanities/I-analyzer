@@ -24,6 +24,7 @@ def download_scroll(request_json, download_size=10000):
 @celery_app.task()
 def make_csv(results, request_json, username, email=None):
     filename = create_filename(request_json)
+    print(filename)
     filepath = create_csv(results, request_json['fields'], filename)
     if email:
         # we are sending the results to the user by email
@@ -71,9 +72,8 @@ def create_filename(request_json):
     #         if filter_name.get('terms') != None:
     #             for term in filter_name['terms']:
     #                 filename += "_" + str(filter_name['terms'].get(term))
-    filename = str.join(*request_json['route'].split(';')[1:])
+    filename = request_json['route'].split('/')[2]
     filename += '.csv'
-    print(filename)
     return filename
 
 
