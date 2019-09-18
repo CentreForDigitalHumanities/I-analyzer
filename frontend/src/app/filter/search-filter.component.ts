@@ -81,14 +81,7 @@ export class SearchFilterComponent implements OnDestroy {
     /**
      * Trigger a change event.
      */
-    update(toggleOrReset: string = null) {
-        // check if filter was toggled or reset
-       
-        // else if (toggleOrReset == "reset") {
-        //     this.useAsFilter = false;
-        //     this.filter.currentData = this.filter.defaultData;
-        //     this.data = this.getDisplayData(this.filter);
-        // }
+    update() {
         if (this.data.selected && this.data.selected.length==0) {
             this.useAsFilter = false;
         }
