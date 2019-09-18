@@ -228,7 +228,6 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        print(request.json)
         filepath = tasks.make_csv.delay(search_results, request.json, current_user.username)
         csv_file = filepath.get()
         response = make_response(send_file(csv_file, mimetype='text/csv'))
@@ -270,7 +269,7 @@ def api_download_task():
 def api_csv(filename):
     #replace standard 'instance' folder with path to dedicated csv files folder
     csv_files_dir=dirname(current_app.config['CSV_FILES_PATH'])
-    return send_from_directory(csv_files_dir, '{}'.format(filename))
+    return send_from_directory(csv_files_dir, filename)
 
 
 @api.route('/login', methods=['POST'])
