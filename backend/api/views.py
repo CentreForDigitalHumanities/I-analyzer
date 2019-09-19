@@ -8,7 +8,7 @@ import base64
 import math
 import functools
 
-from os.path import dirname, split, join, isfile, getsize
+from os.path import dirname, basename, split, join, isfile, getsize
 import sys
 import tempfile
 from datetime import datetime, timedelta
@@ -220,7 +220,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -247,7 +247,7 @@ def api_download_task():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif not current_user.email:
@@ -267,7 +267,8 @@ def api_download_task():
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])
 def api_csv(filename):
-    return send_from_directory(current_app.instance_path, '{}'.format(filename))
+    csv_files_dir=current_app.config['CSV_FILES_PATH']
+    return send_from_directory(csv_files_dir, filename)
 
 
 @api.route('/login', methods=['POST'])
