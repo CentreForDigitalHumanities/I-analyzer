@@ -1,12 +1,12 @@
 import { TestBed, inject, fakeAsync } from '@angular/core/testing';
 
-import { ApiServiceMock } from './api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
 import { ApiRetryService } from './api-retry.service';
 import { CorpusService } from './corpus.service';
 import { LogService } from './log.service';
 import { UserService } from './user.service';
-import { UserServiceMock } from './user.service.mock';
+import { UserServiceMock } from '../../mock-data/user';
 
 import { Corpus } from '../models/corpus';
 import { CorpusField, SearchFilterData } from '../models/index';
@@ -101,7 +101,7 @@ describe('CorpusService', () => {
                         "description": "Search only within these banks.",
                         "fieldName": "bank",
                         "useAsFilter": false,
-                        "options": ['A', 'B', 'C']               
+                        "option_count": 3               
                     }
                 },
                 {
@@ -139,7 +139,7 @@ describe('CorpusService', () => {
         return service.get().then((items) => {
             let mockMultipleChoiceData: SearchFilterData  = {
                 filterType: 'MultipleChoiceFilter',
-                options: ['A', 'B', 'C'],
+                options: [undefined, undefined, undefined],
                 selected: []
             };
             let mockRangeData: SearchFilterData = {

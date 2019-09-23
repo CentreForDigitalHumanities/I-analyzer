@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import * as _ from "lodash";
 import * as moment from 'moment';
 
-import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { CorpusField, SearchFilter, MultipleChoiceFilterData } from '../models/index';
 import { DataService } from '../services/index';
 import { CommentStmt } from '@angular/compiler';
 
@@ -148,7 +148,12 @@ export class SearchFilterComponent implements OnDestroy, OnInit {
             this.filter.currentData = this.filter.defaultData;
             this.data = this.getDisplayData(this.filter);
         }
-        else this.useAsFilter = true; // update called through user input
+        else if (this.data.selected && this.data.selected.length==0) {
+            this.useAsFilter = false;
+        }
+        else  {
+            this.useAsFilter = true; // update called through user input
+        }
         this.filter.useAsFilter = this.useAsFilter;
         this.updateEmitter.emit(this.getFilterData());
     }

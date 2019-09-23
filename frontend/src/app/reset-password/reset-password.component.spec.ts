@@ -6,8 +6,8 @@ import { of } from 'rxjs';
 
 import { ApiService } from '../services/api.service';
 import { UserService } from '../services/user.service';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
+import { UserServiceMock } from '../../mock-data/user';
 
 import { ResetPasswordComponent } from './reset-password.component';
 

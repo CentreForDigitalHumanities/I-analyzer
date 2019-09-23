@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { UserService } from '../services/user.service';
 import { DialogService } from '../services/dialog.service';
-import { DialogServiceMock } from '../services/dialog.service.mock';
+import { DialogServiceMock } from '../../mock-data/dialog';
 
 import { RegistrationComponent } from './registration.component';
 import { PrivacyComponent } from '../privacy/privacy.component';

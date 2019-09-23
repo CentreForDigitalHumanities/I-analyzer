@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { Url } from 'url';
 
 @Component({
   selector: 'ia-download',
@@ -14,6 +15,7 @@ export class DownloadComponent implements OnChanges {
     @Input() public resultsCount: number;
     @Input() public hasLimitedResults: boolean;
     @Input() public downloadLimit: string;
+    @Input() public route: string;
 
     public selectedCsvFields: CorpusField[];
     public availableCsvFields: CorpusField[];
@@ -36,7 +38,7 @@ export class DownloadComponent implements OnChanges {
     public choose_download_method() {
         if (this.resultsCount < this.resultsCutoff) {
             this.isDownloading = true;
-            this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount).then( results => { 
+            this.downloadService.download(this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount, this.route).then( results => { 
                 this.isDownloading = false;
             }).catch( error => {
                 this.isDownloading = false;
@@ -44,7 +46,7 @@ export class DownloadComponent implements OnChanges {
             })
         }
         else {
-            this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields()).then( results => {
+            this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields(), this.route).then( results => {
                 if (results.success===false) {
                     this.notificationService.showMessage(results.message);
                 }

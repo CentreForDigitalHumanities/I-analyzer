@@ -18,7 +18,7 @@ class JewishInscriptions(XMLCorpus):
     title = "Jewish Funerary Inscriptions"
     description = "A collection of inscriptions on Jewish burial sites"
     min_date = datetime(year=769, month=1, day=1)
-    max_date = datetime(year=848, month=12, day=31)
+    max_date = datetime(year=849, month=12, day=31)
     data_directory = current_app.config['JEWISH_INSCRIPTIONS_DATA']
     es_index = current_app.config['JEWISH_INSCRIPTIONS_ES_INDEX']
     es_doctype = current_app.config['JEWISH_INSCRIPTIONS_ES_DOCTYPE']
@@ -56,8 +56,8 @@ class JewishInscriptions(XMLCorpus):
     fields = [
         Field(
             name='id',
+            display_name='ID',
             description='ID of the inscription entry.',
-            es_mapping={'type': 'string'},
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
                 toplevel=False,
@@ -65,6 +65,7 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='year',
+            display_name='Year',
             description='Year of origin of the inscription.',
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
@@ -77,10 +78,14 @@ class JewishInscriptions(XMLCorpus):
                 toplevel=False,
             ),
             csv_core=True,
-            sortable=True
+            sortable=True,
+            visualization_type='term_frequency',
+            visualization_sort='key',
+            results_overview=True
         ),
         Field(
-            name='remarks on date',
+            name='date_remarks',
+            display_name='Date comments',
             description='Additional comments on the year.',
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'remarksOnDate'],
@@ -89,36 +94,36 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='transcription',
+            display_name='Transcription',
             description='Text content of the inscription.',
             extractor=XML(
                 tag=['text', 'body', 'transcription'],
                 toplevel=False,
+                flatten=True
             ),
-            search_field_core=True
+            search_field_core=True,
+            results_overview=True,
+            display_type='text_content'
         ),
         Field(
             name='incipit',
+            display_name='Incipit',
             description='The start of the text content of the inscription.',
             es_mapping={'type': 'keyword'},
             csv_core=True,
             search_filter=MultipleChoiceFilter(
                 description='Search only within these incipit types.',
-                options=['המצבה הזאת',
-                         'הציון הלז',
-                         'זכר צדיקים',
-                         'משכב',
-                         'פה הרגיע',
-                         'פה ינוח',
-                         'פה נקבר',
-                         'פה שוכב']
+                option_count=8
             ),
             extractor=XML(
                 tag=['text', 'body', 'incipit'],
                 toplevel=False,
             ),
+            visualization_type='term_frequency'
         ),
         Field(
-            name='names mentioned',
+            name='names',
+            display_name='Names',
             description='Names of the buried persons.',
             extractor=XML(
                 tag=['text', 'body', 'namesMentioned'],
@@ -127,7 +132,8 @@ class JewishInscriptions(XMLCorpus):
             search_field_core=True
         ),
         Field(
-            name='names mentioned (Hebrew)',
+            name='names_hebrew',
+            display_name='Names (Hebrew)',
             description='Names in Hebrew of the buried persons.',
             extractor=XML(
                 tag=['text', 'body', 'namesMentionedHebrew'],
@@ -136,13 +142,12 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='sex',
+            display_name='Sex',
             description='Gender of the buried person. None if the sex is unknown.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these genders.',
-                options=['None',
-                         'M',
-                         'F']
+                option_count=3,
             ),
             extractor=XML(
                 tag=['text', 'body', 'sex'],
@@ -152,6 +157,7 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='age',
+            display_name='Age',
             description='Age of the buried person.',
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
@@ -167,7 +173,8 @@ class JewishInscriptions(XMLCorpus):
             sortable=True
         ),
         Field(
-            name='remarks on age',
+            name='age_remarks',
+            display_name='Age remarks',
             description='Additional comments on the age.',
             extractor=XML(
                 tag=['text', 'body', 'remarksOnAge'],
@@ -176,32 +183,24 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='provenance',
+            display_name='Provenance',
             description='Description of the location where the inscription was found.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these provenances.',
-                options=['Unknown',
-                         'Bari',
-                         'Brindisi',
-                         'Lavello',
-                         'Matera',
-                         'Oria',
-                         'Taranto',
-                         'Venosa']
+                option_count = 8
             ),
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'provenance'],
                 toplevel=False,
             ),
+            visualization_type='term_frequency'
         ),
         Field(
-            name='inscription type',
+            name='inscription_type',
+            display_name='Inscription type',
             description='Type of inscription found.',
             es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Search only within these inscription types.',
-                options=['Epitaph'],
-            ),
             extractor=XML(
                 tag=['text', 'body', 'inscriptionType'],
                 toplevel=False,
@@ -209,28 +208,24 @@ class JewishInscriptions(XMLCorpus):
             csv_core=True
         ),
         Field(
-            name='iconography type',
+            name='iconography_type',
+            display_name='Iconography Type',
             description='Type of iconography on the inscription.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these iconography types.',
-                options=['None',
-                         'Abstract / geometric',
-                         'Crescent',
-                         'Magen David',
-                         'Menorah',
-                         'Shofar',
-                         'Menorah, Abstract / geometric',
-                         'Menorah, Shofar'],
+                option_count=8
             ),
             extractor=XML(
                 tag=['text', 'body', 'iconographyType'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            visualization_type='term_frequency'
         ),
         Field(
-            name='iconography description',
+            name='iconography_desc',
+            display_name='Iconography description',
             description='Description of the iconography on the inscription.',
             extractor=XML(
                 tag=['text', 'body', 'iconographyDescription'],
@@ -239,52 +234,47 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='material',
+            display_name='Material',
             description='Type of material where the inscription is written on.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these material types.',
-                options=['Stone',
-                         'Stone (carparo)',
-                         'Stone (limestone)',
-                         'Stone (hard limestone)',
-                         'Stone (soft limestone)',
-                         'Stone (marble)',
-                         'Stone (travertine)',
-                         'Stone (tufo cozzigno)'],
+                option_count=8
             ),
             extractor=XML(
                 tag=['text', 'body', 'material'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            visualization_type='term_frequency'
         ),
         Field(
             name='language',
+            display_name='Language',
             description='Language written on the inscription.',
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these languages.',
-                options=['Hebrew',
-                         'Latin',
-                         'Hebrew, Latin',
-                         'Greek',
-                         'Aramaic'],
+                option_count = 3
             ),
             extractor=XML(
                 tag=['text', 'body', 'language'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            visualization_type='term_frequency'
         ),
         Field(
-            name='number of lines surviving',
+            name='no_surviving',
+            display_name='Surviving lines',
             description='The amount of lines of text on the incipit that is readable.',
             es_mapping={'type': 'integer'},
-            search_filter=RangeFilter(
-                description='Restrict the amount of lines from which search results will be returned.',
-                lower=0,
-                upper=100,
-            ),
+            # commenting filter out for now, may be uncommented in case we have more documents
+            # search_filter=RangeFilter(
+            #     description='Restrict the amount of lines from which search results will be returned.',
+            #     lower=0,
+            #     upper=100,
+            # ),
             extractor=XML(
                 tag=['text', 'body', 'numberOfLinesSurviving'],
                 toplevel=False,
@@ -293,15 +283,18 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='location',
+            display_name='Storage location',
             description='Storage location of the published work.',
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'location'],
                 toplevel=False,
             ),
-            csv_core=True
+            csv_core=True,
+            results_overview=True
         ),
         Field(
             name='publication',
+            display_name='Publication',
             description='Article or book where inscription is published.',
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publication'],
@@ -310,6 +303,7 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='facsimile',
+            display_name='Facsimile',
             description='Photo or facsimile of publication.',
             extractor=XML(
                 tag=['facsimile', 'photoFacsimile'],
@@ -317,7 +311,8 @@ class JewishInscriptions(XMLCorpus):
             ),
         ),
         Field(
-            name='photos by Leonard',
+            name='photos_leonard',
+            display_name='Photos (Leonard)',
             description='Photos by Leonard.',
             extractor=XML(
                 tag=['facsimile', 'photosLeonard'],
@@ -325,7 +320,8 @@ class JewishInscriptions(XMLCorpus):
             ),
         ),
         Field(
-            name='3D image',
+            name='3D_image',
+            display_name='3D image',
             description='3D image of inscription.',
             extractor=XML(
                 tag=['facsimile', 'image3D'],
@@ -334,6 +330,7 @@ class JewishInscriptions(XMLCorpus):
         ),
         Field(
             name='commentary',
+            display_name='Commentary',
             description='Extra comments, questions or remarks on this inscription.',
             extractor=XML(
                 tag=['text', 'body', 'commentary'],

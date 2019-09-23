@@ -3,7 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -163,7 +163,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
         any >;
 
     @ResourceAction({
@@ -171,7 +171,7 @@ export class ApiService extends Resource {
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[] },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
     @ResourceAction({
@@ -221,21 +221,29 @@ export class ApiService extends Resource {
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/source_pdf',
+        method: ResourceRequestMethod.Get,
+        path: '/get_media{!args}',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
         asResourceResponse: true
     })
-    public sourcePdf: IResourceMethodFull<
-        { corpus_index: string, image_path: string, page: number },
+    public getMedia: IResourceMethodFull<
+        {args: string},
         any>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/request_media'
+    })
+    public requestMedia: ResourceMethod<
+        { corpus_index: string, document: FoundDocument },
+        { success: false } | { success: true, media: string[] }
+        >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download_pdf/{corpus_index}/{filepath}',
     })
     public downloadPdf: IResourceMethod<{ corpus_index: string, filepath: string }, any>
-
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

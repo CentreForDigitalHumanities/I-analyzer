@@ -14,7 +14,7 @@
         <li>
             <a [ngClass]="{'is-current': currentPage==currentPages[1]}" class="pagination-link" (click)="loadResults(currentPages[1])">{{currentPages[1]}}</a>
         </li>
-        <li>
+        <li *ngIf="totalResults>resultsPerPage*2">
             <a [ngClass]="{'is-current': currentPage==currentPages[2]}" class="pagination-link" (click)="loadResults(currentPages[2])">{{currentPages[2]}}</a>
         </li>
         <li *ngIf="currentPages[2]<totalPages-1">

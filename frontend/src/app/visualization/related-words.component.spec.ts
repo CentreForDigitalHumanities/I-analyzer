@@ -3,8 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/primeng'
 
 import { DialogService, SearchService } from '../services/index';
-import { DialogServiceMock } from '../services/dialog.service.mock';
-import { SearchServiceMock } from '../services/search.service.mock';
+import { DialogServiceMock } from '../../mock-data/dialog';
+import { SearchServiceMock } from '../../mock-data/search';
 import { RelatedWordsComponent } from './related-words.component';
 
 describe('RelatedWordsComponent', () => {

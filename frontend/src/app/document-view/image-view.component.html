@@ -1,8 +1,11 @@
-<div class="image-container">
-    <div class="zoom-lens" [ngStyle]="{'top.px': top, 'left.px': left, 'visibility': zoomVisible}"></div>
-    <div class="src-img-div"><img class="src-img" #sourceImage src="{{imgPath}}" (mousemove)="onMouseMove($event)" (mouseover)="zoomVisible = 'visible'" (mouseout)="zoomVisible = 'hidden'"/></div>
-</div>
-
-<div class="zoom-img" [style]="backgroundImageStyle" 
-    [ngStyle]="{'background-position': backgroundPosition, 'background-size': backgroundSize, 'visibility': zoomVisible}">
-</div>
+<app-image-viewer *ngIf="mediaType!='application/pdf'"
+    [images]="imagePaths" 
+    [idContainer]="'idOnHTML'" 
+    [loadOnInit]="true" 
+    [rotate]="false" 
+    [showPDFOnlyOption]="false" 
+    [fullscreen]="false"
+    [download]="allowDownload"
+    primaryColor="#303F9F">
+</app-image-viewer>
+<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [allowDownload]="allowDownload" [downloadPath]="downloadPath"></ia-scan-pdf>

@@ -99,6 +99,7 @@ class DutchNewspapersPublic(XMLCorpus):
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
+    paper_count = len(papers)
 
     distribution = {
         'Landelijk': 'National',
@@ -179,7 +180,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
-                options=self.papers
+                option_count=len(self.papers)
             ),
             extractor=Metadata('title')
         ),
@@ -219,7 +220,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=['test', 'options']
+                option_count=2,
             ),
         ),
         Field(
@@ -231,7 +232,7 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                options=self.distribution
+                option_count=7
             ),
         ),
         Field(
@@ -246,11 +247,7 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            extractor=Metadata('language'),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in this language.',
-                options=['nl', 'fr'],
-            ),
+            extractor=Metadata('language')
         ),
         Field(
             name='article_title',
@@ -282,15 +279,15 @@ class DutchNewspapersPublic(XMLCorpus):
         ),
         Field(
             name='temporal',
-            display_name='Publication frequency',
-            description='publication frequency of the newspaper.',
+            display_name='Edition',
+            description='Newspaper edition for the given date',
             results_overview=True,
             csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this publication frequency.',
-                options=['Dag', 'Week', 'Maand'],
+                description='Accept only articles in newspapers which appeared as a given edition.',
+                option_count=3,
             ),
             extractor=Metadata('temporal')
         ),

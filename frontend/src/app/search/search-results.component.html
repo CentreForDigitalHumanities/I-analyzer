@@ -28,9 +28,9 @@
     </div>
     </section>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
-        <div *ngFor="let document of results.documents" class="document box" (click)="view(document)" role="button">
-            <div class="columns is-gapless">
-                <div class="column  is-flex">  
+        <div *ngFor="let document of results.documents" class="document box" role="button">
+            <div class="columns">
+                <div class="column is-flex" (click)=onViewDocument(document)>  
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">
@@ -42,45 +42,25 @@
                         </ng-container>
                     </table>
                 </div>  
-                <div class="column is-one-quarter is-centered" *ngIf="document.relevance">
+                <div class="column is-one-quarter" *ngIf="document.relevance">
                     <div class="relevance-score">
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
-                    <img *ngIf="corpus.scan_image_type=='png'" class="src-thumbnail" src="/api/get_scan_image/{{corpus.index}}/{{document.fieldValues.image_path}}" onerror="this.style.display='none'"/>
+                    <span *ngIf="corpus.scan_image_type" class="scan-button" iaBalloon="View Scan" (click)="goToScan(document, $event)">
+                        <i class="fa fa-newspaper-o fa-4x" aria-hidden="true"></i>
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </ng-template>
 
-<!-- inform the user about a failed search -->
-<p-dialog [(visible)]="showError" width="600" *ngIf="showError">
-    <p-header>Unfortunately, we couldn&rsquo;t complete your request</p-header>
-    <div class="content">
-        <p>Please try again later, or seek support if the problem persists. In order to help us help you, please provide the
-            following information when seeking support:</p>
-        <table>
-            <tbody>
-                <tr>
-                    <th>Date</th>
-                    <td>
-                        <code>{{showError.date}}</code>
-                    </td>
-                </tr>
-                <tr>
-                    <th>URL</th>
-                    <td>
-                        <code>{{showError.href}}</code>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Error</th>
-                    <td>
-                        <code>{{showError.message}}</code>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<!-- show the selected document -->
+<p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
+    *ngIf="viewDocument">
+    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
+
+<ia-error *ngIf="showError" [showError]="showError"></ia-error>

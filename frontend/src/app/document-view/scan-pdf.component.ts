@@ -1,9 +1,9 @@
-import { Component, OnChanges, OnInit, Input, ViewChild, SimpleChanges } from '@angular/core';
-import { Corpus, FoundDocument } from '../models/index';
-import { ApiService } from '../services';
-import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { Component, HostListener, OnChanges, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
-import { HttpClient } from '@angular/common/http';
+
+import { ApiService } from '../services';
+
 
 @Component({
     selector: 'ia-scan-pdf',
@@ -11,18 +11,15 @@ import { HttpClient } from '@angular/common/http';
     styleUrls: ['./scan-pdf.component.scss'],
     providers: [ConfirmationService]
 })
-export class ScanPdfComponent implements OnChanges, OnInit {
-    @ViewChild(PdfViewerComponent)
-    private pdfComponent: PdfViewerComponent;
+export class ScanPdfComponent implements OnChanges {
+    @Input()
+    public imagePaths: string[];
 
     @Input()
-    public corpus: Corpus;
+    public allowDownload: boolean;
 
     @Input()
-    public document: FoundDocument;
-
-    @Input()
-    public query: string;
+    public downloadPath: string;
 
     public pdfSrc: ArrayBuffer;
 
@@ -36,26 +33,29 @@ export class ScanPdfComponent implements OnChanges, OnInit {
 
     public isLoaded: boolean = false;
 
-    public pdfInfo: pdfHeader;
+    public pdfInfo: PdfHeader;
 
     public pdfNotFound: boolean = false;
 
-    async get_pdf() {
-        this.pdfNotFound = false;
-        try {
-            const pdfResponse = <pdfResponse>await this.apiService.sourcePdf({
-                corpus_index: this.corpus.index,
-                image_path: this.document.fieldValues.image_path,
-                page: this.document.fieldValues.page - 1
-            })
-            this.pdfInfo = <pdfHeader>JSON.parse(pdfResponse.headers.pdfinfo);
-            this.page = this.pdfInfo.homePageIndex; //1-indexed
-            this.startPage = this.page;
-            this.pdfSrc = pdfResponse.body;
-        }
-        catch (e) {
-            this.pdfNotFound = true;
-        }
+    public zoomFactor: number = 1.0;
+    private maxZoomFactor: number = 1.7;
+    private path: URL;
+
+    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private router: Router) { }
+
+    ngOnChanges() {
+        this.path = new URL(this.imagePaths[0]);
+        this.apiService.getMedia({args: this.path.search}).then( response => {
+            this.pdfNotFound = false;
+            this.formatPdfResponse(response);
+        }).catch( () => this.pdfNotFound = true );
+    }
+
+    formatPdfResponse(pdfData) {
+        this.pdfInfo = <PdfHeader>JSON.parse(pdfData.headers.pdfinfo);
+        this.page = this.pdfInfo.homePageIndex; //1-indexed
+        this.startPage = this.page;
+        this.pdfSrc = pdfData.body;
     }
 
     /**
@@ -63,7 +63,6 @@ export class ScanPdfComponent implements OnChanges, OnInit {
          * fires after all pdf data is received and loaded by the viewer.
          */
     afterLoadComplete(pdfData: any) {
-
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
@@ -89,42 +88,50 @@ export class ScanPdfComponent implements OnChanges, OnInit {
             message: `File: \t${this.pdfInfo.fileName}<br/> Size:\t ${this.pdfInfo.fileSize}`,
             header: "Confirm download",
             accept: () => {
-                // this.apiService.downloadPdf({corpus_index: this.corpus.index, filepath: this.document.fieldValues.image_path})
-                window.location.href = `api/download_pdf/${this.corpus.index}/${this.document.fieldValues.image_path}`;
+                let url = this.downloadPath || this.path.pathname + this.path.search;
+                window.location.href = url;
             },
             reject: () => {
             }
-        });
+        })
     }
 
-    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private http: HttpClient) { }
+    // code to implement scrolling with the mouse wheel
+    // this is not currently feasible (container blocks scrolling interaction)
+    // leaving in in case we want to implement this later
+    // @HostListener('mousewheel', ['$event']) onMousewheel(event) {
+    //     if(event.wheelDelta>0){
+    //        this.zoomIn(); 
+    //     }
+    //     if(event.wheelDelta<0){
+    //         this.zoomOut();
+    //     }
+    // }
 
-    ngOnInit() {
-        this.get_pdf();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.document) {
-            if (changes.document.previousValue && changes.document.previousValue != changes.document.currentValue) {
-                this.isLoaded = false;
-                this.page = null;
-                this.startPage = null;
-                this.get_pdf();
-            }
+    zoomIn() {
+        if (this.zoomFactor <= this.maxZoomFactor) {
+            this.zoomFactor += .1;
         }
+    }
 
+    zoomOut() {
+        this.zoomFactor -= .1;
+    }
+
+    resetZoom() {
+        this.zoomFactor = 1;
     }
 
 }
 
-interface pdfHeader {
+interface PdfHeader {
     pageNumbers: number[];
     homePageIndex: number;
     fileName: string;
     fileSize: string;
 }
 
-interface pdfResponse {
+interface PdfResponse {
     status: number;
     body: ArrayBuffer;
     headers: any;
