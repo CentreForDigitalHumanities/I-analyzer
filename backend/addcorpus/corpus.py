@@ -425,6 +425,9 @@ class XMLCorpus(Corpus):
                 if 'attribute' in tag:
                     right_tag = next((candidate for candidate in candidates if
                                       candidate.attrs == tag['attribute']), None)
+                elif 'subtag' in tag:
+                    right_tag = next((candidate.find(tag['subtag']) for candidate in candidates if 
+                                      candidate.find(tag['subtag'])), None)
                 else:
                     right_tag = next((candidate for candidate in candidates if
                                       candidate.attrs == {}), None)

@@ -116,8 +116,6 @@ GO_SCAN_IMAGE_TYPE = 'application/pdf'
 GO_IMAGE = 'guardianobserver.jpg'
 
 ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
-ECCO_ES_INDEX = 'ecco'
-ECCO_ES_DOCTYPE = 'article'
 ECCO_IMAGE = 'ecco.jpg'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'

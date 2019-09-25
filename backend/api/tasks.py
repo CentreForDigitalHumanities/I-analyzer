@@ -59,7 +59,6 @@ def create_filename(route):
     """ name the file given the route of the search """
     filename = re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
     filename += '.csv'
-    print(filename)
     return filename
 
 

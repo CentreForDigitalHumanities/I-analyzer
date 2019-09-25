@@ -155,7 +155,6 @@ class XML(Extractor):
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
         '''
-        print(soup)
         # If the tag was a path, walk through it before continuing
         tag = self.tag
         if not tag:
