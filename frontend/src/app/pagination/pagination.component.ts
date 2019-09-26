@@ -8,7 +8,7 @@ import { SearchParameters } from '../models/index';
   styleUrls: ['./pagination.component.scss']
 })
 export class PaginationComponent implements OnChanges {
-    @Input() private totalResults: number;
+    @Input() public totalResults: number;
     
     public totalPages: number;
     public fromIndex: number = 0;
