@@ -497,6 +497,7 @@ def api_abort_tasks():
 def api_get_media():
     corpus_index = request.args['corpus']
     image_path = request.args['image_path']
+    print(corpus_index)
     backend_corpus = load_corpus(corpus_index)
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
         abort(403)

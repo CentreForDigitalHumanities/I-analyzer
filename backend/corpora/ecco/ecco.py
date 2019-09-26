@@ -5,7 +5,7 @@ locations.
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from flask import current_app
+from flask import current_app, url_for
 import os
 from os.path import join, dirname, isfile, split, splitext
 from datetime import datetime, timedelta
@@ -14,8 +14,8 @@ from pprint import pprint
 import random
 import re
 import sys
-sys.path.append('..')
-sys.path.append('../..')
+
+from addcorpus.image_processing import retrieve_pdf
 
 
 # Source files ################################################################
@@ -48,13 +48,6 @@ class Ecco(XMLCorpus):
                 continue
             elif tail.startswith('ECCOI'):
                 category = tail[6:]
-            # text_file = next((join(directory, filename) for filename in filenames if
-            #                   self.text_pattern.search(filename)), None)
-            # if not text_file:
-            #     continue
-            # else:
-            #     print(text_file)
-            #     continue
 
             for filename in filenames:
                 if not filename.startswith('.'):
@@ -93,6 +86,9 @@ class Ecco(XMLCorpus):
                             full_path, tags=meta_tags)
                         meta_dict['id'] = record_id
                         meta_dict['category'] = category
+                        parts = directory.split('/')
+                        image_dir = join('/', join(*parts[:-3]),'Images', parts[-1], parts[-2])
+                        meta_dict['image_dir'] = image_dir
 
                         yield(text_filepath, meta_dict)
 
@@ -156,7 +152,7 @@ class Ecco(XMLCorpus):
                 extractor=Metadata('author')
             ),
             Field(
-                name='page_no',
+                name='page',
                 display_name='Page number',
                 description='Number of the page on which match was found',
                 extractor=XML(attribute='id', transform=lambda x: int(int(x)/10))
@@ -196,11 +192,34 @@ class Ecco(XMLCorpus):
                 display_name='Volume',
                 description='The book volume',
                 extractor=Metadata('Volume')
+            ),
+            Field(
+                name='image_path',
+                hidden=True,
+                extractor=Combined(Metadata('image_dir'), Metadata('id'), transform=lambda x: '/'.join(x))
             )
         ]
 
 
-if __name__ == '__main__':
-
-    c = Ecco()
-    ss = list(c.sources())
+    def request_media(self, document):
+        image_url = url_for('api.api_get_media', 
+            corpus=self.es_index,
+            image_path=document['fieldValues']['image_path'],
+            page_no=document['fieldValues']['page'],
+            _external=True
+        )
+        return [image_url]
+    
+    
+    def get_media(self, request_args):
+        image_path = join(request_args['image_path'][0], "out.pdf")
+        print(image_path)
+        page_no = request_args['page_no']
+        pdf_data, pdf_stats = retrieve_pdf(image_path)
+        pdf_info = {
+            "pageNumbers": [page_no], #change from 0-indexed to real page
+            "homePageIndex": page_no, #change from 0-indexed to real page
+            "fileName": pdf_stats['filename'],
+            "fileSize": pdf_stats['filesize']
+        }
+        return pdf_data, pdf_info
