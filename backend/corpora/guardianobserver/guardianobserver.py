@@ -34,7 +34,6 @@ class GuardianObserver(XMLCorpus):
     data_directory = current_app.config['GO_DATA']
     es_index = current_app.config['GO_ES_INDEX']
     es_doctype = current_app.config['GO_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['GO_IMAGE']
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']

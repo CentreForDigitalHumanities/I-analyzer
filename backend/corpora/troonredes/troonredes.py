@@ -33,7 +33,6 @@ class Troonredes(XMLCorpus):
     data_directory = current_app.config['TROONREDES_DATA']
     es_index = current_app.config['TROONREDES_ES_INDEX']
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['TROONREDES_IMAGE']
     word_models_present = isfile(
         join(

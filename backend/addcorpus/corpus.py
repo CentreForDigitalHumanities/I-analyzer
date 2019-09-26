@@ -78,8 +78,10 @@ class Corpus(object):
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
+        Can be overridden in case we want, e.g., "AND" instead of "OR" for 
+        combining query terms.
         '''
-        raise NotImplementedError()
+        return None
 
     @property
     def fields(self):

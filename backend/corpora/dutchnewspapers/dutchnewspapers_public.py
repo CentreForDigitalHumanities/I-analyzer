@@ -29,7 +29,6 @@ class DutchNewspapersPublic(XMLCorpus):
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
     es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
