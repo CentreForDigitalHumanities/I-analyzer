@@ -53,7 +53,6 @@ export class SearchFilterComponent implements OnDestroy {
             this.filter = this.field.searchFilter;
             this.data = this.getDisplayData(this.filter);
         }
-        console.log(this.filter, this.data);
     }
 
     protected getDisplayData(filter: SearchFilter) {
