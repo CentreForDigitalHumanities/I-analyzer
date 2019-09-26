@@ -117,6 +117,7 @@ GO_IMAGE = 'guardianobserver.jpg'
 
 ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
 ECCO_IMAGE = 'ecco.jpg'
+ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
 
 PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
 PERIODICALS_IMAGE = 'Fleet_Street.jpg'

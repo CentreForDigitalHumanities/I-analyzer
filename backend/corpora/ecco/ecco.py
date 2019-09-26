@@ -2,19 +2,18 @@
 Collect corpus-specific information, that is, data structures and file
 locations.
 '''
-from addcorpus.extract import Combined, Metadata, XML
-from addcorpus import filters
-from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from flask import current_app, url_for
 import os
 from os.path import join, dirname, isfile, split, splitext
 from datetime import datetime, timedelta
 import logging
-from pprint import pprint
-import random
 import re
-import sys
+from io import BytesIO
 
+from flask import current_app, url_for
+
+from addcorpus.extract import Combined, Metadata, XML
+from addcorpus import filters
+from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus.image_processing import retrieve_pdf
 
 
@@ -31,6 +30,7 @@ class Ecco(XMLCorpus):
     es_index = current_app.config['ECCO_ES_INDEX']
     es_doctype = current_app.config['ECCO_ES_DOCTYPE']
     image = current_app.config['ECCO_IMAGE']
+    scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
     es_settings = None
 
     tag_toplevel = 'pageContent'
@@ -212,14 +212,17 @@ class Ecco(XMLCorpus):
     
     
     def get_media(self, request_args):
-        image_path = join(request_args['image_path'][0], "out.pdf")
-        print(image_path)
+        image_path = request_args['image_path']
+        filename = '{}.pdf'.format(split(image_path)[1])
+        full_path = join(image_path, filename)
         page_no = request_args['page_no']
-        pdf_data, pdf_stats = retrieve_pdf(image_path)
+        pdf_data, pdf_stats = retrieve_pdf(full_path)
         pdf_info = {
-            "pageNumbers": [page_no], #change from 0-indexed to real page
+            "pageNumbers": pdf_stats['all_pages'], #change from 0-indexed to real page
             "homePageIndex": page_no, #change from 0-indexed to real page
-            "fileName": pdf_stats['filename'],
+            "fileName": filename,
             "fileSize": pdf_stats['filesize']
         }
-        return pdf_data, pdf_info
+        with open(full_path, 'rb') as f:
+            pdf_data = f.read()
+        return BytesIO(pdf_data), pdf_info

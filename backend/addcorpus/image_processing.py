@@ -52,8 +52,8 @@ def retrieve_pdf(path):
         'filename': title if title else filename,
         'filesize': sizeof_fmt(getsize(path)),
         'all_pages': list(range(0, num_pages))
-     }
-
+    }
+    
     return pdf, info
 
 def sizeof_fmt(num, suffix='B'):

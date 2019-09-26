@@ -13,7 +13,9 @@ def convert_tif_to_pdf(data_dir):
             subdirs[:] = []
         if not len(filenames) or filenames[0].startswith('.'):
             continue
-        pdf_name ='{}/out.pdf'.format(directory)
+        book_id = split(directory)[1]
+        pdf_name ='{}/{}.pdf'.format(directory, book_id)
+        print(pdf_name)
         os.chdir(directory)
         magick_call = ['magick', '*.TIF', pdf_name]
         subprocess.check_call(magick_call)
