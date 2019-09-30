@@ -115,7 +115,7 @@ class Ecco(XMLCorpus):
                     1700,
                     1800,
                     description=(
-                        'Accept only articles with publication date in this range.'
+                        'Accept only book pages with publication year in this range.'
                     )
                 ),
                 extractor=Metadata('pubDateStart', transform=lambda x: x[:4])
@@ -124,7 +124,15 @@ class Ecco(XMLCorpus):
                 name='title',
                 display_name='Title',
                 description='The title of the book',
-                extractor=Metadata('fullTitle') 
+                extractor=Metadata('fullTitle'),
+                es_mapping={'type': 'keyword'},
+                results_overview=True,
+                search_field_core=True,
+                csv_core=True,
+                search_filter=filters.MultipleChoiceFilter(
+                    description="Accept only pages from these books",
+                    option_count=500
+                )
             ),
             Field(
                 name='content',
@@ -141,15 +149,29 @@ class Ecco(XMLCorpus):
                 name='ocr',
                 display_name='OCR quality',
                 description='Optical character recognition quality',
-                extractor=Metadata('ocr')
+                extractor=Metadata('ocr'),
+                es_mapping={'type': 'float'},
+                search_filter=filters.RangeFilter(
+                    0, 
+                    100,
+                    description=(
+                        'Accept only book pages for which the Opitical Character Recognition '
+                        'confidence indicator is in this range.'
+                    )
+                ),
             ),
             Field(
                 name='author',
                 display_name='Author',
                 description='The author of the book',
+                es_mapping={'type': 'keyword'},
                 results_overview=True,
                 csv_core=True,
-                extractor=Metadata('author')
+                extractor=Metadata('author'),
+                search_filter=filters.MultipleChoiceFilter(
+                    description='Accept only book pages by these authors.',
+                    option_count=100
+                )
             ),
             Field(
                 name='page',
@@ -173,7 +195,12 @@ class Ecco(XMLCorpus):
                 name='category',
                 display_name='Category',
                 description='Which category this book belongs to',
-                extractor=Metadata('category')
+                extractor=Metadata('category'),
+                es_mapping={'type': 'keyword'},
+                search_filter=filters.MultipleChoiceFilter(
+                description='Accept only book pages in these categories.',
+                option_count=7
+            ),
             ),
             Field(
                 name='imprint',
