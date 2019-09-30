@@ -31,7 +31,7 @@ def make_csv(results, request_json, username, email=None):
         send_user_mail(
             email=email,
             username=username,
-            subject_line= current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
+            subject_line="I-Analyzer CSV download",
             email_title="Download CSV",
             message="Your .csv file is ready for download.",
             prompt="Click on the link below.",
