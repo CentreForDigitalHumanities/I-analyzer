@@ -28,8 +28,8 @@ export class ScanPdfComponent implements OnChanges {
     public page: number = null;
 
     public startPage: number = null;
-
     public lastPage: number;
+    public pageNumbers: number [];
 
     public isLoaded: boolean = false;
 
@@ -48,6 +48,7 @@ export class ScanPdfComponent implements OnChanges {
         this.apiService.getMedia({args: this.path.search}).then( response => {
             this.pdfNotFound = false;
             this.formatPdfResponse(response);
+            this.afterLoadComplete(response);
         }).catch( () => this.pdfNotFound = true );
     }
 
@@ -64,6 +65,10 @@ export class ScanPdfComponent implements OnChanges {
          */
     afterLoadComplete(pdfData: any) {
         this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
+        let startArray = this.page - 2 > 0? this.page - 2 : 0;
+        let endArray = this.page + 2 < this.lastPage? this.page + 2 : this.lastPage;
+        this.pageNumbers = this.pdfInfo.pageNumbers.slice(startArray, endArray);
+        console.log(this.pdfInfo.pageNumbers, this.page, this.pageNumbers);
         this.isLoaded = true;
     }
 
