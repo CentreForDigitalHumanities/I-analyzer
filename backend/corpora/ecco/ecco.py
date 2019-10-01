@@ -168,6 +168,7 @@ class Ecco(XMLCorpus):
                 results_overview=True,
                 csv_core=True,
                 extractor=Metadata('author'),
+                search_field_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages by these authors.',
                     option_count=100
