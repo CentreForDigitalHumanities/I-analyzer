@@ -82,6 +82,7 @@ export class SearchComponent implements OnInit {
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
+                this.tabIndex = 0;
                 this.setFiltersFromParams(this.searchFilters, params);
                 this.setSearchFieldsFromParams(params);
                 this.setSortFromParams(this.corpus.fields, params);
