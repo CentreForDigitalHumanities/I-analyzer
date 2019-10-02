@@ -131,7 +131,7 @@ class Ecco(XMLCorpus):
                 csv_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description="Accept only pages from these books",
-                    option_count=500
+                    option_count=1000
                 )
             ),
             Field(
@@ -171,7 +171,7 @@ class Ecco(XMLCorpus):
                 search_field_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages by these authors.',
-                    option_count=25391
+                    option_count=1000
                 )
             ),
             Field(
