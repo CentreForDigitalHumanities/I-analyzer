@@ -8,7 +8,7 @@ import { SearchParameters } from '../models/index';
   styleUrls: ['./pagination.component.scss']
 })
 export class PaginationComponent implements OnChanges {
-    @Input() private totalResults: number;
+    @Input() public totalResults: number;
     
     public totalPages: number;
     public fromIndex: number = 0;
@@ -26,9 +26,11 @@ export class PaginationComponent implements OnChanges {
         this.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
         this.currentPages = [1, 2, 3];
         this.currentPage = 1;
+       
     }
 
     public async loadResults(page: number) {
+
         if (this.currentPage == page) {
             return true;
         }
@@ -39,8 +41,9 @@ export class PaginationComponent implements OnChanges {
         // setting variables for pagination view
         if (page == 1) {
             this.currentPages = [1, 2, 3];
+            
         }
-        else if (page == this.totalPages) {
+        else if (page == this.totalPages && this.totalResults > this.resultsPerPage*2) {
             this.currentPages = [this.totalPages-2, this.totalPages-1, this.totalPages];
         }
         else {

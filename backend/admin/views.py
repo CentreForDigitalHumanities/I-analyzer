@@ -11,7 +11,7 @@ from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
 from wtforms import ValidationError, TextField
-from wtforms.validators import Required, AnyOf
+from wtforms.validators import InputRequired, AnyOf
 
 from ianalyzer import models
 from api import security
@@ -68,6 +68,8 @@ class UserView(ModelView):
     # specifies the fields and their order in create and edit views
     form_create_rules = (
         'username', 'password', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
+    # don't include password in the edit view (so we can adjust download limit while leaving the password alone)
+    # this causes a warning, overridden in view registration on admin.py
     form_edit_rules = (
         'username', 'role', 'email', 'active', 'authenticated', 'download_limit', 'saml')
 
@@ -77,9 +79,9 @@ class UserView(ModelView):
     )
 
     form_args = dict(
-        username=dict(validators=[Required()]),
-        password=dict(validators=[Required()]),
-        email=dict(validators=[Required()])
+        username=dict(validators=[InputRequired()]),
+        password=dict(validators=[InputRequired()]),
+        email=dict(validators=[InputRequired()])
     )
 
     form_widget_args = dict(

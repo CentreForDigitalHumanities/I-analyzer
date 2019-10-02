@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { ApiServiceMock } from './api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import { UserService } from './user.service';

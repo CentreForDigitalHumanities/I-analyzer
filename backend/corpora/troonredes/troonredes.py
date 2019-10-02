@@ -33,7 +33,6 @@ class Troonredes(XMLCorpus):
     data_directory = current_app.config['TROONREDES_DATA']
     es_index = current_app.config['TROONREDES_ES_INDEX']
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['TROONREDES_IMAGE']
     word_models_present = isfile(
         join(
@@ -107,7 +106,7 @@ class Troonredes(XMLCorpus):
                     'Accept only speeches given by '
                     'the relevant monarch.'
                 ),
-                options=MONARCHS
+                option_count=len(MONARCHS)
             ),
         ),
         Field(
@@ -124,7 +123,7 @@ class Troonredes(XMLCorpus):
                     'Accept only speeches of '
                     'the relevant type.'
                 ),
-                options=SPEECH_TYPES
+                option_count=len(SPEECH_TYPES)
             ),
         ),
         Field(

@@ -18,9 +18,9 @@ export class DownloadService {
     /**
      * download csv directly via api service.
      */
-    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number): Promise<string | void> {
+    public async download(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], requestedResults: number, route: string): Promise<string | void> {
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-        return this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults }).then( result => {
+        return this.apiService.download({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'size': requestedResults, 'route': route }).then( result => {
             if (result.status === 200) {
                 let filename = result.headers.filename;
                 saveAs(result.body, filename);
@@ -31,7 +31,7 @@ export class DownloadService {
         });
     }
 
-    public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[]){
+    public async downloadTask(corpus: Corpus, queryModel: QueryModel, fields: CorpusField[], route: string){
     /**
      * Downloads the given tabular data as a CSV file on the backend.
      * Link to CSV is sent to user per email
@@ -40,7 +40,7 @@ export class DownloadService {
      * @param fields The fields to appear as columns in the csv.
      */
     let esQuery = this.elasticSearchService.makeEsQuery(queryModel); //to create elastic search query
-    return this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ) }).then( result => {
+    return this.apiService.downloadTask({'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'route': route }).then( result => {
         return result;
     }).catch( error => {
         throw new Error(error.headers.message[0]);

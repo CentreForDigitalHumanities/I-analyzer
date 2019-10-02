@@ -5,11 +5,12 @@ import os.path as op
 import logging
 from datetime import datetime
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.image_processing import retrieve_pdf, pdf_pages, build_partial_pdf
 
 
 class DutchAnnualReports(XMLCorpus):
@@ -23,7 +24,6 @@ class DutchAnnualReports(XMLCorpus):
     data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
     es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
     es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
@@ -38,6 +38,8 @@ class DutchAnnualReports(XMLCorpus):
             current_app.config['WM_BINNED_FN']
         )
     )
+
+    mimetype = 'application/pdf'
 
     # Data overrides from .common.XMLCorpus
     tag_toplevel = 'alto'
@@ -133,7 +135,7 @@ class DutchAnnualReports(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
-                options=sorted(dutchannualreports_map.values()),
+                option_count=len(dutchannualreports_map.keys()),
             ),
             extractor=Metadata(
                 key='company',
@@ -150,10 +152,7 @@ class DutchAnnualReports(XMLCorpus):
                 description=(
                     'Accept only financial / non-financial companies'
                 ),
-                options=[
-                    'Financial',
-                    'Non-Financial'
-                ]
+                option_count = 2,
             ),
             extractor=Metadata(key='company_type')
         ),
@@ -211,3 +210,36 @@ class DutchAnnualReports(XMLCorpus):
             hidden=True,
         )
     ]
+
+    def request_media(self, document):  
+        image_url = url_for('api.api_get_media', 
+            corpus=self.es_index,
+            image_path=document['fieldValues']['image_path'],
+            page_no=document['fieldValues']['page'],
+            _external=True
+        )
+        return [image_url]
+       
+    def get_media(self, request_args):
+        ''' 
+        Given the image path and page number of the search result,
+        construct a new pdf which contains 2 pages before and after.
+        '''
+        image_path = request_args['image_path']
+        home_page = int(request_args['page_no'])
+        absolute_path = op.join(self.data_directory, image_path)
+        if not op.isfile(absolute_path):
+            return None
+        input_pdf, pdf_info = retrieve_pdf(absolute_path)
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
+         #the page corresponding to the document       
+        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
+        out = build_partial_pdf(pages, input_pdf)
+        pdf_info = {
+            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
+            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
+            "fileName": pdf_info['filename'],
+            "fileSize": pdf_info['filesize']
+        }      
+        return out, pdf_info
+        

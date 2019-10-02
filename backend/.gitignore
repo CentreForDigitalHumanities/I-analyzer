@@ -13,3 +13,4 @@ instance/
 set
 corpora/*/wm/*
 api/csv_files/*.csv
+corpora/guardianobserver/processed.txt

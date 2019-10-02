@@ -12,7 +12,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from flask import current_app
+from flask import current_app, url_for
 
 from addcorpus import extract
 from addcorpus import filters
@@ -30,7 +30,6 @@ class Times(XMLCorpus):
     data_directory = current_app.config['TIMES_DATA']
     es_index = current_app.config['TIMES_ES_INDEX']
     es_doctype = current_app.config['TIMES_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['TIMES_IMAGE']
     scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
     description_page = current_app.config['TIMES_DESCRIPTION_PAGE']
@@ -254,10 +253,7 @@ class Times(XMLCorpus):
                     'Accept only articles that occur in the relevant '
                     'supplement. Only after 1985.'
                 ),
-                options=[
-                    'Supplement',
-                    'Standard'
-                ]
+                option_count=2
             ),
             extractor=extract.XML(
                 tag=['..', 'pageid'], attribute='isPartOf',
@@ -406,33 +402,7 @@ class Times(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=[
-                    'Classified Advertising',
-                    'Display Advertising',
-                    'Property',
-                    'News',
-                    'News in Brief',
-                    'Index',
-                    'Law',
-                    'Politics and Parliament',
-                    'Court and Social',
-                    'Business and Finance',
-                    'Shipping News',
-                    'Stock Exchange Tables',
-                    'Births',
-                    'Business Appointments',
-                    'Deaths',
-                    'Marriages',
-                    'Obituaries',
-                    'Official Appointments and Notices',
-                    'Editorials/Leaders',
-                    'Feature Articles (aka Opinion)',
-                    'Letters to the Editor',
-                    'Arts and Entertainment',
-                    'Reviews',
-                    'Sport',
-                    'Weather'
-                ]
+                option_count=25
             ),
             extractor=extract.XML(tag='ct', multiple=True),
             csv_core=True
@@ -449,15 +419,7 @@ class Times(XMLCorpus):
                 description=(
                     'Accept only articles associated with these types '
                     'of illustrations.'),
-                options=[
-                    'Cartoon',
-                    'Cartoons',
-                    'Map',
-                    'Drawing-Painting',
-                    'Photograph',
-                    'Graph',
-                    'Table',
-                ]
+                option_count=7
             ),
             extractor=extract.Choice(
                 extract.XML(
@@ -503,3 +465,15 @@ class Times(XMLCorpus):
             )
         ),
     ]
+
+    def request_media(self, document):
+        field_values = document['fieldValues']
+        if 'image_path' in field_values:
+            image_urls = [url_for(
+                'api.api_get_media', 
+                corpus=self.es_index,
+                image_path=field_values['image_path'],
+                _external=True
+            )]
+        else: image_urls = []
+        return image_urls

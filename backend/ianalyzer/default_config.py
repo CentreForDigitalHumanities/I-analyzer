@@ -81,7 +81,7 @@ CORPUS_DEFINITIONS = {}
 DUTCHANNUALREPORTS_ES_DOCTYPE = 'page'
 DUTCHANNUALREPORTS_IMAGE = 'dutchannualreports.jpg'
 DUTCHANNUALREPORTS_DESCRIPTION_PAGE = 'dutchannualreports.md'
-DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'pdf'
+DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE = 'application/pdf'
 DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD = True
 DUTCHANNUALREPORTS_MAP = {}
 DUTCHANNUALREPORTS_MAP_FILE = 'dutchannualreports_mapping.csv'
@@ -90,10 +90,11 @@ DUTCHNEWSPAPERS_ES_DOCTYPE = 'article'
 DUTCHNEWSPAPERS_IMAGE = 'dutchnewspapers.jpg'
 DUTCHNEWSPAPERS_TITLES_FILE = 'newspaper_titles.txt'
 DUTCHNEWSPAPERS_ES_INDEX = 'dutchnewspapers-public'
-DUTCHNEWSPAPERS_DATA = '/directory/to/data' # remember to set this in config.py
+DUTCHNEWSPAPERS_DATA = '/directory/to/data'  # remember to set this in config.py
 
 DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
-DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data' # remember to set this in config.py
+# remember to set this in config.py
+DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
@@ -101,7 +102,7 @@ TIMES_ES_INDEX = 'times'
 TIMES_ES_DOCTYPE = 'article'
 TIMES_DATA = '/mnt/times'
 TIMES_IMAGE = 'times.jpg'
-TIMES_SCAN_IMAGE_TYPE = 'png'
+TIMES_SCAN_IMAGE_TYPE = 'image/png'
 TIMES_DESCRIPTION_PAGE = 'times.md'
 
 TML_ES_INDEX = 'tml'
@@ -111,18 +112,27 @@ TML_IMAGE = 'tml.jpg'
 
 TROONREDES_IMAGE = 'troon.jpg'
 
-GO_SCAN_IMAGE_TYPE = 'pdf'
+GO_SCAN_IMAGE_TYPE = 'application/pdf'
 GO_IMAGE = 'guardianobserver.jpg'
+
+ECCO_DATA = '/directory/to/data'  # remember to set this in config.py
+ECCO_IMAGE = 'ecco.jpg'
+ECCO_SCAN_IMAGE_TYPE = 'application/pdf'
+
+PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
+PERIODICALS_IMAGE = 'Fleet_Street.jpg'
+PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
 #################
 
-#Celery configuration
+# Celery configuration
 CELERY_BROKER_URL = 'amqp://'
 CELERY_BACKEND = 'amqp'
+CSV_FILES_PATH =  'api/csv_files'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization
 WM_COMPLETE_FN = "complete.pkl"
 WM_BINNED_FN = "binned.pkl"
 
-WORDCLOUD_LIMIT = 100000;
+WORDCLOUD_LIMIT = 10000

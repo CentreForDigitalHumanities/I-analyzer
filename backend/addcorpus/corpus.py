@@ -2,17 +2,15 @@
 Module contains the base classes from which corpora can derive;
 '''
 
+from . import extract
+from zipfile import ZipExtFile
+import itertools
+import inspect
+import json
+import bs4
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger('indexing')
-
-import bs4
-import json
-import inspect
-import itertools
-from zipfile import ZipExtFile
-
-from . import extract
 
 
 class Corpus(object):
@@ -78,8 +76,10 @@ class Corpus(object):
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
+        Can be overridden in case we want, e.g., "AND" instead of "OR" for 
+        combining query terms.
         '''
-        raise NotImplementedError()
+        return None
 
     @property
     def fields(self):
@@ -106,7 +106,7 @@ class Corpus(object):
             return None
         else:
             return self.scan_image_type
-    
+
     def word_models_present(self):
         '''
         if word models are present for this corpus
@@ -130,6 +130,32 @@ class Corpus(object):
         URL to markdown document with a comprehensive description
         '''
         return None
+
+    def update_body(self, **kwargs):
+        ''' given one document in the index, give an instruction 
+        of how to update the index
+        (based on script or partial data)
+        '''
+        return None
+
+    def update_query(self, **kwargs):
+        ''' given the min date and max date of the 
+        time period for which the update should be performed,
+        return a query restricting the result set
+        Default is a match_all query.
+        '''
+        return {
+            "query": {
+                "match_all": {}
+            }
+        }
+    
+    def request_media(self, document):
+        '''
+        Get a list of urls from where media associated 
+        with a document can be fetched.
+        '''
+        return []
 
     def es_mapping(self):
         '''
@@ -258,7 +284,7 @@ class XMLCorpus(Corpus):
 
     def source2dicts(self, source):
         '''
-        Generate a document dictionaries from a given XML file. This is the
+        Generate document dictionaries from a given XML file. This is the
         default implementation for XML layouts; may be subclassed if more
         '''
         # Make sure that extractors are sensible
@@ -278,65 +304,74 @@ class XMLCorpus(Corpus):
             # no metadata
             filename = source
             soup = self.soup_from_xml(filename)
-        elif isinstance(source, bytes): 
+        elif isinstance(source, bytes):
             soup = self.soup_from_data(source)
             filename = soup.find('RecordID')
         else:
             filename = source[0]
             soup = self.soup_from_xml(filename)
             metadata = source[1] or None
+            soup = self.soup_from_xml(filename)
         if 'external_file' in metadata:
             external_fields = [field for field in self.fields if 
                  isinstance(field.extractor, extract.XML) and 
                  field.extractor.external_file]
             regular_fields = [field for field in self.fields if 
                  field not in external_fields]
-            external_dict = self.external_source2dict(external_fields, source[1])
+            external_soup = self.soup_from_xml(metadata['external_file'])
         else:
             regular_fields = self.fields
             external_dict = {}
+            external_fields = None
         # Extract fields from the soup
         tag = self.tag_entry
         bowl = self.bowl_from_soup(soup)
         if bowl:
             for spoon in bowl.find_all(tag):
-                # yield the union of external fields and document fields
-                yield dict(itertools.chain(external_dict.items(),  {
-                    field.name: field.extractor.apply(
+                regular_field_dict = {field.name: field.extractor.apply(
                         # The extractor is put to work by simply throwing at it
                         # any and all information it might need
                         soup_top=bowl,
                         soup_entry=spoon,
                         metadata=metadata
-                    ) for field in regular_fields if field.indexed
-                }.items()
-                ))
+                    ) for field in regular_fields if field.indexed}
+                external_dict = {}
+                if external_fields:
+                    metadata.update(regular_field_dict)
+                    external_dict = self.external_source2dict(external_soup, external_fields, metadata)        
+                # yield the union of external fields and document fields
+                yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
 
-    def external_source2dict(self, external_fields, metadata):
+    def external_source2dict(self, soup, external_fields, metadata):
         ''' 
         given an external xml file with metadata,
         return a dictionary with tags which were found in that metadata
         wrt to the current source.
         '''
         external_dict = {}
-        filename = metadata['external_file']
-        soup = self.soup_from_xml(filename)
         for field in external_fields:
             bowl = self.bowl_from_soup(
                 soup, field.extractor.external_file['xml_tag_toplevel'])
-            spoon = field.extractor.external_file['xml_tag_entry']
+            spoon = None
+            if field.extractor.secondary_tag:
+                # find a specific subtree in the xml tree identified by matching a secondary tag
+                spoon = bowl.find(
+                    field.extractor.secondary_tag['tag'],
+                    string=metadata[field.extractor.secondary_tag['match']]).parent
+            if not spoon:
+                spoon = field.extractor.external_file['xml_tag_entry']
             if bowl:
                 external_dict[field.name] = field.extractor.apply(
                     soup_top=bowl,
                     soup_entry=spoon,
                     metadata=metadata
-                )            
+                )
             else:
                 logger.warning(
-                    'Top-level tag not found in `{}`'.format(filename))
+                    'Top-level tag not found in `{}`'.format(bowl))
         return external_dict
 
     def soup_from_xml(self, filename):
@@ -349,8 +384,8 @@ class XMLCorpus(Corpus):
             data = f.read()
         logger.info('Loaded {} into memory...'.format(filename))
         return self.soup_from_data(data)
-        
-    def soup_from_data(self, data):    
+
+    def soup_from_data(self, data):
         '''
         Parses content of a xml file
         '''
@@ -367,7 +402,7 @@ class XMLCorpus(Corpus):
             entry_tag = self.tag_entry
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
-    
+
     def metadata_from_xml(self, filename, tags):
         '''
         Given a filename of an xml with metadata, and a range of tags to extract,
@@ -390,11 +425,14 @@ class XMLCorpus(Corpus):
             else:
                 candidates = soup.find_all(tag['tag'])
                 if 'attribute' in tag:
-                    right_tag = next((candidate for candidate in candidates if 
-                     candidate.attrs==tag['attribute']), None)
+                    right_tag = next((candidate for candidate in candidates if
+                                      candidate.attrs == tag['attribute']), None)
+                elif 'subtag' in tag:
+                    right_tag = next((candidate.find(tag['subtag']) for candidate in candidates if 
+                                      candidate.find(tag['subtag'])), None)
                 else:
-                    right_tag = next((candidate for candidate in candidates if 
-                     candidate.attrs=={}), None)
+                    right_tag = next((candidate for candidate in candidates if
+                                      candidate.attrs == {}), None)
                 if not right_tag:
                     continue
                 if 'save_as' in tag:
@@ -544,7 +582,7 @@ class Field(object):
              (self.es_mapping['type'] == 'keyword' and self.search_filter == None))
         # Add back reference to field in filter
         self.downloadable = downloadable
-        
+
         if self.search_filter:
             self.search_filter.field = self
 

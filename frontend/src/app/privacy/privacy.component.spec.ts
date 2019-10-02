@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PrivacyComponent } from './privacy.component';
 import { DialogService } from '../services/dialog.service';
-import { DialogServiceMock } from '../services/dialog.service.mock';
+import { DialogServiceMock } from '../../mock-data/dialog';
 
 describe('PrivacyComponent', () => {
   let component: PrivacyComponent;

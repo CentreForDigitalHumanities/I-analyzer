@@ -1,12 +1,12 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { ApiService } from './api.service';
-import { ApiServiceMock } from './api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { ApiRetryService } from './api-retry.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { UserServiceMock } from './user.service.mock';
+import { UserServiceMock } from '../../mock-data/user';
 
 describe('QueryService', () => {
     beforeEach(() => {

@@ -1,21 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
+import { commonTestBed } from '../common-test-bed';
 
-import { DialogModule } from 'primeng/primeng';
-
-import * as corpus from '../../mock-data/corpus';
 import { CorpusField } from '../models/index';
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, HighlightService, LogService, QueryService, SearchService, UserService } from '../services';
-import { ApiServiceMock } from '../services/api.service.mock';
-import { ElasticSearchServiceMock } from '../services/elastic-search.service.mock';
-import { UserServiceMock } from '../services/user.service.mock';
 
-import { HighlightPipe } from './highlight.pipe';
-import { PaginationComponent } from './pagination.component';
-import { SearchRelevanceComponent } from './search-relevance.component';
 import { SearchResultsComponent } from './search-results.component';
-import { HttpClientModule } from '@angular/common/http';
-import { componentRefresh } from '@angular/core/src/render3/instructions';
 
 
 describe('Search Results Component', () => {
@@ -23,29 +11,7 @@ describe('Search Results Component', () => {
     let fixture: ComponentFixture<SearchResultsComponent>;
 
     beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [HighlightPipe, PaginationComponent, SearchRelevanceComponent, SearchResultsComponent],
-            imports: [DialogModule, FormsModule, HttpClientModule],
-            providers: [
-                {
-                    provide: ApiService, useValue: new ApiServiceMock({
-                        ['corpus']: corpus.MockCorpusResponse
-                    })
-                },
-                ApiRetryService,
-                {
-                    provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
-                },
-                DataService,
-                HighlightService,
-                LogService,
-                QueryService,
-                SearchService,
-                {
-                    provide: UserService, useValue: new UserServiceMock()
-                }]
-        })
-            .compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

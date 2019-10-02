@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/primeng';
 
 import { DialogService } from '../services/index';
-import { DialogServiceMock } from '../services/dialog.service.mock';
+import { DialogServiceMock } from '../../mock-data/dialog';
 import { DialogComponent } from './dialog.component';
 
 describe('DialogComponent', () => {

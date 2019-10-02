@@ -29,7 +29,6 @@ class DutchNewspapersPublic(XMLCorpus):
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
     es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
@@ -60,7 +59,7 @@ class DutchNewspapersPublic(XMLCorpus):
                 subdirs[:] = []
                 continue
             definition_file = next((join(directory, filename) for filename in filenames if 
-                                self.definition_pattern.match(filename)), None)
+                                self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
             meta_dict = self.metadata_from_xml(definition_file, tags=[
@@ -86,10 +85,9 @@ class DutchNewspapersPublic(XMLCorpus):
                     #def_match = self.definition_pattern.match(name)
                     article_match = self.article_pattern.match(name)
                     if article_match:
-                        identifier = os.path.basename(os.path.dirname(
-                            full_path)) + article_match.group(1)
-                        record_id = identifier[4:-4].replace("_",":") +\
-                          ":a" + identifier[-4:]
+                        parts = name.split("_")
+                        record_id = parts[1] + \
+                          ":a" + parts[2]
                         meta_dict.update({
                             'external_file': definition_file,
                             'id': record_id
@@ -100,6 +98,7 @@ class DutchNewspapersPublic(XMLCorpus):
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
+    paper_count = len(papers)
 
     distribution = {
         'Landelijk': 'National',
@@ -180,7 +179,7 @@ class DutchNewspapersPublic(XMLCorpus):
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
-                options=self.papers
+                option_count=len(self.papers)
             ),
             extractor=Metadata('title')
         ),
@@ -220,7 +219,7 @@ class DutchNewspapersPublic(XMLCorpus):
                                   ),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these categories.',
-                options=['test', 'options']
+                option_count=2,
             ),
         ),
         Field(
@@ -232,7 +231,7 @@ class DutchNewspapersPublic(XMLCorpus):
             extractor=Metadata('spatial'),
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles appearing in specific areas.',
-                options=self.distribution
+                option_count=7
             ),
         ),
         Field(
@@ -247,11 +246,7 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Language',
             description='language',
             es_mapping={'type': 'keyword'},
-            extractor=Metadata('language'),
-            search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in this language.',
-                options=['nl', 'fr'],
-            ),
+            extractor=Metadata('language')
         ),
         Field(
             name='article_title',
@@ -283,15 +278,15 @@ class DutchNewspapersPublic(XMLCorpus):
         ),
         Field(
             name='temporal',
-            display_name='Publication frequency',
-            description='publication frequency of the newspaper.',
+            display_name='Edition',
+            description='Newspaper edition for the given date',
             results_overview=True,
             csv_core=True,
             es_mapping={'type': 'keyword'},
             visualization_type='term_frequency',
             search_filter=filters.MultipleChoiceFilter(
-                description='Accept only articles in newspapers with this publication frequency.',
-                options=['Dag', 'Week', 'Maand'],
+                description='Accept only articles in newspapers which appeared as a given edition.',
+                option_count=3,
             ),
             extractor=Metadata('temporal')
         ),

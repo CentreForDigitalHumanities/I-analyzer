@@ -1,28 +1,16 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+
+import { commonTestBed } from '../common-test-bed';
 
 import { DocumentViewComponent } from './document-view.component';
-import { ImageViewComponent } from './image-view.component';
-import { HighlightPipe, SearchRelevanceComponent } from '../search/index';
-import { HighlightService } from '../services/index';
-
-import { PdfViewerComponent } from 'ng2-pdf-viewer';
-import { TabViewModule } from 'primeng/tabview';
-import { HttpClientModule } from '@angular/common/http';
-import { ScanPdfComponent } from './scan-pdf.component';
-import { ConfirmDialogModule } from 'primeng/primeng';
 
 describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;
     let fixture: ComponentFixture<DocumentViewComponent>;
 
     beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [HighlightPipe, DocumentViewComponent, ImageViewComponent, ScanPdfComponent, SearchRelevanceComponent, PdfViewerComponent],
-            imports: [FormsModule, TabViewModule, HttpClientModule, ConfirmDialogModule],
-            providers: [HighlightService]
-        }).compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../services/api.service';
-import { ApiServiceMock } from '../services/api.service.mock';
+import { ApiServiceMock } from '../../mock-data/api';
 import { RequestResetComponent } from './request-reset.component';
 
 describe('RequestResetComponent', () => {

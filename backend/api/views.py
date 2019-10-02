@@ -8,11 +8,9 @@ import base64
 import math
 import functools
 
-from os.path import dirname, split, join, isfile, getsize
+from os.path import dirname, basename, split, join, isfile, getsize
 import sys
 import tempfile
-from io import BytesIO
-from PyPDF2 import PdfFileReader, PdfFileWriter
 from datetime import datetime, timedelta
 from celery import chain
 from werkzeug.security import generate_password_hash
@@ -222,7 +220,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -249,7 +247,7 @@ def api_download_task():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif not current_user.email:
@@ -269,7 +267,8 @@ def api_download_task():
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])
 def api_csv(filename):
-    return send_from_directory( current_app.instance_path, '{}'.format(filename))
+    csv_files_dir=current_app.config['CSV_FILES_PATH']
+    return send_from_directory(csv_files_dir, filename)
 
 
 @api.route('/login', methods=['POST'])
@@ -493,60 +492,51 @@ def api_abort_tasks():
         return jsonify({'success': True})
 
 
-@api.route('/get_scan_image/<corpus_index>/<path:image_path>', methods=['GET'])
+@api.route('/get_media', methods=['GET'])
 @login_required
-def api_get_scan_image(corpus_index, image_path):
+def api_get_media():
+    corpus_index = request.args['corpus']
+    image_path = request.args['image_path']
     backend_corpus = load_corpus(corpus_index)
-    if corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+    if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
+        abort(403)
+    if len(list(request.args.keys()))>2:
+        # there are more arguments, currently used for pdf retrieval only
+        try:
+            out, info = backend_corpus.get_media(request.args)
+        except Exception as e:
+            current_app.logger.error(e)
+            abort(400)
+        header = json.dumps(info)
+        if not out:
+            abort(404)
+        response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True, mimetype=backend_corpus.scan_image_type))
+        response.headers['pdfinfo'] = header
+        return response
+    else:
         absolute_path = join(backend_corpus.data_directory, image_path)
         if not isfile(absolute_path):
             abort(404)
         else:
-            return send_file(absolute_path, mimetype='image/png')
+            return send_file(absolute_path, mimetype=backend_corpus.scan_image_type, as_attachment=True)
 
-@api.route('/source_pdf', methods=['POST'])
+
+@api.route('/request_media', methods=['POST'])
 @login_required
-def api_get_pdf():
+def api_request_images():
     if not request.json:
         abort(400)
-
     corpus_index = request.json['corpus_index']
     backend_corpus = load_corpus(corpus_index)
-
     if not corpus_index in [corpus.name for corpus in current_user.role.corpora]:
-        abort(400)
+        abort(403)
     else:
-        pages_returned = 5 #number of pages that is displayed. must be odd number.
-        
-        home_page = request.json['page'] #the page corresponding to the document
-        image_path = request.json['image_path']
-        absolute_path = join(backend_corpus.data_directory, image_path)
-
-        if not isfile(absolute_path):
-            abort(404)
-
-        input_pdf, pdf_info = retrieve_pdf(absolute_path)
-        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
-        out = build_partial_pdf(pages, input_pdf)
-        
-        response = make_response(send_file(out, mimetype='application/pdf', attachment_filename="scan.pdf", as_attachment=True))
-        pdf_header = json.dumps({
-            "pageNumbers": [p+1 for p in pages], #change from 0-indexed to real page
-            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
-            "fileName": pdf_info['filename'],
-            "fileSize": pdf_info['filesize']
-        })
-        response.headers['pdfinfo'] = pdf_header
-    return response
-
-@api.route('/download_pdf/<corpus_index>/<path:filepath>', methods=['GET'])
-@login_required 
-def api_download_pdf(corpus_index, filepath):
-    backend_corpus = load_corpus(corpus_index)
-
-    if corpus_index in [c.name for c in current_user.role.corpora]:
-        absolute_path = join(backend_corpus.data_directory, filepath)
-        return send_file(absolute_path, as_attachment=True)
+        data = backend_corpus.request_media(request.json['document'])
+        current_app.logger.info(data)
+        if len(data)==0:
+            return jsonify({'success': False})
+        output = {'success': True, 'media': data}
+        return jsonify(output)
 
 
 @api.route('/get_related_words', methods=['POST'])
@@ -599,67 +589,3 @@ def api_get_related_words_time_interval():
             }
         }) 
     return response
-
-def pdf_pages(all_pages, pages_returned, home_page):
-    '''
-    Decide which pages should be returned, and the index of the home page in the resulting list
-    '''
-    context_radius = int((pages_returned - 1) / 2) #the number of pages before and after the initial
-    #the page is within context_radius of the beginning of the pdf:
-    if (home_page - context_radius) <= 0:
-        pages = all_pages[:home_page+context_radius+1]
-        home_page_index = pages.index(home_page)
-
-    #the page is within context_radius of the end of the pdf:
-    elif (home_page + context_radius) >= len(all_pages):
-        pages = all_pages[home_page-context_radius:]
-        home_page_index = pages.index(home_page)
-
-    #normal case:
-    else:
-        pages = all_pages[(home_page-context_radius):(home_page+context_radius+1)]
-        home_page_index = context_radius
-    
-    return pages, home_page_index
-
-def build_partial_pdf(pages, input_pdf):
-    '''
-    Build a partial pdf consisting of the requires pages.
-    Returns a temporary file stream.
-    '''
-    tmp = BytesIO()
-    pdf_writer = PdfFileWriter()
-    for p in pages:
-        pdf_writer.addPage(input_pdf.getPage(p))
-    pdf_writer.write(tmp)
-    tmp.seek(0) #reset stream
-
-    return tmp
-
-def retrieve_pdf(path):
-    '''
-    Retrieve the pdf as a file object, and gather some additional information.
-    '''
-    pdf = PdfFileReader(path, 'rb')
-    title = pdf.getDocumentInfo().title
-    _dir, filename = split(path)
-    num_pages = pdf.getNumPages()
-
-    info = {
-        'filename': title if title else filename,
-        'filesize': sizeof_fmt(getsize(path)),
-        'all_pages': list(range(0, num_pages))
-     }
-
-    return pdf, info
-
-def sizeof_fmt(num, suffix='B'):
-    '''
-    Converts numerical filesize to human-readable string.
-    Maximum of three numbers before the decimal, and one behind.
-    E.g. 124857000 -> "119.1 MB"
-    '''
-    for unit in ['','K','M','G']:
-        if abs(num) < 1024.0:
-            return "{:3.1f} {}{}".format(num, unit, suffix)
-        num /= 1024.0

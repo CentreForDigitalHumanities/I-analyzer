@@ -3,11 +3,12 @@ This module is a tool to define how to extract specific information from an
 object such as a dictionary or a BeautifulSoup XML node.
 '''
 
+import bs4
+import html
+import re
 import logging
 logger = logging.getLogger('indexing')
-import re
-import html
-import bs4
+
 
 class Extractor(object):
     '''
@@ -30,13 +31,12 @@ class Extractor(object):
         '''
         if self.applicable is None or self.applicable(kwargs.get('metadata')):
             result = self._apply(*nargs, **kwargs)
-
             try:
                 if self.transform:
                     return self.transform(result)
             except Exception:
                 logger.critical("Value {v} could not be converted."
-                                 .format(v=result))
+                                .format(v=result))
                 return None
             else:
                 return result
@@ -114,9 +114,14 @@ class XML(Extractor):
     '''
 
     def __init__(self,
-                 # Tag to select. When this is a list, read as a path (e.g.
+                 # Tag to select. When this is a list, read as a path
+                 # e.g. to select successive children; makes sense when recursive=False)
+                 # Pass None if the information is in the attribute of the
+                 # current head of the tree
                  tag=[],
-                 # select successive children; makes sense when recursive=False)
+                 # whether to ascend the tree to find the indicated tag
+                 # useful when a part of the tree has been selected with secondary_tag
+                 parent_level=None,
                  attribute=None,  # Which attribute, if any, to select
                  flatten=False,  # Flatten the text content of a non-text children?
                  toplevel=False,  # Tag to select for search: top-level or entry tag
@@ -125,22 +130,23 @@ class XML(Extractor):
                  secondary_tag={
                      'tag': None,
                      'match': None
-                 }, # Whether the tag's content should match a given string 
+                 },  # Whether the tag's content should match a given string
                  external_file={  # Whether to search other xml files for this field, and the file tag these files should have
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
                  *nargs,
                  **kwargs
-    ):
+                 ):
 
         self.tag = tag
+        self.parent_level = parent_level
         self.attribute = attribute
         self.flatten = flatten
         self.toplevel = toplevel
         self.recursive = recursive
         self.multiple = multiple
-        self.secondary_tag = secondary_tag if secondary_tag['tag']!= None else None
+        self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
         super().__init__(*nargs, **kwargs)
 
@@ -151,6 +157,8 @@ class XML(Extractor):
         '''
         # If the tag was a path, walk through it before continuing
         tag = self.tag
+        if not tag:
+            return soup
         if isinstance(self.tag, list):
             if len(tag) == 0:
                 return soup
@@ -164,24 +172,33 @@ class XML(Extractor):
                 if not soup:
                     return None
             tag = self.tag[-1]
-
+            
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
-            sibling = soup.find(self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
+            sibling = soup.find(
+                self.secondary_tag['tag'], string=metadata[self.secondary_tag['match']])
             if sibling:
                 return sibling.parent.find(tag)
 
         # Find and return (all) relevant BeautifulSoup element(s)
         if self.multiple:
             return soup.find_all(tag, recursive=self.recursive)
+        elif self.parent_level:
+            count = 0
+            while count < self.parent_level:
+                soup = soup.parent
+                count += 1
+            return soup.find(tag, recursive=self.recursive)
         else:
             return soup.find(tag, recursive=self.recursive)
+        
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
             # pass along the metadata to the _select method
-            soup = self._select(soup_top if self.toplevel else soup_entry, metadata=kwargs['metadata'])
+            soup = self._select(
+                soup_top if self.toplevel else soup_entry, metadata=kwargs['metadata'])
         # Select appropriate BeautifulSoup element
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
@@ -220,11 +237,13 @@ class XML(Extractor):
 
         _softbreak = re.compile('(?<=\S)\n(?=\S)| +')
         _newlines = re.compile('\n+')
+        _tabs = re.compile('\t+')
 
         return html.unescape(
             _newlines.sub('\n',
-                          _softbreak.sub(' ', text)
-                          ).strip()
+                          _softbreak.sub(' ', 
+                          _tabs.sub('', text)
+                          )).strip()
         )
 
     def _attr(self, soup):
