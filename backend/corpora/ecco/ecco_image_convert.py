@@ -26,5 +26,6 @@ def convert_tif_to_pdf(data_dir):
             magick_call = ['magick', '-quiet', '*.TIF', pdf_name]
         else:
             print(splitext(filenames[0]))
+            continue
         os.chdir(directory)
         subprocess.check_call(magick_call)

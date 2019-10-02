@@ -107,7 +107,7 @@ class Ecco(XMLCorpus):
                 name='year',
                 display_name='Year',
                 description='Publication year.',
-                es_mapping={'type': 'date', 'format': 'yyyy'}, # TO DO: put integer instead
+                es_mapping={'type': 'integer'},
                 results_overview=True,
                 csv_core=True,
                 visualization_type='term_frequency',
