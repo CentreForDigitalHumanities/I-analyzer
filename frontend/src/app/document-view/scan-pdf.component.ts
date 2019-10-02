@@ -26,10 +26,10 @@ export class ScanPdfComponent implements OnChanges {
     public pdfFile: any;
 
     public page: number = null;
+    public pageNumbers: number[] = null;
 
     public startPage: number = null;
     public lastPage: number;
-    public pageNumbers: number [];
 
     public isLoaded: boolean = false;
 
@@ -48,13 +48,14 @@ export class ScanPdfComponent implements OnChanges {
         this.apiService.getMedia({args: this.path.search}).then( response => {
             this.pdfNotFound = false;
             this.formatPdfResponse(response);
-            this.afterLoadComplete(response);
+            this.afterLoadComplete();
         }).catch( () => this.pdfNotFound = true );
     }
 
     formatPdfResponse(pdfData) {
         this.pdfInfo = <PdfHeader>JSON.parse(pdfData.headers.pdfinfo);
-        this.page = this.pdfInfo.homePageIndex; //1-indexed
+        this.page = Number(this.pdfInfo.homePageIndex); //1-indexed
+        this.pageNumbers = this.pdfInfo.pageNumbers.map( d => Number(d) );
         this.startPage = this.page;
         this.pdfSrc = pdfData.body;
     }
@@ -63,12 +64,8 @@ export class ScanPdfComponent implements OnChanges {
          * callback for ng2-pdf-viewer loadcomplete event,
          * fires after all pdf data is received and loaded by the viewer.
          */
-    afterLoadComplete(pdfData: any) {
-        this.lastPage = this.pdfInfo.pageNumbers.slice(-1).pop();
-        let startArray = this.page - 2 > 0? this.page - 2 : 0;
-        let endArray = this.page + 2 < this.lastPage? this.page + 2 : this.lastPage;
-        this.pageNumbers = this.pdfInfo.pageNumbers.slice(startArray, endArray);
-        console.log(this.pdfInfo.pageNumbers, this.page, this.pageNumbers);
+    afterLoadComplete() {
+        this.lastPage = this.pageNumbers.slice(-1).pop();
         this.isLoaded = true;
     }
 
