@@ -171,7 +171,7 @@ class Ecco(XMLCorpus):
                 search_field_core=True,
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages by these authors.',
-                    option_count=100
+                    option_count=25391
                 )
             ),
             Field(
