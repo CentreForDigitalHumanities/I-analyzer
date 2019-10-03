@@ -1,5 +1,5 @@
 import os
-from os.path import split, join, splitext
+from os.path import exists, split, join, splitext
 import subprocess
 
 def convert_tif_to_pdf(data_dir):
@@ -20,7 +20,10 @@ def convert_tif_to_pdf(data_dir):
         book_id = split(directory)[1]
         pdf_name = join(directory, '{}.pdf'.format(book_id))
         print(pdf_name)
-        if splitext(filenames[0])[1]=='.tif':
+        if exists(pdf_name):
+            print("exists, skipping")
+            continue
+        elif splitext(filenames[0])[1]=='.tif':
             magick_call = ['magick', '-quiet', '*.tif', pdf_name]
         elif splitext(filenames[0])[1]=='.TIF':
             magick_call = ['magick', '-quiet', '*.TIF', pdf_name]
