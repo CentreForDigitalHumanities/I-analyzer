@@ -1,6 +1,7 @@
 import os
 from os.path import exists, split, join, splitext
 import subprocess
+import glob
 
 def convert_tif_to_pdf(data_dir):
     lib_call = ['export', 'DYLD_LIBRARY_PATH="$MAGICK_HOME/lib/"']
@@ -23,12 +24,22 @@ def convert_tif_to_pdf(data_dir):
         if exists(pdf_name):
             print("exists, skipping")
             continue
-        elif splitext(filenames[0])[1]=='.tif':
-            magick_call = ['magick', '-quiet', '*.tif', pdf_name]
-        elif splitext(filenames[0])[1]=='.TIF':
-            magick_call = ['magick', '-quiet', '*.TIF', pdf_name]
-        else:
-            print(splitext(filenames[0]))
-            continue
         os.chdir(directory)
-        subprocess.check_call(magick_call)
+        for filename in filenames:
+            name, ext = splitext(filename)
+            if ext=='.tif' or ext=='.TIF': 
+                magick_call = ['convert', filename, '-quiet', name+'.pdf']
+                subprocess.check_call(magick_call)
+        with open("files.txt", "w") as f:
+            f.write(' '.join(sorted(glob.glob("*.pdf"))))
+        # combine all pdfs in one file
+        ghostscript_call = ['gs', '-sDEVICE=pdfwrite', '-dBATCH', '-dNOPAUSE',
+                '-sOutputFile='+pdf_name, '@files.txt']
+        subprocess.check_call(ghostscript_call)
+        # remove temporary files
+        remove_call = ['find', '.', '-type', 'f', '-name', book_id+'0*.pdf', '-delete']
+        subprocess.check_call(remove_call)
+        remove_call = ['rm', 'files.txt']
+        subprocess.check_call(remove_call)
+        
+        
