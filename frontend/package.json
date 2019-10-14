@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -43,7 +43,7 @@
     "marked": "^0.7.0",
     "material-icons": "^0.3.1",
     "moment": "^2.24.0",
-    "ng2-image-viewer": "^3.0.4",
+    "ng2-image-viewer": "^3.0.5",
     "ng2-pdf-viewer": "^5.2.4",
     "ngx-cookie-service": "^2.2.0",
     "ngx-md": "^6.0.9",

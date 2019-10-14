@@ -427,6 +427,11 @@ class XMLCorpus(Corpus):
                 if 'attribute' in tag:
                     right_tag = next((candidate for candidate in candidates if
                                       candidate.attrs == tag['attribute']), None)
+                elif 'list' in tag:
+                    if 'subtag' in tag:
+                        right_tag = [candidate.find(tag['subtag']) for candidate in candidates]
+                    else:
+                        right_tag = candidates
                 elif 'subtag' in tag:
                     right_tag = next((candidate.find(tag['subtag']) for candidate in candidates if 
                                       candidate.find(tag['subtag'])), None)
@@ -436,9 +441,13 @@ class XMLCorpus(Corpus):
                 if not right_tag:
                     continue
                 if 'save_as' in tag:
-                    out_dict[tag['save_as']] = right_tag.text
+                    out_tag = tag['save_as']
                 else:
-                    out_dict[tag['tag']] = right_tag.text
+                    out_tag = tag['tag']
+                if 'list' in tag:
+                    out_dict[out_tag] = [t.text for t in right_tag]
+                else:
+                    out_dict[out_tag] = right_tag.text
         return out_dict
 
 
