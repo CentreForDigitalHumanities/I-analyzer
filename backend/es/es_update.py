@@ -28,7 +28,8 @@ def update_index(corpus, corpus_definition, query_model):
     hits = len(results['hits']['hits'])
     total_hits = results['hits']['total']
     for doc in results['hits']['hits']:
-        update_document(client, corpus, corpus_definition, doc_type, doc)
+        update_body = corpus_definition.update_body(doc)
+        update_document(corpus, doc_type, doc, update_body, client)
     while hits<total_hits:       
         scroll_id = results['_scroll_id']
         for doc in results['hits']['hits']:
