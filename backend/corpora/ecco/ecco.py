@@ -73,9 +73,10 @@ class Ecco(XMLCorpus):
                         meta_tags = [
                             'collation',
                             {'tag': 'author', 'subtag': 'composed'},
+                            {'tag': 'holdings', 'subtag': 'libraryName', 'list': True},
                             'fullTitle',
                             'imprintFull',
-                            'libraryName',
+                            {'tag': 'sourceLibrary', 'subtag': 'libraryName'},
                             'ocr',
                             'pubDateStart',
                             'publicationPlaceComposed',
@@ -214,9 +215,15 @@ class Ecco(XMLCorpus):
             ),
             Field(
                 name='library',
-                display_name='Holding library',
-                description='The main holding library of the book',
-                extractor=Metadata('libraryName')
+                display_name='Source library',
+                description='The source library of the book',
+                extractor=Metadata('sourceLibrary')
+            ),
+            Field(
+                name='holdings',
+                display_name='Holding libraries',
+                description='Libraries holding a copy of the book',
+                extractor=Metadata('holdings')
             ),
             Field(
                 name='volume',
