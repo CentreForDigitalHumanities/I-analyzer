@@ -5,7 +5,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, FoundDocument, User, SortEvent, SearchFilterData } from '../models/index';
 import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
@@ -59,8 +59,8 @@ export class SearchComponent implements OnInit {
     public resultsCount: number = 0;
     public tabIndex: number;
 
-    private searchFilters: SearchFilter [] = [];
-    private activeFilters: SearchFilter [] = [];
+    private searchFilters: SearchFilter<SearchFilterData> [] = [];
+    private activeFilters: SearchFilter<SearchFilterData> [] = [];
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
@@ -161,7 +161,7 @@ export class SearchComponent implements OnInit {
     /**
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
-    private setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+    private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
         searchFilters.forEach( f => {
             let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
@@ -200,7 +200,7 @@ export class SearchComponent implements OnInit {
         }
     }
 
-    public setActiveFilters(activeFilters: SearchFilter[]) {
+    public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
         this.activeFilters = activeFilters;
         this.search();
     }

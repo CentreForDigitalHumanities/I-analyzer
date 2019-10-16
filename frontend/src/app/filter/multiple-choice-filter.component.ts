@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import * as _ from "lodash";
 
-import { SearchFilterComponent } from './search-filter.component';
+import { BaseFilterComponent } from './base-filter.component';
 import { SearchFilter, MultipleChoiceFilterData } from '../models';
 
 @Component({
@@ -10,13 +10,13 @@ import { SearchFilter, MultipleChoiceFilterData } from '../models';
   templateUrl: './multiple-choice-filter.component.html',
   styleUrls: ['./multiple-choice-filter.component.scss']
 })
-export class MultipleChoiceFilterComponent extends SearchFilterComponent implements OnInit {
+export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleChoiceFilterData> implements OnInit {
     ngOnInit() {
         this.provideFilterData();
     }
 
-    getDisplayData(filter: SearchFilter) {
-        let data = filter.currentData as MultipleChoiceFilterData;
+    getDisplayData(filter: SearchFilter<MultipleChoiceFilterData>) {
+        let data = filter.currentData;
         let options = [];
         if (data.optionsAndCounts) {
             options = _.sortBy(data.optionsAndCounts.map(x => {
@@ -25,12 +25,12 @@ export class MultipleChoiceFilterComponent extends SearchFilterComponent impleme
         }
         else options = _.sortBy(data.options.map(x => { return { 'label': x, 'value': encodeURIComponent(x) } }), o => o.label);
         if (options.length === 0) {
-            this.greyedOut = true;
+            this.grayedOut = true;
         }
         return { options: options, selected: data.selected };
     }
 
-    getFilterData(): SearchFilter {
+    getFilterData(): SearchFilter<MultipleChoiceFilterData> {
         this.filter.currentData = {
             filterType: "MultipleChoiceFilter",
             options: this.data.options,

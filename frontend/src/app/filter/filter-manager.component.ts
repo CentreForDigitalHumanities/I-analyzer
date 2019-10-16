@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import * as _ from "lodash";
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter } from '../models/index';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter, SearchFilterData } from '../models/index';
 import { DataService, SearchService } from '../services';
 
 @Component({
@@ -15,10 +15,10 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     @Input() private queryModel: QueryModel;
 
     @Output('filtersChanged')
-    public filtersChangedEmitter = new EventEmitter<SearchFilter []>()
+    public filtersChangedEmitter = new EventEmitter<SearchFilter<SearchFilterData> []>()
 
-    public searchFilters: SearchFilter [] = [];
-    public activeFilters: SearchFilter [] = [];
+    public searchFilters: SearchFilter<SearchFilterData> [] = [];
+    public activeFilters: SearchFilter<SearchFilterData> [] = [];
     
     public showFilters: boolean;
 
@@ -46,7 +46,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: SearchFilter): Promise<AggregateData> {
+    async getMultipleChoiceFilterOptions(filter: SearchFilter<SearchFilterData>): Promise<AggregateData> {
         let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter===true));
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
         if (filters.length>0) {
@@ -70,7 +70,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      * Event triggered from search-filter.component
      * @param filterData 
      */
-    public updateFilterData(filter: SearchFilter) {
+    public updateFilterData(filter: SearchFilter<SearchFilterData>) {
         let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
         this.searchFilters[index] = filter;
         this.filtersChanged();
@@ -92,12 +92,12 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         this.filtersChangedEmitter.emit(this.activeFilters);
     }
 
-    toggleFilter(filter: SearchFilter) {
+    toggleFilter(filter: SearchFilter<SearchFilterData>) {
         filter.useAsFilter = !filter.useAsFilter;
         this.filtersChanged();
     }
 
-    resetFilter(filter: SearchFilter) {
+    resetFilter(filter: SearchFilter<SearchFilterData>) {
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
         this.filtersChanged();

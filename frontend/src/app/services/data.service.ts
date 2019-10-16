@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject }    from 'rxjs';
 
-import { TimelineData, SearchFilter } from '../models/index';
+import { TimelineData, SearchFilter, SearchFilterData } from '../models/index';
 
-const filterDataSource = new BehaviorSubject<SearchFilter[]>(undefined);
+const filterDataSource = new BehaviorSubject<SearchFilter<SearchFilterData>[]>(undefined);
 const timelineDataSource = new BehaviorSubject<TimelineData>(undefined);
 
 @Injectable()
@@ -12,7 +12,7 @@ export class DataService {
     public timelineData$ = timelineDataSource.asObservable();
 
 
-    pushNewFilterData(data: SearchFilter[]) {
+    pushNewFilterData(data: SearchFilter<SearchFilterData>[]) {
         filterDataSource.next(data);
     }
 

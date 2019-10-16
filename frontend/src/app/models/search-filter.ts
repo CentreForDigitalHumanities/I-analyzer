@@ -1,11 +1,11 @@
 import { AggregateResult } from './search-results';
 
-export type SearchFilter = {
+export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
     useAsFilter: boolean,
-    defaultData?: SearchFilterData,
-    currentData: SearchFilterData
+    defaultData?: T,
+    currentData: T
 }
 
 export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
@@ -35,7 +35,7 @@ export type DateFilterData = {
 
 export type SearchFilterType = SearchFilterData["filterType"];
 
-export function searchFilterDataToParam(filter: SearchFilter): string | string[] {
+export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
     switch (filter.currentData.filterType) {
         case "BooleanFilter":
             return `${filter.currentData}`;

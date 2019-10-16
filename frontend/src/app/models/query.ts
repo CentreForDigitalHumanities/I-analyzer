@@ -1,4 +1,5 @@
 import {SearchFilter } from '../models/index';
+import { SearchFilterData } from './search-filter';
 
 /** This is the query object as it is saved in the database.*/
 export class Query {
@@ -56,7 +57,7 @@ export class Query {
 export type QueryModel = {
     queryText: string,
     fields?: string[],
-    filters?: SearchFilter[],
+    filters?: SearchFilter<SearchFilterData>[],
     sortBy?: string,
     sortAscending?: boolean
 };

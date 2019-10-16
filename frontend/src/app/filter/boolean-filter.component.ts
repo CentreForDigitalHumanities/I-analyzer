@@ -1,25 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 
-import { SearchFilterComponent } from './search-filter.component';
-import { SearchFilter, BooleanFilterData } from '../models';
+import { BaseFilterComponent } from './base-filter.component';
+import { SearchFilter, BooleanFilterData, SearchFilterData } from '../models';
 
 @Component({
   selector: 'ia-boolean-filter',
   templateUrl: './boolean-filter.component.html',
   styleUrls: ['./boolean-filter.component.scss']
 })
-export class BooleanFilterComponent extends SearchFilterComponent implements OnInit {
+export class BooleanFilterComponent extends BaseFilterComponent<BooleanFilterData> implements OnInit {
 
     ngOnInit() {
         this.provideFilterData();
     }
 
-    getDisplayData(filter: SearchFilter) {
-        let data = filter.currentData as BooleanFilterData;
+    getDisplayData(filter: SearchFilter<BooleanFilterData>) {
+        let data = filter.currentData;
         return data.checked;
     }
 
-    getFilterData(): SearchFilter {
+    getFilterData(): SearchFilter<BooleanFilterData> {
         this.filter.currentData = {
             filterType: "BooleanFilter",
             checked: this.data

@@ -3,14 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 
 import { SearchFilter, DateFilterData } from '../models';
-import { SearchFilterComponent } from './search-filter.component';
+import { BaseFilterComponent } from './base-filter.component';
 
 @Component({
   selector: 'ia-date-filter',
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends SearchFilterComponent implements OnInit {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements OnInit {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
@@ -26,8 +26,8 @@ export class DateFilterComponent extends SearchFilterComponent implements OnInit
         }
     }
 
-    getDisplayData(filter: SearchFilter) {
-        let data = this.filter.currentData as DateFilterData;
+    getDisplayData(filter: SearchFilter<DateFilterData>) {
+        let data = filter.currentData;
         return {
             min: new Date(data.min),
             max: new Date(data.max),
@@ -39,7 +39,7 @@ export class DateFilterComponent extends SearchFilterComponent implements OnInit
     /**
      * Create a new version of the filter data from the user input.
      */
-    getFilterData(): SearchFilter {
+    getFilterData(): SearchFilter<DateFilterData> {
         this.filter.currentData = {
             filterType: "DateFilter",
             min: this.formatDate(this.data.min),

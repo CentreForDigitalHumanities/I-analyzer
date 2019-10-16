@@ -24,7 +24,7 @@ import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -53,12 +53,8 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
-import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
-import { BooleanFilterComponent } from './filter/boolean-filter.component';
-import { MultipleChoiceFilterComponent } from './filter/multiple-choice-filter.component';
-import { DateFilterComponent } from './filter/date-filter.component';
-import { RangeFilterComponent } from './filter/range-filter.component';
+import { BaseFilterComponent, BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 
 
 const appRoutes: Routes = [
@@ -114,10 +110,13 @@ const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
+    BarChartComponent,
+    // BaseFilterComponent,
     BooleanFilterComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
+    DocumentViewComponent,
     DownloadComponent,
     DropdownComponent,
     ErrorComponent,
@@ -126,37 +125,33 @@ export const declarations: any[] = [
     HomeComponent,
     HighlightPipe,
     ImageViewComponent,
+    LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     MultipleChoiceFilterComponent,
     NotificationsComponent,
+    QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
+    PrivacyComponent,
     RangeFilterComponent,
+    RegistrationComponent,
+    RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
+    ScanPdfComponent,
+    ScrollToDirective,
     SearchComponent,
-    SearchFilterComponent,
+    SearchHistoryComponent,
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    LoginComponent,
-    ScrollToDirective,
-    BarChartComponent,
+    SelectFieldComponent,
+    TermFrequencyComponent,
+    TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
-    TimelineComponent,
-    RelatedWordsComponent,
-    DocumentViewComponent,
-    SearchHistoryComponent,
-    SelectFieldComponent,
-    RegistrationComponent,
-    PrivacyComponent,
-    RelatedWordsComponent,
-    ScanPdfComponent,
-    QueryFiltersComponent,
-    TermFrequencyComponent,
 ];
 
 export const imports: any[] = [
