@@ -1,4 +1,6 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges } from '@angular/core';
+
+import { ImageViewer } from 'iv-viewer';
 
 import { FoundDocument } from '../models';
 
@@ -14,8 +16,12 @@ export class ImageViewComponent implements OnChanges {
     @Input() public document: FoundDocument;
 
     public downloadPath: string; // optional: downloadable content may differ from displayed content
-    
+    public viewer: any = null;
+    public imageIndex: number = 1;
+    public totalPages: number;
+
     constructor() { }
+
 
     ngOnChanges() {
         this.downloadPath = this.document.fieldValues['image_path'];

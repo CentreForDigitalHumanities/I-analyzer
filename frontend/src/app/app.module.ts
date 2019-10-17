@@ -16,7 +16,6 @@ import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
-import { ImageViewerModule } from 'ng2-image-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
@@ -55,6 +54,7 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { ImageViewComponent } from './document-view/image-view.component';
 import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
+import { ScanImageComponent } from './document-view/scan-image.component';
 
 
 const appRoutes: Routes = [
@@ -135,6 +135,7 @@ export const declarations: any[] = [
     SearchSortingComponent,
     LoginComponent,
     ScrollToDirective,
+    ScanImageComponent,
     BarChartComponent,
     VisualizationComponent,
     WordcloudComponent,
@@ -168,7 +169,6 @@ export const imports: any[] = [
         cookieName: 'csrf_token',
         headerName: 'X-XSRF-Token'
     }),
-    ImageViewerModule,
     MenuModule,
     MultiSelectModule,
     NgxMdModule.forRoot(),
