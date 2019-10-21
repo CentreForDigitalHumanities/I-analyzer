@@ -1,5 +1,5 @@
-import { Component, HostListener, OnChanges, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, Input, HostListener, OnChanges, Output } from '@angular/core';
+
 import { ConfirmationService } from 'primeng/api';
 
 import { ApiService } from '../services';
@@ -16,10 +16,19 @@ export class ScanPdfComponent implements OnChanges {
     public imagePaths: string[];
 
     @Input()
+    public zoomFactor: number;
+
+    @Input()
     public allowDownload: boolean;
 
     @Input()
     public downloadPath: string;
+
+    @Input()
+    public pageIndex: number;
+
+    @Output('scanReady')
+    public scanReadyEmitter = new EventEmitter<{page: number, lastPage: number}>()
 
     public pdfSrc: ArrayBuffer;
 
@@ -27,24 +36,21 @@ export class ScanPdfComponent implements OnChanges {
 
     public page: number = null;
     public pageNumbers: number[] = null;
-
-    public startPage: number = null;
     public lastPage: number;
-
-    public isLoaded: boolean = false;
 
     public pdfInfo: PdfHeader;
 
     public pdfNotFound: boolean = false;
 
-    public zoomFactor: number = 1.0;
-    private maxZoomFactor: number = 1.7;
     private path: URL;
 
-    constructor(private apiService: ApiService, private confirmationService: ConfirmationService, private router: Router) { }
+    public isLoaded: boolean = false; // to do: make this an output
+    // even better: transfer page and pageNumbers via output
 
-    ngOnChanges() {
-        this.path = new URL(this.imagePaths[0]);
+    constructor(private apiService: ApiService, private confirmationService: ConfirmationService) {
+    }
+
+    ngOnInit() {
         this.apiService.getMedia({args: this.path.search}).then( response => {
             this.pdfNotFound = false;
             this.formatPdfResponse(response);
@@ -52,11 +58,14 @@ export class ScanPdfComponent implements OnChanges {
         }).catch( () => this.pdfNotFound = true );
     }
 
+    ngOnChanges() {
+        this.path = new URL(this.imagePaths[0]);
+    }
+
     formatPdfResponse(pdfData) {
         this.pdfInfo = <PdfHeader>JSON.parse(pdfData.headers.pdfinfo);
         this.page = Number(this.pdfInfo.homePageIndex); //1-indexed
         this.pageNumbers = this.pdfInfo.pageNumbers.map( d => Number(d) );
-        this.startPage = this.page;
         this.pdfSrc = pdfData.body;
     }
 
@@ -66,23 +75,11 @@ export class ScanPdfComponent implements OnChanges {
          */
     afterLoadComplete() {
         this.lastPage = this.pageNumbers.slice(-1).pop();
-        this.isLoaded = true;
+        this.scanReadyEmitter.emit({page: this.page, lastPage: this.lastPage});
     }
 
     onError(error: any) {
         console.log(error)
-    }
-
-    nextPage() {
-        this.page++;
-    }
-
-    prevPage() {
-        this.page--;
-    }
-
-    setPage(pageNr: number) {
-        this.page = pageNr;
     }
 
     confirmDownload() {
@@ -109,20 +106,6 @@ export class ScanPdfComponent implements OnChanges {
     //         this.zoomOut();
     //     }
     // }
-
-    zoomIn() {
-        if (this.zoomFactor <= this.maxZoomFactor) {
-            this.zoomFactor += .1;
-        }
-    }
-
-    zoomOut() {
-        this.zoomFactor -= .1;
-    }
-
-    resetZoom() {
-        this.zoomFactor = 1;
-    }
 
 }
 
