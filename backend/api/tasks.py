@@ -30,7 +30,7 @@ def make_csv(results, request_json, username, email=None):
         send_user_mail(
             email=email,
             username=username,
-            subject_line= current_app.config['MAIL_REGISTRATION_SUBJECT_LINE'],
+            subject_line= current_app.config['MAIL_CSV_SUBJECT_LINE'],
             email_title="Download CSV",
             message="Your .csv file is ready for download.",
             prompt="Click on the link below.",
@@ -84,7 +84,7 @@ def create_csv(results, fields, filename):
             if field in result['_source']:
                 entry.update( {field: result['_source'][field]})
         entries.append(entry)
-        
+
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)                  
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
