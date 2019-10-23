@@ -14,26 +14,11 @@ export class ImageViewComponent implements OnChanges {
     @Input() public document: FoundDocument;
 
     public downloadPath: string; // optional: downloadable content may differ from displayed content
-    public page: number = 1;
-    public lastPage: number = 1;  
     public zoomFactor: number = 1.0;
     private maxZoomFactor: number = 1.7;
 
     ngOnChanges() {
         this.downloadPath = this.document.fieldValues['image_path'];
-    }
-
-    getScanData(event) {
-        this.page = event.page;
-        this.lastPage = event.lastPage;
-    }
-
-    prevPage() {
-        this.page = this.page - 1 > 0? this.page - 1 : this.lastPage;
-    }
-
-    nextPage() {
-        this.page = this.page + 1 < this.lastPage? this.page + 1 : 1;
     }
 
     zoomIn() {

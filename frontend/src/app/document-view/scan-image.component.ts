@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, ViewChild, SimpleChanges } from '@angular/core';
 
 import { ImageViewer } from 'iv-viewer';
-import { ImageViewComponent } from './image-view.component';
 
 @Component({
   selector: 'ia-scan-image',
@@ -10,26 +9,24 @@ import { ImageViewComponent } from './image-view.component';
 })
 export class ScanImageComponent implements AfterViewInit, OnChanges {
     @Input() public imagePaths: string[];
-    @Input() public pageIndex: number;
     @Input() public zoomFactor: number;
     
     @ViewChild('imageContainer') public container: ElementRef;
-    @Output('scanReady')
-    public scanReadyEmitter = new EventEmitter<{page: number, lastPage: number}>()
 
     public viewer: any = null;
-    public imageIndex: number = 1;
+    public pageIndex: number = 1;
+    public startPage: number;
     public totalPages: number;
+    public currentPage: number = 1;
 
 
     ngAfterViewInit() {
-        this.totalPages = this.imagePaths.length;
         this.viewer = new ImageViewer(this.container.nativeElement);
-        this.scanReadyEmitter.emit({page: this.imageIndex, lastPage: this.totalPages});
         this.showCurrentImage();    
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        this.totalPages = this.imagePaths.length;
         if (this.viewer) {
             this.showCurrentImage();
             if (changes['zoomFactor']) {
@@ -41,5 +38,10 @@ export class ScanImageComponent implements AfterViewInit, OnChanges {
     showCurrentImage() {
         let imgObj = this.imagePaths[this.pageIndex-1];
         this.viewer.load(imgObj, imgObj); //check options section for supported options 
+    }
+
+    pageIndexChange(event) {
+        this.pageIndex = event;
+        this.showCurrentImage();
     }
 }

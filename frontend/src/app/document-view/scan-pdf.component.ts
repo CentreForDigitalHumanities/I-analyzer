@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, HostListener, OnChanges, Output } from '@angular/core';
+import { Component, Input, HostListener, OnChanges } from '@angular/core';
 
 import { ConfirmationService } from 'primeng/api';
 
@@ -24,12 +24,6 @@ export class ScanPdfComponent implements OnChanges {
     @Input()
     public downloadPath: string;
 
-    @Input()
-    public pageIndex: number;
-
-    @Output('scanReady')
-    public scanReadyEmitter = new EventEmitter<{page: number, lastPage: number}>()
-
     public pdfSrc: ArrayBuffer;
 
     public pdfFile: any;
@@ -37,6 +31,7 @@ export class ScanPdfComponent implements OnChanges {
     public page: number = null;
     public pageNumbers: number[] = null;
     public lastPage: number;
+    public startPage: number;
 
     public pdfInfo: PdfHeader;
 
@@ -44,8 +39,7 @@ export class ScanPdfComponent implements OnChanges {
 
     private path: URL;
 
-    public isLoaded: boolean = false; // to do: make this an output
-    // even better: transfer page and pageNumbers via output
+    public isLoaded: boolean = false;
 
     constructor(private apiService: ApiService, private confirmationService: ConfirmationService) {
     }
@@ -75,7 +69,8 @@ export class ScanPdfComponent implements OnChanges {
          */
     afterLoadComplete() {
         this.lastPage = this.pageNumbers.slice(-1).pop();
-        this.scanReadyEmitter.emit({page: this.page, lastPage: this.lastPage});
+        this.startPage = this.pageNumbers[0];
+        this.isLoaded = true;
     }
 
     onError(error: any) {
@@ -93,6 +88,11 @@ export class ScanPdfComponent implements OnChanges {
             reject: () => {
             }
         })
+    }
+
+    showCurrentPage(event) {
+        console.log(event);
+        this.page = event;
     }
 
     // code to implement scrolling with the mouse wheel

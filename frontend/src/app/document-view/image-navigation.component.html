@@ -1,0 +1,11 @@
+<div class="nav-buttons">
+<button id="prevButton" class="button" (click)="prevPage()" [disabled]="page === 1">
+    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+</button>
+<a class="button">
+    {{page}}
+</a>
+<button id="nextButton" class="button" (click)="nextPage()" [disabled]="page === lastPage">
+    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+</button>
+</div>

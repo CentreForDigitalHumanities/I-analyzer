@@ -1,20 +1,19 @@
-
-
-<div *ngIf="!pdfNotFound" class="pdf">
+<ia-image-navigation *ngIf="page" [firstPage]="startPage" [lastPage]="lastPage" [currentPage]="page" (pageIndexChange)="showCurrentPage($event)"></ia-image-navigation>
+<div *ngIf="!pdfNotFound" class="pdf" [ngClass]="{'is-loading':!isLoaded}">
     <ng-container *ngIf="page">
-        <pdf-viewer
-            [src]="pdfSrc"
-            [render-text]="true"
-            [original-size]="false"
-            [autoresize]="true"
-            [show-all]="false"
-            [page]="pageIndex"
-            [zoom]="zoomFactor"
-            (after-load-complete)="afterLoadComplete($event)"
-            (error)="onError($event)"
-            style="display:block;">
-        </pdf-viewer>
-    </ng-container>
+    <pdf-viewer
+        [src]="pdfSrc"
+        [render-text]="true"
+        [original-size]="false"
+        [autoresize]="true"
+        [show-all]="false"
+        [page]="page"
+        [zoom]="zoomFactor"
+        (after-load-complete)="afterLoadComplete($event)"
+        (error)="onError($event)"
+        style="display:block;">
+    </pdf-viewer>
+</ng-container>
 </div>
 
 <p-confirmDialog #cd appendTo="body">
@@ -29,5 +28,4 @@
         </div>
     </p-footer>
 </p-confirmDialog>
-
 

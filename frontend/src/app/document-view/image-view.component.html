@@ -14,19 +14,8 @@
             <i class="fa fa-arrows-alt" aria-hidden="true"></i>
         </button>
     </div>
-    <div class="field is-grouped level-right">
-        <button class="button is-primary is-small" (click)="prevPage()" [disabled]="page === 1">
-            <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        </button>
-        <a class="button is-small is-primary">
-            {{page}}
-        </a>
-        <button class="button is-primary is-small" (click)="nextPage()" [disabled]="page === lastPage">
-            <i class="fa fa-chevron-right" aria-hidden="true"></i>
-        </button>
-    </div>
     </div>
 </div>
 
-<ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [pageIndex]="page" [zoomFactor]="zoomFactor" (scanReady)="getScanData($event)"></ia-scan-image>
-<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [pageIndex]="page" [zoomFactor]="zoomFactor" [allowDownload]="allowDownload" [downloadPath]="downloadPath" (scanReady)="getScanData($event)"></ia-scan-pdf>
+<ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor"></ia-scan-image>
+<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [allowDownload]="allowDownload" [downloadPath]="downloadPath"></ia-scan-pdf>

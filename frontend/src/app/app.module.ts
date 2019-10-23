@@ -55,6 +55,7 @@ import { ImageViewComponent } from './document-view/image-view.component';
 import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
 import { ScanImageComponent } from './document-view/scan-image.component';
+import { ImageNavigationComponent } from './document-view/image-navigation.component';
 
 
 const appRoutes: Routes = [
@@ -120,6 +121,7 @@ export const declarations: any[] = [
     HomeComponent,
     HighlightPipe,
     ImageViewComponent,
+    ImageNavigationComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
