@@ -38,24 +38,20 @@ import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
-import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
-import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
-import { ImageViewComponent } from './document-view/image-view.component';
 import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
-import { ScanImageComponent } from './document-view/scan-image.component';
-import { ImageNavigationComponent } from './document-view/image-navigation.component';
+import { DocumentViewComponent, ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './document-view';
 
 
 const appRoutes: Routes = [
