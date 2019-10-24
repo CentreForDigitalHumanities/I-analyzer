@@ -11,6 +11,7 @@
             <i class="fa fa-arrows-alt" aria-hidden="true"></i>
         </button>
     </div>
+    <ia-image-navigation *ngIf="pageIndices" class="level-item" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
     <div class="level-right">
         <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
             <i class="fa fa-download" aria-hidden="true"></i>
@@ -18,8 +19,6 @@
     </div>
     </div>
 </div>
-
-<ia-image-navigation *ngIf="pageIndices" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
 
 <p *ngIf="noImages">No scan available for this document.</p>
 <div *ngIf="imagePaths" [ngClass]="{'is-loading':imagePaths==undefined}">
