@@ -1,7 +1,7 @@
 <div style="text-align: center;">
     <div class="level">
     <div class="level-left">
-        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="confirmDownload()">
+        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
             <i class="fa fa-download" aria-hidden="true"></i>
         </button>
         <button class="button is-primary is-inverted" (click)="zoomIn()">
@@ -17,5 +17,24 @@
     </div>
 </div>
 
-<ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor"></ia-scan-image>
-<ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [allowDownload]="allowDownload" [downloadPath]="downloadPath"></ia-scan-pdf>
+<ia-image-navigation *ngIf="pageIndices" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
+
+<p *ngIf="noImages">No scan available for this document.</p>
+<div *ngIf="imagePaths" [ngClass]="{'is-loading':imagePaths==undefined}">
+    <ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
+    <ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
+</div>
+
+<p-confirmDialog #cd appendTo="body">
+    <p-footer>
+        <div class="field is-grouped">   
+            <button class="button is-primary" (click)="cd.accept()">
+                <i class="fa fa-fw fa-download" aria-hidden="true"></i> Download
+            </button>
+            <button class="button is-primary" (click)="cd.rejectt()">
+                <i class="fa fa-fw fa-times" aria-hidden="true"></i> Cancel
+            </button>
+        </div>
+    </p-footer>
+</p-confirmDialog>
+    

@@ -5,9 +5,8 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, FoundDocument, User, SortEvent } from '../models/index';
-import { CorpusService, DataService, DialogService, SearchService, UserService } from '../services/index';
-import { query } from '@angular/core/src/render3/query';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
+import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
     selector: 'ia-search',

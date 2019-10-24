@@ -3,6 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
+import { ImageInfo } from '../document-view/image-view.component';
 import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -236,7 +237,7 @@ export class ApiService extends Resource {
     })
     public requestMedia: ResourceMethod<
         { corpus_index: string, document: FoundDocument },
-        { success: false } | { success: true, media: string[] }
+        { success: false } | { success: true, media: string[], info?: ImageInfo }
         >;
 
     @ResourceAction({

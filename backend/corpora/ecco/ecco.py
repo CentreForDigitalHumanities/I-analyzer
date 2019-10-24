@@ -14,7 +14,7 @@ from flask import current_app, url_for
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from addcorpus.image_processing import retrieve_pdf
+from addcorpus.image_processing import get_pdf_info, retrieve_pdf
 
 
 # Source files ################################################################
@@ -240,13 +240,15 @@ class Ecco(XMLCorpus):
 
 
     def request_media(self, document):
+        image_path = document['fieldValues']['image_path']
         image_url = url_for('api.api_get_media', 
             corpus=self.es_index,
-            image_path=document['fieldValues']['image_path'],
+            image_path=image_path,
             page_no=document['fieldValues']['page'],
             _external=True
         )
-        return [image_url]
+        pdf_stats = get_pdf_info(join(self.data_directory, image_path))
+        return {'media': [image_url], 'info': pdf_stats}
     
     
     def get_media(self, request_args):
@@ -254,7 +256,7 @@ class Ecco(XMLCorpus):
         filename = '{}.pdf'.format(split(image_path)[1])
         full_path = join(image_path, filename)
         page_no = request_args['page_no']
-        pdf_data, pdf_stats = retrieve_pdf(full_path)
+        pdf_data = retrieve_pdf(full_path)
         pdf_info = {
             "pageNumbers": pdf_stats['all_pages'], #change from 0-indexed to real page
             "homePageIndex": page_no, #change from 0-indexed to real page
