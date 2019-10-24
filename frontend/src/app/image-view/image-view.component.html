@@ -1,9 +1,6 @@
 <div style="text-align: center;">
     <div class="level">
     <div class="level-left">
-        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
-            <i class="fa fa-download" aria-hidden="true"></i>
-        </button>
         <button class="button is-primary is-inverted" (click)="zoomIn()">
             <i class="fa fa-search-plus" aria-hidden="true"></i>
         </button>
@@ -12,6 +9,11 @@
         </button>
         <button class="button is-primary is-inverted" (click)="resetZoom()">
             <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="level-right">
+        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
+            <i class="fa fa-download" aria-hidden="true"></i>
         </button>
     </div>
     </div>

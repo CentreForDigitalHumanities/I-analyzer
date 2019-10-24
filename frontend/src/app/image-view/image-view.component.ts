@@ -40,7 +40,6 @@ export class ImageViewComponent implements OnChanges {
         }
         if (changes.document &&  
             changes.document.previousValue != changes.document.currentValue) {
-                this.downloadPath = this.document.fieldValues['image_path'];
                 this.imagePaths = undefined;
                 this.apiService.requestMedia({corpus_index: this.corpus.name, document: this.document}).then( response => {
                     if (response.success) {
@@ -53,6 +52,7 @@ export class ImageViewComponent implements OnChanges {
                             this.initialPage = this.pageIndices[this.showPage]; //1-indexed
                         }
                         else {
+                            this.imageInfo = undefined;
                             let totalPages = this.imagePaths.length;
                             this.pageIndices = Array.from(Array(totalPages + 1).keys()).slice(1);
                             this.showPage = this.pageIndices.indexOf(this.initialPage);
@@ -80,21 +80,20 @@ export class ImageViewComponent implements OnChanges {
     }
     
     download() {
+        let url = this.imagePaths[this.showPage];
         if (this.imageInfo) {
-            this.confirmDownload();
+            this.confirmDownload(url);
         }
         else {
-            let url = this.downloadPath;
             window.location.href = url;
         }
     }
 
-    confirmDownload() {
+    confirmDownload(url: string) {
         this.confirmationService.confirm({
             message: `File: \t${this.imageInfo.fileName}<br/> Size:\t ${this.imageInfo.fileSize}`,
             header: "Confirm download",
-            accept: () => {
-                let url = this.downloadPath;
+            accept: () => {         
                 window.location.href = url;
             },
             reject: () => {
