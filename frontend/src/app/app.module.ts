@@ -51,7 +51,8 @@ import { RequestResetComponent } from './reset-password/request-reset.component'
 import { PaginationComponent } from './pagination/pagination.component';
 import { FilterManagerComponent } from './filter/filter-manager.component';
 import { ErrorComponent } from './error/error.component';
-import { DocumentViewComponent, ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './document-view';
+import { DocumentViewComponent } from './document-view/document-view.component';
+import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 
 
 const appRoutes: Routes = [
