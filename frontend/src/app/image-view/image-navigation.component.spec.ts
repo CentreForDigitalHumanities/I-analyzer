@@ -16,6 +16,8 @@ describe('ImageNavigationComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ImageNavigationComponent);
     component = fixture.componentInstance;
+    component.pageIndices = [40,41,42,43,44];
+    component.initialPage = 42;
     fixture.detectChanges();
   });
 

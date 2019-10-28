@@ -33,7 +33,7 @@
             </p-tabPanel>
             <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
                 <ng-template pTemplate="content">
-                <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
+                    <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
                 </ng-template>
             </p-tabPanel>
         </p-tabView>

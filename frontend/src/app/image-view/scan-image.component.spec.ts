@@ -16,6 +16,9 @@ describe('ScanImageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScanImageComponent);
     component = fixture.componentInstance;
+    component.imagePaths = ['https://image1.jpg', 'https://image2.jpg'];
+    component.zoomFactor = 1.2;
+    component.showPage = 1;
     fixture.detectChanges();
   });
 
