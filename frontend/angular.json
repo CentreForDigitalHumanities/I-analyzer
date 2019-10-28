@@ -23,7 +23,8 @@
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeng/resources/primeng.css",
               "src/styles.scss",
-              "node_modules/font-awesome/css/font-awesome.min.css"
+              "node_modules/font-awesome/css/font-awesome.min.css",
+              "src/imageviewer.scss"
             ],
             "scripts": [
               "node_modules/chart.js/dist/Chart.js"
