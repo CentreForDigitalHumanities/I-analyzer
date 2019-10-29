@@ -65,7 +65,13 @@ def create_filename(route):
 def create_csv(results, fields, filename):
     entries = []
     for result in results:
-        entry = {field: result['_source'][field] for field in fields}
+        entry={}
+        for field in fields:
+            if field in result['_source']:
+                entry.update( {field:result['_source'][field]} )
+                #the id field lives one level higher and is named '_id' by elastic search
+            if field=="id" and "_id" in result: 
+                entry.update( {field: result['_id']} )
         entries.append(entry)
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)                  
