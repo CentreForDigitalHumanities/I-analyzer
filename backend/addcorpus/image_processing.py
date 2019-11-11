@@ -41,20 +41,26 @@ def build_partial_pdf(pages, input_pdf):
 
 def retrieve_pdf(path):
     '''
-    Retrieve the pdf as a file object, and gather some additional information.
+    Retrieve the pdf as a file object.
+    '''
+    pdf = PdfFileReader(path, 'rb')
+    
+    return pdf
+
+def get_pdf_info(path):
+    '''
+    Gather pdf information.
     '''
     pdf = PdfFileReader(path, 'rb')
     title = pdf.getDocumentInfo().title
     _dir, filename = split(path)
     num_pages = pdf.getNumPages()
-
     info = {
         'filename': title if title else filename,
         'filesize': sizeof_fmt(getsize(path)),
         'all_pages': list(range(0, num_pages))
     }
-    
-    return pdf, info
+    return info
 
 def sizeof_fmt(num, suffix='B'):
     '''

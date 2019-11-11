@@ -8,4 +8,5 @@
     &.is-loading {
         @extend %content-loader;
     }
+    overflow: auto;
 }

@@ -503,15 +503,13 @@ def api_get_media():
     if len(list(request.args.keys()))>2:
         # there are more arguments, currently used for pdf retrieval only
         try:
-            out, info = backend_corpus.get_media(request.args)
+            out = backend_corpus.get_media(request.args)
         except Exception as e:
             current_app.logger.error(e)
             abort(400)
-        header = json.dumps(info)
         if not out:
             abort(404)
         response = make_response(send_file(out, attachment_filename="scan.pdf", as_attachment=True, mimetype=backend_corpus.scan_image_type))
-        response.headers['pdfinfo'] = header
         return response
     else:
         absolute_path = join(backend_corpus.data_directory, image_path)
@@ -523,7 +521,7 @@ def api_get_media():
 
 @api.route('/request_media', methods=['POST'])
 @login_required
-def api_request_images():
+def api_request_media():
     if not request.json:
         abort(400)
     corpus_index = request.json['corpus_index']
@@ -533,10 +531,10 @@ def api_request_images():
     else:
         data = backend_corpus.request_media(request.json['document'])
         current_app.logger.info(data)
-        if len(data)==0:
+        if len(data['media'])==0:
             return jsonify({'success': False})
-        output = {'success': True, 'media': data}
-        return jsonify(output)
+        data['success'] = True
+        return jsonify(data)
 
 
 @api.route('/get_related_words', methods=['POST'])

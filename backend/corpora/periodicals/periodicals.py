@@ -294,4 +294,4 @@ class Periodicals(XMLCorpus):
                 ))
             else:
                 continue
-        return image_list
+        return {'media': image_list}

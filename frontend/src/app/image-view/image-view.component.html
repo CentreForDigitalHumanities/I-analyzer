@@ -1,0 +1,47 @@
+<div style="text-align: center;">
+    <div class="level">
+    <div class="level-left">
+        <button class="button is-primary is-inverted" (click)="zoomIn()">
+            <span class="icon">
+                <i class="fa fa-search-plus"></i>
+            </span>
+        </button>
+        <button class="button is-primary is-inverted" (click)="zoomOut()">
+            <span class="icon">
+                <i class="fa fa-search-minus"></i>
+            </span>
+        </button>
+        <button class="button is-primary is-inverted" (click)="resetZoom()">
+            <span class="icon">
+                <i class="fa fa-undo"></i>
+            </span>
+        </button>
+    </div>
+    <ia-image-navigation *ngIf="pageIndices" class="level-item" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
+    <div class="level-right">
+        <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
+            <i class="fa fa-download"></i>
+        </button>
+    </div>
+    </div>
+</div>
+
+<p *ngIf="noImages">No scan available for this document.</p>
+<div *ngIf="imagePaths" [ngClass]="{'is-loading':imagePaths==undefined}">
+    <ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
+    <ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
+</div>
+
+<p-confirmDialog #cd appendTo="body">
+    <p-footer>
+        <div class="field is-grouped">   
+            <button class="button is-primary" (click)="cd.accept()">
+                <i class="fa fa-fw fa-download" aria-hidden="true"></i> Download
+            </button>
+            <button class="button is-primary" (click)="cd.rejectt()">
+                <i class="fa fa-fw fa-times" aria-hidden="true"></i> Cancel
+            </button>
+        </div>
+    </p-footer>
+</p-confirmDialog>
+    

@@ -47,9 +47,11 @@
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
-                    <span *ngIf="corpus.scan_image_type" class="scan-button" iaBalloon="View Scan" (click)="goToScan(document, $event)">
-                        <i class="fa fa-newspaper-o fa-4x" aria-hidden="true"></i>
-                    </span>
+                    <button *ngIf="corpus.scan_image_type" class="button scan-button is-primary is-inverted" iaBalloon="View Scan" (click)="goToScan(document, $event)">
+                        <span class="icon">
+                            <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -58,7 +60,7 @@
 
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
-    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false" [blockScroll]="true"
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
