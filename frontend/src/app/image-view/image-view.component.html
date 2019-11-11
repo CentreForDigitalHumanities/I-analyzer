@@ -2,19 +2,25 @@
     <div class="level">
     <div class="level-left">
         <button class="button is-primary is-inverted" (click)="zoomIn()">
-            <i class="fa fa-search-plus" aria-hidden="true"></i>
+            <span class="icon">
+                <i class="fa fa-search-plus"></i>
+            </span>
         </button>
         <button class="button is-primary is-inverted" (click)="zoomOut()">
-            <i class="fa fa-search-minus" aria-hidden="true"></i>
+            <span class="icon">
+                <i class="fa fa-search-minus"></i>
+            </span>
         </button>
         <button class="button is-primary is-inverted" (click)="resetZoom()">
-            <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+            <span class="icon">
+                <i class="fa fa-undo"></i>
+            </span>
         </button>
     </div>
     <ia-image-navigation *ngIf="pageIndices" class="level-item" [pageIndices]="pageIndices" [initialPage]="initialPage" (pageIndexChange)="pageIndexChange($event)"></ia-image-navigation>
     <div class="level-right">
         <button *ngIf="allowDownload" class="button download is-primary is-inverted" (click)="download()">
-            <i class="fa fa-download" aria-hidden="true"></i>
+            <i class="fa fa-download"></i>
         </button>
     </div>
     </div>
