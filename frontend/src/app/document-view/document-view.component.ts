@@ -1,7 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
-import { ApiService } from '../services';
 
 
 @Component({
@@ -41,23 +40,10 @@ export class DocumentViewComponent implements OnChanges {
     public allowDownload: boolean;
     public mediaType: string;
 
-    constructor(private apiService: ApiService) { }
+    constructor() { }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges() {
         this.index = this.tabIndex;
-        if (changes.corpus) {
-            this.media = undefined;
-            this.allowDownload = this.corpus.allow_image_download;
-            this.mediaType = this.corpus.scan_image_type;
-        }
-        if (changes.document &&  
-            changes.document.previousValue != changes.document.currentValue) {
-                this.apiService.requestMedia({corpus_index: this.corpus.name, document: this.document}).then( response => {
-                    if (response.success) {
-                        this.media = response.media;
-                    };
-                })
-        }
     }
 
     public tabChange(event) {

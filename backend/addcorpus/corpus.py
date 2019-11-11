@@ -152,10 +152,11 @@ class Corpus(object):
     
     def request_media(self, document):
         '''
-        Get a list of urls from where media associated 
-        with a document can be fetched.
+        Get a dictionary with 
+        'media': list of urls from where media associated with a document can be fetched,
+        'info': information for file download
         '''
-        return []
+        return {'media': None, 'info': None}
 
     def es_mapping(self):
         '''

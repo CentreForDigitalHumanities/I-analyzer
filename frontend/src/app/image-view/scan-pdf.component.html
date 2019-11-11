@@ -1,0 +1,16 @@
+<div *ngIf="!pdfNotFound" class="pdf" [ngClass]="{'is-loading':!isLoaded}">
+    <ng-container *ngIf="page">
+        <pdf-viewer
+            [src]="pdfSrc"
+            [render-text]="true"
+            [original-size]="false"
+            [autoresize]="true"
+            [show-all]="false"
+            [page]="page"
+            [zoom]="zoomFactor"
+            (after-load-complete)="afterLoadComplete($event)"
+            (error)="onError($event)"
+            style="display:block;">
+        </pdf-viewer>
+    </ng-container>
+</div>

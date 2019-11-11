@@ -476,4 +476,4 @@ class Times(XMLCorpus):
                 _external=True
             )]
         else: image_urls = []
-        return image_urls
+        return {'media': image_urls }

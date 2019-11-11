@@ -15,8 +15,6 @@ describe('ScanPdfComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScanPdfComponent);
     component = fixture.componentInstance;
-    component.allowDownload = true;
-    component.downloadPath = '/super/awesome/download/path';
     component.imagePaths = ['super/awesome/image/path1.pdf'];
     fixture.detectChanges();
   });
