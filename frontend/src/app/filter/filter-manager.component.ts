@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import * as _ from "lodash";
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter, SearchFilterData } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { SearchService } from '../services';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -22,7 +22,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     
     public showFilters: boolean;
 
-    constructor(private dataService: DataService, private searchService: SearchService) {
+    constructor(private searchService: SearchService) {
      }
 
     ngOnInit() {
@@ -42,7 +42,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
                 let currentData = filter.currentData as MultipleChoiceFilterData;
                 currentData.optionsAndCounts = result[filter.fieldName];
             })
-            this.dataService.pushNewFilterData(this.searchFilters);
         });
     }
 
@@ -78,7 +77,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public toggleActiveFilters() {
         this.searchFilters.forEach(filter => filter.useAsFilter=false);
-        this.dataService.pushNewFilterData(this.searchFilters);
         this.filtersChanged();
     }
 

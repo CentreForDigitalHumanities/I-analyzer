@@ -41,12 +41,10 @@ export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>):
             return `${filter.currentData}`;
         case "MultipleChoiceFilter":
             return filter.currentData.selected as string[];
-        case "RangeFilter": {
+        case "RangeFilter":
             return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
-        case "DateFilter": {
+        case "DateFilter":
             return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
     }
 }
 
