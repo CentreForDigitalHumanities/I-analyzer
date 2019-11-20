@@ -31,9 +31,9 @@ class Periodicals(XMLCorpus):
     data_directory = current_app.config['PERIODICALS_DATA']
     es_index = current_app.config['PERIODICALS_ES_INDEX']
     es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['PERIODICALS_IMAGE']
     scan_image_type = current_app.config['PERIODICALS_SCAN_IMAGE_TYPE']
+    description_page = current_app.config['PERIODICALS_DESCRIPTION_PAGE']
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -294,4 +294,4 @@ class Periodicals(XMLCorpus):
                 ))
             else:
                 continue
-        return image_list
+        return {'media': image_list}

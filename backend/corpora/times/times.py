@@ -30,7 +30,6 @@ class Times(XMLCorpus):
     data_directory = current_app.config['TIMES_DATA']
     es_index = current_app.config['TIMES_ES_INDEX']
     es_doctype = current_app.config['TIMES_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['TIMES_IMAGE']
     scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
     description_page = current_app.config['TIMES_DESCRIPTION_PAGE']
@@ -477,4 +476,4 @@ class Times(XMLCorpus):
                 _external=True
             )]
         else: image_urls = []
-        return image_urls
+        return {'media': image_urls }

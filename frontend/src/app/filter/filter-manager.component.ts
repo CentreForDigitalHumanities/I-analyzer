@@ -30,6 +30,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     ngOnChanges() {
         this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         this.aggregateSearchForMultipleChoiceFilters();
     }
 
@@ -56,7 +57,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         }
         else filters = null;
         let defaultData = filter.defaultData as MultipleChoiceFilterData;
-        let aggregator = {name: filter.fieldName, size: defaultData.options.length}
+        let aggregator = {name: filter.fieldName, size: defaultData.options.length};
         return this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {

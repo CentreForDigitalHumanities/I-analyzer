@@ -28,7 +28,6 @@ class Tml(HTMLCorpus):
     data_directory = current_app.config['TML_DATA']
     es_index = current_app.config['TML_ES_INDEX']
     es_doctype = current_app.config['TML_ES_DOCTYPE']
-    es_settings = None
     image = current_app.config['TML_IMAGE']
 
     tag_toplevel = ''  # in this case there is no usable top level and entry level for this corpus, essential info exists also outside <html> tags

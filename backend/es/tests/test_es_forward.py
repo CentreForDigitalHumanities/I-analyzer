@@ -161,7 +161,7 @@ def mock_es(requests, forward_response, method, es_address, status):
     requests.add(requests.Response(**rargs))
 
 
-def test_es_forwarding_views(app, requests, login, scenario):
+def test_es_forwarding_views(test_app, times_user, client, requests, session, scenario):
     (authenticate, method, route, data,
      es_address, forward_response, status) = scenario
     if isinstance(data, dict):
@@ -173,22 +173,19 @@ def test_es_forwarding_views(app, requests, login, scenario):
         mock_es(requests, forward_response, method, es_address, status)
         if isinstance(forward_response, dict):
             forward_response = json.dumps(forward_response)
-    with app.test_client() as client:
-        headers = {}
-        if authenticate:
-            headers['Cookie'] = login.headers['Set-Cookie']
-        response = client.open(
-            route,
-            method=method,
-            data=data,
-            content_type=request_type,
-            headers=headers,
-        )
-        assert response.status_code == status
-        if forward_response is not None:
-            assert len(requests.calls) == 1
-            c = requests.calls[0]
-            assert response.get_data(True) == forward_response
-            assert response.content_type == c.response.headers['Content-Type']
-        else:
-            assert len(requests.calls) == 0
+    if authenticate:
+        client.times_login()
+    response = client.open(
+        route,
+        method=method,
+        data=data,
+        content_type=request_type,
+    )
+    assert response.status_code == status
+    if forward_response is not None:
+        assert len(requests.calls) == 1
+        c = requests.calls[0]
+        assert response.get_data(True) == forward_response
+        assert response.content_type == c.response.headers['Content-Type']
+    else:
+        assert len(requests.calls) == 0

@@ -3,6 +3,7 @@ import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, Resour
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
+import { ImageInfo } from '../image-view/image-view.component';
 import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -163,7 +164,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
         any >;
 
     @ResourceAction({
@@ -171,7 +172,7 @@ export class ApiService extends Resource {
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[] },
+        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
     @ResourceAction({
@@ -236,7 +237,7 @@ export class ApiService extends Resource {
     })
     public requestMedia: ResourceMethod<
         { corpus_index: string, document: FoundDocument },
-        { success: false } | { success: true, media: string[] }
+        { success: false } | { success: true, media: string[], info?: ImageInfo }
         >;
 
     @ResourceAction({

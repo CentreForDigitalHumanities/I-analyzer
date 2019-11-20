@@ -16,7 +16,6 @@ import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
-import { ImageViewerModule } from 'ng2-image-viewer';
 
 import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
@@ -39,22 +38,21 @@ import { TimelineComponent } from './visualization/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
-import { DocumentViewComponent } from './document-view/document-view.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
-import { ScanPdfComponent } from './document-view/scan-pdf.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { TermFrequencyComponent } from './visualization/term-frequency.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
-import { ImageViewComponent } from './document-view/image-view.component';
-import { ErrorComponent } from './error/error.component';
 import { BaseFilterComponent, BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
+import { ErrorComponent } from './error/error.component';
+import { DocumentViewComponent } from './document-view/document-view.component';
+import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 
 
 const appRoutes: Routes = [
@@ -125,7 +123,7 @@ export const declarations: any[] = [
     HomeComponent,
     HighlightPipe,
     ImageViewComponent,
-    LoginComponent,
+    ImageNavigationComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
@@ -147,6 +145,16 @@ export const declarations: any[] = [
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
+    LoginComponent,
+    ScrollToDirective,
+    ScanImageComponent,
+    BarChartComponent,
+    VisualizationComponent,
+    WordcloudComponent,
+    TimelineComponent,
+    RelatedWordsComponent,
+    DocumentViewComponent,
+    SearchHistoryComponent,
     SelectFieldComponent,
     TermFrequencyComponent,
     TimelineComponent,
@@ -171,7 +179,6 @@ export const imports: any[] = [
         cookieName: 'csrf_token',
         headerName: 'X-XSRF-Token'
     }),
-    ImageViewerModule,
     MenuModule,
     MultiSelectModule,
     NgxMdModule.forRoot(),

@@ -33,7 +33,8 @@
 
     .scan-button {
         display: block;
-        padding-top: 50px;
+        margin-top: 2rem;
+        margin-left: 3rem;
     }
 
     &:hover {
@@ -46,17 +47,6 @@
     margin-bottom: 15px;
 }
 
-.button.is-primary {
-    background-color: $primary;
-    border-color: transparent;
-    color: $text-primary-color;
-
-    &:hover{
-        background-color: $contrast-primary-color;
-        border-color: transparent;
-        color: $text-primary-color;
-    }
-}
 .title {
     font-size: 1.5rem;
 }

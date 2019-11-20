@@ -51,7 +51,7 @@
                                 </div>
                             </form>
                         </div>
-                        <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user.downloadLimit"></ia-download>
+                        <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user.downloadLimit" [route]="this.router.url"></ia-download>
                     </div>
                 </nav>
             </div>
@@ -68,7 +68,7 @@
             </div>
             <!-- search results, on right -->
             <div class="is-boxed column is-9" *ngIf="queryModel">
-                <p-tabView styleClass="is-content" (onChange)="tabChange($event)">
+                <p-tabView styleClass="is-content" [activeIndex]="tabIndex" (onChange)="tabChange($event)">
                     <p-tabPanel header="Search Results" leftIcon="fa fa-list">
                         <div class="column">
                             <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
