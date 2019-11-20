@@ -7,6 +7,7 @@ import * as _ from "lodash";
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
+import { thresholdFreedmanDiaconis } from 'd3';
 
 @Component({
     selector: 'ia-search',
@@ -157,6 +158,8 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            this.searchFilters.map( filter => filter.currentData = filter.defaultData);
+            this.activeFilters = [];
         }
     }
 
