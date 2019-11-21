@@ -18,7 +18,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
     }
 
     getDisplayData(filter: SearchFilter<MultipleChoiceFilterData>) {
-        let data = filter.currentData;
+        this.data = filter.currentData;
         let options = [];
         if (this.optionsAndCounts) {
             options = _.sortBy(this.optionsAndCounts.map(x => {
@@ -29,7 +29,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
         if (options.length === 0) {
             this.grayedOut = true;
         }
-        return { options: options, selected: data.selected };
+        return { options: options, selected: this.data.selected };
     }
 
     getFilterData(): SearchFilter<MultipleChoiceFilterData> {

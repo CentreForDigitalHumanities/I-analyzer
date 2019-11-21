@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RangeFilterComponent } from './range-filter.component';
-
 import { commonTestBed } from '../common-test-bed';
+
+import { RangeFilterComponent } from './range-filter.component';
 import { RangeFilterData } from '../models';
 
 describe('RangeFilterComponent', () => {

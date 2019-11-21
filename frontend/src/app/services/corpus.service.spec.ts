@@ -101,7 +101,7 @@ describe('CorpusService', () => {
                         "description": "Search only within these banks.",
                         "fieldName": "bank",
                         "useAsFilter": false,
-                        "option_count": 3               
+                        "option_count": 42               
                     }
                 },
                 {
@@ -139,7 +139,7 @@ describe('CorpusService', () => {
         return service.get().then((items) => {
             let mockMultipleChoiceData: SearchFilterData  = {
                 filterType: 'MultipleChoiceFilter',
-                options: [undefined, undefined, undefined],
+                optionCount: 42,
                 selected: []
             };
             let mockRangeData: SearchFilterData = {
