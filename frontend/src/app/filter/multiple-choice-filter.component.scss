@@ -1,4 +1,4 @@
-@import '../../_utilities';
+@import "../../_utilities";
 
 ::ng-deep .ui-multiselect-panel {
     max-width: 300px;
@@ -10,24 +10,6 @@
     width: 80%;
 }
 
-::ng-deep .ui-calendar {
-    margin: 1px 0;
-}
-
-.filter-container{
-    &:hover{
-        box-shadow: 0 0 0 1px $primary;
-    }
-    margin-bottom: 5px;
-}
-
-.filter-container.on{
-    box-shadow: 0 0 0 2px $primary;
-}
-
-.filter-icon {
-    border: none;
-}
 
 .select-count {
     width: 50px;

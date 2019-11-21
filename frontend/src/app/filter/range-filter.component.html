@@ -1,0 +1,4 @@
+<div class="range">
+    <span>{{data[0]}} - {{data[1]}}</span>
+    <p-slider [animate]="true" [(ngModel)]="data" [range]="true" [min]="filter.defaultData.min" [max]="filter.defaultData.max" (onSlideEnd)="update()"></p-slider>
+</div>

@@ -1,0 +1,16 @@
+@import "../../_utilities";
+
+.filter-container{
+    &:hover{
+        box-shadow: 0 0 0 1px $primary;
+    }
+    margin-bottom: 5px;
+}
+
+.filter-container.on{
+    box-shadow: 0 0 0 2px $primary;
+}
+
+.filter-icon {
+    border: none;
+}

@@ -1,11 +1,9 @@
-import { AggregateResult } from './search-results';
-
-export type SearchFilter = {
+export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
     useAsFilter: boolean,
-    defaultData?: SearchFilterData,
-    currentData: SearchFilterData
+    defaultData?: T,
+    currentData: T
 }
 
 export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
@@ -16,9 +14,8 @@ export type BooleanFilterData = {
 };
 export type MultipleChoiceFilterData = {
     filterType: 'MultipleChoiceFilter', 
-    options?: string[], 
-    selected: string[],
-    optionsAndCounts?: AggregateResult[]
+    optionCount?: number, 
+    selected: string[]
 };
 export type RangeFilterData = {
     filterType: 'RangeFilter',
@@ -35,18 +32,16 @@ export type DateFilterData = {
 
 export type SearchFilterType = SearchFilterData["filterType"];
 
-export function searchFilterDataToParam(filter: SearchFilter): string | string[] {
+export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
     switch (filter.currentData.filterType) {
         case "BooleanFilter":
             return `${filter.currentData}`;
         case "MultipleChoiceFilter":
             return filter.currentData.selected as string[];
-        case "RangeFilter": {
+        case "RangeFilter":
             return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
-        case "DateFilter": {
+        case "DateFilter":
             return `${filter.currentData.min}:${filter.currentData.max}`;
-        }
     }
 }
 
@@ -55,7 +50,7 @@ export function searchFilterDataFromParam(fieldName: string, filterType: SearchF
         case "BooleanFilter":
             return { filterType, checked: value[0] === 'true' };
         case "MultipleChoiceFilter":
-            return { filterType, options: [], selected: value };
+            return { filterType, selected: value };
         case "RangeFilter": {
             let [min, max] = value[0].split(':');
             return { filterType, min: parseFloat(min), max: parseFloat(max) };

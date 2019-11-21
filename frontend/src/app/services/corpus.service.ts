@@ -6,7 +6,7 @@ import * as moment from 'moment';
 
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, SearchFilter } from '../models/index';
+import { Corpus, CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 
 @Injectable()
 export class CorpusService {
@@ -85,7 +85,7 @@ export class CorpusService {
         }
     }
 
-    private parseSearchFilter(filter: any, fieldName: string): SearchFilter {
+    private parseSearchFilter(filter: any, fieldName: string): SearchFilter<SearchFilterData> {
         let defaultData: any;
         switch (filter.name) {
             case 'BooleanFilter':
@@ -97,7 +97,7 @@ export class CorpusService {
             case 'MultipleChoiceFilter':
                 defaultData = {
                     filterType: filter.name,
-                    options: Array.from(Array(filter.option_count)),
+                    optionCount: filter.option_count,
                     selected: []
                 }
                 break;
