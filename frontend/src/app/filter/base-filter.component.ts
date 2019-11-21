@@ -1,15 +1,13 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { EventEmitter, Input, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
-import { DataService } from '../services/index';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
  * Filter data from parameters and after search are pushed via a DataService observable
  */
-// @Component({})
-export abstract class BaseFilterComponent <T extends SearchFilterData> implements OnDestroy {
+export abstract class BaseFilterComponent <T extends SearchFilterData> {
     @Input()
     public field: CorpusField;
 
@@ -28,27 +26,14 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> implement
     public grayedOut: boolean = false;
     public useAsFilter: boolean = false;
 
-    constructor() {}
-    // constructor(private dataService: DataService<T>) {
-    //     this.subscription = this.dataService.filterData$.subscribe(
-    //         data => {
-    //             if (this.field && data !== undefined) {
-    //                 this.filter = data.find(f => f.fieldName === this.field.name);
-    //                 this.grayedOut = false;
-    //                 this.data = this.getDisplayData(this.filter);
-    //                 this.useAsFilter = this.filter.useAsFilter;
-    //             }
-    //         });
-    // }
-
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
+    constructor() {
     }
 
     provideFilterData() {
         if (this.field) {
             this.filter = this.field.searchFilter as SearchFilter<T>;
             this.data = this.getDisplayData(this.filter);
+            this.useAsFilter = this.filter.useAsFilter;
         }
     }
 

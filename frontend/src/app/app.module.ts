@@ -49,7 +49,7 @@ import { TermFrequencyComponent } from './visualization/term-frequency.component
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
-import { BaseFilterComponent, BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
+import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';

@@ -17,8 +17,7 @@ export type BooleanFilterData = {
 export type MultipleChoiceFilterData = {
     filterType: 'MultipleChoiceFilter', 
     options?: string[], 
-    selected: string[],
-    optionsAndCounts?: AggregateResult[]
+    selected: string[]
 };
 export type RangeFilterData = {
     filterType: 'RangeFilter',

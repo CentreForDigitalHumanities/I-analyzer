@@ -41,7 +41,7 @@
             <ng-container [ngSwitch]="field.searchFilter.defaultData.filterType">
                 <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [field]="field" (update)="updateFilterData($event)"></ia-boolean-filter>
                 <ia-date-filter *ngSwitchCase="'DateFilter'" [field]="field" (update)="updateFilterData($event)"></ia-date-filter>
-                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [field]="field" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
+                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [field]="field" [optionsAndCounts]="multipleChoiceData[field.name]" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
                 <ia-range-filter *ngSwitchCase="'RangeFilter'" [field]="field" (update)="updateFilterData($event)"></ia-range-filter>
             </ng-container>
         </div>

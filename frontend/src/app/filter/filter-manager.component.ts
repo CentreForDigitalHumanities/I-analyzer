@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import * as _ from "lodash";
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter, SearchFilterData } from '../models/index';
-import { SearchService } from '../services';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter, SearchFilterData, AggregateResult } from '../models/index';
+import { DataService, SearchService } from '../services';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -22,7 +22,9 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     
     public showFilters: boolean;
 
-    constructor(private searchService: SearchService) {
+    public multipleChoiceData: Object = {};
+
+    constructor(private dataService: DataService, private searchService: SearchService) {
      }
 
     ngOnInit() {
@@ -30,19 +32,23 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     ngOnChanges() {
         this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
-        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         this.aggregateSearchForMultipleChoiceFilters();
     }
 
+    /**
+     * For all multiple choice filters, get the bins and counts
+     * Exclude the filter itself from the aggregate search
+     * Save results in multipleChoiceData, which is structured as follows:
+     * fieldName1: [{key: option1, doc_count: 42}, {key: option2, doc_count: 3}],
+     * fieldName2: [etc]
+     */
     private aggregateSearchForMultipleChoiceFilters() {
         let multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType==="MultipleChoiceFilter");
         let aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
         Promise.all(aggregateResultPromises).then(results => {
-            results.forEach(result => {
-                let filter = multipleChoiceFilters.find(f => f.fieldName===Object.keys(result)[0])
-                let currentData = filter.currentData as MultipleChoiceFilterData;
-                currentData.optionsAndCounts = result[filter.fieldName];
-            })
+            results.forEach( r =>
+                this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
+            );
         });
     }
 
@@ -58,7 +64,8 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         else filters = null;
         let defaultData = filter.defaultData as MultipleChoiceFilterData;
         let aggregator = {name: filter.fieldName, size: defaultData.options.length};
-        return this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results => {
+        let queryModel = this.searchService.createQueryModel(this.queryModel.queryText, this.queryModel.fields, filters);
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
             console.trace(error, aggregator);
@@ -67,7 +74,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Event triggered from search-filter.component
+     * Event triggered from filter components
      * @param filterData 
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {
@@ -78,6 +85,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public toggleActiveFilters() {
         this.searchFilters.forEach(filter => filter.useAsFilter=false);
+        this.dataService.pushNewFilterData(this.searchFilters);
         this.filtersChanged();
     }
 
