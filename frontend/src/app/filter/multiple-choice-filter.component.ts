@@ -25,7 +25,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
                 return { 'label': x.key, 'value': encodeURIComponent(x.key), 'doc_count': x.doc_count };
             }), o => o.label);
         }
-        else options = _.sortBy(data.options.map(x => { return { 'label': x, 'value': encodeURIComponent(x) } }), o => o.label);
+        else options = [1, 2, 3]; // dummy array to make sure the component loads
         if (options.length === 0) {
             this.grayedOut = true;
         }
@@ -35,7 +35,6 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
     getFilterData(): SearchFilter<MultipleChoiceFilterData> {
         this.filter.currentData = {
             filterType: "MultipleChoiceFilter",
-            options: this.data.options,
             selected: this.data.selected
         };
         return this.filter;

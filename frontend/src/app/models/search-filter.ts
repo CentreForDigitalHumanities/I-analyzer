@@ -1,5 +1,3 @@
-import { AggregateResult } from './search-results';
-
 export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
@@ -16,7 +14,7 @@ export type BooleanFilterData = {
 };
 export type MultipleChoiceFilterData = {
     filterType: 'MultipleChoiceFilter', 
-    options?: string[], 
+    optionCount?: number, 
     selected: string[]
 };
 export type RangeFilterData = {
@@ -52,7 +50,7 @@ export function searchFilterDataFromParam(fieldName: string, filterType: SearchF
         case "BooleanFilter":
             return { filterType, checked: value[0] === 'true' };
         case "MultipleChoiceFilter":
-            return { filterType, options: [], selected: value };
+            return { filterType, selected: value };
         case "RangeFilter": {
             let [min, max] = value[0].split(':');
             return { filterType, min: parseFloat(min), max: parseFloat(max) };

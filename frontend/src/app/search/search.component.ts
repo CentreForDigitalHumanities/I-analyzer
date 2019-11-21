@@ -181,6 +181,7 @@ export class SearchComponent implements OnInit {
                 f.useAsFilter = false;
             }
         })
+        this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {

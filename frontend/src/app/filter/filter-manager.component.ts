@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import * as _ from "lodash";
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter, SearchFilterData, AggregateResult } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData } from '../models/index';
+import { SearchService } from '../services';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -24,7 +24,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public multipleChoiceData: Object = {};
 
-    constructor(private dataService: DataService, private searchService: SearchService) {
+    constructor(private searchService: SearchService) {
      }
 
     ngOnInit() {
@@ -63,7 +63,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         }
         else filters = null;
         let defaultData = filter.defaultData as MultipleChoiceFilterData;
-        let aggregator = {name: filter.fieldName, size: defaultData.options.length};
+        let aggregator = {name: filter.fieldName, size: defaultData.optionCount};
         let queryModel = this.searchService.createQueryModel(this.queryModel.queryText, this.queryModel.fields, filters);
         return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
@@ -85,7 +85,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public toggleActiveFilters() {
         this.searchFilters.forEach(filter => filter.useAsFilter=false);
-        this.dataService.pushNewFilterData(this.searchFilters);
         this.filtersChanged();
     }
 
