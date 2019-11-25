@@ -102,7 +102,6 @@ export class ElasticSearchService {
         let connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
-            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
@@ -179,10 +178,11 @@ export class ElasticSearchService {
      * @param completed
      */
     private parseResponse(response: SearchResponse<{}>): SearchResults {
+        console.log(response);
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
-            total: response.hits.total
+            total: response.hits.total.value
         }
     }
 
