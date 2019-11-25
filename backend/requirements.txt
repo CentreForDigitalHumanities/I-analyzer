@@ -17,7 +17,7 @@ chardet==3.0.4            # via requests
 click==7.0                # via flask
 coverage==4.5.3
 defusedxml==0.5.0         # via python3-saml
-elasticsearch==6.4.0
+elasticsearch==7.0.1
 et-xmlfile==1.0.1         # via openpyxl
 flask-admin==1.5.3
 flask-login==0.4.1

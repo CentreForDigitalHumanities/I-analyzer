@@ -165,12 +165,10 @@ class Corpus(object):
         '''
         result = {
             'mappings': {
-                self.es_doctype: {
-                    'properties': {
-                        field.name: field.es_mapping
-                        for field in self.fields
-                        if field.es_mapping and field.indexed
-                    }
+                'properties': {
+                    field.name: field.es_mapping
+                    for field in self.fields
+                    if field.es_mapping and field.indexed
                 }
             }
         }
