@@ -154,7 +154,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).options.length;
+                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
             }
             else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
                 size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;

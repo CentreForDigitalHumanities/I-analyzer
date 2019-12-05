@@ -5,7 +5,7 @@ import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
 @Component({
@@ -59,8 +59,8 @@ export class SearchComponent implements OnInit {
     public resultsCount: number = 0;
     public tabIndex: number;
 
-    private searchFilters: SearchFilter [] = [];
-    private activeFilters: SearchFilter [] = [];
+    private searchFilters: SearchFilter<SearchFilterData> [] = [];
+    private activeFilters: SearchFilter<SearchFilterData> [] = [];
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
@@ -157,13 +157,15 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            this.searchFilters.map( filter => filter.currentData = filter.defaultData);
+            this.activeFilters = [];
         }
     }
 
     /**
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
-    private setFiltersFromParams(searchFilters: SearchFilter[], params: ParamMap) {
+    private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
         searchFilters.forEach( f => {
             let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
@@ -179,6 +181,7 @@ export class SearchComponent implements OnInit {
                 f.useAsFilter = false;
             }
         })
+        this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
@@ -202,7 +205,7 @@ export class SearchComponent implements OnInit {
         }
     }
 
-    public setActiveFilters(activeFilters: SearchFilter[]) {
+    public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
         this.activeFilters = activeFilters;
         this.search();
     }

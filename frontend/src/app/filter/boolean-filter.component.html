@@ -1,0 +1,4 @@
+<div class="bool">
+    <p-checkbox [(ngModel)]="data" binary="true" (onChange)="update()"></p-checkbox>
+    {{data | json | titlecase }}
+</div>

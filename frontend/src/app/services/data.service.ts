@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject }    from 'rxjs';
 
-import { TimelineData, SearchFilter } from '../models/index';
+import { TimelineData } from '../models/index';
 
-const filterDataSource = new BehaviorSubject<SearchFilter[]>(undefined);
 const timelineDataSource = new BehaviorSubject<TimelineData>(undefined);
 
+/**
+ * This service is used to communicate changes between components
+ * which don't have a child-parent relationship
+ * Currently used for pushing changes from timeline component
+ * to frequency table component
+ */
 @Injectable()
 export class DataService {
-    public filterData$ = filterDataSource.asObservable();
     public timelineData$ = timelineDataSource.asObservable();
-
-
-    pushNewFilterData(data: SearchFilter[]) {
-        filterDataSource.next(data);
-    }
 
     pushCurrentTimelineData(data: TimelineData){
         timelineDataSource.next(data);

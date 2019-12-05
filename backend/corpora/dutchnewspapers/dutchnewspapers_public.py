@@ -299,7 +299,7 @@ class DutchNewspapersPublic(XMLCorpus):
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
                                   flatten=True, toplevel=True),
-            visualization_type="word_cloud"
+            visualization_type="wordcloud"
         ),
     ]
 

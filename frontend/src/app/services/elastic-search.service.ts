@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Client, SearchResponse } from 'elasticsearch';
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter } from '../models/index';
+import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -200,7 +200,7 @@ export class ElasticSearchService {
     /**
     * Convert filters from query model into elasticsearch form
     */
-    private mapFilters(filters: SearchFilter[]) {
+    private mapFilters(filters: SearchFilter<SearchFilterData>[]) {
         return filters.map(filter => {
             switch (filter.currentData.filterType) {
                 case "BooleanFilter":

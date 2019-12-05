@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import * as _ from "lodash";
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, searchFilterDataFromParam, SearchFilter } from '../models/index';
-import { DataService, SearchService } from '../services';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData } from '../models/index';
+import { SearchService } from '../services';
 
 @Component({
     selector: 'ia-filter-manager',
@@ -15,14 +15,16 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     @Input() private queryModel: QueryModel;
 
     @Output('filtersChanged')
-    public filtersChangedEmitter = new EventEmitter<SearchFilter []>()
+    public filtersChangedEmitter = new EventEmitter<SearchFilter<SearchFilterData> []>()
 
-    public searchFilters: SearchFilter [] = [];
-    public activeFilters: SearchFilter [] = [];
+    public searchFilters: SearchFilter<SearchFilterData> [] = [];
+    public activeFilters: SearchFilter<SearchFilterData> [] = [];
     
     public showFilters: boolean;
 
-    constructor(private dataService: DataService, private searchService: SearchService) {
+    public multipleChoiceData: Object = {};
+
+    constructor(private searchService: SearchService) {
      }
 
     ngOnInit() {
@@ -33,20 +35,24 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         this.aggregateSearchForMultipleChoiceFilters();
     }
 
+    /**
+     * For all multiple choice filters, get the bins and counts
+     * Exclude the filter itself from the aggregate search
+     * Save results in multipleChoiceData, which is structured as follows:
+     * fieldName1: [{key: option1, doc_count: 42}, {key: option2, doc_count: 3}],
+     * fieldName2: [etc]
+     */
     private aggregateSearchForMultipleChoiceFilters() {
         let multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType==="MultipleChoiceFilter");
         let aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
         Promise.all(aggregateResultPromises).then(results => {
-            results.forEach(result => {
-                let filter = multipleChoiceFilters.find(f => f.fieldName===Object.keys(result)[0])
-                let currentData = filter.currentData as MultipleChoiceFilterData;
-                currentData.optionsAndCounts = result[filter.fieldName];
-            })
-            this.dataService.pushNewFilterData(this.searchFilters);
+            results.forEach( r =>
+                this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
+            );
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: SearchFilter): Promise<AggregateData> {
+    async getMultipleChoiceFilterOptions(filter: SearchFilter<SearchFilterData>): Promise<AggregateData> {
         let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter===true));
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
         if (filters.length>0) {
@@ -57,8 +63,9 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         }
         else filters = null;
         let defaultData = filter.defaultData as MultipleChoiceFilterData;
-        let aggregator = {name: filter.fieldName, size: defaultData.options.length}
-        return this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(results => {
+        let aggregator = {name: filter.fieldName, size: defaultData.optionCount};
+        let queryModel = this.searchService.createQueryModel(this.queryModel.queryText, this.queryModel.fields, filters);
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
             console.trace(error, aggregator);
@@ -67,10 +74,10 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Event triggered from search-filter.component
+     * Event triggered from filter components
      * @param filterData 
      */
-    public updateFilterData(filter: SearchFilter) {
+    public updateFilterData(filter: SearchFilter<SearchFilterData>) {
         let index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
         this.searchFilters[index] = filter;
         this.filtersChanged();
@@ -78,7 +85,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public toggleActiveFilters() {
         this.searchFilters.forEach(filter => filter.useAsFilter=false);
-        this.dataService.pushNewFilterData(this.searchFilters);
         this.filtersChanged();
     }
 
@@ -90,6 +96,17 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     public filtersChanged() {
         this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         this.filtersChangedEmitter.emit(this.activeFilters);
+    }
+
+    toggleFilter(filter: SearchFilter<SearchFilterData>) {
+        filter.useAsFilter = !filter.useAsFilter;
+        this.filtersChanged();
+    }
+
+    resetFilter(filter: SearchFilter<SearchFilterData>) {
+        filter.useAsFilter = false;
+        filter.currentData = filter.defaultData;
+        this.filtersChanged();
     }
 
 }

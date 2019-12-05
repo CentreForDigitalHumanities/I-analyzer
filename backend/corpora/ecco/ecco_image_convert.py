@@ -28,6 +28,8 @@ def convert_tif_to_pdf(data_dir):
         for filename in filenames:
             name, ext = splitext(filename)
             if ext=='.tif' or ext=='.TIF': 
+                if exists(name+'.pdf'):
+                    continue
                 magick_call = ['convert', filename, '-quiet', name+'.pdf']
                 subprocess.check_call(magick_call)
         with open("files.txt", "w") as f:

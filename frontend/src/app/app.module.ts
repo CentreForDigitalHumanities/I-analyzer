@@ -23,7 +23,7 @@ import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchFilterComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -49,7 +49,7 @@ import { TermFrequencyComponent } from './visualization/term-frequency.component
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
-import { FilterManagerComponent } from './filter/filter-manager.component';
+import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
@@ -108,8 +108,13 @@ const appRoutes: Routes = [
 export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
+    BarChartComponent,
+    // BaseFilterComponent,
+    BooleanFilterComponent,
     CorpusSelectionComponent,
+    DateFilterComponent,
     DialogComponent,
+    DocumentViewComponent,
     DownloadComponent,
     DropdownComponent,
     ErrorComponent,
@@ -122,13 +127,21 @@ export const declarations: any[] = [
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
+    MultipleChoiceFilterComponent,
     NotificationsComponent,
+    QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
+    PrivacyComponent,
+    RangeFilterComponent,
+    RegistrationComponent,
+    RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
+    ScanPdfComponent,
+    ScrollToDirective,
     SearchComponent,
-    SearchFilterComponent,
+    SearchHistoryComponent,
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
@@ -143,12 +156,10 @@ export const declarations: any[] = [
     DocumentViewComponent,
     SearchHistoryComponent,
     SelectFieldComponent,
-    RegistrationComponent,
-    PrivacyComponent,
-    RelatedWordsComponent,
-    ScanPdfComponent,
-    QueryFiltersComponent,
     TermFrequencyComponent,
+    TimelineComponent,
+    VisualizationComponent,
+    WordcloudComponent,
 ];
 
 export const imports: any[] = [
