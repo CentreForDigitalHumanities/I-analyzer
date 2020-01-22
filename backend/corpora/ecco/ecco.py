@@ -244,8 +244,8 @@ class Ecco(XMLCorpus):
         pages_returned = 5 #number of pages that is displayed. must be odd number.
          #the page corresponding to the document
         home_page = int(document['fieldValues']['page'])
-        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = get_pdf_info(join(self.data_directory, image_path))
+        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = {
             "pageNumbers": [p for p in pages], #change from 0-indexed to real page
             "homePageIndex": home_page_index+1, #change from 0-indexed to real page
