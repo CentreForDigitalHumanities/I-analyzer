@@ -270,8 +270,8 @@ class Ecco(XMLCorpus):
         image_path = request_args['image_path']
         start_page = int(request_args['start_page'])
         end_page = int(request_args['end_page'])
-        absolute_path = op.join(self.data_directory, image_path)
-        if not op.isfile(absolute_path):
+        absolute_path = join(self.data_directory, image_path)
+        if not isfile(absolute_path):
             return None
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
