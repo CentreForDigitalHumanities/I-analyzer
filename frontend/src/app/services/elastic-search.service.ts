@@ -182,7 +182,7 @@ export class ElasticSearchService {
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
-            total: response.hits.total
+            total: response.hits.total.value
         }
     }
 

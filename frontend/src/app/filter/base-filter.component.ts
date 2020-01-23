@@ -1,5 +1,4 @@
 import { EventEmitter, Input, Output } from '@angular/core';
-import { Subscription } from 'rxjs';
 
 import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
 
@@ -21,8 +20,6 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
      */
     public data: any; // holds the user data
 
-    public subscription: Subscription;
-
     public grayedOut: boolean = false;
     public useAsFilter: boolean = false;
 
@@ -32,6 +29,7 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
     provideFilterData() {
         if (this.field) {
             this.filter = this.field.searchFilter as SearchFilter<T>;
+            this.grayedOut = !this.field.searchFilter.currentData;
             this.data = this.getDisplayData(this.filter);
             this.useAsFilter = this.filter.useAsFilter;
         }

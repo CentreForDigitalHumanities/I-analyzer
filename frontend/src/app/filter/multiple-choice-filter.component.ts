@@ -14,6 +14,7 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
     @Input() public optionsAndCounts: AggregateResult[];
     
     ngOnChanges() {
+        console.log(this.field);
         this.provideFilterData();
     }
 
