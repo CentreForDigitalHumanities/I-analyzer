@@ -8,10 +8,9 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnChanges {
-
-    ngOnChanges() {
-        console.log(this.filter);
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnInit {
+    
+    ngOnInit() {
         this.provideFilterData();
     }
 

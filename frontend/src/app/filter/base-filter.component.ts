@@ -10,9 +10,6 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
     @Input()
     public filter: SearchFilter<T>;
 
-    @Input()
-    public resetFlag: string;
-
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter<T>>();
 

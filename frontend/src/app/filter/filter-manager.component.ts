@@ -108,7 +108,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
         console.log("resettin'");
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
-        this.resetFlag = filter.fieldName;
         this.filtersChanged();
     }
 
