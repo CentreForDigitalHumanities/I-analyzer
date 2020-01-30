@@ -105,9 +105,8 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     resetFilter(filter: SearchFilter<SearchFilterData>) {
-        console.log("resettin'");
         filter.useAsFilter = false;
-        filter.currentData = filter.defaultData;
+        filter.currentData = Object.assign({}, filter.defaultData);
         this.filtersChanged();
     }
 

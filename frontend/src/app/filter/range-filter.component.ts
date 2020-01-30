@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 import { SearchFilter, RangeFilterData } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -8,15 +8,18 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnInit {
-    
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnChanges, OnInit {
     ngOnInit() {
         this.provideFilterData();
     }
 
+    ngOnChanges() {
+        console.log("range filter changed");
+    }
+
     getDisplayData(filter: SearchFilter<RangeFilterData>) {
-        let data = filter.currentData;
-        return [data.min, data.max];
+        this.data = filter.currentData;
+        return [this.data.min, this.data.max];
     }
 
     getFilterData(): SearchFilter<RangeFilterData> {   

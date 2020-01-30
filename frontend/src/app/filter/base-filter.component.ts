@@ -7,13 +7,11 @@ import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
  * Filter data from parameters and after search are pushed via a DataService observable
  */
 export abstract class BaseFilterComponent <T extends SearchFilterData> {
-    @Input()
+    @Input() 
     public filter: SearchFilter<T>;
 
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter<T>>();
-
-    //public filter: SearchFilter<T>;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
@@ -22,13 +20,13 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
 
     public grayedOut: boolean = false;
     public useAsFilter: boolean = false;
+    public currentData: SearchFilterData;
 
     constructor() {
     }
 
     provideFilterData() {
         if (this.filter) {
-            // this.filter = this.field.searchFilter as SearchFilter<T>;
             this.grayedOut = !this.filter.currentData;
             this.data = this.getDisplayData(this.filter);
             this.useAsFilter = this.filter.useAsFilter;
