@@ -23,7 +23,6 @@ class DutchAnnualReports(XMLCorpus):
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
     es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
     image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']

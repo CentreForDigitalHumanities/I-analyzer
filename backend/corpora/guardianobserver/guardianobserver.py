@@ -34,7 +34,6 @@ class GuardianObserver(XMLCorpus):
     max_date = datetime(year=2003, month=12, day=31)
     data_directory = current_app.config['GO_DATA']
     es_index = current_app.config['GO_ES_INDEX']
-    es_doctype = current_app.config['GO_ES_DOCTYPE']
     image = current_app.config['GO_IMAGE']
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
     #description_page = current_app.config['GO_DESCRIPTION_PAGE']
@@ -203,7 +202,7 @@ class GuardianObserver(XMLCorpus):
                             "image_path": image_path
                         }
                     }
-                    update_document(self.es_index, self.es_doctype, document, update_body)
+                    update_document(self.es_index, document, update_body)
                     # define subdirectory in the zip archive
                     filename = join(correct_file.split('/')[0], target_filename)
                     break

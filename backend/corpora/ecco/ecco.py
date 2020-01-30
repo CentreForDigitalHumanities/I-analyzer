@@ -28,7 +28,6 @@ class Ecco(XMLCorpus):
 
     data_directory = current_app.config['ECCO_DATA']
     es_index = current_app.config['ECCO_ES_INDEX']
-    es_doctype = current_app.config['ECCO_ES_DOCTYPE']
     image = current_app.config['ECCO_IMAGE']
     scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
     es_settings = None

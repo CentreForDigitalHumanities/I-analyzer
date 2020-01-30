@@ -28,7 +28,6 @@ class DutchNewspapersPublic(XMLCorpus):
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
