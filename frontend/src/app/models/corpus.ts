@@ -16,7 +16,6 @@ export class Corpus implements ElasticSearchIndex {
          * Description of the corpus to show to users.
          */
         public description: string,
-        public doctype: DocumentType,
         public index: string,
         public fields: CorpusField[],
         public minDate: Date,
@@ -30,12 +29,9 @@ export class Corpus implements ElasticSearchIndex {
 }
 
 export type ElasticSearchIndex = {
-    doctype: DocumentType,
     index: string,
     serverName: string
 }
-
-export type DocumentType = 'article';
 
 export type CorpusField = {
     description: string,

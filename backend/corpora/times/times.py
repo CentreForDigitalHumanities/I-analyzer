@@ -29,7 +29,6 @@ class Times(XMLCorpus):
     max_date = datetime(year=2010, month=12, day=31)
     data_directory = current_app.config['TIMES_DATA']
     es_index = current_app.config['TIMES_ES_INDEX']
-    es_doctype = current_app.config['TIMES_ES_DOCTYPE']
     image = current_app.config['TIMES_IMAGE']
     scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
     description_page = current_app.config['TIMES_DESCRIPTION_PAGE']

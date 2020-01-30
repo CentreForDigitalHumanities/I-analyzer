@@ -89,7 +89,6 @@ export class ElasticSearchService {
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
-            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -178,7 +177,6 @@ export class ElasticSearchService {
      * @param completed
      */
     private parseResponse(response: SearchResponse<{}>): SearchResults {
-        console.log(response);
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
