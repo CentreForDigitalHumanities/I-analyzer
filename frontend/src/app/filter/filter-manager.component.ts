@@ -21,6 +21,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     public activeFilters: SearchFilter<SearchFilterData> [] = [];
     
     public showFilters: boolean;
+    public resetFlag: string;
 
     public multipleChoiceData: Object = {};
 
@@ -104,8 +105,10 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     resetFilter(filter: SearchFilter<SearchFilterData>) {
+        console.log("resettin'");
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
+        this.resetFlag = filter.fieldName;
         this.filtersChanged();
     }
 

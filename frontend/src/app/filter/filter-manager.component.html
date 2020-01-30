@@ -39,10 +39,10 @@
                 </p>
             </div>
             <ng-container [ngSwitch]="field.searchFilter.defaultData.filterType">
-                <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [field]="field" (update)="updateFilterData($event)"></ia-boolean-filter>
-                <ia-date-filter *ngSwitchCase="'DateFilter'" [field]="field" (update)="updateFilterData($event)"></ia-date-filter>
-                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [field]="field" [optionsAndCounts]="multipleChoiceData[field.name]" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
-                <ia-range-filter *ngSwitchCase="'RangeFilter'" [field]="field" (update)="updateFilterData($event)"></ia-range-filter>
+                <ia-boolean-filter *ngSwitchCase="'BooleanFilter'" [filter]="field.searchFilter" [resetFlag]="resetFlag" (update)="updateFilterData($event)"></ia-boolean-filter>
+                <ia-date-filter *ngSwitchCase="'DateFilter'" [filter]="field.searchFilter" [resetFlag]="resetFlag" (update)="updateFilterData($event)"></ia-date-filter>
+                <ia-multiple-choice-filter *ngSwitchCase="'MultipleChoiceFilter'" [filter]="field.searchFilter" [resetFlag]="resetFlag" [optionsAndCounts]="multipleChoiceData[field.name]" (update)="updateFilterData($event)"></ia-multiple-choice-filter>
+                <ia-range-filter *ngSwitchCase="'RangeFilter'" [filter]="field.searchFilter" [resetFlag]="resetFlag" (update)="updateFilterData($event)"></ia-range-filter>
             </ng-container>
         </div>
     </ng-container>

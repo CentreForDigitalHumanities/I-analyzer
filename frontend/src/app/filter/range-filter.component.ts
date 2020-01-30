@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges } from '@angular/core';
 
 import { SearchFilter, RangeFilterData } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -8,9 +8,10 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnInit {
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnChanges {
 
-    ngOnInit() {
+    ngOnChanges() {
+        console.log(this.filter);
         this.provideFilterData();
     }
 

@@ -8,12 +8,15 @@ import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
  */
 export abstract class BaseFilterComponent <T extends SearchFilterData> {
     @Input()
-    public field: CorpusField;
+    public filter: SearchFilter<T>;
+
+    @Input()
+    public resetFlag: string;
 
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter<T>>();
 
-    public filter: SearchFilter<T>;
+    //public filter: SearchFilter<T>;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
@@ -27,9 +30,9 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
     }
 
     provideFilterData() {
-        if (this.field) {
-            this.filter = this.field.searchFilter as SearchFilter<T>;
-            this.grayedOut = !this.field.searchFilter.currentData;
+        if (this.filter) {
+            // this.filter = this.field.searchFilter as SearchFilter<T>;
+            this.grayedOut = !this.filter.currentData;
             this.data = this.getDisplayData(this.filter);
             this.useAsFilter = this.filter.useAsFilter;
         }
