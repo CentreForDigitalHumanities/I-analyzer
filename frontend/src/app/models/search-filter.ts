@@ -1,7 +1,11 @@
+import { BooleanFilterComponent } from '../filter';
+
 export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
     useAsFilter: boolean,
+    reset?: boolean,
+    grayedOut?: boolean,
     defaultData?: T,
     currentData: T
 }

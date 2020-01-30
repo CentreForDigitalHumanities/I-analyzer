@@ -10,6 +10,9 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
     @Input() 
     public filter: SearchFilter<T>;
 
+    @Input()
+    public grayedOut: boolean;
+
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter<T>>();
 
@@ -18,7 +21,6 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
      */
     public data: any; // holds the user data
 
-    public grayedOut: boolean = false;
     public useAsFilter: boolean = false;
     public currentData: SearchFilterData;
 
@@ -27,7 +29,6 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
 
     provideFilterData() {
         if (this.filter) {
-            this.grayedOut = !this.filter.currentData;
             this.data = this.getDisplayData(this.filter);
             this.useAsFilter = this.filter.useAsFilter;
         }

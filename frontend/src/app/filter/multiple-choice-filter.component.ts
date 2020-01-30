@@ -24,9 +24,6 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
             options = _.sortBy(this.optionsAndCounts.map(x => {
                 return { 'label': x.key, 'value': encodeURIComponent(x.key), 'doc_count': x.doc_count };
             }), o => o.label);
-            if (options.length === 0) {
-                this.grayedOut = true;
-            }
         }
         else options = [1, 2, 3]; // dummy array to make sure the component loads
         return { options: options, selected: this.data.selected };

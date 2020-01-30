@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 
 import * as moment from 'moment';
 
@@ -10,7 +10,7 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements OnInit {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements DoCheck, OnInit {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
@@ -23,6 +23,13 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> imp
             this.maxDate = new Date(this.filter.defaultData.max);
             this.minYear = this.minDate.getFullYear();
             this.maxYear = this.maxDate.getFullYear();
+        }
+    }
+
+    ngDoCheck() {
+        if (this.filter.reset) {
+            this.filter.reset = false;
+            this.provideFilterData();
         }
     }
 
