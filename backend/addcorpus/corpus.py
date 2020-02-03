@@ -66,6 +66,13 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def es_doctype(self):
+        '''
+        ElasticSearch document type name.
+        '''
+        raise NotImplementedError()
+
+    @property
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
@@ -158,10 +165,12 @@ class Corpus(object):
         '''
         result = {
             'mappings': {
-                'properties': {
-                    field.name: field.es_mapping
-                    for field in self.fields
-                    if field.es_mapping and field.indexed
+                self.es_doctype: {
+                    'properties': {
+                        field.name: field.es_mapping
+                        for field in self.fields
+                        if field.es_mapping and field.indexed
+                    }
                 }
             }
         }

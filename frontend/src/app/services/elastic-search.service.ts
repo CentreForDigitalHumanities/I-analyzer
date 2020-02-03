@@ -89,6 +89,7 @@ export class ElasticSearchService {
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
+            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -101,6 +102,7 @@ export class ElasticSearchService {
         let connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
+            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
@@ -180,7 +182,7 @@ export class ElasticSearchService {
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
-            total: response.hits.total.value
+            total: response.hits.total
         }
     }
 

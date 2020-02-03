@@ -55,10 +55,12 @@ def get_client(corpus):
 def get_es_settings(corpus, corpus_definition):
     """ Get the settings for the scroll request.
     Return:
+    - doc_type (e.g. "article")
     - scroll_timeout
     - scroll_size
     """
+    doc_type = corpus_definition.es_doctype
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
     scroll_size = current_app.config['SERVERS'][server]['scroll_page_size']
-    return scroll_timeout, scroll_size
+    return doc_type, scroll_timeout, scroll_size

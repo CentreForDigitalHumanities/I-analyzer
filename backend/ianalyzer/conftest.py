@@ -32,6 +32,7 @@ class UnittestConfig:
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
     TIMES_ES_INDEX = 'times'
+    TIMES_ES_DOCTYPE = 'article'
     TIMES_IMAGE = 'times.jpg'
     TIMES_SCAN_IMAGE_TYPE = 'image/png'
     TIMES_DESCRIPTION_PAGE = 'times.md'
