@@ -21,6 +21,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     public activeFilters: SearchFilter<SearchFilterData> [] = [];
     
     public showFilters: boolean;
+    public grayOutFilters: boolean;
 
     public multipleChoiceData: Object = {};
 
@@ -49,6 +50,8 @@ export class FilterManagerComponent implements OnInit, OnChanges {
             results.forEach( r =>
                 this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
             );
+            // if multipleChoiceData is empty, gray out all filters
+            this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length == 0
         });
     }
 
@@ -89,7 +92,10 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     }
 
     public resetAllFilters() {
-        this.searchFilters.forEach(filter => filter.currentData = filter.defaultData);
+        this.searchFilters.forEach(filter => { 
+            filter.currentData = filter.defaultData;
+            filter.reset = true;
+        });
         this.toggleActiveFilters();
     }
 
@@ -106,6 +112,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     resetFilter(filter: SearchFilter<SearchFilterData>) {
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
+        filter.reset = true;
         this.filtersChanged();
     }
 

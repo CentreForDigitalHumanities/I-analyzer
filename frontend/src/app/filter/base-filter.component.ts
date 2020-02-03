@@ -1,37 +1,34 @@
 import { EventEmitter, Input, Output } from '@angular/core';
-import { Subscription } from 'rxjs';
 
-import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { SearchFilter, SearchFilterData } from '../models/index';
 
 /**
  * Filter component receives the corpus fields containing search filters as input
  * Filter data from parameters and after search are pushed via a DataService observable
  */
 export abstract class BaseFilterComponent <T extends SearchFilterData> {
+    @Input() 
+    public filter: SearchFilter<T>;
+
     @Input()
-    public field: CorpusField;
+    public grayedOut: boolean;
 
     @Output('update')
     public updateEmitter = new EventEmitter<SearchFilter<T>>();
-
-    public filter: SearchFilter<T>;
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
      */
     public data: any; // holds the user data
 
-    public subscription: Subscription;
-
-    public grayedOut: boolean = false;
     public useAsFilter: boolean = false;
+    public currentData: SearchFilterData;
 
     constructor() {
     }
 
     provideFilterData() {
-        if (this.field) {
-            this.filter = this.field.searchFilter as SearchFilter<T>;
+        if (this.filter) {
             this.data = this.getDisplayData(this.filter);
             this.useAsFilter = this.filter.useAsFilter;
         }

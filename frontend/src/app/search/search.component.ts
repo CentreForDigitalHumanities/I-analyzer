@@ -174,7 +174,7 @@ export class SearchComponent implements OnInit {
                 }
                 let filterSettings = params.get(param).split(',');
                 if (filterSettings[0] == "") filterSettings = [];
-                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
+                f.currentData = searchFilterDataFromParam(f.currentData.filterType, filterSettings);
                 f.useAsFilter = true;
             }
             else {

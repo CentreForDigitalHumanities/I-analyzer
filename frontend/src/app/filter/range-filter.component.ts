@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 
 import { SearchFilter, RangeFilterData } from '../models';
 import { BaseFilterComponent } from './base-filter.component';
@@ -8,15 +8,21 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './range-filter.component.html',
   styleUrls: ['./range-filter.component.scss']
 })
-export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements OnInit {
-
+export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> implements DoCheck, OnInit {
     ngOnInit() {
         this.provideFilterData();
     }
 
+    ngDoCheck() {
+        if (this.filter.reset) {
+            this.filter.reset = false;
+            this.provideFilterData();
+        }
+    }
+
     getDisplayData(filter: SearchFilter<RangeFilterData>) {
-        let data = filter.currentData;
-        return [data.min, data.max];
+        this.data = filter.currentData;
+        return [this.data.min, this.data.max];
     }
 
     getFilterData(): SearchFilter<RangeFilterData> {   
