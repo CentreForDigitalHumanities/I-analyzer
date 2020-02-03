@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from "lodash";
 
@@ -31,8 +31,13 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     ngOnInit() {
     }
 
-    ngOnChanges() {
-        this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+    ngOnChanges(changes: SimpleChanges) {        
+        if (changes['corpus']) {
+            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            if (changes['corpus'].previousValue != undefined ) {
+                this.searchFilters.forEach( filter => filter.currentData = filter.defaultData);            
+            }
+        }
         this.aggregateSearchForMultipleChoiceFilters();
     }
 

@@ -157,7 +157,6 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
-            this.searchFilters.map( filter => filter.currentData = filter.defaultData);
             this.activeFilters = [];
         }
     }
