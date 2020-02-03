@@ -39,7 +39,7 @@ export type SearchFilterType = SearchFilterData["filterType"];
 export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
     switch (filter.currentData.filterType) {
         case "BooleanFilter":
-            return `${filter.currentData}`;
+            return `${filter.currentData.checked}`;
         case "MultipleChoiceFilter":
             return filter.currentData.selected as string[];
         case "RangeFilter":
@@ -49,7 +49,7 @@ export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>):
     }
 }
 
-export function searchFilterDataFromParam(fieldName: string, filterType: SearchFilterType, value: string[]): SearchFilterData {
+export function searchFilterDataFromParam(filterType: SearchFilterType, value: string[]): SearchFilterData {
     switch (filterType) {
         case "BooleanFilter":
             return { filterType, checked: value[0] === 'true' };

@@ -1,6 +1,6 @@
 import { EventEmitter, Input, Output } from '@angular/core';
 
-import { CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { SearchFilter, SearchFilterData } from '../models/index';
 
 /**
  * Filter component receives the corpus fields containing search filters as input

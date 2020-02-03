@@ -1,4 +1,4 @@
 <div class="bool">
-    <p-checkbox [(ngModel)]="data" [disabled]="grayedOut" binary="true" (onChange)="update()"></p-checkbox>
-    {{data | json | titlecase }}
+    <p-checkbox [(ngModel)]="data.checked" [disabled]="grayedOut" binary="true" (onChange)="update()"></p-checkbox>
+    {{data.checked | json | titlecase }}
 </div>

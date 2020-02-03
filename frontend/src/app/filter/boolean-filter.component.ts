@@ -23,13 +23,13 @@ export class BooleanFilterComponent extends BaseFilterComponent<BooleanFilterDat
 
     getDisplayData(filter: SearchFilter<BooleanFilterData>) {
         let data = filter.currentData;
-        return data.checked;
+        return { checked: data.checked }
     }
 
     getFilterData(): SearchFilter<BooleanFilterData> {
         this.filter.currentData = {
             filterType: "BooleanFilter",
-            checked: this.data
+            checked: this.data.checked
         };
         return this.filter;
     }   

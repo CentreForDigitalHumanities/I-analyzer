@@ -18,12 +18,10 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> imp
 
     ngOnInit() {
         this.provideFilterData();
-        if (this.filter.defaultData.filterType === 'DateFilter') {
-            this.minDate = new Date(this.filter.defaultData.min);
-            this.maxDate = new Date(this.filter.defaultData.max);
-            this.minYear = this.minDate.getFullYear();
-            this.maxYear = this.maxDate.getFullYear();
-        }
+        this.minDate = new Date(this.filter.defaultData.min);
+        this.maxDate = new Date(this.filter.defaultData.max);
+        this.minYear = this.minDate.getFullYear();
+        this.maxYear = this.maxDate.getFullYear();
     }
 
     ngDoCheck() {
