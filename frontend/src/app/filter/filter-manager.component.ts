@@ -34,6 +34,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges) {        
         if (changes['corpus']) {
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            this.activeFilters = [];
             if (changes['corpus'].previousValue != undefined ) {
                 this.searchFilters.forEach( filter => filter.currentData = filter.defaultData);            
             }
