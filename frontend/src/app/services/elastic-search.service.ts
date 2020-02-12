@@ -20,6 +20,7 @@ export class ElasticSearchService {
                     config,
                     client: new Client({
                         host: config.host + (config.port ? `:${config.port}` : ''),
+                        apiVersion: '6.8'
                     })
                 }
                 return connections;

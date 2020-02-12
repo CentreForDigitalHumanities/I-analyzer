@@ -44,7 +44,10 @@ def update_index(corpus, corpus_definition, query_model):
 def update_document(corpus, doc_type, doc, update_body, client=None):
     if not client:
         client = get_client(corpus)
-    doc_id = doc['_id']
+    doc_id = doc.get('_id', doc.get('id', None))
+    if not doc_id:
+        logger.info("failed to update the following document: {}".format(doc))
+        return None
     client.update(index=corpus, doc_type=doc_type, id=doc_id, body=update_body)
 
 

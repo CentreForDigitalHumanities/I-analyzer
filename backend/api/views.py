@@ -531,7 +531,7 @@ def api_request_media():
     else:
         data = backend_corpus.request_media(request.json['document'])
         current_app.logger.info(data)
-        if len(data['media'])==0:
+        if 'media' not in data or len(data['media'])==0:
             return jsonify({'success': False})
         data['success'] = True
         return jsonify(data)
