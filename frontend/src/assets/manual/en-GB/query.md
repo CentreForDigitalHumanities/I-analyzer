@@ -1,4 +1,4 @@
-The database used in I-analyzer is organised using Elasticsearch. To search it, it is necessary to use terms and operators which Elasticsearch can understand. They are explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
+The database used in PEACE portal is organised using Elasticsearch. To search it, it is necessary to use terms and operators which Elasticsearch can understand. They are explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
 
 For your convenience, a summary of the search operators is shown below.
 

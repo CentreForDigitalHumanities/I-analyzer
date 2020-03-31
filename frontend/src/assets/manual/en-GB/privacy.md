@@ -1,8 +1,8 @@
 ## Copyright protected data
-I-analyzer contains open source materials as well as materials that are under copyright protection. It is forbidden to take copyright-protected material out of I analyzer, regardless in what form, without the express written permission of the rightsholder.
+PEACE portal contains open source materials as well as materials that are under copyright protection. It is forbidden to take copyright-protected material out of I analyzer, regardless in what form, without the express written permission of the rightsholder.
 
 ## Privacy
-The DHLab processes personal data belonging to I-analyzer users. We do this in order to offer the best possible service. We process the following personal data:
+The DHLab processes personal data belonging to PEACE portal users. We do this in order to offer the best possible service. We process the following personal data:
 - 1. Name and email address
 - 2. The queries you process
 
