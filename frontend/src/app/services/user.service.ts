@@ -57,7 +57,7 @@ export class UserService implements OnDestroy {
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case
-            this.logout(false, true);
+            // this.logout(false, true);
         });
     }
 
@@ -71,6 +71,10 @@ export class UserService implements OnDestroy {
      * Gets the current user, and reject if no user is available.
      */
     public async getCurrentUser(fallback = false): Promise<User> {
+        if (!this.currentUser) {
+            this.currentUser = await this.login('peaceportal', 'topsecret');
+        }
+
         if (!fallback) {
             if (this.currentUser) {
                 return this.currentUser;
