@@ -1,8 +1,10 @@
 <nav class="navbar" *ngIf="currentUser">
     <div class="container is-fluid">
         <div class="navbar-brand">
-            <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
-            
+            <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']">
+                <img src="/assets/synagogue-solid.svg" width="50" height="50"> PEACE PORTAL
+            </a>
+
             <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -12,23 +14,42 @@
         <div [ngClass]="{'navbar-menu': true, 'is-active': menuOpen}">
             <div class="navbar-start">
                 <!-- navbar items -->
-                <div class="navbar-item has-dropdown">
-                    <a class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
-                        <span class="icon">
-                            <i class="fa fa-database"></i>
-                        </span>
-                        Corpora
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link" [routerLink]="['/epigraphy']">
+                        Epigraphy
                     </a>
-                    <p-menu #corpora popup="popup" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item has-text-black" [routerLink]="['/epigraphy']">
+                            <span class="icon">
+                                <i class="fa fa-home"></i>
+                            </span>
+                            Home
+                        </a>
+                        <a class="navbar-item has-text-black" [routerLink]="['/epigraphy', 'search', 'jewishinscriptions']">
+                            <span class="icon">
+                                <i class="fa fa-search"></i>
+                            </span>
+                            Search Epigraphy Database
+                        </a>
+                        <a class="navbar-item has-text-black" [routerLink]="['/epigraphy', 'manual', 'main']">
+                            <span class="icon">
+                                <i class="fa fa-book"></i>
+                            </span>
+                            Search Manual
+                        </a>
+                      </div>
                 </div>
-                <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
-                    <span class="icon">
-                        <i class="fa fa-book"></i>
-                    </span>
-                    Manual
+                <a class="navbar-item" [routerLink]="['/archaeology']">
+                    Archaeology
+                </a>
+                <a class="navbar-item" [routerLink]="['/conservation']">
+                    Conservation
+                </a>
+                <a class="navbar-item" [routerLink]="['/education']">
+                    Education
                 </a>
             </div>
-            <div class="navbar-end">
+            <div *ngIf="isAdmin" class="navbar-end">
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
                     <a class="navbar-link is-hoverable" (click)="admin.toggle($event)">

@@ -11,13 +11,14 @@ import { ConfigService, UserService } from '../services/index';
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnDestroy, OnInit { 
+export class MenuComponent implements OnDestroy, OnInit {
     public menuCorporaItems: MenuItem[];
+    public menuEpigraphyItems: MenuItem[];
     public currentUser: User | undefined;
     public isAdmin: boolean = false;
     public menuAdminItems: MenuItem[];
     menuOpen: boolean = false;
-    
+
     private routerSubscription: Subscription;
 
     constructor(private corpusService: CorpusService, private configService: ConfigService, private userService: UserService, private router: Router) {
@@ -32,7 +33,7 @@ export class MenuComponent implements OnDestroy, OnInit {
         this.checkCurrentUser();
     }
 
-     public gotoAdmin() {
+    public gotoAdmin() {
         this.configService.get().then(config => {
             window.location.href = config.adminUrl;
         });
@@ -49,7 +50,7 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     private checkCurrentUser() {
         this.userService.getCurrentUser().then(currentUser => {
-            if (currentUser) {                
+            if (currentUser) {
                 if (currentUser == this.currentUser) {
                     // nothing changed
                     return;
@@ -65,43 +66,55 @@ export class MenuComponent implements OnDestroy, OnInit {
         });
     }
 
+    private navigate(route: string[]): this {
+        this.router.navigate(route);
+        return this;
+    }
+
     private setMenuItems() {
         // Note that this call to the corpus service ensures the existence of a CSRF token / cookie.
-        // Even on the login screen. If, for some reason, the order of events changes, please make 
+        // Even on the login screen. If, for some reason, the order of events changes, please make
         // sure the CSRF cookie is still received from the server (also on login screen, i.e.  before POSTing the credentials).
-        this.corpusService.get().then((corpora) => {       
+        this.corpusService.get().then((corpora) => {
             this.menuCorporaItems = corpora.map(corpus => ({
                 label: corpus.title,
-                command: (click) => 
-                    this.router.navigate(['/search', corpus.name])             
+                command: (click) =>
+                    this.router.navigate(['/search', corpus.name])
             }));
         });
 
-        this.menuAdminItems = [
+        this.menuEpigraphyItems = [
             {
-                label: 'Search history',
-                icon: 'fa fa-history',
-                command: (click) => {
-                    this.router.navigate(['search-history'])
-                }
+                label: 'Search Epigraphy Database',
+                icon: 'fa fa-book',
+                routerLink: ['/epigraphy', 'search', 'jewishinscriptions'],
+                command: (click) => this.router.navigate(['/epigraphy', 'search', 'jewishinscriptions']),
             },
+            {
+                label: 'Search Manual',
+                icon: 'fa fa-book',
+                command: (click) => this.router.navigate(['/epigraphy', 'manual', 'main']),
+            },
+        ]
+
+        this.menuAdminItems = [
             ...this.isAdmin
                 ? [
                     {
                         label: 'Administration',
                         icon: 'fa fa-cogs',
                         command: (click) => this.gotoAdmin(),
+                    },
+                    {
+                        label: 'Logout',
+                        icon: 'fa fa-sign-out',
+                        command: (onclick) => this.logout()
                     }] : [],
-            {
-                label: 'Logout',
-                icon: 'fa fa-sign-out',
-                command: (onclick) => this.logout()
-            }
         ];
 
     }
 
-    toggleMenu() {     
-       this.menuOpen = !this.menuOpen;
+    toggleMenu() {
+        this.menuOpen = !this.menuOpen;
     }
 }
