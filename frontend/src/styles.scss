@@ -11,3 +11,10 @@
 .container.is-readable {
     max-width: 1024px !important;
 }
+
+.buttons {
+    .button {
+        margin-bottom: .5rem;
+        margin-right: .5rem;
+    }
+}
