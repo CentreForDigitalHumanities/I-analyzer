@@ -3,7 +3,12 @@
 
 name: Unit tests
 
-on: [push, pull_request]
+on:
+    push:
+        branches: ['*']
+    pull_request:
+        branches: ['*']
+        branches-ignore: 'feature/**'
 
 jobs:
   build:
@@ -15,6 +20,8 @@ jobs:
         node-version: [10.x, 12.x]
 
     steps:
+    - name: Install debian packages
+      run: sudo apt-get install libmysqlclient-dev libxmlsec1-dev
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
