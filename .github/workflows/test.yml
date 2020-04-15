@@ -55,4 +55,4 @@ jobs:
         cd frontend
         npm ci
         npm run build
-        npm test
+        npm run test:once
