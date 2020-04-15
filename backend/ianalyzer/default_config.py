@@ -3,7 +3,8 @@ Configuration.
 '''
 
 import logging
-from secrets import token_hex
+import binascii
+from os import urandom
 from os.path import expanduser, realpath, join, relpath
 from datetime import datetime, timedelta
 
@@ -11,7 +12,9 @@ from datetime import datetime, timedelta
 DEBUG = False
 TESTING = False
 # set to a fixed value to retain sessions after a server reset
-SECRET_KEY = token_hex(24)
+# Python > 3.5 urandom(24).hex()
+# Python >= 3.6 randoms.token_hex(24)
+SECRET_KEY = str(binascii.hexlify(urandom(24)), 'ascii')
 SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
