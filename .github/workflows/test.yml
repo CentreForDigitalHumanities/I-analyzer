@@ -11,8 +11,6 @@ on:
             - 'feature/**'
             - 'bugfix/**'
             - 'release/**'
-    pull_request:
-        branches-ignore: ['feature/**', 'bugfix/**']
 
 jobs:
   build:
@@ -49,8 +47,8 @@ jobs:
     #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pip install pytest
         cd backend
+        cp ianalyzer/default_config.py ianalyzer/config.py
         pytest
     - name: Test Angular
       run: |
