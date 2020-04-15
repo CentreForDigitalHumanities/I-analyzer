@@ -70,7 +70,7 @@ The above steps do not actually install the package; you can do this at any stag
 
 ### Testing
 
-Tests exist in the `backend/ianalyzer/tests/` directory and may be run by calling `python -m py.test` from `/backend`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `frontend`, they should be run from that directory using Angular.
+Tests exist in the `backend/ianalyzer/tests/` directory and may be run by calling `pytest` (or `python -m pytest`) from `/backend`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `frontend`, they should be run from that directory using Angular.
 
 When writing new backend tests, you can use the fixtures in `backend/ianalyzer/tests/conftest.py`. For example, you can do the following in order to test a view.
 

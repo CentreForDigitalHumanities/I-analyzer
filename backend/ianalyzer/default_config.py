@@ -3,7 +3,7 @@ Configuration.
 '''
 
 import logging
-from uuid import uuid4
+from secrets import token_hex
 from os.path import expanduser, realpath, join, relpath
 from datetime import datetime, timedelta
 
@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 DEBUG = False
 TESTING = False
 # set to a fixed value to retain sessions after a server reset
-SECRET_KEY = str(uuid4())
+SECRET_KEY = token_hex(24)
 SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
