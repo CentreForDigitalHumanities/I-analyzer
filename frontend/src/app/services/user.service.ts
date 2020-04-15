@@ -20,7 +20,7 @@ export class UserService implements OnDestroy {
     // - If the user logs on or off, the value is directly updated.
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
     private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
- 
+
 
     /**
      * Get the current user
@@ -58,6 +58,8 @@ export class UserService implements OnDestroy {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case
             // this.logout(false, true);
+            // make sure we always start without user
+            this.currentUser = undefined;
         });
     }
 
@@ -65,33 +67,26 @@ export class UserService implements OnDestroy {
         if (this.sessionExpiredSubscription) {
             this.sessionExpiredSubscription.unsubscribe();
         }
+        this.currentUser = undefined;
     }
 
     /**
      * Gets the current user, and reject if no user is available.
      */
     public async getCurrentUser(fallback = false): Promise<User> {
+        // login once on start
         if (!this.currentUser) {
             this.currentUser = await this.login('peaceportal', 'topsecret');
+            return this.currentUser as User;
         }
-
-        if (!fallback) {
-            if (this.currentUser) {
-                return this.currentUser;
-            }
-            throw 'Not logged on';
+        else {
+            return this.currentUser;
         }
-        let currentUser = await this.getCurrentUserOrFallback();
-        if (currentUser) {
-            return currentUser;
-        }
-
-        throw 'Not logged on';
     }
 
     public login(username: string, password: string = null): Promise<User | false> {
         let loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {                
+            if (result.success) {
                 return this.processLoginSucces(result);
             }
 
@@ -148,18 +143,18 @@ export class UserService implements OnDestroy {
 
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
         let isSolisLogin = false;
-        
-        if (this.currentUser) { 
-            isSolisLogin = this.currentUser.isSolisLogin; 
+
+        if (this.currentUser) {
+            isSolisLogin = this.currentUser.isSolisLogin;
         }
-        
+
         this.currentUser = false;
         this.sessionCheckPromise = Promise.resolve(false);
 
         if (isSolisLogin) {
             window.location.href = 'api/init_solislogout'
         } else {
-            if (notifyServer) {                
+            if (notifyServer) {
                 await this.apiService.logout();
             }
 
