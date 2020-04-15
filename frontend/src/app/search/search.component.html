@@ -1,9 +1,8 @@
 <!-- Toggle filter button, search bar, visualize and download buttons -->
 <section class="section title-section">
     <div class="container is-readable">
-        <h1 class="title">
-            Search
-            <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+        <h1 class="title is-4">
+            <a [routerLink]="['/home']">Home</a> / <a [routerLink]="['/epigraphy']">Epigraphy</a> / Search
             <sup>
                 <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
                     <i class="moreInfoLink fa fa-info-circle info-icon"></i>
