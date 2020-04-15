@@ -5,10 +5,14 @@ name: Unit tests
 
 on:
     push:
-        branches: ['*']
+        branches:
+            - 'develop'
+            - 'master'
+            - 'feature/**'
+            - 'bugfix/**'
+            - 'release/**'
     pull_request:
-        branches: ['*']
-        branches-ignore: 'feature/**'
+        branches-ignore: ['feature/**', 'bugfix/**']
 
 jobs:
   build:
@@ -20,8 +24,6 @@ jobs:
         node-version: [10.x, 12.x]
 
     steps:
-    - name: Install debian packages
-      run: sudo apt-get install libmysqlclient-dev libxmlsec1-dev
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
@@ -31,7 +33,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install dependencies
+    - name: Install Ubuntu packages
+      run: sudo apt-get install libmysqlclient-dev libxmlsec1-dev
+    - name: Install Python dependencies
       run: |
         cd backend
         python -m pip install --upgrade pip
