@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/UUDigitalHumanitiesLab/I-analyzer/workflows/Unit tests/badge.svg)](https://github.com/UUDigitalHumanitiesLab/I-analyzer/actions)
+
 I-analyzer
 ===============================================================================
 
