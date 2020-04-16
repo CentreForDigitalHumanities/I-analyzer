@@ -12,9 +12,8 @@ from datetime import datetime, timedelta
 DEBUG = False
 TESTING = False
 # set to a fixed value to retain sessions after a server reset
-# Python > 3.5 urandom(24).hex()
-# Python >= 3.6 randoms.token_hex(24)
-SECRET_KEY = str(binascii.hexlify(urandom(24)), 'ascii')
+# Python >= 3.5 urandom(24)
+SECRET_KEY = binascii.hexlify(urandom(24))
 SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
