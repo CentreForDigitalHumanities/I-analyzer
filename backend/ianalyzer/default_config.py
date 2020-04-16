@@ -3,13 +3,17 @@ Configuration.
 '''
 
 import logging
-from os.path import expanduser, realpath, join, dirname, relpath
+import binascii
+from os import urandom
+from os.path import expanduser, realpath, join, relpath
 from datetime import datetime, timedelta
 
 # Flask
 DEBUG = False
 TESTING = False
-SECRET_KEY = ''
+# set to a fixed value to retain sessions after a server reset
+# Python >= 3.5 urandom(24)
+SECRET_KEY = binascii.hexlify(urandom(24))
 SERVER_NAME = 'localhost:4200'
 
 # CSRF Token
@@ -22,7 +26,7 @@ SAML_SOLISID_KEY = "uuShortID"
 SAML_MAIL_KEY = "mail"
 
 # SQLAlchemy
-SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+SQLALCHEMY_DATABASE_URI = 'mysql://username:password@localhost:3306/ianalyzer'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 LOG_CONFIG = 'logging.json'
@@ -30,7 +34,7 @@ LOG_CONFIG = 'logging.json'
 # the corpora dictionary provides the file path of the corpus definition
 # this information can be anywhere on the file system
 CORPORA = {
-    'times': 'ianalyzer/corpora/times/times.py'
+    'times': 'corpora/times/times.py'
 }
 
 IMAGE_PATH = 'images'
