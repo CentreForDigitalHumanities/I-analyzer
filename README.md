@@ -25,7 +25,7 @@ Each corpus is defined by subclassing the `Corpus` class, found in `addcorpus/co
 Prerequisites
 -------------------------------------------------------------------------------
 
-* Python 3.4 or Python 3.5
+* Python >=3.4, <=3.7
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
