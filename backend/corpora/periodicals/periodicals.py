@@ -230,6 +230,7 @@ class Periodicals(XMLCorpus):
         ),
         Field(
             name='category',
+            csv_core=True,
             display_name='Category',
             description='Article category.',
             es_mapping={'type': 'keyword'},
@@ -272,7 +273,8 @@ class Periodicals(XMLCorpus):
             es_mapping={'type': 'keyword'},
             description='Path of scan.',
             extractor=extract.Metadata('image_path'),
-            hidden=True
+            hidden=True,
+            downloadable=False
         ),
     ]
 
