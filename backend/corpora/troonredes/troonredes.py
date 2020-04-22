@@ -6,7 +6,7 @@ locations.
 import logging
 logger = logging.getLogger(__name__)
 import os
-from os.path import dirname, join, isfile, splitext, isfile
+from os.path import join, isfile, splitext, isfile
 from datetime import datetime, timedelta
 import re
 import random
@@ -17,6 +17,7 @@ from flask import current_app
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
+from addcorpus.load_corpus import corpus_dir
 
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
@@ -36,8 +37,8 @@ class Troonredes(XMLCorpus):
     image = current_app.config['TROONREDES_IMAGE']
     word_models_present = isfile(
         join(
-            dirname(current_app.config['CORPORA']['dutchannualreports']),
-            current_app.config['WM_PATH'], 
+            corpus_dir('dutchannualreports'),
+            current_app.config['WM_PATH'],
             current_app.config['WM_BINNED_FN']
         )
     )
