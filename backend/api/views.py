@@ -48,7 +48,7 @@ def api_register():
     email = request.json['email']
     is_valid_username = security.is_unique_username(username)
     is_valid_email = security.is_unique_non_solis_email(email)
-
+        
     if not is_valid_username or not is_valid_email:
         return jsonify({
             'success': False,
@@ -78,7 +78,7 @@ def api_register():
     # if email was succesfully sent, add user to db
     add_basic_user(username, request.json['password'], email, False)
 
-    return jsonify({'success': True})
+    return jsonify({'success': True})    
 
 # endpoint for the confirmation of user if link in email is clicked.
 @api.route('/registration_confirmation/<token>', methods=['GET'])
@@ -86,9 +86,9 @@ def api_register_confirmation(token):
 
     expiration = 60*60*72  # method does not return email after this limit
     username = security.get_original_token_input(token, expiration)
-
+    
     if not username:
-        flash('The confirmation link is invalid or has expired.', 'danger')
+        flash('The confirmation link is invalid or has expired.', 'danger')        
         abort(403)
 
     user = models.User.query.filter_by(username=username).first_or_404()
@@ -116,7 +116,7 @@ def api_request_reset():
             'message': message + " Log in via your Solis-ID or make a new account."})
     token = security.get_token(user.username)
     if not send_user_mail(
-        email=email,
+        email=email, 
         username=user.username,
         subject_line="Your password can be reset",
         email_title="Password reset",
@@ -142,7 +142,7 @@ def api_reset_password():
     if not user:
         return jsonify({'success': False, 'message': 'User doesn\'t exist.'})
     user = models.User.query.filter_by(username=username).first_or_404()
-    security.login_user(user)
+    security.login_user(user) 
     password = request.json['password']
     user.password = generate_password_hash(password)
     models.db.session.commit()
@@ -154,7 +154,7 @@ def api_reset_password():
 def api_es_config():
     return jsonify([{
         'name': server_name,
-        'host': smart_url_for('es.forward_head', server_name=server_name, _external=True),
+        'host': url_for('es.forward_head', server_name=server_name, _external=True),
         'port': None,
         'chunkSize': server_config['chunk_size'],
         'maxChunkBytes': server_config['max_chunk_bytes'],
@@ -164,20 +164,6 @@ def api_es_config():
         'scrollPagesize': server_config['scroll_page_size']
     } for server_name, server_config in current_app.config['SERVERS'].items()])
 
-
-def smart_url_for(*args, **kwargs):
-    '''
-    Wrapper around Flask's `url_for` method, to ensure the correct scheme is used.
-    Simply passes the scheme present in the current request.
-    Note that this wrapper is necessary because the setting `PREFERRED_URL_SCHEME`
-    does not work as the docs assert. Note also that this will only
-    work in a request context, i.e. request cannot be empty.
-    '''
-    url = request.url
-    scheme = 'http'
-    if url.startswith('https'):
-        scheme = 'https'
-    return url_for(*args, _scheme=scheme, **kwargs)
 
 @api.route('/corpus', methods=['GET'])
 @login_required
@@ -200,7 +186,7 @@ def api_corpus_image(corpus, image_name):
     Return the image for a corpus.
     '''
     return send_from_directory(join(
-        dirname(current_app.config['CORPORA'][corpus]),
+        dirname(current_app.config['CORPORA'][corpus]), 
         current_app.config['IMAGE_PATH']), '{}'.format(image_name))
 
 @api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
@@ -268,7 +254,7 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), 
         tasks.make_csv.s(request.json, current_user.username, current_user.email))
     csvs = csv_task.apply_async()
     if not csvs:
@@ -276,7 +262,7 @@ def api_download_task():
     else:
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
 
-
+    
 
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])
@@ -308,7 +294,7 @@ def add_basic_user(username, password, email, is_active):
     basic_role = models.Role.query.filter_by(name='basic').first()
     pw_hash = None
     if (password):
-        pw_hash = generate_password_hash(password)
+        pw_hash = generate_password_hash(password)    
     new_user = models.User(
         username=username,
         email=email,
@@ -327,10 +313,10 @@ def create_success_response(user):
         'description': corpus.description
     } for corpus in user.role.corpora]
     role = {
-        'name': user.role.name,
-        'description': user.role.description,
+        'name': user.role.name, 
+        'description': user.role.description, 
         'corpora': corpora
-    }
+    }    
     response = jsonify({
         'success': True,
         'id': user.id,
@@ -402,7 +388,7 @@ def api_query():
     else:
         query = models.Query(
             query=query_json, corpus_name=corpus_name, user=current_user)
-
+    
     query.total_results = request.json['total_results']
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
@@ -487,7 +473,7 @@ def api_task_outcome(task_id):
         try:
             outcome = results.get()
         except Exception as e:
-            return jsonify({'success': False, 'message': 'Task canceled.'})
+            return jsonify({'success': False, 'message': 'Task canceled.'})  
         return jsonify({'success': True, 'results': outcome})
 
 
@@ -573,7 +559,7 @@ def api_get_related_words():
                 'similar_words_subsets': results[1],
                 'time_points': results[2]
             }
-        })
+        }) 
     return response
 
 
@@ -599,5 +585,5 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
-        })
+        }) 
     return response
