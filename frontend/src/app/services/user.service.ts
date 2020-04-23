@@ -159,7 +159,8 @@ export class UserService implements OnDestroy {
             }
 
             if (redirectToLogout && !UserService.loginActivated) {
-                this.showLogin();
+                this.currentUser = undefined;
+                // this.showLogin();
             }
         }
 

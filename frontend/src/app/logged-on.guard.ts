@@ -14,7 +14,7 @@ export class LoggedOnGuard implements CanActivate {
         return this.userService.getCurrentUser(true)
             .then(user => !!user)
             .catch(() => {
-                this.userService.showLogin(state.url);
+                this.router.navigate(['/home']);
                 return false;
             });
     }
