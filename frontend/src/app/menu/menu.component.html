@@ -14,6 +14,9 @@
         <div [ngClass]="{'navbar-menu': true, 'is-active': menuOpen}">
             <div class="navbar-start">
                 <!-- navbar items -->
+                <a class="navbar-item" [routerLink]="['/about']">
+                    About PEACE
+                </a>
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link" [routerLink]="['/epigraphy']">
                         Epigraphy
@@ -30,12 +33,6 @@
                                 <i class="fa fa-search"></i>
                             </span>
                             Search Epigraphy Database
-                        </a>
-                        <a class="navbar-item has-text-black" [routerLink]="['/epigraphy', 'manual', 'main']">
-                            <span class="icon">
-                                <i class="fa fa-book"></i>
-                            </span>
-                            Search Manual
                         </a>
                       </div>
                 </div>

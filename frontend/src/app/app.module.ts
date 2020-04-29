@@ -57,9 +57,14 @@ import { EpigraphyComponent } from './epigraphy/epigraphy.component';
 import { ArchaeologyComponent } from './archaeology/archaeology.component';
 import { ConservationComponent } from './conservation/conservation.component';
 import { EducationComponent } from './education/education.component';
+import { AboutComponent } from './about/about.component';
 
 
 const appRoutes: Routes = [
+    {
+        path: 'about',
+        component: AboutComponent
+    },
     {
         path: 'archaeology',
         component: ArchaeologyComponent
@@ -122,6 +127,7 @@ const appRoutes: Routes = [
 ]
 
 export const declarations: any[] = [
+    AboutComponent,
     AppComponent,
     ArchaeologyComponent,
     BalloonDirective,
