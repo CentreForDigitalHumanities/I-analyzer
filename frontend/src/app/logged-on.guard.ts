@@ -11,7 +11,7 @@ export class LoggedOnGuard implements CanActivate {
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Promise<boolean> {
-        return this.userService.getCurrentUser(true)
+        return this.userService.getCurrentUser()
             .then(user => !!user)
             .catch(() => {
                 this.userService.showLogin(state.url);
