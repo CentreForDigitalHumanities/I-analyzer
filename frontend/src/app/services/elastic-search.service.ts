@@ -18,7 +18,8 @@ export class ElasticSearchService {
     constructor(apiRetryService: ApiRetryService, private http: Http) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
-                const client = new Client(this.http, config.host)
+                const client = new Client(this.http, config.host);
+                console.log(client, config.host);
                 connections[config.name] = {
                     config,
                     client: client
@@ -283,7 +284,8 @@ export class Client {
     constructor(private http: Http, private host: string){
     };
     search<T>(searchParams: SearchParams): Promise<HttpResponse<SearchResponse>> {
-        return this.http.post(this.host, searchParams).toPromise()
+        const url = this.host
+        return this.http.post(url, searchParams).toPromise()
     }
 }
 
