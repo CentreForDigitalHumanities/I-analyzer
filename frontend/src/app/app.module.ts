@@ -212,7 +212,13 @@ export const providers: any[] = [
     CorpusGuard,
     LoggedOnGuard,
     TitleCasePipe,
-    CookieService
+    CookieService,
+    {
+        provide: APP_INITIALIZER,
+        useFactory: initApp,
+        deps: [ApiService],
+        multi: true
+    },
 ];
 
 @NgModule({
@@ -226,4 +232,10 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
+}
+
+function initApp(api: ApiService): Function {
+    return (): Promise<any> => {
+        return api.ensureCsrf();
+    }
 }
