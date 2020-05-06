@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
+import { HttpResponse } from '@angular/common/http';
 
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
@@ -6,19 +8,17 @@ import { ApiRetryService } from './api-retry.service';
 
 import * as _ from 'lodash';
 
+
 type Connections = { [serverName: string]: Connection };
 
 @Injectable()
 export class ElasticSearchService {
     private connections: Promise<Connections>;
 
-    constructor(apiRetryService: ApiRetryService) {
+    constructor(apiRetryService: ApiRetryService, private http: Http) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
-                const client = new Client({
-                    host: config.host + (config.port ? `:${config.port}` : '')
-                });
-                console.log(client);
+                const client = new Client(this.http, config.host)
                 connections[config.name] = {
                     config,
                     client: client
@@ -118,6 +118,7 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        console.log(result);
         let aggregateData = {}
         Object.keys(result.aggregations).forEach(fieldName => {
             aggregateData[fieldName] = result.aggregations[fieldName].buckets
@@ -179,7 +180,7 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>): SearchResults {
+    private parseResponse(response: SearchResponse): SearchResults {
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
@@ -279,11 +280,22 @@ type EsAggregateResult = {
 }
 
 export class Client {
-    constructor(host: string){};
-    search<T>(params: any): Promise<SearchResponse<T>>{};
+    constructor(private http: Http, private host: string){
+    };
+    search<T>(searchParams: SearchParams): Promise<HttpResponse<SearchResponse>> {
+        return this.http.post(this.host, searchParams).toPromise()
+    }
 }
 
-export interface SearchResponse<T> {
+export interface SearchParams {
+    index: string,
+    type: string,
+    size: Number,
+    from?: Number,
+    body: EsQuery
+}
+
+export interface SearchResponse {
     took: number;
     timed_out: boolean;
     hits: {
