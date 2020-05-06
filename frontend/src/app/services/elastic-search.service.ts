@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-import { Client, SearchResponse } from 'elasticsearch';
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
@@ -16,12 +15,13 @@ export class ElasticSearchService {
     constructor(apiRetryService: ApiRetryService) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
+                const client = new Client({
+                    host: config.host + (config.port ? `:${config.port}` : '')
+                });
+                console.log(client);
                 connections[config.name] = {
                     config,
-                    client: new Client({
-                        host: config.host + (config.port ? `:${config.port}` : ''),
-                        apiVersion: '6.8'
-                    })
+                    client: client
                 }
                 return connections;
             }, {}));
@@ -276,4 +276,26 @@ type EsAggregateResult = {
         sum_other_doc_count: number,
         buckets: AggregateResult[]
     }
+}
+
+export class Client {
+    constructor(host: string){};
+    search<T>(params: any): Promise<SearchResponse<T>>{};
+}
+
+export interface SearchResponse<T> {
+    took: number;
+    timed_out: boolean;
+    hits: {
+        total: number;
+        max_score: number;
+        hits: Array<{
+            fields?: any;
+            highlight?: any;
+            inner_hits?: any;
+            matched_queries?: string[];
+            sort?: string[];
+        }>;
+    };
+    aggregations?: any;
 }
