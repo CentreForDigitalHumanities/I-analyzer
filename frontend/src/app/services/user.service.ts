@@ -21,6 +21,8 @@ export class UserService implements OnDestroy {
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
     private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
 
+    private currentUserPromise;
+    private loggingIn = false;
 
     /**
      * Get the current user
@@ -58,9 +60,11 @@ export class UserService implements OnDestroy {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case
             // this.logout(false, true);
-            // make sure we always start without user
-            this.currentUser = undefined;
+
         });
+
+        // make sure we always start without user
+        this.currentUser = undefined;
     }
 
     ngOnDestroy() {
@@ -73,29 +77,27 @@ export class UserService implements OnDestroy {
     /**
      * Gets the current user, and reject if no user is available.
      */
-    public async getCurrentUser(fallback = false): Promise<User> {
-        // login once on start
-        if (!this.currentUser) {
-            this.currentUser = await this.login('peaceportal', 'topsecret');
-            return this.currentUser as User;
+    public getCurrentUser(): Promise<User> {
+        if (!this.currentUserPromise) {
+            // login once on start
+            this.currentUserPromise = this.login('peaceportal', 'topsecret');
         }
-        else {
-            return this.currentUser;
-        }
+        // let all other request for user wait on initial promise
+        return this.currentUserPromise;
+    }
+
+    public async ensureCsrf(): Promise<any> {
+        return this.apiService.ensureCsrf();
     }
 
     public login(username: string, password: string = null): Promise<User | false> {
-        let loginPromise = this.apiService.login({ username, password }).then(result => {
+        return this.apiService.login({ username, password }).then(result => {
             if (result.success) {
                 return this.processLoginSucces(result);
             }
 
             return false;
         });
-
-        this.sessionCheckPromise = loginPromise.then(user => !!user);
-
-        return loginPromise;
     }
 
 
