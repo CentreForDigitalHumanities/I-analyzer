@@ -18,7 +18,6 @@ export class ElasticSearchService {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
                 const client = new Client(this.http, config.host);
-                console.log(client, config.host);
                 connections[config.name] = {
                     config,
                     client: client
@@ -191,7 +190,7 @@ export class ElasticSearchService {
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
+    private hitToDocument(hit: SearchHit, maxScore: number) {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
@@ -306,13 +305,13 @@ export interface SearchResponse {
     hits: {
         total: number;
         max_score: number;
-        hits: Array<{
-            fields?: any;
-            highlight?: any;
-            inner_hits?: any;
-            matched_queries?: string[];
-            sort?: string[];
-        }>;
+        hits: Array<SearchHit>;
     };
     aggregations?: any;
+}
+
+export interface SearchHit {
+    _id: string, 
+    _score: number, 
+    _source: {}
 }
