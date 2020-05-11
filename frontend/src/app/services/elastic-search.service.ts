@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
@@ -15,7 +14,7 @@ type Connections = { [serverName: string]: Connection };
 export class ElasticSearchService {
     private connections: Promise<Connections>;
 
-    constructor(apiRetryService: ApiRetryService, private http: Http) {
+    constructor(apiRetryService: ApiRetryService, private http: HttpClient) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
                 const client = new Client(this.http, config.host);
@@ -281,11 +280,15 @@ type EsAggregateResult = {
 }
 
 export class Client {
-    constructor(private http: Http, private host: string){
+    constructor(private http: HttpClient, private host: string){
     };
-    search<T>(searchParams: SearchParams): Promise<HttpResponse<SearchResponse>> {
-        const url = this.host
-        return this.http.post(url, searchParams).toPromise()
+    search<T>(searchParams: SearchParams): Promise<SearchResponse> {
+        const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
+        let options = { params: new HttpParams().set('size', searchParams.size.toString())}
+        if (searchParams.from) {
+            options.params.set('from', searchParams.from.toString());
+        }
+        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise()
     }
 }
 
