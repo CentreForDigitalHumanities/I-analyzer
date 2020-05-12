@@ -1,5 +1,5 @@
 import { Subject, Observable } from 'rxjs';
-import 'rxjs/add/operator/toPromise';
+
 
 export class ApiServiceMock {
     public SessionExpiredSubject = new Subject();
