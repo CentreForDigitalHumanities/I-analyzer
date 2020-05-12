@@ -1,10 +1,11 @@
 
 import os
-from os.path import dirname, join
+from os.path import join
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
 from sklearn.feature_extraction.text import CountVectorizer
+from addcorpus.load_corpus import corpus_dir
 import numpy as np
 import scipy
 
@@ -55,7 +56,7 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     return a word list of number_similar most similar words.
     """
     binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
-    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and 
+    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
         time['end_year']==int(which_time_interval[-4:])), None)
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
         time_bin['transformer'],
@@ -69,7 +70,7 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
 
 def load_word_models(corpus, path):
     try:
-        wm_directory = join(dirname(current_app.config['CORPORA'][corpus]), current_app.config['WM_PATH'])       
+        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
     except KeyError:
         return "There are no word models for this corpus."
     with open(os.path.join(wm_directory, path), "rb") as f:
@@ -78,7 +79,7 @@ def load_word_models(corpus, path):
 
 
 def find_n_most_similar(matrix, transformer, query_term, n):
-    """given a matrix of svd_ppmi values 
+    """given a matrix of svd_ppmi values
     and the transformer (i.e., sklearn CountVectorizer),
     determine which n terms match the given query term best
     """
@@ -92,7 +93,7 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
     output_terms = [{
-        'key': transformer.get_feature_names()[index], 
+        'key': transformer.get_feature_names()[index],
         'similarity': similarities[index]
         } for index in most_similar_indices[0] if
         transformer.get_feature_names()[index]!=query_term
@@ -120,7 +121,7 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
             value = cosine_similarity_vectors(matrix[:, index], query_vec)
         item['data'].append(value)
     return word_data
-    
+
 
 def cosine_similarity_vectors(array1, array2):
     dot = np.inner(array1, array2)

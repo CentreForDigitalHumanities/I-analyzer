@@ -3,7 +3,7 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import os
-from os.path import join, dirname, isfile, split, splitext
+from os.path import join, isfile, split, splitext
 from datetime import datetime, timedelta
 import logging
 import re
@@ -155,7 +155,7 @@ class Ecco(XMLCorpus):
                 extractor=Metadata('ocr'),
                 es_mapping={'type': 'float'},
                 search_filter=filters.RangeFilter(
-                    0, 
+                    0,
                     100,
                     description=(
                         'Accept only book pages for which the Opitical Character Recognition '
@@ -252,7 +252,7 @@ class Ecco(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
-        image_url = url_for('api.api_get_media', 
+        image_url = url_for('api.api_get_media',
             corpus=self.es_index,
             image_path=image_path,
             start_page=pages[0]-1,
@@ -260,10 +260,10 @@ class Ecco(XMLCorpus):
             _external=True
         )
         return {'media': [image_url], 'info': pdf_info}
-    
-    
+
+
     def get_media(self, request_args):
-        ''' 
+        '''
         Given the image path and page number of the search result,
         construct a new pdf which contains 2 pages before and after.
         '''
@@ -275,5 +275,5 @@ class Ecco(XMLCorpus):
             return None
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
-        out = build_partial_pdf(pages, input_pdf)         
+        out = build_partial_pdf(pages, input_pdf)
         return out
