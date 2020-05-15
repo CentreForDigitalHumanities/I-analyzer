@@ -54,7 +54,6 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
             '_op_type' : 'index',
             '_index' : corpus_definition.es_index,
             '_type' : corpus_definition.es_doctype,
-            '_id' : doc.pop('id'),
             '_source' : doc
         } for doc in docs
     )
