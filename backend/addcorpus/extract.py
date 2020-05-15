@@ -135,6 +135,9 @@ class XML(Extractor):
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
+                 transform_soup_func=None, # a function [e.g. `my_func(soup)`]` to transform the soup directly
+                    # after _select was called, i.e. before further processing (attributes, flattening, etc).
+                    # Keep in mind that the soup passed could be None.
                  *nargs,
                  **kwargs
                  ):
@@ -148,6 +151,7 @@ class XML(Extractor):
         self.multiple = multiple
         self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
+        self.transform_soup_func = transform_soup_func
         super().__init__(*nargs, **kwargs)
 
     def _select(self, soup, metadata=None):
@@ -202,6 +206,8 @@ class XML(Extractor):
         # Select appropriate BeautifulSoup element
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
+        if self.transform_soup_func:
+            soup = self.transform_soup_func(soup)
         if not soup:
             return None
 
