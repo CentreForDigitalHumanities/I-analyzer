@@ -282,7 +282,7 @@ class HTML(XML):
         super().__init__(*nargs, **kwargs)
         self.attribute_filter = attribute_filter
 
-    def _select(self, soup):
+    def _select(self, soup, metadata):
         '''
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
