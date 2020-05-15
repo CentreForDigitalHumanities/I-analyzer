@@ -26,13 +26,10 @@ def create(client, corpus_definition, clear):
         logger.info('Attempting to clean old index...')
         client.indices.delete(index=corpus_definition.es_index, ignore=[400, 404])
 
-    print(corpus_definition.es_mapping())
-
     logger.info('Attempting to create index...')
     client.indices.create(
         index=corpus_definition.es_index,
-        body=corpus_definition.es_mapping(),
-        ignore=400
+        body=corpus_definition.es_mapping()
     )
 
 
