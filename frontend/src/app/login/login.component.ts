@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.isLoading = false;
             this.isWrong = true;
         } else {
-            window.location.href = '/admin'
+            window.location.href = '/admin/'
         }
     }
 }
