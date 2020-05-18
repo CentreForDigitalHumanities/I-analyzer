@@ -62,67 +62,13 @@ import { AboutComponent } from './about/about.component';
 
 const appRoutes: Routes = [
     {
-        path: 'about',
-        component: AboutComponent
-    },
-    {
-        path: 'archaeology',
-        component: ArchaeologyComponent
-    },
-    {
-        path: 'conservation',
-        component: ConservationComponent
-    },
-    {
-        path: 'education',
-        component: EducationComponent
-    },
-    {
-        path: 'epigraphy',
-        component: EpigraphyComponent,
-    },
-    {
-        path: 'epigraphy/search/:corpus',
-        component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
-    },
-    {
-        path: 'epigraphy/manual/:identifier',
-        component: ManualComponent
-    },
-    {
         path: 'login',
         component: LoginComponent
     },
     {
-        path: 'login/:activated',
-        component: LoginComponent
-    },
-    {
-        path: 'registration',
-        component: RegistrationComponent
-    },
-    {
-        path: 'reset',
-        component: RequestResetComponent
-    },
-    {
-        path: 'reset-password/:token',
-        component: ResetPasswordComponent
-    },
-    {
-        path: 'privacy',
-        component: PrivacyComponent
-    },
-    {
-        path: 'home',
-        component: HomeComponent,
-        canActivate: [LoggedOnGuard]
-    },
-    {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+        path: 'search/:corpus',
+        component: SearchComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     }
 ]
 
