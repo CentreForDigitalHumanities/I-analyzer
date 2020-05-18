@@ -53,11 +53,6 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { EpigraphyComponent } from './epigraphy/epigraphy.component';
-import { ArchaeologyComponent } from './archaeology/archaeology.component';
-import { ConservationComponent } from './conservation/conservation.component';
-import { EducationComponent } from './education/education.component';
-import { AboutComponent } from './about/about.component';
 
 
 const appRoutes: Routes = [
@@ -73,23 +68,18 @@ const appRoutes: Routes = [
 ]
 
 export const declarations: any[] = [
-    AboutComponent,
     AppComponent,
-    ArchaeologyComponent,
     BalloonDirective,
     BarChartComponent,
     // BaseFilterComponent,
     BooleanFilterComponent,
-    ConservationComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
     DocumentViewComponent,
     DownloadComponent,
     DropdownComponent,
-    EducationComponent,
     ErrorComponent,
-    EpigraphyComponent,
     FilterManagerComponent,
     FreqtableComponent,
     HomeComponent,
