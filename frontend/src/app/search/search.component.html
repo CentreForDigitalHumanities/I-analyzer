@@ -1,91 +1,103 @@
-<!-- Toggle filter button, search bar, visualize and download buttons -->
-<section class="section title-section">
-    <div class="container is-readable">
-        <h1 class="title is-4">
-            <a [routerLink]="['/home']">Home</a> / <a [routerLink]="['/epigraphy']">Epigraphy</a> / Search
-            <sup>
-                <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
-                    <i class="moreInfoLink fa fa-info-circle info-icon"></i>
-                </span>
-            </sup>
-        </h1>
-    </div>
-</section>
-<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
-    <div class="container is-readable">
-        <div class="columns">
-            <div class="column is-6">
-                <nav class="level">
-                    <div class="level-left search-controls">
-                        <div class="level-item">
-                            <form (ngSubmit)="search()" *ngIf="corpus">
-                                <div class="field has-addons">
-                                    <div class="control" iaBalloon="View query documentation" iaBalloonPosition="down-left">
-                                        <a class="button" (click)="showQueryDocumentation()">
-                                            <span class="icon is-small">
-                                                <i class="fa fa-question-circle"></i>
-                                            </span>
-                                        </a>
-                                    </div>
-                                    <div class="control">
-                                        <input class="input" id="query" [(ngModel)]="queryText" name="queryText" type="text"
-                                            placeholder="Query" />
-                                    </div>
-                                    <div class="control" iaBalloon="Perform a search to apply the changed filters"
-                                        [iaBalloonVisible]="hasSearched && hasModifiedFilters" iaBalloonLength="medium">
-                                        <button class="button is-primary" type="submit" id="search" [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
-                                            <span class="icon is-small">
-                                                <i class="fa fa-search"></i>
-                                            </span>
-                                            <span>Search</span>
-                                        </button>
-                                    </div>
-                                    <div class="control" iaBalloon="Click here to limit your search to specific fields"
-                                        iaBalloonLength="medium">
-                                        <ia-select-field [availableFields]="availableSearchFields" [filterCriterion]=" 'searchField' "
-                                            [label]=" 'All fields' " (selectedFields)="selectSearchFields($event)"
-                                            [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
-                                        </ia-select-field>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount" [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user.downloadLimit" [route]="this.router.url"></ia-download>
-                    </div>
-                </nav>
-            </div>
+<div #fullContent>
+    <!-- Toggle filter button, search bar, visualize and download buttons -->
+    <section class="section title-section">
+        <div class="container is-readable">
+            <h1 class="title is-4">
+                <sup>
+                    <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small"
+                        iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
+                        <i class="moreInfoLink fa fa-info-circle info-icon"></i>
+                    </span>
+                </sup>
+            </h1>
         </div>
-    </div>
-</section>
-<section class="section search-results">
-    <div class="container is-readable">
-        <!-- filters and search results -->
-        <div class="columns">
-            <!-- Filters, on left -->
-            <div class="column is-3">
-                <ia-filter-manager *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel" (filtersChanged)="setActiveFilters($event)"></ia-filter-manager>
-            </div>
-            <!-- search results, on right -->
-            <div class="is-boxed column is-9" *ngIf="queryModel">
-                <p-tabView styleClass="is-content" [activeIndex]="tabIndex" (onChange)="tabChange($event)">
-                    <p-tabPanel header="Search Results" leftIcon="fa fa-list">
-                        <div class="column">
-                            <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                                (searched)="onSearched($event)">
-                                <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
-                                    (onChange)="changeSorting($event)"></ia-search-sorting>
-                            </ia-search-results>
-                        </div>
-                    </p-tabPanel>
-                    <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
-                        <ng-template pTemplate="content">
-                            <div class="column">
-                                <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount"></ia-visualization>
+    </section>
+    <section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}"
+        *ngIf="user">
+        <div class="container is-readable">
+            <div class="columns">
+                <div class="column is-6">
+                    <nav class="level">
+                        <div class="level-left search-controls">
+                            <div class="level-item">
+                                <form (ngSubmit)="search()" *ngIf="corpus">
+                                    <div class="field has-addons">
+                                        <div class="control" iaBalloon="View query documentation"
+                                            iaBalloonPosition="down-left">
+                                            <a class="button" (click)="showQueryDocumentation()">
+                                                <span class="icon is-small">
+                                                    <i class="fa fa-question-circle"></i>
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <div class="control">
+                                            <input class="input" id="query" [(ngModel)]="queryText" name="queryText"
+                                                type="text" placeholder="Query" />
+                                        </div>
+                                        <div class="control" iaBalloon="Perform a search to apply the changed filters"
+                                            [iaBalloonVisible]="hasSearched && hasModifiedFilters"
+                                            iaBalloonLength="medium">
+                                            <button class="button is-primary" type="submit" id="search"
+                                                [ngClass]="{'is-loading':isSearching, 'is-warning':hasSearched && hasModifiedFilters}">
+                                                <span class="icon is-small">
+                                                    <i class="fa fa-search"></i>
+                                                </span>
+                                                <span>Search</span>
+                                            </button>
+                                        </div>
+                                        <div class="control"
+                                            iaBalloon="Click here to limit your search to specific fields"
+                                            iaBalloonLength="medium">
+                                            <ia-select-field [availableFields]="availableSearchFields"
+                                                [filterCriterion]=" 'searchField' " [label]=" 'All fields' "
+                                                (selectedFields)="selectSearchFields($event)"
+                                                [showSelectedFields]="true" [fieldsFromParams]="selectedSearchFields">
+                                            </ia-select-field>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </ng-template>
-                    </p-tabPanel>
-                </p-tabView>
+                            <ia-download [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount"
+                                [hasLimitedResults]="hasLimitedResults" [downloadLimit]="user.downloadLimit"
+                                [route]="this.router.url"></ia-download>
+                        </div>
+                    </nav>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+    <section class="section search-results">
+        <div class="container is-readable">
+            <!-- filters and search results -->
+            <div class="columns">
+                <!-- Filters, on left -->
+                <div class="column is-3">
+                    <ia-filter-manager *ngIf="corpus" [corpus]="corpus" [queryModel]="queryModel"
+                        (filtersChanged)="setActiveFilters($event)"></ia-filter-manager>
+                </div>
+                <!-- search results, on right -->
+                <div class="is-boxed column is-9" *ngIf="queryModel">
+                    <p-tabView styleClass="is-content" [activeIndex]="tabIndex" (onChange)="tabChange($event)">
+                        <p-tabPanel header="Search Results" leftIcon="fa fa-list">
+                            <div class="column">
+                                <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
+                                    (searched)="onSearched($event)" (resultsRendered)='onResultsRendered($event)'>
+                                    <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending"
+                                        [fields]="corpus.fields" (onChange)="changeSorting($event)" ></ia-search-sorting>
+                                </ia-search-results>
+                            </div>
+                        </p-tabPanel>
+                        <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
+                            <ng-template pTemplate="content">
+                                <div class="column">
+                                    <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [queryModel]="queryModel"
+                                        [resultsCount]="resultsCount"></ia-visualization>
+                                </div>
+                            </ng-template>
+                        </p-tabPanel>
+                    </p-tabView>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
