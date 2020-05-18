@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild, ViewChildren } from '@angular/core';
 
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
@@ -29,10 +29,13 @@ export class SearchResultsComponent implements OnChanges {
     public parentElement: HTMLElement;
 
     @Output('view')
-    public viewEvent = new EventEmitter<{document: FoundDocument, tabIndex?: number}>();
+    public viewEvent = new EventEmitter<{ document: FoundDocument, tabIndex?: number }>();
 
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
+
+    @Output('resultsRendered')
+    public resultsRenderedEvent = new EventEmitter<{}>();
 
     public isLoading = false;
     public isScrolledDown: boolean;
@@ -66,6 +69,18 @@ export class SearchResultsComponent implements OnChanges {
 
     constructor(private searchService: SearchService) { }
 
+    /**
+     * Wait for change events on the element containing the results.
+     * Is here to support displaying the search page as an iframe (i.e. to calculate height of the page correctly).
+     */
+    @ViewChildren('resultdoc') resultdoc: any;
+
+    ngAfterViewInit() {
+        this.resultdoc.changes.subscribe(r => {
+            this.resultsRenderedEvent.next();
+        });
+    }
+
     ngOnChanges() {
         if (this.queryModel !== null) {
             this.queryText = this.queryModel.queryText;
@@ -91,9 +106,9 @@ export class SearchResultsComponent implements OnChanges {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.results.documents.map( (d, i) => d.position = i + 1 );
+            this.results.documents.map((d, i) => d.position = i + 1);
             this.searched(this.queryModel.queryText, this.results.total);
-            this.totalResults = this.results.total <= this.maximumDisplayed? this.results.total : this.maximumDisplayed;
+            this.totalResults = this.results.total <= this.maximumDisplayed ? this.results.total : this.maximumDisplayed;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
@@ -111,7 +126,7 @@ export class SearchResultsComponent implements OnChanges {
         this.fromIndex = searchParameters.from;
         this.resultsPerPage = searchParameters.size;
         this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
-        this.results.documents.map( (d,i) => d.position = i + searchParameters.from + 1 );
+        this.results.documents.map((d, i) => d.position = i + searchParameters.from + 1);
         this.isLoading = false;
     }
 
@@ -121,7 +136,7 @@ export class SearchResultsComponent implements OnChanges {
         this.isLoading = false;
     }
 
-    public goToScan(document: FoundDocument, event:any) {
+    public goToScan(document: FoundDocument, event: any) {
         this.onViewDocument(document);
         this.documentTabIndex = 1;
         event.stopPropagation();

@@ -14,6 +14,14 @@ import { CorpusService, DialogService, SearchService, UserService } from '../ser
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
+    /**
+     * Watch the full content of the page, in order to calculate its height
+     * (after results are rendered, see event on ia-search-results / on ResultsRendered).
+     * Required to support displaying search page in iframe.
+     */
+    @ViewChild('fullContent')
+    public fullContent: ElementRef;
+
     @ViewChild('searchSection')
     public searchSection: ElementRef;
 
@@ -68,6 +76,7 @@ export class SearchComponent implements OnInit {
         private dialogService: DialogService,
         private activatedRoute: ActivatedRoute,
         private router: Router) {
+
         }
 
     async ngOnInit() {
@@ -96,6 +105,13 @@ export class SearchComponent implements OnInit {
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
+    }
+
+    public onResultsRendered(): any {
+        let height = this.fullContent.nativeElement.offsetHeight;
+        if (window.parent) {
+            window.parent.postMessage(["setHeight", height], "*");
+        }
     }
 
     public changeSorting(event: SortEvent) {
