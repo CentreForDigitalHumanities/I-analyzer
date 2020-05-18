@@ -29,8 +29,7 @@ def create(client, corpus_definition, clear):
     logger.info('Attempting to create index...')
     client.indices.create(
         index=corpus_definition.es_index,
-        body=corpus_definition.es_mapping(),
-        ignore=400
+        body=corpus_definition.es_mapping()
     )
 
 
@@ -54,7 +53,6 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
             '_op_type' : 'index',
             '_index' : corpus_definition.es_index,
             '_type' : corpus_definition.es_doctype,
-            '_id' : doc.pop('id'),
             '_source' : doc
         } for doc in docs
     )
