@@ -53,91 +53,33 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { EpigraphyComponent } from './epigraphy/epigraphy.component';
-import { ArchaeologyComponent } from './archaeology/archaeology.component';
-import { ConservationComponent } from './conservation/conservation.component';
-import { EducationComponent } from './education/education.component';
 
 
 const appRoutes: Routes = [
-    {
-        path: 'archaeology',
-        component: ArchaeologyComponent
-    },
-    {
-        path: 'conservation',
-        component: ConservationComponent
-    },
-    {
-        path: 'education',
-        component: EducationComponent
-    },
-    {
-        path: 'epigraphy',
-        component: EpigraphyComponent,
-    },
-    {
-        path: 'epigraphy/search/:corpus',
-        component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
-    },
-    {
-        path: 'epigraphy/manual/:identifier',
-        component: ManualComponent
-    },
     {
         path: 'login',
         component: LoginComponent
     },
     {
-        path: 'login/:activated',
-        component: LoginComponent
-    },
-    {
-        path: 'registration',
-        component: RegistrationComponent
-    },
-    {
-        path: 'reset',
-        component: RequestResetComponent
-    },
-    {
-        path: 'reset-password/:token',
-        component: ResetPasswordComponent
-    },
-    {
-        path: 'privacy',
-        component: PrivacyComponent
-    },
-    {
-        path: 'home',
-        component: HomeComponent,
-        canActivate: [LoggedOnGuard]
-    },
-    {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+        path: 'search/:corpus',
+        component: SearchComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     }
 ]
 
 export const declarations: any[] = [
     AppComponent,
-    ArchaeologyComponent,
     BalloonDirective,
     BarChartComponent,
     // BaseFilterComponent,
     BooleanFilterComponent,
-    ConservationComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
     DocumentViewComponent,
     DownloadComponent,
     DropdownComponent,
-    EducationComponent,
     ErrorComponent,
-    EpigraphyComponent,
     FilterManagerComponent,
     FreqtableComponent,
     HomeComponent,
@@ -232,7 +174,13 @@ export const providers: any[] = [
     CorpusGuard,
     LoggedOnGuard,
     TitleCasePipe,
-    CookieService
+    CookieService,
+    {
+        provide: APP_INITIALIZER,
+        useFactory: initApp,
+        deps: [ApiService],
+        multi: true
+    },
 ];
 
 @NgModule({
@@ -246,4 +194,10 @@ export class AppModule { }
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
+}
+
+export function initApp(api: ApiService): Function {
+    return (): Promise<any> => {
+        return api.ensureCsrf();
+    }
 }

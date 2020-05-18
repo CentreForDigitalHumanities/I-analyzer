@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
             if (params['solislogin'] === 'true') {
                 this.solislogin();
-            } 
+            }
         });
     }
 
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     solislogin(): void {
         this.isLoading = true;
         this.userService.solisLogin().then(result => {
-           this.handleLoginResponse(result); 
+           this.handleLoginResponse(result);
         });
     }
 
@@ -62,8 +62,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (!result) {
             this.isLoading = false;
             this.isWrong = true;
-        } else {                
-            this.router.navigateByUrl(this.returnUrl);
+        } else {
+            window.location.href = '/admin/'
         }
     }
 }
