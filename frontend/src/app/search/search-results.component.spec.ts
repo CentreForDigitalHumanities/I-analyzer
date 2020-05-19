@@ -30,7 +30,10 @@ describe('Search Results Component', () => {
                 'b': '4',
                 'c': 'Wally is here'
             }, '2', 0.5)],
-            total: 2
+            total: {
+                value: 2,
+                relation: 'gte'
+            }
         };
         component.corpus = <any>{
             fields

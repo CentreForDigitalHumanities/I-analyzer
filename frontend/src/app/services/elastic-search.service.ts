@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
-import { Client, SearchResponse } from 'elasticsearch';
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
@@ -16,15 +14,13 @@ type Connections = { [serverName: string]: Connection };
 export class ElasticSearchService {
     private connections: Promise<Connections>;
 
-    constructor(apiRetryService: ApiRetryService, private http: Http) {
+    constructor(apiRetryService: ApiRetryService, private http: HttpClient) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
-                const client = new Client(this.http, config.host)
+                const client = new Client(this.http, config.host);
                 connections[config.name] = {
                     config,
-                    client: new Client({
-                        host: config.host + (config.port ? `:${config.port}` : ''),
-                    })
+                    client: client
                 }
                 return connections;
             }, {}));
@@ -93,6 +89,7 @@ export class ElasticSearchService {
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
+            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -105,6 +102,7 @@ export class ElasticSearchService {
         let connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
+            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
@@ -185,14 +183,14 @@ export class ElasticSearchService {
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
-            total: (response.hits.total as any).value
+            total: response.hits.total
         }
     }
 
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
+    private hitToDocument(hit: SearchHit, maxScore: number) {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
@@ -281,10 +279,15 @@ type EsAggregateResult = {
 }
 
 export class Client {
-    constructor(private http: Http, private host: string){
+    constructor(private http: HttpClient, private host: string){
     };
-    search<T>(searchParams: SearchParams): Promise<HttpResponse<SearchResponse>> {
-        return this.http.post(this.host, searchParams).toPromise()
+    search<T>(searchParams: SearchParams): Promise<SearchResponse> {
+        const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
+        let options = { params: new HttpParams().set('size', searchParams.size.toString())}
+        if (searchParams.from) {
+            options.params.set('from', searchParams.from.toString());
+        }
+        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise()
     }
 }
 
@@ -300,15 +303,18 @@ export interface SearchResponse {
     took: number;
     timed_out: boolean;
     hits: {
-        total: number;
+        total: {
+            value: number,
+            relation: string
+        }
         max_score: number;
-        hits: Array<{
-            fields?: any;
-            highlight?: any;
-            inner_hits?: any;
-            matched_queries?: string[];
-            sort?: string[];
-        }>;
+        hits: Array<SearchHit>;
     };
     aggregations?: any;
+}
+
+export interface SearchHit {
+    _id: string, 
+    _score: number, 
+    _source: {}
 }
