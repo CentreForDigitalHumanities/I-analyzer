@@ -33,7 +33,10 @@ def create(client, corpus_definition, clear, prod):
     logger.info('Attempting to create index...')
     client.indices.create(
         index=corpus_definition.es_index,
-        body=corpus_definition.es_mapping()
+        body={
+            'settings': corpus_definition.es_settings,
+            'mappings': corpus_definition.es_mapping()
+        }
     )
 
 

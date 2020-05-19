@@ -51,14 +51,13 @@ npm install
 4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.
 6. Set up your configuration file. `default_config.py` contains some reasonable defaults. Set the location of the source files of your corpora (which are now available in a separate repository, ianalyzer-corpora).
-7. Set `export FLASK_APP=app.py` to allow [Flask](https://flask.palletsprojects.com/) to run.
-8. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise.
-9. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
-10. Set up the database and migrations by running `flask db upgrade`.
-11. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
-12. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
-13. Make sure you have rabbitmq installed and running for celery to work. Then, on a separate terminal window, from the `/backend` directory, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and word cloud).
-14. Go to `/frontend` and run `npm start` to start it.
+7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise. (Note that new indices are created with `number_of_replicas` set to 0 (this is to make index creation easier/lighter). In production, you'll want to update this to be at least 1 once the index is created, see below.)
+8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
+9. Set up the database and migrations by running `flask db upgrade`.
+10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
+11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
+12. Make sure you have rabbitmq installed for celery to work. Then, on a separte terminal window, from the `/backend` directory, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and word cloud).
+13. Go to `/frontend` and follow the instructions in the README to start it.
 
 ### Python package management
 
@@ -92,6 +91,16 @@ Indexing large corpora on the remote server
 1. If you are not indexing on your local machine, `ssh` into the server. After `sudo su`-ing to a relevant user, do `script /dev/null` so that `screen` will not get [confused](http://serverfault.com/q/116775) from being called by a different user. Now, create and attach to a new `screen` session, or reattach with `screen -r <id>` to an existing ID in `screen -ls`.
 2. After activating the virtual environment, start indexing in the background with `./es_index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.
 3. If required, you can then detach with `screen -D` so that you can safely exit the terminal while indexing is in progress.
+4. When the indexing is done, update the `number_of_replicas` setting to ensure that there is at least one replica:
+
+```
+PUT /whatever_your_index_is_called/_settings
+{
+    "index" : {
+        "number_of_replicas" : 1
+    }
+}
+```
 
 
 SAML
