@@ -5,10 +5,10 @@
 </ng-container>
 <ng-template #resultsBlock>
     <h2 class="subtitle" *ngIf="results.total <= 5">
-        {results.total, plural, =1 {1 hit} other {{{results.total}} hits}}
+        {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
     </h2>
-    <h2 class="subtitle" *ngIf="results.total > 5">
-        {{results.total}} results.
+    <h2 class="subtitle" *ngIf="results.total.value > 5">
+        {{results.total.value}} results.
         Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
     </h2>
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">

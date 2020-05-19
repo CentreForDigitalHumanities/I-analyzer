@@ -19,7 +19,10 @@ type QueryDb<TDateType> = {
     completed?: TDateType,
     aborted: boolean,
     transferred: number,
-    total_results: number
+    total_results: {
+        value: number,
+        relation: string
+    }
 }
 
 @Injectable()

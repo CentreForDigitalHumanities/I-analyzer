@@ -50,7 +50,10 @@ export class Query {
     /**
      * Number of total results available for the query.
      */
-    public totalResults: number = 0;
+    public totalResults: {
+        value: number,
+        relation: string
+    }
 }
 
 /** This is the client's representation of the query by the user, shared between components */

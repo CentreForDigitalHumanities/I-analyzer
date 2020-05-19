@@ -107,8 +107,8 @@ export class SearchResultsComponent implements OnChanges {
         ).then(results => {
             this.results = results;
             this.results.documents.map((d, i) => d.position = i + 1);
-            this.searched(this.queryModel.queryText, this.results.total);
-            this.totalResults = this.results.total <= this.maximumDisplayed ? this.results.total : this.maximumDisplayed;
+            this.searched(this.queryModel.queryText, this.results.total.value);
+            this.totalResults = this.results.total.value <= this.maximumDisplayed ? this.results.total.value : this.maximumDisplayed;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),
