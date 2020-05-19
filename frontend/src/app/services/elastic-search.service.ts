@@ -281,8 +281,17 @@ export class Client {
     constructor(private http: HttpClient, private host: string){
     };
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
+<<<<<<< HEAD
         const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
         let options = { params: new HttpParams().set('size', searchParams.size.toString())}
+=======
+        const url = `${this.host}/${searchParams.index}/_search`;
+        let options = {
+            params: new HttpParams()
+                .set('size', searchParams.size.toString())
+                .set('track_total_hits', 'true')
+        }
+>>>>>>> a68eb87... Add query param 'track_total_hits' to retrieve total number of docs (ES7 update)
         if (searchParams.from) {
             options.params.set('from', searchParams.from.toString());
         }
