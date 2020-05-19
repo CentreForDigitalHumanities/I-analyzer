@@ -280,7 +280,11 @@ export class Client {
     };
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
         const url = `${this.host}/${searchParams.index}/_search`;
-        let options = { params: new HttpParams().set('size', searchParams.size.toString())}
+        let options = {
+            params: new HttpParams()
+                .set('size', searchParams.size.toString())
+                .set('track_total_hits', 'true')
+        }
         if (searchParams.from) {
             options.params.set('from', searchParams.from.toString());
         }
