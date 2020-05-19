@@ -115,7 +115,6 @@ export class ElasticSearchService {
         let esQuery = this.makeEsQuery(queryModel);
         let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
         let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-        console.log(result);
         let aggregateData = {}
         Object.keys(result.aggregations).forEach(fieldName => {
             aggregateData[fieldName] = result.aggregations[fieldName].buckets
