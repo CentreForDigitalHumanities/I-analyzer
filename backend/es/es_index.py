@@ -9,6 +9,7 @@ import sys
 from datetime import datetime
 
 import elasticsearch.helpers as es_helpers
+from elasticsearch.exceptions import RequestError
 
 from flask import current_app
 
@@ -27,13 +28,19 @@ def create(client, corpus_definition, clear):
         client.indices.delete(index=corpus_definition.es_index, ignore=[400, 404])
 
     logger.info('Attempting to create index...')
-    client.indices.create(
-        index=corpus_definition.es_index,
-        body={
-            'settings': corpus_definition.es_settings,
-            'mappings': corpus_definition.es_mapping()
-        }
-    )
+    try:
+        client.indices.create(
+            index=corpus_definition.es_index,
+            body={
+                'settings': corpus_definition.es_settings,
+                'mappings': corpus_definition.es_mapping()
+            }
+        )
+    except RequestError as e:
+        if not 'already_exists' in e.error:
+            # ignore that the index already exist,
+            # raise any other errors.
+            raise
 
 
 def populate(client, corpus_name, corpus_definition, start=None, end=None):
