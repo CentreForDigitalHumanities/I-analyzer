@@ -65,14 +65,16 @@ class PeacePortal(XMLCorpus):
         display_name='ID',
         description='ID of the inscription entry.',
         csv_core=True,
-        es_mapping={'type': 'keyword'}
+        es_mapping={'type': 'keyword'},
+        search_field_core=True
     )
 
     url = Field(
         name='url',
         display_name='URL',
         description='URL of the inscription entry.',
-        es_mapping={'type': 'keyword'}
+        es_mapping={'type': 'keyword'},
+        search_field_core=True
     )
 
     year = Field(
@@ -167,6 +169,7 @@ class PeacePortal(XMLCorpus):
         display_name='Material details',
         description='Details about the material the inscription is written on.',
         es_mapping={'type': 'text'},
+        search_field_core=True
     )
 
     language = Field(

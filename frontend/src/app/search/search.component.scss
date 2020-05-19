@@ -60,7 +60,7 @@
 ::ng-deep ia-select-field {
 
     .ui-multiselect-label-container {
-    display: none;
+    // display: none;
     }
 
     .ui-multiselect  .ui-multiselect-trigger {
@@ -108,11 +108,11 @@
 }
 
 .modal-card-head_success{
-    background-color: #8ffc98; 
+    background-color: #8ffc98;
 }
 
 .modal-card-head_error{
-   background-color: #ff8e9b; 
+   background-color: #ff8e9b;
 }
 
 .info-icon {
