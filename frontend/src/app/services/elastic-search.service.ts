@@ -89,6 +89,7 @@ export class ElasticSearchService {
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
+            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -101,6 +102,7 @@ export class ElasticSearchService {
         let connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
+            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
@@ -279,7 +281,7 @@ export class Client {
     constructor(private http: HttpClient, private host: string){
     };
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `${this.host}/${searchParams.index}/_search`;
+        const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
         let options = { params: new HttpParams().set('size', searchParams.size.toString())}
         if (searchParams.from) {
             options.params.set('from', searchParams.from.toString());
@@ -299,7 +301,10 @@ export interface SearchResponse {
     took: number;
     timed_out: boolean;
     hits: {
-        total: number;
+        total: {
+            value: number,
+            relation: string
+        }
         max_score: number;
         hits: Array<SearchHit>;
     };
@@ -307,7 +312,7 @@ export interface SearchResponse {
 }
 
 export interface SearchHit {
-    _id: string, 
-    _score: number, 
+    _id: string,
+    _score: number,
     _source: {}
 }
