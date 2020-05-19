@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
-import { Client, SearchResponse } from 'elasticsearch';
 import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
 import * as _ from 'lodash';
+
 
 type Connections = { [serverName: string]: Connection };
 
@@ -13,14 +14,13 @@ type Connections = { [serverName: string]: Connection };
 export class ElasticSearchService {
     private connections: Promise<Connections>;
 
-    constructor(apiRetryService: ApiRetryService) {
+    constructor(apiRetryService: ApiRetryService, private http: HttpClient) {
         this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
             configs.reduce((connections: Connections, config) => {
+                const client = new Client(this.http, config.host);
                 connections[config.name] = {
                     config,
-                    client: new Client({
-                        host: config.host + (config.port ? `:${config.port}` : ''),
-                    })
+                    client: client
                 }
                 return connections;
             }, {}));
@@ -176,18 +176,18 @@ export class ElasticSearchService {
      * @param alreadyRetrieved
      * @param completed
      */
-    private parseResponse(response: SearchResponse<{}>): SearchResults {
+    private parseResponse(response: SearchResponse): SearchResults {
         let hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
-            total: (response.hits.total as any).value
+            total: response.hits.total
         }
     }
 
     /**
      * return the id, relevance and field values of a given document
      */
-    private hitToDocument(hit: { _id: string, _score: number, _source: {} }, maxScore: number) {
+    private hitToDocument(hit: SearchHit, maxScore: number) {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
@@ -273,4 +273,48 @@ type EsAggregateResult = {
         sum_other_doc_count: number,
         buckets: AggregateResult[]
     }
+}
+
+export class Client {
+    constructor(private http: HttpClient, private host: string){
+    };
+    search<T>(searchParams: SearchParams): Promise<SearchResponse> {
+        const url = `${this.host}/${searchParams.index}/_search`;
+        let options = {
+            params: new HttpParams()
+                .set('size', searchParams.size.toString())
+                .set('track_total_hits', 'true')
+        }
+        if (searchParams.from) {
+            options.params.set('from', searchParams.from.toString());
+        }
+        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise()
+    }
+}
+
+export interface SearchParams {
+    index: string,
+    size: Number,
+    from?: Number,
+    body: EsQuery
+}
+
+export interface SearchResponse {
+    took: number;
+    timed_out: boolean;
+    hits: {
+        total: {
+            value: number,
+            relation: string
+        }
+        max_score: number;
+        hits: Array<SearchHit>;
+    };
+    aggregations?: any;
+}
+
+export interface SearchHit {
+    _id: string, 
+    _score: number, 
+    _source: {}
 }
