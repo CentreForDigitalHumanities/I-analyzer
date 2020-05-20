@@ -20,7 +20,7 @@ export class SearchComponent implements OnInit {
      * Required to support displaying search page in iframe.
      */
     @ViewChild('fullContent')
-    public fullContent: ElementRef;
+    public _fullContent: ElementRef;
 
     @ViewChild('searchSection')
     public searchSection: ElementRef;
@@ -67,17 +67,18 @@ export class SearchComponent implements OnInit {
     public resultsCount: number = 0;
     public tabIndex: number;
 
-    private searchFilters: SearchFilter<SearchFilterData> [] = [];
-    private activeFilters: SearchFilter<SearchFilterData> [] = [];
+    private searchFilters: SearchFilter<SearchFilterData>[] = [];
+    private activeFilters: SearchFilter<SearchFilterData>[] = [];
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
         private activatedRoute: ActivatedRoute,
-        private router: Router) {
+        private router: Router,
+        private elementRef: ElementRef) {
 
-        }
+    }
 
     async ngOnInit() {
         this.user = await this.userService.getCurrentUser();
@@ -108,10 +109,17 @@ export class SearchComponent implements OnInit {
     }
 
     public onResultsRendered(): any {
-        let height = this.fullContent.nativeElement.offsetHeight;
-        if (window.parent) {
-            window.parent.postMessage(["setHeight", height], "*");
-        }
+        // wrap collecting height in a setTimeout that waits 0ms.
+        // Without this, height is not the correct value. It seems like rendering
+        // isn't quite done or something like that. Anyhow this harmless wrapping
+        // fixes it
+        setTimeout(() => {
+            let height = this._fullContent.nativeElement.offsetHeight;
+            if (window.parent) {
+                window.parent.postMessage(["setHeight", height], "*");
+            }
+        }, 0);
+
     }
 
     public changeSorting(event: SortEvent) {
@@ -173,7 +181,7 @@ export class SearchComponent implements OnInit {
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
-            this.searchFilters.map( filter => filter.currentData = filter.defaultData);
+            this.searchFilters.map(filter => filter.currentData = filter.defaultData);
             this.activeFilters = [];
         }
     }
@@ -182,7 +190,7 @@ export class SearchComponent implements OnInit {
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
     private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        searchFilters.forEach( f => {
+        searchFilters.forEach(f => {
             let param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
@@ -197,7 +205,7 @@ export class SearchComponent implements OnInit {
                 f.useAsFilter = false;
             }
         })
-        this.activeFilters = searchFilters.filter( f => f.useAsFilter );
+        this.activeFilters = searchFilters.filter(f => f.useAsFilter);
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
