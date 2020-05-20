@@ -53,6 +53,11 @@ export class SearchResultsComponent implements OnChanges {
     public imgSrc: Uint8Array;
 
     /**
+     * Pass top position to document detail popup (i.e. p-dialog)
+     */
+    public detailTop: number;
+
+    /**
      * For failed searches.
      */
     public showError: false | undefined | ShowError;
@@ -137,12 +142,25 @@ export class SearchResultsComponent implements OnChanges {
     }
 
     public goToScan(document: FoundDocument, event: any) {
-        this.onViewDocument(document);
+        this.onViewDocument(document, false, event);
         this.documentTabIndex = 1;
         event.stopPropagation();
     }
 
-    public onViewDocument(document: FoundDocument) {
+    public onViewDocument(document: FoundDocument, isLast: boolean, event: Event) {
+        let clickedDoc = event.currentTarget as HTMLElement;
+        // align top of pop up with clicked result...
+        let popupTop = clickedDoc.getBoundingClientRect().top;
+        // ... except if it is the last one
+        if (isLast) {
+            popupTop = popupTop - clickedDoc.offsetHeight;
+        }
+
+        if (window.parent) {
+            window.parent.postMessage(["scroll", popupTop], "*");
+        }
+
+        this.detailTop = popupTop;
         this.showDocument = true;
         this.viewDocument = document;
         this.documentTabIndex = 0;
