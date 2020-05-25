@@ -1,108 +1,21 @@
-I-analyzer
-===============================================================================
+# PEACE Portal
 
-`ianalyzer/backend` is a Python package that provides the following:
+The PEACE portal is in essence an instance of I-analyzer that serves only one corpus, and only the search page for that one corpus. For detailed instructions on how to get a working installation of the application, please refer to the README of I-analyzer. This README describes the implementation details of PEACE Portal (a.k.a. differences) from the normal I-analyzer application.
 
-- the models (user, role, corpus) and configuration files (in module ianalyzer)
+## iframe support
 
-- an 'api' module that enables users to search through an ElasticSearch index of a text corpus, and stream search results into a CSV file. `Flask` is used for serving the interface and generating results.
+The PEACE Portal is a Wordpress environment, created by Simon Welling for us (at https://peace.sites.uu.nl/). This gives the user(s) the ability to maintain the content of the site themselves, i.e. it allows for easy updating. On the `Epigraphy/Search` page, I-analyzer is displayed as an `<iframe>`. For this purpose, there is no menu on the page, nor a footer. Also, to facilitate scrolling and correct positioning of the search detail dialog pop up, there is communication between the application in the ifram and its parent. See `search-component.ts` and `search-results-component.ts` for the implementation details. Note that there is javascript on the Wordpress page that relies / functions in tandem with these messages.
 
-- An 'addcorpus' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+## Corpus definition
 
-- A 'corpora' module containing corpus definitions and metadata of the currently implemented coprora 
+The PEACE Portal corpus is a combination of three corpora (Ortal Paz' jewish inscriptions, Epidat and IIS). These exist in ES as separate indices, with a shared mapping and an alias that facilitates searching them simultaneously. To ensure the shared mapping and a consistent search interface, there is a base class in `peaceportal.py` in which all shared properties are defined. This is the corpus definition that should be passed to the frontend when the application is run.
 
-- An 'admin' module which describes the views for the admin interface (served through Flask)
+Before that, however, index creation is needed. This should be done by using the corpus specific corpus definition, e.g. `epidat.py`. If you browse that class briefly, you will notice that it only defines extractors, i.e. it tells the application only where to find the information needed in the source documents. The rest of the corpus definition is left to the base class.
 
-- migragtion files and utitilies (using flask-migrate)
+## Login and user/corpus administration
 
-`ianalyzer/frontend` is an [Angular 4](https://angular.io/) web interface.
+Upon application start, a user ('peaceportal') logs in automatically (the password is topsecret). All of the complex user management that is in I-analyzer is bypassed by this. If a user by the name 'peaceportal' does not exist yes, you can navigate to `whatever.nl/login` and login with your/our superuser account. You will automatically be redirected to the admin module. If this doesn't work, try navigating to `whatever.nl/admin/` (slash at the end!)
 
-Project layout
--------------------------------------------------------------------------------
+## Frontend routes
 
-Each corpus is defined by subclassing the `Corpus` class, found in `addcorpus/common.py`, and registering that class in `backend/ianalyzer/config.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
-
-Prerequisites
--------------------------------------------------------------------------------
-
-* Python 3.4 or Python 3.5
-* MySQL daemon and libmysqlclient-dev
-* [ElasticSearch](https://www.elastic.co/)
-* RabbitMQ (used by Celery)
-
-Running
--------------------------------------------------------------------------------
-Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
-
-To get an instance running, do all of the following inside an activated `virtualenv`:
-
-1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options. (September 2019: Install vs 6.x of Elastic search, not vs 7.)
-2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
-```
-http.cors.enabled: true
-http.cors.allow-origin: "*"
-```
-3. Install the requirements for both the API and the client with `npm install`.
-```
-npm install
-```
-4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
-5. Go to `/backend`. See instructions below for Python package installation and dependency management.
-6. Set up your configuration file. `default_config.py` contains some reasonable defaults. Set the location of the source files of your corpora (which are now available in a separate repository, ianalyzer-corpora).
-7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise. (Note that new indices are created with `number_of_replicas` set to 0 (this is to make index creation easier/lighter). In production, you'll want to update this to be at least 1 once the index is created, see below.)
-8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
-9. Set up the database and migrations by running `flask db upgrade`.
-10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
-11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
-12. Make sure you have rabbitmq installed for celery to work. Then, on a separte terminal window, from the `/backend` directory, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and word cloud).
-13. Go to `/frontend` and follow the instructions in the README to start it.
-
-### Python package management
-
-Install `pip-tools` in your virtualenv. Run `pip-sync` or `pip install -r api/requirements.txt` in order to install all Python package dependencies. If you want to add a new package dependency, take the following steps:
-
- 1. Add the package *without version number* to `api/requirements.in`,
- 2. Run `pip-compile backend/requirements.in` (you can just `pip-compile` if you `cd backend` first). This will update the `backend/requirements.txt` with a pinned version that cooperates well with the other packages.
- 3. Commit the changes to `backend/requirements.{in,txt}` at the same time.
-
-The above steps do not actually install the package; you can do this at any stage using `pip install` or afterwards using `pip-sync`.
-
-### Testing
-
-Tests exist in the `backend/ianalyzer/tests/` directory and may be run by calling `python -m py.test` from `/backend`. Assess code coverage by running `coverage run --m py.test && coverage report`. Tests are also available for the `frontend`, they should be run from that directory using Angular.
-
-When writing new backend tests, you can use the fixtures in `backend/ianalyzer/tests/conftest.py`. For example, you can do the following in order to test a view.
-
-```py
-def test_some_view(app):
-    with app.test_client() as client:
-        response = client.get('/some/route')
-        assert response.status_code == 200
-        # etcetera
-```
-
-For further details, consult the source code in `api/ianalyzer/tests/conftest.py`.
-
-Indexing large corpora on the remote server
--------------------------------------------------------------------------------
-
-1. If you are not indexing on your local machine, `ssh` into the server. After `sudo su`-ing to a relevant user, do `script /dev/null` so that `screen` will not get [confused](http://serverfault.com/q/116775) from being called by a different user. Now, create and attach to a new `screen` session, or reattach with `screen -r <id>` to an existing ID in `screen -ls`.
-2. After activating the virtual environment, start indexing in the background with `./es_index.py times 1900-01-01 1999-12-31 &`, inserting the appropriate arguments: respectively the corpus name and the start- and end-timestamps of the documents.
-3. If required, you can then detach with `screen -D` so that you can safely exit the terminal while indexing is in progress.
-4. When the indexing is done, update the `number_of_replicas` setting to ensure that there is at least one replica:
-
-```
-PUT /whatever_your_index_is_called/_settings
-{
-    "index" : {
-        "number_of_replicas" : 1
-    }
-}
-```
-
-
-SAML
--------------------------------------------------------------------------------
-In order to login with Solis ID, I-analyzer has SAML integration with ITS. For this, it uses our custom class `dhlab_flask_saml.py` from the [dhlab-saml](https://github.com/UUDigitalHumanitieslab/dhlab-saml) repo. More information on working with SAML, setting up a local environment to test the SAML integration, etc. can be found there.
-
-Note that the SAML integration relies on three variables in the config (see te default config), one of which you will need to adjust to get a working situation. 
+In the frontend, all routes that are not required have been deleted. This boils down to there only being two routes: `search/:corpus` and `login`. As explained above, the latter of these automatically redirects to the admin module, and is meant only to add the user that logs in automatically if it doesn't exist yet.
