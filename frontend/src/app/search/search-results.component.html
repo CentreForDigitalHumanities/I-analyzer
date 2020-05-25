@@ -28,9 +28,9 @@
     </div>
     </section>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
-        <div *ngFor="let document of results.documents" class="document box" #resultdoc role="button">
+        <div *ngFor="let document of results.documents; last as isLast" class="document box" #resultdoc role="button">
             <div class="columns">
-                <div class="column is-flex" (click)=onViewDocument(document)>
+                <div class="column is-flex" (click)="onViewDocument(document, isLast, $event)">
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">
@@ -61,7 +61,7 @@
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument">
+    *ngIf="viewDocument" [positionTop]="detailTop">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
 
