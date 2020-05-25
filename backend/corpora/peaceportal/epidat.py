@@ -155,4 +155,18 @@ def extract_country(soup):
     return cloned_soup
 
 
+        # excluded (for now):
+        # title
+        # organization (incl details, e.g. address)
+        # licence
+        # objectType (e.g. Grabmal)
+        # dimensions (incl notes/remarks)
+        # condition (remarks)
+        # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)
+        # geo details (name and coordinates)
+        # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
+        # date of death for each person
+        # fascimile (i.e. images)
+        # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
+        #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
 
