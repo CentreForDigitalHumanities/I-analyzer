@@ -89,7 +89,6 @@ export class ElasticSearchService {
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
-            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -102,7 +101,6 @@ export class ElasticSearchService {
         let connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
-            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
@@ -281,17 +279,12 @@ export class Client {
     constructor(private http: HttpClient, private host: string){
     };
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-<<<<<<< HEAD
-        const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
-        let options = { params: new HttpParams().set('size', searchParams.size.toString())}
-=======
         const url = `${this.host}/${searchParams.index}/_search`;
         let options = {
             params: new HttpParams()
                 .set('size', searchParams.size.toString())
                 .set('track_total_hits', 'true')
         }
->>>>>>> a68eb87... Add query param 'track_total_hits' to retrieve total number of docs (ES7 update)
         if (searchParams.from) {
             options.params.set('from', searchParams.from.toString());
         }
