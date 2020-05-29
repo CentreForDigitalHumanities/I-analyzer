@@ -48,11 +48,11 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
     # Each source document is decorated as an indexing operation, so that it
     # can be sent to ElasticSearch in bulk
+
     actions = (
         {
             '_op_type' : 'index',
             '_index' : corpus_definition.es_index,
-            '_type' : corpus_definition.es_doctype,
             '_source' : doc
         } for doc in docs
     )
