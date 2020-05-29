@@ -87,13 +87,13 @@ def forward_scroll(server_name):
     return proxy_es(address)
 
 
-@es.route('/<server_name>/<corpus_name>/<document_type>/_search', methods=['POST'])
+@es.route('/<server_name>/<corpus_name>/_search', methods=['POST'])
 @login_required
-def forward_search(server_name, corpus_name, document_type):
+def forward_search(server_name, corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
-    host = get_es_host_or_404(server_name) 
-    address = '{}/{}/{}/_search'.format(host, corpus_name, document_type)
+    host = get_es_host_or_404(server_name)
+    address = '{}/{}/_search'.format(host, corpus_name)
     return proxy_es(address)
 
 
