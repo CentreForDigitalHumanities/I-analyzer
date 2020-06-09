@@ -27,12 +27,8 @@ def load_corpus(corpus_name):
         corpus_spec = util.spec_from_file_location(
             corpus_name,
             filepath)
-        # this is deprecated as per Python 3.6 (use importlib.utils.module_from_spec)
-        # for now, assume we develop for Python 3.4
-        corpus_mod = SourceFileLoader(
-            corpus_name,
-            filepath
-        ).load_module()
+
+        corpus_mod = util.module_from_spec(corpus_spec)
     except FileNotFoundError:
         logger.critical(
             'No module describing the corpus "{0}" found in the specified file path:\
