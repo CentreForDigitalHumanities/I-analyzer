@@ -1,6 +1,7 @@
 
 import { combineLatest as observableCombineLatest,  BehaviorSubject, Subject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { DialogService, ManualPageMetaData, HighlightService } from '../services';
 
 @Component({
@@ -17,7 +18,7 @@ export class ManualNavigationComponent implements OnInit {
         (manifest, filterText) => {
             return { manifest, filterText };
         })
-        .subscribe(({ manifest, filterText }) => Array.from(this.filter(manifest, filterText)));
+        .pipe(map(({ manifest, filterText }) => Array.from(this.filter(manifest, filterText))));
 
     public set filterText(value: string) {
         this.filterTextSubject.next(value)
