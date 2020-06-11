@@ -102,8 +102,7 @@ class GoodReads(XMLCorpus):
             display_type='text_content',
             csv_core=True,
             results_overview=True,
-            searchable=True,
-            visualization_type='word_cloud',
+            searchable=True
         ),
         Field(
             name='language',
