@@ -220,19 +220,40 @@ class PeacePortal(XMLCorpus):
     ]
 
 
+def normalize_language(text):
+    ltext = text.lower()
+    if ltext in ['grc']: return 'Greek'
+    if ltext in ['he', 'heb']: return 'Hebrew'
+    if ltext in ['arc']: return 'Aramaic'
+    if ltext in ['la']: return 'Latin'
+
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
+    The Epidat corpus in particular has mainly descriptions of the material.
     Returns a list of categories, i.e. those that appear in `text`.
     '''
-    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Stone', 'Granit', 'Kunststein',
+    if not text: return ['Unknown']
+
+    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
-                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit']
+                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit',
+                  # below from FIJI and IIS
+                  'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
+                  'Marble', 'Metal', 'Bone', 'Lead' ]
     result = []
     ltext = text.lower()
+
     for c in categories:
         if c.lower() in ltext:
             result.append(c)
+
     if len(result) == 0:
-        result.append(text)
+        # reduce unknown, other and ? to unknown
+        # 'schrifttafel' removes some clutter from Epidat
+        if 'unknown' in ltext or 'other' in ltext or '?' in ltext or 'schrifttafel':
+            result.append('Unknown')
+        else:
+            result.append(text)
+
     return result
