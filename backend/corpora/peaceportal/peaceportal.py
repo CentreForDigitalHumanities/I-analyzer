@@ -38,6 +38,9 @@ class PeacePortal(XMLCorpus):
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+    # overwrite below in child class if you need to extract the (converted) transcription
+    # from external files. See README.
+    external_file_folder = '.'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -45,10 +48,15 @@ class PeacePortal(XMLCorpus):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
+
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
-                yield full_path
+
+                yield full_path, {
+                    'external_file': os.path.join(self.external_file_folder, filename)
+                }
+
 
     source_database = Field(
         name='source_database',
