@@ -22,12 +22,12 @@ class PeacePortal(XMLCorpus):
     title = "PEACE Portal"
     description = "A collection of inscriptions on Jewish burial sites"
     # store min_year as int, since datetime does not support BCE dates
-    min_year = -725
-    min_date = datetime(year=746, month=1, day=1) # THIS IS IGNORED BUT NEEDS TO EXIST
-    max_date = datetime(year=2020, month=12, day=31)
+    min_year = -530
+    max_date = datetime(year=1948, month=12, day=31)
     visualize = []
     es_index = 'peaceportal'
     # fields below are required by code but not actually used
+    min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'
     data_directory = 'bogus'
 
@@ -143,7 +143,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these countries.',
-            option_count=4
+            option_count=5
         ),
         visualization_type='term_frequency',
         results_overview=True
@@ -156,7 +156,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these provenances.',
-            option_count=23
+            option_count=29
         ),
         visualization_type='term_frequency',
         results_overview=True
@@ -169,7 +169,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these material types.',
-            option_count=36
+            option_count=39
         ),
         visualization_type='term_frequency'
     )
@@ -189,7 +189,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these languages.',
-            option_count=3
+            option_count=10
         ),
         csv_core=True,
         visualization_type='term_frequency'
