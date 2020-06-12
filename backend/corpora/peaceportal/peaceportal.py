@@ -21,7 +21,9 @@ class PeacePortal(XMLCorpus):
 
     title = "PEACE Portal"
     description = "A collection of inscriptions on Jewish burial sites"
-    min_date = datetime(year=769, month=1, day=1)
+    # store min_year as int, since datetime does not support BCE dates
+    min_year = -725
+    min_date = datetime(year=746, month=1, day=1) # THIS IS IGNORED BUT NEEDS TO EXIST
     max_date = datetime(year=2020, month=12, day=31)
     visualize = []
     es_index = 'peaceportal'
@@ -84,7 +86,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'integer'},
         search_filter=RangeFilter(
             description='Restrict the years from which search results will be returned.',
-            lower=min_date.year,
+            lower=min_year,
             upper=max_date.year,
         ),
         csv_core=True,
