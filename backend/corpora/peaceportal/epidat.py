@@ -67,7 +67,7 @@ class Epidat(PeacePortal):
             multiple=True,
             toplevel=False,
             transform=lambda x: ['M' if s ==
-                                 '1' else 'F' if s == '2' else None for s in x]
+                                 '1' else 'F' if s == '2' else 'Unknown' for s in x]
         )
 
         self.country.extractor = XML(
@@ -167,6 +167,7 @@ def extract_country(soup):
         # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
         # date of death for each person
         # fascimile (i.e. images)
+        # translation / Ubersetzung
         # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
         #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
 
