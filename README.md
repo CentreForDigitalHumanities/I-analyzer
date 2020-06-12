@@ -12,6 +12,64 @@ The PEACE Portal corpus is a combination of three corpora (Ortal Paz' jewish ins
 
 Before that, however, index creation is needed. This should be done by using the corpus specific corpus definition, e.g. `epidat.py`. If you browse that class briefly, you will notice that it only defines extractors, i.e. it tells the application only where to find the information needed in the source documents. The rest of the corpus definition is left to the base class.
 
+### IIS corpus preprocessing
+
+The IIS corpus proved a bit tricky to add to the index. This is due to the fact that the `transcription` field is fully encoded in Epidoc as well (as opposed to the FIJI and Epidat corpora, which only utilize `<lb>`). Here is an example:
+
+```xml
+<div subtype="transcription" type="edition" xml:lang="grc">
+    <p>
+        <gap quantity="1" reason="lost" unit="line" />
+        <lb />
+        υἱὸς Ἰωσῆ
+        <lb />
+        <foreign xml:lang="heb">
+            רבי
+        </foreign>
+        ὅσ
+        <supplied reason="lost">
+            ι
+        </supplied>
+        ος ὧδε κῖτε
+        <lb />
+        θά
+        <supplied reason="lost">
+            ρσει
+        </supplied>
+    </p>
+</div>
+```
+
+This has to somehow be converted to this:
+
+```txt
+[ - - - - - - - - - - ]
+υἱὸς Ἰωσῆ
+רבי ὅσ[ι]ος ὧδε κῖτε
+θά[ρσει]
+```
+
+The process for this is a manual process, and a bit tedious.
+The core of it is using the official Epidoc stylesheets to convert the XML to plain text. Here are the steps:
+
+1. Ensure you have a copy of the corpus. If you need to download / scrape it, please use the scraper in the `dhlab-scrapers` repo.
+
+2. Download the [Epidoc stylesheets](https://github.com/EpiDoc/Stylesheets) to your local system. Note that these are XSLT 2 scripts, that cannot be run by any Python library (as far as I could tell, and believe me, I really tried to find something that could spare you all this trouble)
+
+3. Make sure you have docker installed, you will need it to actually use the stylesheets you just downloaded, because they are XSLT 2 scripts.
+
+4. Preprocess the corpus for transcription extraction by running the `iis_corpus_preprocessor.py` script. It needs two parameters: `-xml` - the folder where the corpus resides, and `-out` - the folder where you want to store the result. Note that this script will make a copy of the element containing the transcription (i.e.like the example above), remove all content from `<text>` and then reinsert the transcription `<div>`. This ensures that there will be no clutter after the XSLT conversion.
+
+5. Adjust and run the following command (note that the `atomgraph/saxon` image will be downloaded automatically if you don't have it yet):
+
+```bash
+docker run -v "/path/to/wherever/you/want/the/result":"/txt/" -v "/path/to/wherever/the/preprocessed/files/are":"/xml/" -v "/path/to/wherever/the/epidoc_stylesheets/are":"/xsl/" atomgraph/saxon -s:/xml/ -xsl:/xsl/start-txt.xsl -o:/txt/
+```
+
+6. Set `PEACEPORTAL_IIS_TXT_DATA` in `config.py` to `"/path/to/wherever/you/want/the/result"` from the command above, i.e. the files that were produced by the docker run. (If you open one of these files you'll notice a lot of whitespace, don't worry about that - it will be handled by the corpus definition)
+
+7. If you made all required / typical settings in `config.py`, you are now ready to actually create an index, i.e. `flask es -c iis`.
+
 ## Login and user/corpus administration
 
 Upon application start, a user ('peaceportal') logs in automatically (the password is topsecret). All of the complex user management that is in I-analyzer is bypassed by this. If a user by the name 'peaceportal' does not exist yes, you can navigate to `whatever.nl/login` and login with your/our superuser account. You will automatically be redirected to the admin module. If this doesn't work, try navigating to `whatever.nl/admin/` (slash at the end!)
