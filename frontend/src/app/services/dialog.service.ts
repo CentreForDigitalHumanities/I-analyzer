@@ -28,7 +28,8 @@ export class DialogService {
         let path = this.getLocalizedPath(`${identifier}.md`);
         let pagePromise = fetch(path).then(response => this.parseResponse(response));
 
-        let [html, manifest] = await Promise.all([pagePromise, this.getManifest()]);
+        let html = await pagePromise;
+        let manifest = await this.getManifest();
         let title = manifest.find(page => page.id == identifier).title;
 
         return { html, title };
