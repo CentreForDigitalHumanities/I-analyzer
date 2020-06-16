@@ -153,17 +153,23 @@ def extract_commentary(soup):
     # <date period="http://n2t.net/ark:/99152/p0m63njjcn4" notBefore="0452" notAfter="0452">April 15, 452 CE</date>
     # <date period="http://n2t.net/ark:/99152/p0m63nj3bbf http://n2t.net/ark:/99152/p0m63njdf2z" notBefore="-0400" notAfter="-0100">probably 200-100 BCE, maybe 400-200 BCE</date>
 
-    # excluded (for now):
-    # object description (e.g. amphora, handles)
-    # dimensions - support / dimension notes
+    # TODO: add field
+
+
+    # TODO: move to a comments field:
     # condition
     # layout description - notes
-    # handDesc (description of the letters)
-    # geogName / site -
+    # dimensions - support / dimension notes
     # origin notes
+
+    # excluded (for now):
     # revision history
 
+    # TODO: discuss
+    # object description (e.g. amphora, handles)
+    # handDesc (description of the letters)
 
-    # missing (i.e. present in Epidat and Fiji)
+    # geogName / site -
+
+    # MISSING (i.e. present in Epidat and Fiji)
     # person(s) - names (profileDesc is completely missing)
-    # language - should also be in profileDesc

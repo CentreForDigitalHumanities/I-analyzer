@@ -105,18 +105,19 @@ class JewishInscriptions(PeacePortal):
             toplevel=False,
         )
 
-        # excluded (for now):
+        # TODO: move to a comments field:
         # date_remarks
-        # incipit (what is it and what to do with it?)
-        # names_hebrew
-        # age
-        # age_remarks
+        # age_remarks (incl age)
+        # iconography_desc
+
+        # excluded (for now):
+        # 3D_image
+        # location (storage location of published work)
+
+        # TODO: discuss
         # inscription_type
         # iconography_type
-        # iconography_desc
-        # no_surviving
-        # location (storage location of published work)
-        # publication
+
         # fascimile
         # photos_leonard
-        # 3D_image
+
