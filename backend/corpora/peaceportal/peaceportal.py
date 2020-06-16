@@ -195,6 +195,13 @@ class PeacePortal(XMLCorpus):
         visualization_type='term_frequency'
     )
 
+    bibliography = Field(
+        name='bibliography',
+        es_mapping={'type','keyword'},
+        display_name='Bibliography',
+        description='Reference(s) to who edited and published this funerary inscription.'
+    )
+
     commentary = Field(
         name='commentary',
         es_mapping={'type': 'text'},
@@ -206,6 +213,7 @@ class PeacePortal(XMLCorpus):
     fields = [
         _id,
         url,
+        source_database,
         year,
         transcription,
         names,
@@ -215,8 +223,8 @@ class PeacePortal(XMLCorpus):
         material,
         material_details,
         language,
-        commentary,
-        source_database
+        bibliography,
+        commentary
     ]
 
 
