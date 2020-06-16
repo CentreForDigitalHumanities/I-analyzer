@@ -21,11 +21,13 @@ class PeacePortal(XMLCorpus):
 
     title = "PEACE Portal"
     description = "A collection of inscriptions on Jewish burial sites"
-    min_date = datetime(year=769, month=1, day=1)
-    max_date = datetime(year=2020, month=12, day=31)
+    # store min_year as int, since datetime does not support BCE dates
+    min_year = -530
+    max_date = datetime(year=1948, month=12, day=31)
     visualize = []
     es_index = 'peaceportal'
     # fields below are required by code but not actually used
+    min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'
     data_directory = 'bogus'
 
@@ -36,6 +38,9 @@ class PeacePortal(XMLCorpus):
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+    # overwrite below in child class if you need to extract the (converted) transcription
+    # from external files. See README.
+    external_file_folder = '.'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -43,10 +48,15 @@ class PeacePortal(XMLCorpus):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
+
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
-                yield full_path
+
+                yield full_path, {
+                    'external_file': os.path.join(self.external_file_folder, filename)
+                }
+
 
     source_database = Field(
         name='source_database',
@@ -84,7 +94,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'integer'},
         search_filter=RangeFilter(
             description='Restrict the years from which search results will be returned.',
-            lower=min_date.year,
+            lower=min_year,
             upper=max_date.year,
         ),
         csv_core=True,
@@ -133,7 +143,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these countries.',
-            option_count=4
+            option_count=5
         ),
         visualization_type='term_frequency',
         results_overview=True
@@ -146,7 +156,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these provenances.',
-            option_count=23
+            option_count=29
         ),
         visualization_type='term_frequency',
         results_overview=True
@@ -159,7 +169,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these material types.',
-            option_count=36
+            option_count=39
         ),
         visualization_type='term_frequency'
     )
@@ -179,10 +189,17 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these languages.',
-            option_count=3
+            option_count=10
         ),
         csv_core=True,
         visualization_type='term_frequency'
+    )
+
+    bibliography = Field(
+        name='bibliography',
+        es_mapping={'type','keyword'},
+        display_name='Bibliography',
+        description='Reference(s) to who edited and published this funerary inscription.'
     )
 
     commentary = Field(
@@ -196,6 +213,7 @@ class PeacePortal(XMLCorpus):
     fields = [
         _id,
         url,
+        source_database,
         year,
         transcription,
         names,
@@ -205,24 +223,45 @@ class PeacePortal(XMLCorpus):
         material,
         material_details,
         language,
-        commentary,
-        source_database
+        bibliography,
+        commentary
     ]
 
+
+def normalize_language(text):
+    ltext = text.lower()
+    if ltext in ['grc']: return 'Greek'
+    if ltext in ['he', 'heb']: return 'Hebrew'
+    if ltext in ['arc']: return 'Aramaic'
+    if ltext in ['la']: return 'Latin'
 
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
+    The Epidat corpus in particular has mainly descriptions of the material.
     Returns a list of categories, i.e. those that appear in `text`.
     '''
-    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Stone', 'Granit', 'Kunststein',
+    if not text: return ['Unknown']
+
+    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
-                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit']
+                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit',
+                  # below from FIJI and IIS
+                  'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
+                  'Marble', 'Metal', 'Bone', 'Lead' ]
     result = []
     ltext = text.lower()
+
     for c in categories:
         if c.lower() in ltext:
             result.append(c)
+
     if len(result) == 0:
-        result.append(text)
+        # reduce unknown, other and ? to unknown
+        # 'schrifttafel' removes some clutter from Epidat
+        if 'unknown' in ltext or 'other' in ltext or '?' in ltext or 'schrifttafel':
+            result.append('Unknown')
+        else:
+            result.append(text)
+
     return result

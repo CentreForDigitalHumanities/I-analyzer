@@ -67,7 +67,7 @@ class Epidat(PeacePortal):
             multiple=True,
             toplevel=False,
             transform=lambda x: ['M' if s ==
-                                 '1' else 'F' if s == '2' else None for s in x]
+                                 '1' else 'F' if s == '2' else 'Unknown' for s in x]
         )
 
         self.country.extractor = XML(
@@ -154,19 +154,27 @@ def extract_country(soup):
     region.extract()
     return cloned_soup
 
+    # TODO: add field
+    # translation / Ubersetzung
+    # fascimile (i.e. images)
 
-        # excluded (for now):
-        # title
-        # organization (incl details, e.g. address)
-        # licence
-        # objectType (e.g. Grabmal)
-        # dimensions (incl notes/remarks)
-        # condition (remarks)
-        # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)
-        # geo details (name and coordinates)
-        # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
-        # date of death for each person
-        # fascimile (i.e. images)
-        # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
-        #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
+    # TODO: move to a comments field:
+    # dimensions (incl notes/remarks)
+    # condition (remarks)
+    # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
+    #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
+
+    # excluded (for now):
+    # title
+    # organization (incl details, e.g. address)
+    # licence
+    # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
+
+    # TODO: discuss with OPS
+    # objectType (e.g. Grabmal)
+    # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)
+
+    # geo details (name and coordinates)
+
+    # date of death for each person
 

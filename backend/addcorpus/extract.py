@@ -282,7 +282,7 @@ class HTML(XML):
         super().__init__(*nargs, **kwargs)
         self.attribute_filter = attribute_filter
 
-    def _select(self, soup, metadata):
+    def _select(self, soup, metadata = None):
         '''
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
@@ -310,3 +310,27 @@ class HTML(XML):
             return soup.find_all(tag, recursive=self.recursive)
         else:
             return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
+
+
+class ExternalFile(Extractor):
+
+    def __init__(self, stream_handler, *nargs, **kwargs):
+        '''
+        Free for all external file extractor that provides a stream to `stream_handler`
+        to do whatever is needed to extract data from an external file. Relies on `external_file`
+        being present in the metadata. Note that the XMLExtractor has a built in trick to extract
+        data from external files (i.e. setting `external_file`), so you probably need that if your
+        external file is XML.
+
+        Parameters:
+            folder -- folder where the file is located.
+            stream_handler -- function that will handle the opened file.
+        '''
+        super().__init__(*nargs, **kwargs)
+        self.stream_handler = stream_handler
+
+    def _apply(self, metadata, *nargs, **kwargs):
+        '''
+        Extract `external_file` from metadata and call `self.stream_handler` with file stream.
+        '''
+        return self.stream_handler(open(metadata['external_file'], 'r'))
