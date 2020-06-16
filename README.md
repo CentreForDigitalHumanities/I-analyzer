@@ -12,6 +12,10 @@ The PEACE Portal corpus is a combination of three corpora (Ortal Paz' jewish ins
 
 Before that, however, index creation is needed. This should be done by using the corpus specific corpus definition, e.g. `epidat.py`. If you browse that class briefly, you will notice that it only defines extractors, i.e. it tells the application only where to find the information needed in the source documents. The rest of the corpus definition is left to the base class.
 
+### FIJI corpus conversion
+
+The FIJI corpus is supplied to us via Excel, provided by Ortal-Paz Saar. A conversion script exists for this sheet, `fiji_converter.py`. It extracts the data for each record from a CSV version of and creates XML for it using a (Jinja2) template. The script can be called with custom parameters, but it is easiest to run it from the folder where it resides, after moving the source file (typically `InscriptionDB_full.csv`) right next to it. Make sure the delimiter in the CSV is ';' and call `python fiji_converter.py`. This will produce a folder 'jewish-inscriptions' with the xml files in it. If, for some reason, you need to change the input or output path, or the delimiter, run `python fiji_converter.py --help` to see your options.
+
 ### IIS corpus preprocessing
 
 The IIS corpus proved a bit tricky to add to the index. This is due to the fact that the `transcription` field is fully encoded in Epidoc as well (as opposed to the FIJI and Epidat corpora, which only utilize `<lb>`). Here is an example:

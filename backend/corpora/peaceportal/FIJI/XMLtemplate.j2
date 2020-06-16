@@ -1,0 +1,64 @@
+<TEI xml:space="preserve" xml:lang="en"
+xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>{{ title }}</title>
+            </titleStmt>
+            <publicationStmt>
+                <authority/>
+                <idno type="filename"/>
+            </publicationStmt>
+            <sourceDesc>
+                <msDesc>
+                    <msIdentifier>
+                        <location>{{ presentLocation }}</location>
+                        <publication>{{ publication }}</publication>
+                    </msIdentifier>
+                    <history>
+                        <origin>
+                            <provenance>{{ provenance }}</provenance>
+                            <origDate>{{ date }}</origDate>
+                            <remarksOnDate>{{ remarksOnDate }}</remarksOnDate>
+                        </origin>
+                    </history>
+                </msDesc>
+            </sourceDesc>
+        </fileDesc>
+        <profileDesc>
+            {%- if persons %}
+            <particDesc>
+                <listPerson>
+                    {%- for person in persons %}
+                    <person sex="{{ person.sex }}">
+                        <persName>{{ person.name }}</persName>
+                    </person>
+                    {%- endfor %}
+                </listPerson>
+            </particDesc>
+            {% endif -%}            
+            <langUsage>
+                <!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+                <language>{{ language }}</language>
+            </langUsage>
+        </profileDesc>
+    </teiHeader>
+    <facsimile>
+        <photoFacsimile>{{ facsimile }}</photoFacsimile>
+        <photosLeonard>{{ photosLeonard }}</photosLeonard>
+        <image3D>{{ image3D }}</image3D>
+    </facsimile>
+    <text>
+        <body>
+            <transcription>{{ transcription }}</transcription>
+            <inscriptionType>{{ inscriptionType }}</inscriptionType>
+            <remarksOnAge>{{ remarksOnAge }}</remarksOnAge>
+            <iconographyType>{{ iconographyType }}</iconographyType>
+            <iconographyDescription>{{ iconographyDescription }}</iconographyDescription>
+            <material>{{ material }}</material>
+            <incipit>{{ incipit }}</incipit>
+            <ageComments>{{ ageComments }}</ageComments>
+            <commentary>{{ commentary }}</commentary>
+        </body>
+    </text>
+</TEI>

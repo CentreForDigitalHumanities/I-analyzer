@@ -9,15 +9,15 @@ from addcorpus.corpus import Field
 from corpora.peaceportal.peaceportal import PeacePortal, categorize_material
 
 
-class JewishInscriptions(PeacePortal):
+class FIJI(PeacePortal):
     '''
     This is a fresh version of Ortal-Paz Saar's 'Funerary Inscriptions of Jews from Italy' corpus,
     updated to align with the PEACE portal index. This mostly implies that there are less fields
     than in the earlier version (i.e. the one under corpora/jewishinscriptions).
     '''
 
-    data_directory = current_app.config['PEACEPORTAL_JEWISH_INSCRIPTIONS_DATA']
-    es_index = current_app.config['PEACEPORTAL_JEWISH_INSCRIPTIONS_ES_INDEX']
+    data_directory = current_app.config['PEACEPORTAL_FIJI_DATA']
+    es_index = current_app.config['PEACEPORTAL_FIJI_ES_INDEX']
     filename_pattern = re.compile('\d+')
 
     def sources(self, start, end):
@@ -120,4 +120,3 @@ class JewishInscriptions(PeacePortal):
 
         # fascimile
         # photos_leonard
-
