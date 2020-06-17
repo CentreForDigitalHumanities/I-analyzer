@@ -283,10 +283,12 @@ export class Client {
     };
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
         const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
+
         let options = { params: new HttpParams().set('size', searchParams.size.toString())}
         if (searchParams.from) {
-            options.params.set('from', searchParams.from.toString());
+            options = { params: new HttpParams().set('size', searchParams.size.toString()).set('from', searchParams.from.toString())}
         }
+
         return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise()
     }
 }
