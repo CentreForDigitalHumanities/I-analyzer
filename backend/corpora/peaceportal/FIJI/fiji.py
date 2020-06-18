@@ -52,11 +52,11 @@ class FIJI(PeacePortal):
             value=None
         )
 
-        self.year.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc',
-                 'msDesc', 'history', 'origin', 'origDate'],
-            toplevel=False,
-        )
+        # self.year.extractor = XML(
+        #     tag=['teiHeader', 'fileDesc', 'sourceDesc',
+        #          'msDesc', 'history', 'origin', 'origDate'],
+        #     toplevel=False,
+        # )
 
         self.transcription.extractor = XML(
             tag=['text', 'body', 'transcription'],
@@ -65,12 +65,18 @@ class FIJI(PeacePortal):
         )
 
         self.names.extractor = XML(
-            tag=['text', 'body', 'namesMentioned'],
+            tag=['teiHeader', 'profileDesc',
+                 'particDesc', 'listPerson', 'person'],
+            flatten=True,
+            multiple=True,
             toplevel=False,
         )
 
         self.sex.extractor = XML(
-            tag=['text', 'body', 'sex'],
+            tag=['teiHeader', 'profileDesc',
+                 'particDesc', 'listPerson', 'person'],
+            attribute='sex',
+            multiple=True,
             toplevel=False,
         )
 
@@ -96,13 +102,20 @@ class FIJI(PeacePortal):
         )
 
         self.language.extractor = XML(
-            tag=['text', 'body', 'language'],
+            tag=['teiHeader', 'profileDesc', 'langUsage', 'language'],
             toplevel=False,
+            multiple=True,
         )
 
         self.commentary.extractor = XML(
             tag=['text', 'body', 'commentary'],
             toplevel=False,
+        )
+
+        self.bibliography.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publications', 'publication'],
+            toplevel=False,
+            multiple=True
         )
 
         # TODO: move to a comments field:
