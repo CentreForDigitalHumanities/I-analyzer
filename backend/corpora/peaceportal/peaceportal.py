@@ -54,7 +54,8 @@ class PeacePortal(XMLCorpus):
                     continue
 
                 yield full_path, {
-                    'external_file': os.path.join(self.external_file_folder, filename)
+                    # applies only to iis corpus
+                    'associated_file': os.path.join(self.external_file_folder, filename)
                 }
 
 
