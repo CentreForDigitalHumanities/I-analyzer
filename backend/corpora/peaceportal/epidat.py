@@ -4,7 +4,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters
 
 
 class Epidat(PeacePortal):
@@ -48,7 +48,7 @@ class Epidat(PeacePortal):
             toplevel=False,
             multiple=False,
             flatten=True,
-            transform=lambda x: ' '.join(x.split()),
+            transform=lambda x: clean_newline_characters(x),
             transform_soup_func=extract_transcript
         )
 

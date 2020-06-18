@@ -4,7 +4,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML, ExternalFile
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, normalize_language
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, normalize_language, clean_newline_characters
 
 
 class IIS(PeacePortal):
@@ -126,9 +126,9 @@ class IIS(PeacePortal):
 def extract_transcript(filestream):
     text = filestream.read().strip()
     filestream.close()
-    # very naive whitespace (incl newline!) removal for now
-    text = ' '.join(text.split())
-    return text
+    # remove the tabs and spaces inherited from xml
+    text = clean_newline_characters(text)
+    return text.replace('\t', '')
 
 def extract_paragraph(soup):
     '''
