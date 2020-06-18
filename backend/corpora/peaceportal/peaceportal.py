@@ -66,7 +66,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these databases.',
-            option_count=2,
+            option_count=3,
         ),
         csv_core=True
     )
