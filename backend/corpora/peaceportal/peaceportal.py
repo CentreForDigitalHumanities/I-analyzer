@@ -235,6 +235,20 @@ def normalize_language(text):
     if ltext in ['arc']: return 'Aramaic'
     if ltext in ['la']: return 'Latin'
 
+def clean_newline_characters(text):
+    '''
+    Remove all spaces surrounding newlines in `text`.
+    Also removes multiple newline characters in a row.
+    '''
+    parts = text.split('\n')
+    cleaned = []
+    for part in parts:
+        if not '\n' in part:
+            stripped = part.strip()
+            if stripped:
+                cleaned.append(part.strip())
+    return '\n'.join(cleaned)
+
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
