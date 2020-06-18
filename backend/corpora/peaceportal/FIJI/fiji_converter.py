@@ -48,7 +48,7 @@ def extract_record(row):
         remarksOnDate=row["Remarks on date"],
         provenance=row["Provenance"],
         presentLocation=row["Present location"],
-        publication=get_publication(row),
+        publications=get_publications(row),
         facsimile=row["Photo / Facsimile from publication"],
         photosLeonard=row["Photos by Leonard"],
         image3D=row["3D image"],
@@ -74,12 +74,20 @@ def export(out_folder, record):
             xmlFile.write(template.render(record))
 
 
-def get_publication(row):
-    publication_no = row["No. in publication"]
-    publication = row["Publication"]
-    if publication_no:
-        publication = "{} ({})".format(publication, publication_no)
-    return publication
+def get_publications(row):
+    results = []
+    publication_nos = row["No. in publication"].split(';')
+    publications = row["Publication"].split(';')
+
+    for index, pub in enumerate(publications):
+        publication = pub.replace('\n', '')
+        try:
+            publication_no = publication_nos[index].replace('\n', '').strip()
+            publication = "{} ({})".format(publication, publication_no)
+        except IndexError:
+            pass # ignore adding pub_no if it doesn't exist
+        results.append(publication)
+    return results
 
 
 def get_transcription(row):

@@ -13,7 +13,13 @@ xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
                 <msDesc>
                     <msIdentifier>
                         <location>{{ presentLocation }}</location>
-                        <publication>{{ publication }}</publication>
+                        {%- if publications %}
+                        <publications>
+                            {%- for publication in publications %}
+                            <publication>{{ publication }}</publication>
+                            {%- endfor %}
+                        </publications>
+                        {% endif -%}
                     </msIdentifier>
                     <history>
                         <origin>
@@ -36,7 +42,7 @@ xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
                     {%- endfor %}
                 </listPerson>
             </particDesc>
-            {% endif -%}            
+            {% endif -%}
             <langUsage>
                 <!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
                 <language>{{ language }}</language>
