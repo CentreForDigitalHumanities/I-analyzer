@@ -2,9 +2,9 @@ import re
 from copy import copy
 from flask import current_app
 
-from addcorpus.extract import XML, Constant, HTML, ExternalFile
+from addcorpus.extract import XML, Constant, HTML, ExternalFile, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, normalize_language, clean_newline_characters
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters
 
 
 class IIS(PeacePortal):
@@ -82,12 +82,41 @@ class IIS(PeacePortal):
             value='Israel/Palestine'
         )
 
-        self.provenance.extractor = XML(
+        self.region.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'placeName', 'region'],
             toplevel=False,
             flatten=True
         )
+
+        self.settlement.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'placeName', 'settlement'],
+            toplevel=False,
+            flatten=True
+        )
+
+        self.location_details.extractor = Combined(
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                    'history', 'origin', 'placeName'],
+                toplevel=False,
+                flatten=True
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                    'history', 'origin', 'p'],
+                toplevel=False,
+                flatten=True
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                    'history', 'provenance'],
+                toplevel=False,
+                flatten=True
+            )
+        )
+
 
         self.material.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
@@ -106,13 +135,23 @@ class IIS(PeacePortal):
             flatten=True
         )
 
-        self.language.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
-                 'textLang'],
-            attribute='mainLang',
-            toplevel=False,
-            transform=lambda x: normalize_language(x)
+        self.language.extractor = Combined(
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
+                    'textLang'],
+                attribute='mainLang',
+                toplevel=False,
+                transform=lambda x: normalize_language(x)
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msContents',
+                    'textLang'],
+                attribute='otherLangs',
+                toplevel=False,
+                transform=lambda x: normalize_language(x)
+            )
         )
+
 
         self.commentary.extractor = XML(
             tag=['text'],
@@ -122,13 +161,21 @@ class IIS(PeacePortal):
             transform_soup_func=extract_commentary
         )
 
+        self.bibliography.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publications', 'publication'],
+            toplevel=False,
+            multiple=True
+        )
+
 
 def extract_transcript(filestream):
     text = filestream.read().strip()
     filestream.close()
     # remove the tabs and spaces inherited from xml
     text = clean_newline_characters(text)
-    return text.replace('\t', '')
+    if text:
+        text = text.replace('\t', '')
+    return text
 
 def extract_paragraph(soup):
     '''
@@ -148,6 +195,15 @@ def extract_commentary(soup):
     return extract_paragraph(commentary_div)
 
 
+def normalize_language(text):
+    if not text: return
+    ltext = text.lower().strip()
+    if ltext in ['grc']: return 'Greek'
+    if ltext in ['he', 'heb']: return 'Hebrew'
+    if ltext in ['arc']: return 'Aramaic'
+    if ltext in ['la', 'latin']: return 'Latin'
+
+
     # what to do with the dates from this corpus?
     # <date period="http://n2t.net/ark:/99152/p0m63njbxb9" notBefore="0001" notAfter="0100">First century CE</date>
     # <date period="http://n2t.net/ark:/99152/p0m63njjcn4" notBefore="0452" notAfter="0452">April 15, 452 CE</date>
@@ -155,21 +211,16 @@ def extract_commentary(soup):
 
     # TODO: add field
 
-
     # TODO: move to a comments field:
     # condition
     # layout description - notes
     # dimensions - support / dimension notes
     # origin notes
-
-    # excluded (for now):
-    # revision history
-
-    # TODO: discuss
     # object description (e.g. amphora, handles)
     # handDesc (description of the letters)
 
-    # geogName / site -
+    # excluded (for now):
+    # revision history
 
     # MISSING (i.e. present in Epidat and Fiji)
     # person(s) - names (profileDesc is completely missing)

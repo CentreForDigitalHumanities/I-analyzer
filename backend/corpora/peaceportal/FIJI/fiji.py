@@ -84,7 +84,7 @@ class FIJI(PeacePortal):
             value='Italy'
         )
 
-        self.provenance.extractor = XML(
+        self.settlement.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc',
                  'msDesc', 'history', 'origin', 'provenance'],
             toplevel=False,
@@ -105,6 +105,7 @@ class FIJI(PeacePortal):
             tag=['teiHeader', 'profileDesc', 'langUsage', 'language'],
             toplevel=False,
             multiple=True,
+            transform=lambda x: normalize_language(x)
         )
 
         self.commentary.extractor = XML(
@@ -118,18 +119,110 @@ class FIJI(PeacePortal):
             multiple=True
         )
 
+        self.location_details.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'location'],
+            toplevel=False
+        )
+
+        self.iconography.extractor = XML(
+            tag=['text', 'body', 'iconographyType'],
+            toplevel=False
+        )
+
+
+
+def normalize_language(languages):
+    results = []
+    for lang in languages:
+        if not lang:
+            results.append('Unknown')
+            continue
+
+        ltext = lang.lower().strip()
+        if 'greek' in ltext or 'greeek' in ltext:
+            results.append(select_greek(lang))
+        if 'latin' in ltext:
+            results.append(select_latin(lang))
+        if 'hebrew' in ltext:
+            results.append(select_hebrew(lang))
+        if ltext == 'aramaic' or ltext == 'samaritan':
+            return lang
+        if '?' in ltext or ltext == 'x' or ltext == 'none':
+            results.append('Unknown')
+    return results
+
+
+def select_greek(text):
+    text = text.strip()
+    if text in [
+        "Greek", "Greek (?)", "Greeek",
+        "Greek (some Latin characters)",
+        "Latin (some Greek characters)",
+        "Greek or Latin", "Latin and Greek (?)",
+        "Latin in Greek characters"
+        "Greek (transliterated Latin?)",
+        "Greek with transliterated Latin (?)",
+        "Greek with transliterated Latin formula",
+    ]:
+        return 'Greek'
+    if text in [
+        "Greek (in Hebrew characters)",
+        "Greek in Latin characters (?)",
+        "Latin (including transliterated Greek)",
+        "transliterated Greek"
+    ]:
+        return 'Greek (transliterated)'
+
+def select_latin(text):
+    text = text.strip()
+    if text in [
+        "Latin", "Latin (?)",
+        "Greek (some Latin characters)",
+        "Latin (some Greek characters)",
+        "Latin (including transliterated Greek)",
+        "Greek or Latin", "Latin and Greek (?)",
+        "Latin (transliterated Hebrew)"
+    ]:
+        return "Latin"
+
+    if text in [
+        "Latin in Greek characters",
+        "Greek (transliterated Latin?)",
+        "Greek with transliterated Latin (?)",
+        "Greek with transliterated Latin formula",
+    ]:
+        return "Latin (transliterated)"
+
+
+def select_hebrew(text):
+    text = text.strip()
+
+    if text in [
+        "Hebrew", "Hebrew (?)"
+    ]:
+        return "Hebrew"
+
+    if text in [
+        "Latin (transliterated Hebrew)",
+        "Hebrew (transliterated)",
+    ]:
+        return "Hebrew (transliterated)"
+
+
+
+
+        # TODO: new fields
+
         # TODO: move to a comments field:
         # date_remarks
         # age_remarks (incl age)
         # iconography_desc
 
+
         # excluded (for now):
         # 3D_image
-        # location (storage location of published work)
+        # inscription_type
 
         # TODO: discuss
-        # inscription_type
-        # iconography_type
-
         # fascimile
         # photos_leonard

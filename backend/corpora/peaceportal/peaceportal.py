@@ -115,6 +115,12 @@ class PeacePortal(XMLCorpus):
         display_type='text_content'
     )
 
+    transcription_german = Field(
+        name='transcription_german',
+        es_mapping={'type': 'text'},
+        hidden=True
+    )
+
     # A string with all the names occuring in the source
     names = Field(
         name='names',
@@ -150,17 +156,35 @@ class PeacePortal(XMLCorpus):
         results_overview=True
     )
 
-    provenance = Field(
-        name='provenance',
-        display_name='Provenance',
-        description='Description of the location where the inscription was found.',
+    settlement = Field(
+        name='settlement',
+        display_name='Settlement',
+        description='The settlement where the inscription was found.',
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
-            description='Search only within these provenances.',
+            description='Search only within these settlements.',
             option_count=29
         ),
-        visualization_type='term_frequency',
-        results_overview=True
+        visualization_type='term_frequency'
+    )
+
+    region = Field(
+        name='region',
+        display_name='Region',
+        description='The region where the inscription was found.',
+        es_mapping={'type': 'keyword'},
+        search_filter=MultipleChoiceFilter(
+            description='Search only within these regions.',
+            option_count=29
+        ),
+        visualization_type='term_frequency'
+    )
+
+    location_details = Field(
+        name='location_details',
+        display_name='Location details',
+        description='Details about the location of the inscription',
+        es_mapping={'type': 'text'}
     )
 
     material = Field(
@@ -198,7 +222,7 @@ class PeacePortal(XMLCorpus):
 
     bibliography = Field(
         name='bibliography',
-        es_mapping={'type','keyword'},
+        es_mapping={'type': 'keyword'},
         display_name='Bibliography',
         description='Reference(s) to who edited and published this funerary inscription.'
     )
@@ -211,36 +235,66 @@ class PeacePortal(XMLCorpus):
         search_field_core=True,
     )
 
+    images = Field(
+        name='images',
+        es_mapping={'type': 'keyword'},
+        display_name='Images',
+        description='Links to image(s) of the inscription.',
+        hidden=True
+    )
+
+    coordinates = Field(
+        name='coordinates',
+        es_mapping={'type': 'keyword'},
+        display_name='Coordinates',
+        description='GIS coordinates for the inscription.'
+    )
+
+    iconography = Field(
+        name='iconography',
+        es_mapping={'type': 'text'},
+        display_name='Iconography',
+        description='Description of the icons used in the inscription.',
+        search_field_core=True
+    )
+
+    dates_of_death = Field(
+        name='dates_of_death',
+        es_mapping={'type': 'keyword'},
+        display_name='Date of death',
+    )
+
     fields = [
         _id,
         url,
-        source_database,
         year,
+        source_database,
         transcription,
         names,
         sex,
+        dates_of_death,
         country,
-        provenance,
+        region,
+        settlement,
+        location_details,
+        language,
+        iconography,
+        images,
+        coordinates,
         material,
         material_details,
-        language,
         bibliography,
-        commentary
+        commentary,
+        transcription_german,
     ]
 
-
-def normalize_language(text):
-    ltext = text.lower()
-    if ltext in ['grc']: return 'Greek'
-    if ltext in ['he', 'heb']: return 'Hebrew'
-    if ltext in ['arc']: return 'Aramaic'
-    if ltext in ['la']: return 'Latin'
 
 def clean_newline_characters(text):
     '''
     Remove all spaces surrounding newlines in `text`.
     Also removes multiple newline characters in a row.
     '''
+    if not text: return
     parts = text.split('\n')
     cleaned = []
     for part in parts:
@@ -249,6 +303,7 @@ def clean_newline_characters(text):
             if stripped:
                 cleaned.append(part.strip())
     return '\n'.join(cleaned)
+
 
 def categorize_material(text):
     '''
@@ -260,7 +315,7 @@ def categorize_material(text):
 
     categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
-                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit',
+                  'Glas', 'Rosenquarz', 'Gabbro', 'Diorit', 'Bronze',
                   # below from FIJI and IIS
                   'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
                   'Marble', 'Metal', 'Bone', 'Lead' ]
@@ -269,10 +324,10 @@ def categorize_material(text):
 
     for c in categories:
         if c.lower() in ltext:
-            result.append(c)
+            result.append(translate_category(c))
 
     if len(result) == 0:
-        # reduce unknown, other and ? to unknown
+        # reduce unknown, other and ? to Unknown
         # 'schrifttafel' removes some clutter from Epidat
         if 'unknown' in ltext or 'other' in ltext or '?' in ltext or 'schrifttafel':
             result.append('Unknown')
@@ -280,3 +335,29 @@ def categorize_material(text):
             result.append(text)
 
     return result
+
+def translate_category(category):
+    '''
+    Helper function to translate non-English categories of material into English
+    '''
+    pairs = {
+        'Sandstein': 'Sandstone',
+        'Kalkstein': 'Limestone',
+        'Stein': 'Stone',
+        'Granit': 'Granite',
+        'Kunststein': 'Artificial stone',
+        'Lavatuff': 'Tufa',
+        'Marmor': 'Marble',
+        'Kalk': 'Limestone',
+        'Syenit': 'Syenite',
+        'Labrador': 'Labradorite',
+        'Beton': 'Concrete',
+        'Glas': 'Glass',
+        'Rosenquarz': 'Rose quartz',
+        'Diorit': 'Diorite'
+    }
+
+    for original, translation in pairs.items():
+        if category == original:
+            return translation
+    return category
