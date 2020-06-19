@@ -21,11 +21,13 @@ class PeacePortal(XMLCorpus):
 
     title = "PEACE Portal"
     description = "A collection of inscriptions on Jewish burial sites"
-    min_date = datetime(year=769, month=1, day=1)
-    max_date = datetime(year=2020, month=12, day=31)
+    # store min_year as int, since datetime does not support BCE dates
+    min_year = -530
+    max_date = datetime(year=1948, month=12, day=31)
     visualize = []
     es_index = 'peaceportal'
     # fields below are required by code but not actually used
+    min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'
     data_directory = 'bogus'
 
@@ -36,6 +38,9 @@ class PeacePortal(XMLCorpus):
     # New data members
     non_xml_msg = 'Skipping non-XML file {}'
     non_match_msg = 'Skipping XML file with nonmatching name {}'
+    # overwrite below in child class if you need to extract the (converted) transcription
+    # from external files. See README.
+    external_file_folder = '.'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -43,10 +48,16 @@ class PeacePortal(XMLCorpus):
             for filename in filenames:
                 name, extension = op.splitext(filename)
                 full_path = op.join(directory, filename)
+
                 if extension != '.xml':
                     logger.debug(self.non_xml_msg.format(full_path))
                     continue
-                yield full_path
+
+                yield full_path, {
+                    # applies only to iis corpus
+                    'associated_file': os.path.join(self.external_file_folder, filename)
+                }
+
 
     source_database = Field(
         name='source_database',
@@ -55,7 +66,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these databases.',
-            option_count=2,
+            option_count=3,
         ),
         csv_core=True
     )
@@ -84,7 +95,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'integer'},
         search_filter=RangeFilter(
             description='Restrict the years from which search results will be returned.',
-            lower=min_date.year,
+            lower=min_year,
             upper=max_date.year,
         ),
         csv_core=True,
@@ -102,6 +113,12 @@ class PeacePortal(XMLCorpus):
         search_field_core=True,
         results_overview=True,
         display_type='text_content'
+    )
+
+    transcription_german = Field(
+        name='transcription_german',
+        es_mapping={'type': 'text'},
+        hidden=True
     )
 
     # A string with all the names occuring in the source
@@ -133,23 +150,41 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these countries.',
-            option_count=4
+            option_count=5
         ),
         visualization_type='term_frequency',
         results_overview=True
     )
 
-    provenance = Field(
-        name='provenance',
-        display_name='Provenance',
-        description='Description of the location where the inscription was found.',
+    settlement = Field(
+        name='settlement',
+        display_name='Settlement',
+        description='The settlement where the inscription was found.',
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
-            description='Search only within these provenances.',
-            option_count=23
+            description='Search only within these settlements.',
+            option_count=29
         ),
-        visualization_type='term_frequency',
-        results_overview=True
+        visualization_type='term_frequency'
+    )
+
+    region = Field(
+        name='region',
+        display_name='Region',
+        description='The region where the inscription was found.',
+        es_mapping={'type': 'keyword'},
+        search_filter=MultipleChoiceFilter(
+            description='Search only within these regions.',
+            option_count=29
+        ),
+        visualization_type='term_frequency'
+    )
+
+    location_details = Field(
+        name='location_details',
+        display_name='Location details',
+        description='Details about the location of the inscription',
+        es_mapping={'type': 'text'}
     )
 
     material = Field(
@@ -159,7 +194,7 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these material types.',
-            option_count=36
+            option_count=39
         ),
         visualization_type='term_frequency'
     )
@@ -179,10 +214,17 @@ class PeacePortal(XMLCorpus):
         es_mapping={'type': 'keyword'},
         search_filter=MultipleChoiceFilter(
             description='Search only within these languages.',
-            option_count=3
+            option_count=10
         ),
         csv_core=True,
         visualization_type='term_frequency'
+    )
+
+    bibliography = Field(
+        name='bibliography',
+        es_mapping={'type': 'keyword'},
+        display_name='Bibliography',
+        description='Reference(s) to who edited and published this funerary inscription.'
     )
 
     commentary = Field(
@@ -193,36 +235,129 @@ class PeacePortal(XMLCorpus):
         search_field_core=True,
     )
 
+    images = Field(
+        name='images',
+        es_mapping={'type': 'keyword'},
+        display_name='Images',
+        description='Links to image(s) of the inscription.',
+        hidden=True
+    )
+
+    coordinates = Field(
+        name='coordinates',
+        es_mapping={'type': 'keyword'},
+        display_name='Coordinates',
+        description='GIS coordinates for the inscription.'
+    )
+
+    iconography = Field(
+        name='iconography',
+        es_mapping={'type': 'text'},
+        display_name='Iconography',
+        description='Description of the icons used in the inscription.',
+        search_field_core=True
+    )
+
+    dates_of_death = Field(
+        name='dates_of_death',
+        es_mapping={'type': 'keyword'},
+        display_name='Date of death',
+    )
+
     fields = [
         _id,
         url,
         year,
+        source_database,
         transcription,
         names,
         sex,
+        dates_of_death,
         country,
-        provenance,
+        region,
+        settlement,
+        location_details,
+        language,
+        iconography,
+        images,
+        coordinates,
         material,
         material_details,
-        language,
+        bibliography,
         commentary,
-        source_database
+        transcription_german,
     ]
+
+
+def clean_newline_characters(text):
+    '''
+    Remove all spaces surrounding newlines in `text`.
+    Also removes multiple newline characters in a row.
+    '''
+    if not text: return
+    parts = text.split('\n')
+    cleaned = []
+    for part in parts:
+        if not '\n' in part:
+            stripped = part.strip()
+            if stripped:
+                cleaned.append(part.strip())
+    return '\n'.join(cleaned)
 
 
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
+    The Epidat corpus in particular has mainly descriptions of the material.
     Returns a list of categories, i.e. those that appear in `text`.
     '''
-    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Stone', 'Granit', 'Kunststein',
+    if not text: return ['Unknown']
+
+    categories = ['Sandstein', 'Kalkstein', 'Stein', 'Granit', 'Kunststein',
                   'Lavatuff', 'Marmor', 'Kalk', 'Syenit', 'Labrador', 'Basalt', 'Beton',
-                  'Glas', 'Labrador', 'Rosenquarz', 'Gabbro', 'Diorit']
+                  'Glas', 'Rosenquarz', 'Gabbro', 'Diorit', 'Bronze',
+                  # below from FIJI and IIS
+                  'Limestone', 'Stone', 'Clay', 'Plaster', 'Glass', 'Kurkar', 'Granite',
+                  'Marble', 'Metal', 'Bone', 'Lead' ]
     result = []
     ltext = text.lower()
+
     for c in categories:
         if c.lower() in ltext:
-            result.append(c)
+            result.append(translate_category(c))
+
     if len(result) == 0:
-        result.append(text)
+        # reduce unknown, other and ? to Unknown
+        # 'schrifttafel' removes some clutter from Epidat
+        if 'unknown' in ltext or 'other' in ltext or '?' in ltext or 'schrifttafel':
+            result.append('Unknown')
+        else:
+            result.append(text)
+
     return result
+
+def translate_category(category):
+    '''
+    Helper function to translate non-English categories of material into English
+    '''
+    pairs = {
+        'Sandstein': 'Sandstone',
+        'Kalkstein': 'Limestone',
+        'Stein': 'Stone',
+        'Granit': 'Granite',
+        'Kunststein': 'Artificial stone',
+        'Lavatuff': 'Tufa',
+        'Marmor': 'Marble',
+        'Kalk': 'Limestone',
+        'Syenit': 'Syenite',
+        'Labrador': 'Labradorite',
+        'Beton': 'Concrete',
+        'Glas': 'Glass',
+        'Rosenquarz': 'Rose quartz',
+        'Diorit': 'Diorite'
+    }
+
+    for original, translation in pairs.items():
+        if category == original:
+            return translation
+    return category

@@ -281,7 +281,8 @@ class XMLCorpus(Corpus):
                 extract.Combined,
                 extract.XML,
                 extract.Metadata,
-                extract.Constant
+                extract.Constant,
+                extract.ExternalFile
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")

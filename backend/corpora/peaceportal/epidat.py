@@ -4,7 +4,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters
 
 
 class Epidat(PeacePortal):
@@ -40,7 +40,7 @@ class Epidat(PeacePortal):
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'origDate', 'date'],
             toplevel=False,
-            transform=lambda x: re.search('[1-2]{0,1}[0-9]{3}', x)[0],
+            transform=lambda x: get_year(x),
         )
 
         self.transcription.extractor = XML(
@@ -48,8 +48,17 @@ class Epidat(PeacePortal):
             toplevel=False,
             multiple=False,
             flatten=True,
-            transform=lambda x: ' '.join(x.split()),
+            transform=lambda x: clean_newline_characters(x),
             transform_soup_func=extract_transcript
+        )
+
+        self.transcription_german.extractor = XML(
+            tag=['text', 'body',],
+            toplevel=False,
+            multiple=False,
+            flatten=True,
+            transform=lambda x: clean_newline_characters(x),
+            transform_soup_func=extract_translation
         )
 
         self.names.extractor = XML(
@@ -66,8 +75,16 @@ class Epidat(PeacePortal):
             attribute='sex',
             multiple=True,
             toplevel=False,
-            transform=lambda x: ['M' if s ==
-                                 '1' else 'F' if s == '2' else None for s in x]
+            transform=lambda x: convert_sex(x)
+        )
+
+        self.dates_of_death.extractor = XML(
+            tag=['teiHeader', 'profileDesc',
+                 'particDesc', 'listPerson'],
+            transform_soup_func=extract_death,
+            attribute='when',
+            multiple=False,
+            toplevel=False,
         )
 
         self.country.extractor = XML(
@@ -75,14 +92,31 @@ class Epidat(PeacePortal):
                  'history', 'origin', 'origPlace', 'country'],
             toplevel=False,
             transform_soup_func=extract_country,
+            transform=lambda x: clean_country(x),
             flatten=True,
         )
 
-        self.provenance.extractor = XML(
+        self.region.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'origPlace', 'country', 'region'],
             toplevel=False,
             flatten=True
+        )
+
+        self.settlement.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origPlace', 'settlement'],
+            toplevel=False,
+            flatten=True,
+            transform_soup_func=extract_settlement,
+        )
+
+        self.location_details.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origPlace', 'settlement', 'geogName'],
+            toplevel=False,
+            flatten=True,
+            transform_soup_func=extract_location_details,
         )
 
         self.material.extractor = XML(
@@ -104,7 +138,7 @@ class Epidat(PeacePortal):
             tag=['teiHeader', 'profileDesc', 'langUsage', 'language'],
             toplevel=False,
             multiple=True,
-            transform=lambda x: [''.join(s.split()) for s in x]
+            transform=lambda x: get_language(x)
         )
 
         self.commentary.extractor = XML(
@@ -113,6 +147,63 @@ class Epidat(PeacePortal):
             transform_soup_func=extract_commentary,
             flatten=True
         )
+
+        self.images.extractor = XML(
+            tag=['facsimile', 'graphic'],
+            multiple=True,
+            attribute='url',
+            toplevel=False
+        )
+
+        self.coordinates.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origPlace', 'settlement', 'geogName', 'geo'],
+            toplevel=False,
+            multiple=False,
+            flatten=True
+        )
+
+        self.iconography.extractor = XML(
+             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc', 'decoDesc', 'decoNote'],
+             toplevel=False,
+             multiple=False
+        )
+
+        self.bibliography.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publications', 'publication'],
+            toplevel=False,
+            multiple=True
+        )
+
+
+
+
+def convert_sex(values):
+    if not values: return ['Unknown']
+    result = []
+    for value in values:
+        if value == '1': result.append('M')
+        elif value == '2': result.append('F')
+        else: result.append('Unknown')
+    return result
+
+
+def clean_country(text):
+    if not text: return 'Unknown'
+    if text.lower().strip() == 'tobedone': return 'Unknown'
+    return text
+
+
+def get_year(text):
+    if not text or text == '--': return
+    matches = re.search('[1-2]{0,1}[0-9]{3}', text)
+    if matches: return matches[0]
+
+def get_language(values):
+    if not values: return ['Unknown']
+    if 'German in Hebrew letters' in values:
+        return ['German (transliterated)', 'Hebrew']
+    return values
 
 
 def extract_transcript(soup):
@@ -125,6 +216,18 @@ def extract_transcript(soup):
     if not soup:
         return
     return soup.find_all('ab')
+
+def extract_translation(soup):
+    '''
+    Helper function to extract translation from the <body> tag
+    '''
+    if not soup:
+        return
+    translation = soup.find('div', { 'type': 'translation'})
+    if translation:
+        return translation.find_all('ab')
+    else:
+        return
 
 
 def extract_commentary(soup):
@@ -141,32 +244,60 @@ def extract_commentary(soup):
     return None
 
 
+def extract_death(soup):
+    '''
+    Helper function to extract date of death from multiple person tags.
+    '''
+    if not soup: return
+    return soup.find_all('death')
+
 def extract_country(soup):
     '''
     Helper function to extract country.
     This is needed because the output of `flatten` would otherwise include the text contents
     of the `<region>`.
     '''
+    return clone_soup_extract_child(soup, 'region')
+
+
+def extract_settlement(soup):
+    return clone_soup_extract_child(soup, 'geogName')
+
+def extract_location_details(soup):
+    return clone_soup_extract_child(soup, 'geo')
+
+def clone_soup_extract_child(soup, to_extract):
+    '''
+    Helper function to clone the soup and extract a child element.
+    This is useful when the output of `flatten` would otherwise include the text contents
+    of the child.
+    '''
     if not soup:
         return
     cloned_soup = copy(soup)
-    region = cloned_soup.find('region')
-    region.extract()
+    child = cloned_soup.find(to_extract)
+    if child:
+        child.extract()
     return cloned_soup
 
 
-        # excluded (for now):
-        # title
-        # organization (incl details, e.g. address)
-        # licence
-        # objectType (e.g. Grabmal)
-        # dimensions (incl notes/remarks)
-        # condition (remarks)
-        # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)
-        # geo details (name and coordinates)
-        # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
-        # date of death for each person
-        # fascimile (i.e. images)
-        # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
-        #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
 
+    # TODO: add field
+    # date of death for each person
+
+    # TODO: move to a comments field:
+    # dimensions (incl notes/remarks)
+    # condition (remarks)
+    # geogName
+    # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
+    #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
+    # objectType (e.g. Grabmal)
+
+    # excluded (for now):
+    # title
+    # organization (incl details, e.g. address)
+    # licence
+    # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
+
+    # TODO: discuss with OPS
+    # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)
