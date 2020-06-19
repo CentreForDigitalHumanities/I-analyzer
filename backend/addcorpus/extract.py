@@ -7,6 +7,7 @@ import bs4
 import html
 import re
 import logging
+import traceback
 logger = logging.getLogger('indexing')
 
 
@@ -35,6 +36,7 @@ class Extractor(object):
                 if self.transform:
                     return self.transform(result)
             except Exception:
+                logger.error(traceback.format_exc())
                 logger.critical("Value {v} could not be converted."
                                 .format(v=result))
                 return None
