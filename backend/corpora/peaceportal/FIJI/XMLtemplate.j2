@@ -44,8 +44,9 @@ xml:base="ex-epidoctemplate.xml" xmlns="http://www.tei-c.org/ns/1.0">
             </particDesc>
             {% endif -%}
             <langUsage>
-                <!-- According to bcp47 http://tools.ietf.org/html/bcp47 (Language) and ISO15924 (writing System)-->
+                {%- for language in languages %}
                 <language>{{ language }}</language>
+                {%- endfor %}
             </langUsage>
         </profileDesc>
     </teiHeader>

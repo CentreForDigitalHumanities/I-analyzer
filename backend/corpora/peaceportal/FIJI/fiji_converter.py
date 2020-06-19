@@ -59,7 +59,7 @@ def extract_record(row):
         iconographyType=row["Iconography type"],
         iconographyDescription=row["Iconography description"],
         material=row["Material"],
-        language=row["Language"],
+        languages=get_languages(row),
         incipit=row["Incipit"],
         commentary=get_commentary(row)
     )
@@ -105,6 +105,17 @@ def get_age_comments(row):
     if remarks and not ages:
         return remarks
     return ''
+
+def get_languages(row):
+    value = row["Language"]
+    langs = value.split(',')
+    if len(langs) > 1:
+        cleaned = []
+        for lang in langs:
+            cleaned.append(lang.strip())
+        return cleaned
+    else:
+        return langs
 
 
 def get_commentary(row):
