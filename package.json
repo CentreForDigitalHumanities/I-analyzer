@@ -3,9 +3,9 @@
     "version": "1.4.3",
     "license": "MIT",
     "scripts": {
-        "postinstall": "npm run install-backend && npm run install-frontend",
+        "postinstall": "yarn install-backend && yarn install-frontend",
         "install-backend": "cd backend && pip install -r requirements.txt",
-        "install-frontend": "cd frontend && npm install",
+        "install-frontend": "cd frontend && yarn",
         "test-once": "cd frontend && ng test --watch=false"
     },
     "private": true,
