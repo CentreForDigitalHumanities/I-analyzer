@@ -38,7 +38,7 @@ class GoodReads(XMLCorpus):
         for item in os.listdir(self.data_directory):
             path = os.path.join(self.data_directory, item)
             if os.path.isdir(path):
-                book_title = item
+                book_title = item.replace('_', ' ')
                 orig_dir = os.getcwd()
                 os.chdir(os.path.join(path, 'XML'))
                 for file in glob.glob("*.xml"):
@@ -107,7 +107,7 @@ class GoodReads(XMLCorpus):
         ),
         Field(
             name='language',
-            display_name='Language',
+            display_name='Review language',
             description='The language of the review.',
             extractor=XML(
                 tag=['language'],
@@ -199,6 +199,21 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews made for these titles.',
                 option_count=2
             ),
+            csv_core=True
+        ),
+        Field(
+            name='original_language',
+            display_name='Original language',
+            description='The original language the book reviews were made for was written in.',
+            extractor=XML(
+                tag=['original_language'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews made for titles originally in this language(s).',
+                option_count=8
+            ),
             csv_core=True,
         ),
         Field(
@@ -249,3 +264,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
         ),
     ]
+
+def test(title):
+    print(title.replace('_', ' '))
+    return title.replace('_', ' ')
