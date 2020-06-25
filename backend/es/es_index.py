@@ -17,7 +17,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 import logging
 logger = logging.getLogger('indexing')
 
-def create(client, corpus_definition, clear):
+def create(client, corpus_definition, clear, prod):
     '''
     Initialise an ElasticSearch index.
     '''
@@ -25,6 +25,10 @@ def create(client, corpus_definition, clear):
     if clear:
         logger.info('Attempting to clean old index...')
         client.indices.delete(index=corpus_definition.es_index, ignore=[400, 404])
+
+    if prod:
+        logger.info('Adding prod settings to index')
+        # TODO: actually add settings
 
     logger.info('Attempting to create index...')
     client.indices.create(
@@ -71,7 +75,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         logger.info('Indexed documents ({}).'.format(result))
 
 
-def perform_indexing(corpus_name, corpus_definition, start, end, clear):
+def perform_indexing(corpus_name, corpus_definition, start, end, clear, prod):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),
@@ -80,8 +84,12 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear):
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
-    create(client, corpus_definition, clear)
+    create(client, corpus_definition, clear, prod)
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
+
+    if prod:
+        logger.info('Updating settings for index {}'.format(corpus_definition.es_index))
+        # TODO: actually update settings
