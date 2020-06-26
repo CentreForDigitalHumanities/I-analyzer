@@ -26,14 +26,32 @@ def create(client, corpus_definition, clear, prod):
 
     if clear:
         logger.info('Attempting to clean old index...')
-        client.indices.delete(index=corpus_definition.es_index, ignore=[400, 404])
+        client.indices.delete(
+            index=corpus_definition.es_index, ignore=[400, 404])
 
-    logger.info('Attempting to create index...')
+    settings = corpus_definition.es_settings
+
+    if prod:
+        logger.info('Using a versioned index name')
+        corpus_definition.es_index = "{}_{}".format(
+            corpus_definition.es_index, get_new_version_number(client, corpus_definition.es_index))
+        if client.indices.exists(corpus_definition.es_index):
+            logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
+                corpus_definition.es_index))
+            sys.exit(1)
+
+        logger.info('Adding prod settings to index')
+        if not settings['index']['number_of_replicas'] == 0:
+            settings['index']['number_of_replicas'] = 0
+        settings['index']['number_of_shards'] = 5
+
+    logger.info('Attempting to create index `{}`...'.format(
+        corpus_definition.es_index))
     try:
         client.indices.create(
             index=corpus_definition.es_index,
             body={
-                'settings': corpus_definition.es_settings,
+                'settings': settings,
                 'mappings': corpus_definition.es_mapping()
             }
         )
