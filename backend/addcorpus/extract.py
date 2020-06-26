@@ -317,7 +317,7 @@ class ExternalFile(Extractor):
     def __init__(self, stream_handler, *nargs, **kwargs):
         '''
         Free for all external file extractor that provides a stream to `stream_handler`
-        to do whatever is needed to extract data from an external file. Relies on `external_file`
+        to do whatever is needed to extract data from an external file. Relies on `associated_file`
         being present in the metadata. Note that the XMLExtractor has a built in trick to extract
         data from external files (i.e. setting `external_file`), so you probably need that if your
         external file is XML.
@@ -331,6 +331,6 @@ class ExternalFile(Extractor):
 
     def _apply(self, metadata, *nargs, **kwargs):
         '''
-        Extract `external_file` from metadata and call `self.stream_handler` with file stream.
+        Extract `associated_file` from metadata and call `self.stream_handler` with file stream.
         '''
-        return self.stream_handler(open(metadata['external_file'], 'r'))
+        return self.stream_handler(open(metadata['associated_file'], 'r'))
