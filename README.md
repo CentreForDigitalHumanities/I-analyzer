@@ -61,27 +61,9 @@ npm install
 
 #### Production
 
-14. On the servers, we work with aliases. Indices created with the `--prod` flag will have a version number (e.g. `indexname_1`), and as such will not be recognized by the corpus definition (which is looking for `indexname`). Create an alias for that. The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created. Switching to the new index is easy: add an alias for the new index, remove the alias from the old index (or delete the index entirely). For example:
+14. On the servers, we work with aliases. Indices created with the `--prod` flag will have a version number (e.g. `indexname_1`), and as such will not be recognized by the corpus definition (which is looking for `indexname`). Create an alias for that using the `alias` command: `flask alias -c corpusname`. That script ensures that an alias is present for the index with the highest version numbers, and not for all others (i.e. older versions). The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created. Note that removing an alias does not remove the index itself.
 
-```json
-POST /_aliases
-{
-    "actions" : [
-        {
-          "remove": {
-              "index": "my_index_<old_version>",
-              "alias": "my_index"
-            }
-        },
-        {
-            "add" : {
-                 "index" : "my_index_<new_version>",
-                 "alias" : "my_index"
-            }
-        }
-    ]
-}
-```
+15. Once you have an alias in place, you might want to remove any old versions of the index. The `alias` command can be used for this. If you call `flask alias -c corpusname --clean` any versions of the index that are not the newest version will be removed. Note that removing an index also removes any existing aliases for it. You might want to perform this as a separate operation (i.e. after completing step 14) so that the old index stays in place for a bit while you check that all is fine.
 
 ### Python package management
 
