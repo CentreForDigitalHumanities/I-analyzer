@@ -14,6 +14,7 @@ from elasticsearch.exceptions import RequestError
 from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
+from .es_alias import get_new_version_number
 
 import logging
 logger = logging.getLogger('indexing')
@@ -62,37 +63,6 @@ def create(client, corpus_definition, clear, prod):
             raise
 
 
-def get_version_number(client, es_index):
-    '''
-    Get version number for a new index.
-    Will be 1 if an index with name `es_index` exists,
-    or neither an index nor an alias with name `es_index` exists.
-    If an alias exists, the version number of the existing index with
-    the latest version number will be used to determine the new version
-    number. Note that this relies on the existence of version numbers in
-    the index names (e.g. `index_name_1`).
-    '''
-    is_existing_index = False
-    is_existing_alias = False
-    if client.indices.exists(es_index):
-        is_existing_alias = client.indices.exists_alias(name=es_index)
-        is_existing_index = not is_existing_alias
-
-    if is_existing_index or (not is_existing_index and not is_existing_alias):
-        return 1
-
-    # get the indices aliased with `es_index`
-    indices = client.indices.get_alias(es_index).keys()
-
-    highest_version = 1
-    for index_name in indices:
-        _index = index_name.rfind('_')
-        version = int(index_name[_index + 1:])
-        if version > highest_version:
-            highest_version = version
-    return str(highest_version + 1)
-
-
 def populate(client, corpus_name, corpus_definition, start=None, end=None):
     '''
     Populate an ElasticSearch index from the corpus' source files.
@@ -108,7 +78,6 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
     # Each source document is decorated as an indexing operation, so that it
     # can be sent to ElasticSearch in bulk
-
     actions = (
         {
             '_op_type': 'index',

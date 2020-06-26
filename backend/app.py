@@ -18,6 +18,7 @@ from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
 from es.es_update import update_index
+from es.es_alias import alias as update_alias
 
 app = flask_app(config)
 migrate = Migrate(app, db)
@@ -117,6 +118,23 @@ def es(corpus, start, end, delete=False, update=False, prod=False):
             raise
     else:
         perform_indexing(corpus, this_corpus, start_index, end_index, delete, prod)
+
+@app.cli.command()
+@click.option(
+    '--corpus', '-c', required=True, help='Required. Sets for which corpus the alias should be updated.'
+)
+@click.option(
+    '--clean', is_flag=True, help='Optional. If specified any indices that are not the highest version will be deleted.'
+)
+def alias(corpus, clean=False):
+    '''
+    Ensure that an alias exist for the index with the highest version number (e.g. `indexname_5`).
+    The alias is removed for all other (lower / older) versions. The indices themselves are only removed
+    if you add the `--clean` flag (but be very sure if this is what you want to do!).
+    Particularly useful in the production environment, i.e. after creating an index with `--prod`.
+    '''
+    corpus_definition = load_corpus(corpus)
+    update_alias(corpus, corpus_definition, clean)
 
 
 def create_user(name, password=None):
