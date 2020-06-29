@@ -1,9 +1,6 @@
-
-import {combineLatest as observableCombineLatest } from 'rxjs';
-
-import {filter} from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { Observable } from 'rxjs';
 import "rxjs/add/operator/filter";
 import "rxjs/add/observable/combineLatest";
 import * as _ from "lodash";
@@ -17,6 +14,14 @@ import { CorpusService, DialogService, SearchService, UserService } from '../ser
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
+    /**
+     * Watch the full content of the page, in order to calculate its height
+     * (after results are rendered, see event on ia-search-results / on ResultsRendered).
+     * Required to support displaying search page in iframe.
+     */
+    @ViewChild('fullContent')
+    public _fullContent: ElementRef;
+
     @ViewChild('searchSection')
     public searchSection: ElementRef;
 
@@ -70,8 +75,10 @@ export class SearchComponent implements OnInit {
         private userService: UserService,
         private dialogService: DialogService,
         private activatedRoute: ActivatedRoute,
-        private router: Router) {
-        }
+        private router: Router,
+        private elementRef: ElementRef) {
+
+    }
 
     async ngOnInit() {
         this.user = await this.userService.getCurrentUser();
@@ -99,6 +106,20 @@ export class SearchComponent implements OnInit {
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
+    }
+
+    public onResultsRendered(): any {
+        // wrap collecting height in a setTimeout that waits 0ms.
+        // Without this, height is not the correct value. It seems like rendering
+        // isn't quite done or something like that. Anyhow this harmless wrapping
+        // fixes it
+        setTimeout(() => {
+            let height = this._fullContent.nativeElement.offsetHeight;
+            if (window.parent) {
+                window.parent.postMessage(["setHeight", height], "*");
+            }
+        }, 0);
+
     }
 
     public changeSorting(event: SortEvent) {

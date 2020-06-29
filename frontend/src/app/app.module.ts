@@ -57,51 +57,13 @@ import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanP
 
 const appRoutes: Routes = [
     {
-        path: 'search/:corpus',
-        component: SearchComponent,
-        canActivate: [CorpusGuard, LoggedOnGuard]
-    },
-    {
         path: 'login',
         component: LoginComponent
     },
     {
-        path: 'login/:activated',
-        component: LoginComponent
-    },
-    {
-        path: 'registration',
-        component: RegistrationComponent
-    },
-    {
-        path: 'reset',
-        component: RequestResetComponent
-    },
-    {
-        path: 'reset-password/:token',
-        component: ResetPasswordComponent
-    },
-    {
-        path: 'privacy',
-        component: PrivacyComponent
-    },
-    {
-        path: 'home',
-        component: HomeComponent,
-        canActivate: [LoggedOnGuard]
-    },
-    {
-        path: 'manual/:identifier',
-        component: ManualComponent
-    },
-    {
-        path: 'search-history',
-        component: SearchHistoryComponent
-    },
-    {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+        path: 'search/:corpus',
+        component: SearchComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
     }
 ]
 
