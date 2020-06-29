@@ -20,7 +20,9 @@ export class UserService implements OnDestroy {
     // - If the user logs on or off, the value is directly updated.
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
     private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
- 
+
+    private currentUserPromise;
+    private loggingIn = false;
 
     /**
      * Get the current user
@@ -57,46 +59,45 @@ export class UserService implements OnDestroy {
     constructor(private apiService: ApiService, private sessionService: SessionService, private router: Router) {
         this.sessionExpiredSubscription = this.sessionService.expired.subscribe(() => {
             // no need to notify the server that we are going to logoff, because it told us this is already the case
-            this.logout(false, true);
+            // this.logout(false, true);
+
         });
+
+        // make sure we always start without user
+        this.currentUser = undefined;
     }
 
     ngOnDestroy() {
         if (this.sessionExpiredSubscription) {
             this.sessionExpiredSubscription.unsubscribe();
         }
+        this.currentUser = undefined;
     }
 
     /**
      * Gets the current user, and reject if no user is available.
      */
-    public async getCurrentUser(fallback = false): Promise<User> {
-        if (!fallback) {
-            if (this.currentUser) {
-                return this.currentUser;
-            }
-            throw 'Not logged on';
+    public getCurrentUser(): Promise<User> {
+        if (!this.currentUserPromise) {
+            // login once on start
+            this.currentUserPromise = this.login('peaceportal', 'topsecret');
         }
-        let currentUser = await this.getCurrentUserOrFallback();
-        if (currentUser) {
-            return currentUser;
-        }
+        // let all other request for user wait on initial promise
+        return this.currentUserPromise;
+    }
 
-        throw 'Not logged on';
+    public async ensureCsrf(): Promise<any> {
+        return this.apiService.ensureCsrf();
     }
 
     public login(username: string, password: string = null): Promise<User | false> {
-        let loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {                
+        return this.apiService.login({ username, password }).then(result => {
+            if (result.success) {
                 return this.processLoginSucces(result);
             }
 
             return false;
         });
-
-        this.sessionCheckPromise = loginPromise.then(user => !!user);
-
-        return loginPromise;
     }
 
 
@@ -160,7 +161,8 @@ export class UserService implements OnDestroy {
             }
 
             if (redirectToLogout && !UserService.loginActivated) {
-                this.showLogin();
+                this.currentUser = undefined;
+                // this.showLogin();
             }
         }
 
