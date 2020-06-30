@@ -13,11 +13,11 @@ def alias(corpus_name, corpus_definition, clean=False):
     client = elasticsearch(corpus_name)
 
     indices = client.indices.get('{}_*'.format(corpus_definition.es_index))
-    highest_version = get_highest_version_number(indices)
+    highest_version = get_highest_version_number(indices, corpus_definition.es_index)
 
     actions = []
     for index_name, properties in indices.items():
-        is_aliased = corpus_definition.es_index in properties['aliases'].keys()
+        is_aliased = 'peaceportal' in properties['aliases'].keys()
         is_highest_version = extract_version(index_name) == highest_version
 
         if not is_highest_version and clean:
@@ -26,28 +26,26 @@ def alias(corpus_name, corpus_definition, clean=False):
             actions.append({'remove_index': {'index': index_name}})
 
         if not is_highest_version and is_aliased and not clean:
-            logger.info('Removing alias `{}` for index `{}`'.format(
-                corpus_definition.es_index, index_name))
+            logger.info('Removing alias `peaceportal` for index `{}`'.format(index_name))
             actions.append(
-                {'remove': {'index': index_name, 'alias': corpus_definition.es_index}})
+                {'remove': {'index': index_name, 'alias': 'peaceportal'}})
 
         if is_highest_version and not is_aliased:
-            logger.info('Adding alias `{}` for index `{}`'.format(
-                corpus_definition.es_index, index_name))
+            logger.info('Adding alias `peaceportal` for index `{}`'.format(index_name))
             actions.append(
-                {'add': {'index': index_name, 'alias': corpus_definition.es_index}})
+                {'add': {'index': index_name, 'alias': 'peaceportal'}})
         elif is_highest_version and is_aliased:
-            logger.info('Alias `{}` already exists for `{}`, skipping alias creation'.format(
-                corpus_definition.es_index, index_name))
+            logger.info('Alias `peaceportal` already exists for `{}`, skipping alias creation'.format(
+                index_name))
 
     if len(actions) > 0:
         client.indices.update_aliases({'actions': actions})
     logger.info('Done updating aliases')
 
 
-def get_new_version_number(client, es_index):
+def get_new_version_number(client, alias, es_index):
     '''
-    Get version number for a new index.
+    Get version number for a new PEACE Portal index.
     Will be 1 if an index with name `es_index` exists,
     or neither an index nor an alias with name `es_index` exists.
     If an alias exists, the version number of the existing index with
@@ -55,18 +53,9 @@ def get_new_version_number(client, es_index):
     number. Note that this relies on the existence of version numbers in
     the index names (e.g. `index_name_1`).
     '''
-    is_existing_index = False
-    is_existing_alias = False
-    if client.indices.exists(es_index):
-        is_existing_alias = client.indices.exists_alias(name=es_index)
-        is_existing_index = not is_existing_alias
-
-    if is_existing_index or (not is_existing_index and not is_existing_alias):
-        return 1
-
-    # get the indices aliased with `es_index`
-    indices = client.indices.get_alias(es_index)
-    highest_version = get_highest_version_number(indices)
+    # get the indices aliased with `alias`
+    indices = client.indices.get_alias(alias)
+    highest_version = get_highest_version_number(indices, es_index)
     return str(highest_version + 1)
 
 
@@ -82,18 +71,22 @@ def extract_version(index_name):
     return int(index_name[_index + 1:])
 
 
-def get_highest_version_number(indices):
+def get_highest_version_number(indices, current_index):
     '''
     Get the version number of the index with the highest version number currently present in ES.
     Note that this relies on the existence of version numbers in the index names (e.g. `index_name_1`).
 
     Parameters:
         indices -- a dict with the ES response (not a list of names!)
+        current_index -- the index to update, e.g. Epidat, FIJI, or IIS
     '''
     if type(indices) is list:
         raise RuntimeError('`indices` should not be list')
     highest_version = 0
     for index_name in indices.keys():
+        if not index_name.startswith(current_index):
+            # skip irrelevant indices
+            continue
         version = extract_version(index_name)
         if version > highest_version:
             highest_version = version
