@@ -153,12 +153,12 @@ class IIS(PeacePortal):
         )
 
 
-        self.commentary.extractor = XML(
+        self.comments.extractor = XML(
             tag=['text'],
             toplevel=False,
             multiple=False,
             flatten=True,
-            transform_soup_func=extract_commentary
+            transform_soup_func=extract_comments
         )
 
         self.bibliography.extractor = XML(
@@ -186,7 +186,7 @@ def extract_paragraph(soup):
     return soup.find('p')
 
 
-def extract_commentary(soup):
+def extract_comments(soup):
     '''
     Helper function to extract the commentary from either <body> or <back> (siblings under <text>)
     '''

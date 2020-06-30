@@ -227,8 +227,8 @@ class PeacePortal(XMLCorpus):
         description='Reference(s) to who edited and published this funerary inscription.'
     )
 
-    commentary = Field(
-        name='commentary',
+    comments = Field(
+        name='comments',
         es_mapping={'type': 'text'},
         display_name='Commentary',
         description='Extra comments, questions or remarks on this inscription.',
@@ -284,7 +284,7 @@ class PeacePortal(XMLCorpus):
         material,
         material_details,
         bibliography,
-        commentary,
+        comments,
         transcription_german,
     ]
 
