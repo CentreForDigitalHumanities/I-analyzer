@@ -193,8 +193,6 @@ class Epidat(PeacePortal):
         )
 
 def join_commentaries(commentaries):
-    print(commentaries)
-
     results = []
     for comm in commentaries:
         if comm:
