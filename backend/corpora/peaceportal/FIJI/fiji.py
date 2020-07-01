@@ -108,7 +108,7 @@ class FIJI(PeacePortal):
             transform=lambda x: normalize_language(x)
         )
 
-        self.commentary.extractor = XML(
+        self.comments.extractor = XML(
             tag=['text', 'body', 'commentary'],
             toplevel=False,
         )

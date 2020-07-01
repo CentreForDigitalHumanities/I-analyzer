@@ -227,8 +227,8 @@ class PeacePortal(XMLCorpus):
         description='Reference(s) to who edited and published this funerary inscription.'
     )
 
-    commentary = Field(
-        name='commentary',
+    comments = Field(
+        name='comments',
         es_mapping={'type': 'text'},
         display_name='Commentary',
         description='Extra comments, questions or remarks on this inscription.',
@@ -284,7 +284,7 @@ class PeacePortal(XMLCorpus):
         material,
         material_details,
         bibliography,
-        commentary,
+        comments,
         transcription_german,
     ]
 
@@ -304,6 +304,24 @@ def clean_newline_characters(text):
                 cleaned.append(part.strip())
     return '\n'.join(cleaned)
 
+
+def clean_commentary(commentary):
+    '''
+    Clean a commentary by removing all whitespaces characters between words,
+    except for one space.
+    '''
+    return ' '.join(commentary.split())
+
+def join_commentaries(commentaries):
+    '''
+    Helper function to join the result of a Combined extractor
+    into one string, separating items by a newline
+    '''
+    results = []
+    for comm in commentaries:
+        if comm:
+            results.append(comm)
+    return "\n".join(results)
 
 def categorize_material(text):
     '''

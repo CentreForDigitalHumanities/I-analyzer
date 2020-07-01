@@ -2,9 +2,9 @@ import re
 from copy import copy
 from flask import current_app
 
-from addcorpus.extract import XML, Constant, HTML
+from addcorpus.extract import XML, Constant, HTML, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries
 
 
 class Epidat(PeacePortal):
@@ -53,7 +53,7 @@ class Epidat(PeacePortal):
         )
 
         self.transcription_german.extractor = XML(
-            tag=['text', 'body',],
+            tag=['text', 'body', ],
             toplevel=False,
             multiple=False,
             flatten=True,
@@ -141,11 +141,26 @@ class Epidat(PeacePortal):
             transform=lambda x: get_language(x)
         )
 
-        self.commentary.extractor = XML(
-            tag=['text', 'body'],
-            toplevel=False,
-            transform_soup_func=extract_commentary,
-            flatten=True
+        self.comments.extractor = Combined(
+            XML(
+                tag=['text', 'body'],
+                toplevel=False,
+                transform_soup_func=extract_commentary,
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
+                    'objectDesc', 'supportDesc', 'condition'],
+                toplevel=False,
+                flatten=True,
+                transform=lambda x: 'CONDITION:\n{}\n'.format(x) if x else x
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc',
+                    'objectDesc', 'supportDesc', 'support', 'p'],
+                toplevel=False,
+                transform_soup_func=extract_support_comments,
+            ),
+            transform=lambda x: join_commentaries(x)
         )
 
         self.images.extractor = XML(
@@ -164,43 +179,53 @@ class Epidat(PeacePortal):
         )
 
         self.iconography.extractor = XML(
-             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'physDesc', 'decoDesc', 'decoNote'],
-             toplevel=False,
-             multiple=False
+            tag=['teiHeader', 'fileDesc', 'sourceDesc',
+                 'msDesc', 'physDesc', 'decoDesc', 'decoNote'],
+            toplevel=False,
+            multiple=False
         )
 
         self.bibliography.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publications', 'publication'],
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'msIdentifier', 'publications', 'publication'],
             toplevel=False,
             multiple=True
         )
 
 
-
-
 def convert_sex(values):
-    if not values: return ['Unknown']
+    if not values:
+        return ['Unknown']
     result = []
     for value in values:
-        if value == '1': result.append('M')
-        elif value == '2': result.append('F')
-        else: result.append('Unknown')
+        if value == '1':
+            result.append('M')
+        elif value == '2':
+            result.append('F')
+        else:
+            result.append('Unknown')
     return result
 
 
 def clean_country(text):
-    if not text: return 'Unknown'
-    if text.lower().strip() == 'tobedone': return 'Unknown'
+    if not text:
+        return 'Unknown'
+    if text.lower().strip() == 'tobedone':
+        return 'Unknown'
     return text
 
 
 def get_year(text):
-    if not text or text == '--': return
+    if not text or text == '--':
+        return
     matches = re.search('[1-2]{0,1}[0-9]{3}', text)
-    if matches: return matches[0]
+    if matches:
+        return matches[0]
+
 
 def get_language(values):
-    if not values: return ['Unknown']
+    if not values:
+        return ['Unknown']
     if 'German in Hebrew letters' in values:
         return ['German (transliterated)', 'Hebrew']
     return values
@@ -217,13 +242,14 @@ def extract_transcript(soup):
         return
     return soup.find_all('ab')
 
+
 def extract_translation(soup):
     '''
     Helper function to extract translation from the <body> tag
     '''
     if not soup:
         return
-    translation = soup.find('div', { 'type': 'translation'})
+    translation = soup.find('div', {'type': 'translation'})
     if translation:
         return translation.find_all('ab')
     else:
@@ -232,24 +258,68 @@ def extract_translation(soup):
 
 def extract_commentary(soup):
     '''
-    Helper function to extract commentary from the <body> tag.
+    Helper function to extract all commentaries from the <body> tag.
+    A single element will be returned with the commentaries found as text content.
     '''
-    incl_header = soup.find('div', {'subtype': 'Endkommentar'})
-    if incl_header:
-        return incl_header.find('p')
-    # if there is no endcommentary, return the first commentary we find, or None
-    commentary = soup.find('div', {'type': 'commentary'})
-    if commentary:
-        return commentary.find('p')
-    return None
+    if not soup: return
+    found = []
+    commentaries = soup.find_all('div', {'type': 'commentary'})
+
+    for commentary in commentaries:
+        if commentary['subtype'] in ['Zitate', 'Zeilenkommentar', 'Prosopographie', 'Abkürzung', 'Endkommentar', 'Stilmittel']:
+            p = commentary.find('p')
+            if p:
+                text = p.get_text()
+                if text:
+                    text = clean_commentary(text)
+                    found.append('{}:\n{}\n'.format(commentary['subtype'].strip().upper(), text))
+
+    if len(found) > 1:
+        cloned_soup = copy(soup)
+        cloned_soup.clear()
+        cloned_soup.string = "\n".join(found)
+        return cloned_soup
+    else:
+        return None
+
+def extract_support_comments(soup):
+    if not soup: return
+    cloned_soup = copy(soup)
+    cloned_soup.clear()
+
+    commentaries = add_support_comment(soup, '', 'dim', 'DIMENSIONS')
+    commentaries = add_support_comment(soup, commentaries, 'objectType', 'OBJECTTYPE')
+
+    # add any additional text from the <p> element,
+    # i.e. if there is text it is the very last node
+    contents = soup.contents
+    text = contents[len(contents) - 1].strip()
+    if text:
+        text = clean_commentary(text)
+        commentaries = '{}{}:\n{}\n'.format(commentaries, 'SUPPORT', text)
+
+    cloned_soup.string = commentaries
+    return cloned_soup
+
+
+def add_support_comment(soup, existing_commentaries, elem_name, commentary_name):
+    elem = soup.find(elem_name)
+    if elem:
+        text = elem.get_text()
+        if text:
+            text = clean_commentary(text)
+            return '{}{}:\n{}\n\n'.format(existing_commentaries, commentary_name, text)
+    return existing_commentaries
 
 
 def extract_death(soup):
     '''
     Helper function to extract date of death from multiple person tags.
     '''
-    if not soup: return
+    if not soup:
+        return
     return soup.find_all('death')
+
 
 def extract_country(soup):
     '''
@@ -263,8 +333,10 @@ def extract_country(soup):
 def extract_settlement(soup):
     return clone_soup_extract_child(soup, 'geogName')
 
+
 def extract_location_details(soup):
     return clone_soup_extract_child(soup, 'geo')
+
 
 def clone_soup_extract_child(soup, to_extract):
     '''
@@ -280,18 +352,9 @@ def clone_soup_extract_child(soup, to_extract):
         child.extract()
     return cloned_soup
 
-
-
     # TODO: add field
-    # date of death for each person
 
     # TODO: move to a comments field:
-    # dimensions (incl notes/remarks)
-    # condition (remarks)
-    # geogName
-    # various types of commentary (if they exist) - currently Endkommentar is extracted, or the first commentary if taht doesn't exist.
-    #       Other types of commentary include "Zeilenkommentar" and "Prosopographie"
-    # objectType (e.g. Grabmal)
 
     # excluded (for now):
     # title
@@ -299,5 +362,3 @@ def clone_soup_extract_child(soup, to_extract):
     # licence
     # taxonomy (i.e. things like foto1, foto2 -> no working links to actual images)
 
-    # TODO: discuss with OPS
-    # hand and decoNotes (e.g. <decoNote type='ornament'>floral</decoNote> or <decoNote type='ornament'>gestalterisch</decoNote>)

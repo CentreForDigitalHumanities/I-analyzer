@@ -12,12 +12,13 @@ from flask_migrate import Migrate
 
 from ianalyzer import config_fallback as config
 from ianalyzer.models import User, Role, db, Corpus
-from ianalyzer.factories.app import flask_app 
+from ianalyzer.factories.app import flask_app
 from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
 from es.es_update import update_index
+from es.es_alias import alias as update_alias
 
 app = flask_app(config)
 migrate = Migrate(app, db)
@@ -75,7 +76,11 @@ def admin(name, pwd):
     help='Set this to true to update an index' +
     '(adding / changing fields in documents)'
 )
-def es(corpus, start, end, delete=False, update=False):
+@click.option(
+    '--prod', '-p', is_flag=True, help='''Specifies if this is NOT a local indexing operation.
+        This influences index settings in particular'''
+)
+def es(corpus, start, end, delete=False, update=False, prod=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -98,7 +103,7 @@ def es(corpus, start, end, delete=False, update=False):
             'Example call: flask es -c times -s 1785-01-01 -e 2010-12-31'
         )
         raise
-    
+
     if update:
         try:
             if not this_corpus.update_body():
@@ -112,7 +117,24 @@ def es(corpus, start, end, delete=False, update=False):
             logging.critical(e)
             raise
     else:
-        perform_indexing(corpus, this_corpus, start_index, end_index, delete)
+        perform_indexing(corpus, this_corpus, start_index, end_index, delete, prod)
+
+@app.cli.command()
+@click.option(
+    '--corpus', '-c', required=True, help='Required. Sets for which corpus the alias should be updated.'
+)
+@click.option(
+    '--clean', is_flag=True, help='Optional. If specified any indices that are not the highest version will be deleted.'
+)
+def alias(corpus, clean=False):
+    '''
+    Ensure that an alias exist for the index with the highest version number (e.g. `indexname_5`).
+    The alias is removed for all other (lower / older) versions. The indices themselves are only removed
+    if you add the `--clean` flag (but be very sure if this is what you want to do!).
+    Particularly useful in the production environment, i.e. after creating an index with `--prod`.
+    '''
+    corpus_definition = load_corpus(corpus)
+    update_alias(corpus, corpus_definition, clean)
 
 
 def create_user(name, password=None):
