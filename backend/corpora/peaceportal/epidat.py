@@ -4,7 +4,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries
 
 
 class Epidat(PeacePortal):
@@ -192,14 +192,6 @@ class Epidat(PeacePortal):
             multiple=True
         )
 
-def join_commentaries(commentaries):
-    results = []
-    for comm in commentaries:
-        if comm:
-            results.append(comm)
-    return "\n".join(results)
-
-
 
 def convert_sex(values):
     if not values:
@@ -308,9 +300,6 @@ def extract_support_comments(soup):
 
     cloned_soup.string = commentaries
     return cloned_soup
-
-def clean_commentary(commentary):
-    return ' '.join(commentary.split())
 
 
 def add_support_comment(soup, existing_commentaries, elem_name, commentary_name):

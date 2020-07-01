@@ -305,6 +305,24 @@ def clean_newline_characters(text):
     return '\n'.join(cleaned)
 
 
+def clean_commentary(commentary):
+    '''
+    Clean a commentary by removing all whitespaces characters between words,
+    except for one space.
+    '''
+    return ' '.join(commentary.split())
+
+def join_commentaries(commentaries):
+    '''
+    Helper function to join the result of a Combined extractor
+    into one string, separating items by a newline
+    '''
+    results = []
+    for comm in commentaries:
+        if comm:
+            results.append(comm)
+    return "\n".join(results)
+
 def categorize_material(text):
     '''
     Helper function to (significantly) reduce the material field to a set of categories.
