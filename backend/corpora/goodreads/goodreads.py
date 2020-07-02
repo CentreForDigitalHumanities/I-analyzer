@@ -237,7 +237,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only editions written in these languages.',
-                option_count=5
+                option_count=8
             ),
             results_overview=True,
             csv_core=True,
