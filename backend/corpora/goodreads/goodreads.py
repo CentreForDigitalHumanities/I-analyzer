@@ -116,7 +116,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only reviews written in these languages.',
-                option_count=43
+                option_count=50
             ),
             results_overview=True,
             csv_core=True,
@@ -197,7 +197,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only reviews made for these titles.',
-                option_count=2
+                option_count=154
             ),
             csv_core=True
         ),
@@ -264,7 +264,3 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
         ),
     ]
-
-def test(title):
-    print(title.replace('_', ' '))
-    return title.replace('_', ' ')
