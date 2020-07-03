@@ -23,7 +23,7 @@ describe('ResetPasswordComponent', () => {
             { provide: ApiService, useValue: new ApiServiceMock() },
             {
                 provide: ActivatedRoute, useValue: {
-                    params: of(<{ token: string }>{ token: 'check12check12' }).map(convertToParamMap)
+                    params: of(convertToParamMap(<{ token: string }>{ token: 'check12check12' }))
                 }
             },
             {
