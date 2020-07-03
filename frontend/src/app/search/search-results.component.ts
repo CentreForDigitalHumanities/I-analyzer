@@ -13,7 +13,7 @@ export class SearchResultsComponent implements OnChanges {
     /**
      * The search queryModel to use
      */
-    @ViewChild('resultsNavigation')
+    @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
     @Input()

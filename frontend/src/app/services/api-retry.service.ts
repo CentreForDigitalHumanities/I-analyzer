@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Response } from '@angular/http';
 
 import { ApiService } from './api.service';
 import { LogService } from './log.service';

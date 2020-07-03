@@ -11,26 +11,26 @@ import { BarChartComponent } from './barchart.component';
     styleUrls: ['./term-frequency.component.scss']
 })
 export class TermFrequencyComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('termfrequency') private termFreqContainer: ElementRef;
+    @ViewChild('termfrequency', {static: true}) private termFreqContainer: ElementRef;
     @Input() searchData: AggregateResult[];
     @Input() visualizedField;
-    @Input() asPercent: boolean = false;
+    @Input() asPercent = false;
 
     private xBarWidth: number;
     private xBarHalf: number;
     private tooltip: any;
-    private maxCategories: number = 30;
+    private maxCategories = 30;
 
     ngOnInit() {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.chartElement == undefined) {
+        if (this.chartElement === undefined) {
             this.chartElement = this.termFreqContainer.nativeElement;
             this.calculateCanvas();
         }
         // redraw only if searchData changed
-        if (changes['searchData'] != undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
+        if (changes['searchData'] !== undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
             this.prepareTermFrequency();
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);

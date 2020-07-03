@@ -18,11 +18,11 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @ViewChild('timeline') private timelineContainer: ElementRef;
+    @ViewChild('timeline', {static: true}) private timelineContainer: ElementRef;
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
-    @Input() asPercent: boolean = false;
+    @Input() asPercent = false;
 
     @Output() isLoading = new EventEmitter<boolean>();
 
