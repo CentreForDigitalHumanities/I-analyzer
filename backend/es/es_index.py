@@ -35,7 +35,7 @@ def create(client, corpus_definition, clear, prod):
     if prod:
         logger.info('Using a versioned index name')
         corpus_definition.es_index = "{}_{}".format(
-            corpus_definition.es_index, get_new_version_number(client, 'peaceportal', corpus_definition.es_index))
+            corpus_definition.es_index, get_new_version_number(client, corpus_definition.es_alias, corpus_definition.es_index))
         if client.indices.exists(corpus_definition.es_index):
             logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
                 corpus_definition.es_index))

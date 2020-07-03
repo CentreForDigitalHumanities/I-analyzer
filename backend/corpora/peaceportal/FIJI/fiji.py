@@ -18,6 +18,7 @@ class FIJI(PeacePortal):
 
     data_directory = current_app.config['PEACEPORTAL_FIJI_DATA']
     es_index = current_app.config['PEACEPORTAL_FIJI_ES_INDEX']
+    es_alias = current_app.config['PEACEPORTAL_ALIAS']
     filename_pattern = re.compile('\d+')
 
     def sources(self, start, end):

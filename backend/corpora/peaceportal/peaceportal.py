@@ -25,7 +25,6 @@ class PeacePortal(XMLCorpus):
     min_year = -530
     max_date = datetime(year=1948, month=12, day=31)
     visualize = []
-    es_index = 'peaceportal'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'

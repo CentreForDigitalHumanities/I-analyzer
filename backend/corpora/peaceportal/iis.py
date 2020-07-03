@@ -11,6 +11,7 @@ class IIS(PeacePortal):
     data_directory = current_app.config['PEACEPORTAL_IIS_DATA']
     external_file_folder = current_app.config['PEACEPORTAL_IIS_TXT_DATA']
     es_index = current_app.config['PEACEPORTAL_IIS_ES_INDEX']
+    es_alias = current_app.config['PEACEPORTAL_ALIAS']
 
     def __init__(self):
         self.source_database.extractor = Constant(
