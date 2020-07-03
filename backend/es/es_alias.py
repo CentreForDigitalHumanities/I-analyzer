@@ -44,19 +44,27 @@ def alias(corpus_name, corpus_definition, clean=False):
     logger.info('Done updating aliases')
 
 
-def get_new_version_number(client, alias, es_index = None):
+def get_new_version_number(client, alias, current_index = None):
     '''
-    Get version number for a new PEACE Portal index.
-    Will be 1 if an index with name `es_index` exists,
-    or neither an index nor an alias with name `es_index` exists.
+    Get version number for a new versioned index (e.g. `indexname_1`).
+    Will be 1 if an index with name `alias` exists,
+    or neither an index nor an alias with name `alias` exists.
     If an alias exists, the version number of the existing index with
     the latest version number will be used to determine the new version
-    number. Note that this relies on the existence of version numbers in
-    the index names (e.g. `index_name_1`).
+    number. Note that the latter relies on the existence of version numbers in
+    the index names (e.g. `indexname_1`).
+
+    Parameters
+        client -- ES client
+        alias -- The alias any versioned indices might be under.
+        current_index -- The `es_index` (i.e. unversioned name) currently being updated.
+            This will be used to exclude indices starting with different names under the same alias.
     '''
+    if not client.indices.exists(alias):
+        return 1
     # get the indices aliased with `alias`
     indices = client.indices.get_alias(alias)
-    highest_version = get_highest_version_number(indices, es_index)
+    highest_version = get_highest_version_number(indices, current_index)
     return str(highest_version + 1)
 
 
@@ -79,6 +87,8 @@ def get_highest_version_number(indices, current_index = None):
 
     Parameters:
         indices -- a dict with the ES response (not a list of names!)
+        current_index -- The `es_index` (i.e. unversioned) currently being updated.
+            This will be used to exclude indices starting with different names under the same alias.
     '''
     if type(indices) is list:
         raise RuntimeError('`indices` should not be list')
