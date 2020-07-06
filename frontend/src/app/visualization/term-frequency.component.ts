@@ -1,6 +1,10 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, SimpleChanges } from '@angular/core';
-import * as d3 from 'd3';
-import * as _ from "lodash";
+import * as d3 from 'd3-selection';
+import * as d3Scale from 'd3-scale';
+import * as d3Format from 'd3-format';
+import * as d3Axis from 'd3-axis';
+import * as d3Array from 'd3-array';
+import * as _ from 'lodash';
 
 import { AggregateResult } from '../models/index';
 import { BarChartComponent } from './barchart.component';
@@ -30,32 +34,29 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.calculateCanvas();
         }
         // redraw only if searchData changed
-        if (changes['searchData'] !== undefined && changes['searchData'].previousValue != changes['searchData'].currentValue) {
+        if (changes['searchData'] !== undefined && changes['searchData'].previousValue !== changes['searchData'].currentValue) {
             this.prepareTermFrequency();
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);
             this.rescaleY(this.asPercent);
-            this.setupBrushBehaviour();
             this.drawChartData();
+            this.setupBrushBehaviour();
             this.setupTooltip();
-        }
-
-        //listen for changes in 'asPercent'
-        else if (changes['asPercent'] != undefined) {
-            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+        } else if (changes['asPercent'] !== undefined) {
+            if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
                 this.rescaleY(this.asPercent);
             }
         }
     }
 
     prepareTermFrequency() {
-        if (typeof this.searchData[0].key === "number") {
+        if (typeof this.searchData[0].key === 'number') {
             this.searchData = _.sortBy(this.searchData, d => d.key);
         }
         this.xDomain = [-.5, this.searchData.length - .5];
         this.calculateBarWidth(this.searchData.length);
-        this.xScale = d3.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
-        this.yMax = d3.max(this.searchData.map(d => d.doc_count));
+        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
+        this.yMax = d3Array.max(this.searchData.map(d => d.doc_count));
         this.totalCount = _.sumBy(this.searchData, d => d.doc_count);
     }
 
@@ -78,15 +79,15 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
         // remove exiting bars
         update.exit().remove();
 
-        this.xAxisClass.tickValues(this.searchData.map(d => d.key)).tickFormat(d3.format("s"));
+        this.xAxisClass.tickValues(this.searchData.map(d => d.key)).tickFormat(d3Format.format('s'));
         // x axis ticks
         this.xAxis.selectAll('text')
             .data(this.searchData)
             .text(d => d.key)
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-35)");
+            .style('text-anchor', 'end')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em')
+            .attr('transform', 'rotate(-35)');
 
         // update existing bars
         this.chart.selectAll('.bar').transition()
@@ -98,7 +99,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
         if (this.searchData.length > this.maxCategories) {
             // remove x axis ticks
-            this.xAxis.selectAll(".tick").remove();
+            this.xAxis.selectAll('.tick').remove();
 
             // add new bars
             update
@@ -107,7 +108,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
                 .attr('class', 'bar')
                 .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
                 .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) //set to zero first for smooth transition
+                .attr('y', this.yScale(0)) // set to zero first for smooth transition
                 .attr('height', 0)
                 .transition().duration(750)
                 .delay((d, i) => i * 10)
@@ -115,20 +116,18 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
                 .attr('height', d => this.height - this.yScale(d.doc_count))
 
             // add tooltips
-            this.chart.selectAll(".bar")
-                .on("mouseover", (d,i) => {
-                    var yPos = this.height + 5 * this.margin.top;
-                    var xPos = this.xScale(i);
+            this.chart.selectAll('.bar')
+                .on('mouseover', (d,i) => {
+                    const yPos = this.height + 5 * this.margin.top;
+                    const xPos = this.xScale(i);
                     this.tooltip
                         .text(d.key)
-                        .style("left", xPos + "px")
-                        .style("top", yPos + "px")
-                        .style("visibility", "visible")
+                        .style('left', xPos + 'px')
+                        .style('top', yPos + 'px')
+                        .style('visibility', 'visible')
                 })
-                .on("mouseout", () => this.tooltip.style("visibility", "hidden"))
-        }
-
-        else {
+                .on('mouseout', () => this.tooltip.style('visibility', 'hidden'))
+        } else {
             // add new bars, without tooltips
             update
                 .enter()
@@ -136,7 +135,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
                 .attr('class', 'bar')
                 .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
                 .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) //set to zero first for smooth transition
+                .attr('y', this.yScale(0)) // set to zero first for smooth transition
                 .attr('height', 0)
                 .transition().duration(750)
                 .delay((d, i) => i * 10)
@@ -147,12 +146,12 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
     setupTooltip() {
         // select the tooltip in the template
-        this.tooltip = d3.select(".tooltip");
+        this.tooltip = d3.select('.tooltip');
     }
 
 
     zoomIn() {
-        let selection = this.searchData.filter((d, i) => i >= this.xScale.domain()[0] && i <= this.xScale.domain()[1]);
+        const selection = this.searchData.filter((d, i) => i >= this.xScale.domain()[0] && i <= this.xScale.domain()[1]);
         this.calculateBarWidth(selection.length + 1);
 
         this.chart.selectAll('.bar')
@@ -160,23 +159,23 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
             .attr('y', d => this.yScale(d.doc_count))
             .attr('width', this.xBarWidth);
-        
+
         if (selection.length < this.maxCategories) {
             this.xAxis
-            .call(d3.axisBottom(this.xScale).ticks(selection.length))
+            .call(d3Axis.axisBottom(this.xScale).ticks(selection.length))
             .selectAll('.tick text')
             .text((d, i) => selection[i].key)
-            .attr("text-anchor", "end")
-            .attr("transform", "rotate(-35)");
+            .attr('text-anchor', 'end')
+            .attr('transform', 'rotate(-35)');
         }
     }
 
     zoomOut() {
         this.xDomain = [-.5, this.searchData.length - .5];
         this.calculateBarWidth(this.searchData.length);
-        this.xScale = d3.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
+        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
         this.xAxis
-            .call(d3.axisBottom(this.xScale).ticks(this.searchData.length));
+            .call(d3Axis.axisBottom(this.xScale).ticks(this.searchData.length));
         this.drawChartData();
     }
 
