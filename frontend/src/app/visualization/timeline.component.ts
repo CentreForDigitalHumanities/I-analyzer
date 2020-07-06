@@ -1,16 +1,18 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 
 import * as d3 from 'd3';
-import * as _ from "lodash";
+import { transition } from 'd3-transition';
+import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel } from '../models/index';
-import { default as scaleTimeCustom }from './timescale.js';
+import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
 const hintHidingDebounceTime = 1000;  // milliseconds
+d3.selection.prototype.transition = transition;
 
 @Component({
     selector: 'ia-timeline',
