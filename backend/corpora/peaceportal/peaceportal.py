@@ -2,6 +2,7 @@ import os
 import os.path as op
 import logging
 from datetime import datetime
+from flask import current_app
 
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import XML, Constant
@@ -25,6 +26,8 @@ class PeacePortal(XMLCorpus):
     min_year = -530
     max_date = datetime(year=1948, month=12, day=31)
     visualize = []
+    es_index = current_app.config['PEACEPORTAL_ALIAS']
+    scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'
@@ -40,6 +43,7 @@ class PeacePortal(XMLCorpus):
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
     external_file_folder = '.'
+
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -57,6 +61,11 @@ class PeacePortal(XMLCorpus):
                     'associated_file': os.path.join(self.external_file_folder, filename)
                 }
 
+    def request_media(self, document):
+        images = document['fieldValues']['images']
+        if not images:
+            images = []
+        return { 'media': images }
 
     source_database = Field(
         name='source_database',
