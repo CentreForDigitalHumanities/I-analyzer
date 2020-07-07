@@ -45,6 +45,20 @@ class IIS(PeacePortal):
             attribute='notBefore'
         )
 
+        self.not_before.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'date'],
+            toplevel=False,
+            attribute='notBefore'
+        )
+
+        self.not_after.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'date'],
+            toplevel=False,
+            attribute='notAfter',
+        )
+
         self.transcription.extractor = ExternalFile(
             stream_handler=extract_transcript
         )

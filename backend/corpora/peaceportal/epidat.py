@@ -44,6 +44,22 @@ class Epidat(PeacePortal):
             transform=lambda x: get_year(x),
         )
 
+        self.not_before.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origDate', 'date'],
+            toplevel=False,
+            attribute='notBefore',
+            transform=lambda x: get_year(x),
+        )
+
+        self.not_after.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origDate', 'date'],
+            toplevel=False,
+            attribute='notAfter',
+            transform=lambda x: get_year(x),
+        )
+
         self.transcription.extractor = XML(
             tag=['text', 'body', 'div'],
             toplevel=False,

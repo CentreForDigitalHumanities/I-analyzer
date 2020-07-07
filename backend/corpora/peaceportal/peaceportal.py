@@ -113,6 +113,22 @@ class PeacePortal(XMLCorpus):
         results_overview=True
     )
 
+    not_before = Field(
+        name='not_before',
+        display_name='Not before',
+        description='Inscription is dated not earlier than this year.',
+        es_mapping={'type': 'integer'},
+        hidden=True
+    )
+
+    not_after = Field(
+        name='not_after',
+        display_name='Not after',
+        description='Inscription is dated not later than this year.',
+        es_mapping={'type': 'integer'},
+        hidden=True
+    )
+
     transcription = Field(
         name='transcription',
         es_mapping={'type': 'text'},
