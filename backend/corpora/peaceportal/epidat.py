@@ -104,6 +104,10 @@ class Epidat(PeacePortal):
             toplevel=False,
         )
 
+        self.age.extractor = Constant(
+            value='Momentarily not available'
+        )
+
         self.country.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'origPlace', 'country'],

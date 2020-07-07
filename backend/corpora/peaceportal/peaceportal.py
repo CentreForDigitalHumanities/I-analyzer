@@ -145,6 +145,14 @@ class PeacePortal(XMLCorpus):
         hidden=True
     )
 
+    age = Field(
+        name='age',
+        display_name='Age',
+        description='Age of the buried person(s)',
+        es_mapping={'type': 'keyword'},
+        hidden=True
+    )
+
     # A string with all the names occuring in the source
     names = Field(
         name='names',
@@ -292,11 +300,14 @@ class PeacePortal(XMLCorpus):
         _id,
         url,
         year,
+        not_before,
+        not_after,
         source_database,
         transcription,
         names,
         sex,
         dates_of_death,
+        age,
         country,
         region,
         settlement,

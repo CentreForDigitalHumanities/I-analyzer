@@ -103,6 +103,10 @@ class IIS(PeacePortal):
             value='Unknown'
         )
 
+        self.age.extractor = Constant(
+            value='Momentarily not available'
+        )
+
         self.country.extractor = Constant(
             value='Israel/Palestine'
         )
