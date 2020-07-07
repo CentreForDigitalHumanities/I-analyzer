@@ -55,7 +55,8 @@ def extract_record(row):
         transcription=get_transcription(row),
         inscriptionType=row["Inscription type"],
         persons=get_persons(row),
-        ageComments=get_age_comments(row),
+        age=row['Age'],
+        ageComments=row["Remarks on age"],
         iconographyType=row["Iconography type"],
         iconographyDescription=row["Iconography description"],
         material=row["Material"],
@@ -94,17 +95,6 @@ def get_transcription(row):
     transcription = preprocess_text(row["Transcription"])
     return transcription.replace('\n', '\n<lb/>\n')
 
-
-def get_age_comments(row):
-    ages = row['Age']
-    remarks = row["Remarks on age"]
-    if ages and remarks:
-        return "{}; {}".format(ages, remarks)
-    if ages and not remarks:
-        return ages
-    if remarks and not ages:
-        return remarks
-    return ''
 
 def get_languages(row):
     value = row["Language"]
@@ -253,17 +243,17 @@ def parse_arguments(sys_args):
         description='Preprocess FIJI csv (from excelsheet)')
 
     parser.add_argument(
-        '--input', '-in', dest='input', required=False, default='InscriptionDB_full.csv',
-        help='Path to the CSV file that contains the data. Defaults to \'InscriptionDB_full.csv\' (i.e. in the script\'s folder')
+        '--input', '-in', dest='input', required=False, default='FIJI_full.csv',
+        help='Path to the CSV file that contains the data. Defaults to \'FIJI_full.csv\' (i.e. in the script\'s folder')
 
     parser.add_argument(
         '--delimiter', '-d', dest='delimiter', required=False, default=';',
         help='Character that delimits fields in the CSV. Defaults to \';\'')
 
     parser.add_argument(
-        '--out_folder', '-out', dest='out_folder', required=False, default="jewish-inscriptions",
+        '--out_folder', '-out', dest='out_folder', required=False, default="FIJI",
         help='''Path to the folder where the output should end up.
-            Will be created if it doesn\'t exist. Defaults to \'jewish-inscriptions\' (i.e. in the script\'s folder)''')
+            Will be created if it doesn\'t exist. Defaults to \'FIJI\' (i.e. in the script\'s folder)''')
 
     parsedArgs = parser.parse_args()
     return parsedArgs
