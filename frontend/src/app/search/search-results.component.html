@@ -19,7 +19,7 @@
             <ng-content></ng-content>
         </div>
     </div>
-    <div class="level-right has-text-centered" *ngIf="results.total > resultsPerPage" >
+    <div class="level-right has-text-centered" *ngIf="results.total.value">
         <div>
             <p class="heading">Pages</p>
             <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
