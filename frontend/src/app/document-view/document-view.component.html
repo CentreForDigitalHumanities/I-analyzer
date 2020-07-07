@@ -25,18 +25,30 @@
 
     <div class="column is-7">
         <div class="box">
-        <p-tabView [activeIndex]="index" (onChange)="tabChange($event)"> 
-            <p-tabPanel header="" leftIcon="fa fa-book">
+            <div class="tabs is-boxed">
+                <ul>
+                    <li [ngClass]="{'is-active': tabIndex==0}">
+                        <a (click)="tabIndex=0">
+                            <span class="icon is-small"><i class="fa fa-book" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                    <li [ngClass]="{'is-active': tabIndex==1}">
+                        <a (click)="tabIndex=1">
+                            <span class="icon is-small"><i class="fa fa-image" aria-hidden="true"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div *ngIf="tabIndex==0">
                 <ng-container *ngFor="let field of contentFields">
                     <div class="content" *ngIf="document.fieldValues[field.name]" [innerHtml]="document.fieldValues[field.name] | highlight:query"></div>
                 </ng-container>
-            </p-tabPanel>
-            <p-tabPanel header="" leftIcon="fa fa-image" [disabled]="corpus.scan_image_type==undefined" style="width:100%;">
+            </div>
+            <div *ngIf="tabIndex==1">
                 <ng-template pTemplate="content">
                     <ia-image-view [corpus]="corpus" [document]="document"></ia-image-view>
                 </ng-template>
-            </p-tabPanel>
-        </p-tabView>
+            </div>
         </div>
     </div>
 </div>
