@@ -17,7 +17,7 @@ import { CorpusService, DialogService, SearchService, UserService } from '../ser
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit {
-    @ViewChild('searchSection', {static: true})
+    @ViewChild('searchSection', {static: false})
     public searchSection: ElementRef;
 
     public isScrolledDown: boolean;
