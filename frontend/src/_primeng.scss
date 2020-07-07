@@ -100,10 +100,37 @@ $inputGroupTextColor: $text;
 }
 
 .ui-widget-header {
-    border: 1px solid $primary;
+    // border: 1px solid $primary;
     background-color: $contrast-primary-color;
     color: $text-primary-color;
     font-weight: bold;
+}
+
+body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item {
+    &.ui-state-highlight {
+        background-color: $stateHighlightBgColor;
+        color: $stateHighlightTextColor;
+    }
+
+    &:hover {
+        background-color: $primary;
+        color: $primary-invert;
+    }
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: $stateHighlightBgColor;
+    color: $stateHighlightTextColor;
+    &:hover {
+        background-color: $primary;
+        color: $primary-invert;
+    }
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: $primary;
+    color: $primary-invert;
+    border-color: $primary;
 }
 
 // All styling for the tabview
