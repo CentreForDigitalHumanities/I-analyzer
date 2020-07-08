@@ -3,7 +3,7 @@
     <div class="container is-readable">
         <h1 class="title">
             Search
-            <a [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+            <a class="corpus-name" [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
             <sup>
                 <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
                     <i class="moreInfoLink fa fa-info-circle info-icon"></i>

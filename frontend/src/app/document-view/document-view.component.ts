@@ -31,7 +31,7 @@ export class DocumentViewComponent {
     public corpus: Corpus;
 
     @Input()
-    public tabIndex: number;
+    public documentTabIndex: number;
 
     public imgNotFound: boolean;
     public imgPath: string;
@@ -40,5 +40,4 @@ export class DocumentViewComponent {
     public mediaType: string;
 
     constructor() { }
-
 }

@@ -62,7 +62,7 @@
 <p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument">
-    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
+    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>
