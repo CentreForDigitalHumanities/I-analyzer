@@ -55,6 +55,6 @@ jobs:
     - name: Test Angular
       run: |
         cd frontend
-        npm ci
-        npm run build
-        npm run test:once
+        yarn install --frozen-lockfile
+        yarn build
+        yarn test:once
