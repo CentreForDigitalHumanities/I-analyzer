@@ -147,6 +147,24 @@ class PeacePortal(XMLCorpus):
         hidden=True
     )
 
+    transcription_hebrew = Field(
+        name='transcription_hebrew',
+        es_mapping={'type': 'text'},
+        hidden=True
+    )
+
+    transcription_latin = Field(
+        name='transcription_latin',
+        es_mapping={'type': 'text'},
+        hidden=True
+    )
+
+    transcription_greek = Field(
+        name='transcription_greek',
+        es_mapping={'type': 'text'},
+        hidden=True
+    )
+
     age = Field(
         name='age',
         display_name='Age',
@@ -323,6 +341,9 @@ class PeacePortal(XMLCorpus):
         bibliography,
         comments,
         transcription_german,
+        transcription_hebrew,
+        transcription_latin,
+        transcription_greek
     ]
 
 

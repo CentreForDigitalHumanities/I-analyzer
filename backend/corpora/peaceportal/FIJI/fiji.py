@@ -6,7 +6,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries, get_text_in_language
 
 
 class FIJI(PeacePortal):
@@ -153,6 +153,24 @@ class FIJI(PeacePortal):
         self.iconography.extractor = XML(
             tag=['text', 'body', 'iconographyType'],
             toplevel=False
+        )
+
+        self.transcription_hebrew.extractor = Combined(
+            self.transcription.extractor,
+            Constant('he'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_latin.extractor = Combined(
+            self.transcription.extractor,
+            Constant('la'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_greek.extractor = Combined(
+            self.transcription.extractor,
+            Constant('el'),
+            transform=lambda x: get_text_in_language(x)
         )
 
 
