@@ -32,7 +32,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install Ubuntu packages
-      run: sudo apt-get install libmysqlclient-dev libxmlsec1-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install libmysqlclient-dev libxmlsec1-dev
     - name: Install Python dependencies
       run: |
         cd backend
