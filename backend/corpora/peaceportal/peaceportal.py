@@ -3,6 +3,8 @@ import os.path as op
 import logging
 from datetime import datetime
 from flask import current_app
+from langdetect import detect
+from langdetect.lang_detect_exception import LangDetectException
 
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import XML, Constant
@@ -414,3 +416,37 @@ def translate_category(category):
         if category == original:
             return translation
     return category
+
+
+def get_text_in_language(_input):
+    '''
+    Get all the lines from a transcription that are in a certain language
+    (according to the `langdetect` package). Note that `transcription` will
+    be split on newlines to create lines that will be fed to langdetect one by one.
+    All lines that are in `language_code` will be collected and returned as one string,
+    i.e. they will be joined with a space (no newlines!).
+
+    Parameters:
+        _input -- A tuple or list with (transcription, language_code). Will typically be the output
+        of a Combined extractor, i.e. one for the transcript and a Constant extractor with the language code.
+        For a list of language codes detected by langdetect, see https://pypi.org/project/langdetect/
+    '''
+    results = []
+    if len(_input) != 2:
+        return results
+    lines = _input[0].split('\n')
+    language_code = _input[1]
+
+    for line in lines:
+        if not line: continue
+        detected_code = None
+        try:
+            # note that Aramaic is detected as Hebrew
+            detected_code = detect(line)
+        except LangDetectException:
+            # sometimes langdetect isn't happy with some stuff like
+            # very short strings with mainly numbers in it
+            pass
+        if detected_code and detected_code == language_code:
+            results.append(line)
+    return ' '.join(results)
