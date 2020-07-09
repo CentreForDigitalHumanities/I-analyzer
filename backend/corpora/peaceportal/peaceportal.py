@@ -143,13 +143,13 @@ class PeacePortal(XMLCorpus):
 
     transcription_german = Field(
         name='transcription_german',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'text', 'analyzer': 'german' },
         hidden=True
     )
 
     transcription_english = Field(
         name='transcription_english',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'text', 'analyzer': 'english'},
         hidden=True
     )
 
@@ -167,7 +167,13 @@ class PeacePortal(XMLCorpus):
 
     transcription_greek = Field(
         name='transcription_greek',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'text', 'analyzer': 'greek'},
+        hidden=True
+    )
+
+    transcription_dutch = Field(
+        name='transcription_dutch',
+        es_mapping={'type': 'text', 'analyzer': 'dutch'},
         hidden=True
     )
 
@@ -350,7 +356,8 @@ class PeacePortal(XMLCorpus):
         transcription_hebrew,
         transcription_latin,
         transcription_greek,
-        transcription_english
+        transcription_english,
+        transcription_dutch
     ]
 
 

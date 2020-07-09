@@ -4,7 +4,7 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
 class Epidat(PeacePortal):
@@ -211,6 +211,24 @@ class Epidat(PeacePortal):
                  'msIdentifier', 'publications', 'publication'],
             toplevel=False,
             multiple=True
+        )
+
+        self.transcription_hebrew.extractor = Combined(
+            self.transcription.extractor,
+            Constant('he'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_english.extractor = Combined(
+            self.transcription.extractor,
+            Constant('en'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_dutch.extractor = Combined(
+            self.transcription.extractor,
+            Constant('nl'),
+            transform=lambda x: get_text_in_language(x)
         )
 
 
