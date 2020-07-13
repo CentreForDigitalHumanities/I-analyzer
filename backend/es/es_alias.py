@@ -46,13 +46,13 @@ def alias(corpus_name, corpus_definition, clean=False):
 
 def get_new_version_number(client, alias, current_index = None):
     '''
-    Get version number for a new versioned index (e.g. `indexname_1`).
+    Get version number for a new versioned index (e.g. `indexname-1`).
     Will be 1 if an index with name `alias` exists,
     or neither an index nor an alias with name `alias` exists.
     If an alias exists, the version number of the existing index with
     the latest version number will be used to determine the new version
     number. Note that the latter relies on the existence of version numbers in
-    the index names (e.g. `indexname_1`).
+    the index names (e.g. `indexname-1`).
 
     Parameters
         client -- ES client
@@ -71,10 +71,10 @@ def get_new_version_number(client, alias, current_index = None):
 def extract_version(index_name):
     '''
     Helper function to extract version number from an index name.
-    Format of the index_name should be `index_name_<version>`, eg `index_name_5`.
+    Format of the index_name should be `index_name-<version>`, eg `indexname-5`.
     Returns -1 if no version number is found in `index_name`.
     '''
-    _index = index_name.rfind('_')
+    _index = index_name.rfind('-')
     if _index == -1:
         return _index
     return int(index_name[_index + 1:])
@@ -83,7 +83,7 @@ def extract_version(index_name):
 def get_highest_version_number(indices, current_index = None):
     '''
     Get the version number of the index with the highest version number currently present in ES.
-    Note that this relies on the existence of version numbers in the index names (e.g. `index_name_1`).
+    Note that this relies on the existence of version numbers in the index names (e.g. `index_name-1`).
 
     Parameters:
         indices -- a dict with the ES response (not a list of names!)
