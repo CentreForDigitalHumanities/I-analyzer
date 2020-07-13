@@ -66,6 +66,13 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def es_alias(self):
+        '''
+        Elasticsearch alias. Defaults to None.
+        '''
+        return None
+
+    @property
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
@@ -281,7 +288,8 @@ class XMLCorpus(Corpus):
                 extract.Combined,
                 extract.XML,
                 extract.Metadata,
-                extract.Constant
+                extract.Constant,
+                extract.ExternalFile
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
