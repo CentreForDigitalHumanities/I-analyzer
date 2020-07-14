@@ -25,6 +25,12 @@ export class SearchComponent implements OnInit {
     @ViewChild('searchSection')
     public searchSection: ElementRef;
 
+    /**
+     * This is a constant used to ensure that, when we are displayed in an iframe,
+     * the filters are displayed even if there are no results.
+     */
+    private minIframeHeight = 1150;
+
     public isScrolledDown: boolean;
 
     public corpus: Corpus;
@@ -100,6 +106,12 @@ export class SearchComponent implements OnInit {
                     this.queryModel = queryModel;
                 }
             });
+
+
+
+        if (window.parent) {
+            window.parent.postMessage(["setHeight", this.minIframeHeight], "*");
+        }
     }
 
     @HostListener("window:scroll", [])
@@ -114,8 +126,7 @@ export class SearchComponent implements OnInit {
         // isn't quite done or something like that. Anyhow this harmless wrapping
         // fixes it
         setTimeout(() => {
-            // 1150 is the minimum height to display all filters if there are no results
-            let height = Math.max(this._fullContent.nativeElement.offsetHeight, 1150);
+            let height = Math.max(this._fullContent.nativeElement.offsetHeight, this.minIframeHeight);
             if (window.parent) {
                 window.parent.postMessage(["setHeight", height], "*");
             }
