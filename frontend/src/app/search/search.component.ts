@@ -114,7 +114,8 @@ export class SearchComponent implements OnInit {
         // isn't quite done or something like that. Anyhow this harmless wrapping
         // fixes it
         setTimeout(() => {
-            let height = this._fullContent.nativeElement.offsetHeight;
+            // 1150 is the minimum height to display all filters if there are no results
+            let height = Math.max(this._fullContent.nativeElement.offsetHeight, 1150);
             if (window.parent) {
                 window.parent.postMessage(["setHeight", height], "*");
             }
