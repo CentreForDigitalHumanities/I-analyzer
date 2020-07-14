@@ -2,6 +2,9 @@ import os
 import os.path as op
 import logging
 from datetime import datetime
+from flask import current_app
+from langdetect import detect
+from langdetect.lang_detect_exception import LangDetectException
 
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.extract import XML, Constant
@@ -25,7 +28,8 @@ class PeacePortal(XMLCorpus):
     min_year = -530
     max_date = datetime(year=1948, month=12, day=31)
     visualize = []
-    es_index = 'peaceportal'
+    es_index = current_app.config['PEACEPORTAL_ALIAS']
+    scan_image_type = 'image/png'
     # fields below are required by code but not actually used
     min_date = datetime(year=746, month=1, day=1)
     image = 'bogus'
@@ -41,6 +45,7 @@ class PeacePortal(XMLCorpus):
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
     external_file_folder = '.'
+
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -58,6 +63,11 @@ class PeacePortal(XMLCorpus):
                     'associated_file': os.path.join(self.external_file_folder, filename)
                 }
 
+    def request_media(self, document):
+        images = document['fieldValues']['images']
+        if not images:
+            images = []
+        return { 'media': images }
 
     source_database = Field(
         name='source_database',
@@ -105,6 +115,22 @@ class PeacePortal(XMLCorpus):
         results_overview=True
     )
 
+    not_before = Field(
+        name='not_before',
+        display_name='Not before',
+        description='Inscription is dated not earlier than this year.',
+        es_mapping={'type': 'integer'},
+        hidden=True
+    )
+
+    not_after = Field(
+        name='not_after',
+        display_name='Not after',
+        description='Inscription is dated not later than this year.',
+        es_mapping={'type': 'integer'},
+        hidden=True
+    )
+
     transcription = Field(
         name='transcription',
         es_mapping={'type': 'text'},
@@ -117,8 +143,45 @@ class PeacePortal(XMLCorpus):
 
     transcription_german = Field(
         name='transcription_german',
+        es_mapping={'type': 'text', 'analyzer': 'german' },
+        hidden=True
+    )
+
+    transcription_english = Field(
+        name='transcription_english',
+        es_mapping={'type': 'text', 'analyzer': 'english'},
+        hidden=True
+    )
+
+    transcription_hebrew = Field(
+        name='transcription_hebrew',
         es_mapping={'type': 'text'},
         hidden=True
+    )
+
+    transcription_latin = Field(
+        name='transcription_latin',
+        es_mapping={'type': 'text'},
+        hidden=True
+    )
+
+    transcription_greek = Field(
+        name='transcription_greek',
+        es_mapping={'type': 'text', 'analyzer': 'greek'},
+        hidden=True
+    )
+
+    transcription_dutch = Field(
+        name='transcription_dutch',
+        es_mapping={'type': 'text', 'analyzer': 'dutch'},
+        hidden=True
+    )
+
+    age = Field(
+        name='age',
+        display_name='Age',
+        description='Age of the buried person(s)',
+        es_mapping={'type': 'keyword'}
     )
 
     # A string with all the names occuring in the source
@@ -268,11 +331,14 @@ class PeacePortal(XMLCorpus):
         _id,
         url,
         year,
+        not_before,
+        not_after,
         source_database,
         transcription,
         names,
         sex,
         dates_of_death,
+        age,
         country,
         region,
         settlement,
@@ -286,6 +352,11 @@ class PeacePortal(XMLCorpus):
         bibliography,
         comments,
         transcription_german,
+        transcription_hebrew,
+        transcription_latin,
+        transcription_greek,
+        transcription_english,
+        transcription_dutch
     ]
 
 
@@ -379,3 +450,37 @@ def translate_category(category):
         if category == original:
             return translation
     return category
+
+
+def get_text_in_language(_input):
+    '''
+    Get all the lines from a transcription that are in a certain language
+    (according to the `langdetect` package). Note that `transcription` will
+    be split on newlines to create lines that will be fed to langdetect one by one.
+    All lines that are in `language_code` will be collected and returned as one string,
+    i.e. they will be joined with a space (no newlines!).
+
+    Parameters:
+        _input -- A tuple or list with (transcription, language_code). Will typically be the output
+        of a Combined extractor, i.e. one for the transcript and a Constant extractor with the language code.
+        For a list of language codes detected by langdetect, see https://pypi.org/project/langdetect/
+    '''
+    results = []
+    if len(_input) != 2 or not _input[0]:
+        return results
+    lines = _input[0].split('\n')
+    language_code = _input[1]
+
+    for line in lines:
+        if not line: continue
+        detected_code = None
+        try:
+            # note that Aramaic is detected as Hebrew
+            detected_code = detect(line)
+        except LangDetectException:
+            # sometimes langdetect isn't happy with some stuff like
+            # very short strings with mainly numbers in it
+            pass
+        if detected_code and detected_code == language_code:
+            results.append(line)
+    return ' '.join(results)

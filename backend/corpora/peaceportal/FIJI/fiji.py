@@ -4,9 +4,9 @@ import os.path as op
 import logging
 from flask import current_app
 
-from addcorpus.extract import XML, Constant
+from addcorpus.extract import XML, Constant, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, join_commentaries, get_text_in_language
 
 
 class FIJI(PeacePortal):
@@ -18,6 +18,7 @@ class FIJI(PeacePortal):
 
     data_directory = current_app.config['PEACEPORTAL_FIJI_DATA']
     es_index = current_app.config['PEACEPORTAL_FIJI_ES_INDEX']
+    es_alias = current_app.config['PEACEPORTAL_ALIAS']
     filename_pattern = re.compile('\d+')
 
     def sources(self, start, end):
@@ -80,6 +81,12 @@ class FIJI(PeacePortal):
             toplevel=False,
         )
 
+        self.age.extractor = XML(
+            tag=['text', 'body', 'age'],
+            toplevel=False,
+            transform=lambda age: transform_age(age)
+        )
+
         self.country.extractor = Constant(
             value='Italy'
         )
@@ -108,10 +115,29 @@ class FIJI(PeacePortal):
             transform=lambda x: normalize_language(x)
         )
 
-        self.comments.extractor = XML(
-            tag=['text', 'body', 'commentary'],
-            toplevel=False,
+        self.comments.extractor = Combined(
+            XML(
+                tag=['text', 'body', 'commentary'],
+                toplevel=False,
+            ),
+            XML(
+                tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'remarksOnDate'],
+                toplevel=False,
+                transform=lambda x: 'DATE:\n{}\n'.format(x) if x else x
+            ),
+            XML(
+                tag=['text', 'body', 'ageComments'],
+                toplevel=False,
+                transform=lambda x: 'AGE:\n{}\n'.format(x) if x else x
+            ),
+            XML(
+                tag=['text', 'body', 'iconographyDescription'],
+                toplevel=False,
+                transform=lambda x: 'ICONOGRAPHY:\n{}\n'.format(x) if x else x
+            ),
+            transform=lambda x: join_commentaries(x)
         )
+
 
         self.bibliography.extractor = XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publications', 'publication'],
@@ -129,7 +155,29 @@ class FIJI(PeacePortal):
             toplevel=False
         )
 
+        self.transcription_hebrew.extractor = Combined(
+            self.transcription.extractor,
+            Constant('he'),
+            transform=lambda x: get_text_in_language(x)
+        )
 
+        self.transcription_latin.extractor = Combined(
+            self.transcription.extractor,
+            Constant('la'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_greek.extractor = Combined(
+            self.transcription.extractor,
+            Constant('el'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+
+def transform_age(age):
+    if age in ['?', 'none', 'none?']:
+        return 'Unknown'
+    return age
 
 def normalize_language(languages):
     results = []
@@ -214,9 +262,7 @@ def select_hebrew(text):
         # TODO: new fields
 
         # TODO: move to a comments field:
-        # date_remarks
-        # age_remarks (incl age)
-        # iconography_desc
+
 
 
         # excluded (for now):

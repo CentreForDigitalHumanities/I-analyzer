@@ -4,13 +4,14 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML, ExternalFile, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
 class IIS(PeacePortal):
     data_directory = current_app.config['PEACEPORTAL_IIS_DATA']
     external_file_folder = current_app.config['PEACEPORTAL_IIS_TXT_DATA']
     es_index = current_app.config['PEACEPORTAL_IIS_ES_INDEX']
+    es_alias = current_app.config['PEACEPORTAL_ALIAS']
 
     def __init__(self):
         self.source_database.extractor = Constant(
@@ -44,27 +45,36 @@ class IIS(PeacePortal):
             attribute='notBefore'
         )
 
+        self.not_before.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'date'],
+            toplevel=False,
+            attribute='notBefore'
+        )
+
+        self.not_after.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'date'],
+            toplevel=False,
+            attribute='notAfter',
+        )
+
         self.transcription.extractor = ExternalFile(
             stream_handler=extract_transcript
         )
 
-        # TODO: change this to extract from source and add it transcription.english field
-        # extract translation (i.e. English) from external file
-        # self.translation.extractor = HTML(
-        #     external_file={
-        #         'xml_tag_toplevel': 'html',
-        #         'xml_tag_entry': 'body'
-        #     },
-        #     tag=['div'],
-        #     toplevel=True,
-        #     multiple=False,
-        #     flatten=True,
-        #     attribute_filter={
-        #         'attribute': 'id',
-        #         'value': 'translation'
-        #     },
-        #     transform_soup_func=extract_paragraph
-        # )
+        self.transcription_english.extractor = HTML(
+            tag=['div'],
+            toplevel=True,
+            multiple=False,
+            flatten=True,
+            attribute_filter={
+                'attribute': 'type',
+                'value': 'translation'
+            },
+            transform_soup_func=extract_paragraph,
+            transform=lambda x: ' '.join(x.split()) if x else None
+        )
 
         # is not present in IIS data
         # self.names.extractor = XML(
@@ -86,6 +96,10 @@ class IIS(PeacePortal):
         # is not present in IIS data
         self.sex.extractor = Constant(
             value='Unknown'
+        )
+
+        self.age.extractor = Constant(
+            value='Momentarily not available'
         )
 
         self.country.extractor = Constant(
@@ -220,6 +234,24 @@ class IIS(PeacePortal):
             multiple=True
         )
 
+        self.transcription_hebrew.extractor = Combined(
+            self.transcription.extractor,
+            Constant('he'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_latin.extractor = Combined(
+            self.transcription.extractor,
+            Constant('la'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_greek.extractor = Combined(
+            self.transcription.extractor,
+            Constant('el'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
 
 def extract_transcript(filestream):
     text = filestream.read().strip()
@@ -325,15 +357,6 @@ def normalize_language(text):
         return 'Aramaic'
     if ltext in ['la', 'latin']:
         return 'Latin'
-
-    # what to do with the dates from this corpus?
-    # <date period="http://n2t.net/ark:/99152/p0m63njbxb9" notBefore="0001" notAfter="0100">First century CE</date>
-    # <date period="http://n2t.net/ark:/99152/p0m63njjcn4" notBefore="0452" notAfter="0452">April 15, 452 CE</date>
-    # <date period="http://n2t.net/ark:/99152/p0m63nj3bbf http://n2t.net/ark:/99152/p0m63njdf2z" notBefore="-0400" notAfter="-0100">probably 200-100 BCE, maybe 400-200 BCE</date>
-
-    # TODO: add field
-
-    # TODO: move to a comments field:
 
     # excluded (for now):
     # revision history

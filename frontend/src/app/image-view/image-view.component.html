@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<p *ngIf="noImages">No scan available for this document.</p>
+<p *ngIf="noImages">No image available for this document.</p>
 <div *ngIf="imagePaths" [ngClass]="{'is-loading':imagePaths==undefined}">
     <ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
     <ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
@@ -34,7 +34,7 @@
 
 <p-confirmDialog #cd appendTo="body">
     <p-footer>
-        <div class="field is-grouped">   
+        <div class="field is-grouped">
             <button class="button is-primary" (click)="cd.accept()">
                 <i class="fa fa-fw fa-download" aria-hidden="true"></i> Download
             </button>
@@ -44,4 +44,3 @@
         </div>
     </p-footer>
 </p-confirmDialog>
-    

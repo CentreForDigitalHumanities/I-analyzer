@@ -9,23 +9,24 @@
     </h2>
     <h2 class="subtitle" *ngIf="results.total.value > 5">
         {{results.total.value}} results.
-        Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
+        Showing results {{fromIndex+1}} -
+        {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
     </h2>
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
-    <div class="level">
-    <div class="level-left has-text-centered">
-        <div>
-            <p class="heading">Sort By</p>
-            <ng-content></ng-content>
+        <div class="level">
+            <div class="level-left has-text-centered">
+                <div>
+                    <p class="heading">Sort By</p>
+                    <ng-content></ng-content>
+                </div>
+            </div>
+            <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage">
+                <div>
+                    <p class="heading">Pages</p>
+                    <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="level-right has-text-centered" *ngIf="results.total > resultsPerPage" >
-        <div>
-            <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
-        </div>
-        </div>
-    </div>
     </section>
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents; last as isLast" class="document box" #resultdoc role="button">
@@ -37,7 +38,8 @@
                                 <td>
                                     <b>{{field.displayName}}: </b>
                                 </td>
-                                <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                                <td style="word-break:break-word"
+                                    [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
                             </tr>
                         </ng-container>
                     </table>
@@ -47,7 +49,8 @@
                         <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
                     </div>
                     <search-relevance [value]="document.relevance"></search-relevance>
-                    <button *ngIf="corpus.scan_image_type" class="button scan-button is-primary is-inverted" iaBalloon="View Scan" (click)="goToScan(document, $event)">
+                    <button *ngIf="corpus.scan_image_type" class="button scan-button is-primary is-inverted"
+                        iaBalloon="View Scan" (click)="goToScan(document, $event)">
                         <span class="icon">
                             <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
                         </span>
@@ -60,9 +63,10 @@
 
 <!-- show the selected document -->
 <p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
-    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument" [positionTop]="detailTop">
-    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [tabIndex]="documentTabIndex"></ia-document-view>
+    [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true"
+    [resizable]="false" [blockScroll]="true" *ngIf="viewDocument" [positionTop]="detailTop">
+    <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus"
+        [tabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>

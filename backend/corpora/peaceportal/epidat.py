@@ -4,13 +4,14 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant, HTML, Combined
 from addcorpus.corpus import Field
-from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries
+from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, clean_newline_characters, clean_commentary, join_commentaries, get_text_in_language
 
 
 class Epidat(PeacePortal):
 
     data_directory = current_app.config['PEACEPORTAL_EPIDAT_DATA']
     es_index = current_app.config['PEACEPORTAL_EPIDAT_ES_INDEX']
+    es_alias = current_app.config['PEACEPORTAL_ALIAS']
 
     def __init__(self):
         self.source_database.extractor = Constant(
@@ -40,6 +41,22 @@ class Epidat(PeacePortal):
             tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
                  'history', 'origin', 'origDate', 'date'],
             toplevel=False,
+            transform=lambda x: get_year(x),
+        )
+
+        self.not_before.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origDate', 'date'],
+            toplevel=False,
+            attribute='notBefore',
+            transform=lambda x: get_year(x),
+        )
+
+        self.not_after.extractor = XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc',
+                 'history', 'origin', 'origDate', 'date'],
+            toplevel=False,
+            attribute='notAfter',
             transform=lambda x: get_year(x),
         )
 
@@ -85,6 +102,10 @@ class Epidat(PeacePortal):
             attribute='when',
             multiple=False,
             toplevel=False,
+        )
+
+        self.age.extractor = Constant(
+            value='Momentarily not available'
         )
 
         self.country.extractor = XML(
@@ -190,6 +211,24 @@ class Epidat(PeacePortal):
                  'msIdentifier', 'publications', 'publication'],
             toplevel=False,
             multiple=True
+        )
+
+        self.transcription_hebrew.extractor = Combined(
+            self.transcription.extractor,
+            Constant('he'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_english.extractor = Combined(
+            self.transcription.extractor,
+            Constant('en'),
+            transform=lambda x: get_text_in_language(x)
+        )
+
+        self.transcription_dutch.extractor = Combined(
+            self.transcription.extractor,
+            Constant('nl'),
+            transform=lambda x: get_text_in_language(x)
         )
 
 
