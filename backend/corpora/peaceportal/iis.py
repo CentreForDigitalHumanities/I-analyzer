@@ -73,7 +73,7 @@ class IIS(PeacePortal):
                 'value': 'translation'
             },
             transform_soup_func=extract_paragraph,
-            transform=lambda x: ' '.join(x.split())
+            transform=lambda x: ' '.join(x.split()) if x else None
         )
 
         # is not present in IIS data

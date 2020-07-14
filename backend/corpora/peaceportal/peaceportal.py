@@ -466,7 +466,7 @@ def get_text_in_language(_input):
         For a list of language codes detected by langdetect, see https://pypi.org/project/langdetect/
     '''
     results = []
-    if len(_input) != 2:
+    if len(_input) != 2 or not _input[0]:
         return results
     lines = _input[0].split('\n')
     language_code = _input[1]
