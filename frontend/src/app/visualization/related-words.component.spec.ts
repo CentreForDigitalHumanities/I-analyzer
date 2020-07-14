@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { ChartModule } from 'primeng/primeng'
+import { ChartModule } from 'primeng/chart';
 
 import { DialogService, SearchService } from '../services/index';
 import { DialogServiceMock } from '../../mock-data/dialog';

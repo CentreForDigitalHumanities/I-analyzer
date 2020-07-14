@@ -1,5 +1,9 @@
 @import "../../_utilities";
 
+a.corpus-name {
+    color: $primary;
+}
+
 .title-section {
     // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
     padding-bottom: $spacing;
@@ -58,8 +62,15 @@
     display: none;
     }
 
-    .ui-multiselect  .ui-multiselect-trigger {
-        padding: 0px 0.75em;
+    .ui-multiselect .ui-multiselect-trigger {
+        padding: 0px 0px;
+        position: inherit;
+        color: $primary;
+    }
+
+    .button.ui-widget {
+        font-size: 1rem;
+        border: 1px solid $primary;
     }
 }
 

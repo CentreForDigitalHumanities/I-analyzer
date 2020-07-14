@@ -1,11 +1,14 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 
-import * as d3 from 'd3';
-import * as _ from "lodash";
+import * as d3Scale from 'd3-scale';
+import * as d3TimeFormat from 'd3-time-format';
+import * as d3Time from 'd3-time';
+import * as d3Array from 'd3-array';
+import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel } from '../models/index';
-import { default as scaleTimeCustom }from './timescale.js';
+import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
@@ -18,23 +21,23 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @ViewChild('timeline') private timelineContainer: ElementRef;
+    @ViewChild('timeline', {static: true}) private timelineContainer: ElementRef;
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
-    @Input() asPercent: boolean = false;
+    @Input() asPercent = false;
 
     @Output() isLoading = new EventEmitter<boolean>();
 
     private queryModelCopy;
 
-    public xScale: d3.ScaleTime<any, any>;
+    public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
 
     private currentTimeCategory: string;
     private selectedData: Array<DateFrequencyPair>;
-    private scaleDownThreshold: number = 10;
-    private timeFormat: any = d3.timeFormat("%Y-%m-%d");
+    private scaleDownThreshold = 10;
+    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
 
     ngOnInit() {
         this.setupZoomHint();
@@ -46,8 +49,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.calculateCanvas();
         }
         this.queryModelCopy = _.cloneDeep(this.queryModel);
-        let min = new Date(this.visualizedField.searchFilter.currentData.min);
-        let max = new Date(this.visualizedField.searchFilter.currentData.max);
+        const min = new Date(this.visualizedField.searchFilter.currentData.min);
+        const max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
         this.calculateTimeCategory(min, max);
         this.xScale = scaleTimeCustom()
@@ -61,9 +64,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.setupBrushBehaviour();
         });
 
-        //listen for changes in 'asPercent'
-        if (changes['asPercent'] != undefined) {
-            if (changes['asPercent'].previousValue != changes['asPercent'].currentValue) {
+        // listen for changes in 'asPercent'
+        if (changes['asPercent'] !== undefined) {
+            if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
                 this.rescaleY(this.asPercent);
             }
         }
@@ -74,13 +77,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         await this.requestTimeData();
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
-        this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+        this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
         this.isLoading.emit(false);
     }
 
-    setDateRange() {   
-        let min = new Date(this.visualizedField.searchFilter.currentData.min);
-        let max = new Date(this.visualizedField.searchFilter.currentData.max);
+    setDateRange() {
+        const min = new Date(this.visualizedField.searchFilter.currentData.min);
+        const max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
         this.xScale.domain(this.xDomain);
     }
@@ -89,12 +92,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         /* date fields are returned with keys containing identifiers by elasticsearch
          replace with string representation, contained in 'key_as_string' field
         */
-        let dataPromise = this.searchService.dateHistogramSearch(this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then( result => {
+        const dataPromise = this.searchService.dateHistogramSearch(
+            this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then( result => {
             return result.aggregations[this.visualizedField.name].filter( cat => cat.doc_count > 0).map( cat => {
                 return {
                     date: new Date(cat.key_as_string),
                     doc_count: cat.doc_count
-                }
+                };
             });
         });
         this.selectedData = await dataPromise;
@@ -110,6 +114,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         // remove exiting bars
         update.exit().remove();
 
+        // update existing bars
         this.chart.selectAll('.bar').transition()
             .attr('x', d => this.xScale(d.date))
             .attr('y', d => this.yScale(d.doc_count))
@@ -123,7 +128,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .attr('class', 'bar')
             .attr('x', d => this.xScale(d.date))
             .attr('width',  d => this.calculateBarWidth(d.date))
-            .attr('y', this.yScale(0)) //set to zero first for smooth transition
+            .attr('y', this.yScale(0)) // set to zero first for smooth transition
             .attr('height', 0)
             .transition().duration(750)
             .delay((d, i) => i * 10)
@@ -134,11 +139,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
 
     zoomIn() {
-        let xExtent = this.xScale.domain();
-        let previousTimeCategory = this.currentTimeCategory;
+        const xExtent = this.xScale.domain();
+        const previousTimeCategory = this.currentTimeCategory;
         this.calculateTimeCategory(xExtent[0], xExtent[1]);
         // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
-        if (this.currentTimeCategory == 'day' && previousTimeCategory == this.currentTimeCategory) {
+        if (this.currentTimeCategory === 'day' && previousTimeCategory === this.currentTimeCategory) {
             // zoom in without rearranging underlying data
             this.rescaleX();
             this.chart.selectAll('.bar')
@@ -148,12 +153,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 .attr('width', d => this.calculateBarWidth(d.date));
         }
         else {
-            let filter = this.visualizedField.searchFilter;
-            filter.currentData = { filterType: "DateFilter", min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
+            const filter = this.visualizedField.searchFilter;
+            filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
             this.queryModelCopy.filters.push(filter);
             this.prepareTimeline().then( () => {
                 this.setupYScale();
-                this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+                this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
                 this.rescaleY(this.asPercent);
                 this.drawChartData();
                 this.rescaleX();
@@ -167,7 +172,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.prepareTimeline().then( () => {
             this.setDateRange();
             this.setupYScale();
-            this.yMax = d3.max(this.selectedData.map(d => d.doc_count));
+            this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
             this.rescaleY(this.asPercent);
             this.rescaleX();
             this.drawChartData();
@@ -176,19 +181,16 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     calculateTimeCategory(min: Date, max: Date) {
-        if (d3.timeYear.count(min, max) >= this.scaleDownThreshold) {
+        if (d3Time.timeYear.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'year';
             // this.timeFormat = d3.timeFormat("%Y");
-        }
-        else if (d3.timeMonth.count(min, max) >= this.scaleDownThreshold) {
+        } else if (d3Time.timeMonth.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'month';
             // this.timeFormat = d3.timeFormat("%B");
-        }
-        else if (d3.timeWeek.count(min, max) >= this.scaleDownThreshold) {
+        } else if (d3Time.timeWeek.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'week';
             // this.timeFormat = d3.timeFormat("%b %d");
-        }
-        else {
+        } else {
             this.currentTimeCategory = 'day';
             // this.timeFormat = d3.timeFormat("%a %d");
         }
@@ -198,19 +200,19 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         let endDate: Date;
         switch(this.currentTimeCategory) {
             case 'year':
-                endDate = d3.timeYear.ceil(startDate);
+                endDate = d3Time.timeYear.ceil(startDate);
                 break;
             case 'month':
-                endDate = d3.timeMonth.ceil(startDate);
+                endDate = d3Time.timeMonth.ceil(startDate);
                 break;
             case 'week':
-                endDate = d3.timeWeek.ceil(startDate);
+                endDate = d3Time.timeWeek.ceil(startDate);
                 break;
             case 'day':
-                endDate = d3.timeDay.ceil(startDate);
+                endDate = d3Time.timeDay.ceil(startDate);
                 break;
         }
-        return this.xScale(endDate)-this.xScale(startDate);
+        return this.xScale(endDate) - this.xScale(startDate);
     }
 
     /**
