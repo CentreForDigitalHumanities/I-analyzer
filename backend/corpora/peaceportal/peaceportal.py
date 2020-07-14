@@ -181,8 +181,7 @@ class PeacePortal(XMLCorpus):
         name='age',
         display_name='Age',
         description='Age of the buried person(s)',
-        es_mapping={'type': 'keyword'},
-        hidden=True
+        es_mapping={'type': 'keyword'}
     )
 
     # A string with all the names occuring in the source
