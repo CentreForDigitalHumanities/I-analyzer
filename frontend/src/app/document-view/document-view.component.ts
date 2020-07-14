@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 
 import { CorpusField, FoundDocument, Corpus } from '../models/index';
 
@@ -8,7 +8,7 @@ import { CorpusField, FoundDocument, Corpus } from '../models/index';
     templateUrl: './document-view.component.html',
     styleUrls: ['./document-view.component.scss']
 })
-export class DocumentViewComponent {
+export class DocumentViewComponent implements OnChanges {
 
     public get contentFields() {
         return this.fields.filter(field => !field.hidden && field.displayType == 'text_content');
@@ -39,5 +39,15 @@ export class DocumentViewComponent {
     public allowDownload: boolean;
     public mediaType: string;
 
+    public tabIndex: number;
+
     constructor() { }
+
+    ngOnChanges() {
+        this.tabIndex = this.documentTabIndex;
+    }
+
+    changeTabIndex(index: number) {
+        this.tabIndex = index;
+    }
 }

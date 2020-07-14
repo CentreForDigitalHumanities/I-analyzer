@@ -40,7 +40,7 @@ export class BarChartComponent {
     private idleDelay: number;
 
     // dataService is needed for pushing filtered data from timeline component
-    constructor(public dataService: DataService, public searchService: SearchService){}
+    constructor(public dataService: DataService, public searchService: SearchService) {}
 
     calculateCanvas() {
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
@@ -57,7 +57,7 @@ export class BarChartComponent {
     }
 
     rescaleX() {
-        let t = this.svg.transition().duration(750);
+        const t = this.svg.transition().duration(750);
         this.xAxis.transition(t).call(this.xAxisClass);
         this.xAxis.selectAll('text')
             .style('text-anchor', 'end')
