@@ -100,83 +100,37 @@ $inputGroupTextColor: $text;
 }
 
 .ui-widget-header {
-    // border: 1px solid $primary;
     background-color: $contrast-primary-color;
     color: $text-primary-color;
     font-weight: bold;
 }
 
-body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item {
-    &.ui-state-highlight {
-        background-color: $stateHighlightBgColor;
-        color: $stateHighlightTextColor;
-    }
+body {
+    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item {
+        &.ui-state-highlight {
+            background-color: $stateHighlightBgColor;
+            color: $stateHighlightTextColor;
+        }
 
-    &:hover {
-        background-color: $primary;
-        color: $primary-invert;
-    }
-}
-
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
-    background-color: $stateHighlightBgColor;
-    color: $stateHighlightTextColor;
-    &:hover {
-        background-color: $primary;
-        color: $primary-invert;
-    }
-}
-
-body .ui-chkbox .ui-chkbox-box.ui-state-active {
-    background-color: $primary;
-    color: $primary-invert;
-    border-color: $primary;
-}
-
-// All styling for the tabview
-.ui-tabview {
-    .ui-tabview-panels {
-        background-color: $primary-invert;
-        border: 0px;
-    }
-}
-
-.ui-tabview-nav {
-    padding: 0em 0em 0 !important;
-    border: 0px solid $primary;
-    background-color: $primary-invert;
-    border-bottom-color: $primary;
-    border-bottom-style: solid;
-    border-bottom-width: 0px;
-    border-radius: 0;
-
-    .ui-state-default a
-    {
-        background-color: $primary;
-        cursor: pointer;
-        span {
+        &:hover {
+            background-color: $primary;
             color: $primary-invert;
         }
+    }
 
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+        background-color: $stateHighlightBgColor;
+        color: $stateHighlightTextColor;
         &:hover {
-            background: $contrast-primary-color;
+            background-color: $primary;
+            color: $primary-invert;
         }
     }
 
-    .ui-state-active a
-    {
-        background: $primary-invert;
-        cursor: default !important;
-        span {
-            color: $primary;
-        }
-
-        &:hover {
-            background: $primary-invert;
-            span {
-                color: $primary;
-            }
-        }
+    .ui-chkbox .ui-chkbox-box.ui-state-active {
+        background-color: $primary;
+        color: $primary-invert;
+        border-color: $primary;
     }
 }
 

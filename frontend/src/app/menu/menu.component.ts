@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { MenuItem } from 'primeng/primeng';
+import { MenuItem } from 'primeng/api';
 import { User } from '../models/index';
 import { CorpusService } from '../services/index';
 import { ConfigService, UserService } from '../services/index';
