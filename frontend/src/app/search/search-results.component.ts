@@ -87,7 +87,10 @@ export class SearchResultsComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        if (this.queryModel !== null) {
+        let empty_query = !this.queryModel.queryText && this.queryModel.filters.length == 0 &&
+            !this.queryModel.sortBy && !this.queryModel.sortAscending;
+
+        if (this.queryModel !== null && !empty_query) {
             this.queryText = this.queryModel.queryText;
             this.fromIndex = 0;
             this.maximumDisplayed = this.user.downloadLimit | 10000;
