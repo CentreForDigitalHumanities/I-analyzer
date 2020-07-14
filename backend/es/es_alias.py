@@ -13,7 +13,7 @@ def alias(corpus_name, corpus_definition, clean=False):
     client = elasticsearch(corpus_name)
 
     alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-    indices = client.indices.get('{}_*'.format(corpus_definition.es_index))
+    indices = client.indices.get('{}-*'.format(corpus_definition.es_index))
     highest_version = get_highest_version_number(indices)
 
     actions = []
