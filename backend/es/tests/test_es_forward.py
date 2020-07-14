@@ -69,7 +69,7 @@ FORWARD_CASES = {
     'search_unauthenticated': (
         False,
         'POST',
-        '/es/default/times/article/_search?size=20&scroll=3m',
+        '/es/default/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -78,14 +78,14 @@ FORWARD_CASES = {
             }},
             'filter': [],
         }}},
-        'http://localhost:9200/times/article/_search?size=20&scroll=3m',
+        'http://localhost:9200/times/_search?size=20&scroll=3m',
         None,
         401,
     ),
     'search_bogus': (
         True,
         'POST',
-        '/es/bogus/times/article/_search?size=20&scroll=3m',
+        '/es/bogus/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -94,14 +94,14 @@ FORWARD_CASES = {
             }},
             'filter': [],
         }}},
-        'http://localhost:9200/times/article/_search?size=20&scroll=3m',
+        'http://localhost:9200/times/_search?size=20&scroll=3m',
         None,
         404,
     ),
     'search_unauthorized': (
         True,
         'POST',
-        '/es/default/daily-mail/article/_search?size=20&scroll=3m',
+        '/es/default/daily-mail/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -110,23 +110,23 @@ FORWARD_CASES = {
             }},
             'filter': [],
         }}},
-        'http://localhost:9200/times/article/_search?size=20&scroll=3m',
+        'http://localhost:9200/times/_search?size=20&scroll=3m',
         None,
-        404,
+        401,
     ),
     'search_empty': (
         True,
         'POST',
-        '/es/default/times/article/_search?size=20&scroll=3m',
+        '/es/default/times/_search?size=20&scroll=3m',
         {},
-        'http://localhost:9200/times/article/_search?size=20&scroll=3m',
+        'http://localhost:9200/times/_search?size=20&scroll=3m',
         {'error': 'no query'},
         400,
     ),
     'search_success': (
         True,
         'POST',
-        '/es/default/times/article/_search?size=20&scroll=3m',
+        '/es/default/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -135,7 +135,7 @@ FORWARD_CASES = {
             }},
             'filter': [],
         }}},
-        'http://localhost:9200/times/article/_search?size=20&scroll=3m',
+        'http://localhost:9200/times/_search?size=20&scroll=3m',
         {'hits': {}},
         200,
     ),
