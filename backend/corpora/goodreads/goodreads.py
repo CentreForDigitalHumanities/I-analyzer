@@ -26,6 +26,7 @@ class GoodReads(XMLCorpus):
     max_date=datetime(2020, 12, 31)
     data_directory = current_app.config['GOODREADS_DATA']
     es_index = current_app.config['GOODREADS_ES_INDEX']
+    es_doctype = current_app.config['GOODREADS_ES_DOCTYPE']
     image = current_app.config['GOODREADS_IMAGE']
     visualize = []
 
@@ -102,7 +103,7 @@ class GoodReads(XMLCorpus):
             csv_core=True,
             results_overview=True,
             searchable=True,
-            visualization_type='word_cloud',
+            visualization_type='wordcloud',
         ),
         Field(
             name='language',
