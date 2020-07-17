@@ -4,7 +4,10 @@ import { FoundDocument } from './found-document';
 export type SearchResults = {
     fields?: CorpusField[],
     documents: FoundDocument[],
-    total: number
+    total: {
+        value: number,
+        relation: string
+    }
 }
 
 export type ResultOverview = {

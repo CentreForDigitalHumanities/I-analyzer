@@ -13,7 +13,7 @@ export class SearchResultsComponent implements OnChanges {
     /**
      * The search queryModel to use
      */
-    @ViewChild('resultsNavigation')
+    @ViewChild('resultsNavigation', {static: true})
     public resultsNavigation: ElementRef;
 
     @Input()
@@ -70,7 +70,7 @@ export class SearchResultsComponent implements OnChanges {
         if (this.queryModel !== null) {
             this.queryText = this.queryModel.queryText;
             this.fromIndex = 0;
-            this.maximumDisplayed = this.user.downloadLimit | 10000;
+            this.maximumDisplayed = this.user.downloadLimit ? this.user.downloadLimit : 10000;
             this.search();
         }
     }
@@ -80,7 +80,7 @@ export class SearchResultsComponent implements OnChanges {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
         // this introduces a box shadow
         if (this.resultsNavigation != undefined) {
-            this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y == 68;
+            this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y === 68;
         }
     }
 
@@ -91,9 +91,9 @@ export class SearchResultsComponent implements OnChanges {
             this.corpus
         ).then(results => {
             this.results = results;
-            this.results.documents.map( (d, i) => d.position = i + 1 );
-            this.searched(this.queryModel.queryText, this.results.total);
-            this.totalResults = this.results.total <= this.maximumDisplayed? this.results.total : this.maximumDisplayed;
+            this.results.documents.map((d, i) => d.position = i + 1);
+            this.searched(this.queryModel.queryText, this.results.total.value);
+            this.totalResults = this.results.total.value <= this.maximumDisplayed ? this.results.total.value : this.maximumDisplayed;
         }, error => {
             this.showError = {
                 date: (new Date()).toISOString(),

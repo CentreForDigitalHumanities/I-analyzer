@@ -387,7 +387,7 @@ def api_query():
         query = models.Query(
             query=query_json, corpus_name=corpus_name, user=current_user)
 
-    query.total_results = request.json['total_results']
+    query.total_results = request.json['total_results']['value']
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
         else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)

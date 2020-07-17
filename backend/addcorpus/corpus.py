@@ -66,20 +66,22 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
-    def es_doctype(self):
+    def es_alias(self):
         '''
-        ElasticSearch document type name.
+        Elasticsearch alias. Defaults to None.
         '''
-        raise NotImplementedError()
+        return None
 
     @property
     def es_settings(self):
         '''
         Dictionary containing ElasticSearch settings for the corpus' index.
-        Can be overridden in case we want, e.g., "AND" instead of "OR" for 
-        combining query terms.
+        Can be overridden in case we want, e.g., "AND" instead of "OR" for
+        combining query terms. By default contains the setting to ensure `number_of_replicas`
+        is zero on index creation (this is better while creating an index). Should you choose
+        to overwrite this, consider copying this setting.
         '''
-        return None
+        return { 'index' : { 'number_of_replicas' : 0 }}
 
     @property
     def fields(self):
@@ -126,20 +128,20 @@ class Corpus(object):
             return self.allow_image_download
 
     def description_page(self):
-        ''' 
+        '''
         URL to markdown document with a comprehensive description
         '''
         return None
 
     def update_body(self, **kwargs):
-        ''' given one document in the index, give an instruction 
+        ''' given one document in the index, give an instruction
         of how to update the index
         (based on script or partial data)
         '''
         return None
 
     def update_query(self, **kwargs):
-        ''' given the min date and max date of the 
+        ''' given the min date and max date of the
         time period for which the update should be performed,
         return a query restricting the result set
         Default is a match_all query.
@@ -149,10 +151,10 @@ class Corpus(object):
                 "match_all": {}
             }
         }
-    
+
     def request_media(self, document):
         '''
-        Get a dictionary with 
+        Get a dictionary with
         'media': list of urls from where media associated with a document can be fetched,
         'info': information for file download
         '''
@@ -163,22 +165,13 @@ class Corpus(object):
         Create the ElasticSearch mapping for the fields of this corpus. May be
         passed to the body of an ElasticSearch index creation request.
         '''
-        result = {
-            'mappings': {
-                self.es_doctype: {
-                    'properties': {
-                        field.name: field.es_mapping
-                        for field in self.fields
-                        if field.es_mapping and field.indexed
-                    }
-                }
+        return {
+            'properties': {
+                field.name: field.es_mapping
+                for field in self.fields
+                if field.es_mapping and field.indexed
             }
         }
-
-        if self.es_settings:
-            result['settings'] = self.es_settings
-
-        return result
 
     def json(self):
         '''
@@ -295,7 +288,8 @@ class XMLCorpus(Corpus):
                 extract.Combined,
                 extract.XML,
                 extract.Metadata,
-                extract.Constant
+                extract.Constant,
+                extract.ExternalFile
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
@@ -314,11 +308,11 @@ class XMLCorpus(Corpus):
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
         if 'external_file' in metadata:
-            external_fields = [field for field in self.fields if 
-                 isinstance(field.extractor, extract.XML) and 
-                 field.extractor.external_file]
-            regular_fields = [field for field in self.fields if 
-                 field not in external_fields]
+            external_fields = [field for field in self.fields if
+                               isinstance(field.extractor, extract.XML) and
+                               field.extractor.external_file]
+            regular_fields = [field for field in self.fields if
+                              field not in external_fields]
             external_soup = self.soup_from_xml(metadata['external_file'])
         else:
             regular_fields = self.fields
@@ -330,16 +324,17 @@ class XMLCorpus(Corpus):
         if bowl:
             for spoon in bowl.find_all(tag):
                 regular_field_dict = {field.name: field.extractor.apply(
-                        # The extractor is put to work by simply throwing at it
-                        # any and all information it might need
-                        soup_top=bowl,
-                        soup_entry=spoon,
-                        metadata=metadata
-                    ) for field in regular_fields if field.indexed}
+                    # The extractor is put to work by simply throwing at it
+                    # any and all information it might need
+                    soup_top=bowl,
+                    soup_entry=spoon,
+                    metadata=metadata
+                ) for field in regular_fields if field.indexed}
                 external_dict = {}
                 if external_fields:
                     metadata.update(regular_field_dict)
-                    external_dict = self.external_source2dict(external_soup, external_fields, metadata)        
+                    external_dict = self.external_source2dict(
+                        external_soup, external_fields, metadata)
                 # yield the union of external fields and document fields
                 yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
         else:
@@ -347,7 +342,7 @@ class XMLCorpus(Corpus):
                 'Top-level tag not found in `{}`'.format(filename))
 
     def external_source2dict(self, soup, external_fields, metadata):
-        ''' 
+        '''
         given an external xml file with metadata,
         return a dictionary with tags which were found in that metadata
         wrt to the current source.
@@ -408,7 +403,7 @@ class XMLCorpus(Corpus):
         '''
         Given a filename of an xml with metadata, and a range of tags to extract,
         return a dictionary of all the contents of the requested tags.
-        A tag can either be a string, or a dictionary: 
+        A tag can either be a string, or a dictionary:
         {
             "tag": "tag_to_extract",
             "attribute": attribute to additionally filter on, optional
@@ -430,11 +425,12 @@ class XMLCorpus(Corpus):
                                       candidate.attrs == tag['attribute']), None)
                 elif 'list' in tag:
                     if 'subtag' in tag:
-                        right_tag = [candidate.find(tag['subtag']) for candidate in candidates]
+                        right_tag = [candidate.find(
+                            tag['subtag']) for candidate in candidates]
                     else:
                         right_tag = candidates
                 elif 'subtag' in tag:
-                    right_tag = next((candidate.find(tag['subtag']) for candidate in candidates if 
+                    right_tag = next((candidate.find(tag['subtag']) for candidate in candidates if
                                       candidate.find(tag['subtag'])), None)
                 else:
                     right_tag = next((candidate for candidate in candidates if
@@ -531,7 +527,7 @@ class Field(object):
     - whether they appear in the overview of results (results_overview)
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
-    - whether they are associated with a visualization type (visualization_type) 
+    - whether they are associated with a visualization type (visualization_type)
         options: term_frequency, timeline, wordcloud
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
@@ -633,7 +629,7 @@ def after(year):
 
 
 def consolidate_start_end_years(start, end, min_date, max_date):
-    ''' given a start and end date provided by the user, make sure 
+    ''' given a start and end date provided by the user, make sure
     - that start is not before end
     - that start is not before min_date (corpus variable)
     - that end is not after max_date (corpus variable)

@@ -31,23 +31,23 @@ export class DocumentViewComponent implements OnChanges {
     public corpus: Corpus;
 
     @Input()
-    private tabIndex: number;
+    public documentTabIndex: number;
 
-    public index: number;
     public imgNotFound: boolean;
     public imgPath: string;
     public media: string[];
     public allowDownload: boolean;
     public mediaType: string;
 
+    public tabIndex: number;
+
     constructor() { }
 
     ngOnChanges() {
-        this.index = this.tabIndex;
+        this.tabIndex = this.documentTabIndex;
     }
 
-    public tabChange(event) {
-        this.index = event.index;
+    changeTabIndex(index: number) {
+        this.tabIndex = index;
     }
-
 }

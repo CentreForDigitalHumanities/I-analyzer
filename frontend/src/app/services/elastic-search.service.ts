@@ -21,7 +21,7 @@ export class ElasticSearchService {
                 connections[config.name] = {
                     config,
                     client: client
-                }
+                };
                 return connections;
             }, {}));
     }
@@ -55,11 +55,11 @@ export class ElasticSearchService {
                         filter: this.mapFilters(queryModel.filters),
                     }
                 }
-            }
+            };
         } else {
             query = {
                 'query': clause
-            }
+            };
         }
 
         if (queryModel.sortBy) {
@@ -76,20 +76,19 @@ export class ElasticSearchService {
     * Date fields are aggregated in year intervals
     */
     makeAggregation(aggregator: string, size?: number, min_doc_count?: number) {
-        let aggregation = {
+        const aggregation = {
             terms: {
                 field: aggregator,
                 size: size,
                 min_doc_count: min_doc_count
             }
-        }
+        };
         return aggregation;
     }
 
     private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
             index: index.index,
-            type: index.doctype,
             size: 0,
             body: aggregationModel
         }));
@@ -99,51 +98,56 @@ export class ElasticSearchService {
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
     private async execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number, from?: number) {
-        let connection = (await this.connections)[index.serverName];
+        const connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
             index: index.index,
-            type: index.doctype,
             from: from,
             size: size,
             body: esQuery
         });
     }
 
-    public async aggregateSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
-        let aggregations = {}
+    public async aggregateSearch<TKey>(
+        corpusDefinition: ElasticSearchIndex,
+        queryModel: QueryModel,
+        aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
+        const aggregations = {};
         aggregators.forEach(d => {
             aggregations[d.name] = this.makeAggregation(d.name, d.size, 1);
         });
-        let esQuery = this.makeEsQuery(queryModel);
-        let aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
-        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-        console.log(result);
-        let aggregateData = {}
+        const esQuery = this.makeEsQuery(queryModel);
+        const aggregationModel = Object.assign({ aggs: aggregations }, esQuery);
+        const result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
             aggregateData[fieldName] = result.aggregations[fieldName].buckets
-        })
+        });
         return {
             completed: true,
             aggregations: aggregateData
-        }
+        };
     }
 
-    public async dateHistogramSearch<TKey>(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
-        let agg = {
+    public async dateHistogramSearch<TKey>(
+        corpusDefinition: ElasticSearchIndex,
+        queryModel: QueryModel,
+        fieldName: string,
+        timeInterval: string): Promise<AggregateQueryFeedback> {
+        const agg = {
             [fieldName]: {
                 date_histogram: {
                     field: fieldName,
                     interval: timeInterval
                 }
             }
-        }
-        let esQuery = this.makeEsQuery(queryModel);
-        let aggregationModel = Object.assign({ aggs: agg }, esQuery);
-        let result = await this.executeAggregate(corpusDefinition, aggregationModel);
-        let aggregateData = {}
+        };
+        const esQuery = this.makeEsQuery(queryModel);
+        const aggregationModel = Object.assign({ aggs: agg }, esQuery);
+        const result = await this.executeAggregate(corpusDefinition, aggregationModel);
+        const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets
-        })
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
+        });
         return {
             completed: true,
             aggregations: aggregateData
@@ -156,7 +160,7 @@ export class ElasticSearchService {
         let connection = (await this.connections)[corpusDefinition.serverName];
         let esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response);
     }
 
@@ -164,11 +168,14 @@ export class ElasticSearchService {
     /**
      * Load results for requested page
      */
-    public async loadResults(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, from: number, size: number): Promise<SearchResults> {
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let esQuery = this.makeEsQuery(queryModel);
+    public async loadResults(
+        corpusDefinition: ElasticSearchIndex,
+        queryModel: QueryModel, from: number,
+        size: number): Promise<SearchResults> {
+        const connection = (await this.connections)[corpusDefinition.serverName];
+        const esQuery = this.makeEsQuery(queryModel);
         // Perform the search
-        let response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
+        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
         return this.parseResponse(response);
     }
 
@@ -204,9 +211,9 @@ export class ElasticSearchService {
     private mapFilters(filters: SearchFilter<SearchFilterData>[]) {
         return filters.map(filter => {
             switch (filter.currentData.filterType) {
-                case "BooleanFilter":
+                case 'BooleanFilter':
                     return { 'term': { [filter.fieldName]: filter.currentData.checked } };
-                case "MultipleChoiceFilter":
+                case 'MultipleChoiceFilter':
                     return {
                         'terms': {
                             [filter.fieldName]: _.map(filter.currentData.selected, f => {
@@ -214,21 +221,21 @@ export class ElasticSearchService {
                             })
                         }
                     };
-                case "RangeFilter":
+                case 'RangeFilter':
                     return {
                         'range': {
                             [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max }
                         }
-                    }
-                case "DateFilter":
+                    };
+                case 'DateFilter':
                     return {
                         'range': {
                             [filter.fieldName]: { gte: filter.currentData.min, lte: filter.currentData.max, format: 'yyyy-MM-dd' }
                         }
-                    }
+                    };
             }
         });
-    };
+    }
 }
 
 type Connection = {
@@ -270,42 +277,40 @@ type Aggregator = {
     size: number
 };
 
-type EsAggregateResult = {
-    [fieldName: string]: {
-        doc_count_error_upper_bound: number,
-        sum_other_doc_count: number,
-        buckets: AggregateResult[]
-    }
-}
-
 export class Client {
-    constructor(private http: HttpClient, private host: string){
-    };
+    constructor(private http: HttpClient, private host: string) {
+    }
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `${this.host}/${searchParams.index}/${searchParams.type}/_search`;
-
-        let options = { params: new HttpParams().set('size', searchParams.size.toString())}
+        const url = `${this.host}/${searchParams.index}/_search`;
+        const optionDict = {
+            'size': searchParams.size.toString(),
+            'track_total_hits': 'true'
+        };
         if (searchParams.from) {
-            options = { params: new HttpParams().set('size', searchParams.size.toString()).set('from', searchParams.from.toString())}
+            optionDict['from'] = searchParams.from.toString();
         }
-
-        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise()
+        const options = {
+            params: new HttpParams({ fromObject: optionDict })
+        };
+        return this.http.post<SearchResponse>(url, searchParams.body, options).toPromise();
     }
 }
 
 export interface SearchParams {
-    index: string,
-    type: string,
-    size: Number,
-    from?: Number,
-    body: EsQuery
+    index: string;
+    size: Number;
+    from?: Number;
+    body: EsQuery;
 }
 
 export interface SearchResponse {
     took: number;
     timed_out: boolean;
     hits: {
-        total: number;
+        total: {
+            value: number,
+            relation: string
+        }
         max_score: number;
         hits: Array<SearchHit>;
     };
@@ -313,7 +318,7 @@ export interface SearchResponse {
 }
 
 export interface SearchHit {
-    _id: string, 
-    _score: number, 
-    _source: {}
+    _id: string;
+    _score: number;
+    _source: {};
 }

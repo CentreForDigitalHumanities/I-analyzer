@@ -7,6 +7,7 @@ import bs4
 import html
 import re
 import logging
+import traceback
 logger = logging.getLogger('indexing')
 
 
@@ -35,6 +36,7 @@ class Extractor(object):
                 if self.transform:
                     return self.transform(result)
             except Exception:
+                logger.error(traceback.format_exc())
                 logger.critical("Value {v} could not be converted."
                                 .format(v=result))
                 return None
@@ -135,6 +137,9 @@ class XML(Extractor):
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
+                 transform_soup_func=None, # a function [e.g. `my_func(soup)`]` to transform the soup directly
+                    # after _select was called, i.e. before further processing (attributes, flattening, etc).
+                    # Keep in mind that the soup passed could be None.
                  *nargs,
                  **kwargs
                  ):
@@ -148,6 +153,7 @@ class XML(Extractor):
         self.multiple = multiple
         self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
+        self.transform_soup_func = transform_soup_func
         super().__init__(*nargs, **kwargs)
 
     def _select(self, soup, metadata=None):
@@ -202,6 +208,8 @@ class XML(Extractor):
         # Select appropriate BeautifulSoup element
         else:
             soup = self._select(soup_top if self.toplevel else soup_entry)
+        if self.transform_soup_func:
+            soup = self.transform_soup_func(soup)
         if not soup:
             return None
 
@@ -276,7 +284,7 @@ class HTML(XML):
         super().__init__(*nargs, **kwargs)
         self.attribute_filter = attribute_filter
 
-    def _select(self, soup):
+    def _select(self, soup, metadata):
         '''
         Return the BeautifulSoup element that matches the constraints of this
         extractor.
@@ -304,3 +312,27 @@ class HTML(XML):
             return soup.find_all(tag, recursive=self.recursive)
         else:
             return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
+
+
+class ExternalFile(Extractor):
+
+    def __init__(self, stream_handler, *nargs, **kwargs):
+        '''
+        Free for all external file extractor that provides a stream to `stream_handler`
+        to do whatever is needed to extract data from an external file. Relies on `associated_file`
+        being present in the metadata. Note that the XMLExtractor has a built in trick to extract
+        data from external files (i.e. setting `external_file`), so you probably need that if your
+        external file is XML.
+
+        Parameters:
+            folder -- folder where the file is located.
+            stream_handler -- function that will handle the opened file.
+        '''
+        super().__init__(*nargs, **kwargs)
+        self.stream_handler = stream_handler
+
+    def _apply(self, metadata, *nargs, **kwargs):
+        '''
+        Extract `associated_file` from metadata and call `self.stream_handler` with file stream.
+        '''
+        return self.stream_handler(open(metadata['associated_file'], 'r'))
