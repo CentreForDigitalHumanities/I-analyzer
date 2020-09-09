@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
+import { Resource, ResourceAction, ResourceParams,
+    ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
@@ -23,7 +24,7 @@ type QueryDb<TDateType> = {
         value: number,
         relation: string
     }
-}
+};
 
 @Injectable()
 @ResourceParams()
@@ -32,15 +33,6 @@ export class ApiService extends Resource {
 
     constructor(private config: ConfigService, restHandler: ResourceHandler) {
         super(restHandler);
-    }
-
-    $getUrl(actionOptions: IResourceAction): string | Promise<string> {
-        let urlPromise = super.$getUrl(actionOptions);
-        if (!this.apiUrl) {
-            this.apiUrl = this.config.get().then(config => config.apiUrl);
-        }
-
-        return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
     }
 
     @ResourceAction({
@@ -56,7 +48,7 @@ export class ApiService extends Resource {
     public wordcloud: ResourceMethod<
         { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
         { success: false, message: string } | { success: true, data: AggregateResult[] }>;
-    
+
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/wordcloud_tasks'
@@ -64,7 +56,7 @@ export class ApiService extends Resource {
     public wordcloudTasks: ResourceMethod<
         { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
         { success: false, message: string } | { success: true, task_ids: string[] }>;
-    
+
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/task_outcome/{task_id}'
@@ -79,8 +71,8 @@ export class ApiService extends Resource {
         path: '/abort_tasks/'
     })
     public abortTasks: ResourceMethod<
-    { task_ids: string[] }, 
-    { success: boolean }>
+    { task_ids: string[] },
+    { success: boolean }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -192,7 +184,7 @@ export class ApiService extends Resource {
     })
     public requestReset: ResourceMethod<
         { email: string },
-        { success: boolean, message:string }>;
+        { success: boolean, message: string }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -201,8 +193,7 @@ export class ApiService extends Resource {
     public resetPassword: ResourceMethod<
         { password: string, token: string },
         { success: boolean, message?: string, username?: string }
-    >
-    
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -217,7 +208,7 @@ export class ApiService extends Resource {
         path: '/ensure_csrf'
     })
     public ensureCsrf: ResourceMethod<void, { success: boolean }>;
-    
+
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/search_history'
@@ -255,4 +246,13 @@ export class ApiService extends Resource {
         responseBodyType: ResourceResponseBodyType.Text
     })
     public corpusdescription: ResourceMethod<{ filename: string, corpus: string }, any>;
+
+    $getUrl(actionOptions: IResourceAction): string | Promise<string> {
+        const urlPromise = super.$getUrl(actionOptions);
+        if (!this.apiUrl) {
+            this.apiUrl = this.config.get().then(config => config.apiUrl);
+        }
+
+        return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
+    }
 }

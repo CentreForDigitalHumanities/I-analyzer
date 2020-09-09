@@ -3,21 +3,31 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 
-import { HttpClient, HttpClientModule } from '@angular/common/http'
-import { HttpClientXsrfModule } from '@angular/common/http'
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NgxMdModule } from 'ngx-md';
-import { CalendarModule, ChartModule, DropdownModule, MultiSelectModule, SliderModule, MenuModule, DialogModule, CheckboxModule, SharedModule, TabViewModule, ConfirmDialogModule } from 'primeng/primeng';
+import { CalendarModule } from 'primeng/calendar';
+import { ChartModule } from 'primeng/chart';
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SliderModule } from 'primeng/slider';
+import { MenuModule } from 'primeng/menu';
+import { DialogModule } from 'primeng/dialog';
+import { CheckboxModule } from 'primeng/checkbox';
+import { SharedModule } from 'primeng/shared';
+import { TabViewModule } from 'primeng/tabview';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, 
+    ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
@@ -65,7 +75,7 @@ const appRoutes: Routes = [
         component: SearchComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
     }
-]
+];
 
 export const declarations: any[] = [
     AppComponent,
@@ -135,7 +145,6 @@ export const imports: any[] = [
     DialogModule,
     DropdownModule,
     FormsModule,
-    HttpModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrf_token',
@@ -153,7 +162,7 @@ export const imports: any[] = [
     SliderModule,
     TableModule,
     TabViewModule,
-]
+];
 
 export const providers: any[] = [
     ApiService,
@@ -199,5 +208,5 @@ export function resourceHandlerFactory(http: HttpClient) {
 export function initApp(api: ApiService): Function {
     return (): Promise<any> => {
         return api.ensureCsrf();
-    }
+    };
 }

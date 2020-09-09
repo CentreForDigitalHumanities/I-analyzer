@@ -1,6 +1,6 @@
 import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel } from '../models/index';
 import { SearchService, ApiService } from '../services/index';

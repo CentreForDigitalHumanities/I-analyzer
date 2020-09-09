@@ -70,6 +70,14 @@
     }
 
     .ui-menuitem .ui-menuitem-link {
-        color: $text-primary-color;
+        .ui-menuitem-text, .ui-menuitem-icon {
+            color: $text-primary-color;
+        }
+        &:hover {
+            background-color: $contrast-primary-color;
+            .ui-menuitem-text, .ui-menuitem-icon {
+                color: $text-primary-color;
+            }
+        }
     }
 }

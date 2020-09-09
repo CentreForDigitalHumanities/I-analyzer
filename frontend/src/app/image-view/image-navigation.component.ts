@@ -1,6 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnChanges } from '@angular/core';
-import { NumberValueAccessor } from '@angular/forms/src/directives';
-import { curveBasisOpen } from 'd3';
 
 @Component({
   selector: 'ia-image-navigation',

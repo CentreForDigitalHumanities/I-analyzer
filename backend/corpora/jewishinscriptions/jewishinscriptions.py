@@ -21,6 +21,7 @@ class JewishInscriptions(XMLCorpus):
     max_date = datetime(year=849, month=12, day=31)
     data_directory = current_app.config['JEWISH_INSCRIPTIONS_DATA']
     es_index = current_app.config['JEWISH_INSCRIPTIONS_ES_INDEX']
+    es_doctype = current_app.config['JEWISH_INSCRIPTIONS_ES_DOCTYPE']
     image = current_app.config['JEWISH_INSCRIPTIONS_IMAGE']
     visualize = []
 
