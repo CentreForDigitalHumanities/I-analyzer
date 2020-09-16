@@ -31,7 +31,7 @@
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents; last as isLast" class="document box" #resultdoc role="button">
             <div class="columns">
-                <div class="column is-flex" (click)=onViewDocument(document)>
+                <div class="column is-flex" (click)=onViewDocument(document, isLast, $event)>
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">

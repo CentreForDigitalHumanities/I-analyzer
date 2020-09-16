@@ -119,7 +119,6 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
                 .on('mouseover', (d,i) => {
                     const yPos = this.height + 5 * this.margin.top;
                     const xPos = this.xScale(i);
-                    console.log(xPos);
                     this.tooltip
                         .text(d.key)
                         .style('left', xPos + 'px')
