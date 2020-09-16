@@ -43,7 +43,6 @@ def load_corpus(corpus_name):
     corpus_name = regex.sub('', corpus_name)
     endpoint = next((attr for attr in dir(corpus_mod)
                      if attr.lower() == corpus_name), None)
-
     corpus_class = getattr(corpus_mod, endpoint)
     return corpus_class()
 

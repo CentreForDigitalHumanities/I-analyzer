@@ -11,6 +11,7 @@ from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
+from addcorpus.load_corpus import corpus_dir
 
 
 class DutchAnnualReports(XMLCorpus):
@@ -23,17 +24,18 @@ class DutchAnnualReports(XMLCorpus):
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
     es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
+    es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
     image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
     allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
-    filename = op.join(op.dirname(current_app.config['CORPORA']['dutchannualreports']),
-        current_app.config['WM_PATH'], 
+    filename = op.join(corpus_dir('dutchannualreports'),
+        current_app.config['WM_PATH'],
         current_app.config['WM_BINNED_FN'])
     word_models_present = op.isfile(
         op.join(
-            op.dirname(current_app.config['CORPORA']['dutchannualreports']),
-            current_app.config['WM_PATH'], 
+            corpus_dir('dutchannualreports'),
+            current_app.config['WM_PATH'],
             current_app.config['WM_BINNED_FN']
         )
     )
@@ -50,7 +52,7 @@ class DutchAnnualReports(XMLCorpus):
 
     dutchannualreports_map = {}
 
-    with open(op.join(op.dirname(current_app.config['CORPORA']['dutchannualreports']),
+    with open(op.join(corpus_dir('dutchannualreports'),
      current_app.config['DUTCHANNUALREPORTS_MAP_FILE'])) as f:
         reader = csv.DictReader(f)
         for line in reader:
@@ -211,11 +213,11 @@ class DutchAnnualReports(XMLCorpus):
     ]
 
     def request_media(self, document):
-        image_path = document['fieldValues']['image_path'] 
+        image_path = document['fieldValues']['image_path']
         pdf_info = get_pdf_info(op.join(self.data_directory, image_path))
         pages_returned = 5 #number of pages that is displayed. must be odd number.
          #the page corresponding to the document
-        home_page = int(document['fieldValues']['page'])    
+        home_page = int(document['fieldValues']['page'])
         pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
         pdf_info = {
             "pageNumbers": [p for p in pages], #change from 0-indexed to real page
@@ -223,7 +225,7 @@ class DutchAnnualReports(XMLCorpus):
             "fileName": pdf_info['filename'],
             "fileSize": pdf_info['filesize']
         }
-        image_url = url_for('api.api_get_media', 
+        image_url = url_for('api.api_get_media',
             corpus=self.es_index,
             image_path=image_path,
             start_page=pages[0]-1,
@@ -231,10 +233,10 @@ class DutchAnnualReports(XMLCorpus):
             _external=True
         )
         return {'media': [image_url], 'info': pdf_info}
-        
-       
+
+
     def get_media(self, request_args):
-        ''' 
+        '''
         Given the image path and page number of the search result,
         construct a new pdf which contains 2 pages before and after.
         '''
@@ -246,6 +248,6 @@ class DutchAnnualReports(XMLCorpus):
             return None
         input_pdf = retrieve_pdf(absolute_path)
         pages = range(start_page, end_page)
-        out = build_partial_pdf(pages, input_pdf)         
+        out = build_partial_pdf(pages, input_pdf)
         return out
-        
+

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/finally';
-import 'rxjs/add/operator/map';
+
+
 
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';

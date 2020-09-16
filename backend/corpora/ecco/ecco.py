@@ -3,7 +3,7 @@ Collect corpus-specific information, that is, data structures and file
 locations.
 '''
 import os
-from os.path import join, dirname, isfile, split, splitext
+from os.path import join, isfile, split, splitext
 from datetime import datetime, timedelta
 import logging
 import re
@@ -14,7 +14,7 @@ from flask import current_app, url_for
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from addcorpus.image_processing import get_pdf_info, retrieve_pdf
+from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 
 
 # Source files ################################################################
@@ -28,6 +28,7 @@ class Ecco(XMLCorpus):
 
     data_directory = current_app.config['ECCO_DATA']
     es_index = current_app.config['ECCO_ES_INDEX']
+    es_doctype = current_app.config['ECCO_ES_DOCTYPE']
     image = current_app.config['ECCO_IMAGE']
     scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
     es_settings = None
@@ -154,7 +155,7 @@ class Ecco(XMLCorpus):
                 extractor=Metadata('ocr'),
                 es_mapping={'type': 'float'},
                 search_filter=filters.RangeFilter(
-                    0, 
+                    0,
                     100,
                     description=(
                         'Accept only book pages for which the Opitical Character Recognition '
@@ -240,28 +241,39 @@ class Ecco(XMLCorpus):
 
     def request_media(self, document):
         image_path = document['fieldValues']['image_path']
-        image_url = url_for('api.api_get_media', 
+        pages_returned = 5 #number of pages that is displayed. must be odd number.
+         #the page corresponding to the document
+        home_page = int(document['fieldValues']['page'])
+        pdf_info = get_pdf_info(join(self.data_directory, image_path))
+        pages, home_page_index = pdf_pages(pdf_info['all_pages'], pages_returned, home_page)
+        pdf_info = {
+            "pageNumbers": [p for p in pages], #change from 0-indexed to real page
+            "homePageIndex": home_page_index+1, #change from 0-indexed to real page
+            "fileName": pdf_info['filename'],
+            "fileSize": pdf_info['filesize']
+        }
+        image_url = url_for('api.api_get_media',
             corpus=self.es_index,
             image_path=image_path,
-            page_no=document['fieldValues']['page'],
+            start_page=pages[0]-1,
+            end_page=pages[-1],
             _external=True
         )
-        pdf_stats = get_pdf_info(join(self.data_directory, image_path))
-        return {'media': [image_url], 'info': pdf_stats}
-    
-    
+        return {'media': [image_url], 'info': pdf_info}
+
+
     def get_media(self, request_args):
+        '''
+        Given the image path and page number of the search result,
+        construct a new pdf which contains 2 pages before and after.
+        '''
         image_path = request_args['image_path']
-        filename = '{}.pdf'.format(split(image_path)[1])
-        full_path = join(image_path, filename)
-        page_no = request_args['page_no']
-        pdf_data = retrieve_pdf(full_path)
-        pdf_info = {
-            "pageNumbers": pdf_stats['all_pages'], #change from 0-indexed to real page
-            "homePageIndex": page_no, #change from 0-indexed to real page
-            "fileName": filename,
-            "fileSize": pdf_stats['filesize']
-        }
-        with open(full_path, 'rb') as f:
-            pdf_data = f.read()
-        return BytesIO(pdf_data), pdf_info
+        start_page = int(request_args['start_page'])
+        end_page = int(request_args['end_page'])
+        absolute_path = join(self.data_directory, image_path)
+        if not isfile(absolute_path):
+            return None
+        input_pdf = retrieve_pdf(absolute_path)
+        pages = range(start_page, end_page)
+        out = build_partial_pdf(pages, input_pdf)
+        return out

@@ -43,6 +43,7 @@ export class SearchSortingComponent {
     public changeField(field: CorpusField | undefined) {
         if (field === undefined) {
             this.valueType = defaultValueType;
+            this.ascending = false;
         } else {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }

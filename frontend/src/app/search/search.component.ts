@@ -1,9 +1,12 @@
+
+import {combineLatest as observableCombineLatest } from 'rxjs';
+
+import {filter} from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { Observable } from 'rxjs';
-import "rxjs/add/operator/filter";
-import "rxjs/add/observable/combineLatest";
-import * as _ from "lodash";
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/observable/combineLatest';
+import * as _ from 'lodash';
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
@@ -19,10 +22,10 @@ export class SearchComponent implements OnInit {
      * (after results are rendered, see event on ia-search-results / on ResultsRendered).
      * Required to support displaying search page in iframe.
      */
-    @ViewChild('fullContent')
+    @ViewChild('fullContent', {static: true})
     public _fullContent: ElementRef;
 
-    @ViewChild('searchSection')
+    @ViewChild('searchSection', {static: true})
     public searchSection: ElementRef;
 
     /**
@@ -38,13 +41,13 @@ export class SearchComponent implements OnInit {
     /**
      * The filters have been modified.
      */
-    public hasModifiedFilters: boolean = false;
+    public hasModifiedFilters = false;
     public isSearching: boolean;
     public hasSearched: boolean;
     /**
      * Whether the total number of hits exceeds the download limit.
      */
-    public hasLimitedResults: boolean = false;
+    public hasLimitedResults = false;
     /**
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
@@ -70,7 +73,7 @@ export class SearchComponent implements OnInit {
     public sortAscending: boolean;
     public sortField: CorpusField | undefined;
 
-    public resultsCount: number = 0;
+    public resultsCount = 0;
     public tabIndex: number;
 
     private searchFilters: SearchFilter<SearchFilterData>[] = [];
@@ -88,12 +91,12 @@ export class SearchComponent implements OnInit {
 
     async ngOnInit() {
         this.user = await this.userService.getCurrentUser();
-        Observable.combineLatest(
+        observableCombineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
             (corpus, params) => {
                 return { corpus, params };
-            }).filter(({ corpus, params }) => !!corpus)
+            }).pipe(filter(({ corpus, params }) => !!corpus))
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
@@ -101,7 +104,7 @@ export class SearchComponent implements OnInit {
                 this.setFiltersFromParams(this.searchFilters, params);
                 this.setSearchFieldsFromParams(params);
                 this.setSortFromParams(this.corpus.fields, params);
-                let queryModel = this.createQueryModel();
+                const queryModel = this.createQueryModel();
                 if (this.queryModel !== queryModel) {
                     this.queryModel = queryModel;
                 }
@@ -114,7 +117,7 @@ export class SearchComponent implements OnInit {
         }
     }
 
-    @HostListener("window:scroll", [])
+    @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
@@ -142,8 +145,8 @@ export class SearchComponent implements OnInit {
 
     public search() {
         this.queryModel = this.createQueryModel();
-        let route = this.searchService.queryModelToRoute(this.queryModel);
-        let url = this.router.serializeUrl(this.router.createUrlTree(
+        const route = this.searchService.queryModelToRoute(this.queryModel);
+        const url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
             { relativeTo: this.activatedRoute },
         ));
@@ -173,13 +176,14 @@ export class SearchComponent implements OnInit {
     }
 
     private getQueryFields(): string[] | null {
-        let fields = this.selectedSearchFields.map(field => field.name);
-        if (!fields.length) return null;
+        const fields = this.selectedSearchFields.map(field => field.name);
+        if (!fields.length) { return null; }
         return fields;
     }
 
     private createQueryModel() {
-        return this.searchService.createQueryModel(this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
+        return this.searchService.createQueryModel(
+            this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
     }
 
     /**
@@ -187,13 +191,13 @@ export class SearchComponent implements OnInit {
      */
 
     private setCorpus(corpus: Corpus) {
-        if (!this.corpus || this.corpus.name != corpus.name) {
+        if (!this.corpus || this.corpus.name !==corpus.name) {
             this.corpus = corpus;
             this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
-            this.searchFilters.map(filter => filter.currentData = filter.defaultData);
+            this.searchFilters.map(fil => fil.currentData = fil.defaultData);
             this.activeFilters = [];
         }
     }
@@ -202,27 +206,26 @@ export class SearchComponent implements OnInit {
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
     private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        searchFilters.forEach(f => {
-            let param = this.searchService.getParamForFieldName(f.fieldName);
+        searchFilters.forEach( f => {
+            const param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
                 if (this.showFilters == undefined) {
                     this.showFilters = true;
                 }
                 let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] == "") filterSettings = [];
-                f.currentData = searchFilterDataFromParam(f.fieldName, f.currentData.filterType, filterSettings);
+                if (filterSettings[0] === '') { filterSettings = []; }
+                f.currentData = searchFilterDataFromParam(f.currentData.filterType, filterSettings);
                 f.useAsFilter = true;
-            }
-            else {
+            } else {
                 f.useAsFilter = false;
             }
-        })
-        this.activeFilters = searchFilters.filter(f => f.useAsFilter);
+        });
+        this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
         if (params.has('fields')) {
-            let queryRestriction = params.get('fields').split(',');
+            const queryRestriction = params.get('fields').split(',');
             this.selectedSearchFields = queryRestriction.map(
                 fieldName => this.corpus.fields.find(
                     field => field.name === fieldName
@@ -233,9 +236,9 @@ export class SearchComponent implements OnInit {
 
     private setSortFromParams(corpusFields: CorpusField[], params: ParamMap) {
         if (params.has('sort')) {
-            let [sortField, sortAscending] = params.get('sort').split(',');
-            this.sortField = corpusFields.find(field => field.name == sortField);
-            this.sortAscending = sortAscending == 'asc';
+            const [sortField, sortAscending] = params.get('sort').split(',');
+            this.sortField = corpusFields.find(field => field.name === sortField);
+            this.sortAscending = sortAscending === 'asc';
         } else {
             this.sortField = undefined;
         }
@@ -244,10 +247,6 @@ export class SearchComponent implements OnInit {
     public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
         this.activeFilters = activeFilters;
         this.search();
-    }
-
-    private tabChange(event) {
-        this.tabIndex = event.index;
     }
 
     private selectSearchFields(selection: CorpusField[]) {
