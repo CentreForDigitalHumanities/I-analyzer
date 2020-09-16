@@ -15,7 +15,7 @@ class TOL(PeacePortal):
 
     def __init__(self):
         self.source_database.extractor = Constant(
-            value='TOL'
+            value='Medieval funerary inscriptions from Toledo'
         )
 
         self._id.extractor = XML(
@@ -68,15 +68,6 @@ class TOL(PeacePortal):
             transform=lambda x: clean_newline_characters(x),
             transform_soup_func=extract_transcript
         )
-
-        # self.transcription_german.extractor = XML(
-        #     tag=['text', 'body', ],
-        #     toplevel=False,
-        #     multiple=False,
-        #     flatten=True,
-        #     transform=lambda x: clean_newline_characters(x),
-        #     transform_soup_func=extract_translation
-        # )
 
         self.names.extractor = XML(
             tag=['teiHeader', 'profileDesc',
