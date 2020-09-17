@@ -66,7 +66,7 @@
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true"
     [resizable]="false" [blockScroll]="true" *ngIf="viewDocument" [positionTop]="detailTop">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus"
-        [tabIndex]="documentTabIndex"></ia-document-view>
+        [documentTabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>
