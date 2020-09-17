@@ -17,8 +17,8 @@ class GoodReads(XMLCorpus):
     """ Home-scraped XML corpus of GoodReads reviews. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = "GoodReads reviews"
-    description = "A collection of reviews from GoodReads.com"
+    title = "DIOPTRA-L"
+    description = "Goodreads reviews of contemporary literary texts that have been translated from and into the following languages: Afrikaans, Dutch, English, French, German, Italian, Portuguese and Spanish. A variety of genres are represented, and the corpus is searchable by, for example, language pair, author, title and genre. For more information, or suggestions, please contact Haidee Kotze (h.kotze (at) uu.nl) and Gys-Walt van Egdom (g.m.w.vanegdom (at) uu.nl)"
 
     tag_entry = 'review'
 
