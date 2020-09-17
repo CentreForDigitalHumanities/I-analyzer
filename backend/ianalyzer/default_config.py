@@ -100,6 +100,9 @@ DUTCHNEWSPAPERS_ALL_ES_INDEX = 'dutchnewspapers-all'
 # remember to set this in config.py
 DUTCHNEWSPAPERS_ALL_DATA = '/directory/to/data'
 
+GOODREADS_DESCRIPTION_PAGE = 'goodreads.md'
+GOODREADS_IMAGE = 'DioptraL.png'
+
 JEWISH_INSCRIPTIONS_IMAGE = 'jewish_inscriptions.jpg'
 
 TIMES_ES_INDEX = 'times'

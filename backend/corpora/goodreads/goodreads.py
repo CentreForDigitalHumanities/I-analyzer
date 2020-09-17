@@ -18,7 +18,7 @@ class GoodReads(XMLCorpus):
 
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = "DIOPTRA-L"
-    description = "Goodreads reviews of contemporary literary texts that have been translated from and into the following languages: Afrikaans, Dutch, English, French, German, Italian, Portuguese and Spanish. A variety of genres are represented, and the corpus is searchable by, for example, language pair, author, title and genre. For more information, or suggestions, please contact Haidee Kotze (h.kotze (at) uu.nl) and Gys-Walt van Egdom (g.m.w.vanegdom (at) uu.nl)"
+    description = "Goodreads reviews of translated literary texts"
 
     tag_entry = 'review'
 
@@ -27,6 +27,7 @@ class GoodReads(XMLCorpus):
     data_directory = current_app.config['GOODREADS_DATA']
     es_index = current_app.config['GOODREADS_ES_INDEX']
     image = current_app.config['GOODREADS_IMAGE']
+    description_page = current_app.config['GOODREADS_DESCRIPTION_PAGE']
     visualize = []
 
     # New data members
