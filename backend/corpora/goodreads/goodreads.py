@@ -17,8 +17,8 @@ class GoodReads(XMLCorpus):
     """ Home-scraped XML corpus of GoodReads reviews. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
-    title = "GoodReads reviews"
-    description = "A collection of reviews from GoodReads.com"
+    title = "DIOPTRA-L"
+    description = "Goodreads reviews of translated literary texts"
 
     tag_entry = 'review'
 
@@ -27,6 +27,7 @@ class GoodReads(XMLCorpus):
     data_directory = current_app.config['GOODREADS_DATA']
     es_index = current_app.config['GOODREADS_ES_INDEX']
     image = current_app.config['GOODREADS_IMAGE']
+    description_page = current_app.config['GOODREADS_DESCRIPTION_PAGE']
     visualize = []
 
     # New data members

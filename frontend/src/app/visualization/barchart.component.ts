@@ -124,7 +124,7 @@ export class BarChartComponent {
             this.xAxisClass.tickFormat(d3Format.format(''));
         }
         if (tickMarks) {
-            this.xAxisClass.ticks(tickMarks)
+            this.xAxisClass.ticks(tickMarks);
         }
         this.xAxis = this.svg.append('g')
             .attr('class', 'axis-x')

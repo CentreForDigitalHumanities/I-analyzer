@@ -39,8 +39,8 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);
             this.rescaleY(this.asPercent);
-            this.drawChartData();
             this.setupBrushBehaviour();
+            this.drawChartData();
             this.setupTooltip();
         } else if (changes['asPercent'] !== undefined) {
             if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
@@ -73,7 +73,6 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
         const update = this.chart
             .selectAll('.bar')
-            .attr('clip-path', 'url(#my-clip-path)')
             .data(this.searchData);
 
         // remove exiting bars
@@ -120,13 +119,13 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
                 .on('mouseover', (d,i) => {
                     const yPos = this.height + 5 * this.margin.top;
                     const xPos = this.xScale(i);
+                    console.log(xPos);
                     this.tooltip
                         .text(d.key)
                         .style('left', xPos + 'px')
                         .style('top', yPos + 'px')
-                        .style('visibility', 'visible')
-                })
-                .on('mouseout', () => this.tooltip.style('visibility', 'hidden'))
+                        .style('visibility', 'visible');
+                }).on('mouseout', () => this.tooltip.style('visibility', 'hidden'));
         } else {
             // add new bars, without tooltips
             update
