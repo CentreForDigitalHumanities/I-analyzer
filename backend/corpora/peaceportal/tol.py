@@ -8,7 +8,6 @@ from corpora.peaceportal.peaceportal import PeacePortal, categorize_material, cl
 
 
 class TOL(PeacePortal):
-
     data_directory = current_app.config['PEACEPORTAL_TOL_DATA']
     es_index = current_app.config['PEACEPORTAL_TOL_ES_INDEX']
     es_alias = current_app.config['PEACEPORTAL_ALIAS']
