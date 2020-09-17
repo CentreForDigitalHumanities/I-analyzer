@@ -11,15 +11,14 @@ export class ScanImageComponent implements AfterViewInit, OnChanges {
     @Input() public imagePaths: string[];
     @Input() public zoomFactor: number;
     @Input() public showPage: number;
-    
-    @ViewChild('imageContainer') public container: ElementRef;
+    @ViewChild('imageContainer', {static: true}) public container: ElementRef;
 
     public viewer: any = null;
 
 
     ngAfterViewInit() {
         this.viewer = new ImageViewer(this.container.nativeElement);
-        this.showCurrentImage();    
+        this.showCurrentImage();
     }
 
     ngOnChanges(changes: SimpleChanges) {

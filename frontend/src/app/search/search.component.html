@@ -77,25 +77,30 @@
                 </div>
                 <!-- search results, on right -->
                 <div class="is-boxed column is-9" *ngIf="queryModel">
-                    <p-tabView styleClass="is-content" [activeIndex]="tabIndex" (onChange)="tabChange($event)">
-                        <p-tabPanel header="Search Results" leftIcon="fa fa-list">
-                            <div class="column">
-                                <ia-search-results [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                                    (searched)="onSearched($event)" (resultsRendered)='onResultsRendered($event)'>
-                                    <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending"
-                                        [fields]="corpus.fields" (onChange)="changeSorting($event)" ></ia-search-sorting>
-                                </ia-search-results>
-                            </div>
-                        </p-tabPanel>
-                        <p-tabPanel header="Visualizations" leftIcon="fa fa-bar-chart">
-                            <ng-template pTemplate="content">
-                                <div class="column">
-                                    <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [queryModel]="queryModel"
-                                        [resultsCount]="resultsCount"></ia-visualization>
-                                </div>
-                            </ng-template>
-                        </p-tabPanel>
-                    </p-tabView>
+                    <div class="tabs is-boxed">
+                        <ul>
+                            <li [ngClass]="{'is-active': tabIndex==0}">
+                                <a (click)="tabIndex=0">
+                                    <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
+                                    <span>Search Results</span>
+                                </a>
+                            </li>
+                            <li [ngClass]="{'is-active': tabIndex==1}">
+                                <a (click)="tabIndex=1">
+                                    <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                    <span>Visualizations</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <ia-search-results *ngIf="tabIndex==0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
+                            (searched)="onSearched($event)">
+                            <ia-search-sorting [sortField]="sortField" [ascending]="sortAscending" [fields]="corpus.fields"
+                                (onChange)="changeSorting($event)"></ia-search-sorting>
+                        </ia-search-results>
+                        <ia-visualization *ngIf="tabIndex==1" [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount"></ia-visualization>
+                    </div>
                 </div>
             </div>
         </div>

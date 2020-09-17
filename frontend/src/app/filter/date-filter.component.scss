@@ -1,3 +1,8 @@
-::ng-deep .ui-calendar {
+@import "../../_utilities";
+
+::ng-deep .ui-datepicker {
     margin: 1px 0;
+    .ui-state-active {
+        background-color: $primary !important;
+    };
 }

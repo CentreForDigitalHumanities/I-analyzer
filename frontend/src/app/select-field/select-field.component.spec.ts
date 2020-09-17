@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { MultiSelectModule } from 'primeng/primeng';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { SelectFieldComponent } from './select-field.component';
 import { BalloonDirective } from '../balloon.directive';

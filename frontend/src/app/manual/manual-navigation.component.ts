@@ -1,7 +1,8 @@
+
+import { combineLatest as observableCombineLatest,  BehaviorSubject, Subject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DialogService, ManualPageMetaData, HighlightService } from '../services';
-import "rxjs/add/observable/combineLatest";
 
 @Component({
     selector: 'ia-manual-navigation',
@@ -11,13 +12,13 @@ import "rxjs/add/observable/combineLatest";
 export class ManualNavigationComponent implements OnInit {
     private manifest = new Subject<ManualPageMetaData[]>();
     private filterTextSubject = new BehaviorSubject<string>('');
-    public filtered = Observable.combineLatest(
+    public filtered = observableCombineLatest(
         this.manifest,
         this.filterTextSubject,
         (manifest, filterText) => {
             return { manifest, filterText };
         })
-        .map(({ manifest, filterText }) => Array.from(this.filter(manifest, filterText)));
+        .pipe(map(({ manifest, filterText }) => Array.from(this.filter(manifest, filterText))));
 
     public set filterText(value: string) {
         this.filterTextSubject.next(value)

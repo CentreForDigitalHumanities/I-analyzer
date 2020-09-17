@@ -1,15 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { Observable } from 'rxjs';
-
-import { SharedModule, DropdownModule } from 'primeng/primeng';
-import { ChartModule } from 'primeng/chart'
+import { SharedModule } from 'primeng/shared';
+import { DropdownModule } from 'primeng/dropdown';
+import { ChartModule } from 'primeng/chart';
 import { TableModule } from 'primeng/table';
 
 import { BarChartComponent } from './barchart.component';
 import { WordcloudComponent } from './wordcloud.component';
-import { FreqtableComponent } from './freqtable.component'
+import { FreqtableComponent } from './freqtable.component';
 import { TimelineComponent } from './timeline.component';
 import { RelatedWordsComponent } from './related-words.component';
 import { VisualizationComponent } from './visualization.component';
@@ -60,7 +59,7 @@ describe('VisualizationComponent', () => {
     it('should be created', () => {
         expect(component).toBeTruthy();
     });
-    
+
     afterAll(() => {
         fixture.destroy();
     });

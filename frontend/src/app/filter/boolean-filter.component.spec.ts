@@ -15,6 +15,19 @@ describe('BooleanFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(BooleanFilterComponent);
     component = fixture.componentInstance;
+    component.filter = {
+        fieldName: 'A yes/no question',
+        description: 'What is the average speed of a swallow?',
+        useAsFilter: false,
+        defaultData: {
+            filterType: 'BooleanFilter',
+            checked: false
+        },
+        currentData: {
+            filterType: 'BooleanFilter',
+            checked: true
+        }
+    };
     fixture.detectChanges();
   });
 

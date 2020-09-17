@@ -53,7 +53,7 @@ $inputTextColor: $text;
 $invalidInputBorderColor: $danger;
 $inputGroupTextColor: $text;
 
-@import "~primeng/resources/themes/_theme.scss";
+@import "~primeng/resources/themes/nova-light/theme.css";
 
 .ui-button {
     @extend .button;
@@ -90,6 +90,7 @@ $inputGroupTextColor: $text;
         border: none;
         height: calc(100% + 2px);
         margin: -1px 0;
+        background-color: $primary
     }
 }
 
@@ -99,47 +100,37 @@ $inputGroupTextColor: $text;
 }
 
 .ui-widget-header {
-    border: 1px solid $primary;
     background-color: $contrast-primary-color;
     color: $text-primary-color;
     font-weight: bold;
 }
 
-// All styling for the tabview
-.ui-tabview {
-    background-color: $primary-invert;
-    border: 0px;
-}
+body {
+    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item {
+        &.ui-state-highlight {
+            background-color: $stateHighlightBgColor;
+            color: $stateHighlightTextColor;
+        }
 
-.ui-tabview-nav {
-    padding: 0em 0em 0 !important;
-    border: 0px solid $primary;
-    background-color: $primary-invert;
-    border-bottom-color: $primary;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-radius: 0;
-
-    li {
-        top: 2px !important;
+        &:hover {
+            background-color: $primary;
+            color: $primary-invert;
+        }
     }
 
-    .ui-state-default a {
-        color: $primary-invert;
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+        background-color: $stateHighlightBgColor;
+        color: $stateHighlightTextColor;
+        &:hover {
+            background-color: $primary;
+            color: $primary-invert;
+        }
+    }
+
+    .ui-chkbox .ui-chkbox-box.ui-state-active {
         background-color: $primary;
-    }
-
-    .ui-state-default a:hover {
-        background: $contrast-primary-color;
         color: $primary-invert;
-        cursor: pointer;
-    }
-
-    .ui-state-active a,
-    .ui-state-active a:hover {
-        background-color: $primary-invert;
-        color: $primary;
-        cursor: default !important;
+        border-color: $primary;
     }
 }
 
