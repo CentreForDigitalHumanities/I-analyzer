@@ -7951,10 +7951,10 @@ primeicons@^1.0.0:
   resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-1.0.0.tgz#90061f168ef6227f21f0a7db8204ffa85cd27aec"
   integrity sha512-p/hzIjUVccW4eJPhuORHI3AUkDpqfvCQVrjxbFEejnTEdWY4C8fomVfjiaA9jCu83fSQnBHuRIGB96iAR8R6uA==
 
-primeng@8.0:
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/primeng/-/primeng-8.0.4.tgz#ca4928c57cd8aa30db01369223898181f74d2d3b"
-  integrity sha512-yLgX3bqB6exgocMhMXm/mOEQmfsaSO6qw+FTb6WEEEPA9vmJ1YRktz8F5nyCWcRc59LzNEZ7n87Fwo8cjArQBQ==
+primeng@9.0:
+  version "9.0.6"
+  resolved "https://registry.yarnpkg.com/primeng/-/primeng-9.0.6.tgz#b0d8350428722aaab2f5d4a65d3d06b5d4f673e0"
+  integrity sha512-RGVTkXwHTb7609zTU/uJFYdbJV124kOwrMiwnHjFn6UkwmS3yTX0Kkr21v8KOTJqsKLq3OWVYhkOwvUklipAAg==
 
 prismjs@^1.15.0:
   version "1.21.0"

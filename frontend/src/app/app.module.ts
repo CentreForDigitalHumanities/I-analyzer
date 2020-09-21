@@ -17,7 +17,7 @@ import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
-import { SharedModule } from 'primeng/shared';
+// import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
@@ -196,7 +196,7 @@ export const imports: any[] = [
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
     }),
     RouterModule.forRoot(appRoutes),
-    SharedModule,
+    // SharedModule,
     SliderModule,
     TableModule,
     TabViewModule,

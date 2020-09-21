@@ -1,12 +1,9 @@
 
 import {combineLatest as observableCombineLatest } from 'rxjs';
-
 import {filter} from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import "rxjs/add/operator/filter";
-import "rxjs/add/observable/combineLatest";
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
