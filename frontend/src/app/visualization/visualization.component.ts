@@ -49,8 +49,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     private childComponentLoading: boolean = false;
 
     // aggregate search expects a size argument
-    public defaultSize: number = 10000;
-    private batchSizeWordcloud: number = 1000;
+    public defaultSize = 10000;
+    private batchSizeWordcloud = 1000;
 
     private tasksToCancel: string[] = [];
 
@@ -71,22 +71,20 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.visDropdown = this.visualizedFields.map(field => ({
                 label: field.displayName,
                 value: field.name
-            }))
+            }));
             if (this.corpus.word_models_present == true) {
                 this.visDropdown.push({
                     label: 'Related Words',
                     value: 'relatedwords'
-                })
+                });
             }
             if (this.visualizedFields === undefined) {
                 this.noVisualizations = true;
-            }
-            else {
+            } else {
                 this.noVisualizations = false;
                 this.visualizedField = _.cloneDeep(this.visualizedFields[0]);
-            }   
-        }
-        else if (changes['queryModel']) {
+            }
+        } else if (changes['queryModel']) {
             this.checkResults();
         }
     }
@@ -120,24 +118,21 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
         this.aggResults = [];
         this.errorMessage = '';
-        if (selectedField == 'relatedwords') {
+        if (selectedField === 'relatedwords') {
             this.visualizedField.visualizationType = selectedField;
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
-        }
-        else {
+        } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
         }
-        this.foundNoVisualsMessage = "Retrieving data..."
+        this.foundNoVisualsMessage = 'Retrieving data...';
         if (this.visualizedField.visualizationType === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
             this.isLoading = false;
-        }
-        else if (this.visualizedField.visualizationType === 'timeline') {
+        } else if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
-        }
-        else if (this.visualizedField.visualizationType === 'relatedwords') {
+        } else if (this.visualizedField.visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -150,16 +145,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        }
-        else {
+        } else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-            }
-            else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
+            } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
                 size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
             }
-            let aggregator = {name: this.visualizedField.name, size: size};
+            const aggregator = {name: this.visualizedField.name, size: size};
             this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
                 this.isLoading = false;
@@ -168,7 +161,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     loadWordcloudData(size: number = null){
-        let queryModel = this.queryModel;
+        const queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
                 this.aggResults = result[this.visualizedField.name];
@@ -181,16 +174,15 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     loadMoreWordcloudData() {
-        let queryModel = this.queryModel;
+        const queryModel = this.queryModel;
         if (queryModel) {
             this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
                 this.tasksToCancel = result['taskIds'];
-                    let childTask = result['taskIds'][0];
+                    const childTask = result['taskIds'][0];
                     this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
                             this.aggResults = outcome['results'];
-                        }
-                        else {
+                        } else {
                             this.foundNoVisualsMessage = this.noResults;
                         }
                     });

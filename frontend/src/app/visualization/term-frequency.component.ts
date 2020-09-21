@@ -39,8 +39,8 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);
             this.rescaleY(this.asPercent);
-            this.setupBrushBehaviour();
             this.drawChartData();
+            this.setupBrushBehaviour();
             this.setupTooltip();
         } else if (changes['asPercent'] !== undefined) {
             if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {

@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, Renderer } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 /**
  * Directive for showing styled tooltip balloons.
