@@ -1,6 +1,5 @@
 
-import {combineLatest as observableCombineLatest } from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {combineLatest as combineLatest } from 'rxjs';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
@@ -72,12 +71,12 @@ export class SearchComponent implements OnInit {
 
     async ngOnInit() {
         this.user = await this.userService.getCurrentUser();
-        observableCombineLatest(
+        combineLatest(
             this.corpusService.currentCorpus,
             this.activatedRoute.paramMap,
             (corpus, params) => {
                 return { corpus, params };
-            }).pipe(filter(({ corpus, params }) => !!corpus))
+            }).filter(({ corpus, params }) => !!corpus)
             .subscribe(({ corpus, params }) => {
                 this.queryText = params.get('query');
                 this.setCorpus(corpus);
