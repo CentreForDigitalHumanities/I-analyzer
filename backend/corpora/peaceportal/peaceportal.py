@@ -26,7 +26,7 @@ class PeacePortal(XMLCorpus):
     description = "A collection of inscriptions on Jewish burial sites"
     # store min_year as int, since datetime does not support BCE dates
     min_year = -530
-    max_date = datetime(year=1948, month=12, day=31)
+    max_date = datetime(year=1950, month=12, day=31)
     visualize = []
     es_index = current_app.config['PEACEPORTAL_ALIAS']
     scan_image_type = 'image/png'
