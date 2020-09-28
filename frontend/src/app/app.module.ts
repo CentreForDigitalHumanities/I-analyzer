@@ -33,7 +33,7 @@ import { AppComponent } from './app.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
-import { HighlightPipe, SearchComponent, SearchRelevanceComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
+import { HighlightPipe, SearchComponent, SearchResultsComponent, SearchSortingComponent } from './search/index';
 import { ManualComponent } from './manual/manual.component';
 import { ManualNavigationComponent } from './manual/manual-navigation.component';
 import { MenuComponent } from './menu/menu.component';
@@ -114,7 +114,6 @@ export const declarations: any[] = [
     ScrollToDirective,
     SearchComponent,
     SearchHistoryComponent,
-    SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
     LoginComponent,

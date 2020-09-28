@@ -3,12 +3,6 @@
         <div class="box">
             <div class="table-container">
                 <table class="table is-fullwidth" *ngIf="document">
-                    <tr *ngIf="document.relevance">
-                        <th>Relevance</th>
-                        <td>
-                            <search-relevance [value]="document.relevance"></search-relevance>
-                        </td>
-                    </tr>
                     <ng-container *ngFor="let field of propertyFields">
                         <tr *ngIf="document.fieldValues[field.name]">
                             <th>{{field.displayName}}</th>
