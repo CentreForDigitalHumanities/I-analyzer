@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit {
     @ViewChild('fullContent', {static: false})
     public _fullContent: ElementRef;
 
-    @ViewChild('searchSection', {static: true})
+    @ViewChild('searchSection', {static: false})
     public searchSection: ElementRef;
 
     /**
