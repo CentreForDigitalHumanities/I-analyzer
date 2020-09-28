@@ -44,8 +44,8 @@
                         </ng-container>
                     </table>
                 </div>
-                <div class="column is-one-quarter">
-                    <button *ngIf="document.fieldValues.image_path" class="button scan-button is-primary is-inverted"
+                <div class="column is-one-quarter" *ngIf="document.fieldValues.images">
+                    <button class="button scan-button is-primary is-inverted"
                         iaBalloon="View Photograph" (click)="goToScan(document, $event)">
                         <span class="icon">
                             <i class="fa fa-image fa-3x" aria-hidden="true"></i>
