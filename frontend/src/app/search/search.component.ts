@@ -22,7 +22,7 @@ export class SearchComponent implements OnInit {
      * (after results are rendered, see event on ia-search-results / on ResultsRendered).
      * Required to support displaying search page in iframe.
      */
-    @ViewChild('fullContent', {static: false})
+    @ViewChild('fullContent', {static: true})
     public _fullContent: ElementRef;
 
     @ViewChild('searchSection', {static: false})
