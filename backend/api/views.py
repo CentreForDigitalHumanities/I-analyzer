@@ -221,9 +221,6 @@ def api_download():
     elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
-    elif request.json['size']>1000:
-        error_response.headers['message'] += 'too many documents requested.'
-        return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
         filepath = tasks.make_csv.delay(search_results, request.json, current_user.username)

@@ -24,7 +24,7 @@ export class DownloadComponent implements OnChanges {
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
     
-    private resultsCutoff = 1000;
+    private resultsCutoff = 10000;
     
     constructor(private downloadService: DownloadService, private notificationService: NotificationService) { }
 
@@ -46,16 +46,7 @@ export class DownloadComponent implements OnChanges {
             })
         }
         else {
-            this.downloadService.downloadTask(this.corpus, this.queryModel, this.getCsvFields(), this.route).then( results => {
-                if (results.success===false) {
-                    this.notificationService.showMessage(results.message);
-                }
-                else {
-                    this.notificationService.showMessage("Downloading CSV file... A link will be sent to your email address shortly.", 'success');
-                }
-            }).catch( error => {
-                this.notificationService.showMessage(error);
-            });
+            this.notificationService.showMessage("You cannot download more than 10'000 documents at a time.", 'warning');
         }
     }
 
