@@ -67,11 +67,12 @@ def create_csv(results, fields, filename):
     for result in results:
         entry={}
         for field in fields:
-            if field in result['_source']:
-                entry.update( {field:result['_source'][field]} )
-                #the id field lives one level higher and is named '_id' by elastic search
+            #this assures that old indices, which have their id on
+            #the top level '_id' field, will fill in id here
             if field=="id" and "_id" in result: 
                 entry.update( {field: result['_id']} )
+            if field in result['_source']:
+                entry.update( {field:result['_source'][field]} )
         entries.append(entry)
     csv.register_dialect('myDialect', delimiter=',', quotechar='"',
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)                  
