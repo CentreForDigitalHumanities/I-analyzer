@@ -32,7 +32,7 @@ export class SearchComponent implements OnInit {
      * This is a constant used to ensure that, when we are displayed in an iframe,
      * the filters are displayed even if there are no results.
      */
-    private minIframeHeight = 1150;
+    private minIframeHeight = 1300;
 
     public isScrolledDown: boolean;
 
