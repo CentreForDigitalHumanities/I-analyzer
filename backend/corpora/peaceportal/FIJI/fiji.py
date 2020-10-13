@@ -84,7 +84,7 @@ class FIJI(PeacePortal):
         self.age.extractor = XML(
             tag=['text', 'body', 'age'],
             toplevel=False,
-            transform=lambda age: transform_age(age)
+            transform=lambda age: transform_age_integer(age)
         )
 
         self.country.extractor = Constant(
@@ -178,6 +178,14 @@ def transform_age(age):
     if age in ['?', 'none', 'none?']:
         return 'Unknown'
     return age
+
+
+def transform_age_integer(age):
+    try:
+        return int(age)
+    except:
+        return None
+
 
 def normalize_language(languages):
     results = []

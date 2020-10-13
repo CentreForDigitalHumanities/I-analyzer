@@ -181,7 +181,13 @@ class PeacePortal(XMLCorpus):
         name='age',
         display_name='Age',
         description='Age of the buried person(s)',
-        es_mapping={'type': 'keyword'}
+        es_mapping={'type': 'integer'},
+        search_filter=RangeFilter(
+            description='Filter by age of the buried persons.',
+            lower=0,
+            upper=100,
+        ),
+
     )
 
     # A string with all the names occuring in the source
