@@ -48,7 +48,7 @@ def extract_record(row):
     return dict(
         title=row["Inscription no."],
         date=row["Date"],
-        remarksOnDate=row["Remarks on date"],
+        remarksOnDate=preprocess_text(row["Remarks on date"]),
         provenance=row["Provenance"],
         presentLocation=row["Present location"],
         publications=get_publications(row),
@@ -59,9 +59,9 @@ def extract_record(row):
         inscriptionType=row["Inscription type"],
         persons=get_persons(row),
         age=row['Age'],
-        ageComments=row["Remarks on age"],
+        ageComments=preprocess_text(row["Remarks on age"]),
         iconographyType=row["Iconography type"],
-        iconographyDescription=row["Iconography description"],
+        iconographyDescription=preprocess_text(row["Iconography description"]),
         material=row["Material"],
         languages=get_languages(row),
         incipit=row["Incipit"],
@@ -127,8 +127,10 @@ def get_commentary(row):
         commentary = '{}{} There are {} surviving lines.'.format(
             commentary, '.' if not period else '', additional
         )
-    row['Number of lines (s=surviving, o=original)']
-    return commentary
+    if commentary:
+        return commentary
+    else:
+        return ""
 
 
 def preprocess_text(text):

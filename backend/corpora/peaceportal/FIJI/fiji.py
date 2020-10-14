@@ -53,10 +53,12 @@ class FIJI(PeacePortal):
             value=None
         )
 
+        # the year is commented out: need to have not before / not after fields
+        # this is advisable since often we only roughly now the century
         # self.year.extractor = XML(
         #     tag=['teiHeader', 'fileDesc', 'sourceDesc',
         #          'msDesc', 'history', 'origin', 'origDate'],
-        #     toplevel=False,
+        #     toplevel=False
         # )
 
         self.transcription.extractor = XML(
@@ -185,7 +187,7 @@ def transform_age_integer(age):
         return int(age)
     except:
         return None
-
+        
 
 def normalize_language(languages):
     results = []
