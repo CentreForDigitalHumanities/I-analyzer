@@ -184,7 +184,8 @@ def transform_age(age):
 
 def transform_age_integer(age):
     try:
-        return int(age)
+        int(age)
+        return age
     except:
         return None
         
