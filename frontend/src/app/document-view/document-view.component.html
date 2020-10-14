@@ -4,7 +4,7 @@
             <div class="table-container">
                 <table class="table is-fullwidth" *ngIf="document">
                     <ng-container *ngFor="let field of propertyFields">
-                        <tr *ngIf="document.fieldValues[field.name]">
+                        <tr *ngIf="document.fieldValues[field.name]!==null">
                             <th>{{field.displayName}}</th>
                             <td *ngIf="field.name!='url'" data-test-field-value [innerHtml]="document.fieldValues[field.name] | highlight:query"></td>
                             <td *ngIf="field.name=='url'">
