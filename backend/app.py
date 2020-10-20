@@ -77,10 +77,15 @@ def admin(name, pwd):
     '(adding / changing fields in documents)'
 )
 @click.option(
+    '--add', '-a', is_flag=True,
+    help='Set this to indicate that we want to add documents' +
+    'to an existing index, i.e., skip index creation'
+)
+@click.option(
     '--prod', '-p', is_flag=True, help='''Specifies if this is NOT a local indexing operation.
         This influences index settings in particular'''
 )
-def es(corpus, start, end, delete=False, update=False, prod=False):
+def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -117,7 +122,7 @@ def es(corpus, start, end, delete=False, update=False, prod=False):
             logging.critical(e)
             raise
     else:
-        perform_indexing(corpus, this_corpus, start_index, end_index, delete, prod)
+        perform_indexing(corpus, this_corpus, start_index, end_index, add, delete, prod)
 
 @app.cli.command()
 @click.option(

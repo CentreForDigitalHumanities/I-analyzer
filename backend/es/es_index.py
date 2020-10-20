@@ -20,10 +20,13 @@ import logging
 logger = logging.getLogger('indexing')
 
 
-def create(client, corpus_definition, clear, prod):
+def create(client, corpus_definition, add, clear, prod):
     '''
     Initialise an ElasticSearch index.
     '''
+    if add:
+        # we add document to existing index - skip creation.
+        return None
 
     if clear:
         logger.info('Attempting to clean old index...')
@@ -101,7 +104,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         logger.info('Indexed documents ({}).'.format(result))
 
 
-def perform_indexing(corpus_name, corpus_definition, start, end, clear, prod):
+def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),
@@ -110,7 +113,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, clear, prod):
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
-    create(client, corpus_definition, clear, prod)
+    create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
