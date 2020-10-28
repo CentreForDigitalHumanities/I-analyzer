@@ -47,22 +47,8 @@ export class DialogService {
      * Requests that a manual page should be shown to the user.
      * @param identifier Name of the page
      */
-    public async showManualPage(identifier: string) {        
-        this.behavior.next({
-            status: 'loading'
-        });
-        let { html, title } = await this.getManualPage(identifier);
-
-        this.behavior.next({
-            identifier,
-            html,
-            title,
-            status: 'show',
-            footer: {
-                buttonLabel: 'View in manual',
-                routerLink: ['/manual', identifier]
-            }
-        });
+    public async showManualPage(identifier: string) {
+        location.assign('https://peace-copy.sites.uu.nl/epigraphy/manual/');
     }
 
     public async showDescriptionPage(corpus: Corpus) {
