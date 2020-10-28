@@ -60,7 +60,7 @@ export class DialogService {
             status: 'show',
             footer: {
                 buttonLabel: 'Show manual',
-                routerLink: 'https://peace-copy.sites.uu.nl/epigraphy/manual/'
+                routerLink: ['/manual', identifier]
             }
         });
     }

@@ -74,6 +74,10 @@ const appRoutes: Routes = [
         path: 'search/:corpus',
         component: SearchComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
+    },
+    {
+        path: 'manual/:identifier',
+        redirectTo: '/https://peace-copy.sites.uu.nl/epigraphy/manual/', pathMatch: 'full'
     }
 ];
 
