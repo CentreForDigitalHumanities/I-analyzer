@@ -77,7 +77,7 @@ const appRoutes: Routes = [
     },
     {
         path: 'manual/:identifier',
-        redirectTo: '/https://peace-copy.sites.uu.nl/epigraphy/manual/', pathMatch: 'full'
+        redirectTo: 'https://peace-copy.sites.uu.nl/epigraphy/manual/'
     }
 ];
 
