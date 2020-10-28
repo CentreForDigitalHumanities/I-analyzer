@@ -58,10 +58,7 @@ export class DialogService {
             html,
             title,
             status: 'show',
-            footer: {
-                buttonLabel: 'Show manual',
-                routerLink: ['/manual', identifier]
-            }
+            footer: null
         });
     }
 
