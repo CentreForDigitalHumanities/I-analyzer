@@ -80,6 +80,7 @@ def process_logout_result():
     '''
     try:
         saml_auth.process_logout_result(request, session) #TODO local: SAMLing doesn't work with this
+        logger.info(dir(request))
         if current_user.is_authenticated:
             logout_user()
     except SamlAuthError as e:
