@@ -21,6 +21,10 @@
             "level": "INFO",
             "handlers": ["app"]
         },
+        "saml": {
+            "level": "INFO",
+            "handlers": ["app"]
+        },
         "werkzeug": {
             "level": "WARNING",
             "handlers": ["app"]

@@ -3,6 +3,8 @@ from urllib.parse import urlparse, urlencode
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
+import logging
+logger = logging.getLogger(__name__)
 
 '''
 Custom exception that will be thrown by the DhlabFlaskSaml class if an error occurs

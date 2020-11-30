@@ -8,6 +8,10 @@ The 'saml' route is CSRF exempt.
 from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response, current_app
 from flask_login import current_user, logout_user
 from werkzeug.security import generate_password_hash
+from  onelogin.saml2.logout_request import OneLogin_Saml2_LogoutRequest
+
+import logging
+logger = logging.getLogger(__name__)
 
 from ianalyzer.models import User, Role, db
 from api.security import login_user, get_token, get_original_token_input
@@ -69,7 +73,7 @@ def process_login_result():
     return redirect(redirect_to)
 
 
-@saml.route('/process_logout_result', methods=['GET']) #TODO local: SAMLing requires POST
+@saml.route('/process_logout_result', methods=['GET', 'POST']) #TODO local: SAMLing requires POST
 def process_logout_result():
     '''
     SAML logout step 2. This will be called by the Identity Provider (ITS) after a logout request.
@@ -77,8 +81,8 @@ def process_logout_result():
     but support for this is currently not implemented.
     '''
     try:
-        saml_auth.process_logout_result(request, session) #TODO local: SAMLing doesn't work with this
-        current_app.logger.info(dir(request))
+        lo_request = OneLogin_Saml2_LogoutRequest(request)
+        logger.info(lo_request.get_issuer())
         if current_user.is_authenticated:
             logout_user()
     except SamlAuthError as e:
