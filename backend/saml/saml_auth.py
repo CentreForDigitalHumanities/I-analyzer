@@ -134,8 +134,7 @@ class SamlAuth:
             name_id = session['samlNameId']
         if 'samlSessionIndex' in session:
             session_index = session['samlSessionIndex']
-        return_url = '{}/saml/logout'.format(request.host_url)
-        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index, return_to=return_url))
+        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
 
 
     def process_logout_result(self, request, session):
