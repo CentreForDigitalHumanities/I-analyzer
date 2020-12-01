@@ -11,10 +11,6 @@ from werkzeug.security import generate_password_hash
 import logging
 logger = logging.getLogger(__name__)
 
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
-from onelogin.saml2.logout_response import OneLogin_Saml2_Logout_Response
-from bs4 import BeautifulSoup
-
 from ianalyzer.models import User, Role, db
 from api.security import login_user, get_token, get_original_token_input
 from api import api
@@ -87,6 +83,7 @@ def process_logout_result():
         if current_user.is_authenticated:
             logout_user()
         if url:
+            logger.info(url)
             return redirect(url)
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
