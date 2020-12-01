@@ -153,6 +153,7 @@ class SamlAuth:
         logger.info(req)
         dscb = lambda: session.clear()
         url = self.saml_auth.process_slo(delete_session_cb=dscb)
+        logger.info(url)
         errors = self.saml_auth.get_errors()
         if len(errors) > 0:
             logger.info(errors)

@@ -92,12 +92,6 @@ def process_logout_result():
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
-
-
-@saml.route('/logout/', methods=['GET'])
-def sp_initiated_logout():
-    if current_user.is_authenticated:
-        logout_user()
     return redirect(request.host_url)
 
 
