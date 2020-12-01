@@ -134,8 +134,8 @@ class SamlAuth:
             name_id = session['samlNameId']
         if 'samlSessionIndex' in session:
             session_index = session['samlSessionIndex']
-
-        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index))
+        return_url = '{}/saml/logout'.format(request.host_url)
+        return redirect(self.saml_auth.logout(name_id=name_id, session_index=session_index, return_to=return_url))
 
 
     def process_logout_result(self, request, session):
@@ -150,11 +150,12 @@ class SamlAuth:
         req = self.prepare_flask_request(request)
         self.init_saml_auth(req)
         errors = []
-
+        logger.info(req)
         dscb = lambda: session.clear()
         url = self.saml_auth.process_slo(delete_session_cb=dscb)
         errors = self.saml_auth.get_errors()
         if len(errors) > 0:
+            logger.info(errors)
             self.process_errors(errors, self.saml_auth.get_last_error_reason())
 
 

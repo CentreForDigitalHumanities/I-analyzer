@@ -8,10 +8,12 @@ The 'saml' route is CSRF exempt.
 from flask import Flask, Blueprint, request,  jsonify, redirect, session, make_response, current_app
 from flask_login import current_user, logout_user
 from werkzeug.security import generate_password_hash
-from  onelogin.saml2.logout_request import OneLogin_Saml2_LogoutRequest
-
 import logging
 logger = logging.getLogger(__name__)
+
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+from onelogin.saml2.logout_response import OneLogin_Saml2_Logout_Response
+from bs4 import BeautifulSoup
 
 from ianalyzer.models import User, Role, db
 from api.security import login_user, get_token, get_original_token_input
@@ -54,6 +56,9 @@ def init_logout():
 def process_login_result():
     ''' SAML login step 2. Will be called by Identity Provider (ITS)'''
     try:
+        saml_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(request.form['SAMLResponse'], ignore_zip=True)
+        soup = BeautifulSoup(saml_response, 'lxml-xml')
+        logger.info(soup.find("saml:Issuer"))
         saml_auth.process_login_result(request, session)
     except SamlAuthError as e:
         current_app.logger.error(e)
@@ -73,21 +78,26 @@ def process_login_result():
     return redirect(redirect_to)
 
 
-@saml.route('/process_logout_result', methods=['GET', 'POST']) #TODO local: SAMLing requires POST
+@saml.route('/process_logout_result', methods=['GET']) #LOCAL: SAMLing requires POST
 def process_logout_result():
     '''
     SAML logout step 2. This will be called by the Identity Provider (ITS) after a logout request.
     Strictly speaking, this could also be called by the IdP when the user logs out ot elsewhere (i.e. not our application),
     but support for this is currently not implemented.
     '''
+    if current_user.is_authenticated:
+        logout_user()
     try:
-        lo_request = OneLogin_Saml2_LogoutRequest(request)
-        logger.info(lo_request.get_issuer())
-        if current_user.is_authenticated:
-            logout_user()
+        saml_auth.process_logout_result(request, session) #LOCAL: SAMLing does not work with this
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
-        current_app.logger.error(e)
+        logger.error(e)
+
+
+@saml.route('/logout/', methods=['GET'])
+def sp_initiated_logout():
+    if current_user.is_authenticated:
+        logout_user()
     return redirect(request.host_url)
 
 
