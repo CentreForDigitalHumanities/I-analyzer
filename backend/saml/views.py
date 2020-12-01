@@ -86,13 +86,12 @@ def process_logout_result():
         url = saml_auth.process_logout_result(request, session) #LOCAL: SAMLing does not work with this
         if current_user.is_authenticated:
             logout_user()
+        if url:
+            return redirect(url)
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
-    if url:
-        return redirect(url)
-    else:
-        return redirect(request.host_url)
+    return redirect(request.host_url)
 
 
 @saml.route('/metadata/', methods=['GET'])
