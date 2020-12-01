@@ -82,14 +82,17 @@ def process_logout_result():
     Strictly speaking, this could also be called by the IdP when the user logs out ot elsewhere (i.e. not our application),
     but support for this is currently not implemented.
     '''
-    if current_user.is_authenticated:
-        logout_user()
     try:
-        saml_auth.process_logout_result(request, session) #LOCAL: SAMLing does not work with this
+        url = saml_auth.process_logout_result(request, session) #LOCAL: SAMLing does not work with this
+        if current_user.is_authenticated:
+            logout_user()
     except SamlAuthError as e:
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
-    return redirect(request.host_url)
+    if url:
+        return redirect(url)
+    else:
+        return redirect(request.host_url)
 
 
 @saml.route('/metadata/', methods=['GET'])

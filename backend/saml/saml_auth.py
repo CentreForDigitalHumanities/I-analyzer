@@ -152,11 +152,12 @@ class SamlAuth:
         errors = []
         dscb = lambda: session.clear()
         url = self.saml_auth.process_slo(delete_session_cb=dscb)
-        logger.info(url)
         errors = self.saml_auth.get_errors()
         if len(errors) > 0:
             logger.info(errors)
             self.process_errors(errors, self.saml_auth.get_last_error_reason())
+        if url:
+            return url
 
 
     def metadata(self, request, make_response):
