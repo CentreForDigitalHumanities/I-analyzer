@@ -56,9 +56,6 @@ def init_logout():
 def process_login_result():
     ''' SAML login step 2. Will be called by Identity Provider (ITS)'''
     try:
-        saml_response = OneLogin_Saml2_Utils.decode_base64_and_inflate(request.form['SAMLResponse'], ignore_zip=True)
-        soup = BeautifulSoup(saml_response, 'lxml-xml')
-        logger.info(soup.find("saml:Issuer"))
         saml_auth.process_login_result(request, session)
     except SamlAuthError as e:
         current_app.logger.error(e)
