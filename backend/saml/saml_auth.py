@@ -149,6 +149,7 @@ class SamlAuth:
         req = self.prepare_flask_request(request)
         self.init_saml_auth(req)
         errors = []
+        logger.info(dir(session))
         dscb = lambda: session.clear()
         url = self.saml_auth.process_slo(delete_session_cb=dscb)
         errors = self.saml_auth.get_errors()
