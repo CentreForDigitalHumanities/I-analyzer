@@ -150,7 +150,7 @@ class SamlAuth:
         self.init_saml_auth(req)
         errors = []
         dscb = lambda: session.clear()
-        logger.pring(dscb)
+        logger.info(dscb)
         url = self.saml_auth.process_slo()
         errors = self.saml_auth.get_errors()
         if len(errors) > 0:
