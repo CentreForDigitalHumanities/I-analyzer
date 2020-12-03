@@ -80,6 +80,84 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             csv_core=True,
         ),
+                Field(
+            name='book_title',
+            display_name='Book title',
+            description='The title of the book reviews were made for. Encompasses all editions.',
+            extractor=Metadata('book_title'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews made for these titles.',
+                option_count=154
+            ),
+            csv_core=True
+        ),
+        Field(
+            name='original_language',
+            display_name='Original language',
+            description='The original language the book reviews were made for was written in.',
+            extractor=XML(
+                tag=['original_language'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews made for titles originally in this language(s).',
+                option_count=8
+            ),
+            csv_core=True,
+        ),
+        Field(
+            name='edition_id',
+            display_name='Edition ID',
+            description='ID of the edition the review was made for.',
+            extractor=XML(
+                tag=['edition_id'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+        ),
+        Field(
+            name='edition_language',
+            display_name='Edition language',
+            description='The language that the edition that the review is for was written in',
+            extractor=XML(
+                tag=['edition_language'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only editions written in these languages.',
+                option_count=8
+            ),
+            results_overview=True,
+            csv_core=True,
+            visualization_type='term_frequency',
+        ),
+        Field(
+            name='genre',
+            display_name='Genre',
+            description='The genre of the reviewed book',
+            extractor=Metadata('book_genre'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews of books in this genre',
+                option_count=8
+            ),
+            visualization_type='term_frequency'
+        ),
+        Field(
+            name='age_category',
+            display_name='Age category',
+            description='The age category of the target audience of the reviewed book',
+            extractor=Metadata('age_category'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews of books written for this age category',
+                option_count=3
+            ),
+            visualization_type='term_frequency'
+        ),
         Field(
             name='url',
             display_name='URL',
@@ -147,8 +225,8 @@ class GoodReads(XMLCorpus):
         ),
         Field(
             name='author_gender',
-            display_name='Author gender',
-            description='Gender of the author. Was guessed based on name.',
+            display_name='Reviewer gender',
+            description='Gender of the reviewer, guessed based on name.',
             extractor=XML(
                 tag=['author_gender'],
                 toplevel=False,
@@ -188,60 +266,6 @@ class GoodReads(XMLCorpus):
             results_overview=True,
             visualization_type='term_frequency',
             visualization_sort='key'
-        ),
-        Field(
-            name='book_title',
-            display_name='Book title',
-            description='The title of the book reviews were made for. Encompasses all editions.',
-            extractor=Metadata('book_title'),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made for these titles.',
-                option_count=154
-            ),
-            csv_core=True
-        ),
-        Field(
-            name='original_language',
-            display_name='Original language',
-            description='The original language the book reviews were made for was written in.',
-            extractor=XML(
-                tag=['original_language'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made for titles originally in this language(s).',
-                option_count=8
-            ),
-            csv_core=True,
-        ),
-        Field(
-            name='edition_id',
-            display_name='Edition ID',
-            description='ID of the edition the review was made for.',
-            extractor=XML(
-                tag=['edition_id'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-        ),
-        Field(
-            name='edition_language',
-            display_name='Edition language',
-            description='The language that the edition that the review is for was written in',
-            extractor=XML(
-                tag=['edition_language'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only editions written in these languages.',
-                option_count=8
-            ),
-            results_overview=True,
-            csv_core=True,
-            visualization_type='term_frequency',
         ),
         Field(
             name='edition_publisher',
