@@ -4,7 +4,7 @@
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-backend && yarn install-frontend",
-        "install-backend": "cd backend && pip install -r requirements.txt",
+        "install-backend": "cd backend && pip install -r requirements.txt --ignore-installed",
         "install-frontend": "cd frontend && npm install",
         "build-frontend": "cd frontend && npm run build",
         "test-once": "cd frontend && ng test --watch=false"
