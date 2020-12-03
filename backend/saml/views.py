@@ -88,7 +88,6 @@ def process_logout_result():
         # user is already logged out from I-analyzer, so no further action
         logger.error(e)
     if url:
-        session.clear()
         return redirect(url)
     else:
         return redirect(request.host_url)
