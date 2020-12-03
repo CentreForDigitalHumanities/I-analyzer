@@ -150,7 +150,6 @@ class SamlAuth:
         self.init_saml_auth(req)
         errors = []
         url = self.saml_auth.process_slo()
-        session.clear()
         errors = self.saml_auth.get_errors()
         if len(errors) > 0:
             self.process_errors(errors, self.saml_auth.get_last_error_reason())
