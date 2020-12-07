@@ -6,6 +6,7 @@ import logging
 from datetime import datetime
 
 from flask import current_app
+import openpyxl
 
 from addcorpus.extract import XML, Metadata, Combined
 # SliderRangeFilter, BoxRangeFilter
@@ -288,3 +289,31 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
         ),
     ]
+
+    def update_script(self):
+        metafile = op.join(self.data_directory, "Reviews_metadata.xlsx")
+        wb = openpyxl.load_workbook(filename=metafile)
+        sheet = wb['Sheet1']
+        for index, row in enumerate(sheet.values):
+            title = row[0]
+            book_genre = row[2]
+            age_category = row[3]
+            title_cleaned = re.sub(r'\W', self.replace_string_function, title)
+            update_body = {
+                "script": {
+                    "source": "ctx._source['book_genre']='{}'; ctx._source['age_category']='{}'".format(book_genre, age_category),
+                    "lang": "painless"
+                },
+                "query": {
+                    "term": {
+                        "book_title": "{}".format(title_cleaned)
+                    }
+                }
+            }
+            yield update_body
+
+    def replace_string_function(self, character):
+        if character.group()==' ':
+            return ' '
+        else: return ''
+            
