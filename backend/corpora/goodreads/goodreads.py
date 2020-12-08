@@ -135,6 +135,10 @@ class GoodReads(XMLCorpus):
             csv_core=True,
             visualization_type='term_frequency',
         ),
+        # the following two fields are not actually in the metadata
+        # if reindexing from scratch, either:
+        # - modify the sources definition such that metadata will include genre and age info
+        # - comment out the genre / age info fields prior to indexing, uncomment, run the update script
         Field(
             name='genre',
             display_name='Genre',
@@ -315,5 +319,7 @@ class GoodReads(XMLCorpus):
     def replace_string_function(self, character):
         if character.group()==' ':
             return ' '
+        elif character.group()=='-':
+            return '-'
         else: return ''
             
