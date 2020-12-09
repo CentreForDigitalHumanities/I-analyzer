@@ -302,7 +302,7 @@ class GoodReads(XMLCorpus):
             title = row[0]
             book_genre = row[2]
             age_category = row[3]
-            title_cleaned = re.sub(r'\W', self.replace_string_function, title)
+            title_cleaned = re.sub('[^\w .-]', '', title)
             update_body = {
                 "script": {
                     "source": "ctx._source['book_genre']='{}'; ctx._source['age_category']='{}'".format(book_genre, age_category),
@@ -315,11 +315,4 @@ class GoodReads(XMLCorpus):
                 }
             }
             yield update_body
-
-    def replace_string_function(self, character):
-        if character.group()==' ':
-            return ' '
-        elif character.group()=='-':
-            return '-'
-        else: return ''
             
