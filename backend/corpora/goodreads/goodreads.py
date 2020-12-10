@@ -303,7 +303,6 @@ class GoodReads(XMLCorpus):
             title = row[0]
             book_genre = row[2]
             age_category = row[3]
-            print(title, book_genre, age_category)
             title_cleaned = re.sub('[^\w .-]', '', title)
             update_body = {
                 "script": {
