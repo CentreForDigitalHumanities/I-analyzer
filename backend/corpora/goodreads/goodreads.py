@@ -318,7 +318,7 @@ class GoodReads(XMLCorpus):
                         },
                         "filter": {
                             "term": {
-                                "book_title": "A game of thrones A song of ice and fire 1"
+                                "book_title": title_cleaned
                             }
                         }
                    }
