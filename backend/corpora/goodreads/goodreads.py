@@ -241,7 +241,6 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews made by authors of these genders. Note that gender was guessed based on username',
                 option_count=6
             ),
-            results_overview=True,
             csv_core=True,
             visualization_type='term_frequency',
         ),
@@ -299,9 +298,12 @@ class GoodReads(XMLCorpus):
         wb = openpyxl.load_workbook(filename=metafile)
         sheet = wb['Sheet1']
         for index, row in enumerate(sheet.values):
+            if index==0:
+                continue
             title = row[0]
             book_genre = row[2]
             age_category = row[3]
+            print(title, book_genre, age_category)
             title_cleaned = re.sub('[^\w .-]', '', title)
             update_body = {
                 "script": {
