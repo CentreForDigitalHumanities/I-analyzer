@@ -310,9 +310,18 @@ class GoodReads(XMLCorpus):
                     "lang": "painless"
                 },
                 "query": {
-                    "term": {
-                        "book_title": "{}".format(title_cleaned)
-                    }
+                   "bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "book_genre"
+                            }
+                        },
+                        "filter": {
+                            "term": {
+                                "book_title": "A game of thrones A song of ice and fire 1"
+                            }
+                        }
+                   }
                 }
             }
             yield update_body
