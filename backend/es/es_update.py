@@ -52,9 +52,8 @@ def update_by_query(corpus, corpus_definition, query_generator):
             body=query_model,
             timeout=current_app.config['ES_SEARCH_TIMEOUT']
         )
-        if response['updated']!= response['total']:
-            logger.info('Updated {} of {} documents for query {}'.format(
-                response['updated'], response['total'], query_model))
+        logger.info('Updated {} of {} documents for query {}'.format(
+            response['updated'], response['total'], query_model))
 
 
 def update_document(corpus, doc, update_body, client=None):
