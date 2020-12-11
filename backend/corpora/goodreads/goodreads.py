@@ -140,7 +140,7 @@ class GoodReads(XMLCorpus):
         # - modify the sources definition such that metadata will include genre and age info
         # - comment out the genre / age info fields prior to indexing, uncomment, run the update script
         Field(
-            name='genre',
+            name='book_genre',
             display_name='Genre',
             description='The genre of the reviewed book',
             extractor=Metadata('book_genre'),
