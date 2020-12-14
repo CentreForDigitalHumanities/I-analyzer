@@ -6,6 +6,7 @@ import logging
 from datetime import datetime
 
 from flask import current_app
+import openpyxl
 
 from addcorpus.extract import XML, Metadata, Combined
 # SliderRangeFilter, BoxRangeFilter
@@ -80,6 +81,88 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             csv_core=True,
         ),
+                Field(
+            name='book_title',
+            display_name='Book title',
+            description='The title of the book reviews were made for. Encompasses all editions.',
+            extractor=Metadata('book_title'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews made for these titles.',
+                option_count=154
+            ),
+            csv_core=True
+        ),
+        Field(
+            name='original_language',
+            display_name='Original language',
+            description='The original language the book reviews were made for was written in.',
+            extractor=XML(
+                tag=['original_language'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews made for titles originally in this language(s).',
+                option_count=8
+            ),
+            csv_core=True,
+        ),
+        Field(
+            name='edition_id',
+            display_name='Edition ID',
+            description='ID of the edition the review was made for.',
+            extractor=XML(
+                tag=['edition_id'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+        ),
+        Field(
+            name='edition_language',
+            display_name='Edition language',
+            description='The language that the edition that the review is for was written in',
+            extractor=XML(
+                tag=['edition_language'],
+                toplevel=False,
+            ),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only editions written in these languages.',
+                option_count=8
+            ),
+            results_overview=True,
+            csv_core=True,
+            visualization_type='term_frequency',
+        ),
+        # the following two fields are not actually in the metadata
+        # if reindexing from scratch, either:
+        # - modify the sources definition such that metadata will include genre and age info
+        # - comment out the genre / age info fields prior to indexing, uncomment, run the update script
+        Field(
+            name='book_genre',
+            display_name='Genre',
+            description='The genre of the reviewed book',
+            extractor=Metadata('book_genre'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews of books in this genre',
+                option_count=8
+            ),
+            visualization_type='term_frequency'
+        ),
+        Field(
+            name='age_category',
+            display_name='Age category',
+            description='The age category of the target audience of the reviewed book',
+            extractor=Metadata('age_category'),
+            es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Accept only reviews of books written for this age category',
+                option_count=3
+            ),
+            visualization_type='term_frequency'
+        ),
         Field(
             name='url',
             display_name='URL',
@@ -147,8 +230,8 @@ class GoodReads(XMLCorpus):
         ),
         Field(
             name='author_gender',
-            display_name='Author gender',
-            description='Gender of the author. Was guessed based on name.',
+            display_name='Reviewer gender',
+            description='Gender of the reviewer, guessed based on name.',
             extractor=XML(
                 tag=['author_gender'],
                 toplevel=False,
@@ -158,7 +241,6 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews made by authors of these genders. Note that gender was guessed based on username',
                 option_count=6
             ),
-            results_overview=True,
             csv_core=True,
             visualization_type='term_frequency',
         ),
@@ -190,60 +272,6 @@ class GoodReads(XMLCorpus):
             visualization_sort='key'
         ),
         Field(
-            name='book_title',
-            display_name='Book title',
-            description='The title of the book reviews were made for. Encompasses all editions.',
-            extractor=Metadata('book_title'),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made for these titles.',
-                option_count=154
-            ),
-            csv_core=True
-        ),
-        Field(
-            name='original_language',
-            display_name='Original language',
-            description='The original language the book reviews were made for was written in.',
-            extractor=XML(
-                tag=['original_language'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only reviews made for titles originally in this language(s).',
-                option_count=8
-            ),
-            csv_core=True,
-        ),
-        Field(
-            name='edition_id',
-            display_name='Edition ID',
-            description='ID of the edition the review was made for.',
-            extractor=XML(
-                tag=['edition_id'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-        ),
-        Field(
-            name='edition_language',
-            display_name='Edition language',
-            description='The language that the edition that the review is for was written in',
-            extractor=XML(
-                tag=['edition_language'],
-                toplevel=False,
-            ),
-            es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Accept only editions written in these languages.',
-                option_count=8
-            ),
-            results_overview=True,
-            csv_core=True,
-            visualization_type='term_frequency',
-        ),
-        Field(
             name='edition_publisher',
             display_name='Edition publisher',
             description='Publisher of the edition the review was written for',
@@ -264,3 +292,37 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
         ),
     ]
+
+    def update_script(self):
+        metafile = op.join(self.data_directory, "Reviews_metadata.xlsx")
+        wb = openpyxl.load_workbook(filename=metafile)
+        sheet = wb['Sheet1']
+        for index, row in enumerate(sheet.values):
+            if index==0:
+                continue
+            title = row[0]
+            book_genre = row[2]
+            age_category = row[3]
+            title_cleaned = re.sub('[^\w .-]', '', title)
+            update_body = {
+                "script": {
+                    "source": "ctx._source['book_genre']='{}'; ctx._source['age_category']='{}'".format(book_genre, age_category),
+                    "lang": "painless"
+                },
+                "query": {
+                   "bool": {
+                        "must_not": {
+                            "exists": {
+                                "field": "book_genre"
+                            }
+                        },
+                        "filter": {
+                            "term": {
+                                "book_title": title_cleaned
+                            }
+                        }
+                   }
+                }
+            }
+            yield update_body
+            

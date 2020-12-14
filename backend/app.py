@@ -17,7 +17,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
 import corpora
 from es.es_index import perform_indexing
-from es.es_update import update_index
+from es.es_update import update_index, update_by_query
 from es.es_alias import alias as update_alias
 
 app = flask_app(config)
@@ -72,7 +72,7 @@ def admin(name, pwd):
     '(turned off by default)'
 )
 @click.option(
-    '--update', '-u',
+    '--update', '-u', is_flag=True,
     help='Set this to true to update an index' +
     '(adding / changing fields in documents)'
 )
@@ -111,13 +111,21 @@ def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
 
     if update:
         try:
-            if not this_corpus.update_body():
-                logging.critical("No update_body specified: doing nothing")
-                return None
-            update_index(corpus, this_corpus, this_corpus.update_query(
-                min_date=start_index.strftime('%Y-%m-%d'), max_date=end_index.strftime('%Y-%m-%d')
+            if this_corpus.update_body():
+                update_index(
+                    corpus,
+                    this_corpus,
+                    this_corpus.update_query(
+                        min_date=start_index.strftime('%Y-%m-%d'),
+                        max_date=end_index.strftime('%Y-%m-%d')
+                ))
+            elif this_corpus.update_script():
+                update_by_query(
+                    corpus, this_corpus, this_corpus.update_script()
                 )
-            )
+            else:
+                logging.critical("Cannot update without update_body or update_script")
+                return None
         except Exception as e:
             logging.critical(e)
             raise

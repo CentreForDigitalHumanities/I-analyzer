@@ -140,6 +140,12 @@ class Corpus(object):
         '''
         return None
 
+    def update_script(self, **kwargs):
+        ''' return a (generator of a) Elasticsearch
+        update_by_query script
+        '''
+        return None
+
     def update_query(self, **kwargs):
         ''' given the min date and max date of the
         time period for which the update should be performed,
