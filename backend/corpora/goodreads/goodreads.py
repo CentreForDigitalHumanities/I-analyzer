@@ -143,10 +143,6 @@ class GoodReads(XMLCorpus):
             csv_core=True,
             visualization_type='term_frequency',
         ),
-        # the following two fields are not actually in the metadata
-        # if reindexing from scratch, either:
-        # - modify the sources definition such that metadata will include genre and age info
-        # - comment out the genre / age info fields prior to indexing, uncomment, run the update script
         Field(
             name='book_genre',
             display_name='Genre',
@@ -319,6 +315,9 @@ class GoodReads(XMLCorpus):
     ]
 
     def update_script(self):
+        ''' use this script to add genre and metadata data to an existing corpus,
+        without this information.
+        '''
         metafile = op.join(self.data_directory, "Reviews_metadata.xlsx")
         wb = openpyxl.load_workbook(filename=metafile)
         sheet = wb['Sheet1']
