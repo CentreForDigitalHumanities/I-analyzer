@@ -287,7 +287,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
                 1,
-                1000,
+                4225,
                 description=(
                     'Accept only book reviews with word count in this range.'
             ))
