@@ -36,18 +36,26 @@ class GoodReads(XMLCorpus):
     non_match_msg = 'Skipping XML file with nonmatching name {}'
 
     def sources(self, start, end):
-        for item in os.listdir(self.data_directory):
-            path = os.path.join(self.data_directory, item)
+        metafile = op.join(self.data_directory, "Reviews_metadata.xlsx")
+        wb = openpyxl.load_workbook(filename=metafile)
+        sheet = wb['Sheet1']
+        for index, row in enumerate(sheet.values):
+            if index==0:
+                continue
+            book_title = row[0]
+            book_genre = row[2]
+            age_category = row[3]
+            title_dir = re.sub('[^\w .-]', '', book_title).replace(' ', '_')
+            path = os.path.join(self.data_directory, title_dir)
             if os.path.isdir(path):
-                book_title = item.replace('_', ' ')
-                orig_dir = os.getcwd()
                 os.chdir(os.path.join(path, 'XML'))
                 for file in glob.glob("*.xml"):
                     full_path = os.path.join(path, 'XML', file)
                     yield full_path, {
-                        'book_title': book_title
+                        'book_title': book_title,
+                        'book_genre': book_genre,
+                        'age_category': age_category
                     }
-                os.chdir(orig_dir)
 
     fields = [
         Field(
@@ -81,7 +89,7 @@ class GoodReads(XMLCorpus):
             es_mapping={'type': 'keyword'},
             csv_core=True,
         ),
-                Field(
+        Field(
             name='book_title',
             display_name='Book title',
             description='The title of the book reviews were made for. Encompasses all editions.',
@@ -135,10 +143,6 @@ class GoodReads(XMLCorpus):
             csv_core=True,
             visualization_type='term_frequency',
         ),
-        # the following two fields are not actually in the metadata
-        # if reindexing from scratch, either:
-        # - modify the sources definition such that metadata will include genre and age info
-        # - comment out the genre / age info fields prior to indexing, uncomment, run the update script
         Field(
             name='book_genre',
             display_name='Genre',
@@ -272,6 +276,23 @@ class GoodReads(XMLCorpus):
             visualization_sort='key'
         ),
         Field(
+            name='word_count',
+            display_name='Word count',
+            description='Number of words (whitespace-delimited) in the review.',
+            extractor=XML(
+                tag=['text'],
+                toplevel=False,
+                transform=lambda x: len(x.split(' '))
+            ),
+            es_mapping={'type': 'integer'},
+            search_filter=RangeFilter(
+                1,
+                1000,
+                description=(
+                    'Accept only book reviews with word count in this range.'
+            ))
+        ),
+        Field(
             name='edition_publisher',
             display_name='Edition publisher',
             description='Publisher of the edition the review was written for',
@@ -294,6 +315,9 @@ class GoodReads(XMLCorpus):
     ]
 
     def update_script(self):
+        ''' use this script to add genre and metadata data to an existing corpus,
+        without this information.
+        '''
         metafile = op.join(self.data_directory, "Reviews_metadata.xlsx")
         wb = openpyxl.load_workbook(filename=metafile)
         sheet = wb['Sheet1']
