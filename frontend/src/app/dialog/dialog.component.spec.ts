@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { DialogModule } from 'primeng/primeng';
+import { DialogModule } from 'primeng/dialog';
 
 import { DialogService } from '../services/index';
 import { DialogServiceMock } from '../../mock-data/dialog';

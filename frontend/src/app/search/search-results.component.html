@@ -44,15 +44,11 @@
                         </ng-container>
                     </table>
                 </div>
-                <div class="column is-one-quarter" *ngIf="document.relevance">
-                    <div class="relevance-score">
-                        <span>Relevance: {{document.relevance * 100 | number:'1.0-0' }}%</span>
-                    </div>
-                    <search-relevance [value]="document.relevance"></search-relevance>
-                    <button *ngIf="corpus.scan_image_type" class="button scan-button is-primary is-inverted"
-                        iaBalloon="View Scan" (click)="goToScan(document, $event)">
+                <div class="column is-one-quarter" *ngIf="document.fieldValues.images">
+                    <button class="button scan-button is-primary is-inverted"
+                        iaBalloon="View Photograph" (click)="goToScan(document, $event)">
                         <span class="icon">
-                            <i class="fa fa-newspaper-o fa-3x" aria-hidden="true"></i>
+                            <i class="fa fa-image fa-3x" aria-hidden="true"></i>
                         </span>
                     </button>
                 </div>
@@ -66,7 +62,7 @@
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true"
     [resizable]="false" [blockScroll]="true" *ngIf="viewDocument" [positionTop]="detailTop">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus"
-        [tabIndex]="documentTabIndex"></ia-document-view>
+        [documentTabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>

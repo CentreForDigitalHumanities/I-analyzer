@@ -1,45 +1,26 @@
-The database used in PEACE portal is organised using Elasticsearch. To search it, it is necessary to use terms and operators which Elasticsearch can understand. They are explained in more details in the [Simple Query String manual of Elasticsearch itself](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html).
+The Epigraphy section of the PEACE portal searches simultaneously through all the partner databases: IIP, Epidat, FIJI, and Medieval Toledo. 
 
-For your convenience, a summary of the search operators is shown below.
+It employs a system called Elasticsearch. To perform a search it is necessary to use terms and operators that Elasticsearch can understand. They are explained in detail below. 
 
-# Simple Query String Syntax
+## Searching for one term:
+You may search for a string (a word or name) in the text transcription (meaning the actual epitaphs), or in other fields of the epigraphic database, for example in the Names field. You may also choose to perform a broad search, through all the fields of the Epigraphy section. For example, searching for the string `shalom` through all the fields will return results of `shalom al Israel` as well as the funerary inscription of a woman named `Shalom daughter of Jehohanan`. If you wish to limit your search to people named Shalom, you need to search for this term in the Names field.
 
-The search method supports the following operators:
+## Searching for more than one term:
+When you search for more than term, for example `peace on Israel`, the default search will combine all terms using `OR`. This means that the databases will be searched for either the word `peace`, or the word `on`, or the name `Israel`, or any combination thereof, and your search query will return results such as `On this day`. To avoid this and search for an entire phrase, use inverted commas around your search terms: `“peace on Israel”`.
+If you wish to search for more than one term but in no particular order, use the + operator between your terms. For example: `wife +mother` will return all inscriptions that contain both these words.
+Additional search operators are listed below.
 
 | Operator | Description |
 |:---:| --- |
-| `+` | means AND (bank AND assets) |
-| &#124; | means OR (bank OR assets) |
-| `-` | means NOT (NOT assets) |
-| `"` | allows the search for an entire phrase “the assets of the bank” |
-| `*` | only allowed after other characters and is a wildcard for any number of characters (`asset*` is allowed, `*asset` is not) |
-| `~N` | the fuzziness, when placed after a term this signifies how many characters are allowed to differ. So `bank~1` also searches for bang, sank, dank etc. |
+| `+` | means AND  (`peace` AND `rest`)|
+| &#124; | means OR (`peace` OR `rest`)|
+| `-` | means NOT (NOT `rest`) |
+| `"` | allows the search for an entire phrase “peace on his resting place” |
+| `*` | is a wildcard for any number of characters. `rest*` will search for `rest, resting, restful`. The * operator is only allowed after other characters ( `rest*` is allowed, `*rest` is not) |
+| `~N` | This operator represents fuzziness. When placed after a term this signifies how many characters are allowed to differ. So `rest~1` also searches for `rust, rent, pest`, etc. |
 | `~N` | when placed after a phrase this signifies how many *words* may differ |
 
-Symbols such as `|` and `+` are reserved characters. If you want to search for text containing these characters then they should be escaped by prefixing them with `\`.
+Symbols such as | and + are reserved characters. If you want to search for text containing these characters then they should be escaped by prefixing them with \.
+Sometimes adding or removing spaces between your search terms and the operators may change the results of your search. 
 
-By default the search will combine all terms using `OR`. This means that when you type: `Tram Bike`, documents will be searched containing `Tram` and/or `Bike`. This also has implications for the `–`operator. `Tram Bike –Car` becomes documents containing `Tram`, `Bike` or any document not containing `Car`. A more expected result could be obtained by using `(Tram Bike) +-Car` which will return all hits containing `Tram` or `Bike` and withhold all those containing `Car`.
-
-## Be Careful with Spaces
-Adding or removing a space can change the results of your query. For example search for `+- term` is different than searching for `+-term`. It might be necessary to escape a space (also by placing a `\` in front of it).
-
-### Examples of Search Results
-
-Illustrating the differences when searching for different combinations of `bank` and `assets`.
-
-| Query | Hits |
-| --- | --- |
-| `assets` | 568 hits |
-| `bank` | 76161 hits |
-| `bank  +assets` | 256 hits  (bank AND assets)|
-| `+bank +assets` | 256 hits (AND bank AND assets)|
-| `+bank +-assets` | 75905 hits (bank AND not assets, or: documents containing bank but not assets) |
-| `+-bank +assets`| 312 hits (not bank but assets) |
-| `"assets of the bank"` | 2 hits|
-| `assets deposit` | 632 hits|
-| `+assets +deposit`| 27 hits|
-| `asset*`| 910 hits |
-| `*asset` | There were no results to your query. |
-| `bank~1` | 76241 hits (compare with just bank) | 
-| `"the bank is"` | 24 hits |
-| `"the bank is" ~1`| 32 hits |
+For more information on the query syntax, consult the [Simple Query String manual of Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.9/query-dsl-simple-query-string-query.html).

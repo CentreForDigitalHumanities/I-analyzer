@@ -15,7 +15,7 @@ TIMES_USER_PASSWORD = '12345'
 
 
 class UnittestConfig:
-    SECRET_KEY = 'poiuytrewqlkjhgfdsamnbvcxz'
+    SECRET_KEY = b'dd5520c21ee49d64e7f78d3220b2be1dde4eb4a0933c8baf'
     SQLALCHEMY_DATABASE_URI = 'sqlite://'  # in-memory
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = True
@@ -32,13 +32,14 @@ class UnittestConfig:
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
     TIMES_ES_INDEX = 'times'
+    TIMES_ES_DOCTYPE = 'article'
     TIMES_IMAGE = 'times.jpg'
     TIMES_SCAN_IMAGE_TYPE = 'image/png'
     TIMES_DESCRIPTION_PAGE = 'times.md'
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
-    SAML_MAIL_KEY = "mail"  
+    SAML_MAIL_KEY = "mail"
 
 
 @pytest.fixture(scope='session')
@@ -49,7 +50,7 @@ def test_app(request):
     ctx = app.app_context()
     ctx.push()
     yield app
-    
+
     # performed after running tests
     ctx.pop()
 

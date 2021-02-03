@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CorpusField, SortEvent } from '../models';
 
 const defaultValueType = 'alpha';
@@ -8,7 +8,7 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { 'class': 'field has-addons' }
 })
-export class SearchSortingComponent {
+export class SearchSortingComponent implements OnInit {
     @Input()
     public ascending = true;
 
@@ -27,6 +27,11 @@ export class SearchSortingComponent {
     public sortableFields: CorpusField[];
     public showFields = false;
 
+    ngOnInit() {
+        this.sortField = this.sortableFields[0];
+        this.valueType = ['integer', 'date', 'boolean'].indexOf(this.sortField.displayType) >= 0 ? 'numeric' : 'alpha';
+    }
+
     public get sortType(): SortType {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
@@ -38,16 +43,6 @@ export class SearchSortingComponent {
 
     public toggleShowFields() {
         this.showFields = !this.showFields;
-    }
-
-    public changeField(field: CorpusField | undefined) {
-        if (field === undefined) {
-            this.valueType = defaultValueType;
-        } else {
-            this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
-        }
-        this.sortField = field;
-        this.emitChange();
     }
 
     private emitChange() {

@@ -26,15 +26,13 @@ export class PaginationComponent implements OnChanges {
         this.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
         this.currentPages = [1, 2, 3];
         this.currentPage = 1;
-       
     }
 
     public async loadResults(page: number) {
 
         if (this.currentPage == page) {
             return true;
-        }
-        
+        }       
         this.currentPage = page;
         this.fromIndex = (this.currentPage - 1) * this.resultsPerPage;
 

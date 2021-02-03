@@ -8,7 +8,7 @@ import base64
 import math
 import functools
 
-from os.path import dirname, basename, split, join, isfile, getsize
+from os.path import split, join, isfile, getsize
 import sys
 import tempfile
 from datetime import datetime, timedelta
@@ -23,7 +23,7 @@ from flask_mail import Message
 
 from ianalyzer import models, celery_app
 from es import download
-from addcorpus.load_corpus import load_all_corpora, load_corpus
+from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 
 from api.user_mail import send_user_mail
 from . import security
@@ -48,7 +48,7 @@ def api_register():
     email = request.json['email']
     is_valid_username = security.is_unique_username(username)
     is_valid_email = security.is_unique_non_solis_email(email)
-        
+
     if not is_valid_username or not is_valid_email:
         return jsonify({
             'success': False,
@@ -78,7 +78,7 @@ def api_register():
     # if email was succesfully sent, add user to db
     add_basic_user(username, request.json['password'], email, False)
 
-    return jsonify({'success': True})    
+    return jsonify({'success': True})
 
 # endpoint for the confirmation of user if link in email is clicked.
 @api.route('/registration_confirmation/<token>', methods=['GET'])
@@ -86,9 +86,9 @@ def api_register_confirmation(token):
 
     expiration = 60*60*72  # method does not return email after this limit
     username = security.get_original_token_input(token, expiration)
-    
+
     if not username:
-        flash('The confirmation link is invalid or has expired.', 'danger')        
+        flash('The confirmation link is invalid or has expired.', 'danger')
         abort(403)
 
     user = models.User.query.filter_by(username=username).first_or_404()
@@ -116,7 +116,7 @@ def api_request_reset():
             'message': message + " Log in via your Solis-ID or make a new account."})
     token = security.get_token(user.username)
     if not send_user_mail(
-        email=email, 
+        email=email,
         username=user.username,
         subject_line="Your password can be reset",
         email_title="Password reset",
@@ -142,7 +142,7 @@ def api_reset_password():
     if not user:
         return jsonify({'success': False, 'message': 'User doesn\'t exist.'})
     user = models.User.query.filter_by(username=username).first_or_404()
-    security.login_user(user) 
+    security.login_user(user)
     password = request.json['password']
     user.password = generate_password_hash(password)
     models.db.session.commit()
@@ -186,7 +186,7 @@ def api_corpus_image(corpus, image_name):
     Return the image for a corpus.
     '''
     return send_from_directory(join(
-        dirname(current_app.config['CORPORA'][corpus]), 
+        corpus_dir(corpus),
         current_app.config['IMAGE_PATH']), '{}'.format(image_name))
 
 @api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
@@ -195,8 +195,7 @@ def api_corpus_description(corpus, description_name):
     '''
     Return comprehensive information on the corpus.
     '''
-    corpus_dir = dirname(current_app.config['CORPORA'][corpus])
-    return send_from_directory(corpus_dir, 'description/{}'.format(description_name))
+    return send_from_directory(corpus_dir(corpus), 'description/{}'.format(description_name))
 
 
 @api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
@@ -205,8 +204,7 @@ def api_corpus_document(corpus, document_name):
     '''
     Return a document for a corpus.
     '''
-    corpus_dir = dirname(current_app.config['CORPORA'][corpus])
-    return send_from_directory(corpus_dir, 'documents/{}'.format(document_name))
+    return send_from_directory(corpus_dir(corpus), 'documents/{}'.format(document_name))
 
 
 @api.route('/download', methods=['POST'])
@@ -222,9 +220,6 @@ def api_download():
         return error_response
     elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
         error_response.headers['message'] += 'missing arguments.'
-        return error_response
-    elif request.json['size']>1000:
-        error_response.headers['message'] += 'too many documents requested.'
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
@@ -254,7 +249,7 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit), 
+    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
         tasks.make_csv.s(request.json, current_user.username, current_user.email))
     csvs = csv_task.apply_async()
     if not csvs:
@@ -262,7 +257,7 @@ def api_download_task():
     else:
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
 
-    
+
 
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])
@@ -294,7 +289,7 @@ def add_basic_user(username, password, email, is_active):
     basic_role = models.Role.query.filter_by(name='basic').first()
     pw_hash = None
     if (password):
-        pw_hash = generate_password_hash(password)    
+        pw_hash = generate_password_hash(password)
     new_user = models.User(
         username=username,
         email=email,
@@ -313,10 +308,10 @@ def create_success_response(user):
         'description': corpus.description
     } for corpus in user.role.corpora]
     role = {
-        'name': user.role.name, 
-        'description': user.role.description, 
+        'name': user.role.name,
+        'description': user.role.description,
         'corpora': corpora
-    }    
+    }
     response = jsonify({
         'success': True,
         'id': user.id,
@@ -473,7 +468,7 @@ def api_task_outcome(task_id):
         try:
             outcome = results.get()
         except Exception as e:
-            return jsonify({'success': False, 'message': 'Task canceled.'})  
+            return jsonify({'success': False, 'message': 'Task canceled.'})
         return jsonify({'success': True, 'results': outcome})
 
 
@@ -531,7 +526,7 @@ def api_request_media():
     else:
         data = backend_corpus.request_media(request.json['document'])
         current_app.logger.info(data)
-        if len(data['media'])==0:
+        if 'media' not in data or len(data['media'])==0:
             return jsonify({'success': False})
         data['success'] = True
         return jsonify(data)
@@ -559,7 +554,7 @@ def api_get_related_words():
                 'similar_words_subsets': results[1],
                 'time_points': results[2]
             }
-        }) 
+        })
     return response
 
 
@@ -585,5 +580,5 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
-        }) 
+        })
     return response

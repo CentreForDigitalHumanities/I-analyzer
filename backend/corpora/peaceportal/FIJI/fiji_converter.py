@@ -7,7 +7,7 @@ sends us a updated excelsheet (e.g. with translations added).
 '''
 import os
 import sys
-import csv
+import openpyxl
 import argparse
 from jinja2 import Template
 
@@ -19,13 +19,14 @@ def main(sys_args):
     if not os.path.exists(out_folder):
         os.makedirs(out_folder)
 
-    with open(args.input, 'r', encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=args.delimiter)
-        headers = reader.fieldnames
-        preprocess_headers(headers)
-
-        for row in reader:
-            record = extract_record(row)
+    wb = openpyxl.load_workbook(args.input)
+    sheet = wb['Sheet1']
+    headers = list(list(sheet.values)[0])
+    preprocess_headers(headers)
+    for row in sheet.values:
+        row_dict = {headers[i]: row[i] for i in range(len(row))}
+        record = extract_record(row_dict)
+        if record:
             export(out_folder, record)
 
 
@@ -42,10 +43,12 @@ def preprocess_headers(headers):
 
 
 def extract_record(row):
+    if not row['Inscription no.']:
+        return None
     return dict(
         title=row["Inscription no."],
         date=row["Date"],
-        remarksOnDate=row["Remarks on date"],
+        remarksOnDate=preprocess_text(row["Remarks on date"]),
         provenance=row["Provenance"],
         presentLocation=row["Present location"],
         publications=get_publications(row),
@@ -56,9 +59,9 @@ def extract_record(row):
         inscriptionType=row["Inscription type"],
         persons=get_persons(row),
         age=row['Age'],
-        ageComments=row["Remarks on age"],
+        ageComments=preprocess_text(row["Remarks on age"]),
         iconographyType=row["Iconography type"],
-        iconographyDescription=row["Iconography description"],
+        iconographyDescription=preprocess_text(row["Iconography description"]),
         material=row["Material"],
         languages=get_languages(row),
         incipit=row["Incipit"],
@@ -67,7 +70,7 @@ def extract_record(row):
 
 
 def export(out_folder, record):
-    export_path = os.path.join(out_folder, record['title'] + '.xml')
+    export_path = os.path.join(out_folder, '{}.xml'.format(record['title']))
     with open('XMLtemplate.j2') as file_:
         template = Template(file_.read())
 
@@ -77,8 +80,11 @@ def export(out_folder, record):
 
 def get_publications(row):
     results = []
-    publication_nos = row["No. in publication"].split(';')
-    publications = row["Publication"].split(';')
+    publication_nos = str(row["No. in publication"]).split(';')
+    publications = row["Publication"]
+    if not publications:
+        return results
+    publications = publications.split(';')
 
     for index, pub in enumerate(publications):
         publication = pub.replace('\n', '')
@@ -98,6 +104,8 @@ def get_transcription(row):
 
 def get_languages(row):
     value = row["Language"]
+    if not value:
+        return ""
     langs = value.split(',')
     if len(langs) > 1:
         cleaned = []
@@ -119,8 +127,10 @@ def get_commentary(row):
         commentary = '{}{} There are {} surviving lines.'.format(
             commentary, '.' if not period else '', additional
         )
-    row['Number of lines (s=surviving, o=original)']
-    return commentary
+    if commentary:
+        return commentary
+    else:
+        return ""
 
 
 def preprocess_text(text):
@@ -128,6 +138,8 @@ def preprocess_text(text):
     Preprocess a text field.
     For now replaces < and > with html entities.
     '''
+    if not text:
+        return ""
     return text.replace('<', '&lt;').replace('>', '&gt;')
 
 
@@ -135,7 +147,7 @@ def get_persons(row):
     persons = []
     inscription_id = row['Inscription no.']
     names = get_names_from_field(row, "Names mentioned")
-    namesHebrew = get_names_from_field(row, "Names mentioned (Hebrew)")
+    namesHebrew = get_names_from_field(row, "Names mentioned (original language)")
     sexes = get_sexes(row)
 
     if len(names) == 1 and len(namesHebrew) > 1 and len(sexes) == 1:
@@ -228,7 +240,10 @@ def extract_multifield(row, fieldname, splitter):
     Returns an array that will not contain empty strings or None.
     '''
     results = []
-    values = row[fieldname].split(splitter)
+    content = row[fieldname]
+    if not content:
+        return results
+    values = content.split(splitter)
     for value in values:
         if value:
             results.append(value)

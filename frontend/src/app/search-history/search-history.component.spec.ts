@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DropdownModule } from 'primeng/primeng';
-import { TableModule } from 'primeng/table'
+import { DropdownModule } from 'primeng/dropdown';
+import { TableModule } from 'primeng/table';
 
 import { ApiService, ApiRetryService, CorpusService, LogService, QueryService, SearchService, UserService } from '../services/index';
 import { ApiServiceMock } from '../../mock-data/api';

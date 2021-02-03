@@ -8,7 +8,7 @@ import random
 import re
 import sys
 from datetime import datetime, timedelta
-from os.path import join, dirname, isfile, split, splitext
+from os.path import join, isfile, split, splitext
 import os
 
 from flask import current_app
@@ -16,7 +16,7 @@ from flask import current_app
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus import filters
 from addcorpus.extract import Combined, Metadata, XML
-
+from addcorpus.load_corpus import corpus_dir
 
 # Source files ################################################################
 
@@ -28,6 +28,7 @@ class DutchNewspapersPublic(XMLCorpus):
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
+    es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
@@ -57,14 +58,14 @@ class DutchNewspapersPublic(XMLCorpus):
                 # don't walk further if the year is not within the limits specified by the user
                 subdirs[:] = []
                 continue
-            definition_file = next((join(directory, filename) for filename in filenames if 
+            definition_file = next((join(directory, filename) for filename in filenames if
                                 self.definition_pattern.search(filename)), None)
             if not definition_file:
                 continue
             meta_dict = self.metadata_from_xml(definition_file, tags=[
-                    "title", 
-                    "date", 
-                    "publisher", 
+                    "title",
+                    "date",
+                    "publisher",
                     {"tag": "spatial", "save_as":"distribution"},
                     "source",
                     "issuenumber",
@@ -92,8 +93,8 @@ class DutchNewspapersPublic(XMLCorpus):
                             'id': record_id
                         })
                         yield full_path, meta_dict
-    
-    titlefile = join(dirname(current_app.config['CORPORA']['dutchnewspapers-public']),
+
+    titlefile = join(corpus_dir('dutchnewspapers-public'),
      current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
@@ -298,7 +299,7 @@ class DutchNewspapersPublic(XMLCorpus):
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,
                                   flatten=True, toplevel=True),
-            visualization_type="word_cloud"
+            visualization_type="wordcloud"
         ),
     ]
 

@@ -26,9 +26,6 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
             }), o => o.label);
         }
         else options = [1, 2, 3]; // dummy array to make sure the component loads
-        if (options.length === 0) {
-            this.grayedOut = true;
-        }
         return { options: options, selected: this.data.selected };
     }
 

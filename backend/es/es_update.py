@@ -44,7 +44,10 @@ def update_index(corpus, corpus_definition, query_model):
 def update_document(corpus, doc_type, doc, update_body, client=None):
     if not client:
         client = get_client(corpus)
-    doc_id = doc['_id']
+    doc_id = doc.get('_id', doc.get('id', None))
+    if not doc_id:
+        logger.info("failed to update the following document: {}".format(doc))
+        return None
     client.update(index=corpus, doc_type=doc_type, id=doc_id, body=update_body)
 
 
@@ -55,10 +58,12 @@ def get_client(corpus):
 def get_es_settings(corpus, corpus_definition):
     """ Get the settings for the scroll request.
     Return:
+    - doc_type (e.g. "article")
     - scroll_timeout
     - scroll_size
     """
+    doc_type = corpus_definition.es_doctype
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
     scroll_size = current_app.config['SERVERS'][server]['scroll_page_size']
-    return scroll_timeout, scroll_size
+    return doc_type, scroll_timeout, scroll_size
