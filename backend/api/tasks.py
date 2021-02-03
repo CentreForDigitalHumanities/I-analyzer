@@ -79,7 +79,13 @@ def create_csv(results, fields, filename):
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
     # newline='' to prevent empty double lines
     with open(filepath, 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=fields, dialect='myDialect')
+        writer = csv.DictWriter(
+            f,
+            encoding='utf-8',
+            newline='',
+            fieldnames=fields,
+            dialect='myDialect'
+        )
         writer.writeheader()
         for row in entries:
             writer.writerow(row)
