@@ -252,13 +252,27 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
+    filename = tasks.create_filename(request.json['route'])
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(request.json, current_user.username, current_user.email))
+        tasks.make_csv.s(filename, request.json))
     csvs = csv_task.apply_async()
-    if not csvs:
-        return jsonify({'success': False, 'message': 'Could not create csvs.'})
-    else:
+    if csvs:
+        # we are sending the results to the user by email
+        current_app.logger.info("should now be sending email")
+        send_user_mail(
+            email=current_user.email,
+            username=current_user.username,
+            subject_line="I-Analyzer CSV download",
+            email_title="Download CSV",
+            message="Your .csv file is ready for download.",
+            prompt="Click on the link below.",
+            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
+            link_text="Download .csv file"
+            )
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
+    else:
+        return jsonify({'success': False, 'message': 'Could not create csvs.'})
+        
 
 
 

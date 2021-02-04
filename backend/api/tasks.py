@@ -23,24 +23,9 @@ def download_scroll(request_json, download_size=10000):
 
 
 @celery_app.task()
-def make_csv(results, request_json, username, email=None):
-    filename = create_filename(request_json['route'])
+def make_csv(results, filename, request_json):
     filepath = create_csv(results, request_json['fields'], filename)
-    if email:
-        # we are sending the results to the user by email
-        send_user_mail(
-            email=email,
-            username=username,
-            subject_line="I-Analyzer CSV download",
-            email_title="Download CSV",
-            message="Your .csv file is ready for download.",
-            prompt="Click on the link below.",
-            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
-            link_text="Download .csv file"
-            )
-        return None
-    else:
-        return filepath
+    return filepath
 
 
 @celery_app.task()
@@ -56,8 +41,14 @@ def make_wordcloud_data(list_of_texts, request_json):
 
 
 def create_filename(route):
-    """ name the file given the route of the search """
+    """ 
+    name the file given the route of the search
+    cut the file name to max length of 255 (including route and extension) 
+    """
     filename = re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
+    max_filename_length = 251-current_app.config['CSV_FILES_PATH']
+    if len(filename) > max_filename_length:
+        filename = filename[:max_filename_length]
     filename += '.csv'
     return filename
 
@@ -78,14 +69,8 @@ def create_csv(results, fields, filename):
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)                  
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
     # newline='' to prevent empty double lines
-    with open(filepath, 'w', newline='') as f:
-        writer = csv.DictWriter(
-            f,
-            encoding='utf-8',
-            newline='',
-            fieldnames=fields,
-            dialect='myDialect'
-        )
+    with open(filepath, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=fields, dialect='myDialect')
         writer.writeheader()
         for row in entries:
             writer.writerow(row)
