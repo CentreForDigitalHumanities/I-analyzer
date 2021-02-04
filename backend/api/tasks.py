@@ -46,7 +46,7 @@ def create_filename(route):
     cut the file name to max length of 255 (including route and extension) 
     """
     filename = re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
-    max_filename_length = 251-current_app.config['CSV_FILES_PATH']
+    max_filename_length = 251-len(current_app.config['CSV_FILES_PATH'])
     if len(filename) > max_filename_length:
         filename = filename[:max_filename_length]
     filename += '.csv'
