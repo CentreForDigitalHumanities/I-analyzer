@@ -1,6 +1,6 @@
 {
     "name": "i-analyzer",
-    "version": "2.4.1",
+    "version": "2.4.2",
     "license": "MIT",
     "scripts": {
         "postinstall": "yarn install-backend && yarn install-frontend",
