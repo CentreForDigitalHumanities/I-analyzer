@@ -226,8 +226,11 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filepath = tasks.make_csv.delay(search_results, request.json, current_user.username)
+        filename = tasks.create_filename(request.json['route'])
+        filepath = tasks.make_csv.delay(search_results, filename, request.json)
         csv_file = filepath.get()
+        if not csv_file:
+            return jsonify({'success': False, 'message': 'Could not create csv file.'})
         response = make_response(send_file(csv_file, mimetype='text/csv'))
         response.headers['filename'] = split(csv_file)[1]
         return response
@@ -271,7 +274,7 @@ def api_download_task():
             )
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
-        return jsonify({'success': False, 'message': 'Could not create csvs.'})
+        return jsonify({'success': False, 'message': 'Could not create csv file.'})
         
 
 
