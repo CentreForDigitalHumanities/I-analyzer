@@ -37,7 +37,7 @@ class Troonredes(XMLCorpus):
     image = current_app.config['TROONREDES_IMAGE']
     word_models_present = isfile(
         join(
-            corpus_dir('dutchannualreports'),
+            corpus_dir('troonredes'),
             current_app.config['WM_PATH'],
             current_app.config['WM_BINNED_FN']
         )

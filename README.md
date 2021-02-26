@@ -15,7 +15,7 @@ I-analyzer
 
 - An 'admin' module which describes the views for the admin interface (served through Flask)
 
-- migragtion files and utitilies (using flask-migrate)
+- migration files and utitilies (using flask-migrate)
 
 `ianalyzer/frontend` is an [Angular 4](https://angular.io/) web interface.
 
@@ -38,7 +38,7 @@ Warning: do not try this on a Windows machine. You will grind to a halt installi
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Install the ElasticSearch (https://www.elastic.co/) and MySQL daemons on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options. (September 2019: Install vs 6.x of Elastic search, not vs 7.)
+1. Install the ElasticSearch v.7 (https://www.elastic.co/) and MySQL daemons on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
 2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
 ```
 http.cors.enabled: true
