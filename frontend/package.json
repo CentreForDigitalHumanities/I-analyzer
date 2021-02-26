@@ -46,6 +46,7 @@
     "ng2-pdf-viewer": "6.3",
     "ngx-cookie-service": "^2.4.0",
     "ngx-md": "^8.1.6",
+    "pdfjs-dist": "2.5.207",
     "primeicons": "^1.0.0",
     "primeng": "9.0",
     "process": "^0.11.10",
