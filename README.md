@@ -32,6 +32,8 @@ Prerequisites
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
 
+The Wiki includes a [recipe for installing the prerequisites on Debian 10](https://github.com/UUDigitalHumanitieslab/I-analyzer/wiki/Local-Debian-I-Analyzer-setup).
+
 Running
 -------------------------------------------------------------------------------
 Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml and libxmlsec1-dev is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
