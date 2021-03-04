@@ -44,9 +44,9 @@ To get an instance running, do all of the following inside an activated `virtual
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
-3. Install the requirements for both the API and the client with `npm install`.
+3. Install the requirements for the API with `yarn postinstall`.
 ```
-npm install
+yarn postinstall
 ```
 4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.

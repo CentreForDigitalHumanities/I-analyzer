@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 # Prerequisites
 
-Run `npm install` to install all the dependencies. You can also run this from the project root, it will then also install the requirements for the API.
+Run `yarn` to install the dependencies.
 
 ## Development server
 
