@@ -46,7 +46,7 @@ To get an instance running, do all of the following inside an activated `virtual
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
-3. Install the requirements for the API with `yarn postinstall`.
+3. Install the requirements for both the API and the client:
 ```
 yarn postinstall
 ```
