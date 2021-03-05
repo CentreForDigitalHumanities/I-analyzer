@@ -32,6 +32,8 @@ Prerequisites
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
 
+The Wiki includes a [recipe for installing the prerequisites on Debian 10](https://github.com/UUDigitalHumanitieslab/I-analyzer/wiki/Local-Debian-I-Analyzer-setup).
+
 Running
 -------------------------------------------------------------------------------
 Warning: do not try this on a Windows machine. You will grind to a halt installing the libxml library. Since the SAML integration libxml and libxmlsec1-dev is required to get I-Analyzer running. Install on a mac or a linux system (such as Ubuntu)
@@ -44,9 +46,9 @@ To get an instance running, do all of the following inside an activated `virtual
 http.cors.enabled: true
 http.cors.allow-origin: "*"
 ```
-3. Install the requirements for both the API and the client with `npm install`.
+3. Install the requirements for the API with `yarn postinstall`.
 ```
-npm install
+yarn postinstall
 ```
 4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.
