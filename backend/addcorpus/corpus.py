@@ -81,7 +81,7 @@ class Corpus(object):
         is zero on index creation (this is better while creating an index). Should you choose
         to overwrite this, consider copying this setting.
         '''
-        return { 'index' : { 'number_of_replicas' : 0 }}
+        return {'index': {'number_of_replicas': 0}}
 
     @property
     def fields(self):
@@ -313,7 +313,7 @@ class XMLCorpus(Corpus):
             soup = self.soup_from_xml(filename)
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
-        if 'external_file' in metadata:
+        if metadata and 'external_file' in metadata:
             external_fields = [field for field in self.fields if
                                isinstance(field.extractor, extract.XML) and
                                field.extractor.external_file]
