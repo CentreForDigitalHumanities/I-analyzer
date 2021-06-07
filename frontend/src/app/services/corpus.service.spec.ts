@@ -30,7 +30,7 @@ describe('CorpusService', () => {
                 LogService,
                 { provide: UserService, useValue: userServiceMock }]
         });
-        service = TestBed.get(CorpusService);
+        service = TestBed.inject(CorpusService);
     });
 
     it('should be created', inject([CorpusService], (service: CorpusService) => {
@@ -100,7 +100,7 @@ describe('CorpusService', () => {
                         'description': 'Search only within these banks.',
                         'fieldName': 'bank',
                         'useAsFilter': false,
-                        'option_count': 42               
+                        'option_count': 42
                     }
                 },
                 {
@@ -136,7 +136,7 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
-            let mockMultipleChoiceData: SearchFilterData  = {
+            let mockMultipleChoiceData: SearchFilterData = {
                 filterType: 'MultipleChoiceFilter',
                 optionCount: 42,
                 selected: []
