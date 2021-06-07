@@ -65,7 +65,7 @@ itsdangerous==1.1.0
     # via flask
 jdcal==1.4.1
     # via openpyxl
-jinja2==2.10.1
+jinja2==2.11.3
     # via flask
 kombu==4.5.0
     # via celery
