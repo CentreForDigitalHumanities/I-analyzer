@@ -1,4 +1,4 @@
-import { EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { SearchFilter, SearchFilterData } from '../models/index';
 
@@ -6,15 +6,17 @@ import { SearchFilter, SearchFilterData } from '../models/index';
  * Filter component receives the corpus fields containing search filters as input
  * Filter data from parameters and after search are pushed via a DataService observable
  */
-export abstract class BaseFilterComponent <T extends SearchFilterData> {
-    @Input() 
+@Component({
+    template: ''
+})
+export abstract class BaseFilterComponent<T extends SearchFilterData> {
+    @Input()
     public filter: SearchFilter<T>;
 
     @Input()
     public grayedOut: boolean;
 
-    @Output('update')
-    public updateEmitter = new EventEmitter<SearchFilter<T>>();
+    @Output('update') public updateEmitter = new EventEmitter<SearchFilter<T>>();
 
     /**
      * The data of the applied filter transformed to use as input for the value editors.
@@ -44,10 +46,9 @@ export abstract class BaseFilterComponent <T extends SearchFilterData> {
      * Trigger a change event.
      */
     update() {
-        if (this.data.selected && this.data.selected.length==0) {
+        if (this.data.selected && this.data.selected.length === 0) {
             this.useAsFilter = false;
-        }
-        else  {
+        } else {
             this.useAsFilter = true; // update called through user input
         }
         this.filter.useAsFilter = this.useAsFilter;
