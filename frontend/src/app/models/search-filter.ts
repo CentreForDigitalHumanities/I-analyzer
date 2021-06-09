@@ -1,5 +1,3 @@
-import { BooleanFilterComponent } from '../filter';
-
 export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
@@ -12,19 +10,19 @@ export type SearchFilter<T extends SearchFilterData> = {
 
 export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
 
-export type BooleanFilterData = { 
-    filterType: 'BooleanFilter', 
+export type BooleanFilterData = {
+    filterType: 'BooleanFilter',
     checked: boolean
 };
 export type MultipleChoiceFilterData = {
-    filterType: 'MultipleChoiceFilter', 
-    optionCount?: number, 
+    filterType: 'MultipleChoiceFilter',
+    optionCount?: number,
     selected: string[]
 };
 export type RangeFilterData = {
     filterType: 'RangeFilter',
-    min: number, 
-    max: number 
+    min: number,
+    max: number
 };
 export type DateFilterData = {
     filterType: 'DateFilter',
