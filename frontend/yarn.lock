@@ -6839,7 +6839,7 @@ next-tick@~1.0.0:
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-ng2-pdf-viewer@6.3:
+ng2-pdf-viewer@6.3.2:
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/ng2-pdf-viewer/-/ng2-pdf-viewer-6.3.2.tgz#07189207893ceb4c086e9b6ebd74fdbb31982af1"
   integrity sha512-H2tBhDd+Lq6CUzK2g54HsCcZDR2wTn1sDjYqKY3yF0Ydasl2R5ppCKynZBU/zge4EKvmHglJI120FbQMpJKDYQ==
