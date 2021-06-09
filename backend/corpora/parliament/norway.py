@@ -29,14 +29,18 @@ class ParliamentNorway(Parliament):
 
     def sources(self, start, end):
         for txt_file in glob('{}/*.txt'.format(self.data_directory)):
-            yield txt_file, {'date': datetime(year='_'.split(basename(txt_file))[1], month=1, day=1)}
+            date = datetime(year=int(basename(
+                txt_file).split('_')[1]), month=1, day=1)
+            if start < date < end:
+                yield txt_file, {'date': date.strftime('%Y-%m-%d')}
 
     def source2dicts(self, source):
         txt_file = source[0]
         out_dict = source[1]
         with open(txt_file, 'r') as f:
             text = f.read()
-        yield out_dict.update({'debate': text})
+        out_dict.update({'debate': text})
+        yield(out_dict)
 
     def __init__(self):
         self.country.extractor = Constant(

@@ -137,9 +137,10 @@ class XML(Extractor):
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
-                 transform_soup_func=None, # a function [e.g. `my_func(soup)`]` to transform the soup directly
-                    # after _select was called, i.e. before further processing (attributes, flattening, etc).
-                    # Keep in mind that the soup passed could be None.
+                 # a function [e.g. `my_func(soup)`]` to transform the soup directly
+                 transform_soup_func=None,
+                 # after _select was called, i.e. before further processing (attributes, flattening, etc).
+                 # Keep in mind that the soup passed could be None.
                  *nargs,
                  **kwargs
                  ):
@@ -178,7 +179,7 @@ class XML(Extractor):
                 if not soup:
                     return None
             tag = self.tag[-1]
-            
+
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
@@ -198,7 +199,6 @@ class XML(Extractor):
             return soup.find(tag, recursive=self.recursive)
         else:
             return soup.find(tag, recursive=self.recursive)
-        
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
@@ -249,9 +249,9 @@ class XML(Extractor):
 
         return html.unescape(
             _newlines.sub('\n',
-                          _softbreak.sub(' ', 
-                          _tabs.sub('', text)
-                          )).strip()
+                          _softbreak.sub(' ',
+                                         _tabs.sub('', text)
+                                         )).strip()
         )
 
     def _attr(self, soup):
