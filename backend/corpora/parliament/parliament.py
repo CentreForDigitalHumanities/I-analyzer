@@ -30,7 +30,7 @@ class Parliament(Corpus):
     # fields below are required by code but not actually used
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=2021, month=12, day=31)
-    image = 'bogus'
+    image = 'parliament.jpeg'
     data_directory = 'bogus'
 
     # overwrite below in child class if you need to extract the (converted) transcription
