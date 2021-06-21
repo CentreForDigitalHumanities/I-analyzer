@@ -15,7 +15,7 @@ import { BarChartComponent } from './barchart.component';
     styleUrls: ['./term-frequency.component.scss']
 })
 export class TermFrequencyComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('termfrequency', {static: true}) private termFreqContainer: ElementRef;
+    @ViewChild('termfrequency', { static: true }) private termFreqContainer: ElementRef;
     @Input() searchData: AggregateResult[];
     @Input() visualizedField;
     @Input() asPercent = false;
@@ -116,9 +116,9 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
             // add tooltips
             this.chart.selectAll('.bar')
-                .on('mouseover', (d,i) => {
+                .on('mouseover', (event, d) => {
                     const yPos = this.height + 5 * this.margin.top;
-                    const xPos = this.xScale(i);
+                    const xPos = event.offsetX;
                     this.tooltip
                         .text(d.key)
                         .style('left', xPos + 'px')
@@ -160,11 +160,11 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
 
         if (selection.length < this.maxCategories) {
             this.xAxis
-            .call(d3Axis.axisBottom(this.xScale).ticks(selection.length))
-            .selectAll('.tick text')
-            .text((d, i) => selection[i].key)
-            .attr('text-anchor', 'end')
-            .attr('transform', 'rotate(-35)');
+                .call(d3Axis.axisBottom(this.xScale).ticks(selection.length))
+                .selectAll('.tick text')
+                .text((d, i) => selection[i].key)
+                .attr('text-anchor', 'end')
+                .attr('transform', 'rotate(-35)');
         }
     }
 

@@ -182,8 +182,9 @@ export class BarChartComponent {
             }
             this.zoomOut();
         } else {
+            // remove the rectangular selection
+            this.svg.select('.brush').call(this.brush.clear);
             this.xScale.domain([s[0], s[1]].map(this.xScale.invert, this.xScale));
-            this.svg.select('.brush').call(this.brush.move, null);
             this.zoomIn();
         }
     }
