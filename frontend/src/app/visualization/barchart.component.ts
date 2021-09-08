@@ -40,7 +40,7 @@ export class BarChartComponent {
     private idleDelay: number;
 
     // dataService is needed for pushing filtered data from timeline component
-    constructor(public dataService: DataService, public searchService: SearchService) {}
+    constructor(public dataService: DataService, public searchService: SearchService) { }
 
     calculateCanvas() {
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
@@ -173,20 +173,18 @@ export class BarChartComponent {
             .call(this.brush);
     }
 
-    brushended() {
-        const s = d3.event.selection;
+    brushended(event) {
+        const s = event.selection;
         if (!s) {
-            if (!d3.event.sourceEvent.selection) {
-                if (!this.idleTimeout) {
-                    return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
-                }
-                // resetting everything to first view
-                this.zoomOut();
+            // check if this was double-click, if so, zoom out
+            if (!this.idleTimeout) {
+                return this.idleTimeout = setTimeout(this.idled, this.idleDelay);
             }
-
+            this.zoomOut();
         } else {
+            // remove the rectangular selection
+            this.svg.select('.brush').call(this.brush.clear);
             this.xScale.domain([s[0], s[1]].map(this.xScale.invert, this.xScale));
-            this.svg.select('.brush').call(this.brush.move, null);
             this.zoomIn();
         }
     }
@@ -196,6 +194,6 @@ export class BarChartComponent {
     }
 
     // implemented on child components
-    protected zoomIn() {}
-    protected zoomOut() {}
+    protected zoomIn() { }
+    protected zoomOut() { }
 }
