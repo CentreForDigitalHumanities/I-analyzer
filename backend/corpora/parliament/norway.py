@@ -10,13 +10,7 @@ from corpora.parliament.parliament import Parliament
 
 class ParliamentNorway(Parliament):
     '''
-    Base class for corpora in the People & Parliament project.
-
-    This supplies the frontend with the information it needs.
-    Child corpora should only provide extractors for each field.
-    Create indices (with alias 'peopleparliament') from
-    the corpora specific definitions, and point the application
-    to this base corpus.
+    Class for indexing Norwegian parliamentary data
     '''
 
     title = "People & Parliament (Norway)"
