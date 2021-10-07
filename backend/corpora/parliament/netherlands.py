@@ -5,9 +5,9 @@ from flask import current_app
 
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant
-from corpora.parliament.parliament import Parliament
+from corpora.parliament.parliament import ParliamentSpeech
 
-class ParliamentNetherlands(Parliament, XMLCorpus):
+class ParliamentNetherlands(ParliamentSpeech, XMLCorpus):
     '''
     Class for indexing Dutch parliamentary data
     '''
@@ -18,7 +18,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     es_index = current_app.config['PP_NL_INDEX']
     es_alias = current_app.config['PP_ALIAS']
     tag_toplevel = 'root'
-    tag_entry = 'proceedings'
+    tag_entry = 'speech'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -37,7 +37,33 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             toplevel=True
         )
 
-        self.debate.extractor = XML(
-            tag='topic',
+        self.house.extractor = XML(
+            tag=['meta','dc:subject', 'pm:house'],
+            toplevel=True,   
+        )
+
+        self.debate_title.extractor = XML(
+            tag=['meta', 'dc:title'],
+            toplevel=True,
+        )
+
+        self.topic.extractor = XML(
+            tag=['..', '..'],
+            attribute='pm:title'
+        )
+
+        self.speech.extractor = XML(
             flatten=True
+        )
+
+        self.speaker.extractor = XML(
+            attribute='pm:speaker'
+        )
+
+        self.role.extractor = XML(
+            attribute='pm:role'
+        )
+
+        self.party.extractor = XML(
+            attribute='pm:party'
         )

@@ -6,17 +6,17 @@ from flask import current_app
 
 from addcorpus.extract import XML, Constant
 from addcorpus.corpus import XMLCorpus
-from corpora.parliament.parliament import Parliament
+from corpora.parliament.parliament import ParliamentSpeech
 
 
-class ParliamentUK(Parliament, XMLCorpus):
+class ParliamentUK(ParliamentSpeech, XMLCorpus):
     title = 'People & Parliament (UK)'
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
     es_alias = current_app.config['PP_ALIAS']
 
     tag_toplevel = 'hansard'
-    tag_entry = 'housecommons'
+    tag_entry = 'membercontribution'
 
     image = current_app.config['PP_UK_IMAGE']
 
@@ -33,11 +33,19 @@ class ParliamentUK(Parliament, XMLCorpus):
         self.country.search_filter = None
 
         self.date.extractor = XML(
-            tag='date',
-            attribute='format'
+            tag=['date'],
+            attribute='format',
+            recursive=True,
+            toplevel=True
         )
 
-        self.debate.extractor = XML(
-            tag='debates',
-            flatten=True
+        self.speech.extractor = XML(
+        )
+
+        self.speaker.extractor = XML(
+            tag=['..', 'member']
+        )
+
+        self.topic.extractor = XML(
+            tag=['..', '..', 'title']
         )
