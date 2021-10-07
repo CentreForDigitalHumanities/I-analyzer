@@ -49,7 +49,7 @@ class ParliamentNetherlands(ParliamentSpeech, XMLCorpus):
 
         self.topic.extractor = XML(
             tag=['..', '..'],
-            attribute='pm:title'
+            attribute=':title'
         )
 
         self.speech.extractor = XML(
@@ -57,13 +57,13 @@ class ParliamentNetherlands(ParliamentSpeech, XMLCorpus):
         )
 
         self.speaker.extractor = XML(
-            attribute='pm:speaker'
+            attribute=':speaker'
         )
 
         self.role.extractor = XML(
-            attribute='pm:role'
+            attribute=':role'
         )
 
         self.party.extractor = XML(
-            attribute='pm:party'
+            attribute=':party'
         )

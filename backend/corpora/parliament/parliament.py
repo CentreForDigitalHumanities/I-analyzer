@@ -162,7 +162,7 @@ class ParliamentSpeech(Corpus):
     )
 
     topic = Field(
-        name='topc',
+        name='topic',
         display='Topic',
         description='Topic of the debate in which the speech was held',
         es_mapping={'type': 'keyword'},
