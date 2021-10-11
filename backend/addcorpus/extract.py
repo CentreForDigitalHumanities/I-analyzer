@@ -260,8 +260,12 @@ class XML(Extractor):
         '''
 
         if isinstance(soup, bs4.element.Tag):
+            if self.attribute == 'name':
+                return soup.name
             return soup.attrs.get(self.attribute)
         else:
+            if self.attribute == 'name':
+                return [ node.name for node in soup]
             return [
                 node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
