@@ -66,7 +66,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if topic_start and topic_end:
             return '{}-{}'.format(topic_start, topic_end)
 
-
     def __init__(self):
         self.country.extractor = Constant(
             value='Netherlands'
@@ -102,7 +101,9 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
 
         self.speech.extractor = XML(
-            flatten=True
+            tag='p',
+            multiple=True,
+            flatten=True,
         )
 
         self.speech_id.extractor = XML(
