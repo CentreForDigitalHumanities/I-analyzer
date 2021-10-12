@@ -1,6 +1,7 @@
 from glob import glob
 import logging
 import bs4
+import re
 
 from flask import current_app
 
@@ -28,7 +29,7 @@ class ParliamentUK(Parliament, XMLCorpus):
             yield xml_file, {}
 
     def clean_speech(speech):
-        if speech.startswith(': '):
+        if speech and speech.startswith(': '):
             return speech[2:]
         return speech
     
@@ -44,7 +45,41 @@ class ParliamentUK(Parliament, XMLCorpus):
             return 'House of Lords'
         return ''
 
- 
+    def format_topic(topic):
+        if topic and len(topic) >= 1:
+            topic = re.sub(r'\.$', '', topic)
+            topic = topic[0].upper() + topic[1:].lower()
+        return topic
+    
+    def find_last_column(node):
+        "find the last column number before the start of the current node"
+        is_tag = lambda x : type(x) == bs4.element.Tag
+
+        #look for column id in previous nodes
+        for prev_node in node.previous_siblings:          
+            if is_tag(prev_node):
+                #check if this is a column tag
+                if prev_node.name == 'col':
+                    return prev_node
+                
+                #check if the tag contains column tags
+                cols = prev_node.find_all('col')
+                if cols:
+                    return cols[-1]
+        
+        #if none was found, go up a level
+        parent = node.parent
+        if parent:
+            return ParliamentUK.find_last_column(parent)
+    
+    def format_columns(columns):
+        if columns:
+            start_col, end_col = columns
+            if end_col:
+                return '{}-{}'.format(start_col, end_col)
+            return start_col
+
+
     def __init__(self):
         self.country.extractor = Constant(
             value='United Kingdom'
@@ -75,13 +110,24 @@ class ParliamentUK(Parliament, XMLCorpus):
         )
 
         self.speaker.extractor = XML(
-            tag='member'
+            tag='member',
+            transform = lambda name : name.title() if name else None
         )
 
         self.topic.extractor = XML(
             tag=['title'],
             parent_level=1,
+            transform=ParliamentUK.format_topic
         )
 
-        self.role.search_filter = None
-        self.party.search_filter = None
+        self.column.extractor = Combined(
+            XML(
+                transform_soup_func=ParliamentUK.find_last_column
+            ),
+            XML(
+                tag=['membercontribution', 'col'],
+                multiple=True,
+                transform=lambda cols : cols[-1] if cols else cols
+                ),
+            transform=ParliamentUK.format_columns
+        )

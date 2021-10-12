@@ -3,6 +3,7 @@ import logging
 
 from flask import current_app
 
+import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
 from corpora.parliament.parliament import Parliament
@@ -24,6 +25,47 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         logger = logging.getLogger(__name__)
         for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
             yield xml_file
+    
+    def format_role(role):
+        if role == 'mp':
+            return role.upper()
+        else:
+            return role.title()
+
+    def find_topic(speech):
+        return speech.find_parent('topic')
+    
+    def format_house(house):
+        if house == 'senate':
+            return 'Eerste Kamer der Staten-Generaal'
+        return house
+    
+    def find_last_pagebreak(node):
+        "find the last pagebreak node before the start of the current node"
+        is_tag = lambda x : type(x) == bs4.element.Tag
+
+        #look for pagebreaks in previous nodes
+        for prev_node in node.previous_siblings:          
+            if is_tag(prev_node):
+                breaks = prev_node.find_all('pagebreak')
+                if breaks:
+                    return breaks[-1]
+        
+        #if none was found, go up a level
+        parent = node.parent
+        if parent:
+            return ParliamentNetherlands.find_last_pagebreak(parent)
+    
+    def format_pages(pages):
+        topic_start, topic_end, prev_break, last_break = pages
+        if prev_break:
+            if last_break:
+                return '{}-{}'.format(prev_break, last_break)
+            return str(prev_break)
+        
+        if topic_start and topic_end:
+            return '{}-{}'.format(topic_start, topic_end)
+
 
     def __init__(self):
         self.country.extractor = Constant(
@@ -39,7 +81,9 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
         self.house.extractor = XML(
             tag=['meta','dc:subject', 'pm:house'],
-            toplevel=True,   
+            attribute='pm:house',
+            toplevel=True,
+            transform=ParliamentNetherlands.format_house
         )
 
         self.debate_title.extractor = XML(
@@ -53,9 +97,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
 
         self.topic.extractor = XML(
-            tag='topic',
+            transform_soup_func = ParliamentNetherlands.find_topic,
             attribute=':title',
-            parent_level=3,
         )
 
         self.speech.extractor = XML(
@@ -77,7 +120,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
 
         self.role.extractor = XML(
-            attribute=':role'
+            attribute=':role',
+            transform=ParliamentNetherlands.format_role
         )
 
         self.party.extractor = XML(
@@ -86,4 +130,22 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
         self.party_id.extractor = XML(
             attribute=':party-ref'
+        )
+
+        self.page.extractor = Combined(
+            XML(transform_soup_func=ParliamentNetherlands.find_topic,
+                attribute=':source-start-page'
+            ),
+            XML(transform_soup_func=ParliamentNetherlands.find_topic,
+                attribute=':source-end-page'
+            ),
+            XML(transform_soup_func=ParliamentNetherlands.find_last_pagebreak,
+                attribute=':originalpagenr',
+            ),
+            XML(tag=['stage-direction', 'pagebreak'],
+                attribute=':originalpagenr',
+                multiple=True,
+                transform=lambda pages : pages[-1] if pages else pages
+            ),
+            transform=ParliamentNetherlands.format_pages,
         )
