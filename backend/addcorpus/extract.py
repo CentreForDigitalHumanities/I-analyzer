@@ -331,10 +331,11 @@ class CSV(Extractor):
     
     def _apply(self, rows, *nargs, **kwargs):
         if self.multiple:
-            return [row[self.field] for row in rows]
+            return [row[self.field] for row in rows if self.field in row]
         else:
             row = rows[0]
-            return row[self.field]
+            if self.field in row:
+                return row[self.field]
 
 class ExternalFile(Extractor):
 
