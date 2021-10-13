@@ -37,7 +37,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     
     def format_house(house):
         if house == 'senate':
-            return 'Eerste Kamer der Staten-Generaal'
+            return 'Eerste Kamer'
+        if house == 'commons':
+            return 'Tweede Kamer'
+        if house == 'other':
+            return 'Other'
         return house
     
     def find_last_pagebreak(node):

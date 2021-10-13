@@ -539,9 +539,7 @@ class CSVCorpus(Corpus):
                 extract.Choice,
                 extract.Combined,
                 extract.CSV,
-                extract.Metadata,
                 extract.Constant,
-                extract.ExternalFile
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")

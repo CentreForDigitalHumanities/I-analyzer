@@ -160,6 +160,10 @@ class Parliament(Corpus):
         display_name='Party ID',
         description='Unique identifier of the political party the speaker belongs to',
         es_mapping={'type': 'keyword'},
+        search_filter=MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=10
+        )
     )
 
     page = Field(
