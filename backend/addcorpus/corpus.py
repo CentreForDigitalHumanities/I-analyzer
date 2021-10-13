@@ -8,6 +8,7 @@ import itertools
 import inspect
 import json
 import bs4
+import csv
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger('indexing')
@@ -517,6 +518,75 @@ class HTMLCorpus(XMLCorpus):
                     metadata=metadata
                 ) for field in self.fields if field.indexed
             }
+
+
+class CSVCorpus(Corpus):
+    '''
+    An CSVCorpus is any corpus that extracts its data from CSV sources.
+    '''
+
+    @property
+    def field_entry(self):
+        '''
+        If applicable, the field that identifies entries. Subsequent rows with the same
+        value for this field are treated as a single document. If left blank, each row
+        is treated as a document.
+        '''
+
+    def source2dicts(self, source):
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                extract.Choice,
+                extract.Combined,
+                extract.CSV,
+                extract.Metadata,
+                extract.Constant,
+                extract.ExternalFile
+            )):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with a CSV corpus")
+        
+        if isinstance(source, str):
+            filename = source
+        if isinstance(source, bytes):
+            raise NotImplementedError()
+        else:
+            filename = source[0]
+        
+        with open(filename, 'r') as f:
+            reader = csv.DictReader(f)
+            document_id = None
+            rows = []
+
+            for row in reader:
+                is_new_document = True
+                if self.field_entry:
+                    id = row[self.field_entry]
+                    if id == document_id:
+                        is_new_document = False
+                    else:
+                        document_id = id
+                
+                if is_new_document and rows:
+                    yield self.document_from_rows(rows)
+                    rows = [row]
+                else:
+                    rows.append(row)
+            
+            yield self.document_from_rows(rows)
+        
+    def document_from_rows(self, rows):
+        doc = {
+            field.name: field.extractor.apply(
+                # The extractor is put to work by simply throwing at it
+                # any and all information it might need
+                rows=rows,
+            )
+            for field in self.fields if field.indexed
+        }
+
+        return doc
+
 
 
 # Fields ######################################################################

@@ -317,6 +317,24 @@ class HTML(XML):
         else:
             return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
 
+class CSV(Extractor):
+    '''
+    This extractor extracts values from a CSV row.
+    '''
+    def __init__(self, 
+            field, 
+            multiple=False,
+            *nargs, **kwargs):
+        self.field = field
+        self.multiple = multiple
+        super().__init__(*nargs, **kwargs)
+    
+    def _apply(self, rows, *nargs, **kwargs):
+        if self.multiple:
+            return [row[self.field] for row in rows]
+        else:
+            row = rows[0]
+            return row[self.field]
 
 class ExternalFile(Extractor):
 
