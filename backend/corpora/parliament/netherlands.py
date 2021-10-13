@@ -30,7 +30,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if role == 'mp':
             return role.upper()
         else:
-            return role.title()
+            return role.title() if type(role) == str else role
 
     def find_topic(speech):
         return speech.find_parent('topic')
@@ -69,6 +69,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         
         if topic_start and topic_end:
             return '{}-{}'.format(topic_start, topic_end)
+    
+    def format_party(data):
+        name, id = data
+        if name:
+            return name
+        if id and id.startswith('nl.p.'):
+            id = id[5:]
+        return id
 
     def __init__(self):
         self.country.extractor = Constant(
@@ -129,8 +137,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             transform=ParliamentNetherlands.format_role
         )
 
-        self.party.extractor = XML(
-            attribute=':party'
+        self.party.extractor = Combined(
+            XML(
+                attribute=':party'
+                ),
+            XML(
+                attribute=':party-ref'
+            ),
+            transform=ParliamentNetherlands.format_party,
         )
 
         self.party_id.extractor = XML(
