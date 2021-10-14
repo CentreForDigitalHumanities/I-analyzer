@@ -11,6 +11,7 @@ from corpora.parliament.parliament import ParliamentSpeech
 
 class ParliamentUK(ParliamentSpeech, XMLCorpus):
     title = 'People & Parliament (UK)'
+    description = "Speeches from the House of Lords and House of Commons"
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
     es_alias = current_app.config['PP_ALIAS']
