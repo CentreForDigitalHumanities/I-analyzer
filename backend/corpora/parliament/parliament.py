@@ -68,7 +68,8 @@ class Parliament(Corpus):
             max_date,
             description='Search only within this time range.'
         ),
-    )
+        visualization_type='timeline'
+    ) 
 
     house = Field(
         name='house',
@@ -153,7 +154,8 @@ class Parliament(Corpus):
         search_filter=MultipleChoiceFilter(
             description='Search in speeches from the selected parties',
             option_count=10
-        )
+        ),
+        visualization_type='term_frequency'
     )
 
     party_id = Field(

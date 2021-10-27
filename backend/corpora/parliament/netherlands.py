@@ -14,7 +14,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
 
     title = "People & Parliament (Netherlands)"
-    description = "Minutes from European parliaments"
+    description = "Speeches from the First and Second Chamber of the Netherlands"
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     es_alias = current_app.config['PP_ALIAS']
