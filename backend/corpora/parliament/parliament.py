@@ -85,7 +85,7 @@ class Parliament(Corpus):
         name='debate_title',
         display_name='Title of debate',
         description='Title of the debate in which the speech was held',
-        es_mapping={'type': 'keyword'},
+        es_mapping={'type': 'text'},
     )
 
     debate_id = Field(
@@ -99,6 +99,7 @@ class Parliament(Corpus):
         name='topic',
         display_name='Topic',
         description='Topic of the debate in which the speech was held',
+        es_mapping={'type': 'text'},
     )
 
     speech = Field(
