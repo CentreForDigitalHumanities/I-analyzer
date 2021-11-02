@@ -8,6 +8,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from addcorpus.load_corpus import corpus_dir
 import numpy as np
 import scipy
+import json
+import re
 
 from flask import current_app
 
@@ -135,3 +137,57 @@ def cosine_similarity_matrix_vector(vector, matrix):
     vector_norm = np.linalg.norm(vector)
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
+
+def get_collocations(query_term, corpus):
+    """Given a query term and a corpus, get the words that occurred most frequently around the query term"""
+
+    min_year = 1900
+    max_year = 2020
+    year_step = 10
+
+    bins = range(min_year, max_year, year_step)
+
+    hits = get_highlight_result(query_term, corpus)
+    docs = highlights_by_time_interval(hits, bins)
+    collocations = count_collocations(docs)
+
+    time_labels = ['{}-{}'.format(year, year + year_step) for year in bins]
+
+    return { 'words': collocations, 'time_points' : time_labels }
+
+def get_highlight_result(query_term, corpus):
+    with open('/home/luka/Documents/I-analyzer/highlight_search_voorbeeld.json') as f:
+        data = json.load(f)
+        hits = data['hits']['hits']
+
+        return hits
+
+def highlights_by_time_interval(hits, bins):
+    docs = ['' for year in bins]
+
+    # remove queryterm (and surrounding html tags)
+    format = lambda highlight: re.sub(r'<em>.*</em>', '', highlight)
+
+    for hit in hits:
+        date = hit['_source']['date']
+        hit_year = int(date[:4])
+
+        for (i, bin_year) in enumerate(reversed(bins)):
+            if hit_year >= bin_year:
+                highlights = [format(highlight) for field in hit['highlight'] for highlight in hit['highlight'][field]]
+                docs[i] += ' ' + ' '.join(highlights)
+                break
+
+    return docs
+
+
+def count_collocations(highlights):
+    cv = CountVectorizer( max_features=10)
+    counts = cv.fit_transform(highlights).toarray()
+    words = cv.get_feature_names()
+    output = [{
+            'label': word, 
+            'data': list(int(count) for count in counts[:,i])
+        } 
+        for i, word in enumerate(words)]
+    return output

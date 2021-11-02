@@ -42,7 +42,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
     public relatedWordsTable: {
         [word: string]: number
-    }
+    };
+    public collocationGraph: {
+        labels: string[],
+        datasets: {
+            label: string, data: number[]
+        }[]
+    };
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
     public isLoading: boolean = false;
@@ -72,6 +78,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 label: field.displayName,
                 value: field.name
             }));
+            this.visDropdown.push({
+                label: 'Collocations',
+                value: 'collocation',
+            });
             if (this.corpus.word_models_present == true) {
                 this.visDropdown.push({
                     label: 'Related Words',
@@ -123,6 +133,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
+        } else if (selectedField === 'collocation') {
+            this.visualizedField.visualizationType = selectedField;
+            this.visualizedField.name = selectedField;
+            this.visualizedField.displayName = 'Collocations';
         } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
         }
@@ -145,6 +159,16 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
+        } else if (this.visualizedField.visualizationType === 'collocation') {
+            this.searchService.getCollocation(this.queryModel.queryText, this.corpus.name).then(results => {
+                this.collocationGraph = results['graphData'];
+                this.isLoading = false;
+            }).catch(error => {
+                this.collocationGraph = undefined;
+                this.foundNoVisualsMessage = this.noResults;
+                this.errorMessage = error['message'];
+                this.isLoading = false;
+            });
         } else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {

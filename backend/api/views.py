@@ -602,3 +602,26 @@ def api_get_related_words_time_interval():
             }
         })
     return response
+
+@api.route('/get_collocations', methods=['POST'])
+@login_required
+def api_get_collocations():
+    if not request.json:
+        abort(400)
+
+    results = analyze.get_collocations(
+        request.json['query_term'],
+        request.json['corpus_name'],
+    )
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'word_data': results
+        })
+    return response

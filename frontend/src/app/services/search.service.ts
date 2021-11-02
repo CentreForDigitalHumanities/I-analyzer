@@ -7,7 +7,8 @@ import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
+    AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 
 @Injectable()
 export class SearchService {
@@ -159,6 +160,22 @@ export class SearchService {
                     reject({'message': result['message']})
                 }
             })
+        });
+    }
+
+    getCollocation(queryTerm: string, corpusName: string): Promise<any> {
+        return this.apiService.getCollocations({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve({'graphData': {
+                                'labels': result.word_data.time_points,
+                                'datasets': result.word_data.words,
+                            }
+                    });
+                } else {
+                    reject({'message': result['message']});
+                }
+            });
         });
     }
 
