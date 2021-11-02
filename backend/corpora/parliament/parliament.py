@@ -166,7 +166,14 @@ class Parliament(Corpus):
     page = Field(
         name='page',
         display_name='Page(s)',
-        description='Page(s) of the debate in the original document',
+        description='Page(s) of the speech in the original document',
+        es_mapping={'type': 'keyword'}
+    )
+
+    column = Field(
+        name='column',
+        display_name='Column',
+        description='Column(s) of the speech in the original document',
         es_mapping={'type': 'keyword'}
     )
 
@@ -178,5 +185,5 @@ class Parliament(Corpus):
         speaker, speaker_id, 
         role, 
         party, party_id,
-        page,
+        page, column,
         ]
