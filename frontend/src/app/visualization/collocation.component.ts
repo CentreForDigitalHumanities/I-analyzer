@@ -11,9 +11,9 @@ export class CollocationComponent implements OnInit {
         datasets: {
             label: string,
             data: number[],
-            fill?: boolean,
             backgroundColor?: string,
-            borderColor?: string
+            borderColor?: string,
+            pointRadius?: number;
         }[]
     };
 
@@ -26,7 +26,7 @@ export class CollocationComponent implements OnInit {
         },
         scales: {
             yAxes: [{
-                // stacked: true,
+                stacked: true,
                 scaleLabel: {
                     display: true,
                     labelString: 'Frequency'
@@ -36,6 +36,16 @@ export class CollocationComponent implements OnInit {
         },
         tooltips: {
             intersect: false,
+            callbacks: {
+                label(tooltipItem, data): string {
+                    const dataset = data.datasets[tooltipItem.datasetIndex];
+                    const label = dataset.label;
+                    const value: any = dataset.data[tooltipItem.index];
+                    if (value) { // skip 0 values
+                        return `${label}: ${value}`;
+                    }
+                  },
+            }
         }
     };
 
@@ -43,9 +53,9 @@ export class CollocationComponent implements OnInit {
 
     ngOnInit(): void {
         this.searchData.datasets.forEach((data, index) => {
-            data.fill = false;
-            data.backgroundColor = this.colorPalette[index]; // set background color for tooltip
-            data.borderColor = this.colorPalette[index];
+            data.backgroundColor = this.colorPalette[index];
+            data.borderColor = 'rgba(0,0,0,0)';
+            data.pointRadius = 0;
         });
         console.log(this.searchData);
     }
