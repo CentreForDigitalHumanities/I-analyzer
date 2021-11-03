@@ -160,7 +160,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.isLoading = false;
                 });
         } else if (this.visualizedField.visualizationType === 'collocation') {
-            this.searchService.getCollocation(this.queryModel.queryText, this.corpus.name).then(results => {
+            this.searchService.getCollocation(this.queryModel, this.corpus.name).then(results => {
                 this.collocationGraph = results['graphData'];
                 this.isLoading = false;
             }).catch(error => {

@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, CollocationResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, CollocationResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -95,7 +95,7 @@ export class ApiService extends Resource {
         path: '/get_collocations'
     })
     public getCollocations: ResourceMethod<
-        { query_term: string, corpus_name: string },
+        { es_query: EsQuery, corpus_name: string, },
         { success: boolean, message?: string, word_data?: CollocationResults }>;
 
     @ResourceAction({

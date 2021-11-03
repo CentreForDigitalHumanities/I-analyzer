@@ -15,7 +15,7 @@
 </div>
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || collocationGraph || timeline); else noVisualsMessage">
-    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords') || (freqtable && visualizedField.visualizationType != 'relatedwords')">
+    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='collocation') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='collocation')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage

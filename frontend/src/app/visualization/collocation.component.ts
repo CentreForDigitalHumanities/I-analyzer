@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 
 @Component({
     selector: 'ia-collocation',
     templateUrl: './collocation.component.html',
     styleUrls: ['./collocation.component.scss']
 })
-export class CollocationComponent implements OnInit {
+export class CollocationComponent implements OnInit, OnChanges {
     @Input() searchData: {
         labels: string[],
         datasets: {
@@ -51,13 +51,14 @@ export class CollocationComponent implements OnInit {
 
     constructor() { }
 
-    ngOnInit(): void {
+    ngOnInit(): void { }
+
+    ngOnChanges(): void {
         this.searchData.datasets.forEach((data, index) => {
             data.backgroundColor = this.colorPalette[index];
             data.borderColor = 'rgba(0,0,0,0)';
             data.pointRadius = 0;
         });
-        console.log(this.searchData);
     }
 
 }

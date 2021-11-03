@@ -10,6 +10,8 @@ import numpy as np
 import scipy
 import json
 import re
+from datetime import date, datetime
+from ianalyzer.factories.elasticsearch import elasticsearch
 
 from flask import current_app
 
@@ -138,29 +140,63 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_collocations(query_term, corpus):
-    """Given a query term and a corpus, get the words that occurred most frequently around the query term"""
+def get_collocations(es_query, corpus):
+    """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
-    min_year = 1900
-    max_year = 2020
-    year_step = 10
+    # get time bins
+
+    datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
+
+    if datefilter:
+        data = datefilter['range']['date']
+        min_year = datetime.strptime(data['gte'], '%Y-%m-%d').year
+        max_year = datetime.strptime(data['lte'], '%Y-%m-%d').year
+    else:
+        # TO DO: get min and max year from corpus
+        min_year = 1800
+        max_year = 2020
+        
+    time_range = max_year - min_year
+
+    if time_range <= 20:
+        year_step = 1
+    elif time_range <= 100:
+        year_step = 5
+    else: 
+        year_step = 10
 
     bins = range(min_year, max_year, year_step)
+    time_labels = ['{}-{}'.format(year, min(max_year, year + year_step)) for year in bins]
 
-    hits = get_highlight_result(query_term, corpus)
+    # find collocations
+
+    hits = highlight_search(corpus, es_query)
     docs = highlights_by_time_interval(hits, bins)
     collocations = count_collocations(docs)
 
-    time_labels = ['{}-{}'.format(year, year + year_step) for year in bins]
-
     return { 'words': collocations, 'time_points' : time_labels }
 
-def get_highlight_result(query_term, corpus):
-    with open('/home/luka/Documents/I-analyzer/highlight_search_voorbeeld.json') as f:
-        data = json.load(f)
-        hits = data['hits']['hits']
 
-        return hits
+def highlight_search(corpus, es_query):
+
+    print(es_query['query'])
+
+    es_query['highlight'] = {
+        'number_of_fragments': 10,
+        'fragment_size': 100,
+        'fields': {
+            '*': {} 
+        },
+    }
+
+    client = elasticsearch(corpus)
+    search_results = client.search(
+        index=corpus,
+        body = es_query,
+    )
+
+    return search_results['hits']['hits']
+
 
 def highlights_by_time_interval(hits, bins):
     docs = ['' for year in bins]

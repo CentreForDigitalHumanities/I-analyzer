@@ -610,7 +610,7 @@ def api_get_collocations():
         abort(400)
 
     results = analyze.get_collocations(
-        request.json['query_term'],
+        request.json['es_query'],
         request.json['corpus_name'],
     )
 

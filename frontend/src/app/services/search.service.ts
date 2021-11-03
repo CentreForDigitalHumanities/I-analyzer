@@ -163,8 +163,9 @@ export class SearchService {
         });
     }
 
-    getCollocation(queryTerm: string, corpusName: string): Promise<any> {
-        return this.apiService.getCollocations({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+    getCollocation(queryModel: QueryModel, corpusName: string): Promise<any> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getCollocations({'es_query': esQuery, 'corpus_name': corpusName}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({'graphData': {
