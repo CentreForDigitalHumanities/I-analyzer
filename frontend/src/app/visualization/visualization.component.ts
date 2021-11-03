@@ -78,10 +78,12 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 label: field.displayName,
                 value: field.name
             }));
-            this.visDropdown.push({
-                label: 'Collocations',
-                value: 'collocation',
-            });
+            if (this.queryModel.queryText) {
+                this.visDropdown.push({
+                    label: 'Collocations',
+                    value: 'collocation',
+                });
+            }
             if (this.corpus.word_models_present == true) {
                 this.visDropdown.push({
                     label: 'Related Words',
