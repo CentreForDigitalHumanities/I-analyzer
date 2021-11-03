@@ -131,6 +131,7 @@ PERIODICALS_IMAGE = 'Fleet_Street.jpg'
 PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
 PP_UK_IMAGE = 'uk.jpeg'
+PP_NL_IMAGE = 'netherlands.jpg'
 
 #################
 

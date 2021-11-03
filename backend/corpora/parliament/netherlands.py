@@ -16,12 +16,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
 
     title = "People & Parliament (Netherlands)"
-    description = "Minutes from European parliaments"
+    description = "Speeches from the Senate and House of Representatives"
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     es_alias = current_app.config['PP_ALIAS']
+    image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
+
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
