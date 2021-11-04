@@ -17,7 +17,6 @@ class ParliamentUK(Parliament, CSVCorpus):
     description = "Speeches from the House of Lords and House of Commons"
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
-    es_alias = current_app.config['PP_ALIAS']
     image = current_app.config['PP_UK_IMAGE']
 
     field_entry = 'speech_id'
@@ -87,6 +86,20 @@ class ParliamentUK(Parliament, CSVCorpus):
             multiple=True,
             transform=lambda x : ' '.join(x)
         )
+
+        # adjust the mapping:
+        # Dutch analyzer, multifield with exact text
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "english",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "exact": {
+              "type": "text",
+                "analyzer": "standard"
+            }
+            }
+        }
 
         self.speech_id.extractor = CSV(
             field='speech_id'

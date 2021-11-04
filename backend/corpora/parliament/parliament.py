@@ -115,7 +115,7 @@ class Parliament(Corpus):
     )
 
     speech_id = Field(
-        name='speech_id',
+        name='id',
         display_name='Speech ID',
         description='Unique identifier of the speech',
         es_mapping={'type': 'keyword'},
