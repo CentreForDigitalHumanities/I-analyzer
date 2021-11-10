@@ -1,10 +1,11 @@
 
+import enum
 import os
 from os.path import join
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from addcorpus.load_corpus import corpus_dir
 import numpy as np
 import scipy
@@ -16,6 +17,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from flask import current_app
 
 NUMBER_SIMILAR = 8
+WINDOW_SIZE = 3
 
 def make_wordcloud_data(documents, field):
     texts = []
@@ -178,12 +180,9 @@ def get_collocations(es_query, corpus):
 
 
 def highlight_search(corpus, es_query):
-
-    print(es_query['query'])
-
     es_query['highlight'] = {
         'number_of_fragments': 10,
-        'fragment_size': 100,
+        'fragment_size': 250,
         'fields': {
             '*': {} 
         },
@@ -202,7 +201,6 @@ def highlights_by_time_interval(hits, bins):
     docs = ['' for year in bins]
 
     # remove queryterm (and surrounding html tags)
-    format = lambda highlight: re.sub(r'<em>.*</em>', '', highlight)
 
     for hit in hits:
         date = hit['_source']['date']
@@ -210,11 +208,27 @@ def highlights_by_time_interval(hits, bins):
 
         for (i, bin_year) in enumerate(reversed(bins)):
             if hit_year >= bin_year:
-                highlights = [format(highlight) for field in hit['highlight'] for highlight in hit['highlight'][field]]
+                highlights = [extract_tokens_from_highlight(highlight) 
+                    for field in hit['highlight'] for highlight in hit['highlight'][field]]
                 docs[i] += ' ' + ' '.join(highlights)
                 break
 
     return docs
+
+
+def extract_tokens_from_highlight(highlight):
+    # TODO: use better tokenizer
+    tokens = highlight.split()
+    match_indices = (i for i, token in enumerate(tokens) if re.search(r'^<em>.*</em>$', token))
+    res = []
+
+    for index in match_indices:
+        window = tokens[max(0, index - WINDOW_SIZE): min(len(tokens), index + WINDOW_SIZE)]
+        for token in window:
+            if not (re.search(r'^<em>.*</em>$', token)):
+                res.append(token)
+    
+    return ' '.join(res)
 
 
 def count_collocations(highlights):
@@ -226,4 +240,5 @@ def count_collocations(highlights):
             'data': list(int(count) for count in counts[:,i])
         } 
         for i, word in enumerate(words)]
+
     return output

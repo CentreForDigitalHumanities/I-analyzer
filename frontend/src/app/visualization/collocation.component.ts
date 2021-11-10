@@ -13,7 +13,8 @@ export class CollocationComponent implements OnInit, OnChanges {
             data: number[],
             backgroundColor?: string,
             borderColor?: string,
-            pointRadius?: number;
+            pointRadius?: number,
+            pointHoverRadius?: number,
         }[]
     };
 
@@ -58,6 +59,7 @@ export class CollocationComponent implements OnInit, OnChanges {
             data.backgroundColor = this.colorPalette[index];
             data.borderColor = 'rgba(0,0,0,0)';
             data.pointRadius = 0;
+            data.pointHoverRadius = 0;
         });
     }
 
