@@ -5,12 +5,9 @@ import re
 
 from flask import current_app
 
-from addcorpus.extract import XML, Constant, Combined, CSV
-from addcorpus.corpus import CSVCorpus, XMLCorpus
+from addcorpus.extract import Constant, Combined, CSV
+from addcorpus.corpus import CSVCorpus
 from corpora.parliament.parliament import Parliament
-
-def is_speech(_, node):
-    return node.name == 'p' and node.find('membercontribution')
 
 class ParliamentUK(Parliament, CSVCorpus):
     title = 'People & Parliament (UK)'
@@ -87,6 +84,18 @@ class ParliamentUK(Parliament, CSVCorpus):
             multiple=True,
             transform=lambda x : ' '.join(x)
         )
+
+        self.speech.es_mapping = {
+            "type" : "text",
+            "analyzer": "english",
+            "term_vector": "with_positions_offsets",
+            "fields": {
+                "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                    }
+                }
+            }
 
         self.speech_id.extractor = CSV(
             field='speech_id'

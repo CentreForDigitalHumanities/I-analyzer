@@ -5,11 +5,9 @@ from os.path import join
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from addcorpus.load_corpus import corpus_dir
 import numpy as np
-import scipy
-import json
 import re
 from datetime import date, datetime
 from ianalyzer.factories.elasticsearch import elasticsearch
@@ -154,7 +152,7 @@ def get_collocations(es_query, corpus):
         min_year = datetime.strptime(data['gte'], '%Y-%m-%d').year
         max_year = datetime.strptime(data['lte'], '%Y-%m-%d').year
     else:
-        # TO DO: get min and max year from corpus
+        # TODO: get min and max year from corpus
         min_year = 1800
         max_year = 2020
         
@@ -167,57 +165,87 @@ def get_collocations(es_query, corpus):
     else: 
         year_step = 10
 
-    bins = range(min_year, max_year, year_step)
-    time_labels = ['{}-{}'.format(year, min(max_year, year + year_step)) for year in bins]
+    bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
+    time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
 
     # find collocations
 
-    hits = highlight_search(corpus, es_query)
-    docs = highlights_by_time_interval(hits, bins)
+    output = highlight_search(corpus, es_query, bins)
+    docs = highlights_by_time_interval(output)
     collocations = count_collocations(docs)
 
     return { 'words': collocations, 'time_points' : time_labels }
 
 
-def highlight_search(corpus, es_query):
+def highlight_search(corpus, es_query, bins):
     es_query['highlight'] = {
         'number_of_fragments': 10,
         'fragment_size': 250,
         'fields': {
-            '*': {} 
+            'speech': { 'type': 'fvh' },
         },
     }
 
     client = elasticsearch(corpus)
-    search_results = client.search(
-        index=corpus,
-        body = es_query,
-    )
+    output = []
 
-    return search_results['hits']['hits']
+    for (start_year, end_year) in bins:
+        start_date = datetime(start_year, 1, 1)
+        end_date = datetime(end_year, 12, 31)
+
+        
+        if 'filter' not in es_query['query']['bool']:
+            es_query['bool']['filter'] = []
+
+        filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or 'date' not in f['range']]
+        
+        filters.append({
+            'range': {
+                'date': {
+                    'gte': datetime.strftime(start_date, '%Y-%m-%d'),
+                    'lte': datetime.strftime(end_date, '%Y-%m-%d'),
+                    'format': 'yyyy-MM-dd',
+                }
+            }
+        })
+
+        es_query['query']['bool']['filter'] = filters
+
+        search_results = client.search(
+            index=corpus,
+            size = 100,
+            body = es_query,
+        )
+
+        output.append(search_results['hits']['hits'])
+
+    return output
 
 
-def highlights_by_time_interval(hits, bins):
-    docs = ['' for year in bins]
+def highlights_by_time_interval(output):
+    docs = []
 
-    # remove queryterm (and surrounding html tags)
+    for segment in output:
+        doc = ''
 
-    for hit in hits:
-        date = hit['_source']['date']
-        hit_year = int(date[:4])
-
-        for (i, bin_year) in enumerate(reversed(bins)):
-            if hit_year >= bin_year:
-                highlights = [extract_tokens_from_highlight(highlight) 
-                    for field in hit['highlight'] for highlight in hit['highlight'][field]]
-                docs[i] += ' ' + ' '.join(highlights)
-                break
+        for hit in segment:
+            if 'highlight' in hit:
+                for field in hit['highlight']:
+                    highlights = hit['highlight'][field]
+                    if type(highlights) == list:
+                        tokens = ' '.join([extract_tokens_from_highlight(highlight) for highlight in highlights])
+                    else:
+                        tokens = extract_tokens_from_highlight(highlights)
+                    doc += ' ' + tokens
+        
+        docs.append(doc)
 
     return docs
 
 
 def extract_tokens_from_highlight(highlight):
     # TODO: use better tokenizer
+
     tokens = highlight.split()
     match_indices = (i for i, token in enumerate(tokens) if re.search(r'^<em>.*</em>$', token))
     res = []

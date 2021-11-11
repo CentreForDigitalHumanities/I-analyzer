@@ -135,6 +135,18 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute=':id'
         )
 
+        self.speech.es_mapping = {
+            "type" : "text",
+            "analyzer": "dutch",
+            "term_vector": "with_positions_offsets",
+            "fields": {
+                "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                    }
+                }
+            }
+
         self.speaker.extractor = Combined(
             XML(attribute=':function'),
             XML(attribute=':speaker'),
