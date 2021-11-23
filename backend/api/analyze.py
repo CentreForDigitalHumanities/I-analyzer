@@ -2,20 +2,21 @@
 import enum
 import os
 from os.path import join
+import math
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
+from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from addcorpus.load_corpus import corpus_dir
 import numpy as np
-import re
-from datetime import date, datetime
+from datetime import datetime
 from ianalyzer.factories.elasticsearch import elasticsearch
 
 from flask import current_app
 
 NUMBER_SIMILAR = 8
-WINDOW_SIZE = 3
+WINDOW_SIZE = 2
 
 def make_wordcloud_data(documents, field):
     texts = []
@@ -176,7 +177,7 @@ def get_collocations(es_query, corpus):
     return { 'words': collocations, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, bins):
+def tokens_by_time_interval(corpus, es_query, bins, give_ngrams=True):
     client = elasticsearch(corpus)
     output = []
 
@@ -226,49 +227,62 @@ def tokens_by_time_interval(corpus, es_query, bins):
                 index=corpus,
                 doc_type='_doc',
                 id=id,
+                term_statistics=True,
             )
 
             if 'speech' in termvectors['term_vectors']:
                 terms = termvectors['term_vectors']['speech']['terms']
-
-                # find all token indices for the query text
-                match_indices = set()
-                for term in terms:
-                    if term in query_tokens:
-                        positions = [token['position'] for token in terms[term]['tokens']]
-                        for position in positions:
-                            match_indices.add(position)
                 
-                # identify all indices within N words of the match
-                window_indices = set()
-                for match in match_indices:
-                    for i in range(match - WINDOW_SIZE, match + WINDOW_SIZE + 1):
-                        if i not in match_indices:
-                            window_indices.add(i)
+                all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
+                    for term in terms for token in terms[term]['tokens']]
+                sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
 
-                # retrieve tokens within window
-                for term in terms:
-                    positions = [token['position'] for token in terms[term]['tokens']]
-                    for position in positions:
-                        if position in window_indices:
-                            bin_output.append(term)
-        
-        # output per bin: all tokens form this time interval
+                for i, token in enumerate(sorted_tokens):
+                    if token['term'] in query_tokens:
+                        if give_ngrams:
+                            for j in range(0, WINDOW_SIZE + 1):
+                                start = i - j
+                                stop = i - j + WINDOW_SIZE + 1
+                                if start >= 0 and stop <= len(sorted_tokens):
+                                    ngram = sorted_tokens[start:stop]
+                                    words = ' '.join([token['term'] for token in ngram])
+                                    ttf = sum(token['ttf'] for token in ngram)
+                                    bin_output.append((words, ttf))
+                        else:
+                            min_index = max(0, i-WINDOW_SIZE)
+                            max_index = min(len(sorted_tokens), i+WINDOW_SIZE + 1)
+                            for neighbour in sorted_tokens[min_index:i] + sorted_tokens[min(len(sorted_tokens), i+1):max_index]:
+                                bin_output.append((neighbour['term'], token['ttf'] + neighbour['ttf']))
+
+        # output per bin: all tokens from this time interval
         output.append(bin_output)
 
     return output
 
-def count_collocations(docs):
-    cv = CountVectorizer( max_features=10)
-    norm_per_bin = [len(doc) for doc in docs]
-    counts = cv.fit_transform([' '.join(doc) for doc in docs]).toarray()
-    words = cv.get_feature_names()
-    output = [{
-            'label': word, 
-            'data': list(float(count / norm_per_bin[j] if count else 0) for j, count in enumerate(counts[:,i]))
-        } 
-        for i, word in enumerate(words)]
+def count_collocations(docs, divide_by_tff=True):
+    counters = [Counter(doc) for doc in docs]
 
+    total_counter = Counter()
+    for c in counters:
+        total_counter.update(c)
+        
+    if divide_by_tff:
+        score = lambda f, ttf : f / ttf
+        relative_total_counter = {(word, ttf): score(total_counter[(word, ttf)], ttf) for (word, ttf) in total_counter}
+        words = sorted(relative_total_counter.keys(), key=lambda word : relative_total_counter[word], reverse=True)[:10]
+    else:
+        score = lambda f, ttf: f
+        words = [word for word, count in total_counter.most_common(10)]
     
+    # norm_per_bin = [sum(c.values()) for c in counters]
+    norm_per_bin = [math.sqrt(sum(score(c[word], word[1]) for word in words)) for c in counters]
+
+    output = [{
+            'label': word[0],
+            'data': [score(c[word], word[1]) / bin_norm
+                    if bin_norm else 0 
+                for c, bin_norm in zip(counters, norm_per_bin)]
+        }
+        for word in words]
 
     return output
