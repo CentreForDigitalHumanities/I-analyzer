@@ -170,35 +170,34 @@ def get_collocations(es_query, corpus):
 
     # find collocations
 
-    output = highlight_search(corpus, es_query, bins)
-    docs = highlights_by_time_interval(output)
+    docs = tokens_by_time_interval(corpus, es_query, bins)
     collocations = count_collocations(docs)
 
     return { 'words': collocations, 'time_points' : time_labels }
 
 
-def highlight_search(corpus, es_query, bins):
-    es_query['highlight'] = {
-        'number_of_fragments': 10,
-        'fragment_size': 250,
-        'fields': {
-            'speech': { 'type': 'fvh' },
-        },
-    }
-
+def tokens_by_time_interval(corpus, es_query, bins):
     client = elasticsearch(corpus)
     output = []
+
+    query_text = es_query['query']['bool']['must']['simple_query_string']['query']
+    analyzed_query_text = client.indices.analyze(
+        index = corpus,
+        body={
+            'text': query_text,
+            'field': 'speech',
+        },
+    )
+    query_tokens = [token['token'] for token in analyzed_query_text['tokens']]
 
     for (start_year, end_year) in bins:
         start_date = datetime(start_year, 1, 1)
         end_date = datetime(end_year, 12, 31)
 
-        
+        # filter query on this time bin
         if 'filter' not in es_query['query']['bool']:
             es_query['bool']['filter'] = []
-
         filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or 'date' not in f['range']]
-        
         filters.append({
             'range': {
                 'date': {
@@ -208,65 +207,68 @@ def highlight_search(corpus, es_query, bins):
                 }
             }
         })
-
         es_query['query']['bool']['filter'] = filters
 
+        #search for the query text
         search_results = client.search(
             index=corpus,
             size = 100,
             body = es_query,
         )
 
-        output.append(search_results['hits']['hits'])
+        bin_output = []
+
+        for hit in search_results['hits']['hits']:
+            id = hit['_id']
+
+            # get the term vectors for the hit
+            termvectors = client.termvectors(
+                index=corpus,
+                doc_type='_doc',
+                id=id,
+            )
+
+            if 'speech' in termvectors['term_vectors']:
+                terms = termvectors['term_vectors']['speech']['terms']
+
+                # find all token indices for the query text
+                match_indices = set()
+                for term in terms:
+                    if term in query_tokens:
+                        positions = [token['position'] for token in terms[term]['tokens']]
+                        for position in positions:
+                            match_indices.add(position)
+                
+                # identify all indices within N words of the match
+                window_indices = set()
+                for match in match_indices:
+                    for i in range(match - WINDOW_SIZE, match + WINDOW_SIZE + 1):
+                        if i not in match_indices:
+                            window_indices.add(i)
+
+                # retrieve tokens within window
+                for term in terms:
+                    positions = [token['position'] for token in terms[term]['tokens']]
+                    for position in positions:
+                        if position in window_indices:
+                            bin_output.append(term)
+        
+        # output per bin: all tokens form this time interval
+        output.append(bin_output)
 
     return output
 
-
-def highlights_by_time_interval(output):
-    docs = []
-
-    for segment in output:
-        doc = ''
-
-        for hit in segment:
-            if 'highlight' in hit:
-                for field in hit['highlight']:
-                    highlights = hit['highlight'][field]
-                    if type(highlights) == list:
-                        tokens = ' '.join([extract_tokens_from_highlight(highlight) for highlight in highlights])
-                    else:
-                        tokens = extract_tokens_from_highlight(highlights)
-                    doc += ' ' + tokens
-        
-        docs.append(doc)
-
-    return docs
-
-
-def extract_tokens_from_highlight(highlight):
-    # TODO: use better tokenizer
-
-    tokens = highlight.split()
-    match_indices = (i for i, token in enumerate(tokens) if re.search(r'^<em>.*</em>$', token))
-    res = []
-
-    for index in match_indices:
-        window = tokens[max(0, index - WINDOW_SIZE): min(len(tokens), index + WINDOW_SIZE)]
-        for token in window:
-            if not (re.search(r'^<em>.*</em>$', token)):
-                res.append(token)
-    
-    return ' '.join(res)
-
-
-def count_collocations(highlights):
+def count_collocations(docs):
     cv = CountVectorizer( max_features=10)
-    counts = cv.fit_transform(highlights).toarray()
+    norm_per_bin = [len(doc) for doc in docs]
+    counts = cv.fit_transform([' '.join(doc) for doc in docs]).toarray()
     words = cv.get_feature_names()
     output = [{
             'label': word, 
-            'data': list(int(count) for count in counts[:,i])
+            'data': list(float(count / norm_per_bin[j] if count else 0) for j, count in enumerate(counts[:,i]))
         } 
         for i, word in enumerate(words)]
+
+    
 
     return output
