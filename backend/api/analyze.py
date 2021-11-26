@@ -16,7 +16,6 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from flask import current_app
 
 NUMBER_SIMILAR = 8
-WINDOW_SIZE = 2
 
 def make_wordcloud_data(documents, field):
     texts = []
@@ -141,7 +140,7 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_collocations(es_query, corpus):
+def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     # get time bins
@@ -169,15 +168,15 @@ def get_collocations(es_query, corpus):
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
 
-    # find collocations
+    # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, bins)
-    collocations = count_collocations(docs)
+    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions)
+    ngrams = count_ngrams(docs, freq_compensation)
 
-    return { 'words': collocations, 'time_points' : time_labels }
+    return { 'words': ngrams, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, bins, give_ngrams=True):
+def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions):
     client = elasticsearch(corpus)
     output = []
 
@@ -239,27 +238,21 @@ def tokens_by_time_interval(corpus, es_query, bins, give_ngrams=True):
 
                 for i, token in enumerate(sorted_tokens):
                     if token['term'] in query_tokens:
-                        if give_ngrams:
-                            for j in range(0, WINDOW_SIZE + 1):
-                                start = i - j
-                                stop = i - j + WINDOW_SIZE + 1
-                                if start >= 0 and stop <= len(sorted_tokens):
-                                    ngram = sorted_tokens[start:stop]
-                                    words = ' '.join([token['term'] for token in ngram])
-                                    ttf = sum(token['ttf'] for token in ngram)
-                                    bin_output.append((words, ttf))
-                        else:
-                            min_index = max(0, i-WINDOW_SIZE)
-                            max_index = min(len(sorted_tokens), i+WINDOW_SIZE + 1)
-                            for neighbour in sorted_tokens[min_index:i] + sorted_tokens[min(len(sorted_tokens), i+1):max_index]:
-                                bin_output.append((neighbour['term'], token['ttf'] + neighbour['ttf']))
+                        for j in term_positions:
+                            start = i - j
+                            stop = i - j + ngram_size
+                            if start >= 0 and stop <= len(sorted_tokens):
+                                ngram = sorted_tokens[start:stop]
+                                words = ' '.join([token['term'] for token in ngram])
+                                ttf = sum(token['ttf'] for token in ngram)
+                                bin_output.append((words, ttf))
 
         # output per bin: all tokens from this time interval
         output.append(bin_output)
 
     return output
 
-def count_collocations(docs, divide_by_tff=True):
+def count_ngrams(docs, divide_by_tff):
     counters = [Counter(doc) for doc in docs]
 
     total_counter = Counter()

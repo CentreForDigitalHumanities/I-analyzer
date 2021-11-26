@@ -1,11 +1,11 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'ia-collocation',
-    templateUrl: './collocation.component.html',
-    styleUrls: ['./collocation.component.scss']
+    selector: 'ia-ngram',
+    templateUrl: './ngram.component.html',
+    styleUrls: ['./ngram.component.scss']
 })
-export class CollocationComponent implements OnInit, OnChanges {
+export class NgramComponent implements OnInit, OnChanges {
     @Input() searchData: {
         labels: string[],
         datasets: {

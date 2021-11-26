@@ -56,7 +56,7 @@ export type RelatedWordsResults = {
     time_points: string[]
 }
 
-export type CollocationResults = {
+export type NgramResults = {
     words: {
         [word: string]: number[]
     }

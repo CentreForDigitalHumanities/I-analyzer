@@ -163,9 +163,10 @@ export class SearchService {
         });
     }
 
-    getCollocation(queryModel: QueryModel, corpusName: string): Promise<any> {
+    getNgram(queryModel: QueryModel, corpusName: string, ngramSize?: number, termPosition?: number[], freqCompensation?: boolean): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getCollocations({'es_query': esQuery, 'corpus_name': corpusName}).then( result => {
+        return this.apiService.getNgrams({'es_query': esQuery, 'corpus_name': corpusName,
+            ngram_size: ngramSize, term_position: termPosition, freq_compensation: freqCompensation}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({'graphData': {

@@ -43,12 +43,20 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public relatedWordsTable: {
         [word: string]: number
     };
-    public collocationGraph: {
+
+    public ngramGraph: {
         labels: string[],
         datasets: {
             label: string, data: number[]
         }[]
     };
+    ngramSizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
+    ngramSize: number|undefined = undefined;
+    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: '1', value: [0]}, {label: '2', value: [1]}]
+    ngramPositions: number[]|undefined = undefined;
+    ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}]
+    ngramFreqCompensation: boolean|undefined = undefined;
+
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
     public isLoading: boolean = false;
@@ -80,8 +88,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             }));
             if (this.queryModel.queryText) {
                 this.visDropdown.push({
-                    label: 'Collocations',
-                    value: 'collocation',
+                    label: 'Ngrams',
+                    value: 'ngram',
                 });
             }
             if (this.corpus.word_models_present == true) {
@@ -135,10 +143,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
-        } else if (selectedField === 'collocation') {
+        } else if (selectedField === 'ngram') {
             this.visualizedField.visualizationType = selectedField;
             this.visualizedField.name = selectedField;
-            this.visualizedField.displayName = 'Collocations';
+            this.visualizedField.displayName = 'Ngrams';
         } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
         }
@@ -161,16 +169,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType === 'collocation') {
-            this.searchService.getCollocation(this.queryModel, this.corpus.name).then(results => {
-                this.collocationGraph = results['graphData'];
-                this.isLoading = false;
-            }).catch(error => {
-                this.collocationGraph = undefined;
-                this.foundNoVisualsMessage = this.noResults;
-                this.errorMessage = error['message'];
-                this.isLoading = false;
-            });
+        } else if (this.visualizedField.visualizationType === 'ngram') {
+            this.loadNgramGraph();
         } else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
@@ -184,6 +184,49 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 this.isLoading = false;
             });
         }
+    }
+
+    onNgramOptionChange(control: 'size'|'position'|'freq_compensation', selection: {value: any, label: string}): void {
+        const value = selection.value;
+        switch (control) {
+            case 'size': {
+                this.ngramSize = value;
+                // set positions dropdown options and reset its value
+                const positions = Array.from(Array(this.ngramSize).keys());
+                this.ngramPositionOptions =  [ { value: positions, label: 'any' } ]
+                    .concat(positions.map(position => {
+                        return { value : [position], label: (position + 1).toString() }
+                    }));
+                this.ngramPositions = this.ngramPositionOptions[0].value;
+            }
+            case 'position': {
+                if (typeof(value) != 'number') {
+                    this.ngramPositions = value;
+                }
+            }
+            case 'freq_compensation': {
+                this.ngramFreqCompensation = value
+            }
+        }
+
+        this.isLoading = true;
+        this.loadNgramGraph();
+    }
+
+    loadNgramGraph(): void {
+        const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
+        const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
+        const freqCompensation = this.ngramFreqCompensation ? this.ngramFreqCompensation : this.ngramFreqCompensationOptions[0].value;
+
+        this.searchService.getNgram(this.queryModel, this.corpus.name, size, position, freqCompensation).then(results => {
+            this.ngramGraph = results['graphData'];
+            this.isLoading = false;
+        }).catch(error => {
+            this.ngramGraph = undefined;
+            this.foundNoVisualsMessage = this.noResults;
+            this.errorMessage = error['message'];
+            this.isLoading = false;
+        });
     }
 
     loadWordcloudData(size: number = null){

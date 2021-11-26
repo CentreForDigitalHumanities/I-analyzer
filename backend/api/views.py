@@ -603,15 +603,18 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('/get_collocations', methods=['POST'])
+@api.route('/get_ngrams', methods=['POST'])
 @login_required
-def api_get_collocations():
+def api_get_ngrams():
     if not request.json:
         abort(400)
 
-    results = analyze.get_collocations(
+    results = analyze.get_ngrams(
         request.json['es_query'],
         request.json['corpus_name'],
+        ngram_size=request.json['ngram_size'],
+        term_positions=request.json['term_position'],
+        freq_compensation=request.json['freq_compensation'],
     )
 
     if isinstance(results, str):

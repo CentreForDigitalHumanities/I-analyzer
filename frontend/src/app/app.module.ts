@@ -63,7 +63,7 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { CollocationComponent } from './visualization/collocation.component';
+import { NgramComponent } from './visualization/ngram.component';
 
 
 const appRoutes: Routes = [
@@ -171,7 +171,7 @@ export const declarations: any[] = [
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
-    CollocationComponent,
+    NgramComponent,
 ];
 
 export const imports: any[] = [

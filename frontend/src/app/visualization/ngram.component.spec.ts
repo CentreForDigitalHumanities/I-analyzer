@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CollocationComponent } from './collocation.component';
+import { NgramComponent } from './ngram.component';
 
-describe('CollocationComponent', () => {
-  let component: CollocationComponent;
-  let fixture: ComponentFixture<CollocationComponent>;
+describe('NgramComponent', () => {
+  let component: NgramComponent;
+  let fixture: ComponentFixture<NgramComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CollocationComponent ]
+      declarations: [ NgramComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CollocationComponent);
+    fixture = TestBed.createComponent(NgramComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

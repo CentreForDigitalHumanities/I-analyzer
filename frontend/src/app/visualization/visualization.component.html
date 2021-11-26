@@ -2,7 +2,7 @@
     <b> This corpus has no fields with associated visualizations. </b>
 </div>
 
-<div *ngIf="!noVisualizations" #viscontrol>
+<div class="block" *ngIf="!noVisualizations" #viscontrol>
 	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
 	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
@@ -14,14 +14,47 @@
 	</button>
 </div>
 
-<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || collocationGraph || timeline); else noVisualsMessage">
-    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='collocation') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='collocation')">
+
+<div class="box" *ngIf="visualizedField.visualizationType == 'ngram'">
+    <!-- controls for the ngram graph -->
+    <div class="columns">
+        <div class="column">
+            <div class="field">
+                <label class="label">Size of ngram</label>
+                <div class="control">
+                    <ia-dropdown [options]="ngramSizeOptions" [value]="ngramSizeOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('size', $event)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label">Position of search term</label>
+                <div class="control">
+                    <ia-dropdown [options]="ngramPositionOptions" [value]="ngramPositionOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('position', $event)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label">
+                    Compensate for frequency
+                </label>
+                <div class="control">
+                    <ia-dropdown [options]="ngramFreqCompensationOptions" [value]="ngramFreqCompensationOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('freq_compensation', $event)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
+    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage
     	</label>
     </div>  
-    <div [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
+    <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
     		 [asPercent]="asPercentage">
@@ -30,7 +63,7 @@
     		[asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-collocation *ngSwitchCase=" 'collocation' " [searchData]="collocationGraph"></ia-collocation>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [searchData]="ngramGraph"></ia-ngram>
         </ng-container>
     </div>
     <ng-container *ngIf="freqtable">

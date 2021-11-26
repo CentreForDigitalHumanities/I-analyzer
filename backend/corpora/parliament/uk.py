@@ -16,6 +16,19 @@ class ParliamentUK(Parliament, CSVCorpus):
     es_index = current_app.config['PP_UK_INDEX']
     es_alias = current_app.config['PP_ALIAS']
     image = current_app.config['PP_UK_IMAGE']
+    es_settings = {
+        'index': {
+            'number_of_replicas': 0,
+            'analysis': {
+                'analyzer': {
+                    'english-no-stop': {
+                        'type': 'standard',
+                        'stopwords': '_english_',
+                    }
+                }
+            }
+        }
+    }
 
     field_entry = 'speech_id'
 
@@ -87,7 +100,7 @@ class ParliamentUK(Parliament, CSVCorpus):
 
         self.speech.es_mapping = {
             "type" : "text",
-            "analyzer": "english",
+            "analyzer": "english-no-stop",
             "term_vector": "with_positions_offsets",
             "fields": {
                 "exact": {
