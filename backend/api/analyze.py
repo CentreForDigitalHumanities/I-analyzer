@@ -266,15 +266,12 @@ def count_ngrams(docs, divide_by_tff):
     else:
         score = lambda f, ttf: f
         words = [word for word, count in total_counter.most_common(10)]
-    
-    # norm_per_bin = [sum(c.values()) for c in counters]
-    norm_per_bin = [math.sqrt(sum(score(c[word], word[1]) for word in words)) for c in counters]
+
 
     output = [{
             'label': word[0],
-            'data': [score(c[word], word[1]) / bin_norm
-                    if bin_norm else 0 
-                for c, bin_norm in zip(counters, norm_per_bin)]
+            'data': [score(c[word], word[1])
+                for c in counters]
         }
         for word in words]
 

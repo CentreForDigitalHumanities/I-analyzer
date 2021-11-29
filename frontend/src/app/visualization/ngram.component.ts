@@ -18,7 +18,7 @@ export class NgramComponent implements OnInit, OnChanges {
         }[]
     };
 
-    public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30'];
+    public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
     public chartOptions = {
         elements: {
             line: {
@@ -27,7 +27,6 @@ export class NgramComponent implements OnInit, OnChanges {
         },
         scales: {
             yAxes: [{
-                stacked: true,
                 scaleLabel: {
                     display: true,
                     labelString: 'Frequency'
@@ -38,12 +37,20 @@ export class NgramComponent implements OnInit, OnChanges {
         tooltips: {
             intersect: false,
             callbacks: {
+                labelColor(tooltipItem, chart): any {
+                    const dataset = chart.data.datasets[tooltipItem.datasetIndex];
+                    const color = dataset.borderColor;
+                    return {
+                        borderColor: 'rba(0,0,0,0)',
+                        backgroundColor: color
+                    };
+                },
                 label(tooltipItem, data): string {
                     const dataset = data.datasets[tooltipItem.datasetIndex];
                     const label = dataset.label;
                     const value: any = dataset.data[tooltipItem.index];
                     if (value) { // skip 0 values
-                        return `${label}: ${value}`;
+                        return `${label}: ${Math.round((6 - value) * 10000) / 10000}`;
                     }
                   },
             }
@@ -56,8 +63,8 @@ export class NgramComponent implements OnInit, OnChanges {
 
     ngOnChanges(): void {
         this.searchData.datasets.forEach((data, index) => {
-            data.backgroundColor = this.colorPalette[index];
-            data.borderColor = 'rgba(0,0,0,0)';
+            data.borderColor = this.colorPalette[index];
+            data.backgroundColor = 'rgba(0,0,0,0)';
             data.pointRadius = 0;
             data.pointHoverRadius = 0;
         });

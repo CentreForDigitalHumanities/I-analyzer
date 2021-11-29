@@ -52,7 +52,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
     ngramSizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
     ngramSize: number|undefined = undefined;
-    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: '1', value: [0]}, {label: '2', value: [1]}]
+    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}]
     ngramPositions: number[]|undefined = undefined;
     ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}]
     ngramFreqCompensation: boolean|undefined = undefined;
@@ -88,7 +88,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             }));
             if (this.queryModel.queryText) {
                 this.visDropdown.push({
-                    label: 'Ngrams',
+                    label: 'Common n-grams',
                     value: 'ngram',
                 });
             }
@@ -195,7 +195,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 const positions = Array.from(Array(this.ngramSize).keys());
                 this.ngramPositionOptions =  [ { value: positions, label: 'any' } ]
                     .concat(positions.map(position => {
-                        return { value : [position], label: (position + 1).toString() }
+                        return { value : [position], label: ['first','second','third'][position] }
                     }));
                 this.ngramPositions = this.ngramPositionOptions[0].value;
             }
