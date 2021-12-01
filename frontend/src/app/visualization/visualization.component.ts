@@ -52,10 +52,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
     ngramSizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
     ngramSize: number|undefined = undefined;
-    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}]
+    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
     ngramPositions: number[]|undefined = undefined;
-    ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}]
+    ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
     ngramFreqCompensation: boolean|undefined = undefined;
+    ngramStemmingOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
+    ngramStemming: boolean|undefined;
+    ngramMaxSizeOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
+    ngramMaxSize: number|undefined;
 
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
@@ -186,7 +190,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    onNgramOptionChange(control: 'size'|'position'|'freq_compensation', selection: {value: any, label: string}): void {
+    onNgramOptionChange(control: 'size'|'position'|'freq_compensation'|'stemming'|'max_size',
+                        selection: {value: any, label: string}): void {
         const value = selection.value;
         switch (control) {
             case 'size': {
@@ -205,7 +210,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 }
             }
             case 'freq_compensation': {
-                this.ngramFreqCompensation = value
+                this.ngramFreqCompensation = value;
+            }
+            case 'stemming': {
+                this.ngramStemming = value;
+            }
+            case 'max_size': {
+                this.ngramMaxSize = value;
             }
         }
 
@@ -217,8 +228,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
         const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
         const freqCompensation = this.ngramFreqCompensation ? this.ngramFreqCompensation : this.ngramFreqCompensationOptions[0].value;
+        const maxSize = this.ngramMaxSize ? this.ngramMaxSize : 100;
 
-        this.searchService.getNgram(this.queryModel, this.corpus.name, size, position, freqCompensation).then(results => {
+        this.searchService.getNgram(this.queryModel, this.corpus.name, size, position, freqCompensation, maxSize).then(results => {
             this.ngramGraph = results['graphData'];
             this.isLoading = false;
         }).catch(error => {

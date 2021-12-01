@@ -140,7 +140,7 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True):
+def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True, max_size_per_interval=100):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     # get time bins
@@ -170,13 +170,13 @@ def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compen
 
     # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions)
+    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, max_size_per_interval)
     ngrams = count_ngrams(docs, freq_compensation)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions):
+def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, max_size_per_interval):
     client = elasticsearch(corpus)
     output = []
 
@@ -212,7 +212,7 @@ def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions):
         #search for the query text
         search_results = client.search(
             index=corpus,
-            size = 100,
+            size = max_size_per_interval,
             body = es_query,
         )
 

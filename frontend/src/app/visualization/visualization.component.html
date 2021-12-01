@@ -17,8 +17,8 @@
 
 <div class="box" *ngIf="visualizedField.visualizationType == 'ngram'">
     <!-- controls for the ngram graph -->
-    <div class="columns">
-        <div class="column">
+    <div class="columns is-multiline">
+        <div class="column is-one-third">
             <div class="field">
                 <label class="label">Size of n-gram</label>
                 <div class="control">
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div class="column">
+        <div class="column is-one-third">
             <div class="field">
                 <label class="label">Position of search term</label>
                 <div class="control">
@@ -34,13 +34,31 @@
                 </div>
             </div>
         </div>
-        <div class="column">
+        <div class="column is-one-third">
             <div class="field">
                 <label class="label">
                     Compensate for frequency
                 </label>
                 <div class="control">
                     <ia-dropdown [options]="ngramFreqCompensationOptions" [value]="ngramFreqCompensationOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('freq_compensation', $event)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="column is-one-third">
+            <div class="field">
+                <label class="label">
+                    Apply stemming
+                </label>
+                <div class="control">
+                    <ia-dropdown [options]="ngramStemmingOptions" [value]="ngramStemmingOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('stemming', $event)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="column is-one-third">
+            <div class="field">
+                <label class="label">Document limit</label>
+                <div class="control">
+                    <ia-dropdown [options]="ngramMaxSizeOptions" [value]="ngramMaxSizeOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('max_size', $event)"></ia-dropdown>
                 </div>
             </div>
         </div>

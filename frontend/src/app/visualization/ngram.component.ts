@@ -50,7 +50,7 @@ export class NgramComponent implements OnInit, OnChanges {
                     const label = dataset.label;
                     const value: any = dataset.data[tooltipItem.index];
                     if (value) { // skip 0 values
-                        return `${label}: ${Math.round((6 - value) * 10000) / 10000}`;
+                        return `${label}: ${Math.round((value) * 10000) / 10000}`;
                     }
                   },
             }
