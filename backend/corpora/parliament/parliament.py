@@ -68,7 +68,8 @@ class Parliament(Corpus):
             max_date,
             description='Search only within this time range.'
         ),
-    )
+        visualization_type='timeline'
+    ) 
 
     house = Field(
         name='house',
@@ -114,7 +115,7 @@ class Parliament(Corpus):
     )
 
     speech_id = Field(
-        name='speech_id',
+        name='id',
         display_name='Speech ID',
         description='Unique identifier of the speech',
         es_mapping={'type': 'keyword'},
@@ -124,6 +125,13 @@ class Parliament(Corpus):
         name='speaker',
         display_name='Speaker',
         description='The speaker of the transcribed speech',
+        es_mapping={'type': 'keyword'},
+    )
+
+    speech_type = Field(
+        name='speech_type',
+        display_name='Speech Type',
+        description='The type of speech',
         es_mapping={'type': 'keyword'},
     )
 
@@ -153,7 +161,8 @@ class Parliament(Corpus):
         search_filter=MultipleChoiceFilter(
             description='Search in speeches from the selected parties',
             option_count=10
-        )
+        ),
+        visualization_type='term_frequency'
     )
 
     party_id = Field(

@@ -14,7 +14,6 @@ class ParliamentUK(Parliament, CSVCorpus):
     description = "Speeches from the House of Lords and House of Commons"
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
-    es_alias = current_app.config['PP_ALIAS']
     image = current_app.config['PP_UK_IMAGE']
     es_settings = {
         'index': {
@@ -33,7 +32,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     field_entry = 'speech_id'
 
     def sources(self, start, end):
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
     
@@ -98,17 +97,19 @@ class ParliamentUK(Parliament, CSVCorpus):
             transform=lambda x : ' '.join(x)
         )
 
+        # adjust the mapping:
+        # English analyzer, multifield with exact text
         self.speech.es_mapping = {
-            "type" : "text",
-            "analyzer": "english-no-stop",
-            "term_vector": "with_positions_offsets",
-            "fields": {
-                "exact": {
-                    "type": "text",
-                    "analyzer": "standard"
-                    }
-                }
+          "type" : "text",
+          "analyzer": "english",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "exact": {
+              "type": "text",
+                "analyzer": "standard"
             }
+            }
+        }
 
         self.speech_id.extractor = CSV(
             field='speech_id'

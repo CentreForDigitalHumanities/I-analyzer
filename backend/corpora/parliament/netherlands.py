@@ -16,10 +16,9 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
 
     title = "People & Parliament (Netherlands)"
-    description = "Speeches from the Senate and House of Representatives"
+    description = "Speeches from the First and Second Chamber of the Netherlands"
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
-    es_alias = current_app.config['PP_ALIAS']
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
@@ -130,6 +129,20 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             multiple=True,
             flatten=True,
         )
+
+        # adjust the mapping:
+        # Dutch analyzer, multifield with exact text
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "dutch",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "exact": {
+              "type": "text",
+                "analyzer": "standard"
+            }
+            }
+        }
 
         self.speech_id.extractor = XML(
             attribute=':id'

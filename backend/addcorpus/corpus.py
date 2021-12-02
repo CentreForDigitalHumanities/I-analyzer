@@ -559,11 +559,11 @@ class CSVCorpus(Corpus):
             for row in reader:
                 is_new_document = True
                 if self.field_entry:
-                    id = row[self.field_entry]
-                    if id == document_id:
+                    identifier = row[self.field_entry]
+                    if identifier == document_id:
                         is_new_document = False
                     else:
-                        document_id = id
+                        document_id = identifier
                 
                 if is_new_document and rows:
                     yield self.document_from_rows(rows)
