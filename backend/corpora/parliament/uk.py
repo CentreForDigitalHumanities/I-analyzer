@@ -22,7 +22,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     field_entry = 'speech_id'
 
     def sources(self, start, end):
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
     
@@ -88,7 +88,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         )
 
         # adjust the mapping:
-        # Dutch analyzer, multifield with exact text
+        # English analyzer, multifield with exact text
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "english",

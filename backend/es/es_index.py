@@ -116,6 +116,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
     client = elasticsearch(corpus_name)
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
+    # import pdb; pdb.set_trace()
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))

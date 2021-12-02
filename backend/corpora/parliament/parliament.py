@@ -128,6 +128,13 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    speech_type = Field(
+        name='speech_type',
+        display_name='Speech Type',
+        description='The type of speech',
+        es_mapping={'type': 'keyword'},
+    )
+
     speaker_id = Field(
         name='speaker_id',
         display_name='Speaker ID',
