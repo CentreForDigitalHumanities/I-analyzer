@@ -164,7 +164,7 @@ export class SearchService {
     }
 
     getNgram(queryModel: QueryModel, corpusName: string, ngramSize?: number, termPosition?: number[],
-        freqCompensation?: boolean, maxSize?: number): Promise<any> {
+        freqCompensation?: boolean, applyStemming?: boolean, maxSize?: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getNgrams({
             'es_query': esQuery,
@@ -172,6 +172,7 @@ export class SearchService {
             ngram_size: ngramSize,
             term_position: termPosition,
             freq_compensation: freqCompensation,
+            apply_stemming: applyStemming,
             max_size_per_interval: maxSize
         }).then( result => {
             return new Promise( (resolve, reject) => {

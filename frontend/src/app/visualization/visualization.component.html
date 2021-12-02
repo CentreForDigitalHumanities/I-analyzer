@@ -20,7 +20,10 @@
     <div class="columns is-multiline">
         <div class="column is-one-third">
             <div class="field">
-                <label class="label">Size of n-gram</label>
+                <label class="label" iaBalloon="search for bigrams (2 words) or trigrams (3 words)"
+                    iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    Length of n-gram
+                </label>
                 <div class="control">
                     <ia-dropdown [options]="ngramSizeOptions" [value]="ngramSizeOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('size', $event)"></ia-dropdown>
                 </div>
@@ -28,7 +31,10 @@
         </div>
         <div class="column is-one-third">
             <div class="field">
-                <label class="label">Position of search term</label>
+                <label class="label" iaBalloon="only search n-grams with the search term in the specified position"
+                iaBalloonPosition="up-left" iaBalloonLength="fit">
+                    Position of search term
+                </label>
                 <div class="control">
                     <ia-dropdown [options]="ngramPositionOptions" [value]="ngramPositionOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('position', $event)"></ia-dropdown>
                 </div>
@@ -36,7 +42,8 @@
         </div>
         <div class="column is-one-third">
             <div class="field">
-                <label class="label">
+                <label class="label" iaBalloon="divide by the average frequency of the words in the n-gram; favours words that are otherwise rare"
+                iaBalloonPosition="up-left" iaBalloonLength="fit">
                     Compensate for frequency
                 </label>
                 <div class="control">
@@ -46,7 +53,8 @@
         </div>
         <div class="column is-one-third">
             <div class="field">
-                <label class="label">
+                <label class="label" iaBalloon="search using stemmed versions of words"
+                    iaBalloonPosition="up-left" iaBalloonLength="fit">
                     Apply stemming
                 </label>
                 <div class="control">
@@ -56,7 +64,8 @@
         </div>
         <div class="column is-one-third">
             <div class="field">
-                <label class="label">Document limit</label>
+                <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
+                iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
                 <div class="control">
                     <ia-dropdown [options]="ngramMaxSizeOptions" [value]="ngramMaxSizeOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('max_size', $event)"></ia-dropdown>
                 </div>

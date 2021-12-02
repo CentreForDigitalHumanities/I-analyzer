@@ -615,6 +615,7 @@ def api_get_ngrams():
         ngram_size=request.json['ngram_size'],
         term_positions=request.json['term_position'],
         freq_compensation=request.json['freq_compensation'],
+        apply_stemming=request.json['apply_stemming'],
         max_size_per_interval=request.json['max_size_per_interval']
     )
 

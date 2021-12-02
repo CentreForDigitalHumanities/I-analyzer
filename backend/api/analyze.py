@@ -140,7 +140,7 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True, max_size_per_interval=100):
+def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True, apply_stemming=False, max_size_per_interval=100):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     # get time bins
@@ -170,22 +170,23 @@ def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compen
 
     # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, max_size_per_interval)
+    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval)
     ngrams = count_ngrams(docs, freq_compensation)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval):
     client = elasticsearch(corpus)
     output = []
 
     query_text = es_query['query']['bool']['must']['simple_query_string']['query']
+    field = 'speech' if apply_stemming else 'speech.non-stemmed'
     analyzed_query_text = client.indices.analyze(
         index = corpus,
         body={
             'text': query_text,
-            'field': 'speech',
+            'field': field,
         },
     )
     query_tokens = [token['token'] for token in analyzed_query_text['tokens']]
@@ -227,10 +228,11 @@ def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, 
                 doc_type='_doc',
                 id=id,
                 term_statistics=True,
+                fields = [field]
             )
 
-            if 'speech' in termvectors['term_vectors']:
-                terms = termvectors['term_vectors']['speech']['terms']
+            if field in termvectors['term_vectors']:
+                terms = termvectors['term_vectors'][field]['terms']
                 
                 all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
                     for term in terms for token in terms[term]['tokens']]

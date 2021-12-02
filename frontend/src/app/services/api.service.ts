@@ -96,7 +96,7 @@ export class ApiService extends Resource {
     })
     public getNgrams: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
-            max_size_per_interval?: number },
+            apply_stemming?: boolean, max_size_per_interval?: number },
         { success: boolean, message?: string, word_data?: NgramResults }>;
 
     @ResourceAction({

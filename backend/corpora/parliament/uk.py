@@ -20,7 +20,7 @@ class ParliamentUK(Parliament, CSVCorpus):
             'number_of_replicas': 0,
             'analysis': {
                 'analyzer': {
-                    'english-no-stop': {
+                    'non-stemmed': {
                         'type': 'standard',
                         'stopwords': '_english_',
                     }
@@ -105,9 +105,13 @@ class ParliamentUK(Parliament, CSVCorpus):
           "term_vector": "with_positions_offsets", 
           "fields": {
             "exact": {
-              "type": "text",
+                "type": "text",
                 "analyzer": "standard"
-            }
+                },
+            "non-stemmed": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                }
             }
         }
 

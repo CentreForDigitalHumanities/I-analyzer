@@ -204,18 +204,24 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     }));
                 this.ngramPositions = this.ngramPositionOptions[0].value;
             }
+            break;
             case 'position': {
                 if (typeof(value) != 'number') {
                     this.ngramPositions = value;
                 }
             }
+            break;
             case 'freq_compensation': {
                 this.ngramFreqCompensation = value;
             }
+            break;
             case 'stemming': {
+                console.log('stemming updated');
                 this.ngramStemming = value;
             }
+            break;
             case 'max_size': {
+                console.log('max size updated');
                 this.ngramMaxSize = value;
             }
         }
@@ -227,10 +233,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     loadNgramGraph(): void {
         const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
         const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
-        const freqCompensation = this.ngramFreqCompensation ? this.ngramFreqCompensation : this.ngramFreqCompensationOptions[0].value;
+        const freqCompensation = this.ngramFreqCompensation === undefined ?
+            this.ngramFreqCompensationOptions[0].value : this.ngramFreqCompensation;
+        const stemming = this.ngramStemming === true; // no stemming for `false` or `undefined`
         const maxSize = this.ngramMaxSize ? this.ngramMaxSize : 100;
 
-        this.searchService.getNgram(this.queryModel, this.corpus.name, size, position, freqCompensation, maxSize).then(results => {
+        this.searchService.getNgram(this.queryModel, this.corpus.name, size, position, freqCompensation, stemming, maxSize)
+            .then(results => {
             this.ngramGraph = results['graphData'];
             this.isLoading = false;
         }).catch(error => {
