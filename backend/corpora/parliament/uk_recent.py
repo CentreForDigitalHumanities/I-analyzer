@@ -14,8 +14,7 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
     
     def __init__(self):
         self.date.extractor = CSV(
-            field='date_yyyymmdd',
-            transform=lambda x: '-'.join([x[:4], x[4:6], x[6:]])
+            field='date_yyyy-mm-dd'
         )
 
         self.house.extractor = CSV(
@@ -34,15 +33,23 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
             transform=ParliamentUK.format_speaker
         )
 
-        self.speech_type = CSV(
+        self.speaker_id.extractor = CSV(
+            field='speaker_id'
+        )
+
+        self.speech_type.extractor = CSV(
             field='speech_tpe'
         )
 
-        self.debate_title = CSV(
+        self.debate_title.extractor = CSV(
             field='debate'
         )
 
-        self.topic = Combined(
+        self.debate_id.extractor = CSV(
+            field='debate_id'
+        ) 
+
+        self.topic.extractor = Combined(
             CSV(field='heading_major'),
             CSV(field='heading_minor'),
             transform=lambda x: ' '.join(x)
