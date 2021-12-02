@@ -140,10 +140,11 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compensation=True, apply_stemming=False, max_size_per_interval=100):
+def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, apply_stemming=False, max_size_per_interval=100):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     # get time bins
+
 
     datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
 
@@ -170,18 +171,18 @@ def get_ngrams(es_query, corpus, ngram_size=2, term_positions=[0,1], freq_compen
 
     # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval)
+    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval)
     ngrams = count_ngrams(docs, freq_compensation)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval):
     client = elasticsearch(corpus)
     output = []
 
     query_text = es_query['query']['bool']['must']['simple_query_string']['query']
-    field = 'speech' if apply_stemming else 'speech.non-stemmed'
+    field = field if apply_stemming else field + '.non-stemmed'
     analyzed_query_text = client.indices.analyze(
         index = corpus,
         body={
@@ -246,7 +247,7 @@ def tokens_by_time_interval(corpus, es_query, bins, ngram_size, term_positions, 
                             if start >= 0 and stop <= len(sorted_tokens):
                                 ngram = sorted_tokens[start:stop]
                                 words = ' '.join([token['term'] for token in ngram])
-                                ttf = sum(token['ttf'] for token in ngram)
+                                ttf = sum(token['ttf'] for token in ngram) / len(ngram)
                                 bin_output.append((words, ttf))
 
         # output per bin: all tokens from this time interval

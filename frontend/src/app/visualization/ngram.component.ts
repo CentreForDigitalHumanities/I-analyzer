@@ -62,12 +62,14 @@ export class NgramComponent implements OnInit, OnChanges {
     ngOnInit(): void { }
 
     ngOnChanges(): void {
-        this.searchData.datasets.forEach((data, index) => {
-            data.borderColor = this.colorPalette[index];
-            data.backgroundColor = 'rgba(0,0,0,0)';
-            data.pointRadius = 0;
-            data.pointHoverRadius = 0;
-        });
+        if (this.searchData) {
+            this.searchData.datasets.forEach((data, index) => {
+                data.borderColor = this.colorPalette[index];
+                data.backgroundColor = 'rgba(0,0,0,0)';
+                data.pointRadius = 0;
+                data.pointHoverRadius = 0;
+            });
+        }
     }
 
 }

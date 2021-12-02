@@ -20,8 +20,23 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
+    es_settings = {
+        'index': {
+            'number_of_replicas': 0,
+            'analysis': {
+                'analyzer': {
+                    'non-stemmed': {
+                        'type': 'standard',
+                        'stopwords': '_dutch_',
+                    }
+                }
+            }
+        }
+    }
+
     tag_toplevel = 'root'
     tag_entry = 'speech'
+    
 
 
     def sources(self, start, end):
@@ -138,27 +153,19 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
           "term_vector": "with_positions_offsets", 
           "fields": {
             "exact": {
-              "type": "text",
+                "type": "text",
                 "analyzer": "standard"
-            }
+                },
+            "non-stemmed": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                }
             }
         }
 
         self.speech_id.extractor = XML(
             attribute=':id'
         )
-
-        self.speech.es_mapping = {
-            "type" : "text",
-            "analyzer": "dutch",
-            "term_vector": "with_positions_offsets",
-            "fields": {
-                "exact": {
-                    "type": "text",
-                    "analyzer": "standard"
-                    }
-                }
-            }
 
         self.speaker.extractor = Combined(
             XML(attribute=':function'),

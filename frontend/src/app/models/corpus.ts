@@ -48,7 +48,7 @@ export type CorpusField = {
     resultsOverview?: boolean,
     csvCore?: boolean,
     searchFieldCore?: boolean,
-    visualizationType?: string,
+    visualizationType?: string | string[],
     visualizationSort?: string,
     hidden: boolean,
     sortable: boolean,

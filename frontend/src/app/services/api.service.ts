@@ -95,7 +95,7 @@ export class ApiService extends Resource {
         path: '/get_ngrams'
     })
     public getNgrams: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
+        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
             apply_stemming?: boolean, max_size_per_interval?: number },
         { success: boolean, message?: string, word_data?: NgramResults }>;
 

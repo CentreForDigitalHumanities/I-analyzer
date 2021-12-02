@@ -98,7 +98,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         )
 
         # adjust the mapping:
-        # English analyzer, multifield with exact text
+        # English analyzer, multifield with exact text and non-stemmed version
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "english",

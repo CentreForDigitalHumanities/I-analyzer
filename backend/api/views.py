@@ -612,6 +612,7 @@ def api_get_ngrams():
     results = analyze.get_ngrams(
         request.json['es_query'],
         request.json['corpus_name'],
+        request.json['field'],
         ngram_size=request.json['ngram_size'],
         term_positions=request.json['term_position'],
         freq_compensation=request.json['freq_compensation'],

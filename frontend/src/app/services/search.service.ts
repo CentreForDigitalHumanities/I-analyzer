@@ -9,6 +9,7 @@ import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
     AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+import { stringify } from 'querystring';
 
 @Injectable()
 export class SearchService {
@@ -163,12 +164,13 @@ export class SearchService {
         });
     }
 
-    getNgram(queryModel: QueryModel, corpusName: string, ngramSize?: number, termPosition?: number[],
+    getNgram(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
         freqCompensation?: boolean, applyStemming?: boolean, maxSize?: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getNgrams({
             'es_query': esQuery,
             'corpus_name': corpusName,
+            field: field,
             ngram_size: ngramSize,
             term_position: termPosition,
             freq_compensation: freqCompensation,
