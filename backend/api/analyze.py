@@ -183,7 +183,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
     query_text = es_query['query']['bool']['must']['simple_query_string']['query']
     field = field if subfield == 'none' else '.'.join([field, subfield])
-    print(field)
     analyzed_query_text = client.indices.analyze(
         index = corpus,
         body={
@@ -221,36 +220,37 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
         bin_output = []
 
-        for hit in search_results['hits']['hits']:
-            id = hit['_id']
-
-            # get the term vectors for the hit
-            termvectors = client.termvectors(
+        ids = [hit['_id'] for hit in search_results['hits']['hits']]
+        
+        if len(ids):        
+            termvectors = client.mtermvectors(
                 index=corpus,
                 doc_type='_doc',
-                id=id,
+                ids=','.join(ids),
                 term_statistics=True,
                 fields = [field]
             )
 
-            if field in termvectors['term_vectors']:
-                terms = termvectors['term_vectors'][field]['terms']
+            for doc in termvectors['docs']:
+                if field in doc['term_vectors']:
+                    terms = doc['term_vectors'][field]['terms']
+
+                    all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
+                        for term in terms for token in terms[term]['tokens']]
+                    sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
+
+                    for i, token in enumerate(sorted_tokens):
+                        if token['term'] in query_tokens:
+                            for j in term_positions:
+                                start = i - j
+                                stop = i - j + ngram_size
+                                if start >= 0 and stop <= len(sorted_tokens):
+                                    ngram = sorted_tokens[start:stop]
+                                    words = ' '.join([token['term'] for token in ngram])
+                                    ttf = sum(token['ttf'] for token in ngram) / len(ngram)
+                                    bin_output.append((words, ttf))
                 
-                all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
-                    for term in terms for token in terms[term]['tokens']]
-                sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
-
-                for i, token in enumerate(sorted_tokens):
-                    if token['term'] in query_tokens:
-                        for j in term_positions:
-                            start = i - j
-                            stop = i - j + ngram_size
-                            if start >= 0 and stop <= len(sorted_tokens):
-                                ngram = sorted_tokens[start:stop]
-                                words = ' '.join([token['term'] for token in ngram])
-                                ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                                bin_output.append((words, ttf))
-
+                
         # output per bin: all tokens from this time interval
         output.append(bin_output)
 
