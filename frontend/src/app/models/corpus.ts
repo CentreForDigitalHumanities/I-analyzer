@@ -50,6 +50,7 @@ export type CorpusField = {
     searchFieldCore?: boolean,
     visualizationType?: string | string[],
     visualizationSort?: string,
+    multiFields?: string[],
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,

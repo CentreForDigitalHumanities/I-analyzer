@@ -140,7 +140,7 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, apply_stemming=False, max_size_per_interval=100):
+def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=100):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     # get time bins
@@ -171,18 +171,19 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
 
     # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval)
+    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval)
     ngrams = count_ngrams(docs, freq_compensation)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, apply_stemming, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
     client = elasticsearch(corpus)
     output = []
 
     query_text = es_query['query']['bool']['must']['simple_query_string']['query']
-    field = field if apply_stemming else field + '.non-stemmed'
+    field = field if subfield == 'none' else '.'.join([field, subfield])
+    print(field)
     analyzed_query_text = client.indices.analyze(
         index = corpus,
         body={

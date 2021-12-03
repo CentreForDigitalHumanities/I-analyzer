@@ -552,6 +552,7 @@ class CSVCorpus(Corpus):
             filename = source[0]
         
         with open(filename, 'r') as f:
+            logger.info('Reading CSV file {}...'.format(filename))
             reader = csv.DictReader(f)
             document_id = None
             rows = []
@@ -627,6 +628,7 @@ class Field(object):
                  visualization_type=None,
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
+                 multifields=None,
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
@@ -646,6 +648,7 @@ class Field(object):
         self.visualization_type = visualization_type
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
+        self.multifields = multifields
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor

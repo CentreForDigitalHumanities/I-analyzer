@@ -51,14 +51,14 @@
                 </div>
             </div>
         </div>
-        <div class="column is-one-third">
+        <div class="column is-half" *ngIf="ngramAnalysisOptions">
             <div class="field">
-                <label class="label" iaBalloon="search using stemmed versions of words"
+                <label class="label" iaBalloon="pre-processing steps on the text, like removing stopwords or stemming"
                     iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    Apply stemming
+                    Language processing
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="ngramStemmingOptions" [value]="ngramStemmingOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('stemming', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="ngramAnalysisOptions" [value]="ngramAnalysisOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('analysis', $event)"></ia-dropdown>
                 </div>
             </div>
         </div>

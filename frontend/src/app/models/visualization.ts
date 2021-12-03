@@ -5,5 +5,6 @@ export type visualizationField = {
     visualizationType: string,
     displayName?: string,
     visualizationSort?: string,
-    searchFilter?: SearchFilter<SearchFilterData> | null
+    searchFilter?: SearchFilter<SearchFilterData> | null,
+    multiFields?: string[];
 };

@@ -149,14 +149,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         # Dutch analyzer, multifield with exact text
         self.speech.es_mapping = {
           "type" : "text",
-          "analyzer": "dutch",
+          "analyzer": "standard",
           "term_vector": "with_positions_offsets", 
           "fields": {
-            "exact": {
+            "stemmed": {
                 "type": "text",
-                "analyzer": "standard"
+                "analyzer": "dutch" 
                 },
-            "non-stemmed": {
+            "clean": {
                 "type": 'text',
                 "analyzer": "non-stemmed"
                 }

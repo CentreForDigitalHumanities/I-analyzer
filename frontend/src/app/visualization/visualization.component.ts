@@ -62,8 +62,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     ngramPositions: number[]|undefined = undefined;
     ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
     ngramFreqCompensation: boolean|undefined = undefined;
-    ngramStemmingOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
-    ngramStemming: boolean|undefined;
+    ngramAnalysisOptions: {label: string, value: string}[];
+    ngramAnalysis: string|undefined;
     ngramMaxSizeOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     ngramMaxSize: number|undefined;
 
@@ -105,6 +105,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                                 visualizationType: visualizationType,
                                 visualizationSort: field.visualizationSort,
                                 searchFilter: field.searchFilter,
+                                multiFields: field.multiFields,
                             });
                         });
                     }
@@ -196,25 +197,17 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.isLoading = false;
                 });
         } else if (this.visualizedField.visualizationType === 'ngram') {
-            // collect graph options
-            const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
-            const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
-            const freqCompensation = this.ngramFreqCompensation === undefined ?
-                this.ngramFreqCompensationOptions[0].value : this.ngramFreqCompensation;
-            const stemming = this.ngramStemming === true; // no stemming for `false` or `undefined`
-            const maxSize = this.ngramMaxSize ? this.ngramMaxSize : 100;
+            if (this.visualizedField.multiFields) {
+                this.ngramAnalysisOptions = [{label: 'None', value: 'none'}]
+                    .concat(this.visualizedField.multiFields.map(subfield => {
+                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
+                        return { value: subfield, label: displayStrings[subfield]};
+                    }));
+            } else {
+                this.ngramAnalysisOptions = undefined;
+            }
 
-            this.searchService.getNgram(this.queryModel, this.corpus.name, this.visualizedField.name,
-                size, position, freqCompensation, stemming, maxSize)
-                .then(results => {
-                this.ngramGraph = results['graphData'];
-                this.isLoading = false;
-            }).catch(error => {
-                this.ngramGraph = undefined;
-                this.foundNoVisualsMessage = this.noResults;
-                this.errorMessage = error['message'];
-                this.isLoading = false;
-            });
+            this.loadNgram();
         } else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
@@ -230,7 +223,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    onNgramOptionChange(control: 'size'|'position'|'freq_compensation'|'stemming'|'max_size',
+    onNgramOptionChange(control: 'size'|'position'|'freq_compensation'|'analysis'|'max_size',
                         selection: {value: any, label: string}): void {
         const value = selection.value;
         switch (control) {
@@ -255,8 +248,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 this.ngramFreqCompensation = value;
             }
             break;
-            case 'stemming': {
-                this.ngramStemming = value;
+            case 'analysis': {
+                this.ngramAnalysis = value;
             }
             break;
             case 'max_size': {
@@ -265,7 +258,29 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
 
         this.isLoading = true;
-        this.checkResults();
+        this.loadNgram();
+    }
+
+    loadNgram() {
+        // collect graph options
+        const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
+        const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
+        const freqCompensation = this.ngramFreqCompensation === undefined ?
+            this.ngramFreqCompensationOptions[0].value : this.ngramFreqCompensation;
+        const analysis = this.ngramAnalysis ? this.ngramAnalysis : 'none';
+        const maxSize = this.ngramMaxSize ? this.ngramMaxSize : 100;
+
+        this.searchService.getNgram(this.queryModel, this.corpus.name, this.visualizedField.name,
+            size, position, freqCompensation, analysis, maxSize)
+            .then(results => {
+            this.ngramGraph = results['graphData'];
+            this.isLoading = false;
+        }).catch(error => {
+            this.ngramGraph = undefined;
+            this.foundNoVisualsMessage = this.noResults;
+            this.errorMessage = error['message'];
+            this.isLoading = false;
+        });
     }
 
     loadWordcloudData(size: number = null){

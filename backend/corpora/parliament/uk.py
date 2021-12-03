@@ -101,14 +101,14 @@ class ParliamentUK(Parliament, CSVCorpus):
         # English analyzer, multifield with exact text and non-stemmed version
         self.speech.es_mapping = {
           "type" : "text",
-          "analyzer": "english",
+          "analyzer": "standard",
           "term_vector": "with_positions_offsets", 
           "fields": {
-            "exact": {
+            "stemmed": {
                 "type": "text",
-                "analyzer": "standard"
+                "analyzer": "english"
                 },
-            "non-stemmed": {
+            "clean": {
                 "type": 'text',
                 "analyzer": "non-stemmed"
                 }
