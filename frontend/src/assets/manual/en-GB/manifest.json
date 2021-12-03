@@ -20,5 +20,8 @@
     },
     {   "id": "wordcloud",
         "title": "Word cloud visualization"
+    },
+    {   "id": "ngrams",
+        "title": "Common n-grams visualization"
     }
 ]
