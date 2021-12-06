@@ -111,7 +111,7 @@ class Parliament(Corpus):
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
-        visualization_type=['wordcloud', 'ngram'],
+        visualization_type=['wordcloud', 'ngram', 'search_term_frequency'],
     )
 
     speech_id = Field(

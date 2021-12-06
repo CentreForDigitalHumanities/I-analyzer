@@ -64,6 +64,7 @@ import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { NgramComponent } from './visualization/ngram.component';
+import { SearchTermFrequencyComponent } from './visualization/search-term-frequency.component';
 
 
 const appRoutes: Routes = [
@@ -172,6 +173,7 @@ export const declarations: any[] = [
     VisualizationComponent,
     WordcloudComponent,
     NgramComponent,
+    SearchTermFrequencyComponent,
 ];
 
 export const imports: any[] = [

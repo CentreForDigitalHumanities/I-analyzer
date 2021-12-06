@@ -39,6 +39,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         timeline: 'Timeline',
         term_frequency: 'Term frequency',
         relatedwords: 'Related words',
+        search_term_frequency: 'Frequency of search term',
     };
 
     public aggResults: AggregateResult[];
@@ -99,6 +100,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                         // fields with one visualization type
                         this.visualizedFields.push(field as visualizationField);
                     } else {
+                        console.log(field.visualizationType);
                         // fields with multiple visualization types
                         field.visualizationType.forEach(visualizationType => {
                             this.visualizedFields.push({
@@ -116,7 +118,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
-                if (field.visualizationType !== 'ngram' || this.queryModel.queryText) {
+                const requires_search_term = ['ngram', 'search_term_frequency']
+                    .find(vis_type => vis_type === field.visualizationType);
+                if (!requires_search_term || this.queryModel.queryText) {
                     this.visDropdown.push({
                         label: field.displayName,
                         value: {name: field.name, visualizationType: field.visualizationType}
@@ -208,8 +212,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             } else {
                 this.ngramAnalysisOptions = undefined;
             }
-
             this.loadNgram();
+        } else if (this.visualizedField.visualizationType === 'search_term_frequency') {
+
         } else {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
