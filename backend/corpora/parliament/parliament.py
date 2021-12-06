@@ -112,7 +112,6 @@ class Parliament(Corpus):
         search_field_core=True,
         display_type='text_content',
         visualization_type=['wordcloud', 'ngram'],
-        multifields=['clean', 'stemmed']
     )
 
     speech_id = Field(
