@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
@@ -52,22 +52,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         [word: string]: number
     };
 
-    public ngramGraph: {
-        labels: string[],
-        datasets: {
-            label: string, data: number[]
-        }[]
-    };
-    ngramSizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
-    ngramSize: number|undefined = undefined;
-    ngramPositionOptions = [{label: 'any', value: [0,1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
-    ngramPositions: number[]|undefined = undefined;
-    ngramFreqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
-    ngramFreqCompensation: boolean|undefined = undefined;
-    ngramAnalysisOptions: {label: string, value: string}[];
-    ngramAnalysis: string|undefined;
-    ngramMaxSizeOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
-    ngramMaxSize: number|undefined;
 
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
@@ -198,19 +182,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType === 'ngram') {
-            if (this.visualizedField.multiFields) {
-                this.ngramAnalysisOptions = [{label: 'None', value: 'none'}]
-                    .concat(this.visualizedField.multiFields.map(subfield => {
-                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
-                        return { value: subfield, label: displayStrings[subfield]};
-                    }));
-            } else {
-                this.ngramAnalysisOptions = undefined;
-            }
-
-            this.loadNgram();
-        } else {
+        } else if (this.visualizedField.visualizationType !== 'ngram') {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
@@ -223,66 +195,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 this.isLoading = false;
             });
         }
-    }
-
-    onNgramOptionChange(control: 'size'|'position'|'freq_compensation'|'analysis'|'max_size',
-                        selection: {value: any, label: string}): void {
-        const value = selection.value;
-        switch (control) {
-            case 'size': {
-                this.ngramSize = value;
-                // set positions dropdown options and reset its value
-                const positions = Array.from(Array(this.ngramSize).keys());
-                this.ngramPositionOptions =  [ { value: positions, label: 'any' } ]
-                    .concat(positions.map(position => {
-                        return { value : [position], label: ['first','second','third'][position] }
-                    }));
-                this.ngramPositions = this.ngramPositionOptions[0].value;
-            }
-            break;
-            case 'position': {
-                if (typeof(value) != 'number') {
-                    this.ngramPositions = value;
-                }
-            }
-            break;
-            case 'freq_compensation': {
-                this.ngramFreqCompensation = value;
-            }
-            break;
-            case 'analysis': {
-                this.ngramAnalysis = value;
-            }
-            break;
-            case 'max_size': {
-                this.ngramMaxSize = value;
-            }
-        }
-
-        this.loadNgram();
-    }
-
-    loadNgram() {
-        this.onIsLoading(true);
-        // collect graph options
-        const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
-        const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
-        const freqCompensation = this.ngramFreqCompensation === undefined ?
-            this.ngramFreqCompensationOptions[0].value : this.ngramFreqCompensation;
-        const analysis = this.ngramAnalysis ? this.ngramAnalysis : 'none';
-        const maxSize = this.ngramMaxSize ? this.ngramMaxSize : 100;
-
-        this.searchService.getNgram(this.queryModel, this.corpus.name, this.visualizedField.name,
-            size, position, freqCompensation, analysis, maxSize)
-            .then(results => {
-            this.ngramGraph = results['graphData'];
-            this.onIsLoading(false);
-        }).catch(error => {
-            this.ngramGraph = undefined;
-            this.foundNoVisualsMessage = this.noResults;
-            this.errorMessage = error['message'];
-            this.onIsLoading(false);
-        });
     }
 
     loadWordcloudData(size: number = null){
