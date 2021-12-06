@@ -8,7 +8,7 @@ import pickle
 
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
 from datetime import datetime
 from ianalyzer.factories.elasticsearch import elasticsearch
@@ -143,9 +143,20 @@ def cosine_similarity_matrix_vector(vector, matrix):
 def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=100):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
-    # get time bins
+    bins = get_time_bins(es_query, corpus)
+    time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
+
+    # find ngrams
+
+    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval)
+    ngrams = count_ngrams(docs, freq_compensation)
+
+    return { 'words': ngrams, 'time_points' : time_labels }
 
 
+def get_time_bins(es_query, corpus):
+    """Time bins for a query. Depending on the total time range of the query, time intervervals are
+    10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
     datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
 
     if datefilter:
@@ -153,9 +164,9 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
         min_year = datetime.strptime(data['gte'], '%Y-%m-%d').year
         max_year = datetime.strptime(data['lte'], '%Y-%m-%d').year
     else:
-        # TODO: get min and max year from corpus
-        min_year = 1800
-        max_year = 2020
+        corpus_class = load_corpus(corpus)
+        min_year = corpus_class.min_date.year
+        max_year = corpus_class.max_date.year
         
     time_range = max_year - min_year
 
@@ -167,14 +178,7 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
-    time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
-
-    # find ngrams
-
-    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval)
-    ngrams = count_ngrams(docs, freq_compensation)
-
-    return { 'words': ngrams, 'time_points' : time_labels }
+    return bins
 
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):

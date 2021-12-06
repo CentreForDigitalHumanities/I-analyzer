@@ -259,11 +259,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             }
         }
 
-        this.isLoading = true;
         this.loadNgram();
     }
 
     loadNgram() {
+        this.onIsLoading(true);
         // collect graph options
         const size = this.ngramSize ? this.ngramSize : this.ngramSizeOptions[0].value;
         const position = this.ngramPositions ? this.ngramPositions : Array.from(Array(size).keys());
@@ -276,12 +276,12 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             size, position, freqCompensation, analysis, maxSize)
             .then(results => {
             this.ngramGraph = results['graphData'];
-            this.isLoading = false;
+            this.onIsLoading(false);
         }).catch(error => {
             this.ngramGraph = undefined;
             this.foundNoVisualsMessage = this.noResults;
             this.errorMessage = error['message'];
-            this.isLoading = false;
+            this.onIsLoading(false);
         });
     }
 
