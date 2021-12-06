@@ -14,66 +14,6 @@
 	</button>
 </div>
 
-
-<div class="box" *ngIf="visualizedField.visualizationType == 'ngram'">
-    <!-- controls for the ngram graph -->
-    <div class="columns is-multiline">
-        <div class="column is-one-third">
-            <div class="field">
-                <label class="label" iaBalloon="search for bigrams (2 words) or trigrams (3 words)"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    Length of n-gram
-                </label>
-                <div class="control">
-                    <ia-dropdown [options]="ngramSizeOptions" [value]="ngramSizeOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('size', $event)"></ia-dropdown>
-                </div>
-            </div>
-        </div>
-        <div class="column is-one-third">
-            <div class="field">
-                <label class="label" iaBalloon="only search n-grams with the search term in the specified position"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    Position of search term
-                </label>
-                <div class="control">
-                    <ia-dropdown [options]="ngramPositionOptions" [value]="ngramPositionOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('position', $event)"></ia-dropdown>
-                </div>
-            </div>
-        </div>
-        <div class="column is-one-third">
-            <div class="field">
-                <label class="label" iaBalloon="divide by the average frequency of the words in the n-gram; favours words that are otherwise rare"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    Compensate for frequency
-                </label>
-                <div class="control">
-                    <ia-dropdown [options]="ngramFreqCompensationOptions" [value]="ngramFreqCompensationOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('freq_compensation', $event)"></ia-dropdown>
-                </div>
-            </div>
-        </div>
-        <div class="column is-half" *ngIf="ngramAnalysisOptions">
-            <div class="field">
-                <label class="label" iaBalloon="pre-processing steps on the text, like removing stopwords or stemming"
-                    iaBalloonPosition="up-left" iaBalloonLength="fit">
-                    Language processing
-                </label>
-                <div class="control">
-                    <ia-dropdown [options]="ngramAnalysisOptions" [value]="ngramAnalysisOptions[0]" optionLabel="label" (onChange)="onNgramOptionChange('analysis', $event)"></ia-dropdown>
-                </div>
-            </div>
-        </div>
-        <div class="column is-one-third">
-            <div class="field">
-                <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
-                iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
-                <div class="control">
-                    <ia-dropdown [options]="ngramMaxSizeOptions" [value]="ngramMaxSizeOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('max_size', $event)"></ia-dropdown>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
     <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
     	<label>
@@ -90,7 +30,7 @@
     		[asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [searchData]="ngramGraph"></ia-ngram>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
             <ia-search-term-frequency *ngSwitchCase=" 'search_term_frequency' "></ia-search-term-frequency>
         </ng-container>
     </div>
