@@ -103,11 +103,32 @@ class Parliament(Corpus):
         es_mapping={'type': 'text'},
     )
 
+    # speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
+    # stopword and stemmer filter need to be defined for each language
     speech = Field(
         name='speech',
         display_name='Speech',
         description='The transcribed speech',
-        es_mapping={'type': 'text'},
+        # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
+        es_mapping = {
+            "type" : "text",
+            "fields": {
+                "clean": {
+                    "type": "text",
+                    "analyzer": "clean",
+                    "term_vector": "with_positions_offsets"
+                },
+                "stemmed": {
+                    "type": "text",
+                    "analyzer": "stemmed",
+                    "term_vector": "with_positions_offsets", 
+                },
+                "length": {
+                    "type":     "token_count",
+                    "analyzer": "standard"
+                }
+            }
+        },
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
@@ -192,6 +213,7 @@ class Parliament(Corpus):
         topic, house, 
         speech, speech_id,
         speaker, speaker_id, 
+        speech_type,
         role, 
         party, party_id,
         page, column,

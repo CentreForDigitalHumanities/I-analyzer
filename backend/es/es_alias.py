@@ -77,7 +77,10 @@ def extract_version(index_name):
     _index = index_name.rfind('-')
     if _index == -1:
         return _index
-    return int(index_name[_index + 1:])
+    try:
+        return int(index_name[_index + 1:])
+    except:
+        return None
 
 
 def get_highest_version_number(indices, current_index = None):
@@ -98,6 +101,6 @@ def get_highest_version_number(indices, current_index = None):
             # skip irrelevant indices
             continue
         version = extract_version(index_name)
-        if version > highest_version:
+        if version and version > highest_version:
             highest_version = version
     return highest_version
