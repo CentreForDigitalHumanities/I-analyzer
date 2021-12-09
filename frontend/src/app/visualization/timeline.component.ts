@@ -25,6 +25,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     @Input() asPercent = false;
 
     @Output() isLoading = new EventEmitter<boolean>();
@@ -89,18 +90,35 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async requestTimeData() {
-        /* date fields are returned with keys containing identifiers by elasticsearch
-         replace with string representation, contained in 'key_as_string' field
-        */
-        const dataPromise = this.searchService.dateHistogramSearch(
-            this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                return result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
+
+        if (this.frequencyMeasure === 'documents' || this.frequencyMeasure === undefined) {
+            /* date fields are returned with keys containing identifiers by elasticsearch
+            replace with string representation, contained in 'key_as_string' field
+            */
+            dataPromise = this.searchService.dateHistogramSearch(
+                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                    return result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                        return {
+                            date: new Date(cat.key_as_string),
+                            doc_count: cat.doc_count
+                        };
+                    });
+                });
+        } else {
+            dataPromise = this.searchService.dateTermFrequencySearch(
+                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory
+            ).then(result => {
+                console.log(result);
+                return result.data.filter(cat => cat.doc_count > 0).map(cat => {
                     return {
                         date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count
+                        doc_count: cat.doc_count,
                     };
                 });
-            });
+            }).catch();
+        }
+
         this.selectedData = await dataPromise;
     }
 

@@ -18,6 +18,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visualizedFields: visualizationField[];
 
+    public frequencyMeasure: 'documents'|'tokens';
     public asPercentage: boolean;
 
     public showTableButtons: boolean;
@@ -84,7 +85,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                         // fields with one visualization type
                         this.visualizedFields.push(field as visualizationField);
                     } else {
-                        console.log(field.visualizationType);
                         // fields with multiple visualization types
                         field.visualizationType.forEach(visualizationType => {
                             this.visualizedFields.push({
@@ -186,7 +186,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType !== 'ngram') {
+        } else if (this.visualizedField.visualizationType !== 'ngram' && this.visualizedField.visualizationType != 'search_term_frequency') {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;

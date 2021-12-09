@@ -100,6 +100,14 @@ export class ApiService extends Resource {
         { success: boolean, message?: string, word_data?: NgramResults }>;
 
     @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/get_date_term_frequency'
+    })
+    public getDateTermFrequency: ResourceMethod<
+        { es_query: EsQuery, corpus_name: string, field: string, time_interval: string},
+        { success: boolean, message?: string, data?: any }>;
+
+    @ResourceAction({
         path: '/corpus'
     })
     public corpus: ResourceMethod<void, any>;

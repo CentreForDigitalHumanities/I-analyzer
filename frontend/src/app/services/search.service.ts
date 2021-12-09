@@ -101,6 +101,16 @@ export class SearchService {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<any> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getDateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            field: fieldName,
+            time_interval: timeInterval,
+        });
+    }
+
     public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
         let esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
@@ -185,7 +195,7 @@ export class SearchService {
                     }
                 });
             }).catch( result => {
-                reject({'message': result.message});
+                reject({ message: result.message });
             });
         });
     }

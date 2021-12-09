@@ -10,7 +10,7 @@ from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 from ianalyzer.factories.elasticsearch import elasticsearch
 
 from flask import current_app
@@ -153,21 +153,32 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
+def get_total_time_interval(es_query, corpus):
+    """
+    Min and max date for the search query and corpus. Returns the dates from the query if provided,
+    otherwise the min and max date from the corpus definition.
+    """
 
-def get_time_bins(es_query, corpus):
-    """Time bins for a query. Depending on the total time range of the query, time intervervals are
-    10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
     datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
 
     if datefilter:
         data = datefilter['range']['date']
-        min_year = datetime.strptime(data['gte'], '%Y-%m-%d').year
-        max_year = datetime.strptime(data['lte'], '%Y-%m-%d').year
+        min_date = datetime.strptime(data['gte'], '%Y-%m-%d')
+        max_date = datetime.strptime(data['lte'], '%Y-%m-%d')
     else:
         corpus_class = load_corpus(corpus)
-        min_year = corpus_class.min_date.year
-        max_year = corpus_class.max_date.year
-        
+        min_date = corpus_class.min_date
+        max_date = corpus_class.max_date
+    
+    return min_date, max_date
+
+
+def get_time_bins(es_query, corpus):
+    """Wide bins for a query. Depending on the total time range of the query, time intervervals are
+    10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
+
+    min_date, max_date = get_total_time_interval(es_query, corpus)
+    min_year, max_year = min_date.year, max_date.year        
     time_range = max_year - min_year
 
     if time_range <= 20:
@@ -284,3 +295,94 @@ def count_ngrams(docs, divide_by_tff):
         for word in words]
 
     return output
+
+def get_date_term_frequency(es_query, corpus, field, time_interval):
+    
+    bins = get_time_bins_by_interval(es_query, corpus, time_interval)
+    labels = [datetime.strftime(start_date, '%Y-%m-%d') for start_date, end_date in bins]
+    frequencies = frequency_by_time_interval(es_query, corpus, bins, 500)
+
+    return [
+        {
+            'key_as_string': label,
+            'doc_count': freq
+        }
+        for label, freq in zip(labels, frequencies)
+    ]
+
+
+def get_time_bins_by_interval(es_query, corpus, time_interval):
+    """Time bins based on the specified time interval.
+    Parameters:
+    - es_query : elastic search query that the visualisation is based on.
+    - corpus (string): name of the corpus
+    - time_interval (string) : should be 'year', 'month', 'week' or 'day'
+    """
+    min_date, max_date = get_total_time_interval(es_query, corpus)
+    
+    dates = []
+    next_date = min_date
+    while next_date < max_date:
+        dates.append(next_date)
+
+        if time_interval == 'year':
+            next_date = next_date.replace(year=next_date.year + 1)
+        elif time_interval == 'month':
+            if next_date.month < 12:
+                next_date = next_date.replace(month=next_date.month + 1)
+            else:
+                next_date = next_date.replace(year=next_date.year + 1, month=1)
+        elif time_interval == 'week':
+            next_date += timedelta(days=7)
+        else:
+            next_date += timedelta(days=1)
+    dates.append(max_date)
+
+    bins = [(dates[i], dates[i+1]) for i in range(len(dates) - 1)]
+
+    return bins
+
+def frequency_by_time_interval(es_query, corpus, bins, max_size_per_interval):
+    client = elasticsearch(corpus)
+
+    def match_count(start_date, end_date):
+        # filter query on this time bin
+        if 'filter' not in es_query['query']['bool']:
+            es_query['bool']['filter'] = []
+        filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or 'date' not in f['range']]
+        filters.append({
+            'range': {
+                'date': {
+                    'gte': datetime.strftime(start_date, '%Y-%m-%d'),
+                    'lte': datetime.strftime(end_date, '%Y-%m-%d'),
+                    'format': 'yyyy-MM-dd',
+                }
+            }
+        })
+        es_query['query']['bool']['filter'] = filters
+
+        # add highlights to result
+        es_query['highlight'] = {
+            'fragment_size': 1,
+            'number_of_fragments': 100,
+            'fields': {
+                '*': {} 
+            },
+        }
+
+        #search for the query text
+        search_results = client.search(
+            index=corpus,
+            size = max_size_per_interval,
+            body = es_query,
+        )
+
+        hits = (hit for hit in search_results['hits']['hits'])
+
+        total_matches = (sum(len(hit['highlight'][key])
+            for hit in hits for key in hit['highlight'].keys()
+        ))
+
+        return total_matches
+    
+    return [match_count(start_date, end_date) for start_date, end_date in bins]
