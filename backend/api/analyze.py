@@ -345,8 +345,27 @@ def get_time_bins_by_interval(es_query, corpus, time_interval):
 
     return bins
 
-def frequency_by_time_interval(es_query, corpus, field, bins, max_size_per_interval):
+def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_interval):
     client = elasticsearch(corpus)
+
+    # highlighting specifications (used for counting hits)
+    corpus_class = load_corpus(corpus)
+    core_fields = filter(lambda field: field.search_field_core, corpus_class.fields)
+    highlight_fields = dict()
+    for field in core_fields:
+        mapping = field.es_mapping
+        has_termvectors = 'term_vector' in mapping and mapping['term_vector'] == 'with_positions_offsets'
+        highlight_type = 'fvh' if has_termvectors else 'unified'
+        highlight_fields[field.name] = {
+            'type': highlight_type,
+            'fragment_size': 18 if highlight_type == 'fvh' else 1, #fvh requires fragment_size >= 18
+        }
+    
+    highlight_specs = {
+        
+        'number_of_fragments': 100,
+        'fields':  highlight_fields,
+    }
 
     #count number of matches per bin
 
@@ -368,13 +387,7 @@ def frequency_by_time_interval(es_query, corpus, field, bins, max_size_per_inter
         query['query']['bool']['filter'] = filters
 
         # add highlights to result
-        query['highlight'] = {
-            'fragment_size': 1,
-            'number_of_fragments': 100,
-            'fields': {
-                '*': {} 
-            },
-        }
+        query['highlight'] = highlight_specs
 
         #search for the query text
         search_results = client.search(
@@ -383,7 +396,7 @@ def frequency_by_time_interval(es_query, corpus, field, bins, max_size_per_inter
             body = query,
         )
 
-        hits = (hit for hit in search_results['hits']['hits'])
+        hits = (hit for hit in search_results['hits']['hits'] if 'highlight' in hit)
 
         total_matches = (sum(len(hit['highlight'][key])
             for hit in hits for key in hit['highlight'].keys()
@@ -402,7 +415,7 @@ def frequency_by_time_interval(es_query, corpus, field, bins, max_size_per_inter
     query['aggs'] = {
         'date_histogram': {
             'date_range': {
-                'field': field,
+                'field': date_field,
                 'ranges': [
                     {
                         'from': datetime.strftime(start_date, '%Y-%m-%d'),

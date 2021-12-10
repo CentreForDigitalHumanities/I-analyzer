@@ -79,7 +79,8 @@ class Parliament(Corpus):
         search_filter=MultipleChoiceFilter(
             description='Search only in debates from the selected houses',
             option_count=10
-        )
+        ),
+        visualization_type='term_frequency',
     )
 
     debate_title = Field(

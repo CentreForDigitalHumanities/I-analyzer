@@ -111,6 +111,10 @@ class ParliamentUK(Parliament, CSVCorpus):
             "clean": {
                 "type": 'text',
                 "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
                 }
             }
         }
