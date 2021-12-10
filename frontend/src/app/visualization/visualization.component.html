@@ -19,7 +19,7 @@
         <div class="column" *ngIf="queryModel.queryText">
             <p-dropdown [options]="[{label:'Count documents', value:'documents'},{label:'Count search term', value:'tokens'}]" [(ngModel)]="frequencyMeasure"></p-dropdown>
         </div>
-        <div class="column">
+        <div class="column" *ngIf="frequencyMeasure == 'documents'">
             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display

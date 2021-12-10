@@ -105,7 +105,7 @@ export class ApiService extends Resource {
     })
     public getDateTermFrequency: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, field: string, time_interval: string},
-        { success: boolean, message?: string, data?: any }>;
+        { success: boolean, message?: string, data?: AggregateResult[] }>;
 
     @ResourceAction({
         path: '/corpus'

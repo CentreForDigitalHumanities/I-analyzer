@@ -12,6 +12,7 @@ from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
 from datetime import datetime, timedelta
 from ianalyzer.factories.elasticsearch import elasticsearch
+from copy import deepcopy
 
 from flask import current_app
 
@@ -300,14 +301,16 @@ def get_date_term_frequency(es_query, corpus, field, time_interval):
     
     bins = get_time_bins_by_interval(es_query, corpus, time_interval)
     labels = [datetime.strftime(start_date, '%Y-%m-%d') for start_date, end_date in bins]
-    frequencies = frequency_by_time_interval(es_query, corpus, bins, 500)
+    match_counts, doc_counts = frequency_by_time_interval(es_query, corpus, field, bins, 500)
 
     return [
         {
+            'key': label,
             'key_as_string': label,
-            'doc_count': freq
+            'doc_count': doc_count,
+            'match_count': match_count,
         }
-        for label, freq in zip(labels, frequencies)
+        for label, doc_count, match_count in zip(labels, doc_counts, match_counts)
     ]
 
 
@@ -342,14 +345,17 @@ def get_time_bins_by_interval(es_query, corpus, time_interval):
 
     return bins
 
-def frequency_by_time_interval(es_query, corpus, bins, max_size_per_interval):
+def frequency_by_time_interval(es_query, corpus, field, bins, max_size_per_interval):
     client = elasticsearch(corpus)
+
+    #count number of matches per bin
 
     def match_count(start_date, end_date):
         # filter query on this time bin
-        if 'filter' not in es_query['query']['bool']:
-            es_query['bool']['filter'] = []
-        filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or 'date' not in f['range']]
+        query = deepcopy(es_query)
+        if 'filter' not in query['query']['bool']:
+            query['bool']['filter'] = []
+        filters = [f for f in query['query']['bool']['filter'] if 'range' not in f or 'date' not in f['range']]
         filters.append({
             'range': {
                 'date': {
@@ -359,10 +365,10 @@ def frequency_by_time_interval(es_query, corpus, bins, max_size_per_interval):
                 }
             }
         })
-        es_query['query']['bool']['filter'] = filters
+        query['query']['bool']['filter'] = filters
 
         # add highlights to result
-        es_query['highlight'] = {
+        query['highlight'] = {
             'fragment_size': 1,
             'number_of_fragments': 100,
             'fields': {
@@ -374,7 +380,7 @@ def frequency_by_time_interval(es_query, corpus, bins, max_size_per_interval):
         search_results = client.search(
             index=corpus,
             size = max_size_per_interval,
-            body = es_query,
+            body = query,
         )
 
         hits = (hit for hit in search_results['hits']['hits'])
@@ -385,4 +391,40 @@ def frequency_by_time_interval(es_query, corpus, bins, max_size_per_interval):
 
         return total_matches
     
-    return [match_count(start_date, end_date) for start_date, end_date in bins]
+    match_counts = [match_count(start_date, end_date) for start_date, end_date in bins]
+
+    # get documents per time bin
+
+    query = deepcopy(es_query)
+
+    query['query']['bool'].pop('must')
+
+    query['aggs'] = {
+        'date_histogram': {
+            'date_range': {
+                'field': field,
+                'ranges': [
+                    {
+                        'from': datetime.strftime(start_date, '%Y-%m-%d'),
+                        'to': datetime.strftime(end_date, '%Y-%m-%d'),
+                    } for (start_date, end_date) in bins
+                ]
+            }
+        }
+    }
+
+    agg_results = client.search(
+        index=corpus,
+        size = max_size_per_interval,
+        body = query,
+    )
+
+    buckets = agg_results['aggregations']['date_histogram']['buckets']
+    doc_counts = [bucket['doc_count'] for bucket in buckets]
+
+    frequencies = [
+        matches / docs if docs else 0
+        for matches, docs in zip(match_counts, doc_counts)
+    ]
+
+    return match_counts, doc_counts

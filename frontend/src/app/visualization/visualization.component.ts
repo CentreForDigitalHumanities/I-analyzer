@@ -18,7 +18,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visualizedFields: visualizationField[];
 
-    public frequencyMeasure: 'documents'|'tokens';
+    public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public asPercentage: boolean;
 
     public showTableButtons: boolean;

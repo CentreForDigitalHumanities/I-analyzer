@@ -109,11 +109,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             dataPromise = this.searchService.dateTermFrequencySearch(
                 this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory
             ).then(result => {
-                console.log(result);
                 return result.data.filter(cat => cat.doc_count > 0).map(cat => {
                     return {
                         date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count,
+                        doc_count: cat.doc_count ? cat.match_count / cat.doc_count : 0,
                     };
                 });
             }).catch();
