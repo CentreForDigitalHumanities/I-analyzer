@@ -27,8 +27,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() visualizedField;
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     @Input() asPercent = false;
+    @Input() divideTokenFrequencyBy: 'documents'|'tokens';
 
     @Output() isLoading = new EventEmitter<boolean>();
+    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
 
     private queryModelCopy;
 
@@ -36,6 +38,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public showHint: boolean;
 
     private currentTimeCategory: string;
+    private rawData: {date: Date, match_count: number, doc_count: number, token_count: number}[];
     private selectedData: Array<DateFrequencyPair>;
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
@@ -45,6 +48,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        const onlyChangeFrequencyDenominator = Boolean(
+            this.rawData && Object.keys(changes).length === 1 && changes.divideTokenFrequencyBy
+        );
+
         if (this.chartElement === undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
             this.calculateCanvas();
@@ -57,7 +64,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale = d3Scale.scaleTime()
             .range([0, this.width])
             .clamp(true);
-        this.prepareTimeline().then(() => {
+        this.prepareTimeline(onlyChangeFrequencyDenominator).then(() => {
             this.setupYScale();
             this.createChart(this.visualizedField.displayName);
             this.rescaleY(this.asPercent);
@@ -73,9 +80,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    async prepareTimeline() {
+    async prepareTimeline(onlyChangeFrequencyDenominator = false) {
         this.isLoading.emit(true);
-        await this.requestTimeData();
+        if (onlyChangeFrequencyDenominator) {
+            this.updateTimeDataDenominator();
+        } else {
+            await this.requestTimeData();
+        }
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
         this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
@@ -90,7 +101,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async requestTimeData() {
-        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
+        let dataPromise: Promise<{date: Date, doc_count: number, token_count?: number}[]>;
 
         if (this.frequencyMeasure === 'documents' || this.frequencyMeasure === undefined) {
             /* date fields are returned with keys containing identifiers by elasticsearch
@@ -98,27 +109,52 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             */
             dataPromise = this.searchService.dateHistogramSearch(
                 this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    return result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                         return {
                             date: new Date(cat.key_as_string),
                             doc_count: cat.doc_count
                         };
                     });
+                    return data;
                 });
         } else {
             dataPromise = this.searchService.dateTermFrequencySearch(
                 this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory
             ).then(result => {
-                return result.data.filter(cat => cat.doc_count > 0).map(cat => {
+                const data = result.data.filter(cat => cat.doc_count > 0).map(cat => {
                     return {
                         date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count ? cat.match_count / cat.doc_count : 0,
+                        doc_count: cat.doc_count,
+                        match_count: cat.match_count,
+                        token_count: cat.token_count
                     };
                 });
+                // if total token counts are returned, store them in rawData
+                if (data.find(cat => cat.token_count)) {
+                    this.rawData = data;
+                    this.totalTokenCountAvailable.emit(true);
+                } else {
+                    this.totalTokenCountAvailable.emit(false);
+                }
+                return data.map(cat =>
+                    ({date: cat.date, doc_count: 100 * cat.match_count / cat.doc_count})
+                );
             }).catch();
         }
 
         this.selectedData = await dataPromise;
+    }
+
+    updateTimeDataDenominator() {
+        // update values from stored rawData instead of making a new elasticsearch query
+        if (this.divideTokenFrequencyBy === 'tokens') {
+            this.selectedData = this.rawData.map(cat =>
+                ({date: cat.date, doc_count: 100 * cat.match_count / cat.token_count}));
+        } else {
+            this.selectedData = this.rawData.map(cat =>
+                ({date: cat.date, doc_count: 100 * cat.match_count / cat.doc_count}));
+        }
+        console.log(this.selectedData);
     }
 
     drawChartData() {

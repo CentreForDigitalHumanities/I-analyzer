@@ -27,6 +27,9 @@
                 </label>
             </div>
         </div>
+        <div class="column" *ngIf="showTokenCountOption">
+            <p-dropdown [options]="[{label:'Percentage of documents', value:'documents'},{label:'Percentage of words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy"></p-dropdown>
+        </div>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
@@ -34,7 +37,8 @@
     		 [asPercent]="asPercentage">
     		</ia-term-frequency>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		[frequencyMeasure]="frequencyMeasure" [asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
+    		[frequencyMeasure]="frequencyMeasure" [asPercent]="asPercentage" [divideTokenFrequencyBy]="divideTokenFrequencyBy"
+            (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>

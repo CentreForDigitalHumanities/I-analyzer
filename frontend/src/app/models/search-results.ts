@@ -24,6 +24,7 @@ export type AggregateResult = {
     key: string,
     doc_count: number,
     match_count?: number,
+    token_count?: number,
     word_count?: number,
     key_as_string?: string
 }

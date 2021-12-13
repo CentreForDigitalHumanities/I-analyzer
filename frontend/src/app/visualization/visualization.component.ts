@@ -20,6 +20,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public asPercentage: boolean;
+    public divideTokenFrequencyBy: 'documents'|'tokens' = 'documents';
+    public showTokenCountOption: boolean;
 
     public showTableButtons: boolean;
 

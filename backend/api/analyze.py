@@ -301,17 +301,22 @@ def get_date_term_frequency(es_query, corpus, field, time_interval):
     
     bins = get_time_bins_by_interval(es_query, corpus, time_interval)
     labels = [datetime.strftime(start_date, '%Y-%m-%d') for start_date, end_date in bins]
-    match_counts, doc_counts = frequency_by_time_interval(es_query, corpus, field, bins, 500)
+    match_counts, doc_counts, token_counts = frequency_by_time_interval(es_query, corpus, field, bins, 500)
 
-    return [
-        {
-            'key': label,
-            'key_as_string': label,
-            'doc_count': doc_count,
-            'match_count': match_count,
+    def result(index):
+        res = {
+            'key': labels[index],
+            'key_as_string': labels[index],
+            'doc_count': doc_counts[index],
+            'match_count': match_counts[index],
         }
-        for label, doc_count, match_count in zip(labels, doc_counts, match_counts)
-    ]
+
+        if token_counts:
+            res['token_count'] = token_counts[index]
+        
+        return res
+
+    return [result(index) for index in range(len(labels))]
 
 
 def get_time_bins_by_interval(es_query, corpus, time_interval):
@@ -350,7 +355,7 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
 
     # highlighting specifications (used for counting hits)
     corpus_class = load_corpus(corpus)
-    core_fields = filter(lambda field: field.search_field_core, corpus_class.fields)
+    core_fields = list(filter(lambda field: field.search_field_core, corpus_class.fields))
     highlight_fields = dict()
     for field in core_fields:
         mapping = field.es_mapping
@@ -362,7 +367,6 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         }
     
     highlight_specs = {
-        
         'number_of_fragments': 100,
         'fields':  highlight_fields,
     }
@@ -397,7 +401,6 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         )
 
         hits = (hit for hit in search_results['hits']['hits'] if 'highlight' in hit)
-
         total_matches = (sum(len(hit['highlight'][key])
             for hit in hits for key in hit['highlight'].keys()
         ))
@@ -406,14 +409,16 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
     
     match_counts = [match_count(start_date, end_date) for start_date, end_date in bins]
 
-    # get documents per time bin
+    # get total document count and (if available) token count per time bin
+
+    has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
+    include_token_count = all(has_length_count(field) for field in core_fields)
 
     query = deepcopy(es_query)
 
     query['query']['bool'].pop('must')
-
     query['aggs'] = {
-        'date_histogram': {
+        'time_intervals': {
             'date_range': {
                 'field': date_field,
                 'ranges': [
@@ -426,18 +431,34 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         }
     }
 
+    if include_token_count:
+        query['aggs']['time_intervals']['aggs'] = {
+            'token_count_' + field.name: {
+                'sum': {
+                    'field': field.name + '.length'
+                }
+            }
+            for field in core_fields
+        }
+
     agg_results = client.search(
         index=corpus,
         size = max_size_per_interval,
         body = query,
     )
 
-    buckets = agg_results['aggregations']['date_histogram']['buckets']
+    buckets = agg_results['aggregations']['time_intervals']['buckets']
     doc_counts = [bucket['doc_count'] for bucket in buckets]
+    
+    if include_token_count:
+        token_counts = [
+            int(sum(
+                bucket['token_count_' + field.name]['value']
+                for field in core_fields
+            ))
+            for bucket in buckets
+        ]
+    else:
+        token_counts = None
 
-    frequencies = [
-        matches / docs if docs else 0
-        for matches, docs in zip(match_counts, doc_counts)
-    ]
-
-    return match_counts, doc_counts
+    return match_counts, doc_counts, token_counts
