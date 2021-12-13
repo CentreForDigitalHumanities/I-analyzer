@@ -20,20 +20,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
-    es_settings = {
-        'index': {
-            'number_of_replicas': 0,
-            'analysis': {
-                'analyzer': {
-                    'non-stemmed': {
-                        'type': 'standard',
-                        'stopwords': '_dutch_',
-                    }
-                }
-            }
-        }
-    }
-
     tag_toplevel = 'root'
     tag_entry = 'speech'
     es_settings = current_app.config['PP_ES_SETTINGS']
