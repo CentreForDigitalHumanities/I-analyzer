@@ -25,10 +25,15 @@ export class NgramComponent implements OnInit, OnChanges {
             yAxes: [{
                 scaleLabel: {
                     display: true,
-                    labelString: 'Frequency'
+                    labelString: 'Weighed frequency'
                 }
             }],
-            xAxes: [],
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Date',
+                }
+            }],
         },
         tooltips: {
             intersect: false,
@@ -104,7 +109,8 @@ export class NgramComponent implements OnInit, OnChanges {
             }
             break;
             case 'freq_compensation': {
-                this.freqCompensationOptions = value;
+                this.freqCompensation = value;
+                this.chartOptions.scales.yAxes[0].scaleLabel.labelString = value ? 'Weighed frequency' : 'Frequency';
             }
             break;
             case 'analysis': {
