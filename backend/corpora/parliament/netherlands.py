@@ -36,7 +36,17 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     tag_toplevel = 'root'
     tag_entry = 'speech'
-    
+    es_settings = current_app.config['PP_ES_SETTINGS']
+    es_settings['analysis']['filter'] = {
+        "stopwords": {
+            "type": "stop",
+            "stopwords": "_dutch_"
+        },
+        "stemmer": {
+            "type": "stemmer",
+            "language": "dutch"
+        }
+    }
 
 
     def sources(self, start, end):
@@ -144,24 +154,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             multiple=True,
             flatten=True,
         )
-
-        # adjust the mapping:
-        # Dutch analyzer, multifield with exact text
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets", 
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "dutch" 
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "non-stemmed"
-                }
-            }
-        }
 
         self.speech_id.extractor = XML(
             attribute=':id'

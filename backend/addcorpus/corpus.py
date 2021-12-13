@@ -9,6 +9,7 @@ import inspect
 import json
 import bs4
 import csv
+import sys
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger('indexing')
@@ -534,6 +535,8 @@ class CSVCorpus(Corpus):
         '''
 
     def source2dicts(self, source):
+        # make sure the field size is as big as the system permits
+        csv.field_size_limit(sys.maxsize)
         for field in self.fields:
             if not isinstance(field.extractor, (
                 extract.Choice,

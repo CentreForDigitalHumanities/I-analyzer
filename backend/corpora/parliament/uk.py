@@ -15,17 +15,15 @@ class ParliamentUK(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
-    es_settings = {
-        'index': {
-            'number_of_replicas': 0,
-            'analysis': {
-                'analyzer': {
-                    'non-stemmed': {
-                        'type': 'standard',
-                        'stopwords': '_english_',
-                    }
-                }
-            }
+    es_settings = current_app.config['PP_ES_SETTINGS']
+    es_settings['analysis']['filter'] = {
+        "stopwords": {
+          "type": "stop",
+          "stopwords": "_english_"
+        },
+        "stemmer": {
+            "type": "stemmer",
+            "language": "english"
         }
     }
 
@@ -96,24 +94,6 @@ class ParliamentUK(Parliament, CSVCorpus):
             multiple=True,
             transform=lambda x : ' '.join(x)
         )
-
-        # adjust the mapping:
-        # English analyzer, multifield with exact text and non-stemmed version
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets", 
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "english"
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "non-stemmed"
-                }
-            }
-        }
 
         self.speech_id.extractor = CSV(
             field='speech_id'
