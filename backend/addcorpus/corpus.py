@@ -555,6 +555,7 @@ class CSVCorpus(Corpus):
             filename = source[0]
         
         with open(filename, 'r') as f:
+            logger.info('Reading CSV file {}...'.format(filename))
             reader = csv.DictReader(f)
             document_id = None
             rows = []

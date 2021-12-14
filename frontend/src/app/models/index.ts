@@ -6,3 +6,4 @@ export * from './search-results';
 export * from './sort-event';
 export * from './user';
 export * from './user-role';
+export * from './visualization';

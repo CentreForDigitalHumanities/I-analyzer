@@ -1,9 +1,10 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel } from '../models/index';
+import { Corpus, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel, visualizationField } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
+
 
 @Component({
     selector: 'ia-visualization',
@@ -15,13 +16,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
 
-    public visualizedFields: CorpusField[];
+    public visualizedFields: visualizationField[];
 
     public asPercentage: boolean;
 
     public showTableButtons: boolean;
 
-    public visualizedField: CorpusField;
+    public visualizedField: visualizationField;
 
     public noResults: string = "Did not find data to visualize."
     public foundNoVisualsMessage: string = this.noResults;
@@ -32,6 +33,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public groupedVisualizations: SelectItemGroup[];
     public visualizationType: string;
     public freqtable: boolean = false;
+    public visualizationTypeDisplayNames = {
+        ngram: 'Common n-grams',
+        wordcloud: 'Word cloud',
+        timeline: 'Timeline',
+        term_frequency: 'Term frequency',
+        relatedwords: 'Related words',
+    };
 
     public aggResults: AggregateResult[];
     public relatedWordsGraph: {
@@ -42,7 +50,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
     public relatedWordsTable: {
         [word: string]: number
-    }
+    };
+
+
     public disableWordCloudLoadMore: boolean = false;
     public timeline: boolean = false;
     public isLoading: boolean = false;
@@ -65,13 +75,38 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         this.disableWordCloudLoadMore = false;
-        if (changes['corpus']){
-            this.visualizedFields = this.corpus && this.corpus.fields ?
-            this.corpus.fields.filter(field => field.visualizationType != undefined) : [];
-            this.visDropdown = this.visualizedFields.map(field => ({
-                label: field.displayName,
-                value: field.name
-            }));
+        if (changes['corpus']) {
+            this.visualizedFields = [];
+            if (this.corpus && this.corpus.fields) {
+                this.corpus.fields.filter(field => field.visualizationType).forEach(field => {
+                    if (typeof(field.visualizationType) === 'string') {
+                        // fields with one visualization type
+                        this.visualizedFields.push(field as visualizationField);
+                    } else {
+                        // fields with multiple visualization types
+                        field.visualizationType.forEach(visualizationType => {
+                            this.visualizedFields.push({
+                                name: field.name,
+                                displayName: `${field.displayName}: ${this.visualizationTypeDisplayNames[visualizationType]}`,
+                                visualizationType: visualizationType,
+                                visualizationSort: field.visualizationSort,
+                                searchFilter: field.searchFilter,
+                                multiFields: field.multiFields,
+                            });
+                        });
+                    }
+                });
+            }
+
+            this.visDropdown = [];
+            this.visualizedFields.forEach(field => {
+                if (field.visualizationType !== 'ngram' || this.queryModel.queryText) {
+                    this.visDropdown.push({
+                        label: field.displayName,
+                        value: {name: field.name, visualizationType: field.visualizationType}
+                    });
+                }
+            });
             if (this.corpus.word_models_present == true) {
                 this.visDropdown.push({
                     label: 'Related Words',
@@ -96,7 +131,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     checkResults() {
         if (this.resultsCount > 0) {
-            this.setVisualizedField(this.visualizedField.name);
+            this.setVisualizedField({
+                name: this.visualizedField.name,
+                visualizationType: this.visualizedField.visualizationType
+            });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         }
         else {
@@ -105,9 +143,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    setVisualizedField(selectedField: string) {
-        this.isLoading = true;
-        this.timeline = false;
+    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizationType: string}) {
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
@@ -124,7 +160,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
         } else {
-            this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => field.name === selectedField));
+            this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => 
+                field.name === selectedField.name && field.visualizationType === selectedField.visualizationType ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
         if (this.visualizedField.visualizationType === 'wordcloud') {
@@ -145,7 +182,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else {
+        } else if (this.visualizedField.visualizationType !== 'ngram') {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
