@@ -53,10 +53,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
 
 
-    public disableWordCloudLoadMore: boolean = false;
-    public timeline: boolean = false;
-    public isLoading: boolean = false;
-    private childComponentLoading: boolean = false;
+    public disableWordCloudLoadMore = false;
+    public timeline = false;
+    public ngram = false;
+    public isLoading = false;
+    private childComponentLoading = false;
 
     // aggregate search expects a size argument
     public defaultSize = 10000;
@@ -107,7 +108,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     });
                 }
             });
-            if (this.corpus.word_models_present == true) {
+            if (this.corpus.word_models_present === true) {
                 this.visDropdown.push({
                     label: 'Related Words',
                     value: 'relatedwords'
@@ -183,6 +184,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.isLoading = false;
                 });
         } else if (this.visualizedField.visualizationType !== 'ngram') {
+            this.ngram = true;
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
