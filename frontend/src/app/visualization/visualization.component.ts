@@ -35,10 +35,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public freqtable: boolean = false;
     public visualizationTypeDisplayNames = {
         ngram: 'Common n-grams',
-        wordcloud: 'Word cloud',
-        timeline: 'Timeline',
-        term_frequency: 'Term frequency',
-        relatedwords: 'Related words',
+        wordcloud: 'Wordcloud',
+        timeline: 'Timeline'
     };
 
     public aggResults: AggregateResult[];
