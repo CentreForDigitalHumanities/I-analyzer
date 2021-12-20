@@ -35,6 +35,8 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
 
     public subscription: Subscription;
 
+    public downloadUrl: string;
+
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.timelineData$.subscribe(results => {
             if (results !== undefined) {
@@ -80,17 +82,34 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
                 this.defaultSort = this.visualizedField.visualizationSort;
             }
             else {
-                this.defaultSort = "doc_count";      
+                this.defaultSort = "doc_count";
             }
             this.createTable();
         }
     }
 
     createTable() {
-        //set default sort to key for date-type fields, frequency for all others
-        
+        // set default sort to key for date-type fields, frequency for all others
         // calculate percentage data
-        let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
-        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }))
+        const total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
+        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
     }
+
+    parseTableData() {
+        const data = this.tableData.map( row => row.key + ',' + row.doc_count as string + ',' + row.doc_count_fraction as string);
+        data.unshift('key,frequency,percentage');
+        return data.join('\n');
+    }
+
+    downloadTable() {
+        const data = this.parseTableData();
+        const downloadLink = document.createElement('a');
+        downloadLink.href = 'data:text/csv;charset=utf-8,' + encodeURI(data);
+        console.log(downloadLink);
+        downloadLink.target = '_blank';
+        downloadLink.download = this.visualizedField.name + '.csv';
+        downloadLink.click();
+        downloadLink.remove();
+    }
+
 }
