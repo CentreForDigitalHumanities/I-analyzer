@@ -35,8 +35,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
 
     public subscription: Subscription;
 
-    public downloadUrl: string;
-
     constructor(private dataService: DataService) {
         this.subscription = this.dataService.timelineData$.subscribe(results => {
             if (results !== undefined) {
@@ -105,7 +103,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         const data = this.parseTableData();
         const downloadLink = document.createElement('a');
         downloadLink.href = 'data:text/csv;charset=utf-8,' + encodeURI(data);
-        console.log(downloadLink);
         downloadLink.target = '_blank';
         downloadLink.download = this.visualizedField.name + '.csv';
         downloadLink.click();
