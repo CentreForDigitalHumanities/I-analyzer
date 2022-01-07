@@ -632,6 +632,30 @@ def api_get_ngrams():
         })
     return response
 
+@api.route('get_aggregate_term_frequency', methods=['POST'])
+@login_required
+def api_get_aggregate_term_frequency():
+    if not request.json:
+        abort(400)
+    
+    results = analyze.get_aggregate_term_frequency(
+        request.json['es_query'],
+        request.json['corpus_name'],
+        request.json['aggregator']
+    )
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
+        })
+    return response
+
 @api.route('get_date_term_frequency', methods=['POST'])
 @login_required
 def api_get_date_term_frequency():

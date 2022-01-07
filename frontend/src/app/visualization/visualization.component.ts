@@ -188,7 +188,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType !== 'ngram' && this.visualizedField.visualizationType != 'search_term_frequency') {
+        } else if (this.visualizedField.visualizationType !== 'ngram') {
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
                 size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
@@ -196,10 +196,30 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
             }
             const aggregator = {name: this.visualizedField.name, size: size};
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-                this.aggResults = visual.aggregations[this.visualizedField.name];
-                this.isLoading = false;
-            });
+            if (this.frequencyMeasure == 'documents') {
+                this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
+                    this.aggResults = visual.aggregations[this.visualizedField.name];
+                    this.isLoading = false;
+                });
+            }
+            else {
+                this.searchService.aggregateTermFrequencySearch(this.corpus, this.queryModel, aggregator).then(visual => {
+                    if (visual.data.find(item => item.token_count)) {
+                        this.showTokenCountOption = true;
+                    }
+
+                    this.aggResults = visual.data.map(item => {
+                        return {
+                            'key': item.key,
+                            'doc_count': this.divideTokenFrequencyBy === 'documents' ?
+                                item.match_count / item.doc_count :
+                                item.match_count / item.token_count
+                        };
+                    }).sort((item1, item2) => item2.doc_count - item1.doc_count);
+                    
+                    this.isLoading = false;
+                });
+            }
         }
     }
 
@@ -229,7 +249,16 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                             this.foundNoVisualsMessage = this.noResults;
                         }
                     });
-            })
+            });
+        }
+    }
+
+    onFrequencyMeasureChange() {
+        if (this.visualizedField.visualizationType === 'term_frequency') {
+            this.setVisualizedField({
+                name: this.visualizedField.name,
+                visualizationType: this.visualizedField.visualizationType
+            });
         }
     }
 

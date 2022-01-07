@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+    AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 import { stringify } from 'querystring';
 
 @Injectable()
@@ -97,11 +97,20 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
+    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, aggregator: {name: string, size: number}): Promise<AggregateFrequencyResults> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getAggregateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            aggregator: aggregator,
+        });
+    }
+
     public async dateHistogramSearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
-    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<any> {
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateFrequencyResults> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,

@@ -99,6 +99,15 @@ export class ApiService extends Resource {
             subfield?: string, max_size_per_interval?: number },
         { success: boolean, message?: string, word_data?: NgramResults }>;
 
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/get_aggregate_term_frequency'
+    })
+    public getAggregateTermFrequency: ResourceMethod<
+        { es_query: EsQuery, corpus_name: string, aggregator: any},
+        { success: boolean, message?: string, data?: AggregateResult[] }>;
+
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/get_date_term_frequency'

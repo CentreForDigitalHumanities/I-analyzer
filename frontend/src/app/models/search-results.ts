@@ -20,6 +20,12 @@ export type AggregateQueryFeedback = {
     aggregations: AggregateData
 }
 
+export type AggregateFrequencyResults = {
+    success: boolean,
+    message?: string,
+    data?: AggregateResult[];
+}
+
 export type AggregateResult = {
     key: string,
     doc_count: number,

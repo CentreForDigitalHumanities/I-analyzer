@@ -17,7 +17,7 @@
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
     <div class="columns" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
         <div class="column" *ngIf="queryModel.queryText">
-            <p-dropdown [options]="[{label:'Count documents', value:'documents'},{label:'Count search term', value:'tokens'}]" [(ngModel)]="frequencyMeasure"></p-dropdown>
+            <p-dropdown [options]="[{label:'Count documents', value:'documents'},{label:'Count search term', value:'tokens'}]" [(ngModel)]="frequencyMeasure" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
         </div>
         <div class="column" *ngIf="frequencyMeasure == 'documents'">
             <div class="checkbox">
@@ -28,21 +28,20 @@
             </div>
         </div>
         <div class="column" *ngIf="showTokenCountOption">
-            <p-dropdown [options]="[{label:'Percentage of documents', value:'documents'},{label:'Percentage of words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy"></p-dropdown>
+            <p-dropdown [options]="[{label:'Percentage of documents', value:'documents'},{label:'Percentage of words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
         </div>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
-    		 [asPercent]="asPercentage">
+    		    [asPercent]="asPercentage">
     		</ia-term-frequency>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		[frequencyMeasure]="frequencyMeasure" [asPercent]="asPercentage" [divideTokenFrequencyBy]="divideTokenFrequencyBy"
-            (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
+    		    [frequencyMeasure]="frequencyMeasure" [asPercent]="asPercentage" [divideTokenFrequencyBy]="divideTokenFrequencyBy"
+                (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
-            <ia-search-term-frequency *ngSwitchCase=" 'search_term_frequency' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-search-term-frequency>
         </ng-container>
     </div>
     <ng-container *ngIf="freqtable">

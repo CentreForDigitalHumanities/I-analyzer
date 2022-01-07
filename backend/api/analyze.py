@@ -7,7 +7,9 @@ import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
 from collections import Counter
+from re import match
 from sklearn.feature_extraction.text import CountVectorizer
+from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
 from datetime import datetime, timedelta
@@ -350,12 +352,11 @@ def get_time_bins_by_interval(es_query, corpus, time_interval):
 
     return bins
 
-def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_interval):
-    client = elasticsearch(corpus)
-
-    # highlighting specifications (used for counting hits)
+def extract_data_for_term_frequency(corpus):
     corpus_class = load_corpus(corpus)
     core_fields = list(filter(lambda field: field.search_field_core, corpus_class.fields))
+
+
     highlight_fields = dict()
     for field in core_fields:
         mapping = field.es_mapping
@@ -370,6 +371,30 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         'number_of_fragments': 100,
         'fields':  highlight_fields,
     }
+
+    has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
+    include_token_count = all(has_length_count(field) for field in core_fields)
+
+    if include_token_count:
+        token_count_aggregators = {
+            'token_count_' + field.name: {
+                'sum': {
+                    'field': field.name + '.length'
+                }
+            }
+            for field in core_fields
+        }
+    else:
+        token_count_aggregators = None
+
+    return highlight_specs, token_count_aggregators
+
+
+def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_interval):
+    client = elasticsearch(corpus)
+
+    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus)
 
     #count number of matches per bin
 
@@ -411,9 +436,6 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
 
     # get total document count and (if available) token count per time bin
 
-    has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
-    include_token_count = all(has_length_count(field) for field in core_fields)
-
     query = deepcopy(es_query)
 
     query['query']['bool'].pop('must')
@@ -431,15 +453,8 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         }
     }
 
-    if include_token_count:
-        query['aggs']['time_intervals']['aggs'] = {
-            'token_count_' + field.name: {
-                'sum': {
-                    'field': field.name + '.length'
-                }
-            }
-            for field in core_fields
-        }
+    if token_count_aggregators:
+        query['aggs']['time_intervals']['aggs'] = token_count_aggregators
 
     agg_results = client.search(
         index=corpus,
@@ -450,11 +465,11 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
     buckets = agg_results['aggregations']['time_intervals']['buckets']
     doc_counts = [bucket['doc_count'] for bucket in buckets]
     
-    if include_token_count:
+    if token_count_aggregators:
         token_counts = [
             int(sum(
-                bucket['token_count_' + field.name]['value']
-                for field in core_fields
+                bucket[counter]['value']
+                for counter in bucket if counter.startswith('token_count')
             ))
             for bucket in buckets
         ]
@@ -462,3 +477,89 @@ def frequency_by_time_interval(es_query, corpus, date_field, bins, max_size_per_
         token_counts = None
 
     return match_counts, doc_counts, token_counts
+
+def get_aggregate_term_frequency(es_query, corpus, aggregator):
+    client = elasticsearch(corpus)
+
+    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus)
+
+    # get terms in relevant field
+
+    agg_query = deepcopy(es_query)
+    agg_query['aggs'] = {
+        'term_frequencies': {
+            'terms': {
+                'field': aggregator['name']
+            }
+        }
+    }
+
+    agg_results = client.search(
+        index = corpus,
+        body = agg_query
+    )
+
+    buckets = agg_results['aggregations']['term_frequencies']['buckets']
+
+    def match_count(bucket):
+        bucket_query = deepcopy(es_query)
+        bucket_query['query']['bool']['filter'].append(
+            { 'term': { aggregator['name']: bucket['key'] }}
+        )
+
+        bucket_query['highlight'] = highlight_specs
+
+        bucket_results = client.search(
+            index = corpus,
+            body = bucket_query,
+        )
+
+        hits = (hit for hit in bucket_results['hits']['hits'] if 'highlight' in hit)
+        total_matches = (sum(len(hit['highlight'][key])
+            for hit in hits for key in hit['highlight'].keys()
+        ))
+
+        return total_matches
+
+    match_counts = {bucket['key']: match_count(bucket) for bucket in buckets}
+
+    # get total document count and (if available) token count per term
+
+    agg_query['query']['bool'].pop('must') # remove search term filter
+
+    if token_count_aggregators:
+        agg_query['aggs']['term_frequencies']['aggs'] = token_count_aggregators
+
+    total_doc_results = client.search(
+        index=corpus,
+        body = agg_query,
+    )
+
+    total_buckets = total_doc_results['aggregations']['term_frequencies']['buckets']
+    doc_counts = {bucket['key']: bucket['doc_count'] for bucket in total_buckets}
+
+    if token_count_aggregators:
+        token_counts = {
+            bucket['key'] : int(sum(
+                bucket[counter]['value']
+                for counter in bucket if counter.startswith('token_count')
+            ))
+            for bucket in total_buckets
+        }
+    else:
+        token_counts = None
+    
+    all_terms = set(match_counts.keys()).intersection(set(doc_counts.keys()))
+
+    results = [
+        {
+            'key': term,
+            'match_count': match_counts[term],
+            'doc_count': doc_counts[term],
+            'token_count': token_counts[term],
+        }
+        for term in all_terms
+    ]
+
+    return results

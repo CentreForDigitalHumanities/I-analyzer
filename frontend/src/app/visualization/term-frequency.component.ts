@@ -34,7 +34,8 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.calculateCanvas();
         }
         // redraw only if searchData changed
-        if (changes['searchData'].currentValue && changes['searchData'].currentValue.length
+        if (changes['searchData']
+            && changes['searchData'].currentValue && changes['searchData'].currentValue.length
             && changes['searchData'].previousValue !== changes['searchData'].currentValue) {
             this.prepareTermFrequency();
             this.setupYScale();
