@@ -12,6 +12,7 @@ import { NgxMdModule } from 'ngx-md';
 import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
@@ -197,6 +198,7 @@ export const imports: any[] = [
     ResourceModule.forRoot({
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
     }),
+    RadioButtonModule,
     RouterModule.forRoot(appRoutes),
     // SharedModule,
     SliderModule,

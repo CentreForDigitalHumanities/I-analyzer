@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table'
+import { TableModule } from 'primeng/table';
 
 import { DataService } from '../services/index';
 import { FreqtableComponent } from './freqtable.component';

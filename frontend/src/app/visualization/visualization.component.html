@@ -16,19 +16,30 @@
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
     <div class="columns" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
+        Frequency
         <div class="column" *ngIf="queryModel.queryText">
-            <p-dropdown [options]="[{label:'Count documents', value:'documents'},{label:'Count search term', value:'tokens'}]" [(ngModel)]="frequencyMeasure" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
-        </div>
-        <div class="column" *ngIf="frequencyMeasure == 'documents'">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
-                    as Percentage
+            <div class="control" (change)="onFrequencyMeasureChange()">
+                <label class="radio">
+                    <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='documents'" checked>
+                    Documents
+                </label>
+                <label class="radio">
+                    <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='tokens'">
+                    Terms
                 </label>
             </div>
         </div>
-        <div class="column" *ngIf="frequencyMeasure == 'tokens' && showTokenCountOption">
-            <p-dropdown [options]="[{label:'Matches per document', value:'documents'},{label:'Matches per 100 words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
+        <div class="column">
+            <div class="control" (change)="onDivisorChange()">
+                <label class="radio">
+                    <input type="radio" name="divisor" (click)="divisor='raw'" checked>
+                    Raw
+                </label>
+                <label class="radio">
+                    <input type="radio" name="divisor" (click)="divisor='percent'">
+                    Percentage
+                </label>
+            </div>
         </div>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">

@@ -71,8 +71,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     constructor(private searchService: SearchService, private apiService: ApiService) {
     }
 
-    ngDoCheck(){
-        if (this.isLoading != this.childComponentLoading ) {
+    ngDoCheck() {
+        if (this.isLoading !== this.childComponentLoading ) {
             this.isLoading = this.childComponentLoading;
         }
     }
@@ -101,7 +101,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     }
                 });
             }
-
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
                 const requires_search_term = ['ngram', 'search_term_frequency']
@@ -113,7 +112,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     });
                 }
             });
-            if (this.corpus.word_models_present == true) {
+            if (this.corpus.word_models_present === true) {
                 this.visDropdown.push({
                     label: 'Related Words',
                     value: 'relatedwords'
@@ -142,8 +141,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 visualizationType: this.visualizedField.visualizationType
             });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
-        }
-        else {
+        } else {
             this.aggResults = [];
             this.foundNoVisualsMessage = this.noResults;
         }
@@ -153,7 +151,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
-                if (result['success']===true) {
+                if (result['success'] === true) {
                     this.tasksToCancel = [];
                 }
             });
@@ -196,13 +194,12 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
             }
             const aggregator = {name: this.visualizedField.name, size: size};
-            if (this.frequencyMeasure == 'documents') {
+            if (this.frequencyMeasure === 'documents') {
                 this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
                     this.aggResults = visual.aggregations[this.visualizedField.name];
                     this.isLoading = false;
                 });
-            }
-            else {
+            } else {
                 this.searchService.aggregateTermFrequencySearch(this.corpus, this.queryModel, aggregator).then(visual => {
                     this.showTokenCountOption = visual.data.find(item => item.token_count) !== undefined;
 
@@ -214,7 +211,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                                 (100 * item.match_count / item.token_count)
                         };
                     }).sort((item1, item2) => item2.doc_count - item1.doc_count);
-                    
                     this.isLoading = false;
                 });
             }
