@@ -27,8 +27,8 @@
                 </label>
             </div>
         </div>
-        <div class="column" *ngIf="showTokenCountOption">
-            <p-dropdown [options]="[{label:'Percentage of documents', value:'documents'},{label:'Percentage of words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
+        <div class="column" *ngIf="frequencyMeasure == 'tokens' && showTokenCountOption">
+            <p-dropdown [options]="[{label:'Matches per document', value:'documents'},{label:'Matches per 100 words', value:'tokens'}]" [(ngModel)]="divideTokenFrequencyBy" (onChange)="onFrequencyMeasureChange()"></p-dropdown>
         </div>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">

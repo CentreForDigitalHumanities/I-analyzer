@@ -73,10 +73,22 @@ export class BarChartComponent {
         * - change axis label and ticks
         */
 
+
         this.yDomain = percent ? [0, this.yMax / this.totalCount] : [0, this.yMax];
         this.yScale.domain(this.yDomain);
 
-        const tickFormat = percent ? d3Format.format('.0%') : d3Format.format('d');
+        const fraction = this.yDomain[1] < 1;
+        let tickFormat;
+        if (percent) {
+            tickFormat = d3Format.format('.0%');
+        } else if (fraction) {
+            const p = d3Format.precisionRound(0.001, this.yMax);
+            tickFormat = d3Format.format('.' + p + 'r');
+        } else {
+            tickFormat = d3Format.format('d');
+        }
+
+
         this.yAxisClass = d3Axis.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat);
         this.yAxis.call(this.yAxisClass);
 

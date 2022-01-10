@@ -204,16 +204,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             }
             else {
                 this.searchService.aggregateTermFrequencySearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                    if (visual.data.find(item => item.token_count)) {
-                        this.showTokenCountOption = true;
-                    }
+                    this.showTokenCountOption = visual.data.find(item => item.token_count) !== undefined;
 
                     this.aggResults = visual.data.map(item => {
                         return {
                             'key': item.key,
                             'doc_count': this.divideTokenFrequencyBy === 'documents' ?
-                                item.match_count / item.doc_count :
-                                item.match_count / item.token_count
+                                (item.match_count / item.doc_count) :
+                                (100 * item.match_count / item.token_count)
                         };
                     }).sort((item1, item2) => item2.doc_count - item1.doc_count);
                     

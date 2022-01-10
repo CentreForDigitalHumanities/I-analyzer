@@ -153,9 +153,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 ({date: cat.date, doc_count: 100 * cat.match_count / cat.token_count}));
         } else {
             this.selectedData = this.rawData.map(cat =>
-                ({date: cat.date, doc_count: 100 * cat.match_count / cat.doc_count}));
+                ({date: cat.date, doc_count: cat.match_count / cat.doc_count}));
         }
-        console.log(this.selectedData);
     }
 
     drawChartData() {
