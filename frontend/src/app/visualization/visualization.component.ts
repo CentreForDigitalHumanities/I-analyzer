@@ -19,23 +19,22 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public visualizedFields: visualizationField[];
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
-    public asPercentage: boolean;
-    public divideTokenFrequencyBy: 'documents'|'tokens' = 'documents';
+    public normalizer: string;
     public showTokenCountOption: boolean;
 
     public showTableButtons: boolean;
 
     public visualizedField: visualizationField;
 
-    public noResults: string = "Did not find data to visualize."
+    public noResults = 'Did not find data to visualize.';
     public foundNoVisualsMessage: string = this.noResults;
-    public errorMessage: string = '';
+    public errorMessage = '';
     public noVisualizations: boolean;
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
     public visualizationType: string;
-    public freqtable: boolean = false;
+    public freqtable = false;
     public visualizationTypeDisplayNames = {
         ngram: 'Common n-grams',
         wordcloud: 'Word cloud',
@@ -57,10 +56,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
 
 
-    public disableWordCloudLoadMore: boolean = false;
-    public timeline: boolean = false;
-    public isLoading: boolean = false;
-    private childComponentLoading: boolean = false;
+    public disableWordCloudLoadMore = false;
+    public timeline = false;
+    public isLoading = false;
+    private childComponentLoading = false;
 
     // aggregate search expects a size argument
     public defaultSize = 10000;
@@ -202,12 +201,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             } else {
                 this.searchService.aggregateTermFrequencySearch(this.corpus, this.queryModel, aggregator).then(visual => {
                     this.showTokenCountOption = visual.data.find(item => item.token_count) !== undefined;
-
                     this.aggResults = visual.data.map(item => {
                         return {
                             'key': item.key,
-                            'doc_count': this.divideTokenFrequencyBy === 'documents' ?
-                                (item.match_count / item.doc_count) :
+                            'doc_count': this.normalizer === 'raw' ? item.match_count :
+                                this.normalizer === 'documents' ? (item.match_count / item.doc_count) :
                                 (100 * item.match_count / item.token_count)
                         };
                     }).sort((item1, item2) => item2.doc_count - item1.doc_count);

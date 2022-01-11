@@ -15,8 +15,8 @@
 </div>
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
+    <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
     <div class="columns" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
-        Frequency
         <div class="column" *ngIf="queryModel.queryText">
             <div class="control" (change)="onFrequencyMeasureChange()">
                 <label class="radio">
@@ -30,25 +30,35 @@
             </div>
         </div>
         <div class="column">
-            <div class="control" (change)="onDivisorChange()">
+            <div class="control">
                 <label class="radio">
-                    <input type="radio" name="divisor" (click)="divisor='raw'" checked>
+                    <input type="radio" name="normalizer" (click)="normalizer='raw'" checked>
                     Raw
                 </label>
-                <label class="radio">
-                    <input type="radio" name="divisor" (click)="divisor='percent'">
+                <label *ngIf="frequencyMeasure=='documents'" class="radio">
+                    <input type="radio" name="normalizer" (click)="normalizer='percent'">
                     Percentage
                 </label>
+                <ng-container *ngIf="frequencyMeasure=='tokens'">
+                    <label class="radio">
+                        <input type="radio" name="normalizer" (click)="normalizer='documents'">
+                        Normalize: #documents
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="normalizer" (click)="normalizer='terms'">
+                        Normalize: #terms
+                    </label>
+                </ng-container>
             </div>
         </div>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
-    		    [asPercent]="asPercentage">
+    		    [normalizer]="normalizer">
     		</ia-term-frequency>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [frequencyMeasure]="frequencyMeasure" [asPercent]="asPercentage" [divideTokenFrequencyBy]="divideTokenFrequencyBy"
+    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
@@ -57,11 +67,11 @@
     </div>
     <ng-container *ngIf="freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
-        	<ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+        	<ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
-            <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+            <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
-            <ia-freqtable *ngSwitchDefault [searchData]="aggResults" [visualizedField]="visualizedField" [asPercent]="asPercentage">
+            <ia-freqtable *ngSwitchDefault [searchData]="aggResults" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
         </ng-container>
     </ng-container>

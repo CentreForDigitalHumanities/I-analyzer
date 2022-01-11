@@ -18,7 +18,7 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
     @ViewChild('termfrequency', { static: true }) private termFreqContainer: ElementRef;
     @Input() searchData: AggregateResult[];
     @Input() visualizedField;
-    @Input() asPercent = false;
+    @Input() normalizer: string;
 
     private xBarWidth: number;
     private xBarHalf: number;
@@ -40,13 +40,13 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.prepareTermFrequency();
             this.setupYScale();
             this.createChart(this.visualizedField.displayName, this.searchData.length);
-            this.rescaleY(this.asPercent);
+            this.rescaleY(this.normalizer === 'percent');
             this.setupBrushBehaviour();
             this.drawChartData();
             this.setupTooltip();
-        } else if (changes['asPercent'] !== undefined) {
-            if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
-                this.rescaleY(this.asPercent);
+        } else if (changes['normalizer'] !== undefined) {
+            if (changes['normalizer'].previousValue !== changes['normalizer'].currentValue) {
+                this.rescaleY(this.normalizer === 'percent');
             }
         }
     }

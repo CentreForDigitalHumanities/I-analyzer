@@ -26,8 +26,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    @Input() asPercent = false;
-    @Input() divideTokenFrequencyBy: 'documents'|'tokens';
+    @Input() normalizer: 'raw' | 'percent' | 'documents'|'tokens';
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
@@ -67,15 +66,15 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.prepareTimeline(onlyChangeFrequencyDenominator).then(() => {
             this.setupYScale();
             this.createChart(this.visualizedField.displayName);
-            this.rescaleY(this.asPercent);
+            this.rescaleY(this.normalizer === 'percent');
             this.drawChartData();
             this.setupBrushBehaviour();
         });
 
-        // listen for changes in 'asPercent'
-        if (changes['asPercent'] !== undefined) {
-            if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
-                this.rescaleY(this.asPercent);
+        // listen for changes in 'normalizer'
+        if (changes['normalizer'] !== undefined) {
+            if (changes['normalizer'].previousValue !== changes['normalizer'].currentValue) {
+                this.rescaleY(this.normalizer === 'percent');
             }
         }
     }
@@ -148,10 +147,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     updateTimeDataDenominator() {
         // update values from stored rawData instead of making a new elasticsearch query
-        if (this.divideTokenFrequencyBy === 'tokens') {
+        if (this.normalizer === 'tokens') {
             this.selectedData = this.rawData.map(cat =>
                 ({date: cat.date, doc_count: 100 * cat.match_count / cat.token_count}));
-        } else {
+        } if (this.normalizer === 'documents') {
             this.selectedData = this.rawData.map(cat =>
                 ({date: cat.date, doc_count: cat.match_count / cat.doc_count}));
         }
@@ -212,7 +211,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.prepareTimeline().then(() => {
                 this.setupYScale();
                 this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
-                this.rescaleY(this.asPercent);
+                this.rescaleY(this.normalizer === 'percent');
                 this.drawChartData();
                 this.rescaleX();
             });
@@ -226,7 +225,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.setDateRange();
             this.setupYScale();
             this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
-            this.rescaleY(this.asPercent);
+            this.rescaleY(this.normalizer === 'percent');
             this.rescaleX();
             this.drawChartData();
             this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
