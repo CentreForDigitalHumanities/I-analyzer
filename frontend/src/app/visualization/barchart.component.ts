@@ -52,7 +52,7 @@ export class BarChartComponent {
          adjust the y range
          */
         this.yDomain = [0, this.yMax];
-        this.yTicks = this.yDomain[1] > 10 ? 10 : this.yMax;
+        this.yTicks = this.yDomain[1] > 10 || this.yDomain[1] < 1 ? 10 : this.yMax;
         this.yScale.domain(this.yDomain).range([this.height, 0]);
     }
 
@@ -82,7 +82,7 @@ export class BarChartComponent {
         if (percent) {
             tickFormat = d3Format.format('.0%');
         } else if (fraction) {
-            const p = d3Format.precisionRound(0.001, this.yMax);
+            const p = d3Format.precisionRound(this.yMax / this.yTicks, this.yMax);
             tickFormat = d3Format.format('.' + p + 'r');
         } else {
             tickFormat = d3Format.format('d');
