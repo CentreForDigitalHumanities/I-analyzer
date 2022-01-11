@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="column">
-            <div class="control">
+            <div class="control" (change)="onFrequencyMeasureChange()">
                 <label class="radio">
                     <input type="radio" name="normalizer" (click)="normalizer='raw'" checked>
                     Raw

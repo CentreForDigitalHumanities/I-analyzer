@@ -19,7 +19,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public visualizedFields: visualizationField[];
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
-    public normalizer: string;
+    public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
     public showTokenCountOption: boolean;
 
     public showTableButtons: boolean;
@@ -204,7 +204,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.aggResults = visual.data.map(item => {
                         return {
                             'key': item.key,
-                            'doc_count': this.normalizer === 'raw' ? item.match_count :
+                            'doc_count': (this.normalizer === 'raw') ? item.match_count :
                                 this.normalizer === 'documents' ? (item.match_count / item.doc_count) :
                                 (100 * item.match_count / item.token_count)
                         };

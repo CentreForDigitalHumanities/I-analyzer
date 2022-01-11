@@ -26,7 +26,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    @Input() normalizer: 'raw' | 'percent' | 'documents'|'tokens';
+    @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
@@ -47,8 +47,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        const onlyChangeFrequencyDenominator = Boolean(
-            this.rawData && Object.keys(changes).length === 1 && changes.divideTokenFrequencyBy
+        const onlyChangeNormalizer = Boolean(
+            this.rawData && Object.keys(changes).length === 1 && changes.normalizer
         );
 
         if (this.chartElement === undefined) {
@@ -63,7 +63,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale = d3Scale.scaleTime()
             .range([0, this.width])
             .clamp(true);
-        this.prepareTimeline(onlyChangeFrequencyDenominator).then(() => {
+        this.prepareTimeline(onlyChangeNormalizer).then(() => {
             this.setupYScale();
             this.createChart(this.visualizedField.displayName);
             this.rescaleY(this.normalizer === 'percent');
@@ -79,10 +79,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    async prepareTimeline(onlyChangeFrequencyDenominator = false) {
+    async prepareTimeline(onlyChangeNormalizer = false) {
         this.isLoading.emit(true);
-        if (onlyChangeFrequencyDenominator) {
-            this.updateTimeDataDenominator();
+        if (onlyChangeNormalizer) {
+            this.updateTimeDateNormalizer();
         } else {
             await this.requestTimeData();
         }
@@ -136,22 +136,27 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 } else {
                     this.totalTokenCountAvailable.emit(false);
                 }
-                return data.map(cat =>
-                    ({date: cat.date, doc_count: cat.match_count / cat.doc_count})
-                );
+                return this.normalizeData(data);
             }).catch();
         }
 
         this.selectedData = await dataPromise;
     }
 
-    updateTimeDataDenominator() {
+    updateTimeDateNormalizer() {
         // update values from stored rawData instead of making a new elasticsearch query
-        if (this.normalizer === 'tokens') {
-            this.selectedData = this.rawData.map(cat =>
+        this.selectedData = this.normalizeData(this.rawData);
+    }
+
+    normalizeData(data): {date: Date, doc_count: number}[] {
+        if (this.normalizer === 'raw') {
+            return data.map(cat =>
+                ({date: cat.date, doc_count: cat.match_count}));
+        } else if (this.normalizer === 'terms') {
+            return data.map(cat =>
                 ({date: cat.date, doc_count: 100 * cat.match_count / cat.token_count}));
-        } if (this.normalizer === 'documents') {
-            this.selectedData = this.rawData.map(cat =>
+        } else if (this.normalizer === 'documents') {
+            return data.map(cat =>
                 ({date: cat.date, doc_count: cat.match_count / cat.doc_count}));
         }
     }
