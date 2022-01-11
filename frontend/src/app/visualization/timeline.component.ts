@@ -48,7 +48,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     ngOnChanges(changes: SimpleChanges) {
         const onlyChangeNormalizer = Boolean(
-            this.rawData && Object.keys(changes).length === 1 && changes.normalizer
+            this.frequencyMeasure === 'tokens' && this.rawData && Object.keys(changes).length === 1 && changes.normalizer
         );
 
         if (this.chartElement === undefined) {
