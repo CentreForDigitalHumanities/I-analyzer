@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 

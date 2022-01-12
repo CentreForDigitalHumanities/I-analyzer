@@ -14,10 +14,11 @@
 	</button>
 </div>
 
-<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngramGraph || timeline); else noVisualsMessage">
+<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
     <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
     <div class="columns" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
         <div class="column" *ngIf="queryModel.queryText">
+            <h5 class="title is-5">Frequency of</h5>
             <div class="control" (change)="onFrequencyMeasureChange()">
                 <label class="radio" iaBalloon="count the number of documents">
                     <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='documents'" checked>
@@ -31,26 +32,27 @@
         </div>
         <div class="column">
             <div class="control" (change)="onFrequencyMeasureChange()">
+                <h5 class="title is-5">Normalizer</h5>
                 <label class="radio"
-                    iaBalloon="display the (absolute) number of {{frequencyMeasure == 'documents' ? 'documents' : 'observations of the search term'}}">
+                    iaBalloon="Number of {{frequencyMeasure == 'documents' ? 'documents' : 'observations of the search term'}}">
                     <input type="radio" name="normalizer" (click)="normalizer='raw'" checked>
                     Raw
                 </label>
                 <label *ngIf="frequencyMeasure=='documents'" class="radio"
-                    iaBalloon="display the count as a percentage of the total number of observations in the graph">
+                    iaBalloon="Divide by the total amount of documents">
                     <input type="radio" name="normalizer" (click)="normalizer='percent'">
                     Percentage
                 </label>
                 <ng-container *ngIf="frequencyMeasure=='tokens'">
                     <label class="radio"
-                        iaBalloon="display the observations of the search term, divided by the total documents for that {{visualizedField.name}}">
+                        iaBalloon="Divide by the total documents in each bin">
                         <input type="radio" name="normalizer" (click)="normalizer='documents'">
-                        Normalize: #documents
+                        Documents
                     </label>
                     <label class="radio"
-                        iaBalloon="display the observations of the saerch term, divided by the total word count for that {{visualizedField.name}}">
+                        iaBalloon="Divide by the total number of terms in each bin">
                         <input type="radio" name="normalizer" (click)="normalizer='terms'">
-                        Normalize: #terms
+                        Terms
                     </label>
                 </ng-container>
             </div>
