@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {saveAs} from 'file-saver';
 
 import { DataService } from '../services/index';
 
@@ -19,7 +20,8 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         key?: string,
         date?: Date,
         doc_count?: number,
-        similarity?: number
+        similarity?: number,
+        doc_count_fraction?: number
     }[];
     @Input() public visualizedField;
     @Input() public normalizer: string;
@@ -28,9 +30,7 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     public defaultSortOrder = '-1';
     public rightColumnName: string;
 
-    public tableData: FreqtableComponent['searchData'] & {
-        doc_count_fraction: number
-    }[];
+    public tableData: FreqtableComponent['searchData'];
 
     public subscription: Subscription;
 
@@ -41,13 +41,13 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
                 switch(results.timeInterval) {
                     case 'year':
                         format = "YYYY";
-                        break
+                        break;
                     case 'month':
                         format = "MMMM YYYY";
-                        break
+                        break;
                     default:
                         format = "YYYY-MM-DD";
-                        break
+                        break;
                 }
                 this.searchData = results.data;
                 this.searchData.map(d => d.key = moment(d.date).format(format));
@@ -75,7 +75,12 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
             // replace with string representation, contained in 'key_as_string' field
             if ("visualizationSort" in this.visualizedField) {
                 this.defaultSort = this.visualizedField.visualizationSort;
+<<<<<<< HEAD
             } else {
+=======
+            }
+            else {
+>>>>>>> develop
                 this.defaultSort = "doc_count";
             }
             this.createTable();
@@ -83,10 +88,28 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     }
 
     createTable() {
-        //set default sort to key for date-type fields, frequency for all others
-        
+        // set default sort to key for date-type fields, frequency for all others
         // calculate percentage data
+<<<<<<< HEAD
         let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
         this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
+=======
+        const total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
+        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
     }
+
+    parseTableData() {
+        const data = this.tableData.map(row => `${row.key},${row.doc_count},${row.doc_count_fraction}\n`);
+        data.unshift('key,frequency,percentage\n');
+        return data;
+>>>>>>> develop
+    }
+
+    downloadTable() {
+        const data = this.parseTableData();
+        const blob = new Blob(data, { type: `text/csv;charset=utf-8`, endings: 'native' });
+        const filename = this.visualizedField.name + '.csv';
+        saveAs(blob, filename);
+    }
+
 }

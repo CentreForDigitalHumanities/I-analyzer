@@ -18,4 +18,12 @@
             <td *ngIf="asPercent">{{entry.doc_count_fraction | percent:'1.0-2'}}</td>
         </tr>
     </ng-template>
+    <ng-template pTemplate="footer">
+        <a class="button" (click)="downloadTable()">
+            <span class="icon is-small">
+                <i class="fa fa-download"></i>
+            </span>
+            <span>Download table data</span>
+        </a>
+    </ng-template>
 </p-table>
