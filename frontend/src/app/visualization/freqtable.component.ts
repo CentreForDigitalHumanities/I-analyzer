@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import {saveAs} from 'file-saver';
+import { saveAs } from 'file-saver';
 
 import { DataService } from '../services/index';
 
@@ -75,12 +75,7 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
             // replace with string representation, contained in 'key_as_string' field
             if ("visualizationSort" in this.visualizedField) {
                 this.defaultSort = this.visualizedField.visualizationSort;
-<<<<<<< HEAD
             } else {
-=======
-            }
-            else {
->>>>>>> develop
                 this.defaultSort = "doc_count";
             }
             this.createTable();
@@ -90,10 +85,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     createTable() {
         // set default sort to key for date-type fields, frequency for all others
         // calculate percentage data
-<<<<<<< HEAD
-        let total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
-        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
-=======
         const total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
         this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
     }
@@ -102,7 +93,6 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         const data = this.tableData.map(row => `${row.key},${row.doc_count},${row.doc_count_fraction}\n`);
         data.unshift('key,frequency,percentage\n');
         return data;
->>>>>>> develop
     }
 
     downloadTable() {
