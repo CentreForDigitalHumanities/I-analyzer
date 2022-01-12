@@ -49,7 +49,7 @@
                 <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
                 iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
                 <div class="control">
-                    <ia-dropdown [options]="maxDocumentsOptions" [value]="maxDocumentsOptions[1]" optionLabel="label" (onChange)="onNgramOptionChange('max_size', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="maxDocumentsOptions" [value]="maxDocumentsOptions[1]" optionLabel="label" (onChange)="onOptionChange('max_size', $event)"></ia-dropdown>
                 </div>
             </div>
         </div>
