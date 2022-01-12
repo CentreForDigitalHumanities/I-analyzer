@@ -3,6 +3,7 @@ import { Subscription }   from 'rxjs';
 
 import * as _ from "lodash";
 import * as moment from 'moment';
+import {saveAs} from 'file-saver';
 
 import { DataService } from '../services/index';
 import { AggregateResult, WordSimilarity } from '../models/index';
@@ -20,7 +21,8 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
         key?: string,
         date?: Date,
         doc_count?: number,
-        similarity?: number
+        similarity?: number,
+        doc_count_fraction?: number
     }[];
     @Input() public visualizedField;
     @Input() public asPercent: boolean;
@@ -29,9 +31,7 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     public defaultSortOrder: string = "-1"
     public rightColumnName: string;
 
-    public tableData: FreqtableComponent['searchData'] & {
-        doc_count_fraction: number
-    }[];
+    public tableData: FreqtableComponent['searchData'];
 
     public subscription: Subscription;
 
@@ -42,13 +42,13 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
                 switch(results.timeInterval) {
                     case 'year':
                         format = "YYYY";
-                        break
+                        break;
                     case 'month':
                         format = "MMMM YYYY";
-                        break
+                        break;
                     default:
                         format = "YYYY-MM-DD";
-                        break
+                        break;
                 }
                 this.searchData = results.data;
                 this.searchData.map(d => d.key = moment(d.date).format(format));
@@ -94,19 +94,16 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     }
 
     parseTableData() {
-        const data = this.tableData.map( row => row.key + ',' + row.doc_count as string + ',' + row.doc_count_fraction as string);
-        data.unshift('key,frequency,percentage');
-        return data.join('\n');
+        const data = this.tableData.map(row => `${row.key},${row.doc_count},${row.doc_count_fraction}\n`);
+        data.unshift('key,frequency,percentage\n');
+        return data;
     }
 
     downloadTable() {
         const data = this.parseTableData();
-        const downloadLink = document.createElement('a');
-        downloadLink.href = 'data:text/csv;charset=utf-8,' + encodeURI(data);
-        downloadLink.target = '_blank';
-        downloadLink.download = this.visualizedField.name + '.csv';
-        downloadLink.click();
-        downloadLink.remove();
+        const blob = new Blob(data, { type: `text/csv;charset=utf-8`, endings: 'native' });
+        const filename = this.visualizedField.name + '.csv';
+        saveAs(blob, filename);
     }
 
 }
