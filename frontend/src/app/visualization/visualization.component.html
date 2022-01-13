@@ -18,8 +18,8 @@
     <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
     <div class="columns" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram' && visualizedField.visualizationType!='search_term_frequency') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
         <div class="column" *ngIf="queryModel.queryText">
-            <h5 class="title is-5">Frequency of</h5>
             <div class="control" (change)="onFrequencyMeasureChange()">
+                <label class="label">Frequency of</label>
                 <label class="radio" iaBalloon="count the number of documents">
                     <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='documents'" checked>
                     Documents
@@ -32,11 +32,11 @@
         </div>
         <div class="column">
             <div class="control" (change)="onFrequencyMeasureChange()">
-                <h5 class="title is-5">Normalizer</h5>
+                <label class="label">Normalization</label>
                 <label class="radio"
                     iaBalloon="Number of {{frequencyMeasure == 'documents' ? 'documents' : 'observations of the search term'}}">
                     <input type="radio" name="normalizer" (click)="normalizer='raw'" checked>
-                    Raw
+                    None
                 </label>
                 <label *ngIf="frequencyMeasure=='documents'" class="radio"
                     iaBalloon="Divide by the total amount of documents">
@@ -50,7 +50,7 @@
                         Documents
                     </label>
                     <label class="radio"
-                        iaBalloon="Divide by the total number of terms in each bin">
+                        iaBalloon="Divide by the total word count in each bin">
                         <input type="radio" name="normalizer" (click)="normalizer='terms'">
                         Terms
                     </label>
