@@ -10,6 +10,7 @@ import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
     AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 import { stringify } from 'querystring';
+import { formatDate } from '@angular/common';
 
 @Injectable()
 export class SearchService {
@@ -97,12 +98,13 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, aggregator: {name: string, size: number}): Promise<AggregateFrequencyResults> {
+    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getAggregateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
-            aggregator: aggregator,
+            field_name: fieldName,
+            field_value: fieldValue,
         });
     }
 
@@ -110,13 +112,14 @@ export class SearchService {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
-    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateFrequencyResults> {
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, start_date: Date, end_date?: Date): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
             field: fieldName,
-            time_interval: timeInterval,
+            start_date: start_date.toISOString().slice(0, 10),
+            end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
         });
     }
 

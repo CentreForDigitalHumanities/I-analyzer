@@ -105,16 +105,16 @@ export class ApiService extends Resource {
         path: '/get_aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, aggregator: any},
-        { success: boolean, message?: string, data?: AggregateResult[] }>;
+        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, field_value: string|number},
+        { success: boolean, message?: string, data?: AggregateResult }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/get_date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field: string, time_interval: string},
-        { success: boolean, message?: string, data?: AggregateResult[] }>;
+        { es_query: EsQuery, corpus_name: string, field: string, start_date: string, end_date: string },
+        { success: boolean, message?: string, data?: AggregateResult }>;
 
     @ResourceAction({
         path: '/corpus'

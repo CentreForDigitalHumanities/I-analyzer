@@ -1,0 +1,42 @@
+<div class="columns">
+    <div class="column" *ngIf="queryText">
+        <div class="control" (change)="onChange()">
+            <label class="label">Frequency of</label>
+            <label class="radio" iaBalloon="count the number of documents">
+                <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='documents'" checked>
+                Documents
+            </label>
+            <label class="radio" iaBalloon="count the number of times the search term occurs">
+                <input type="radio" name="frequencyMeasure" (click)="frequencyMeasure='tokens'">
+                Terms
+            </label>
+        </div>
+    </div>
+    <div class="column">
+        <div class="control" (change)="onChange()">
+            <label class="label">Normalization</label>
+            <label class="radio"
+                iaBalloon="Number of {{frequencyMeasure == 'documents' ? 'documents' : 'observations of the search term'}}">
+                <input type="radio" name="normalizer" (click)="normalizer='raw'" checked>
+                None
+            </label>
+            <label *ngIf="frequencyMeasure=='documents'" class="radio"
+                iaBalloon="Divide by the total amount of documents">
+                <input type="radio" name="normalizer" (click)="normalizer='percent'">
+                Percentage
+            </label>
+            <ng-container *ngIf="frequencyMeasure=='tokens'">
+                <label class="radio"
+                    iaBalloon="Divide by the total documents in each bin">
+                    <input type="radio" name="normalizer" (click)="normalizer='documents'">
+                    Documents
+                </label>
+                <label class="radio"
+                    iaBalloon="Divide by the total word count in each bin">
+                    <input type="radio" name="normalizer" (click)="normalizer='terms'">
+                    Terms
+                </label>
+            </ng-container>
+        </div>
+    </div>
+</div>

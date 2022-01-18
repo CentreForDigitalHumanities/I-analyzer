@@ -641,7 +641,8 @@ def api_get_aggregate_term_frequency():
     results = analyze.get_aggregate_term_frequency(
         request.json['es_query'],
         request.json['corpus_name'],
-        request.json['aggregator']
+        request.json['field_name'],
+        request.json['field_value'],
     )
 
     if isinstance(results, str):
@@ -666,7 +667,8 @@ def api_get_date_term_frequency():
         request.json['es_query'],
         request.json['corpus_name'],
         request.json['field'],
-        request.json['time_interval']
+        request.json['start_date'],
+        request.json['end_date'],
     )
 
     if isinstance(results, str):

@@ -37,7 +37,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public showHint: boolean;
 
     private currentTimeCategory: string;
-    private rawData: {date: Date, match_count: number, doc_count: number, token_count: number}[];
+    private rawData: {date: Date, doc_count: number, match_count?: number, total_doc_count?: number, token_count?: number}[];
     private selectedData: Array<DateFrequencyPair>;
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
@@ -47,9 +47,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        const onlyChangeNormalizer = Boolean(
-            this.frequencyMeasure === 'tokens' && this.rawData && Object.keys(changes).length === 1 && changes.normalizer
-        );
+        // doc counts should be requested if query has changed
+        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
+
+        // token counts should be requested if they are requested and not already present for this query
+        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && (loadDocCounts  || !(this.rawData.find(cat => cat.match_count)));
 
         if (this.chartElement === undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
@@ -63,7 +65,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale = d3Scale.scaleTime()
             .range([0, this.width])
             .clamp(true);
-        this.prepareTimeline(onlyChangeNormalizer).then(() => {
+        this.prepareTimeline(loadDocCounts, loadTokenCounts).then(() => {
             this.setupYScale();
             this.createChart(this.visualizedField.displayName);
             this.rescaleY(this.normalizer === 'percent');
@@ -79,13 +81,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    async prepareTimeline(onlyChangeNormalizer = false) {
+    async prepareTimeline(loadDocCounts = false, loadTokenCounts = false) {
         this.isLoading.emit(true);
-        if (onlyChangeNormalizer) {
-            this.updateTimeDateNormalizer();
-        } else {
-            await this.requestTimeData();
-        }
+
+        if (loadDocCounts) { await this.requestDocumentData(); }
+        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
+
+        this.selectData();
+
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
         this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
@@ -100,64 +103,71 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale.domain(this.xDomain);
     }
 
-    async requestTimeData() {
-        let dataPromise: Promise<{date: Date, doc_count: number, token_count?: number}[]>;
+    async requestDocumentData() {
+        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
 
-        if (this.frequencyMeasure === 'documents' || this.frequencyMeasure === undefined) {
-            /* date fields are returned with keys containing identifiers by elasticsearch
-            replace with string representation, contained in 'key_as_string' field
-            */
-            dataPromise = this.searchService.dateHistogramSearch(
-                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
-                        return {
-                            date: new Date(cat.key_as_string),
-                            doc_count: cat.doc_count
-                        };
-                    });
-                    return data;
-                });
-        } else {
-            dataPromise = this.searchService.dateTermFrequencySearch(
-                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory
-            ).then(result => {
-                const data = result.data.filter(cat => cat.doc_count > 0).map(cat => {
+        /* date fields are returned with keys containing identifiers by elasticsearch
+        replace with string representation, contained in 'key_as_string' field
+        */
+        dataPromise = this.searchService.dateHistogramSearch(
+            this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                     return {
                         date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count,
-                        match_count: cat.match_count,
-                        token_count: cat.token_count
+                        doc_count: cat.doc_count
                     };
                 });
-                // if total token counts are returned, store them in rawData
-                if (data.find(cat => cat.token_count)) {
-                    this.rawData = data;
-                    this.totalTokenCountAvailable.emit(true);
-                } else {
-                    this.totalTokenCountAvailable.emit(false);
+                return data;
+            });
+
+        this.rawData = await dataPromise;
+    }
+
+    async requestTermFrequencyData() {
+        const dataPromise = new Promise(resolve => {
+            this.rawData.forEach((cat, index) => {
+                if (cat.doc_count > 0) {
+                    const start_date = cat.date;
+                    const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
+                    this.searchService.dateTermFrequencySearch(
+                        this.corpus, this.queryModelCopy, this.visualizedField.name,
+                        start_date, end_date
+                    ).then(result => {
+                        const data = result.data;
+                        this.rawData[index].match_count = data.match_count;
+                        this.rawData[index].total_doc_count = data.doc_count;
+                        this.rawData[index].token_count = data.token_count;
+
+                        if (index === this.rawData.length - 1) {
+                            resolve(true);
+                        }
+                    });
                 }
-                return this.normalizeData(data);
-            }).catch();
-        }
+            });
+        });
 
-        this.selectedData = await dataPromise;
+        await dataPromise;
+
+        // signal if total token counts are available
+        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
+
     }
 
-    updateTimeDateNormalizer() {
-        // update values from stored rawData instead of making a new elasticsearch query
-        this.selectedData = this.normalizeData(this.rawData);
-    }
-
-    normalizeData(data): {date: Date, doc_count: number}[] {
-        if (this.normalizer === 'raw') {
-            return data.map(cat =>
-                ({date: cat.date, doc_count: cat.match_count}));
-        } else if (this.normalizer === 'terms') {
-            return data.map(cat =>
-                ({date: cat.date, doc_count: 100 * cat.match_count / cat.token_count}));
-        } else if (this.normalizer === 'documents') {
-            return data.map(cat =>
-                ({date: cat.date, doc_count: cat.match_count / cat.doc_count}));
+    selectData(): void {
+        if (this.frequencyMeasure === 'tokens') {
+            if (this.normalizer === 'raw') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: cat.match_count }));
+            } else if (this.normalizer === 'terms') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: 100 * cat.match_count / cat.token_count }));
+            } else if (this.normalizer === 'documents') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: cat.match_count / cat.total_doc_count }));
+            }
+        } else {
+            this.selectedData = this.rawData.map(cat =>
+                ({ date: cat.date, doc_count: cat.doc_count }));
         }
     }
 

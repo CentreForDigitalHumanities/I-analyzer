@@ -185,33 +185,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType !== 'ngram') {
-            let size = 0;
-            if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-            } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
-                size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
-            }
-            const aggregator = {name: this.visualizedField.name, size: size};
-            if (this.frequencyMeasure === 'documents') {
-                this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-                    this.aggResults = visual.aggregations[this.visualizedField.name];
-                    this.isLoading = false;
-                });
-            } else {
-                this.searchService.aggregateTermFrequencySearch(this.corpus, this.queryModel, aggregator).then(visual => {
-                    this.showTokenCountOption = visual.data.find(item => item.token_count) !== undefined;
-                    this.aggResults = visual.data.map(item => {
-                        return {
-                            'key': item.key,
-                            'doc_count': (this.normalizer === 'raw') ? item.match_count :
-                                this.normalizer === 'documents' ? (item.match_count / item.doc_count) :
-                                (100 * item.match_count / item.token_count)
-                        };
-                    }).sort((item1, item2) => item2.doc_count - item1.doc_count);
-                    this.isLoading = false;
-                });
-            }
         }
     }
 
@@ -245,13 +218,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    onFrequencyMeasureChange() {
-        if (this.visualizedField.visualizationType === 'term_frequency') {
-            this.setVisualizedField({
-                name: this.visualizedField.name,
-                visualizationType: this.visualizedField.visualizationType
-            });
-        }
+    onHistogramOptionChange(event: {frequencyMeasure: 'documents'|'tokens', normalizer: 'raw'|'percent'|'documents'|'terms' }) {
+        this.frequencyMeasure = event.frequencyMeasure || this.frequencyMeasure;
+        this.normalizer = event.normalizer || this.normalizer;
     }
 
     setErrorMessage(message: string) {
