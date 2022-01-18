@@ -21,10 +21,10 @@
     </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-term-frequency *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
+            <ia-histogram *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
                 [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
-    		</ia-term-frequency>
+    		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>

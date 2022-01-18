@@ -5,16 +5,16 @@ import { ApiService, ApiRetryService, DataService, ElasticSearchService, LogServ
 import { ApiServiceMock } from '../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { UserServiceMock } from '../../mock-data/user';
-import { TermFrequencyComponent } from './term-frequency.component';
+import { HistogramComponent } from './histogram.component';
 
-describe('TermFrequencyComponent', () => {
-  let component: TermFrequencyComponent;
-  let fixture: ComponentFixture<TermFrequencyComponent>;
+describe('HistogramCompoment', () => {
+  let component: HistogramComponent;
+  let fixture: ComponentFixture<HistogramComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
         imports: [ FormsModule ],
-        declarations: [ TermFrequencyComponent ],
+        declarations: [ HistogramComponent ],
         providers: [ 
             {
     
@@ -37,7 +37,7 @@ describe('TermFrequencyComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TermFrequencyComponent);
+    fixture = TestBed.createComponent(HistogramComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

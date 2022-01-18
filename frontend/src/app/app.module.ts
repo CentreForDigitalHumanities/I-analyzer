@@ -56,7 +56,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { HistogramComponent } from './visualization/histogram.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -169,7 +169,7 @@ export const declarations: any[] = [
     DocumentViewComponent,
     SearchHistoryComponent,
     SelectFieldComponent,
-    TermFrequencyComponent,
+    HistogramComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
