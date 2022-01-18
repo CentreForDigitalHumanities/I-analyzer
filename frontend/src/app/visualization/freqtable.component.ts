@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { saveAs } from 'file-saver';
 
 import { DataService } from '../services/index';
-
+import { TimelineData, HistogramData } from '../models/index';
 
 @Component({
     selector: 'ia-freqtable',
@@ -30,27 +30,32 @@ export class FreqtableComponent implements OnChanges, OnDestroy {
     public defaultSortOrder = '-1';
     public rightColumnName: string;
 
+
     public tableData: FreqtableComponent['searchData'];
 
     public subscription: Subscription;
 
     constructor(private dataService: DataService) {
-        this.subscription = this.dataService.timelineData$.subscribe(results => {
+        this.subscription = this.dataService.barchartData$.subscribe(results => {
             if (results !== undefined) {
-                let format: string;
-                switch(results.timeInterval) {
-                    case 'year':
-                        format = "YYYY";
-                        break;
-                    case 'month':
-                        format = "MMMM YYYY";
-                        break;
-                    default:
-                        format = "YYYY-MM-DD";
-                        break;
+                if ('timeInterval' in results) {
+                    let format: string;
+                    switch(results.timeInterval) {
+                        case 'year':
+                            format = "YYYY";
+                            break;
+                        case 'month':
+                            format = "MMMM YYYY";
+                            break;
+                        default:
+                            format = "YYYY-MM-DD";
+                            break;
+                    }
+                    this.searchData = results.data;
+                    this.searchData.map(d => d.key = moment(d.date).format(format));
+                } else {
+                    this.searchData = results.data;
                 }
-                this.searchData = results.data;
-                this.searchData.map(d => d.key = moment(d.date).format(format));
                 this.createTable();
             }
         });

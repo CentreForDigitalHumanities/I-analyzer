@@ -6,7 +6,7 @@ import * as d3Axis from 'd3-axis';
 import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
-import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData, visualizationField } from '../models/index';
+import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData, visualizationField, HistogramDataPoint} from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -25,9 +25,8 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
 
-    aggregator: { name: string, size: number };
     rawData: AggregateResult[];
-    selectedData: { key: string, doc_count: number }[];
+    selectedData: HistogramDataPoint[];
 
     private xBarWidth: number;
     private xBarHalf: number;
@@ -85,9 +84,9 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
             size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
         }
-        this.aggregator = {name: this.visualizedField.name, size: size};
+        const aggregator = {name: this.visualizedField.name, size: size};
 
-        const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [this.aggregator]).then(visual => {
+        const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
             this.rawData = visual.aggregations[this.visualizedField.name];
         });
 
@@ -136,6 +135,8 @@ export class TermFrequencyComponent extends BarChartComponent implements OnInit,
             this.selectedData = this.rawData.map(cat =>
                 ({ key: cat.key, doc_count: cat.doc_count }));
         }
+
+        this.dataService.pushCurrentHistogramData({data: this.selectedData});
     }
 
     calculateBarWidth(noCategories) {

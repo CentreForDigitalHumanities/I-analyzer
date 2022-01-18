@@ -7,7 +7,7 @@ import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel } from '../models/index';
+import { Corpus, DateFrequencyPair, QueryModel, DateResult } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
@@ -37,7 +37,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public showHint: boolean;
 
     private currentTimeCategory: string;
-    private rawData: {date: Date, doc_count: number, match_count?: number, total_doc_count?: number, token_count?: number}[];
+    private rawData: DateResult[];
     private selectedData: Array<DateFrequencyPair>;
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');

@@ -35,11 +35,9 @@
     </div>
     <ng-container *ngIf="freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
-        	<ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
             <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
-            <ia-freqtable *ngSwitchDefault [searchData]="aggResults" [visualizedField]="visualizedField" [normalizer]="normalizer">
+            <ia-freqtable *ngSwitchDefault [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
         </ng-container>
     </ng-container>
