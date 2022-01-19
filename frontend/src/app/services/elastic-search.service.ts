@@ -159,17 +159,18 @@ export class ElasticSearchService {
     public async search(
         corpusDefinition: ElasticSearchIndex,
         queryModel: QueryModel,
+        highlight?: {field: string, fragmentSize: number},
         size?: number,
-        highlight?: {field: string, fragmentSize: number}
     ): Promise<SearchResults> {
         const connection = (await this.connections)[corpusDefinition.serverName];
         const esQuery = this.makeEsQuery(queryModel);
         if (highlight) {
             esQuery.highlight = {
-                order: 'score',
-                [highlight.field]: {
-                    fragment_size: highlight.fragmentSize
-                }
+                fields: {
+                    [highlight.field]: {
+                        fragment_size: highlight.fragmentSize,
+                        order: 'score'
+                }}
             };
         }
         // Perform the search
