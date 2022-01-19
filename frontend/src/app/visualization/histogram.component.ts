@@ -94,26 +94,21 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     }
 
     async requestTermFrequencyData() {
-        const dataPromise = new Promise(resolve => {
-            this.rawData.forEach((cat, index) => {
-                if (cat.doc_count > 0) {
-                    this.searchService.aggregateTermFrequencySearch(
-                        this.corpus, this.queryModel, this.visualizedField.name, cat.key)
-                        .then(result => {
-                            const data = result.data;
-                            this.rawData[index].match_count = data.match_count;
-                            this.rawData[index].total_doc_count = data.doc_count;
-                            this.rawData[index].token_count = data.token_count;
-
-                            if (index === this.rawData.length - 1) {
-                                resolve(true);
-                            }
-                        });
-                }
+        const dataPromises = this.rawData.map((cat, index) => {
+            return new Promise(resolve => {
+                this.searchService.aggregateTermFrequencySearch(
+                    this.corpus, this.queryModel, this.visualizedField.name, cat.key)
+                    .then(result => {
+                        const data = result.data;
+                        this.rawData[index].match_count = data.match_count;
+                        this.rawData[index].total_doc_count = data.doc_count;
+                        this.rawData[index].token_count = data.token_count;
+                        resolve(true);
+                    });
             });
         });
 
-        await dataPromise;
+        await Promise.all(dataPromises);
 
         // signal if total token counts are available
         this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
