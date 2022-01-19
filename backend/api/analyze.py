@@ -327,11 +327,10 @@ def extract_data_for_term_frequency(corpus):
     highlight_fields = dict()
     for field in core_fields:
         mapping = field.es_mapping
-        has_termvectors = 'term_vector' in mapping and mapping['term_vector'] == 'with_positions_offsets'
-        highlight_type = 'fvh' if has_termvectors else 'unified'
+        highlight_type = 'unified'
         highlight_fields[field.name] = {
             'type': highlight_type,
-            'fragment_size': 18 if highlight_type == 'fvh' else 1, #fvh requires fragment_size >= 18
+            'fragment_size': 1,
         }
     
     highlight_specs = {
