@@ -141,7 +141,7 @@ class GoodReads(XMLCorpus):
             ),
             results_overview=True,
             csv_core=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
         ),
         Field(
             name='book_genre',
@@ -153,7 +153,7 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews of books in this genre',
                 option_count=8
             ),
-            visualization_type='term_frequency'
+            visualizations=['histogram']
         ),
         Field(
             name='age_category',
@@ -165,7 +165,7 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews of books written for this age category',
                 option_count=3
             ),
-            visualization_type='term_frequency'
+            visualizations=['histogram']
         ),
         Field(
             name='url',
@@ -190,7 +190,7 @@ class GoodReads(XMLCorpus):
             csv_core=True,
             results_overview=True,
             searchable=True,
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
         ),
         Field(
             name='language',
@@ -207,7 +207,7 @@ class GoodReads(XMLCorpus):
             ),
             results_overview=True,
             csv_core=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
         ),
         Field(
             name='date',
@@ -246,7 +246,7 @@ class GoodReads(XMLCorpus):
                 option_count=6
             ),
             csv_core=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
         ),
         Field(
             name='rating_text',
@@ -272,7 +272,7 @@ class GoodReads(XMLCorpus):
                 option_count=6
             ),
             results_overview=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             visualization_sort='key'
         ),
         Field(

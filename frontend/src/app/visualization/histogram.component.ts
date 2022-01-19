@@ -10,12 +10,12 @@ import { AggregateResult } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
-    selector: 'ia-term-frequency',
-    templateUrl: './term-frequency.component.html',
-    styleUrls: ['./term-frequency.component.scss']
+    selector: 'ia-histogram',
+    templateUrl: './histogram.component.html',
+    styleUrls: ['./histogram.component.scss']
 })
-export class TermFrequencyComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('termfrequency', { static: true }) private termFreqContainer: ElementRef;
+export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
+    @ViewChild('histogram', { static: true }) private termFreqContainer: ElementRef;
     @Input() searchData: AggregateResult[];
     @Input() visualizedField;
     @Input() asPercent = false;
