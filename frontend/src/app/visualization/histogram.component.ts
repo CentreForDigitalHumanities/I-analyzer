@@ -28,7 +28,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     rawData: AggregateResult[];
     selectedData: HistogramDataPoint[];
 
-    documentLimit = 10000; // maximum number of documents to search through for term frequency
+    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
     binDocumentLimit: number;
     documentLimitExceeded = false; // whether some bins have more documents than the limit
 

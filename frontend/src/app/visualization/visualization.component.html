@@ -23,11 +23,11 @@
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-histogram *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
-                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer"
+                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer"
+    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>

@@ -36,7 +36,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
 
-    documentLimit = 10000; // maximum number of documents to search through for term frequency
+    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
     binDocumentLimit: number;
     documentLimitExceeded = false; // whether some bins have more documents than the limit
 
