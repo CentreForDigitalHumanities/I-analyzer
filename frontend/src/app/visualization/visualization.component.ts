@@ -21,7 +21,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
     public showTokenCountOption: boolean;
-    public histogramDocumentLimit = 1000;
+    public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
 

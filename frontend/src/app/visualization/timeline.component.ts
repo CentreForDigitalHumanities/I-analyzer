@@ -37,8 +37,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public showHint: boolean;
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    binDocumentLimit: number;
-    documentLimitExceeded = false; // whether some bins have more documents than the limit
+    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
+    documentLimitExceeded = false; // whether the results include documents than the limit
 
     private currentTimeCategory: string;
     private rawData: DateResult[];
@@ -125,17 +125,19 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             });
 
         this.rawData = await dataPromise;
-        this.binDocumentLimit = _.min([10000, _.round(this.documentLimit / this.rawData.length)]);
-        this.documentLimitExceeded = this.rawData.find(d => d.doc_count > this.binDocumentLimit) !== undefined;
+        const total_documents = _.sum(this.rawData.map(d => d.doc_count));
+        this.searchRatioDocuments = this.documentLimit / total_documents;
+        this.documentLimitExceeded = this.documentLimit < total_documents;
     }
 
     async requestTermFrequencyData() {
         const dataPromises = this.rawData.map((cat, index) => {
             return new Promise(resolve => {
                 const start_date = cat.date;
+                const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
                 const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
                 this.searchService.dateTermFrequencySearch(
-                    this.corpus, this.queryModelCopy, this.visualizedField.name, this.binDocumentLimit,
+                    this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
                     start_date, end_date)
                     .then(result => {
                     const data = result.data;
@@ -299,6 +301,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 document.body.addEventListener('mousemove', hider);
             }, hintHidingMinDelay);
         }
+    }
+
+    get percentageDocumentsSearched() {
+        return _.round(100 * this.searchRatioDocuments);
     }
 }
 

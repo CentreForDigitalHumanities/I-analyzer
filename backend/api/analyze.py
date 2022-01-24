@@ -9,6 +9,7 @@ import pickle
 from collections import Counter
 from pydoc import doc
 from re import match
+from unittest import skip
 from sklearn.feature_extraction.text import CountVectorizer
 from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
@@ -396,10 +397,12 @@ def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_da
         body = highlight_query,
     )
 
-    hits = (hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit)
-    match_count = (sum(len(hit['highlight'][key])
+    hits = [hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit]
+    highlight_matches = (sum(len(hit['highlight'][key])
         for hit in hits for key in hit['highlight'].keys()
     ))
+    skipped_docs = highlight_results['hits']['total']['value'] - len(list(hits))
+    match_count = highlight_matches + skipped_docs
 
     # get total document count and (if available) token count for the time interval
 
@@ -455,10 +458,12 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
         size = size,
     )
 
-    hits = (hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit)
-    match_count = (sum(len(hit['highlight'][key])
+    hits = [hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit]
+    highlight_matches = (sum(len(hit['highlight'][key])
         for hit in hits for key in hit['highlight'].keys()
     ))
+    skipped_docs = highlight_results['hits']['total']['value'] - len(list(hits))
+    match_count = highlight_matches + skipped_docs
 
     # get total document count and (if available) token count for bin
 
