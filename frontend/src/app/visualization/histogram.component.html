@@ -6,8 +6,14 @@
 
 <div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">
     <div class="message-body">
-        The results for your search include too many documents to count matches in every document.
-        Only the first {{binDocumentLimit}} documents for each bin are analyzed;
+        The results for your search include too many documents to count all matches.
+        Only the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
         the rest are assumed to have only one match for your query.
     </div>
 </div>
+
+<a class="button" (click)="showHistogramDocumentation()">
+    <span class="icon">
+        <i class="fa fa-question-circle"></i>
+    </span>
+</a>

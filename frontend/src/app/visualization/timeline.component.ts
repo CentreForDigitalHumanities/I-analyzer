@@ -303,6 +303,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
+    showHistogramDocumentation() {
+        this.dialogService.showManualPage('histogram');
+    }
+
     get percentageDocumentsSearched() {
         return _.round(100 * this.searchRatioDocuments);
     }

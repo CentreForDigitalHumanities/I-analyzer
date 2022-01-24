@@ -21,7 +21,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
     public showTokenCountOption: boolean;
-    public histogramDocumentLimit = 10000;
+    public histogramDocumentLimit = 10;
 
     public showTableButtons: boolean;
 
@@ -40,9 +40,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         ngram: 'Common n-grams',
         wordcloud: 'Word cloud',
         timeline: 'Timeline',
-        term_frequency: 'Term frequency',
+        term_frequency: 'Histogram',
         relatedwords: 'Related words',
-        search_term_frequency: 'Frequency of search term',
     };
 
     public aggResults: AggregateResult[];

@@ -29,7 +29,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     selectedData: HistogramDataPoint[];
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    binDocumentLimit: number;
+    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
     documentLimitExceeded = false; // whether some bins have more documents than the limit
 
     private xBarWidth: number;
@@ -94,8 +94,9 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
             this.rawData = visual.aggregations[this.visualizedField.name];
-            this.binDocumentLimit = _.min([10000, _.round(this.documentLimit / this.rawData.length)]);
-            this.documentLimitExceeded = this.rawData.find(d => d.doc_count > this.binDocumentLimit) !== undefined;
+            const total_documents = _.sum(this.rawData.map(d => d.doc_count));
+            this.searchRatioDocuments = this.documentLimit / total_documents;
+            this.documentLimitExceeded = this.documentLimit < total_documents;
         });
 
         await dataPromise;
@@ -103,9 +104,10 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     async requestTermFrequencyData() {
         const dataPromises = this.rawData.map((cat, index) => {
+            const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
             return new Promise(resolve => {
                 this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, this.queryModel, this.visualizedField.name, cat.key, this.documentLimit)
+                    this.corpus, this.queryModel, this.visualizedField.name, cat.key, binDocumentLimit)
                     .then(result => {
                         const data = result.data;
                         this.rawData[index].match_count = data.match_count;
@@ -259,4 +261,11 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.drawChartData();
     }
 
+    showHistogramDocumentation() {
+        this.dialogService.showManualPage('histogram');
+    }
+
+    get percentageDocumentsSearched() {
+        return _.round(100 * this.searchRatioDocuments);
+    }
 }
