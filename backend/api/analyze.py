@@ -377,6 +377,7 @@ def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_da
         }
     })
     es_query['query']['bool']['filter'] = filters
+    es_query['track_total_hits'] = True
 
     # add highlights to result
     highlight_query = deepcopy(es_query)
@@ -429,6 +430,7 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value):
     es_query['query']['bool']['filter'].append(
         { 'term': { field_name: field_value }}
     )
+    es_query['track_total_hits'] = True
 
     # count number of matches
 

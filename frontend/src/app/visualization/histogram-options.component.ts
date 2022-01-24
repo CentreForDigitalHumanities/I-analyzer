@@ -17,7 +17,11 @@ export class HistogramOptionsComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    onChange(): void {
+    onChange(parameter: 'frequencyMeasure'|'normalizer'): void {
+        if (parameter === 'frequencyMeasure') {
+            this.normalizer = 'raw';
+        }
+
         this.change.emit({
             frequencyMeasure: this.frequencyMeasure,
             normalizer: this.normalizer,
