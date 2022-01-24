@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class HistogramOptionsComponent implements OnInit {
     @Input() queryText: string;
+    @Input() showTokenCountOption: boolean;
     @Output() change = new EventEmitter();
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';

@@ -98,13 +98,14 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number, size: number): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getAggregateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
             field_name: fieldName,
             field_value: fieldValue,
+            size: size,
         });
     }
 
@@ -112,7 +113,7 @@ export class SearchService {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
     }
 
-    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, start_date: Date, end_date?: Date): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, size: number, start_date: Date, end_date?: Date): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,
@@ -120,6 +121,7 @@ export class SearchService {
             field: fieldName,
             start_date: start_date.toISOString().slice(0, 10),
             end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
+            size: size,
         });
     }
 

@@ -643,6 +643,7 @@ def api_get_aggregate_term_frequency():
         request.json['corpus_name'],
         request.json['field_name'],
         request.json['field_value'],
+        request.json['size'],
     )
 
     if isinstance(results, str):
@@ -669,6 +670,7 @@ def api_get_date_term_frequency():
         request.json['field'],
         request.json['start_date'],
         request.json['end_date'],
+        request.json['size'],
     )
 
     if isinstance(results, str):

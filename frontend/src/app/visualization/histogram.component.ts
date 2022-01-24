@@ -28,6 +28,10 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     rawData: AggregateResult[];
     selectedData: HistogramDataPoint[];
 
+    documentLimit = 10000; // maximum number of documents to search through for term frequency
+    binDocumentLimit: number;
+    documentLimitExceeded = false; // whether some bins have more documents than the limit
+
     private xBarWidth: number;
     private xBarHalf: number;
     private tooltip: any;
@@ -64,11 +68,13 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         if (loadDocCounts) { await this.requestDocumentData(); }
         if (loadTokenCounts) { await this.requestTermFrequencyData(); }
 
-        if (typeof this.rawData[0].key === 'number') {
-            this.rawData = _.sortBy(this.rawData, d => d.key);
-        }
-
         this.selectData();
+
+        if (typeof this.selectedData[0].key === 'number') {
+            this.selectedData = _.sortBy(this.selectedData, d => d.key);
+        } else {
+            this.selectedData = _.sortBy(this.selectedData, d => -1 * d.doc_count);
+        }
 
         this.xDomain = [-.5, this.selectedData.length - .5];
         this.calculateBarWidth(this.selectedData.length);
@@ -88,6 +94,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
             this.rawData = visual.aggregations[this.visualizedField.name];
+            this.binDocumentLimit = _.min([10000, _.round(this.documentLimit / this.rawData.length)]);
+            this.documentLimitExceeded = this.rawData.find(d => d.doc_count > this.binDocumentLimit) !== undefined;
         });
 
         await dataPromise;
@@ -97,7 +105,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const dataPromises = this.rawData.map((cat, index) => {
             return new Promise(resolve => {
                 this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, this.queryModel, this.visualizedField.name, cat.key)
+                    this.corpus, this.queryModel, this.visualizedField.name, cat.key, this.documentLimit)
                     .then(result => {
                         const data = result.data;
                         this.rawData[index].match_count = data.match_count;
@@ -121,7 +129,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                     ({ key: cat.key, doc_count: cat.match_count }));
             } else if (this.normalizer === 'terms') {
                 this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, doc_count: 100 * cat.match_count / cat.token_count }));
+                    ({ key: cat.key, doc_count: cat.match_count / cat.token_count }));
             } else if (this.normalizer === 'documents') {
                 this.selectedData = this.rawData.map(cat =>
                     ({ key: cat.key, doc_count: cat.match_count / cat.total_doc_count }));

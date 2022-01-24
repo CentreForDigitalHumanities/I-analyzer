@@ -36,6 +36,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
 
+    documentLimit = 10000; // maximum number of documents to search through for term frequency
+    binDocumentLimit: number;
+    documentLimitExceeded = false; // whether some bins have more documents than the limit
+
     private currentTimeCategory: string;
     private rawData: DateResult[];
     private selectedData: Array<DateFrequencyPair>;
@@ -121,6 +125,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             });
 
         this.rawData = await dataPromise;
+        this.binDocumentLimit = _.min([10000, _.round(this.documentLimit / this.rawData.length)]);
+        this.documentLimitExceeded = this.rawData.find(d => d.doc_count > this.binDocumentLimit) !== undefined;
     }
 
     async requestTermFrequencyData() {
@@ -129,7 +135,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 const start_date = cat.date;
                 const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
                 this.searchService.dateTermFrequencySearch(
-                    this.corpus, this.queryModelCopy, this.visualizedField.name,
+                    this.corpus, this.queryModelCopy, this.visualizedField.name, this.binDocumentLimit,
                     start_date, end_date)
                     .then(result => {
                     const data = result.data;
@@ -155,7 +161,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     ({ date: cat.date, doc_count: cat.match_count }));
             } else if (this.normalizer === 'terms') {
                 this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, doc_count: 100 * cat.match_count / cat.token_count }));
+                    ({ date: cat.date, doc_count: cat.match_count / cat.token_count }));
             } else if (this.normalizer === 'documents') {
                 this.selectedData = this.rawData.map(cat =>
                     ({ date: cat.date, doc_count: cat.match_count / cat.total_doc_count }));

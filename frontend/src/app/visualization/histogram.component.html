@@ -1,3 +1,12 @@
-<div class="barchart" #termfrequency>
-    <div class="tooltip"></div>
+<div class="block">
+    <div class="barchart" #termfrequency>
+        <div class="tooltip"></div>
+    </div>
+</div>
+
+<div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">
+    <div class="message-body">
+        The results for your search include too many documents to count matches in every document.
+        Only the first {{binDocumentLimit}} documents for each bin are included in the results.
+    </div>
 </div>

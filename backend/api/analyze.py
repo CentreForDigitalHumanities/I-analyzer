@@ -300,12 +300,12 @@ def count_ngrams(docs, divide_by_tff):
 
     return output
 
-def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None):
+def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
 
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else datetime.now()
 
-    match_count, doc_count, token_count = frequency_for_time_interval(es_query, corpus, field, start_date, end_date, 500)
+    match_count, doc_count, token_count = frequency_for_time_interval(es_query, corpus, field, start_date, end_date, size)
 
     data = {
         'key': start_date_str,
@@ -319,14 +319,15 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     
     return data
 
-def extract_data_for_term_frequency(corpus):
+def extract_data_for_term_frequency(corpus, search_fields = None):
     corpus_class = load_corpus(corpus)
-    core_fields = list(filter(lambda field: field.search_field_core, corpus_class.fields))
-
+    if search_fields:
+        fields = list(filter(lambda field: field.name in search_fields, corpus_class.fields))
+    else:
+        fields =list(filter(lambda field: field.es_mapping['type'] in ['keyword', 'text'], corpus_class.fields))
 
     highlight_fields = dict()
-    for field in core_fields:
-        mapping = field.es_mapping
+    for field in fields:
         highlight_type = 'unified'
         highlight_fields[field.name] = {
             'type': highlight_type,
@@ -339,7 +340,7 @@ def extract_data_for_term_frequency(corpus):
     }
 
     has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
-    include_token_count = all(has_length_count(field) for field in core_fields)
+    include_token_count = all(has_length_count(field) for field in fields)
 
     if include_token_count:
         token_count_aggregators = {
@@ -348,7 +349,7 @@ def extract_data_for_term_frequency(corpus):
                     'field': field.name + '.length'
                 }
             }
-            for field in core_fields
+            for field in fields
         }
     else:
         token_count_aggregators = None
@@ -359,8 +360,13 @@ def extract_data_for_term_frequency(corpus):
 def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_date, max_size_per_interval):
     client = elasticsearch(corpus)
 
+    if 'fields' in es_query['query']['bool']['must']['simple_query_string']:
+        fields = es_query['query']['bool']['must']['simple_query_string']['fields']
+    else:
+        fields = None
+
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
-    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
 
     # count number of matches
 
@@ -399,13 +405,15 @@ def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_da
 
     agg_query = deepcopy(es_query)
     agg_query['query']['bool'].pop('must')
-    agg_query['aggs'] = token_count_aggregators
+    if token_count_aggregators:
+        agg_query['aggs'] = token_count_aggregators
     agg_query['size'] = 0 # don't include documents
 
     agg_results = client.search(
         index=corpus,
         body = agg_query,
     )
+
 
     doc_count = agg_results['hits']['total']['value']
     
@@ -417,14 +425,18 @@ def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_da
     else:
         token_count = None
 
-
     return match_count, doc_count, token_count
 
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value):
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
     client = elasticsearch(corpus)
 
+    if 'fields' in es_query['query']['bool']['must']['simple_query_string']:
+        fields = es_query['query']['bool']['must']['simple_query_string']['fields']
+    else:
+        fields = None
+
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
-    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
 
     # filter for relevant value
     es_query['query']['bool']['filter'].append(
@@ -440,6 +452,7 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value):
     highlight_results = client.search(
         index = corpus,
         body = highlight_query,
+        size = size,
     )
 
     hits = (hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit)
@@ -447,12 +460,12 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value):
         for hit in hits for key in hit['highlight'].keys()
     ))
 
-
     # get total document count and (if available) token count for bin
 
     agg_query = deepcopy(es_query)
     agg_query['query']['bool'].pop('must') #remove search term filter
-    agg_query['aggs'] = token_count_aggregators
+    if token_count_aggregators:
+        agg_query['aggs'] = token_count_aggregators
     agg_query['size'] = 0 # don't include documents
 
     agg_results = client.search(

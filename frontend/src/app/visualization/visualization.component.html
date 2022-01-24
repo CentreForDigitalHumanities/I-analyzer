@@ -17,7 +17,8 @@
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
     <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
     <ia-histogram-options *ngIf="visualizedField.visualizationType=='timeline' || visualizedField.visualizationType == 'term_frequency'"
-        [queryText]="queryModel.queryText" (change)="onHistogramOptionChange($event)">
+        [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
+        (change)="onHistogramOptionChange($event)">
     </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">

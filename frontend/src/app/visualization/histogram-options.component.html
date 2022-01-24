@@ -31,7 +31,7 @@
                     <input type="radio" name="normalizer" (click)="normalizer='documents'" [checked]="normalizer=='documents'">
                     Documents
                 </label>
-                <label class="radio"
+                <label class="radio" *ngIf="showTokenCountOption"
                     iaBalloon="Divide by the total word count in each bin">
                     <input type="radio" name="normalizer" (click)="normalizer='terms'" [checked]="normalizer=='terms'">
                     Terms
