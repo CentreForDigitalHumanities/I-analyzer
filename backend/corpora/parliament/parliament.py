@@ -76,10 +76,6 @@ class Parliament(Corpus):
         display_name='House',
         description='House in which the debate took place',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
-            option_count=10
-        )
     )
 
     debate_title = Field(
@@ -168,10 +164,6 @@ class Parliament(Corpus):
         display_name='Role',
         description='Role of the speaker in the debate',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search for speeches by speakers with the the selected roles',
-            option_count=10
-        )
     )
 
     party = Field(
@@ -179,11 +171,6 @@ class Parliament(Corpus):
         display_name='Party',
         description='Political party that the speaker belongs to',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search in speeches from the selected parties',
-            option_count=10
-        ),
-        visualization_type='term_frequency'
     )
 
     party_id = Field(

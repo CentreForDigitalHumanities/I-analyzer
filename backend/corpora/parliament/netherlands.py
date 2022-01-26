@@ -6,6 +6,7 @@ from flask import current_app
 import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
+from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 
 import re
@@ -119,6 +120,10 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             toplevel=True,
             transform=ParliamentNetherlands.format_house
         )
+        self.house.search_filter=MultipleChoiceFilter(
+            description='Search only in debates from the selected houses',
+            option_count=2
+        )
 
         self.debate_title.extractor = XML(
             tag=['meta', 'dc:title'],
@@ -160,6 +165,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             transform=ParliamentNetherlands.format_role
         )
 
+        self.role.search_filter=MultipleChoiceFilter(
+            description='Search for speeches by speakers with the the selected roles',
+            option_count=10
+        )
+
         self.party.extractor = Combined(
             XML(
                 attribute=':party'
@@ -169,6 +179,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             ),
             transform=ParliamentNetherlands.format_party,
         )
+        self.party.search_filter = MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=50
+        )
+        self.party.visualization_type = 'term_frequency'
 
         self.party_id.extractor = XML(
             attribute=':party-ref'
