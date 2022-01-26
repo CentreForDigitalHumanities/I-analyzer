@@ -15,17 +15,15 @@ class ParliamentUK(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
-    es_settings = {
-        'index': {
-            'number_of_replicas': 0,
-            'analysis': {
-                'analyzer': {
-                    'non-stemmed': {
-                        'type': 'standard',
-                        'stopwords': '_english_',
-                    }
-                }
-            }
+    es_settings = current_app.config['PP_ES_SETTINGS']
+    es_settings['analysis']['filter'] = {
+        "stopwords": {
+          "type": "stop",
+          "stopwords": "_english_"
+        },
+        "stemmer": {
+            "type": "stemmer",
+            "language": "english"
         }
     }
 

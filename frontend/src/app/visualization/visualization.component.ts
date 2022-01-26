@@ -38,7 +38,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public freqtable = false;
     public visualizationTypeDisplayNames = {
         ngram: 'Common n-grams',
-        wordcloud: 'Word cloud',
+        wordcloud: 'Wordcloud',
         timeline: 'Timeline',
         term_frequency: 'Histogram',
         relatedwords: 'Related words',
@@ -58,6 +58,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public disableWordCloudLoadMore = false;
     public timeline = false;
+    public ngram = false;
     public isLoading = false;
     private childComponentLoading = false;
 
