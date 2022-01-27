@@ -4,6 +4,12 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
+#
+#
+# This file has been updated to work on M1 Macbooks by Mees
+#
+#
+
 alembic==1.0.10
     # via flask-migrate
 amqp==2.4.2
