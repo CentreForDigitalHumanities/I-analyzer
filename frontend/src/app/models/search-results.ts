@@ -55,3 +55,10 @@ export type RelatedWordsResults = {
     },
     time_points: string[]
 }
+
+export type NgramResults = {
+    words: {
+        [word: string]: number[]
+    }
+    time_points: string[];
+}

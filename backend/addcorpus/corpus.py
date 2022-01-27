@@ -8,6 +8,8 @@ import itertools
 import inspect
 import json
 import bs4
+import csv
+import sys
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger('indexing')
@@ -81,7 +83,7 @@ class Corpus(object):
         is zero on index creation (this is better while creating an index). Should you choose
         to overwrite this, consider copying this setting.
         '''
-        return { 'index' : { 'number_of_replicas' : 0 }}
+        return {'index': {'number_of_replicas': 0}}
 
     @property
     def fields(self):
@@ -313,7 +315,7 @@ class XMLCorpus(Corpus):
             soup = self.soup_from_xml(filename)
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
-        if 'external_file' in metadata:
+        if metadata and 'external_file' in metadata:
             external_fields = [field for field in self.fields if
                                isinstance(field.extractor, extract.XML) and
                                field.extractor.external_file]
@@ -517,6 +519,76 @@ class HTMLCorpus(XMLCorpus):
                     metadata=metadata
                 ) for field in self.fields if field.indexed
             }
+
+
+class CSVCorpus(Corpus):
+    '''
+    An CSVCorpus is any corpus that extracts its data from CSV sources.
+    '''
+
+    @property
+    def field_entry(self):
+        '''
+        If applicable, the field that identifies entries. Subsequent rows with the same
+        value for this field are treated as a single document. If left blank, each row
+        is treated as a document.
+        '''
+
+    def source2dicts(self, source):
+        # make sure the field size is as big as the system permits
+        csv.field_size_limit(sys.maxsize)
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                extract.Choice,
+                extract.Combined,
+                extract.CSV,
+                extract.Constant,
+            )):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with a CSV corpus")
+        
+        if isinstance(source, str):
+            filename = source
+        if isinstance(source, bytes):
+            raise NotImplementedError()
+        else:
+            filename = source[0]
+        
+        with open(filename, 'r') as f:
+            logger.info('Reading CSV file {}...'.format(filename))
+            reader = csv.DictReader(f)
+            document_id = None
+            rows = []
+
+            for row in reader:
+                is_new_document = True
+                if self.field_entry:
+                    identifier = row[self.field_entry]
+                    if identifier == document_id:
+                        is_new_document = False
+                    else:
+                        document_id = identifier
+                
+                if is_new_document and rows:
+                    yield self.document_from_rows(rows)
+                    rows = [row]
+                else:
+                    rows.append(row)
+            
+            yield self.document_from_rows(rows)
+        
+    def document_from_rows(self, rows):
+        doc = {
+            field.name: field.extractor.apply(
+                # The extractor is put to work by simply throwing at it
+                # any and all information it might need
+                rows=rows,
+            )
+            for field in self.fields if field.indexed
+        }
+
+        return doc
+
 
 
 # Fields ######################################################################

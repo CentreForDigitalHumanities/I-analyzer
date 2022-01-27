@@ -76,6 +76,7 @@ export class CorpusService {
             searchFieldCore: data.search_field_core,
             visualizationType: data.visualization_type,
             visualizationSort: data.visualization_sort,
+            multiFields: data['es_mapping'].fields ? Object.keys(data['es_mapping'].fields) : undefined,
             hidden: data.hidden,
             sortable: data.sortable,
             searchable: data.searchable,

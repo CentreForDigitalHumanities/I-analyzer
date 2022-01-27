@@ -1,14 +1,10 @@
+from ianalyzer import models
+from flask import current_app
+import re
 from os.path import abspath, dirname, isfile
-import importlib
 from importlib import util
-from importlib.machinery import SourceFileLoader
 import logging
 logger = logging.getLogger(__name__)
-import re
-
-from flask import current_app
-
-from ianalyzer import models
 
 
 def corpus_dir(corpus_name):

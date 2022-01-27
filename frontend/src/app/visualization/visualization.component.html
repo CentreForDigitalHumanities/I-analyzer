@@ -2,7 +2,7 @@
     <b> This corpus has no fields with associated visualizations. </b>
 </div>
 
-<div *ngIf="!noVisualizations" #viscontrol>
+<div class="block" *ngIf="!noVisualizations" #viscontrol>
 	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
 	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
@@ -14,14 +14,14 @@
 	</button>
 </div>
 
-<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
-    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords') || (freqtable && visualizedField.visualizationType != 'relatedwords')">
+<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngram || timeline); else noVisualsMessage">
+    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage
     	</label>
     </div>  
-    <div [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
+    <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
     		 [asPercent]="asPercentage">
@@ -30,6 +30,7 @@
     		[asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>
     <ng-container *ngIf="freqtable">
