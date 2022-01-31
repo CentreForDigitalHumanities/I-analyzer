@@ -12,6 +12,7 @@ import { NgxMdModule } from 'ngx-md';
 import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
@@ -64,6 +65,7 @@ import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { NgramComponent } from './visualization/ngram.component';
+import { HistogramOptionsComponent } from './visualization/histogram-options.component';
 
 
 const appRoutes: Routes = [
@@ -132,7 +134,6 @@ export const declarations: any[] = [
     FreqtableComponent,
     HomeComponent,
     HighlightPipe,
-    HistogramComponent,
     ImageViewComponent,
     ImageNavigationComponent,
     ManualComponent,
@@ -164,10 +165,12 @@ export const declarations: any[] = [
     DocumentViewComponent,
     SearchHistoryComponent,
     SelectFieldComponent,
+    HistogramComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
     NgramComponent,
+    HistogramOptionsComponent,
 ];
 
 export const imports: any[] = [
@@ -193,6 +196,7 @@ export const imports: any[] = [
     ResourceModule.forRoot({
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
     }),
+    RadioButtonModule,
     RouterModule.forRoot(appRoutes),
     // SharedModule,
     SliderModule,

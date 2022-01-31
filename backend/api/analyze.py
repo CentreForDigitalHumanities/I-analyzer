@@ -7,11 +7,16 @@ import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
 from collections import Counter
+from pydoc import doc
+from re import match
+from unittest import skip
 from sklearn.feature_extraction.text import CountVectorizer
+from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 from ianalyzer.factories.elasticsearch import elasticsearch
+from copy import deepcopy
 
 from flask import current_app
 
@@ -153,21 +158,32 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
+def get_total_time_interval(es_query, corpus):
+    """
+    Min and max date for the search query and corpus. Returns the dates from the query if provided,
+    otherwise the min and max date from the corpus definition.
+    """
 
-def get_time_bins(es_query, corpus):
-    """Time bins for a query. Depending on the total time range of the query, time intervervals are
-    10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
     datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
 
     if datefilter:
         data = datefilter['range']['date']
-        min_year = datetime.strptime(data['gte'], '%Y-%m-%d').year
-        max_year = datetime.strptime(data['lte'], '%Y-%m-%d').year
+        min_date = datetime.strptime(data['gte'], '%Y-%m-%d')
+        max_date = datetime.strptime(data['lte'], '%Y-%m-%d')
     else:
         corpus_class = load_corpus(corpus)
-        min_year = corpus_class.min_date.year
-        max_year = corpus_class.max_date.year
-        
+        min_date = corpus_class.min_date
+        max_date = corpus_class.max_date
+    
+    return min_date, max_date
+
+
+def get_time_bins(es_query, corpus):
+    """Wide bins for a query. Depending on the total time range of the query, time intervervals are
+    10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
+
+    min_date, max_date = get_total_time_interval(es_query, corpus)
+    min_year, max_year = min_date.year, max_date.year        
     time_range = max_year - min_year
 
     if time_range <= 20:
@@ -284,3 +300,166 @@ def count_ngrams(docs, divide_by_tff):
         for word in words]
 
     return output
+
+def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
+
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else datetime.now()
+
+    match_count, doc_count, token_count = frequency_for_time_interval(es_query, corpus, field, start_date, end_date, size)
+
+    data = {
+        'key': start_date_str,
+        'key_as_string': start_date_str,
+        'doc_count': doc_count,
+        'match_count': match_count
+    }
+
+    if token_count != None:
+        data['token_count'] = token_count
+    
+    return data
+
+def extract_data_for_term_frequency(corpus, search_fields = None):
+    corpus_class = load_corpus(corpus)
+    if search_fields:
+        fields = list(filter(lambda field: field.name in search_fields, corpus_class.fields))
+    else:
+        fields =list(filter(lambda field: field.es_mapping['type'] in ['keyword', 'text'], corpus_class.fields))
+
+    highlight_fields = dict()
+    for field in fields:
+        highlight_type = 'unified'
+        highlight_fields[field.name] = {
+            'type': highlight_type,
+            'fragment_size': 1,
+        }
+    
+    highlight_specs = {
+        'number_of_fragments': 100,
+        'fields':  highlight_fields,
+    }
+
+    has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
+    include_token_count = all(has_length_count(field) for field in fields)
+
+    if include_token_count:
+        token_count_aggregators = {
+            'token_count_' + field.name: {
+                'sum': {
+                    'field': field.name + '.length'
+                }
+            }
+            for field in fields
+        }
+    else:
+        token_count_aggregators = None
+
+    return highlight_specs, token_count_aggregators
+
+def get_match_count(es_client, query, corpus, size, highlight_specs):
+    query['highlight'] = highlight_specs
+    highlight_results = es_client.search(
+        index=corpus,
+        size = size,
+        body = query,
+    )
+
+    hits = [hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit]
+    highlight_matches = (sum(len(hit['highlight'][key])
+        for hit in hits for key in hit['highlight'].keys()
+    ))
+    skipped_docs = highlight_results['hits']['total']['value'] - len(list(hits))
+    match_count = highlight_matches + skipped_docs
+
+    return match_count
+
+def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators):
+    if token_count_aggregators:
+        query['aggs'] = token_count_aggregators
+    
+    query['size'] = 0 # don't include documents
+
+    results = es_client.search(
+        index=corpus,
+        body = query,
+    )
+
+    doc_count = results['hits']['total']['value']
+    
+    if token_count_aggregators:
+        token_count = int(sum(
+            results['aggregations'][counter]['value']
+            for counter in results['aggregations'] if counter.startswith('token_count')
+        ))
+    else:
+        token_count = None
+
+    return doc_count, token_count
+
+
+def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_date, max_size_per_interval):
+    client = elasticsearch(corpus)
+
+    fields = es_query['query']['bool']['must']['simple_query_string'].get('fields')
+
+    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
+
+    # count number of matches
+
+    es_query['query']['bool']['filter'] = es_query['query']['bool'].get('filter') or []
+    filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or date_field not in f['range']]
+    filters.append({
+        'range': {
+            date_field: {
+                'gte': datetime.strftime(start_date, '%Y-%m-%d'),
+                'lte': datetime.strftime(end_date, '%Y-%m-%d'),
+                'format': 'yyyy-MM-dd',
+            }
+        }
+    })
+    es_query['query']['bool']['filter'] = filters
+    es_query['track_total_hits'] = True
+
+    #search for the query text
+    match_count = get_match_count(client, deepcopy(es_query), corpus, max_size_per_interval, highlight_specs)
+
+    # get total document count and (if available) token count for the time interval
+
+    agg_query = deepcopy(es_query)
+    agg_query['query']['bool'].pop('must')
+    doc_count, token_count = get_total_docs_and_tokens(client, es_query, corpus, token_count_aggregators)
+
+    return match_count, doc_count, token_count
+
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
+    client = elasticsearch(corpus)
+
+    fields = es_query['query']['bool']['must']['simple_query_string'].get('fields')
+
+    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
+    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
+
+    # filter for relevant value
+    es_query['query']['bool']['filter'].append(
+        { 'term': { field_name: field_value }}
+    )
+    es_query['track_total_hits'] = True
+
+    # count number of matches
+    match_count = get_match_count(client, deepcopy(es_query), corpus, size, highlight_specs)
+
+    # get total document count and (if available) token count for bin
+    agg_query = deepcopy(es_query)
+    agg_query['query']['bool'].pop('must') #remove search term filter
+    doc_count, token_count = get_total_docs_and_tokens(client, es_query, corpus, token_count_aggregators)
+
+    result = {
+        'key': field_value,
+        'match_count': match_count,
+        'doc_count': doc_count,
+        'token_count': token_count,
+    }
+
+    return result

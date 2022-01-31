@@ -1,3 +1,19 @@
-<div class="barchart" #histogram>
-    <div class="tooltip"></div>
+<div class="block">
+    <div class="barchart" #histogram>
+        <div class="tooltip"></div>
+    </div>
 </div>
+
+<div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">
+    <div class="message-body">
+        The results for your search include too many documents to count all matches.
+        Only the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
+        the rest are assumed to have only one match for your query.
+    </div>
+</div>
+
+<a class="button" (click)="showHistogramDocumentation()">
+    <span class="icon">
+        <i class="fa fa-question-circle"></i>
+    </span>
+</a>

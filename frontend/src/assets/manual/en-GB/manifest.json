@@ -18,6 +18,9 @@
         "id": "relatedwords",
         "title": "Related Words Query"
     },
+    {   "id": "histogram",
+        "title": "Histogram visualization"
+    },
     {   "id": "wordcloud",
         "title": "Word cloud visualization"
     },
