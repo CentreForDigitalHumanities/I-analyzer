@@ -67,7 +67,7 @@ export class CorpusService {
     }
 
     private parseField(data: any): CorpusField {
-        return {
+        const field = {
             description: data.description,
             displayName: data.display_name || data.name,
             displayType: data.display_type || data['es_mapping'].type,
@@ -83,7 +83,9 @@ export class CorpusService {
             downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null
-        }
+        };
+        console.log(field);
+        return field;
     }
 
     private parseSearchFilter(filter: any, fieldName: string): SearchFilter<SearchFilterData> {
