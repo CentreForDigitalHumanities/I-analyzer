@@ -95,6 +95,28 @@ class ParliamentUK(Parliament, CSVCorpus):
             transform=lambda x : ' '.join(x)
         )
 
+        # adjust the mapping:
+        # English analyzer, multifield with exact text and non-stemmed version
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "standard",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "stemmed": {
+                "type": "text",
+                "analyzer": "english"
+                },
+            "clean": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
+                }
+            }
+        }
+
         self.speech_id.extractor = CSV(
             field='speech_id'
         )

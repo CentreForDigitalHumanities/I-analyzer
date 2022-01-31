@@ -125,6 +125,44 @@ describe('CorpusService', () => {
                         'lower': 1785,
                         'upper': 2010
                     }
+                },
+                {   // example from people & parliament
+                    'description': 'The transcribed speech',
+                    'display_name': 'Speech',
+                    'display_type': 'text_content',
+                    'es_mapping': {
+                        'type': 'text',
+                        'term_vector': 'with_positions_offsets',
+                        'analyzer': 'standard',
+                        'fields': {
+                            'clean': {
+                                'type': 'text',
+                                'analyzer': 'clean',
+                                'term_vector': 'with_positions_offsets'
+                            },
+                            'stemmed': {
+                                'type': 'text',
+                                'analyzer': 'stemmed',
+                                'term_vector': 'with_positions_offsets'
+                            },
+                            'length': {
+                                'type': 'token_count',
+                                'analyzer': 'standard'
+                            }
+                        }
+                    },
+                    'hidden': false,
+                    'indexed': true,
+                    'sortable': false,
+                    'searchable': true,
+                    'downloadable': true,
+                    'name': 'speech',
+                    'results_overview': true,
+                    'csv_core': false,
+                    'search_field_core': true,
+                    'term_frequency': false,
+                    'visualization_type': ['wordcloud', 'ngram'],
+                    'visualization_sort': null,
                 }],
                 'min_date': { 'day': 1, 'hour': 0, 'minute': 0, 'month': 1, 'year': 1785 },
                 'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
@@ -155,6 +193,7 @@ describe('CorpusService', () => {
                 searchFieldCore: false,
                 visualizationType: 'term_frequency',
                 visualizationSort: 'key',
+                multiFields: undefined,
                 hidden: true,
                 sortable: false,
                 searchable: true,
@@ -181,6 +220,7 @@ describe('CorpusService', () => {
                 searchFieldCore: false,
                 visualizationType: 'term_frequency',
                 visualizationSort: 'key',
+                multiFields: undefined,
                 searchFilter: {
                     description: 'Restrict the years from which search results will be returned.',
                     fieldName: 'year',
@@ -188,6 +228,22 @@ describe('CorpusService', () => {
                     defaultData: mockRangeData,
                     currentData: mockRangeData
                 }
+            }, {
+                description: 'The transcribed speech',
+                hidden: false,
+                sortable: false,
+                searchable: true,
+                downloadable: true,
+                name: 'speech',
+                displayName: 'Speech',
+                displayType: 'text_content',
+                resultsOverview: true,
+                csvCore: false,
+                visualizationType: ['wordcloud', 'ngram'],
+                visualizationSort: null,
+                multiFields: ['clean', 'stemmed', 'length'],
+                searchFilter: null,
+                searchFieldCore: true,
             }];
             expect(items).toEqual([new Corpus(
                 'default',
