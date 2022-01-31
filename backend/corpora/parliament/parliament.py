@@ -80,7 +80,7 @@ class Parliament(Corpus):
             description='Search only in debates from the selected houses',
             option_count=10
         ),
-        visualization_type='term_frequency',
+        visualization_type=['term_frequency'],
     )
 
     debate_title = Field(
