@@ -16,8 +16,10 @@ export class RelatedWordsComponent implements OnChanges {
             borderColor?: string
         }[]
     };
+    @Input() tableData: any;
     @Input() queryText: string;
     @Input() corpusName: string;
+    @Input() asTable: boolean;
     public zoomedInData; // data requested when clicking on a time interval
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
     public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']

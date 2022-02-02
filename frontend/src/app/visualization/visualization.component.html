@@ -20,32 +20,20 @@
         [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
         (change)="onHistogramOptionChange($event)">
     </ia-histogram-options>  
-    <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
+    <div  [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualizationType">
             <ia-histogram *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
-                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
+                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
+    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" [asTable]="freqtable" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>
-    <ng-container *ngIf="freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable *ngSwitchCase="'term_frequency'" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable *ngSwitchDefault [searchData]="aggResults" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-        </ng-container>
-    </ng-container>
 </ng-container>
 
 <ng-template #noVisualsMessage>

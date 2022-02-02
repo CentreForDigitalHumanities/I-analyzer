@@ -1,4 +1,12 @@
-<div class="wordcloud" #wordcloud></div>
+<div class="block" [ngClass]="{ 'is-hidden': asTable }">
+    <div class="wordcloud" #wordcloud></div>
+</div>
+
+<div class="block" *ngIf="asTable">
+    <ia-freqtable *ngSwitchDefault [searchData]="significantText">
+    </ia-freqtable>
+</div>
+
 <a class="button" (click)="showWordcloudDocumentation()">
     <span class="icon">
         <i class="fa fa-question-circle"></i>

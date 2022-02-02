@@ -21,6 +21,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     @Input() visualizedField: visualizationField;
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
+    @Input() asTable: boolean;
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();

@@ -27,6 +27,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() visualizedField;
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
+    @Input() asTable: boolean;
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();

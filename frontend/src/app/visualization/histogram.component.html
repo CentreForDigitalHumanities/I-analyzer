@@ -1,7 +1,12 @@
-<div class="block">
+<div class="block" [ngClass]="{'is-hidden': asTable}">
     <div class="barchart" #termfrequency>
         <div class="tooltip"></div>
     </div>
+</div>
+
+<div class="block" *ngIf="asTable">
+    <ia-freqtable [visualizedField]="visualizedField" [normalizer]="normalizer">
+    </ia-freqtable>
 </div>
 
 <div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">
