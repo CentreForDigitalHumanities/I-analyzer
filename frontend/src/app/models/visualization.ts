@@ -2,7 +2,7 @@ import { SearchFilter, SearchFilterData } from './search-filter';
 
 export type visualizationField = {
     name: string,
-    visualizations: string,
+    visualizations: string[],
     displayName?: string,
     visualizationSort?: string,
     searchFilter?: SearchFilter<SearchFilterData> | null,

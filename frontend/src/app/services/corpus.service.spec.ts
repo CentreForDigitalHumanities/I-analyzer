@@ -93,7 +93,7 @@ describe('CorpusService', () => {
                     'results_overview': false,
                     'csv_core': false,
                     'search_field_core': false,
-                    'visualizations': 'histogram',
+                    'visualizations': ['histogram'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'MultipleChoiceFilter',
@@ -115,7 +115,7 @@ describe('CorpusService', () => {
                     'csv_core': true,
                     'search_field_core': false,
                     'histogram': false,
-                    'visualizations': 'histogram',
+                    'visualizations': ['histogram'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'RangeFilter',
