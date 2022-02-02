@@ -156,6 +156,28 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             flatten=True,
         )
 
+        # adjust the mapping:
+        # Dutch analyzer, multifield with exact text
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "standard",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "stemmed": {
+                "type": "text",
+                "analyzer": "dutch" 
+                },
+            "clean": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
+                }
+            }
+        }
+
         self.speech_id.extractor = XML(
             attribute=':id'
         )

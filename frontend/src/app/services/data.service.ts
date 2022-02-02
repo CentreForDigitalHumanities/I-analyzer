@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject }    from 'rxjs';
 
-import { TimelineData } from '../models/index';
+import { TimelineData, HistogramData } from '../models/index';
 
-const timelineDataSource = new BehaviorSubject<TimelineData>(undefined);
+const barchartDataSource = new BehaviorSubject<TimelineData|HistogramData>(undefined);
 
 /**
  * This service is used to communicate changes between components
@@ -13,9 +13,13 @@ const timelineDataSource = new BehaviorSubject<TimelineData>(undefined);
  */
 @Injectable()
 export class DataService {
-    public timelineData$ = timelineDataSource.asObservable();
+    public barchartData$ = barchartDataSource.asObservable();
 
-    pushCurrentTimelineData(data: TimelineData){
-        timelineDataSource.next(data);
+    pushCurrentTimelineData(data: TimelineData) {
+        barchartDataSource.next(data);
+    }
+
+    pushCurrentHistogramData(data: HistogramData) {
+        barchartDataSource.next(data);
     }
 }
