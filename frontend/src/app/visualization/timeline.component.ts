@@ -7,7 +7,7 @@ import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel } from '../models/index';
+import { Corpus, DateFrequencyPair, QueryModel, DateResult } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 
@@ -25,16 +25,23 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
-    @Input() asPercent = false;
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
+    @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Output() isLoading = new EventEmitter<boolean>();
+    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
 
     private queryModelCopy;
 
     public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
 
+    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
+    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
+    documentLimitExceeded = false; // whether the results include documents than the limit
+
     private currentTimeCategory: string;
+    private rawData: DateResult[];
     private selectedData: Array<DateFrequencyPair>;
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
@@ -44,6 +51,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        // doc counts should be requested if query has changed
+        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
+
+        // token counts should be requested if they are requested and not already present for this query
+        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && (loadDocCounts  || !(this.rawData.find(cat => cat.match_count)));
+
         if (this.chartElement === undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
             this.calculateCanvas();
@@ -56,25 +69,30 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale = d3Scale.scaleTime()
             .range([0, this.width])
             .clamp(true);
-        this.prepareTimeline().then(() => {
+        this.prepareTimeline(loadDocCounts, loadTokenCounts).then(() => {
             this.setupYScale();
             this.createChart(this.visualizedField.displayName);
-            this.rescaleY(this.asPercent);
+            this.rescaleY(this.normalizer === 'percent');
             this.drawChartData();
             this.setupBrushBehaviour();
         });
 
-        // listen for changes in 'asPercent'
-        if (changes['asPercent'] !== undefined) {
-            if (changes['asPercent'].previousValue !== changes['asPercent'].currentValue) {
-                this.rescaleY(this.asPercent);
+        // listen for changes in 'normalizer'
+        if (changes['normalizer'] !== undefined) {
+            if (changes['normalizer'].previousValue !== changes['normalizer'].currentValue) {
+                this.rescaleY(this.normalizer === 'percent');
             }
         }
     }
 
-    async prepareTimeline() {
+    async prepareTimeline(loadDocCounts = false, loadTokenCounts = false) {
         this.isLoading.emit(true);
-        await this.requestTimeData();
+
+        if (loadDocCounts) { await this.requestDocumentData(); }
+        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
+
+        this.selectData();
+
         this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
         this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
@@ -89,20 +107,71 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale.domain(this.xDomain);
     }
 
-    async requestTimeData() {
+    async requestDocumentData() {
+        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
+
         /* date fields are returned with keys containing identifiers by elasticsearch
-         replace with string representation, contained in 'key_as_string' field
+        replace with string representation, contained in 'key_as_string' field
         */
-        const dataPromise = this.searchService.dateHistogramSearch(
+        dataPromise = this.searchService.dateHistogramSearch(
             this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                return result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                     return {
                         date: new Date(cat.key_as_string),
                         doc_count: cat.doc_count
                     };
                 });
+                return data;
             });
-        this.selectedData = await dataPromise;
+
+        this.rawData = await dataPromise;
+        const total_documents = _.sum(this.rawData.map(d => d.doc_count));
+        this.searchRatioDocuments = this.documentLimit / total_documents;
+        this.documentLimitExceeded = this.documentLimit < total_documents;
+    }
+
+    async requestTermFrequencyData() {
+        const dataPromises = this.rawData.map((cat, index) => {
+            return new Promise(resolve => {
+                const start_date = cat.date;
+                const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
+                const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
+                this.searchService.dateTermFrequencySearch(
+                    this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                    start_date, end_date)
+                    .then(result => {
+                    const data = result.data;
+                    this.rawData[index].match_count = data.match_count;
+                    this.rawData[index].total_doc_count = data.doc_count;
+                    this.rawData[index].token_count = data.token_count;
+                    resolve(true);
+                });
+            });
+        });
+
+        await Promise.all(dataPromises);
+
+        // signal if total token counts are available
+        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
+
+    }
+
+    selectData(): void {
+        if (this.frequencyMeasure === 'tokens') {
+            if (this.normalizer === 'raw') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: cat.match_count }));
+            } else if (this.normalizer === 'terms') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: cat.match_count / cat.token_count }));
+            } else if (this.normalizer === 'documents') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, doc_count: cat.match_count / cat.total_doc_count }));
+            }
+        } else {
+            this.selectedData = this.rawData.map(cat =>
+                ({ date: cat.date, doc_count: cat.doc_count }));
+        }
     }
 
     drawChartData() {
@@ -160,7 +229,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.prepareTimeline().then(() => {
                 this.setupYScale();
                 this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
-                this.rescaleY(this.asPercent);
+                this.rescaleY(this.normalizer === 'percent');
                 this.drawChartData();
                 this.rescaleX();
             });
@@ -174,7 +243,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.setDateRange();
             this.setupYScale();
             this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
-            this.rescaleY(this.asPercent);
+            this.rescaleY(this.normalizer === 'percent');
             this.rescaleX();
             this.drawChartData();
             this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
@@ -232,6 +301,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 document.body.addEventListener('mousemove', hider);
             }, hintHidingMinDelay);
         }
+    }
+
+    showHistogramDocumentation() {
+        this.dialogService.showManualPage('histogram');
+    }
+
+    get percentageDocumentsSearched() {
+        return _.round(100 * this.searchRatioDocuments);
     }
 }
 

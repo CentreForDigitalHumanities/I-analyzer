@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
@@ -18,25 +18,36 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visualizedFields: visualizationField[];
 
-    public asPercentage: boolean;
+    public frequencyMeasure: 'documents'|'tokens' = 'documents';
+    public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
+    public showTokenCountOption: boolean;
+    public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
 
     public visualizedField: visualizationField;
 
-    public noResults: string = "Did not find data to visualize."
+    public noResults = 'Did not find data to visualize.';
     public foundNoVisualsMessage: string = this.noResults;
-    public errorMessage: string = '';
+    public errorMessage = '';
     public noVisualizations: boolean;
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
+<<<<<<< HEAD
     public visualizations: string [];
     public freqtable = false;
     public visualizationsDisplayNames = {
+=======
+    public visualizationType: string;
+    public freqtable = false;
+    public visualizationTypeDisplayNames = {
+>>>>>>> feature/peopleparliament
         ngram: 'Common n-grams',
         wordcloud: 'Wordcloud',
-        timeline: 'Timeline'
+        timeline: 'Timeline',
+        term_frequency: 'Histogram',
+        relatedwords: 'Related words',
     };
 
     public aggResults: AggregateResult[];
@@ -90,10 +101,15 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     });
                 });
             }
-
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
+<<<<<<< HEAD
                 if (field.visualizations !== 'ngram' || this.queryModel.queryText) {
+=======
+                const requires_search_term = ['ngram', 'search_term_frequency']
+                    .find(vis_type => vis_type === field.visualizationType);
+                if (!requires_search_term || this.queryModel.queryText) {
+>>>>>>> feature/peopleparliament
                     this.visDropdown.push({
                         label: field.displayName,
                         value: {name: field.name, visualizations: field.visualizations}
@@ -129,8 +145,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 visualizations: this.visualizedField.visualizations
             });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
-        }
-        else {
+        } else {
             this.aggResults = [];
             this.foundNoVisualsMessage = this.noResults;
         }
@@ -140,7 +155,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
-                if (result['success']===true) {
+                if (result['success'] === true) {
                     this.tasksToCancel = [];
                 }
             });
@@ -175,6 +190,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
+<<<<<<< HEAD
         } else if (this.visualizedField.visualizations !== 'ngram') {
             this.ngram = true;
             let size = 0;
@@ -188,6 +204,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 this.aggResults = visual.aggregations[this.visualizedField.name];
                 this.isLoading = false;
             });
+=======
+>>>>>>> feature/peopleparliament
         }
     }
 
@@ -217,8 +235,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                             this.foundNoVisualsMessage = this.noResults;
                         }
                     });
-            })
+            });
         }
+    }
+
+    onHistogramOptionChange(event: {frequencyMeasure: 'documents'|'tokens', normalizer: 'raw'|'percent'|'documents'|'terms' }) {
+        this.frequencyMeasure = event.frequencyMeasure || this.frequencyMeasure;
+        this.normalizer = event.normalizer || this.normalizer;
     }
 
     setErrorMessage(message: string) {
