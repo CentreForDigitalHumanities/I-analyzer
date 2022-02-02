@@ -22,7 +22,7 @@ class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
     data_directory = current_app.config['PP_NL_RECENT_DATA']
     tag_entry = 'u'
     tag_toplevel = 'TEI'
-    es_index = 'parliament-nl-recent'
+    es_index = current_app.config['PP_NL_INDEX']
     min_date = datetime(year=2015, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
 
