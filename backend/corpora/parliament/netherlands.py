@@ -11,6 +11,8 @@ from corpora.parliament.parliament import Parliament
 
 import re
 
+logger = logging.getLogger('indexing')
+
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
     Class for indexing Dutch parliamentary data
@@ -101,6 +103,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if id and id.startswith('nl.p.'):
             id = id[5:]
         return id
+    
+    def get_party_full(self, speech_node):
+        party_ref = speech_node.attrs.get(':party-ref')
+        if not party_ref:
+            return None
+        parents = list(speech_node.parents)
+        party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
+        return party_node
 
     def __init__(self):
         self.country.extractor = Constant(
@@ -187,6 +197,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
         self.party_id.extractor = XML(
             attribute=':party-ref'
+        )
+
+        self.party_full.extractor = XML(
+            attribute='pm:name',
+            transform_soup_func=self.get_party_full
         )
 
         self.page.extractor = Combined(

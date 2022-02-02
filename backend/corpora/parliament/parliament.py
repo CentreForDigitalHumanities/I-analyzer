@@ -180,6 +180,13 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    party_full = Field(
+        name='party_full',
+        display_name='Party (full name)',
+        description='Full name of the political party that the speaker belongs to',
+        es_mapping={'type': 'keyword'},
+    )
+
     page = Field(
         name='page',
         display_name='Page(s)',
@@ -202,6 +209,6 @@ class Parliament(Corpus):
         speaker, speaker_id, 
         speech_type,
         role, 
-        party, party_id,
+        party, party_id, party_full,
         page, column,
         ]
