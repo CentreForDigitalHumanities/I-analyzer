@@ -68,7 +68,7 @@ class Parliament(Corpus):
             max_date,
             description='Search only within this time range.'
         ),
-        visualizations='timeline'
+        visualizations=['timeline']
     ) 
 
     house = Field(
@@ -76,6 +76,7 @@ class Parliament(Corpus):
         display_name='House',
         description='House in which the debate took place',
         es_mapping={'type': 'keyword'},
+        visualizations=['histogram'],
     )
 
     debate_title = Field(

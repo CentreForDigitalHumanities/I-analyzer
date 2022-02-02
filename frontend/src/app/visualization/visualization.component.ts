@@ -34,19 +34,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
-<<<<<<< HEAD
     public visualizations: string [];
     public freqtable = false;
     public visualizationsDisplayNames = {
-=======
-    public visualizationType: string;
-    public freqtable = false;
-    public visualizationTypeDisplayNames = {
->>>>>>> feature/peopleparliament
+
         ngram: 'Common n-grams',
         wordcloud: 'Wordcloud',
         timeline: 'Timeline',
-        term_frequency: 'Histogram',
+        histogram: 'Histogram',
         relatedwords: 'Related words',
     };
 
@@ -92,8 +87,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     field.visualizations.forEach(vis => {
                         this.visualizedFields.push({
                             name: field.name,
-                            displayName: `${field.displayName}: ${this.visualizationsDisplayNames[vis]}`,
-                            visualizations: vis,
+                            displayName: field.displayName,
+                            visualization: vis,
                             visualizationSort: field.visualizationSort,
                             searchFilter: field.searchFilter,
                             multiFields: field.multiFields,
@@ -103,16 +98,12 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             }
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
-<<<<<<< HEAD
-                if (field.visualizations !== 'ngram' || this.queryModel.queryText) {
-=======
-                const requires_search_term = ['ngram', 'search_term_frequency']
-                    .find(vis_type => vis_type === field.visualizationType);
+                const requires_search_term = ['ngram', 'relatedwords']
+                    .find(vis_type => vis_type === field.visualization);
                 if (!requires_search_term || this.queryModel.queryText) {
->>>>>>> feature/peopleparliament
                     this.visDropdown.push({
-                        label: field.displayName,
-                        value: {name: field.name, visualizations: field.visualizations}
+                        label: `${field.displayName} (${this.visualizationsDisplayNames[field.visualization]})`,
+                        value: {name: field.name, visualizations: field.visualization}
                     });
                 }
             });
@@ -142,7 +133,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (this.resultsCount > 0) {
             this.setVisualizedField({
                 name: this.visualizedField.name,
-                visualizations: this.visualizedField.visualizations
+                visualizations: this.visualizedField.visualization
             });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         } else {
@@ -163,21 +154,21 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.aggResults = [];
         this.errorMessage = '';
         if (selectedField === 'relatedwords') {
-            this.visualizedField.visualizations = selectedField;
+            this.visualizedField.visualization = selectedField;
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
         } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => 
-                field.name === selectedField.name && field.visualizations === selectedField.visualizations ));
+                field.name === selectedField.name && field.visualization === selectedField.visualizations ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualizations === 'wordcloud') {
+        if (this.visualizedField.visualization === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
             this.isLoading = false;
-        } else if (this.visualizedField.visualizations === 'timeline') {
+        } else if (this.visualizedField.visualization === 'timeline') {
             this.timeline = true;
-        } else if (this.visualizedField.visualizations === 'relatedwords') {
+        } else if (this.visualizedField.visualization === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -190,22 +181,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-<<<<<<< HEAD
-        } else if (this.visualizedField.visualizations !== 'ngram') {
-            this.ngram = true;
-            let size = 0;
-            if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-                size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-            } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
-                size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
-            }
-            const aggregator = {name: this.visualizedField.name, size: size};
-            this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-                this.aggResults = visual.aggregations[this.visualizedField.name];
-                this.isLoading = false;
-            });
-=======
->>>>>>> feature/peopleparliament
         }
     }
 

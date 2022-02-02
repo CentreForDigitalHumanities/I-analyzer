@@ -215,7 +215,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             description='Search in speeches from the selected parties',
             option_count=50
         )
-        self.party.visualization_type = 'term_frequency'
+        self.party.visualizations = ['histogram']
 
         self.party_id.extractor = XML(
             attribute=':party-ref'

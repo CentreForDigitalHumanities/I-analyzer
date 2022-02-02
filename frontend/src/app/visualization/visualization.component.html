@@ -16,13 +16,13 @@
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
     <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
-    <ia-histogram-options *ngIf="visualizedField.visualizationType=='timeline' || visualizedField.visualizationType == 'term_frequency'"
+    <ia-histogram-options *ngIf="visualizedField.visualization=='timeline' || visualizedField.visualization == 'histogram'"
         [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
         (change)="onHistogramOptionChange($event)">
     </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-histogram *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
+        <ng-container [ngSwitch]="visualizedField.visualization">
+            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
                 [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
@@ -35,10 +35,10 @@
         </ng-container>
     </div>
     <ng-container *ngIf="freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
+        <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
-            <ia-freqtable *ngSwitchCase="'term_frequency'" [visualizedField]="visualizedField" [normalizer]="normalizer">
+            <ia-freqtable *ngSwitchCase="'histogram'" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
             <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [normalizer]="normalizer">
             </ia-freqtable>
