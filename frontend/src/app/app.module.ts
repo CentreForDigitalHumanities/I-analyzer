@@ -55,7 +55,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { HistogramComponent } from './visualization/histogram.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -120,7 +120,6 @@ export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
     BarChartComponent,
-    // BaseFilterComponent,
     BooleanFilterComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
@@ -133,6 +132,7 @@ export const declarations: any[] = [
     FreqtableComponent,
     HomeComponent,
     HighlightPipe,
+    HistogramComponent,
     ImageViewComponent,
     ImageNavigationComponent,
     ManualComponent,
@@ -159,15 +159,11 @@ export const declarations: any[] = [
     LoginComponent,
     ScrollToDirective,
     ScanImageComponent,
-    BarChartComponent,
-    VisualizationComponent,
-    WordcloudComponent,
     TimelineComponent,
     RelatedWordsComponent,
     DocumentViewComponent,
     SearchHistoryComponent,
     SelectFieldComponent,
-    TermFrequencyComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,

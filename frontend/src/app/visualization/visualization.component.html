@@ -15,17 +15,17 @@
 </div>
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || ngram || timeline); else noVisualsMessage">
-    <div class="checkbox" *ngIf="(visualizedField.visualizationType!='wordcloud' && visualizedField.visualizationType!='relatedwords'  && visualizedField.visualizationType!='ngram') || (freqtable && visualizedField.visualizationType != 'relatedwords'  && visualizedField.visualizationType!='ngram')">
+    <div class="checkbox" *ngIf="(visualizedField.visualizations!='wordcloud' && visualizedField.visualizations!='relatedwords'  && visualizedField.visualizations!='ngram') || (freqtable && visualizedField.visualizations != 'relatedwords'  && visualizedField.visualizations!='ngram')">
     	<label>
     		<input type="checkbox" name="percentageToggle" [(ngModel)]="asPercentage">Display
     		as Percentage
     	</label>
     </div>  
     <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-term-frequency *ngSwitchCase="'term_frequency'" [searchData]="aggResults" [visualizedField]="visualizedField" 
+        <ng-container [ngSwitch]="visualizedField.visualizations">
+            <ia-histogram *ngSwitchCase="'histogram'" [searchData]="aggResults" [visualizedField]="visualizedField" 
     		 [asPercent]="asPercentage">
-    		</ia-term-frequency>
+    		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		[asPercent]="asPercentage" (isLoading)="onIsLoading($event)"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
@@ -34,7 +34,7 @@
         </ng-container>
     </div>
     <ng-container *ngIf="freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
+        <ng-container [ngSwitch]="visualizedField.visualizations">
         	<ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [asPercent]="asPercentage">
             </ia-freqtable>
             <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [asPercent]="asPercentage">

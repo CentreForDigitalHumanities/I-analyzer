@@ -101,7 +101,7 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only speeches given by '
@@ -118,7 +118,7 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only speeches of '
@@ -134,7 +134,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
             extractor=extract.XML(tag='content')
         ),
     ]

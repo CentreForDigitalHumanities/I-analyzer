@@ -31,9 +31,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
-    public visualizationType: string;
-    public freqtable: boolean = false;
-    public visualizationTypeDisplayNames = {
+    public visualizations: string [];
+    public freqtable = false;
+    public visualizationsDisplayNames = {
         ngram: 'Common n-grams',
         wordcloud: 'Wordcloud',
         timeline: 'Timeline'
@@ -66,8 +66,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     constructor(private searchService: SearchService, private apiService: ApiService) {
     }
 
-    ngDoCheck(){
-        if (this.isLoading != this.childComponentLoading ) {
+    ngDoCheck() {
+        if (this.isLoading !== this.childComponentLoading ) {
             this.isLoading = this.childComponentLoading;
         }
     }
@@ -77,32 +77,26 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (changes['corpus']) {
             this.visualizedFields = [];
             if (this.corpus && this.corpus.fields) {
-                this.corpus.fields.filter(field => field.visualizationType).forEach(field => {
-                    if (typeof(field.visualizationType) === 'string') {
-                        // fields with one visualization type
-                        this.visualizedFields.push(field as visualizationField);
-                    } else {
-                        // fields with multiple visualization types
-                        field.visualizationType.forEach(visualizationType => {
-                            this.visualizedFields.push({
-                                name: field.name,
-                                displayName: `${field.displayName}: ${this.visualizationTypeDisplayNames[visualizationType]}`,
-                                visualizationType: visualizationType,
-                                visualizationSort: field.visualizationSort,
-                                searchFilter: field.searchFilter,
-                                multiFields: field.multiFields,
-                            });
+                this.corpus.fields.filter(field => field.visualizations).forEach(field => {
+                    field.visualizations.forEach(vis => {
+                        this.visualizedFields.push({
+                            name: field.name,
+                            displayName: `${field.displayName}: ${this.visualizationsDisplayNames[vis]}`,
+                            visualizations: vis,
+                            visualizationSort: field.visualizationSort,
+                            searchFilter: field.searchFilter,
+                            multiFields: field.multiFields,
                         });
-                    }
+                    });
                 });
             }
 
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
-                if (field.visualizationType !== 'ngram' || this.queryModel.queryText) {
+                if (field.visualizations !== 'ngram' || this.queryModel.queryText) {
                     this.visDropdown.push({
                         label: field.displayName,
-                        value: {name: field.name, visualizationType: field.visualizationType}
+                        value: {name: field.name, visualizations: field.visualizations}
                     });
                 }
             });
@@ -132,7 +126,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (this.resultsCount > 0) {
             this.setVisualizedField({
                 name: this.visualizedField.name,
-                visualizationType: this.visualizedField.visualizationType
+                visualizations: this.visualizedField.visualizations
             });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         }
@@ -142,7 +136,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizationType: string}) {
+    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizations: string}) {
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
@@ -154,21 +148,21 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.aggResults = [];
         this.errorMessage = '';
         if (selectedField === 'relatedwords') {
-            this.visualizedField.visualizationType = selectedField;
+            this.visualizedField.visualizations = selectedField;
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
         } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => 
-                field.name === selectedField.name && field.visualizationType === selectedField.visualizationType ));
+                field.name === selectedField.name && field.visualizations === selectedField.visualizations ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualizationType === 'wordcloud') {
+        if (this.visualizedField.visualizations === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
             this.isLoading = false;
-        } else if (this.visualizedField.visualizationType === 'timeline') {
+        } else if (this.visualizedField.visualizations === 'timeline') {
             this.timeline = true;
-        } else if (this.visualizedField.visualizationType === 'relatedwords') {
+        } else if (this.visualizedField.visualizations === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -181,7 +175,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        } else if (this.visualizedField.visualizationType !== 'ngram') {
+        } else if (this.visualizedField.visualizations !== 'ngram') {
             this.ngram = true;
             let size = 0;
             if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {

@@ -93,7 +93,7 @@ describe('CorpusService', () => {
                     'results_overview': false,
                     'csv_core': false,
                     'search_field_core': false,
-                    'visualization_type': 'term_frequency',
+                    'visualizations': 'histogram',
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'MultipleChoiceFilter',
@@ -114,8 +114,8 @@ describe('CorpusService', () => {
                     'results_overview': true,
                     'csv_core': true,
                     'search_field_core': false,
-                    'term_frequency': false,
-                    'visualization_type': 'term_frequency',
+                    'histogram': false,
+                    'visualizations': 'histogram',
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'RangeFilter',
@@ -153,7 +153,7 @@ describe('CorpusService', () => {
                 resultsOverview: false,
                 csvCore: false,
                 searchFieldCore: false,
-                visualizationType: 'term_frequency',
+                visualizations: ['histogram'],
                 visualizationSort: 'key',
                 hidden: true,
                 sortable: false,
@@ -179,7 +179,7 @@ describe('CorpusService', () => {
                 resultsOverview: true,
                 csvCore: true,
                 searchFieldCore: false,
-                visualizationType: 'term_frequency',
+                visualizations: ['histogram'],
                 visualizationSort: 'key',
                 searchFilter: {
                     description: 'Restrict the years from which search results will be returned.',
