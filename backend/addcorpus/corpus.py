@@ -606,7 +606,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualization_type)
-        options: term_frequency, timeline, wordcloud
+        options: term_frequency, timeline, wordcloud, ngram, search_term_frequency
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)

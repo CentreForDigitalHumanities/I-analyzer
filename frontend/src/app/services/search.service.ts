@@ -8,8 +8,9 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+    AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 import { stringify } from 'querystring';
+import { formatDate } from '@angular/common';
 
 @Injectable()
 export class SearchService {
@@ -99,8 +100,31 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
+    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number, size: number): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getAggregateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            field_name: fieldName,
+            field_value: fieldValue,
+            size: size,
+        });
+    }
+
     public async dateHistogramSearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
+    }
+
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, size: number, start_date: Date, end_date?: Date): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getDateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            field: fieldName,
+            start_date: start_date.toISOString().slice(0, 10),
+            end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
+            size: size,
+        });
     }
 
     public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
@@ -187,7 +211,7 @@ export class SearchService {
                     }
                 });
             }).catch( result => {
-                reject({'message': result.message});
+                reject({ message: result.message });
             });
         });
     }
