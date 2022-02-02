@@ -83,7 +83,7 @@ export class SearchService {
         const user = await this.userService.getCurrentUser();
         const query = new Query(queryModel, corpus.name, user.id);
         const fields = corpus.fields.filter( field => field.searchFieldCore);
-        const highlight = {field: fields[0].name, fragmentSize: 1};
+        const highlight = {field: fields[0].name, fragmentSize: 50};
         const results = await this.elasticSearchService.search(corpus, queryModel, highlight);
         query.totalResults = results.total;
         await this.queryService.save(query, true);
@@ -91,7 +91,7 @@ export class SearchService {
         return <SearchResults>{
             fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
-            documents: results.documents
+            documents: results.documents,
         };
     }
 

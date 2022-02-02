@@ -7,8 +7,9 @@ export type SearchResults = {
     total: {
         value: number,
         relation: string
-    }
-}
+    },
+    highlights?: {},
+};
 
 export type ResultOverview = {
     queryText: string,

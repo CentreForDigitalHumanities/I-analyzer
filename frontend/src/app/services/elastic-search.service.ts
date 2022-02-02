@@ -169,6 +169,8 @@ export class ElasticSearchService {
                 fields: {
                     [highlight.field]: {
                         fragment_size: highlight.fragmentSize,
+                        pre_tags: ['<span class="highlight">'],
+                        post_tags: ['</span>'],
                         order: 'score'
                 }}
             };
@@ -215,7 +217,8 @@ export class ElasticSearchService {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
-            fieldValues: Object.assign({ id: hit._id }, hit._source)
+            fieldValues: Object.assign({ id: hit._id }, hit._source),
+            highlight: hit.highlight,
         };
     }
 
@@ -338,4 +341,5 @@ export interface SearchHit {
     _id: string;
     _score: number;
     _source: {};
+    highlight: {};
 }
