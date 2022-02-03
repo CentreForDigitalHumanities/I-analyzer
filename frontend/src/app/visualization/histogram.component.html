@@ -5,7 +5,7 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [visualizedField]="visualizedField" [normalizer]="normalizer">
+    <ia-freqtable [headers]="tableHeaders" [data]="selectedData" [visualizedField]="visualizedField" [normalizer]="normalizer">
     </ia-freqtable>
 </div>
 

@@ -15,7 +15,6 @@
 </div>
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
-    <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
     <ia-histogram-options *ngIf="visualizedField.visualizationType=='timeline' || visualizedField.visualizationType == 'term_frequency'"
         [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
         (change)="onHistogramOptionChange($event)">
@@ -29,9 +28,13 @@
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" [asTable]="freqtable" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" [asTable]="freqtable"
+                (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable"
+                [queryText]="queryModel.queryText" [corpusName]="corpus.name" [asTable]="freqtable"
+                (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>

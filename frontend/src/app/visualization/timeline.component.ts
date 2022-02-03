@@ -7,9 +7,11 @@ import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel, DateResult } from '../models/index';
+import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
+    visualizationField, freqTableHeaders } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
+import * as moment from 'moment';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -43,7 +45,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     private currentTimeCategory: string;
     private rawData: DateResult[];
-    private selectedData: Array<DateFrequencyPair>;
+    private selectedData: TimelineDataPoint[];
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
 
@@ -94,10 +96,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         this.selectData();
 
-        this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         this.setDateRange();
-        this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
-        this.totalCount = _.sumBy(this.selectedData, d => d.doc_count);
+        this.yMax = d3Array.max(this.selectedData.map(d => d.value));
+        this.totalCount = _.sumBy(this.selectedData, d => d.value);
         this.isLoading.emit(false);
     }
 
@@ -161,17 +162,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         if (this.frequencyMeasure === 'tokens') {
             if (this.normalizer === 'raw') {
                 this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, doc_count: cat.match_count }));
+                    ({ date: cat.date, value: cat.match_count }));
             } else if (this.normalizer === 'terms') {
                 this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, doc_count: cat.match_count / cat.token_count }));
+                    ({ date: cat.date, value: cat.match_count / cat.token_count }));
             } else if (this.normalizer === 'documents') {
                 this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, doc_count: cat.match_count / cat.total_doc_count }));
+                    ({ date: cat.date, value: cat.match_count / cat.total_doc_count }));
             }
         } else {
-            this.selectedData = this.rawData.map(cat =>
-                ({ date: cat.date, doc_count: cat.doc_count }));
+            if (this.normalizer === 'raw') {
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, value: cat.doc_count }));
+            } else {
+                const total_doc_count = this.rawData.reduce((s, f) => s + f.doc_count, 0);
+                this.selectedData = this.rawData.map(cat =>
+                    ({ date: cat.date, value: cat.doc_count / total_doc_count }));
+            }
+
         }
     }
 
@@ -188,9 +196,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         // update existing bars
         this.chart.selectAll('.bar').transition()
             .attr('x', d => this.xScale(d.date))
-            .attr('y', d => this.yScale(d.doc_count))
+            .attr('y', d => this.yScale(d.value))
             .attr('width', d => this.calculateBarWidth(d.date))
-            .attr('height', d => this.height - this.yScale(d.doc_count));
+            .attr('height', d => this.height - this.yScale(d.value));
 
         // add new bars
         update
@@ -203,8 +211,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             .attr('height', 0)
             .transition().duration(750)
             .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.doc_count))
-            .attr('height', d => this.height - this.yScale(d.doc_count));
+            .attr('y', d => this.yScale(d.value))
+            .attr('height', d => this.height - this.yScale(d.value));
     }
 
 
@@ -229,7 +237,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.queryModelCopy.filters.push(filter);
             this.prepareTimeline().then(() => {
                 this.setupYScale();
-                this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
+                this.yMax = d3Array.max(this.selectedData.map(d => d.value));
                 this.rescaleY(this.normalizer === 'percent');
                 this.drawChartData();
                 this.rescaleX();
@@ -243,11 +251,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.prepareTimeline().then(() => {
             this.setDateRange();
             this.setupYScale();
-            this.yMax = d3Array.max(this.selectedData.map(d => d.doc_count));
+            this.yMax = d3Array.max(this.selectedData.map(d => d.value));
             this.rescaleY(this.normalizer === 'percent');
             this.rescaleX();
             this.drawChartData();
-            this.dataService.pushCurrentTimelineData({ data: this.selectedData, timeInterval: this.currentTimeCategory });
         });
     }
 
@@ -310,6 +317,39 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     get percentageDocumentsSearched() {
         return _.round(100 * this.searchRatioDocuments);
+    }
+
+    get tableHeaders(): freqTableHeaders {
+        const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+
+        let dateFormat: string;
+        switch (this.currentTimeCategory) {
+            case 'year':
+                dateFormat = "YYYY";
+                break;
+            case 'month':
+                dateFormat = "MMMM YYYY";
+                break;
+            default:
+                dateFormat = "YYYY-MM-DD";
+                break;
+        }
+
+        const formatDateValue = (date: Date) => {
+            return moment(date).format(dateFormat);
+        };
+
+        let formatValue: (value: number) => string | undefined;
+        if (this.normalizer === 'percent') {
+            formatValue = (value: number) => {
+                return `${_.round(100 * value, 1)}%`;
+            };
+        }
+
+        return [
+            { key: 'date', label: 'Date', format: formatDateValue },
+            { key: 'value', label: rightColumnName, format: formatValue }
+        ];
     }
 }
 
