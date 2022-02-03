@@ -28,8 +28,9 @@
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" [asTable]="freqtable"
-                (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [batchSize]="batchSizeWordcloud" [resultsCount]="resultsCount" [asTable]="freqtable"
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable"
                 [queryText]="queryModel.queryText" [corpusName]="corpus.name" [asTable]="freqtable"
                 (error)="setErrorMessage($event)"></ia-related-words>

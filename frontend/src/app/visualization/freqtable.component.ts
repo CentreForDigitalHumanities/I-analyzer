@@ -19,8 +19,6 @@ export class FreqtableComponent implements OnChanges {
 
     public defaultSort = 'doc_count';
     public defaultSortOrder = '-1';
-    public rightColumnName: string;
-
 
     constructor() { }
 

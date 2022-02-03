@@ -3,7 +3,7 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable *ngSwitchDefault [searchData]="significantText">
+    <ia-freqtable [headers]="tableHeaders" [data]="significantText" [visualizedField]="visualizedField">
     </ia-freqtable>
 </div>
 
@@ -12,6 +12,6 @@
         <i class="fa fa-question-circle"></i>
     </span>
 </a>
-<button class="button" [ngClass]="{'is-loading': isLoading}" [attr.disabled]="disableLoadMore? '' : null" (click)="loadMoreData()">
+<button class="button" [ngClass]="{'is-loading': isLoading.value}" [attr.disabled]="disableLoadMore? '' : null" (click)="loadMoreData()">
     <span iaBalloon="Load up to 100,000 results to your search query." iaBalloonLength="medium">Load more results</span>
 </button>

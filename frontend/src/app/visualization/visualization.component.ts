@@ -56,7 +56,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
 
 
-    public disableWordCloudLoadMore = false;
     public timeline = false;
     public ngram = false;
     public isLoading = false;
@@ -78,7 +77,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.disableWordCloudLoadMore = false;
         if (changes['corpus']) {
             this.visualizedFields = [];
             if (this.corpus && this.corpus.fields) {
@@ -140,7 +138,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 name: this.visualizedField.name,
                 visualizationType: this.visualizedField.visualizationType
             });
-            this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         } else {
             this.aggResults = [];
             this.foundNoVisualsMessage = this.noResults;
@@ -168,10 +165,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 field.name === selectedField.name && field.visualizationType === selectedField.visualizationType ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualizationType === 'wordcloud') {
-            this.loadWordcloudData(this.batchSizeWordcloud);
-            this.isLoading = false;
-        } else if (this.visualizedField.visualizationType === 'timeline') {
+        if (this.visualizedField.visualizationType === 'timeline') {
             this.timeline = true;
         } else if (this.visualizedField.visualizationType === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
@@ -186,36 +180,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     this.errorMessage = error['message'];
                     this.isLoading = false;
                 });
-        }
-    }
-
-    loadWordcloudData(size: number = null){
-        const queryModel = this.queryModel;
-        if (queryModel) {
-            this.searchService.getWordcloudData(this.visualizedField.name, queryModel, this.corpus.name, size).then(result => {
-                this.aggResults = result[this.visualizedField.name];
-            })
-            .catch(error => {
-                this.foundNoVisualsMessage = this.noResults;
-                this.errorMessage = error['message'];
-            });
-        }
-    }
-
-    loadMoreWordcloudData() {
-        const queryModel = this.queryModel;
-        if (queryModel) {
-            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
-                this.tasksToCancel = result['taskIds'];
-                    const childTask = result['taskIds'][0];
-                    this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
-                        if (outcome['success'] === true) {
-                            this.aggResults = outcome['results'];
-                        } else {
-                            this.foundNoVisualsMessage = this.noResults;
-                        }
-                    });
-            });
         }
     }
 
