@@ -7,6 +7,7 @@ from flask import current_app
 
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
+from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 
 class ParliamentUK(Parliament, CSVCorpus):
@@ -83,6 +84,11 @@ class ParliamentUK(Parliament, CSVCorpus):
         self.house.extractor = CSV(
             field='speaker_house',
             transform=ParliamentUK.format_house
+        )
+
+        self.house.search_filter=MultipleChoiceFilter(
+            description='Search only in debates from the selected houses',
+            option_count=2
         )
 
         self.debate_id.extractor = CSV(

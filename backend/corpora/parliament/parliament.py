@@ -68,7 +68,7 @@ class Parliament(Corpus):
             max_date,
             description='Search only within this time range.'
         ),
-        visualization_type='timeline'
+        visualizations=['timeline']
     ) 
 
     house = Field(
@@ -76,11 +76,7 @@ class Parliament(Corpus):
         display_name='House',
         description='House in which the debate took place',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
-            option_count=10
-        ),
-        visualization_type=['term_frequency'],
+        visualizations=['histogram'],
     )
 
     debate_title = Field(
@@ -133,7 +129,7 @@ class Parliament(Corpus):
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
-        visualization_type=['wordcloud', 'ngram'],
+        visualizations=['wordcloud', 'ngram'],
     )
 
     speech_id = Field(
@@ -169,10 +165,6 @@ class Parliament(Corpus):
         display_name='Role',
         description='Role of the speaker in the debate',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search for speeches by speakers with the the selected roles',
-            option_count=10
-        )
     )
 
     party = Field(
@@ -180,17 +172,19 @@ class Parliament(Corpus):
         display_name='Party',
         description='Political party that the speaker belongs to',
         es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search in speeches from the selected parties',
-            option_count=10
-        ),
-        visualization_type='term_frequency'
     )
 
     party_id = Field(
         name='party_id',
         display_name='Party ID',
         description='Unique identifier of the political party the speaker belongs to',
+        es_mapping={'type': 'keyword'},
+    )
+
+    party_full = Field(
+        name='party_full',
+        display_name='Party (full name)',
+        description='Full name of the political party that the speaker belongs to',
         es_mapping={'type': 'keyword'},
     )
 
@@ -216,6 +210,6 @@ class Parliament(Corpus):
         speaker, speaker_id, 
         speech_type,
         role, 
-        party, party_id,
+        party, party_id, party_full,
         page, column,
         ]

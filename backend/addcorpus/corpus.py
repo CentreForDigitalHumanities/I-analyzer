@@ -605,8 +605,8 @@ class Field(object):
     - whether they appear in the overview of results (results_overview)
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
-    - whether they are associated with a visualization type (visualization_type)
-        options: term_frequency, timeline, wordcloud, ngram, search_term_frequency
+    - whether they are associated with a visualization type (visualizations)
+        options: histogram, timeline, wordcloud
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)
@@ -628,7 +628,7 @@ class Field(object):
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualization_type=None,
+                 visualizations=None,
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
@@ -647,7 +647,7 @@ class Field(object):
         self.results_overview = results_overview
         self.csv_core = csv_core
         self.search_field_core = search_field_core
-        self.visualization_type = visualization_type
+        self.visualizations = visualizations
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
         self.indexed = indexed

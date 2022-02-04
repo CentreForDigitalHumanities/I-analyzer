@@ -15,13 +15,13 @@
 </div>
 
 <ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
-    <ia-histogram-options *ngIf="visualizedField.visualizationType=='timeline' || visualizedField.visualizationType == 'term_frequency'"
+    <ia-histogram-options *ngIf="visualizedField.visualization=='timeline' || visualizedField.visualization == 'histogram'"
         [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
         (change)="onHistogramOptionChange($event)">
     </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}">
-        <ng-container [ngSwitch]="visualizedField.visualizationType">
-            <ia-histogram *ngSwitchCase="'term_frequency'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
+        <ng-container [ngSwitch]="visualizedField.visualization">
+            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
                 [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>

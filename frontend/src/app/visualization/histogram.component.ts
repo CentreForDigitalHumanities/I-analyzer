@@ -16,7 +16,7 @@ import { BarChartComponent } from './barchart.component';
     styleUrls: ['./histogram.component.scss']
 })
 export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('termfrequency', { static: true }) private termFreqContainer: ElementRef;
+    @ViewChild('histogram', { static: true }) private histogramContainer: ElementRef;
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField: visualizationField;
@@ -50,7 +50,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const loadTokenCounts = (this.frequencyMeasure === 'tokens') && (loadDocCounts  || !(this.rawData.find(cat => cat.match_count)));
 
         if (this.chartElement === undefined) {
-            this.chartElement = this.termFreqContainer.nativeElement;
+            this.chartElement = this.histogramContainer.nativeElement;
             this.calculateCanvas();
         }
 
