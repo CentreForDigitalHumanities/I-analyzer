@@ -5,16 +5,16 @@
 <div class="block" *ngIf="!noVisualizations" #viscontrol>
 	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
-	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
+	<button [class.button]="true" [class.is-primary]="freqtable" (click)="freqtable = true" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
 	</button>
 
-	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="showChart()" style="float:right">
+	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="freqtable = false" style="float:right">
 		<i class="fa fa-bar-chart" aria-hidden="true"></i>
 	</button>
 </div>
 
-<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
+<ng-container *ngIf="visualExists; else noVisualsMessage">
     <ia-histogram-options *ngIf="visualizedField.visualization=='timeline' || visualizedField.visualization == 'histogram'"
         [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
         (change)="onHistogramOptionChange($event)">
@@ -29,12 +29,12 @@
     		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [batchSize]="batchSizeWordcloud" [resultsCount]="resultsCount" [asTable]="freqtable"
+                [resultsCount]="resultsCount" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable"
                 [queryText]="queryModel.queryText" [corpusName]="corpus.name" [asTable]="freqtable"
                 (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>

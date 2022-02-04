@@ -2,7 +2,7 @@ import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@an
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, AggregateResult, MultipleChoiceFilterData, RangeFilterData, QueryModel, visualizationField } from '../models/index';
+import { Corpus, QueryModel, visualizationField } from '../models/index';
 import { SearchService, ApiService } from '../services/index';
 
 
@@ -37,15 +37,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public visualizations: string [];
     public freqtable = false;
     public visualizationsDisplayNames = {
-
-        ngram: 'Common n-grams',
-        wordcloud: 'Wordcloud',
-        timeline: 'Timeline',
-        histogram: 'Histogram',
-        relatedwords: 'Related words',
+        ngram: 'common n-grams',
+        wordcloud: 'wordcloud',
+        timeline: 'timeline',
+        histogram: 'histogram',
+        relatedwords: 'related words',
     };
 
-    public aggResults: AggregateResult[];
     public relatedWordsGraph: {
         labels: string[],
         datasets: {
@@ -57,16 +55,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     };
 
 
-    public timeline = false;
-    public ngram = false;
+    public visualExists = false;
     public isLoading = false;
     private childComponentLoading = false;
 
-    // aggregate search expects a size argument
-    public defaultSize = 10000;
-    private batchSizeWordcloud = 1000;
-
-    private tasksToCancel: string[] = [];
 
     constructor(private searchService: SearchService, private apiService: ApiService) {
     }
@@ -134,22 +126,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 visualizations: this.visualizedField.visualization
             });
         } else {
-            this.aggResults = [];
             this.foundNoVisualsMessage = this.noResults;
         }
     }
 
     setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizations: string}) {
-        if (this.tasksToCancel.length > 0) {
-            // the user requests other data, so revoke all running celery tasks
-            this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
-                if (result['success'] === true) {
-                    this.tasksToCancel = [];
-                }
-            });
-        }
-        this.aggResults = [];
         this.errorMessage = '';
+        this.visualExists = true;
+
         if (selectedField === 'relatedwords') {
             this.visualizedField.visualization = selectedField;
             this.visualizedField.name = selectedField;
@@ -160,9 +144,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 field.name === selectedField.name && field.visualization === selectedField.visualizations ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualization === 'timeline') {
-            this.timeline = true;
-        } else if (this.visualizedField.visualization === 'relatedwords') {
+        if (this.visualizedField.visualization === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];
@@ -187,14 +169,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.queryModel = null;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
-    }
-
-    showTable() {
-        this.freqtable = true;
-    }
-
-    showChart() {
-        this.freqtable = false;
     }
 
     onIsLoading(event: boolean) {

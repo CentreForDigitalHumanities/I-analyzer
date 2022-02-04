@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { Corpus, QueryModel, visualizationField } from '../models';
+import * as _ from 'lodash';
+import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
 import { SearchService } from '../services';
 
 @Component({
@@ -11,7 +12,15 @@ export class NgramComponent implements OnInit, OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: visualizationField;
+    @Input() asTable: boolean;
     @Output() isLoading = new EventEmitter<boolean>();
+
+    tableHeaders: freqTableHeaders = [
+        { key: 'date', label: 'Date' },
+        { key: 'ngram', label: 'N-gram' },
+        { key: 'freq', label: 'Frequency' }
+    ];
+    tableData: { date: string, ngram: string, freq: number }[];
 
     public chartData: any;
     public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
@@ -138,6 +147,7 @@ export class NgramComponent implements OnInit, OnChanges {
             size, position, freqCompensation, analysis, maxSize)
             .then(results => {
                 const result = results['graphData'];
+                this.setTableData(result);
                 result.datasets.forEach((data, index) => {
                     data.borderColor = this.colorPalette[index];
                     data.backgroundColor = 'rgba(0,0,0,0)';
@@ -150,6 +160,19 @@ export class NgramComponent implements OnInit, OnChanges {
             this.chartData = undefined;
             this.isLoading.emit(false);
         });
+    }
+
+    setTableData(results: { datasets: { label: string, data: number[] }[], labels: string[] }) {
+        this.tableData = _.flatMap(
+            results.labels.map((date, index) => {
+                return results.datasets.map(dataset => ({
+                    date: date,
+                    ngram: dataset.label,
+                    freq: dataset.data[index],
+                }));
+            })
+        );
+
     }
 
 

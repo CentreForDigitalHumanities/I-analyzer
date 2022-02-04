@@ -19,7 +19,6 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Input() visualizedField: visualizationField;
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
-    @Input() batchSize: number;
     @Input() resultsCount: number;
     @Input() asTable: boolean;
 
@@ -29,6 +28,8 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     public significantText: AggregateResult[];
     public disableLoadMore: boolean = false;
     private tasksToCancel: string[] = [];
+
+    private batchSize = 1000;
 
     private width = 600;
     private height = 400;
