@@ -1,3 +1,10 @@
+<div class="block">
+    <ia-histogram-options
+        [queryText]="queryModel.queryText" [showTokenCountOption]="totalTokenCountAvailable"
+        (options)="onOptionChange($event)">
+    </ia-histogram-options>
+</div>
+
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
     <div class="barchart" #timeline>
         <p class=notification *ngIf=showHint>

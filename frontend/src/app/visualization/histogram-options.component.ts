@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { histogramOptions } from '../models';
 
 @Component({
     selector: 'ia-histogram-options',
@@ -8,7 +9,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class HistogramOptionsComponent implements OnInit {
     @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
-    @Output() change = new EventEmitter();
+    @Output() options = new EventEmitter<histogramOptions>();
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
@@ -23,7 +24,7 @@ export class HistogramOptionsComponent implements OnInit {
             this.normalizer = 'raw';
         }
 
-        this.change.emit({
+        this.options.emit({
             frequencyMeasure: this.frequencyMeasure,
             normalizer: this.normalizer,
         });

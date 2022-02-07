@@ -7,7 +7,7 @@ import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
 import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData,
-    visualizationField, HistogramDataPoint, freqTableHeaders } from '../models/index';
+    visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -20,19 +20,20 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField: visualizationField;
-    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
     @Input() asTable: boolean;
 
     @Output() isLoading = new EventEmitter<boolean>();
-    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
 
     rawData: AggregateResult[];
     selectedData: HistogramDataPoint[];
 
+    frequencyMeasure: 'documents'|'tokens' = 'documents';
+    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
+
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
     searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
     documentLimitExceeded = false; // whether some bins have more documents than the limit
+    totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
     private xBarWidth: number;
     private xBarHalf: number;
@@ -45,28 +46,33 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     async ngOnChanges(changes: SimpleChanges) {
         // doc counts should be requested if query has changed
         const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-
-        // token counts should be requested if they are requested and not already present for this query
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && (loadDocCounts  || !(this.rawData.find(cat => cat.match_count)));
+        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
 
         if (this.chartElement === undefined) {
             this.chartElement = this.histogramContainer.nativeElement;
             this.calculateCanvas();
         }
 
-        this.isLoading.emit(true);
-
-        await this.prepareTermFrequency(loadDocCounts, loadTokenCounts);
-        this.setupYScale();
-        this.createChart(this.visualizedField.displayName, this.rawData.length);
-        this.rescaleY(this.normalizer === 'percent');
-        this.setupBrushBehaviour();
-        this.drawChartData();
-        this.setupTooltip();
-        this.isLoading.emit(false);
+        this.prepareChart(loadDocCounts, loadTokenCounts);
     }
 
-    async prepareTermFrequency(loadDocCounts = false, loadTokenCounts = false) {
+    async onOptionChange(options: histogramOptions) {
+        this.frequencyMeasure = options.frequencyMeasure;
+        this.normalizer = options.normalizer;
+
+        if (this.rawData) {
+            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
+                this.prepareChart(false, true);
+            } else {
+                this.prepareChart(false, false);
+            }
+        }
+    }
+
+
+    async prepareChart(loadDocCounts = false, loadTokenCounts = false) {
+        this.isLoading.emit(true);
+
         if (loadDocCounts) { await this.requestDocumentData(); }
         if (loadTokenCounts) { await this.requestTermFrequencyData(); }
 
@@ -83,6 +89,14 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
         this.yMax = d3Array.max(this.selectedData.map(d => d.value));
         this.totalCount = _.sumBy(this.selectedData, d => d.value);
+
+        this.setupYScale();
+        this.createChart(this.visualizedField.displayName, this.rawData.length);
+        this.rescaleY(this.normalizer === 'percent');
+        this.setupBrushBehaviour();
+        this.drawChartData();
+        this.setupTooltip();
+        this.isLoading.emit(false);
     }
 
     async requestDocumentData() {
@@ -123,7 +137,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         await Promise.all(dataPromises);
 
         // signal if total token counts are available
-        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
+        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
     }
 
     selectData(): void {

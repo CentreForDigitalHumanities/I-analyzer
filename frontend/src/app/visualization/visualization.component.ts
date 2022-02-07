@@ -3,8 +3,6 @@ import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, visualizationField } from '../models/index';
-import { SearchService, ApiService } from '../services/index';
-
 
 @Component({
     selector: 'ia-visualization',
@@ -18,9 +16,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visualizedFields: visualizationField[];
 
-    public frequencyMeasure: 'documents'|'tokens' = 'documents';
-    public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
-    public showTokenCountOption: boolean;
     public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
@@ -128,11 +123,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.visualizedField = selectedField;
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-    }
-
-    onHistogramOptionChange(event: {frequencyMeasure: 'documents'|'tokens', normalizer: 'raw'|'percent'|'documents'|'terms' }) {
-        this.frequencyMeasure = event.frequencyMeasure || this.frequencyMeasure;
-        this.normalizer = event.normalizer || this.normalizer;
     }
 
     setErrorMessage(message: string) {

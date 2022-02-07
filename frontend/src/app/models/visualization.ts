@@ -26,3 +26,8 @@ export type freqTableHeaders = {
     label: string,
     format?: (value) => string
 }[];
+
+export type histogramOptions = {
+    frequencyMeasure: 'documents'|'tokens',
+    normalizer: 'raw'|'percent'|'documents'|'terms',
+};

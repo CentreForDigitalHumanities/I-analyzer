@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
-    visualizationField, freqTableHeaders } from '../models/index';
+    visualizationField, freqTableHeaders, histogramOptions } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
@@ -27,12 +27,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
-    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    @Input() normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
     @Input() asTable: boolean;
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
+
+    frequencyMeasure: 'documents'|'tokens' = 'documents';
+    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     private queryModelCopy;
 
@@ -56,9 +57,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     ngOnChanges(changes: SimpleChanges) {
         // doc counts should be requested if query has changed
         const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-
-        // token counts should be requested if they are requested and not already present for this query
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && (loadDocCounts  || !(this.rawData.find(cat => cat.match_count)));
+        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
 
         if (this.chartElement === undefined) {
             this.chartElement = this.timelineContainer.nativeElement;
@@ -72,18 +71,18 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.xScale = d3Scale.scaleTime()
             .range([0, this.width])
             .clamp(true);
-        this.prepareTimeline(loadDocCounts, loadTokenCounts).then(() => {
-            this.setupYScale();
-            this.createChart(this.visualizedField.displayName);
-            this.rescaleY(this.normalizer === 'percent');
-            this.drawChartData();
-            this.setupBrushBehaviour();
-        });
+        this.prepareTimeline(loadDocCounts, loadTokenCounts);
+    }
 
-        // listen for changes in 'normalizer'
-        if (changes['normalizer'] !== undefined) {
-            if (changes['normalizer'].previousValue !== changes['normalizer'].currentValue) {
-                this.rescaleY(this.normalizer === 'percent');
+    onOptionChange(options: histogramOptions) {
+        this.frequencyMeasure = options.frequencyMeasure;
+        this.normalizer = options.normalizer;
+
+        if (this.rawData) {
+            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
+                this.prepareTimeline(false, true);
+            } else {
+                this.prepareTimeline(false, false);
             }
         }
     }
@@ -99,6 +98,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.setDateRange();
         this.yMax = d3Array.max(this.selectedData.map(d => d.value));
         this.totalCount = _.sumBy(this.selectedData, d => d.value);
+
+        this.setupYScale();
+        this.createChart(this.visualizedField.displayName);
+        this.rescaleY(this.normalizer === 'percent');
+        this.drawChartData();
+        this.setupBrushBehaviour();
         this.isLoading.emit(false);
     }
 

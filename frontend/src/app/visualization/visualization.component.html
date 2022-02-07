@@ -15,18 +15,14 @@
 </div>
 
 <ng-container *ngIf="visualExists; else noVisualsMessage">
-    <ia-histogram-options *ngIf="visualizedField.visualization=='timeline' || visualizedField.visualization == 'histogram'"
-        [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
-        (change)="onHistogramOptionChange($event)">
-    </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable"
