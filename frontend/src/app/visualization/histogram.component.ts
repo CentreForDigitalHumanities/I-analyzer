@@ -289,4 +289,11 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             { key: 'value', label: header, format: formatValue }
         ];
     }
+
+    get defaultSort(): string {
+        if (this.visualizedField && this.visualizedField.visualizationSort) {
+            return 'key';
+        }
+        return 'value';
+    }
 }

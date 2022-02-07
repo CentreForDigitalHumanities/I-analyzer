@@ -41,26 +41,15 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         wordcloud: 'wordcloud',
         timeline: 'timeline',
         histogram: 'histogram',
-        relatedwords: 'related words',
+        relatedwords: 'Related words',
     };
-
-    public relatedWordsGraph: {
-        labels: string[],
-        datasets: {
-            label: string, data: number[]
-        }[]
-    };
-    public relatedWordsTable: {
-        [word: string]: number
-    };
-
 
     public visualExists = false;
     public isLoading = false;
     private childComponentLoading = false;
 
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    constructor() {
     }
 
     ngDoCheck() {
@@ -93,7 +82,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 if (!requires_search_term || this.queryModel.queryText) {
                     this.visDropdown.push({
                         label: `${field.displayName} (${this.visualizationsDisplayNames[field.visualization]})`,
-                        value: {name: field.name, visualizations: field.visualization}
+                        value: field
                     });
                 }
             });
@@ -121,43 +110,24 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     checkResults() {
         if (this.resultsCount > 0) {
-            this.setVisualizedField({
-                name: this.visualizedField.name,
-                visualizations: this.visualizedField.visualization
-            });
+            this.setVisualizedField(this.visualizedField);
         } else {
             this.foundNoVisualsMessage = this.noResults;
         }
     }
 
-    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizations: string}) {
+    setVisualizedField(selectedField: 'relatedwords'|visualizationField) {
         this.errorMessage = '';
         this.visualExists = true;
 
         if (selectedField === 'relatedwords') {
             this.visualizedField.visualization = selectedField;
             this.visualizedField.name = selectedField;
-            this.visualizedField.displayName = 'Related Words';
-            this.visualizedField.visualizationSort = 'similarity';
+            this.visualizedField.displayName = this.visualizationsDisplayNames[selectedField];
         } else {
-            this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => 
-                field.name === selectedField.name && field.visualization === selectedField.visualizations ));
+            this.visualizedField = selectedField;
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualization === 'relatedwords') {
-            this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
-                this.relatedWordsGraph = results['graphData'];
-                this.relatedWordsTable = results['tableData'];
-                this.isLoading = false;
-            })
-                .catch(error => {
-                    this.relatedWordsGraph = undefined;
-                    this.relatedWordsTable = undefined;
-                    this.foundNoVisualsMessage = this.noResults;
-                    this.errorMessage = error['message'];
-                    this.isLoading = false;
-                });
-        }
     }
 
     onHistogramOptionChange(event: {frequencyMeasure: 'documents'|'tokens', normalizer: 'raw'|'percent'|'documents'|'terms' }) {

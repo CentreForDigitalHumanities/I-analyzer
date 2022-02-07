@@ -1,7 +1,7 @@
 <div *ngIf="!asTable">
-    <p-chart *ngIf="!zoomedInData" type="line" [data]="searchData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart>
+    <p-chart *ngIf="!zoomedInData" type="line" [data]="graphData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart>
     <div *ngIf="zoomedInData">
-        <a class="button" (click)="zoomBack()">
+        <a class="button" [iaBalloon]="'go back'" (click)="zoomBack()">
                 <span class="icon">
                     <i class="fa fa-undo"></i>
                 </span>
@@ -11,8 +11,8 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="tableData">
-    </ia-freqtable>    
+    <ia-freqtable  [headers]="tableHeaders" [data]="tableData" [defaultSort]="'similarity'" [name]="'related words'">
+    </ia-freqtable>
 </div>
 
 <a class="button" (click)="showRelatedWordsDocumentation()">

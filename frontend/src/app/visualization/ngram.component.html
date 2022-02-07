@@ -61,6 +61,6 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [visualizedField]="visualizedField">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name+'-ngrams'">
     </ia-freqtable>
 </div>

@@ -21,7 +21,7 @@
     </ia-histogram-options>  
     <div  [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
-            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
+            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
@@ -31,9 +31,8 @@
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [tableData]="relatedWordsTable"
-                [queryText]="queryModel.queryText" [corpusName]="corpus.name" [asTable]="freqtable"
-                (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
+                [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>

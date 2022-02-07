@@ -1,4 +1,4 @@
-import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import * as _ from 'lodash';
@@ -11,26 +11,14 @@ import { saveAs } from 'file-saver';
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class FreqtableComponent implements OnChanges {
+export class FreqtableComponent {
     @Input() headers: { key: string, label: string, transform?: (any) => string }[];
     @Input() data: any[];
-    @Input() public visualizedField;
-    @Input() public normalizer: string;
-
-    public defaultSort = 'doc_count';
+    @Input() name: string;
+    @Input() defaultSort: string;
     public defaultSortOrder = '-1';
 
     constructor() { }
-
-    ngOnChanges() {
-        if (this.headers && this.data) {
-            if ("visualizationSort" in this.visualizedField) {
-                this.defaultSort = this.visualizedField.visualizationSort;
-            } else {
-                this.defaultSort = "doc_count";
-            }
-        }
-    }
 
     parseTableData() {
         const data = this.data.map(row => {
@@ -44,7 +32,7 @@ export class FreqtableComponent implements OnChanges {
     downloadTable() {
         const data = this.parseTableData();
         const blob = new Blob(data, { type: `text/csv;charset=utf-8`, endings: 'native' });
-        const filename = this.visualizedField.name + '.csv';
+        const filename = this.name + '.csv';
         saveAs(blob, filename);
     }
 

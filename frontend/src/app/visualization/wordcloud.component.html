@@ -3,7 +3,7 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="significantText" [visualizedField]="visualizedField">
+    <ia-freqtable [headers]="tableHeaders" [data]="significantText" [defaultSort]="'doc_count'" [name]="visualizedField.name">
     </ia-freqtable>
 </div>
 

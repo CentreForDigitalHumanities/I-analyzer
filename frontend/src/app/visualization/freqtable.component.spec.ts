@@ -20,9 +20,6 @@ describe('FreqtableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FreqtableComponent);
     component = fixture.componentInstance;
-    component.visualizedField = <any>{
-        displayName: 'TestField'
-    };
     fixture.detectChanges();
   });
 
