@@ -1,6 +1,6 @@
 <div class="block">
     <ia-histogram-options
-        [queryText]="queryModel.queryText" [showTokenCountOption]="totalTokenCountAvailable"
+        [queryText]="queryModel ? queryModel.queryText : ''" [showTokenCountOption]="totalTokenCountAvailable"
         (options)="onOptionChange($event)">
     </ia-histogram-options>
 </div>
