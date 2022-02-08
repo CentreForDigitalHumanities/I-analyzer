@@ -111,7 +111,7 @@ class Ecco(XMLCorpus):
                 es_mapping={'type': 'integer'},
                 results_overview=True,
                 csv_core=True,
-                visualization_type='term_frequency',
+                visualizations=['histogram'],
                 visualization_sort='key',
                 search_filter=filters.RangeFilter(
                     1700,
@@ -135,7 +135,7 @@ class Ecco(XMLCorpus):
                     description="Accept only pages from these books",
                     option_count=1000
                 ),
-                visualization_type='wordcloud'
+                visualizations=['wordcloud']
             ),
             Field(
                 name='content',
@@ -146,7 +146,7 @@ class Ecco(XMLCorpus):
                 search_field_core=True,
                 extractor=XML(tag='ocrText',
                               flatten=True),
-                visualization_type='wordcloud'
+                visualizations=['wordcloud']
             ),
             Field(
                 name='ocr',
@@ -205,7 +205,7 @@ class Ecco(XMLCorpus):
                     description='Accept only book pages in these categories.',
                     option_count=7
                 ),
-                visualization_type='term_frequency'
+                visualizations=['histogram']
             ),
             Field(
                 name='imprint',

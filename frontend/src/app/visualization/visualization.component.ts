@@ -34,13 +34,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visDropdown: SelectItem[];
     public groupedVisualizations: SelectItemGroup[];
-    public visualizationType: string;
+    public visualizations: string [];
     public freqtable = false;
-    public visualizationTypeDisplayNames = {
+    public visualizationsDisplayNames = {
+
         ngram: 'Common n-grams',
         wordcloud: 'Wordcloud',
         timeline: 'Timeline',
-        term_frequency: 'Histogram',
+        histogram: 'Histogram',
         relatedwords: 'Related words',
     };
 
@@ -82,33 +83,27 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (changes['corpus']) {
             this.visualizedFields = [];
             if (this.corpus && this.corpus.fields) {
-                this.corpus.fields.filter(field => field.visualizationType).forEach(field => {
-                    if (typeof(field.visualizationType) === 'string') {
-                        // fields with one visualization type
-                        this.visualizedFields.push(field as visualizationField);
-                    } else {
-                        // fields with multiple visualization types
-                        field.visualizationType.forEach(visualizationType => {
-                            this.visualizedFields.push({
-                                name: field.name,
-                                displayName: `${field.displayName}: ${this.visualizationTypeDisplayNames[visualizationType]}`,
-                                visualizationType: visualizationType,
-                                visualizationSort: field.visualizationSort,
-                                searchFilter: field.searchFilter,
-                                multiFields: field.multiFields,
-                            });
+                this.corpus.fields.filter(field => field.visualizations).forEach(field => {
+                    field.visualizations.forEach(vis => {
+                        this.visualizedFields.push({
+                            name: field.name,
+                            displayName: field.displayName,
+                            visualization: vis,
+                            visualizationSort: field.visualizationSort,
+                            searchFilter: field.searchFilter,
+                            multiFields: field.multiFields,
                         });
-                    }
+                    });
                 });
             }
             this.visDropdown = [];
             this.visualizedFields.forEach(field => {
-                const requires_search_term = ['ngram', 'search_term_frequency']
-                    .find(vis_type => vis_type === field.visualizationType);
+                const requires_search_term = ['ngram', 'relatedwords']
+                    .find(vis_type => vis_type === field.visualization);
                 if (!requires_search_term || this.queryModel.queryText) {
                     this.visDropdown.push({
-                        label: field.displayName,
-                        value: {name: field.name, visualizationType: field.visualizationType}
+                        label: `${field.displayName} (${this.visualizationsDisplayNames[field.visualization]})`,
+                        value: {name: field.name, visualizations: field.visualization}
                     });
                 }
             });
@@ -138,7 +133,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (this.resultsCount > 0) {
             this.setVisualizedField({
                 name: this.visualizedField.name,
-                visualizationType: this.visualizedField.visualizationType
+                visualizations: this.visualizedField.visualization
             });
             this.disableWordCloudLoadMore = this.resultsCount < this.batchSizeWordcloud;
         } else {
@@ -147,7 +142,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizationType: string}) {
+    setVisualizedField(selectedField: 'relatedwords'|{name: string, visualizations: string}) {
         if (this.tasksToCancel.length > 0) {
             // the user requests other data, so revoke all running celery tasks
             this.apiService.abortTasks({'task_ids': this.tasksToCancel}).then( result => {
@@ -159,21 +154,21 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.aggResults = [];
         this.errorMessage = '';
         if (selectedField === 'relatedwords') {
-            this.visualizedField.visualizationType = selectedField;
+            this.visualizedField.visualization = selectedField;
             this.visualizedField.name = selectedField;
             this.visualizedField.displayName = 'Related Words';
             this.visualizedField.visualizationSort = 'similarity';
         } else {
             this.visualizedField = _.cloneDeep(this.visualizedFields.find(field => 
-                field.name === selectedField.name && field.visualizationType === selectedField.visualizationType ));
+                field.name === selectedField.name && field.visualization === selectedField.visualizations ));
         }
         this.foundNoVisualsMessage = 'Retrieving data...';
-        if (this.visualizedField.visualizationType === 'wordcloud') {
+        if (this.visualizedField.visualization === 'wordcloud') {
             this.loadWordcloudData(this.batchSizeWordcloud);
             this.isLoading = false;
-        } else if (this.visualizedField.visualizationType === 'timeline') {
+        } else if (this.visualizedField.visualization === 'timeline') {
             this.timeline = true;
-        } else if (this.visualizedField.visualizationType === 'relatedwords') {
+        } else if (this.visualizedField.visualization === 'relatedwords') {
             this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
                 this.relatedWordsGraph = results['graphData'];
                 this.relatedWordsTable = results['tableData'];

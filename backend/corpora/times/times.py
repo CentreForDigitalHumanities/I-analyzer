@@ -89,7 +89,7 @@ class Times(XMLCorpus):
             description='Publication date, parsed to yyyy-MM-dd format',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             hidden=True,
-            visualization_type='timeline',
+            visualizations=['timeline'],
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -349,7 +349,7 @@ class Times(XMLCorpus):
             display_name='Title',
             results_overview=True,
             search_field_core=True,
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
             description='Article title.',
             extractor=extract.XML(tag='ti')
         ),
@@ -396,7 +396,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             display_name='Category',
             description='Article subject categories.',
             es_mapping={'type': 'keyword'},
@@ -414,7 +414,7 @@ class Times(XMLCorpus):
                 'Tables and other illustrations associated with the article.'
             ),
             es_mapping={'type': 'keyword'},
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '
@@ -455,7 +455,7 @@ class Times(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
             description='Raw OCR\'ed text (content).',
             results_overview=True,
             search_field_core=True,
