@@ -38,6 +38,8 @@ export class BarChartComponent {
     public brush: any;
     private idleTimeout: any;
     private idleDelay: number;
+    public primaryColor = '#3F51B5';
+
 
     constructor(public searchService: SearchService, public dialogService: DialogService) { }
 

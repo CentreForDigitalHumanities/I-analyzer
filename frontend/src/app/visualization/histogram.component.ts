@@ -1,10 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import * as d3 from 'd3-selection';
-import * as d3Scale from 'd3-scale';
-import * as d3Format from 'd3-format';
-import * as d3Axis from 'd3-axis';
-import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
+import { Chart } from 'chart.js';
+import Zoom from 'chartjs-plugin-zoom';
 
 import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData,
     visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions } from '../models/index';
@@ -16,13 +13,14 @@ import { BarChartComponent } from './barchart.component';
     styleUrls: ['./histogram.component.scss']
 })
 export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('histogram', { static: true }) private histogramContainer: ElementRef;
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField: visualizationField;
     @Input() asTable: boolean;
 
     @Output() isLoading = new EventEmitter<boolean>();
+
+    histogram: Chart;
 
     rawData: AggregateResult[];
     selectedData: HistogramDataPoint[];
@@ -35,10 +33,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     documentLimitExceeded = false; // whether some bins have more documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
-    private xBarWidth: number;
-    private xBarHalf: number;
-    private tooltip: any;
-    private maxCategories = 30;
 
     ngOnInit() {
     }
@@ -48,10 +42,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
         const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
 
-        if (this.chartElement === undefined) {
-            this.chartElement = this.histogramContainer.nativeElement;
-            this.calculateCanvas();
-        }
 
         this.prepareChart(loadDocCounts, loadTokenCounts);
     }
@@ -84,18 +74,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             this.selectedData = _.sortBy(this.selectedData, d => -1 * d.value);
         }
 
-        this.xDomain = [-.5, this.selectedData.length - .5];
-        this.calculateBarWidth(this.selectedData.length);
-        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
-        this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-        this.totalCount = _.sumBy(this.selectedData, d => d.value);
-
-        this.setupYScale();
-        this.createChart(this.visualizedField.displayName, this.rawData.length);
-        this.rescaleY(this.normalizer === 'percent');
-        this.setupBrushBehaviour();
-        this.drawChartData();
-        this.setupTooltip();
+        this.setChart();
         this.isLoading.emit(false);
     }
 
@@ -164,122 +143,78 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
     }
 
-    calculateBarWidth(noCategories) {
-        this.xBarWidth = .95 * this.width / noCategories;
-        this.xBarHalf = this.xBarWidth / 2;
-    }
+    setChart() {
+        const labels = this.selectedData.map((item) => item.key);
+        const datasets = [
+            {
+                label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
+                data: this.selectedData.map((item) => item.value),
+                backgroundColor: this.primaryColor,
+                hoverBackgroundColor: this.primaryColor,
+                borderColor: this.primaryColor,
+            }
+        ];
 
-
-    drawChartData() {
-        /**
-        * bind data to chart, remove or update existing bars, add new bars
-        */
-
-        const update = this.chart
-            .selectAll('.bar')
-            .data(this.selectedData);
-
-        // remove exiting bars
-        update.exit().remove();
-
-        this.xAxisClass.tickValues(this.selectedData.map(d => d.key)).tickFormat(d3Format.format('s'));
-        // x axis ticks
-        this.xAxis.selectAll('text')
-            .data(this.selectedData)
-            .text(d => d.key)
-            .style('text-anchor', 'end')
-            .attr('dx', '-.8em')
-            .attr('dy', '.15em')
-            .attr('transform', 'rotate(-35)');
-
-        // update existing bars
-        this.chart.selectAll('.bar').transition()
-            .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', this.xBarWidth)
-            .attr('height', d => this.height - this.yScale(d.value));
-
-
-        if (this.selectedData.length > this.maxCategories) {
-            // remove x axis ticks
-            this.xAxis.selectAll('.tick').remove();
-
-            // add new bars
-            update
-                .enter()
-                .append('rect')
-                .attr('class', 'bar')
-                .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-                .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) // set to zero first for smooth transition
-                .attr('height', 0)
-                .transition().duration(750)
-                .delay((d, i) => i * 10)
-                .attr('y', d => this.yScale(d.value))
-                .attr('height', d => this.height - this.yScale(d.value))
-
-            // add tooltips
-            this.chart.selectAll('.bar')
-                .on('mouseover', (event, d) => {
-                    const yPos = this.height + 5 * this.margin.top;
-                    const xPos = event.offsetX;
-                    this.tooltip
-                        .text(d.key)
-                        .style('left', xPos + 'px')
-                        .style('top', yPos + 'px')
-                        .style('visibility', 'visible');
-                }).on('mouseout', () => this.tooltip.style('visibility', 'hidden'));
+        if (this.histogram) {
+            this.histogram.data.labels = labels;
+            this.histogram.data.datasets = datasets;
+            this.histogram.update();
         } else {
-            // add new bars, without tooltips
-            update
-                .enter()
-                .append('rect')
-                .attr('class', 'bar')
-                .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-                .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) // set to zero first for smooth transition
-                .attr('height', 0)
-                .transition().duration(750)
-                .delay((d, i) => i * 10)
-                .attr('y', d => this.yScale(d.value))
-                .attr('height', d => this.height - this.yScale(d.value))
+            this.initChart(labels, datasets);
         }
+
     }
 
-    setupTooltip() {
-        // select the tooltip in the template
-        this.tooltip = d3.select('.tooltip');
+    initChart(labels, datasets) {
+        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const yAxisLabel = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        this.histogram = new Chart('histogram',
+        {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets,
+            },
+            plugins: [ Zoom ],
+            options: {
+                scales: {
+                    xAxes: [{
+                        scaleLabel: { display: true, labelString: xAxisLabel }
+                    }],
+                    yAxes: [{
+                        scaleLabel: { display: true, labelString: yAxisLabel },
+                        ticks: {
+                            beginAtZero: true,
+                            callback: (value, index, values) => this.formatValue(value as number),
+                        }
+                    }]
+                },
+                legend: {
+                    display: false,
+                },
+                tooltips: {
+                    displayColors: false,
+                },
+                plugins: {
+                    zoom: {
+                        zoom: {
+                            enabled: true,
+                            drag: true,
+                            mode: 'x',
+                            threshold: 0,
+                            sensitivity: 0,
+                        }
+                    }
+                }
+            }
+        });
+
+        this.histogram.canvas.ondblclick = (event) => {
+            (this.histogram as any).resetZoom();
+        };
+
     }
 
-
-    zoomIn() {
-        const selection = this.selectedData.filter((d, i) => i >= this.xScale.domain()[0] && i <= this.xScale.domain()[1]);
-        this.calculateBarWidth(selection.length + 1);
-
-        this.chart.selectAll('.bar')
-            .transition().duration(750)
-            .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', this.xBarWidth);
-
-        if (selection.length < this.maxCategories) {
-            this.xAxis
-                .call(d3Axis.axisBottom(this.xScale).ticks(selection.length))
-                .selectAll('.tick text')
-                .text((d, i) => selection[i].key)
-                .attr('text-anchor', 'end')
-                .attr('transform', 'rotate(-35)');
-        }
-    }
-
-    zoomOut() {
-        this.xDomain = [-.5, this.selectedData.length - .5];
-        this.calculateBarWidth(this.selectedData.length);
-        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
-        this.xAxis
-            .call(d3Axis.axisBottom(this.xScale).ticks(this.selectedData.length));
-        this.drawChartData();
-    }
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
@@ -292,15 +227,9 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     get tableHeaders(): freqTableHeaders {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        let formatValue: (value: number) => string | undefined;
-        if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        }
         return [
             { key: 'key', label: label },
-            { key: 'value', label: header, format: formatValue }
+            { key: 'value', label: header, format: this.formatValue }
         ];
     }
 
@@ -310,4 +239,15 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
         return 'value';
     }
+
+    get formatValue(): (value: number) => string {
+        if (this.normalizer === 'percent') {
+            return (value: number) => {
+                return `${_.round(100 * value, 1)}%`;
+            };
+        } else {
+            return (value: number) => value.toString();
+        }
+    }
+
 }
