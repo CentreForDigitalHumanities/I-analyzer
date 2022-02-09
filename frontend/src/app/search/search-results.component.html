@@ -37,7 +37,7 @@
                                 <td>
                                     <b>{{field.displayName}}: </b>
                                 </td>
-                                <ng-container *ngIf="document.highlight[field.name]; else unhighlightedRow">
+                                <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
                                     <td>
                                         <ng-container *ngFor="let highlight of document.highlight[field.name]">
                                             <tr style="word-break:break-word" [innerHtml]="highlight"></tr>
