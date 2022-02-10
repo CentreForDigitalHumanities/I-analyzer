@@ -81,7 +81,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                     });
                 }
             });
-            if (this.corpus.word_models_present === true) {
+            if (this.corpus.word_models_present === true && this.queryModel.queryText) {
                 this.visDropdown.push({
                     label: 'Related Words',
                     value: 'relatedwords'
