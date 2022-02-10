@@ -13,26 +13,10 @@ import { BarChartComponent } from './barchart.component';
     styleUrls: ['./histogram.component.scss']
 })
 export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField: visualizationField;
-    @Input() asTable: boolean;
-
-    @Output() isLoading = new EventEmitter<boolean>();
-
     histogram: Chart;
 
     rawData: AggregateResult[];
     selectedData: HistogramDataPoint[];
-
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
-
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
-    documentLimitExceeded = false; // whether some bins have more documents than the limit
-    totalTokenCountAvailable: boolean; // whether the data includes token count totals
-
 
     ngOnInit() {
     }
@@ -169,59 +153,19 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const yAxisLabel = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         this.histogram = new Chart('histogram',
-        {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: datasets,
-            },
-            plugins: [ Zoom ],
-            options: {
-                scales: {
-                    xAxes: [{
-                        scaleLabel: { display: true, labelString: xAxisLabel }
-                    }],
-                    yAxes: [{
-                        scaleLabel: { display: true, labelString: yAxisLabel },
-                        ticks: {
-                            beginAtZero: true,
-                            callback: (value, index, values) => this.formatValue(value as number),
-                        }
-                    }]
+            {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets,
                 },
-                legend: {
-                    display: false,
-                },
-                tooltips: {
-                    displayColors: false,
-                },
-                plugins: {
-                    zoom: {
-                        zoom: {
-                            enabled: true,
-                            drag: true,
-                            mode: 'x',
-                            threshold: 0,
-                            sensitivity: 0,
-                        }
-                    }
-                }
-            }
-        });
+                plugins: [ Zoom ],
+                options: this.defaultChartOptions
+            });
 
         this.histogram.canvas.ondblclick = (event) => {
             (this.histogram as any).resetZoom();
         };
-
-    }
-
-
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
-    }
-
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
     }
 
     get tableHeaders(): freqTableHeaders {

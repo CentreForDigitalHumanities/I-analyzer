@@ -39,7 +39,6 @@ describe('BarchartComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BarChartComponent);
         component = fixture.componentInstance;
-        component.chartElement = document.createElement('div');
         fixture.detectChanges();
     });
 

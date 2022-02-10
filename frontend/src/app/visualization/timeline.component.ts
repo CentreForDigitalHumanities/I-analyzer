@@ -27,25 +27,9 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField;
-    @Input() asTable: boolean;
-
-    @Output() isLoading = new EventEmitter<boolean>();
-    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
-
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
-
     private queryModelCopy;
 
-    public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
-
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
-    documentLimitExceeded = false; // whether the results include documents than the limit
 
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     private rawData: DateResult[];
@@ -76,7 +60,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     onOptionChange(options: histogramOptions) {
         this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
-
 
         if (this.rawData && this.timeline) {
             if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
@@ -146,11 +129,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         await Promise.all(dataPromises);
 
         // signal if total token counts are available
-        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
-
+        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
     }
 
-    selectData(rawData: DateResult[], total_doc_count = undefined): TimelineDataPoint[] {
+    selectData(rawData: DateResult[], total_doc_count?: number): TimelineDataPoint[] {
         if (this.frequencyMeasure === 'tokens') {
             if (this.normalizer === 'raw') {
                 return rawData.map(cat =>
@@ -207,6 +189,30 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     initChart(datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const yAxisLabel = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+
+        const options = this.defaultChartOptions;
+        options.scales.xAxes[0] = {
+            type: 'time',
+            scaleLabel: { display: true, labelString: xAxisLabel },
+            time: {
+                minUnit: 'day',
+                unit: this.currentTimeCategory,
+            }
+        };
+        options.tooltips = {
+            callbacks: {
+                title: ([tooltipItem], data) => {
+                    return this.formatDate(Date.parse(tooltipItem.xLabel as string));
+                },
+                label: (tooltipItem, data) => {
+                    const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as {t: Date, y: number}).y;
+                    return this.formatValue(value);
+                }
+            },
+            displayColors: false,
+        };
+        options.plugins.zoom.onZoomComplete = ({chart}) => this.onZoomIn(chart);
+
         this.timeline = new Chart('timeline',
         {
             type: 'bar',
@@ -214,52 +220,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 datasets: datasets,
             },
             plugins: [ Zoom ],
-            options: {
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        scaleLabel: { display: true, labelString: xAxisLabel },
-                        time: {
-                            minUnit: 'day',
-                            unit: this.currentTimeCategory,
-                        }
-                    }],
-                    yAxes: [{
-                        scaleLabel: { display: true, labelString: yAxisLabel },
-                        ticks: {
-                            beginAtZero: true,
-                            callback: (value, index, values) => this.formatValue(value as number),
-                        }
-                    }]
-                },
-                legend: {
-                    display: false,
-                },
-                tooltips: {
-                    callbacks: {
-                        title: ([tooltipItem], data) => {
-                            return this.formatDate(Date.parse(tooltipItem.xLabel as string));
-                        },
-                        label: (tooltipItem, data) => {
-                            const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as {t: Date, y: number}).y;
-                            return this.formatValue(value);
-                        }
-                    },
-                    displayColors: false,
-                },
-                plugins: {
-                    zoom: {
-                        zoom: {
-                            enabled: true,
-                            drag: true,
-                            mode: 'x',
-                            threshold: 0,
-                            sensitivity: 0,
-                            onZoomComplete: ({chart}) => this.onZoomIn(chart)
-                        }
-                    }
-                }
-            }
+            options: options,
         });
 
         this.timeline.canvas.ondblclick = (event) => this.zoomOut();
@@ -345,16 +306,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public calculateTimeCategory(min: Date, max: Date) {
         if (d3Time.timeYear.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'year';
-            // this.timeFormat = d3.timeFormat("%Y");
         } else if (d3Time.timeMonth.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'month';
-            // this.timeFormat = d3.timeFormat("%B");
         } else if (d3Time.timeWeek.count(min, max) >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'week';
-            // this.timeFormat = d3.timeFormat("%b %d");
         } else {
             this.currentTimeCategory = 'day';
-            // this.timeFormat = d3.timeFormat("%a %d");
         }
     }
 
@@ -377,14 +334,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
-    }
-
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
-    }
-
     get tableHeaders(): freqTableHeaders {
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const formatDateValue = this.formatDate;
@@ -400,16 +349,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             { key: 'date', label: 'Date', format: formatDateValue },
             { key: 'value', label: rightColumnName, format: formatValue }
         ];
-    }
-
-    get formatValue(): (value: number) => string {
-        if (this.normalizer === 'percent') {
-            return (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        } else {
-            return (value: number) => value.toString();
-        }
     }
 
     get formatDate(): (date) => string {
