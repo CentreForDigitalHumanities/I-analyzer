@@ -126,7 +126,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     setErrorMessage(message: string) {
-        this.queryModel = null;
+        this.visualExists = false;
         this.foundNoVisualsMessage = this.noResults;
         this.errorMessage = message;
     }

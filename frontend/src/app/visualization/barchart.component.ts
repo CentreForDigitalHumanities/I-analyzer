@@ -32,6 +32,7 @@ export class BarChartComponent {
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
     @Output() isLoading = new EventEmitter<boolean>();
+    @Output() error = new EventEmitter();
 
     public xDomain: Array<any>;
     public primaryColor = '#3F51B5';

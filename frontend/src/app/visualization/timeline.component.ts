@@ -80,6 +80,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         if (loadTokenCounts) { await this.requestTermFrequencyData(); }
 
         this.selectedData = this.selectData(this.rawData);
+
+        if (!this.selectedData.length) {
+            this.error.emit({message: 'No results'});
+        }
+
         this.setChart();
         this.isLoading.emit(false);
     }

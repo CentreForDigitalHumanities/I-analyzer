@@ -52,10 +52,14 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         this.selectData();
 
-        if (typeof this.selectedData[0].key === 'number') {
+        if (this.visualizedField.visualizationSort) {
             this.selectedData = _.sortBy(this.selectedData, d => d.key);
         } else {
             this.selectedData = _.sortBy(this.selectedData, d => -1 * d.value);
+        }
+
+        if (!this.selectedData.length) {
+            this.error.emit({message: 'No results'});
         }
 
         this.setChart();
