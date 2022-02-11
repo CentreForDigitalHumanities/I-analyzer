@@ -1,15 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import * as d3 from 'd3-selection';
-import * as d3Scale from 'd3-scale';
-import * as d3Axis from 'd3-axis';
-import * as d3Format from 'd3-format';
-import * as d3Brush from 'd3-brush';
 import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
 import { ChartOptions } from 'chart.js';
-import { AggregateResult, Corpus, DateResult, HistogramDataPoint, QueryModel, TimelineDataPoint } from '../models';
+import { Corpus, QueryModel } from '../models';
 
 @Component({
     selector: 'ia-barchart',
@@ -34,16 +29,19 @@ export class BarChartComponent {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter();
 
-    public xDomain: Array<any>;
     public primaryColor = '#3F51B5';
 
     defaultChartOptions: ChartOptions = {
         scales: {
             xAxes: [{
-                scaleLabel: { display: true, labelString: '' }
+                id: 'xAxis',
+                scaleLabel: { display: true, labelString: '' },
+                gridLines: { drawBorder: true, drawOnChartArea: false }
             }],
             yAxes: [{
+                id: 'yAxis',
                 scaleLabel: { display: true, labelString: 'Frequency' },
+                gridLines: { drawBorder: true, drawOnChartArea: false, },
                 ticks: {
                     beginAtZero: true,
                     callback: (value, index, values) => this.formatValue(value as number),
@@ -70,9 +68,6 @@ export class BarChartComponent {
     };
 
     constructor(public searchService: SearchService, public dialogService: DialogService) { }
-
-    // implemented on child components
-    protected zoomOut() { }
 
 
     showHistogramDocumentation() {

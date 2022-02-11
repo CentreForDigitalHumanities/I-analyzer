@@ -1,4 +1,10 @@
 <div class="block">
+    <p class=notification *ngIf=showHint>
+        <b>Drag to zoom, double click to unzoom</b>
+    </p>
+</div>
+
+<div class="block">
     <ia-histogram-options
         [queryText]="queryModel ? queryModel.queryText : undefined" [showTokenCountOption]="totalTokenCountAvailable"
         (options)="onOptionChange($event)">

@@ -66,7 +66,6 @@ export class RelatedWordsComponent implements OnChanges {
             });
 
             this.tableData = results['tableData'];
-            console.log(this.tableData);
             this.isLoading.emit(false);
         })
             .catch(error => {

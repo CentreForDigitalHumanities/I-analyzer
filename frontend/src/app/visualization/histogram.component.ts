@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Chart } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 
-import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData,
+import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
@@ -155,7 +155,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     initChart(labels, datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
-        const yAxisLabel = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        const options = this.defaultChartOptions;
+        options.scales.xAxes[0].scaleLabel.labelString = xAxisLabel;
         this.histogram = new Chart('histogram',
             {
                 type: 'bar',
@@ -164,7 +165,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                     datasets: datasets,
                 },
                 plugins: [ Zoom ],
-                options: this.defaultChartOptions
+                options: options
             });
 
         this.histogram.canvas.ondblclick = (event) => {
