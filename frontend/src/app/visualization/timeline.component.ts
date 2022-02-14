@@ -242,8 +242,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const max = new Date(ticks.max);
         this.calculateTimeCategory(min, max);
 
-        let zoomedInData: {t: Date, y: number}[];
-
         if (triggedByDataUpdate || (this.currentTimeCategory !== previousTimeCategory)) {
             this.isLoading.emit(true);
             const filter = this.visualizedField.searchFilter;
@@ -290,21 +288,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.rawData.reduce((s, f) => s + f.doc_count, 0)); // add overall total for percentages
 
             const dataset = chart.data.datasets[0];
-            zoomedInData = selectedData.map((item) => ({t: item.date, y: item.value}));
+            const zoomedInData = selectedData.map((item) => ({t: item.date, y: item.value}));
             dataset.data = dataset.data.filter((item: {t: Date}) => item.t < min)
                 .concat(zoomedInData)
                 .concat(dataset.data.filter((item: {t: Date}) => item.t > max));
             chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
             chart.update(0); // insert data without animation effect, looks weird otherwise
             this.isLoading.emit(false);
-        } else {
-            zoomedInData = chart.data.datasets[0].data
-                .filter((item: {t: Date}) => item.t >= min && item.t <= max);
         }
-
-        const maxValue = _.maxBy(zoomedInData, (item) => item.y).y;
-        chart.scales.yAxis.options.ticks.max = maxValue;
-        chart.update();
     }
 
     zoomOut(): void {
