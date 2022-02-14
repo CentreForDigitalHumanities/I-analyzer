@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
-import { ChartOptions } from 'chart.js';
+import { Chart, ChartOptions } from 'chart.js';
 import { Corpus, QueryModel } from '../models';
 
 @Component({
@@ -31,7 +31,7 @@ export class BarChartComponent {
 
     public primaryColor = '#3F51B5';
 
-    defaultChartOptions: ChartOptions = {
+    basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
             xAxes: [{
                 id: 'xAxis',
@@ -40,6 +40,7 @@ export class BarChartComponent {
             }],
             yAxes: [{
                 id: 'yAxis',
+                type: 'linear',
                 scaleLabel: { display: true, labelString: 'Frequency' },
                 gridLines: { drawBorder: true, drawOnChartArea: false, },
                 ticks: {
@@ -48,27 +49,30 @@ export class BarChartComponent {
                 }
             }]
         },
-        legend: {
-            display: false,
-        },
-        tooltips: {
-            displayColors: false,
-        },
         plugins: {
             zoom: {
                 zoom: {
-                    enabled: true,
-                    drag: true,
-                    mode: 'x',
-                    threshold: 0,
-                    sensitivity: 0,
+                    onZoom: ({chart}) => this.loadZoomedInData(chart)
                 }
             }
         }
     };
 
-    constructor(public searchService: SearchService, public dialogService: DialogService) { }
+    constructor(public searchService: SearchService, public dialogService: DialogService) {
+        const chartDefault = Chart.defaults.global;
+        chartDefault.legend.display = false;
+        chartDefault.tooltips.displayColors = false;
+        chartDefault.tooltips.intersect = false;
 
+        const zoomDefault = chartDefault.plugins.zoom.zoom;
+        zoomDefault.enabled = true;
+        zoomDefault.drag = true;
+        zoomDefault.mode = 'x';
+        zoomDefault.threshold = 0;
+        zoomDefault.sensitivity = 0;
+    }
+
+    loadZoomedInData(chart) {}
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');

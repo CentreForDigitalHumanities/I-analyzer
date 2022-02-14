@@ -155,8 +155,16 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     initChart(labels, datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
-        const options = this.defaultChartOptions;
+        const options = this.basicChartOptions;
         options.scales.xAxes[0].scaleLabel.labelString = xAxisLabel;
+        options.tooltips = {
+            callbacks: {
+                label: (tooltipItem, data) => {
+                    const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as number);
+                    return this.formatValue(value);
+                }
+            }
+        };
         this.histogram = new Chart('histogram',
             {
                 type: 'bar',

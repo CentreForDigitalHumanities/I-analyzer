@@ -194,7 +194,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
-        const options = this.defaultChartOptions;
+        const options = this.basicChartOptions;
         const xAxis = options.scales.xAxes[0];
         xAxis.scaleLabel.labelString = xAxisLabel;
         xAxis.type = 'time';
@@ -215,10 +215,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as {t: Date, y: number}).y;
                     return this.formatValue(value);
                 }
-            },
-            displayColors: false,
+            }
         };
-        options.plugins.zoom.zoom.onZoom = ({chart}) => this.loadZoomedInData(chart);
 
         this.timeline = new Chart('timeline',
         {
