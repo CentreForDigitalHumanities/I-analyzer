@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { commonTestBed } from '../common-test-bed';
 
@@ -8,7 +8,7 @@ describe('ScanPdfComponent', () => {
   let component: ScanPdfComponent;
   let fixture: ComponentFixture<ScanPdfComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
   }));
 

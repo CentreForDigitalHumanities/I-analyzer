@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { CorpusField } from '../models/index';
@@ -10,7 +10,7 @@ describe('Search Results Component', () => {
     let component: SearchResultsComponent;
     let fixture: ComponentFixture<SearchResultsComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
 

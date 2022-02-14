@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 
@@ -8,7 +8,7 @@ describe('FreqtableComponent', () => {
   let component: FreqtableComponent;
   let fixture: ComponentFixture<FreqtableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, TableModule],
       providers: [],

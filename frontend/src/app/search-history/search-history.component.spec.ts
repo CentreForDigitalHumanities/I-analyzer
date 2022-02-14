@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DropdownModule } from 'primeng/dropdown';
@@ -16,7 +16,7 @@ describe('SearchHistoryComponent', () => {
     let component: SearchHistoryComponent;
     let fixture: ComponentFixture<SearchHistoryComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, DropdownModule, TableModule],
             declarations: [QueryFiltersComponent, QueryTextPipe, SearchHistoryComponent],
