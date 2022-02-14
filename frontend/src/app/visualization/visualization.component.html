@@ -5,47 +5,34 @@
 <div class="block" *ngIf="!noVisualizations" #viscontrol>
 	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value)"></p-dropdown>
 	<!-- Buttons for switching between table and graphical representation -->
-	<button [class.button]="true" [class.is-primary]="freqtable" (click)="showTable()" style="float:right">
+	<button [class.button]="true" [class.is-primary]="freqtable" (click)="freqtable = true" style="float:right">
 		<i class="fa fa-table" aria-hidden="true"></i>
 	</button>
 
-	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="showChart()" style="float:right">
+	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="freqtable = false" style="float:right">
 		<i class="fa fa-bar-chart" aria-hidden="true"></i>
 	</button>
 </div>
 
-<ng-container *ngIf="(aggResults && aggResults.length>0 || relatedWordsGraph || timeline); else noVisualsMessage">
-    <!-- TO DO: factor this out to its own component, used by timeline / term freq / table -->
-    <ia-histogram-options *ngIf="visualizedField.visualization=='timeline' || visualizedField.visualization == 'histogram'"
-        [queryText]="queryModel.queryText" [showTokenCountOption]="showTokenCountOption"
-        (change)="onHistogramOptionChange($event)">
-    </ia-histogram-options>  
-    <div  [ngClass]="{'is-loading':isLoading}" *ngIf="!freqtable">
+<ng-container *ngIf="visualExists; else noVisualsMessage">
+    <div  [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
-            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" 
-                [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
+            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [frequencyMeasure]="frequencyMeasure" [normalizer]="normalizer" [documentLimit]="histogramDocumentLimit"
+    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
-            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [searchData]="aggResults" [disableLoadMore]="disableWordCloudLoadMore" (loadMore)="loadMoreWordcloudData()"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [searchData]="relatedWordsGraph" [queryText]="queryModel.queryText" [corpusName]="corpus.name" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" (isLoading)="onIsLoading($event)"></ia-ngram>
+            <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [resultsCount]="resultsCount" [asTable]="freqtable"
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
+                [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
+                (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>
-    <ng-container *ngIf="freqtable">
-        <ng-container [ngSwitch]="visualizedField.visualization">
-            <ia-freqtable *ngSwitchCase="'timeline'" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable *ngSwitchCase="'histogram'" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable  *ngSwitchCase="'relatedwords'" [searchData]="relatedWordsTable" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-            <ia-freqtable *ngSwitchDefault [searchData]="aggResults" [visualizedField]="visualizedField" [normalizer]="normalizer">
-            </ia-freqtable>
-        </ng-container>
-    </ng-container>
 </ng-container>
 
 <ng-template #noVisualsMessage>

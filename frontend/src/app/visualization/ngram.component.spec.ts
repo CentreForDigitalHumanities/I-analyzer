@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ApiService, ApiRetryService, DataService, LogService, QueryService, UserService, ElasticSearchService, SearchService } from '../services/index';
+import { ApiService, ApiRetryService, LogService, QueryService, UserService, ElasticSearchService, SearchService } from '../services/index';
 import { ApiServiceMock } from '../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { UserServiceMock } from '../../mock-data/user';
@@ -17,7 +17,6 @@ describe('NgramComponent', () => {
             provide: ApiService, useValue: new ApiServiceMock()
         },
         ApiRetryService,
-        DataService,
         {
             provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
         },

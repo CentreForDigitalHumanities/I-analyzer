@@ -1,7 +1,19 @@
 <div class="block">
+    <ia-histogram-options
+        [queryText]="queryModel ? queryModel.queryText : ''" [showTokenCountOption]="totalTokenCountAvailable"
+        (options)="onOptionChange($event)">
+    </ia-histogram-options>
+</div>
+
+<div class="block" [ngClass]="{'is-hidden': asTable}">
     <div class="barchart" #histogram>
         <div class="tooltip"></div>
     </div>
+</div>
+
+<div class="block" *ngIf="asTable">
+    <ia-freqtable [headers]="tableHeaders" [data]="selectedData" [defaultSort]="defaultSort" [name]="visualizedField ? visualizedField.name : ''">
+    </ia-freqtable>
 </div>
 
 <div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">

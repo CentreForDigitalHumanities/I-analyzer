@@ -7,7 +7,7 @@ import * as d3Format from 'd3-format';
 import * as d3Brush from 'd3-brush';
 import * as _ from 'lodash';
 
-import { DataService, SearchService, DialogService } from '../services/index';
+import { SearchService, DialogService } from '../services/index';
 
 @Component({
     selector: 'ia-barchart',
@@ -39,8 +39,7 @@ export class BarChartComponent {
     private idleTimeout: any;
     private idleDelay: number;
 
-    // dataService is needed for pushing filtered data from timeline component
-    constructor(public dataService: DataService, public searchService: SearchService, public dialogService: DialogService) { }
+    constructor(public searchService: SearchService, public dialogService: DialogService) { }
 
     calculateCanvas() {
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
@@ -74,7 +73,7 @@ export class BarChartComponent {
         */
 
 
-        this.yDomain = percent ? [0, this.yMax / this.totalCount] : [0, this.yMax];
+        this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
 
         const fraction = this.yDomain[1] < 1;

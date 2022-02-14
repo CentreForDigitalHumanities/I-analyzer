@@ -56,4 +56,11 @@
     </div>
 </div>
 
-<p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+<div class="block" *ngIf="!asTable">
+    <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+</div>
+
+<div class="block" *ngIf="asTable">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name+'-ngrams'">
+    </ia-freqtable>
+</div>
