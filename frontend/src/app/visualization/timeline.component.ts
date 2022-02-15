@@ -245,12 +245,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.isLoading.emit(true);
             const dataset = chart.data.datasets[0];
 
-            // clear data within view for smoother transition effect
-            dataset.data = dataset.data.filter((item: {x: string}) => {
-                const date = new Date(item.x);
-                return date < min || date > max;
-            });
-            chart.update('none'); // no animation
+            // hide data for smooth transition
+            chart.update('hide');
 
             // download zoomed in results
             const filter = this.visualizedField.searchFilter;
@@ -297,12 +293,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.rawData.reduce((s, f) => s + f.doc_count, 0)); // add overall total for percentages
 
             // insert results in graph
-            const zoomedInData = selectedData.map((item) => ({x: item.date.toISOString(), y: item.value}));
-            dataset.data = dataset.data.filter((item: {x: string}) => new Date(item.x) < min)
-                .concat(zoomedInData)
-                .concat(dataset.data.filter((item: {x: string}) => new Date(item.x) > max));
+            dataset.data = selectedData.map((item) => ({x: item.date.toISOString(), y: item.value}));
             chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
-            chart.update('none'); // insert data without animation effect, looks weird otherwise
+            chart.update('show'); // fade into view
             this.isLoading.emit(false);
         }
     }
