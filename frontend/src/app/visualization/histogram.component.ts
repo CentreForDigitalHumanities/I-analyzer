@@ -137,9 +137,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             {
                 label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
                 data: this.selectedData.map((item) => item.value),
-                backgroundColor: this.primaryColor,
-                hoverBackgroundColor: this.primaryColor,
-                borderColor: this.primaryColor,
             }
         ];
 
@@ -156,11 +153,12 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     initChart(labels, datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
-        options.scales.xAxes[0].scaleLabel.labelString = xAxisLabel;
-        options.tooltips = {
+        options.scales.xAxis.type = 'category';
+        (options.scales.xAxis as any).title.text = xAxisLabel;
+        options.plugins.tooltip = {
             callbacks: {
-                label: (tooltipItem, data) => {
-                    const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as number);
+                label: (tooltipItem) => {
+                    const value = (tooltipItem.raw as number);
                     return this.formatValue(value);
                 }
             }

@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { Corpus, QueryModel } from '../models';
+import { zoom } from 'chartjs-plugin-zoom';
 
 @Component({
     selector: 'ia-barchart',
@@ -33,25 +34,41 @@ export class BarChartComponent {
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
-            xAxes: [{
-                id: 'xAxis',
-                scaleLabel: { display: true, labelString: '' },
-                gridLines: { drawBorder: true, drawOnChartArea: false }
-            }],
-            yAxes: [{
-                id: 'yAxis',
+            xAxis: {
+                title: { display: true },
+                grid: { drawBorder: true, drawOnChartArea: false }
+            },
+            yAxis: {
                 type: 'linear',
-                scaleLabel: { display: true, labelString: 'Frequency' },
-                gridLines: { drawBorder: true, drawOnChartArea: false, },
+                beginAtZero: true,
+                title: { display: true, text: 'Frequency' },
+                grid: { drawBorder: true, drawOnChartArea: false, },
                 ticks: {
-                    beginAtZero: true,
                     callback: (value, index, values) => this.formatValue(value as number),
-                }
-            }]
+                },
+                min: 0,
+            }
+        },
+        elements: {
+            bar: {
+                backgroundColor: this.primaryColor,
+                hoverBackgroundColor: this.primaryColor,
+            }
         },
         plugins: {
             zoom: {
                 zoom: {
+                    mode: 'x',
+                    drag: {
+                        enabled: true,
+                        threshold: 0,
+                    },
+                    pinch: {
+                        enabled: false,
+                    },
+                    wheel: {
+                        enabled: false,
+                    },
                     onZoom: ({chart}) => this.loadZoomedInData(chart),
                     onZoomComplete: ({chart}) => this.setYmaxOnZoom(chart)
                 }
@@ -60,17 +77,10 @@ export class BarChartComponent {
     };
 
     constructor(public searchService: SearchService, public dialogService: DialogService) {
-        const chartDefault = Chart.defaults.global;
-        chartDefault.legend.display = false;
-        chartDefault.tooltips.displayColors = false;
-        chartDefault.tooltips.intersect = false;
-
-        const zoomDefault = chartDefault.plugins.zoom.zoom;
-        zoomDefault.enabled = true;
-        zoomDefault.drag = true;
-        zoomDefault.mode = 'x';
-        zoomDefault.threshold = 0;
-        zoomDefault.sensitivity = 0;
+        const chartDefault = Chart.defaults;
+        chartDefault.plugins.legend.display = false;
+        chartDefault.plugins.tooltip.displayColors = false;
+        chartDefault.plugins.tooltip.intersect = false;
     }
 
     loadZoomedInData(chart) {}

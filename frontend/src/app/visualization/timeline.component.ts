@@ -10,9 +10,9 @@ import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
-import * as Chart from 'chart.js';
-import { ChartPoint } from 'chart.js';
+import { Chart, ChartOptions } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
+import 'chartjs-adapter-moment';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -35,7 +35,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
     public xDomain: [Date, Date];
 
-    timeline: Chart;
+    timeline: any;
     isZoomedIn: boolean;
 
     ngOnInit() {
@@ -162,22 +162,22 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     setChart() {
         const data = this.selectedData.map((item) => ({
-            t: item.date,
+            x: item.date.toISOString(),
             y: item.value,
         }));
+
         const datasets = [
             {
+                xAxisID: 'xAxis',
+                yAxisID: 'yAxis',
                 label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
                 data: data,
-                backgroundColor: this.primaryColor,
-                hoverBackgroundColor: this.primaryColor,
-                borderColor: this.primaryColor,
             }
         ];
 
         if (this.timeline) {
-            if (this.timeline.options.scales.xAxes[0].time.unit as ('year'|'week'|'month'|'day')) {
-                this.currentTimeCategory = this.timeline.options.scales.xAxes[0].time.unit as ('year'|'week'|'month'|'day');
+            if (this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day')) {
+                this.currentTimeCategory = this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
             }
             this.timeline.data.datasets = datasets;
             this.timeline.update();
@@ -195,38 +195,38 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
-        const xAxis = options.scales.xAxes[0];
-        xAxis.scaleLabel.labelString = xAxisLabel;
+        const xAxis = options.scales.xAxis;
+        (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';
-        xAxis.time = {
+        (xAxis as any).time = {
             minUnit: 'day',
             unit: this.currentTimeCategory,
         };
-        xAxis.ticks = {
-            min: xMin,
-            max: xMax,
-        };
-        options.tooltips = {
+        xAxis.min = xMin.toISOString();
+        xAxis.max = xMax.toISOString();
+        options.plugins.tooltip = {
             callbacks: {
-                title: ([tooltipItem], data) => {
-                    return this.formatDate(Date.parse(tooltipItem.xLabel as string));
+                title: ([tooltipItem]) => {
+                    return this.formatDate(Date.parse(tooltipItem.label as string));
                 },
-                label: (tooltipItem, data) => {
-                    const value = (data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] as {t: Date, y: number}).y;
+                label: (tooltipItem) => {
+                    const value = (tooltipItem.raw as {t: Date, y: number}).y;
                     return this.formatValue(value);
                 }
             }
         };
 
+        options.scales.xAxis.type = 'time';
         this.timeline = new Chart('timeline',
-        {
-            type: 'bar',
-            data: {
-                datasets: datasets,
-            },
-            plugins: [ Zoom ],
-            options: options,
-        });
+            {
+                type: 'bar',
+                data: {
+                    datasets: datasets
+                },
+                plugins: [ Zoom ],
+                options: options
+            }
+        );
 
         this.timeline.canvas.ondblclick = (event) => this.zoomOut();
 
@@ -237,13 +237,22 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.isZoomedIn = true;
         }
         const previousTimeCategory = this.currentTimeCategory;
-        const ticks = chart.scales.xAxis.options.ticks;
-        const min = new Date(ticks.min);
-        const max = new Date(ticks.max);
+        const min = new Date(chart.scales.xAxis.min);
+        const max = new Date(chart.scales.xAxis.max);
         this.calculateTimeCategory(min, max);
 
         if (triggedByDataUpdate || (this.currentTimeCategory !== previousTimeCategory)) {
             this.isLoading.emit(true);
+            const dataset = chart.data.datasets[0];
+
+            // clear data within view for smoother transition effect
+            dataset.data = dataset.data.filter((item: {x: string}) => {
+                const date = new Date(item.x);
+                return date < min || date > max;
+            });
+            chart.update('none'); // no animation
+
+            // download zoomed in results
             const filter = this.visualizedField.searchFilter;
             filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
             this.queryModelCopy.filters.push(filter);
@@ -287,13 +296,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             const selectedData = this.selectData(zoomedInResults,
                 this.rawData.reduce((s, f) => s + f.doc_count, 0)); // add overall total for percentages
 
-            const dataset = chart.data.datasets[0];
-            const zoomedInData = selectedData.map((item) => ({t: item.date, y: item.value}));
-            dataset.data = dataset.data.filter((item: {t: Date}) => item.t < min)
+            // insert results in graph
+            const zoomedInData = selectedData.map((item) => ({x: item.date.toISOString(), y: item.value}));
+            dataset.data = dataset.data.filter((item: {x: string}) => new Date(item.x) < min)
                 .concat(zoomedInData)
-                .concat(dataset.data.filter((item: {t: Date}) => item.t > max));
+                .concat(dataset.data.filter((item: {x: string}) => new Date(item.x) > max));
             chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
-            chart.update(0); // insert data without animation effect, looks weird otherwise
+            chart.update('none'); // insert data without animation effect, looks weird otherwise
             this.isLoading.emit(false);
         }
     }
@@ -302,7 +311,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         (this.timeline as any).resetZoom();
         this.isZoomedIn = false;
         this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
-        this.timeline.options.scales.xAxes[0].time.unit = this.currentTimeCategory;
+        this.timeline.options.scales.xAxis.time.unit = this.currentTimeCategory;
         this.timeline.update();
 
         this.setChart();
