@@ -2,7 +2,6 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
 import { Corpus, CorpusField, QueryModel } from '../models/index';
-import { Url } from 'url';
 
 @Component({
   selector: 'ia-download',

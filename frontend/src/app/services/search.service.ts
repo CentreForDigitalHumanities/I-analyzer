@@ -9,7 +9,6 @@ import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
     AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
-import { stringify } from 'querystring';
 import { formatDate } from '@angular/common';
 
 @Injectable()

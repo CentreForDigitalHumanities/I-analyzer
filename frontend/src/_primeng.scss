@@ -53,7 +53,7 @@ $inputTextColor: $text;
 $invalidInputBorderColor: $danger;
 $inputGroupTextColor: $text;
 
-@import "~primeng/resources/themes/nova-light/theme.css";
+@import "~primeng/resources/themes/nova/theme.css";
 
 .ui-button {
     @extend .button;
