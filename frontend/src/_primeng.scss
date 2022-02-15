@@ -140,6 +140,10 @@ body {
         border-color: $contrast-primary-color;
         background: $contrast-primary-color;
     }
+
+    .p-component {
+        font-family: inherit !important;
+    }
 }
 
 .is-round{
