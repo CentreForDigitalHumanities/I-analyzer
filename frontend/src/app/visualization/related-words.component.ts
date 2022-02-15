@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../models';
 
 import { DialogService, SearchService } from '../services/index';
@@ -34,20 +35,34 @@ export class RelatedWordsComponent implements OnChanges {
     public zoomedInData; // data requested when clicking on a time interval
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
     public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
-    public chartOptions = {
+    public chartOptions: ChartOptions = {
         elements: {
             line: {
                 tension: 0, // disables bezier curves
             }
         },
         scales: {
-            yAxes: [{
-                scaleLabel: {
+            xAxis: {},
+            yAxis: {
+                title: {
                     display: true,
-                    labelString: 'Cosine similarity (SVD_PPMI)'
+                    text: 'Cosine similarity (SVD_PPMI)'
                 }
-            }],
-            xAxes: [],
+            },
+        },
+        plugins: {
+            tooltip: {
+                displayColors: true,
+                callbacks: {
+                    labelColor(tooltipItem: any): any {
+                        const color = tooltipItem.dataset.borderColor;
+                        return {
+                            borderColor: color,
+                            backgroundColor: color,
+                        };
+                    },
+                }
+            }
         }
     };
 
@@ -86,7 +101,7 @@ export class RelatedWordsComponent implements OnChanges {
         this.searchService.getRelatedWordsTimeInterval(
             this.queryModel.queryText,
             this.corpus.name,
-            this.graphData.labels[event.element._index])
+            this.graphData.labels[event.element.index])
             .then(results => {
                 this.zoomedInData = results['graphData'];
                 this.zoomedInData.datasets
@@ -95,11 +110,11 @@ export class RelatedWordsComponent implements OnChanges {
                         d.backgroundColor = this.colorPalette[index];
                     })
                 // hide grid lines as we only have one data point on x axis
-                this.chartOptions.scales.xAxes = [{
-                    gridLines: {
+                this.chartOptions.scales.xAxis = {
+                    grid: {
                         display: false
                     }
-                }];
+                };
                 this.isLoading.emit(false);
             })
             .catch(error => {
@@ -109,7 +124,7 @@ export class RelatedWordsComponent implements OnChanges {
 
     zoomBack() {
         this.zoomedInData = null;
-        this.chartOptions.scales.xAxes = [];
+        this.chartOptions.scales.xAxis = {};
     }
 
 }
