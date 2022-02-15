@@ -36,7 +36,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public xDomain: [Date, Date];
 
     timeline: any;
-    isZoomedIn: boolean;
 
     ngOnInit() {
         this.setupZoomHint();
@@ -65,7 +64,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             } else {
                 this.prepareTimeline(false, false);
             }
-            if (this.isZoomedIn) {
+            if (this.timeline.isZoomedOrPanned()) {
                 this.loadZoomedInData(this.timeline, true);
             }
         }
@@ -182,7 +181,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.timeline.data.datasets = datasets;
             this.timeline.update();
         } else {
-            this.isZoomedIn = false;
             this.initChart(datasets);
         }
 
@@ -233,9 +231,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async loadZoomedInData(chart, triggedByDataUpdate = false) {
-        if (!triggedByDataUpdate) {
-            this.isZoomedIn = true;
-        }
         const previousTimeCategory = this.currentTimeCategory;
         const min = new Date(chart.scales.xAxis.min);
         const max = new Date(chart.scales.xAxis.max);
@@ -246,7 +241,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             const dataset = chart.data.datasets[0];
 
             // hide data for smooth transition
-            chart.update('hide');
+            chart.update(triggedByDataUpdate ? 'none' : 'hide');
 
             // download zoomed in results
             const filter = this.visualizedField.searchFilter;
@@ -301,8 +296,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     zoomOut(): void {
-        (this.timeline as any).resetZoom();
-        this.isZoomedIn = false;
+        this.timeline.resetZoom();
         this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
         this.timeline.options.scales.xAxis.time.unit = this.currentTimeCategory;
         this.timeline.update();

@@ -49,12 +49,6 @@ export class BarChartComponent {
                 min: 0,
             }
         },
-        elements: {
-            bar: {
-                backgroundColor: this.primaryColor,
-                hoverBackgroundColor: this.primaryColor,
-            }
-        },
         plugins: {
             zoom: {
                 zoom: {
@@ -70,7 +64,6 @@ export class BarChartComponent {
                         enabled: false,
                     },
                     onZoom: ({chart}) => this.loadZoomedInData(chart),
-                    onZoomComplete: ({chart}) => this.setYmaxOnZoom(chart)
                 }
             }
         }
@@ -78,33 +71,16 @@ export class BarChartComponent {
 
     constructor(public searchService: SearchService, public dialogService: DialogService) {
         const chartDefault = Chart.defaults;
+        chartDefault.elements.bar.backgroundColor = this.primaryColor;
+        chartDefault.elements.bar.hoverBackgroundColor = this.primaryColor;
+        chartDefault.interaction.axis = 'x';
         chartDefault.plugins.legend.display = false;
         chartDefault.plugins.tooltip.displayColors = false;
         chartDefault.plugins.tooltip.intersect = false;
     }
 
+    // specified in timeline
     loadZoomedInData(chart) {}
-
-    setYmaxOnZoom(chart) {
-        let maxValue: number;
-        if (chart.scales.xAxis.type === 'category') { // histogram
-            const ticks = chart.scales.xAxis.ticks as string[];
-            const zoomedInData = chart.data.datasets[0].data
-                .filter((item, index) =>
-                    ticks.includes(chart.data.labels[index])
-                );
-            maxValue = _.max(zoomedInData);
-        } else { // timeline
-            const minDate = new Date(chart.scales.xAxis.options.ticks.min);
-            const maxDate = new Date(chart.scales.xAxis.options.ticks.max);
-            const zoomedInData = chart.data.datasets[0].data
-                .filter((item: {t: Date}) => item.t >= minDate && item.t <= maxDate);
-            maxValue = _.max(zoomedInData.map(item => item.y));
-        }
-
-        chart.scales.yAxis.options.ticks.max = maxValue;
-        chart.update();
-    }
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
