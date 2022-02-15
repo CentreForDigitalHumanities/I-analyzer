@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
 import { SearchService } from '../services';
@@ -24,45 +25,47 @@ export class NgramComponent implements OnInit, OnChanges {
 
     public chartData: any;
     public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
-    public chartOptions = {
+    public chartOptions: ChartOptions = {
         elements: {
             line: {
                 tension: 0, // disables bezier curves
             }
         },
         scales: {
-            yAxes: [{
-                scaleLabel: {
+            yAxis: {
+                title: {
                     display: true,
-                    labelString: 'Weighed frequency'
+                    text: 'Weighed frequency'
                 }
-            }],
-            xAxes: [{
-                scaleLabel: {
+            },
+            xAxis: {
+                title: {
                     display: true,
-                    labelString: 'Date',
+                    text: 'Date',
                 }
-            }],
+            },
         },
-        tooltips: {
-            intersect: false,
-            callbacks: {
-                labelColor(tooltipItem, chart): any {
-                    const dataset = chart.data.datasets[tooltipItem.datasetIndex];
-                    const color = dataset.borderColor;
-                    return {
-                        borderColor: 'rba(0,0,0,0)',
-                        backgroundColor: color
-                    };
-                },
-                label(tooltipItem, data): string {
-                    const dataset = data.datasets[tooltipItem.datasetIndex];
-                    const label = dataset.label;
-                    const value: any = dataset.data[tooltipItem.index];
-                    if (value) { // skip 0 values
-                        return `${label}: ${Math.round((value) * 10000) / 10000}`;
-                    }
-                  },
+        plugins: {
+            tooltip: {
+                intersect: false,
+                displayColors: true,
+                callbacks: {
+                    labelColor(tooltipItem: any): any {
+                        const color = tooltipItem.dataset.borderColor;
+                        return {
+                            borderColor: color,
+                            backgroundColor: color,
+                            borderWidth: 0,
+                        };
+                    },
+                    label(tooltipItem: any): string {
+                        const label = tooltipItem.dataset.label;
+                        const value = tooltipItem.raw;
+                        if (value) { // skip 0 values
+                            return `${label}: ${Math.round((value) * 10000) / 10000}`;
+                        }
+                      },
+                }
             }
         }
     };
