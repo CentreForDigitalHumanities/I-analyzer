@@ -56,5 +56,6 @@ export type CorpusField = {
     searchable: boolean,
     downloadable: boolean,
     name: string,
-    searchFilter: SearchFilter<SearchFilterData> | null
-}
+    searchFilter: SearchFilter<SearchFilterData> | null,
+    highlight?: boolean,
+};
