@@ -306,18 +306,30 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else datetime.now()
 
-    match_count, doc_count, token_count = frequency_for_time_interval(es_query, corpus, field, start_date, end_date, size)
+    es_query['query']['bool']['filter'] = es_query['query']['bool'].get('filter') or []
+    filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or field not in f['range']]
+    filters.append({
+        'range': {
+            field: {
+                'gte': datetime.strftime(start_date, '%Y-%m-%d'),
+                'lte': datetime.strftime(end_date, '%Y-%m-%d'),
+                'format': 'yyyy-MM-dd',
+            }
+        }
+    })
+    es_query['query']['bool']['filter'] = filters
+    es_query['track_total_hits'] = True
+
+    match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 
     data = {
         'key': start_date_str,
         'key_as_string': start_date_str,
         'doc_count': doc_count,
-        'match_count': match_count
+        'match_count': match_count,
+        'token_count': token_count,
     }
 
-    if token_count != None:
-        data['token_count'] = token_count
-    
     return data
 
 def extract_data_for_term_frequency(corpus, search_fields = None):
@@ -397,55 +409,13 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
 
     return doc_count, token_count
 
-
-def frequency_for_time_interval(es_query, corpus, date_field, start_date, end_date, max_size_per_interval):
+def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
 
     fields = es_query['query']['bool']['must']['simple_query_string'].get('fields')
 
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
     highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
-
-    # count number of matches
-
-    es_query['query']['bool']['filter'] = es_query['query']['bool'].get('filter') or []
-    filters = [f for f in es_query['query']['bool']['filter'] if 'range' not in f or date_field not in f['range']]
-    filters.append({
-        'range': {
-            date_field: {
-                'gte': datetime.strftime(start_date, '%Y-%m-%d'),
-                'lte': datetime.strftime(end_date, '%Y-%m-%d'),
-                'format': 'yyyy-MM-dd',
-            }
-        }
-    })
-    es_query['query']['bool']['filter'] = filters
-    es_query['track_total_hits'] = True
-
-    #search for the query text
-    match_count = get_match_count(client, deepcopy(es_query), corpus, max_size_per_interval, highlight_specs)
-
-    # get total document count and (if available) token count for the time interval
-
-    agg_query = deepcopy(es_query)
-    agg_query['query']['bool'].pop('must')
-    doc_count, token_count = get_total_docs_and_tokens(client, es_query, corpus, token_count_aggregators)
-
-    return match_count, doc_count, token_count
-
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
-    client = elasticsearch(corpus)
-
-    fields = es_query['query']['bool']['must']['simple_query_string'].get('fields')
-
-    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
-    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
-
-    # filter for relevant value
-    es_query['query']['bool']['filter'].append(
-        { 'term': { field_name: field_value }}
-    )
-    es_query['track_total_hits'] = True
 
     # count number of matches
     match_count = get_match_count(client, deepcopy(es_query), corpus, size, highlight_specs)
@@ -454,6 +424,17 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
     agg_query = deepcopy(es_query)
     agg_query['query']['bool'].pop('must') #remove search term filter
     doc_count, token_count = get_total_docs_and_tokens(client, es_query, corpus, token_count_aggregators)
+
+    return match_count, doc_count, token_count
+
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
+    # filter for relevant value
+    es_query['query']['bool']['filter'].append(
+        { 'term': { field_name: field_value }}
+    )
+    es_query['track_total_hits'] = True
+
+    match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 
     result = {
         'key': field_value,
