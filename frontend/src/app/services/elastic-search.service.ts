@@ -69,7 +69,7 @@ export class ElasticSearchService {
         }
 
         if (queryModel.queryText && highlightFragmentSize) {
-            const highlightFields = fields.filter(field => field.highlight);
+            const highlightFields = fields.filter(field => field.searchable);
             query.highlight = {
                 fields: highlightFields.map( field => {
                     return { [field.name]: {

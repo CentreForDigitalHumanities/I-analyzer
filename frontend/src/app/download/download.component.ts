@@ -24,25 +24,29 @@ export class DownloadComponent implements OnChanges {
     public isDownloading: boolean;
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
-    
+
     private resultsCutoff = 1000;
-    
+
     constructor(private downloadService: DownloadService, private notificationService: NotificationService) { }
 
     ngOnChanges() {
         this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
-        this.availableCsvFields.push({
-            name: 'Context',
-            description: 'Query surrounded by 50 characters',
-            displayName: 'Query in context',
-            displayType: 'text_content',
-            csvCore: true,
-            hidden: false,
-            sortable: false,
-            searchable: false,
-            downloadable: true,
-            searchFilter: null
-        });
+        const highlight = Object.values(this.corpus.fields).filter(field => field.searchable);
+        // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
+        if (highlight) {
+            this.availableCsvFields.push({
+                name: 'context',
+                description: 'Query surrounded by 50 characters',
+                displayName: 'Query in context',
+                displayType: 'text_content',
+                csvCore: true,
+                hidden: false,
+                sortable: false,
+                searchable: false,
+                downloadable: true,
+                searchFilter: null
+            });
+        }
     }
 
     /**

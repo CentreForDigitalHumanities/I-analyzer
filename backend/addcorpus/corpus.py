@@ -553,14 +553,14 @@ class CSVCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
-        
+
         if isinstance(source, str):
             filename = source
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
             filename = source[0]
-        
+
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
             reader = csv.DictReader(f)
@@ -571,7 +571,7 @@ class CSVCorpus(Corpus):
 
                 if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
                     continue
-                    
+
 
                 if self.field_entry:
                     identifier = row[self.field_entry]
@@ -580,15 +580,14 @@ class CSVCorpus(Corpus):
                     else:
                         document_id = identifier
 
-                
                 if is_new_document and rows:
                     yield self.document_from_rows(rows)
                     rows = [row]
                 else:
                     rows.append(row)
-            
+
             yield self.document_from_rows(rows)
-        
+
     def document_from_rows(self, rows):
         doc = {
             field.name: field.extractor.apply(
@@ -648,7 +647,6 @@ class Field(object):
                  sortable=None,
                  searchable=None,
                  downloadable=True,
-                 highlight=None,
                  **kwargs
                  ):
 
@@ -666,7 +664,6 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
-        self.highlight = highlight
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
