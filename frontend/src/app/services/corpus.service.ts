@@ -82,7 +82,8 @@ export class CorpusService {
             searchable: data.searchable,
             downloadable: data.downloadable,
             name: data.name,
-            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null
+            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null,
+            highlight: data.highlight,
         };
     }
 
