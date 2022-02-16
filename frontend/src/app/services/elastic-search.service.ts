@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
+import { FoundDocument, Corpus, CorpusField, ElasticSearchIndex, QueryModel, SearchResults,
+    AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -26,9 +27,8 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    public makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
+    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[], highlightFragmentSize?: number): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
-
         if (queryModel.queryText) {
             clause = {
                 simple_query_string: {
@@ -66,6 +66,20 @@ export class ElasticSearchService {
             (query as EsQuerySorted).sort = [{
                 [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
             }];
+        }
+
+        if (queryModel.queryText && highlightFragmentSize) {
+            const highlightFields = fields.filter(field => field.highlight);
+            query.highlight = {
+                fields: highlightFields.map( field => {
+                    return { [field.name]: {
+                        fragment_size: highlightFragmentSize,
+                        pre_tags: ['<span class="highlight">'],
+                        post_tags: ['</span>'],
+                        order: 'score'
+                }};
+            })
+            };
         }
 
         return query;
@@ -157,24 +171,13 @@ export class ElasticSearchService {
 
 
     public async search(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel,
-        highlight?: {field: string, fragmentSize: number},
+        highlightFragmentSize: number,
         size?: number,
     ): Promise<SearchResults> {
         const connection = (await this.connections)[corpusDefinition.serverName];
-        const esQuery = this.makeEsQuery(queryModel);
-        if (highlight) {
-            esQuery.highlight = {
-                fields: {
-                    [highlight.field]: {
-                        fragment_size: highlight.fragmentSize,
-                        pre_tags: ['<span class="highlight">'],
-                        post_tags: ['</span>'],
-                        order: 'score'
-                }}
-            };
-        }
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields, highlightFragmentSize);
         // Perform the search
         const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response);

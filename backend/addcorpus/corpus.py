@@ -636,6 +636,7 @@ class Field(object):
                  sortable=None,
                  searchable=None,
                  downloadable=True,
+                 highlight=None,
                  **kwargs
                  ):
 
@@ -653,6 +654,7 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
+        self.highlight = highlight
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
