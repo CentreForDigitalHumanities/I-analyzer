@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
-    visualizationField, freqTableHeaders, histogramOptions } from '../models/index';
+    visualizationField, freqTableHeaders, histogramOptions, TimelineSeries, TimelineSeriesRaw } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
@@ -29,8 +29,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public showHint: boolean;
 
     private currentTimeCategory: 'year'|'week'|'month'|'day';
-    private rawData: DateResult[];
-    private selectedData: TimelineDataPoint[];
+    private rawData: TimelineSeriesRaw[];
+    private selectedData: TimelineSeries[];
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
     public xDomain: [Date, Date];
@@ -59,7 +59,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.normalizer = options.normalizer;
 
         if (this.rawData && this.timeline) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
+            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(series => (series.data.find((cat) => cat.match_count)))) {
                 this.prepareTimeline(false, true);
             } else {
                 this.prepareTimeline(false, false);
@@ -87,7 +87,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async requestDocumentData() {
-        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
+        let dataPromise: Promise<TimelineSeriesRaw[]>;
 
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
@@ -100,79 +100,90 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                         doc_count: cat.doc_count
                     };
                 });
-                return data;
+                const total_doc_count = _.sumBy(data, (item) => item.doc_count);
+                const searchRatio = this.documentLimit / total_doc_count;
+                return [{data: data, total_doc_count: total_doc_count, searchRatio: searchRatio }];
             });
 
         this.rawData = await dataPromise;
-        const total_documents = _.sum(this.rawData.map(d => d.doc_count));
-        this.searchRatioDocuments = this.documentLimit / total_documents;
-        this.documentLimitExceeded = this.documentLimit < total_documents;
+
+        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
     async requestTermFrequencyData() {
-        const dataPromises = this.rawData.map((cat, index) => {
-            return new Promise(resolve => {
-                const start_date = cat.date;
-                const binDocumentLimit = _.min([10000, _.ceil(this.rawData[index].doc_count * this.searchRatioDocuments)]);
-                const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
-                this.searchService.dateTermFrequencySearch(
-                    this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                    start_date, end_date)
-                    .then(result => {
-                    const data = result.data;
-                    this.rawData[index].match_count = data.match_count;
-                    this.rawData[index].total_doc_count = data.doc_count;
-                    this.rawData[index].token_count = data.token_count;
-                    resolve(true);
+        const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
+            series.data.map((cat, index) => {
+                return new Promise(resolve => {
+                    const start_date = cat.date;
+                    const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+                    const end_date = index < (this.rawData.length - 1) ? series[index + 1].date : undefined;
+                    this.searchService.dateTermFrequencySearch(
+                        this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                        start_date, end_date)
+                        .then(result => {
+                        const data = result.data;
+                        cat.match_count = data.match_count;
+                        cat.total_doc_count = data.doc_count;
+                        cat.token_count = data.token_count;
+                        resolve(true);
+                    });
                 });
             });
-        });
+        }));
 
         await Promise.all(dataPromises);
 
         // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
+        this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    selectData(rawData: DateResult[], total_doc_count?: number): TimelineDataPoint[] {
-        if (this.frequencyMeasure === 'tokens') {
-            if (this.normalizer === 'raw') {
-                return rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count }));
-            } else if (this.normalizer === 'terms') {
-                return rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count / cat.token_count }));
-            } else if (this.normalizer === 'documents') {
-                return rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count / cat.total_doc_count }));
-            }
-        } else {
-            if (this.normalizer === 'raw') {
-                return rawData.map(cat =>
-                    ({ date: cat.date, value: cat.doc_count }));
-            } else {
-                total_doc_count = total_doc_count || rawData.reduce((s, f) => s + f.doc_count, 0);
-                return rawData.map(cat =>
-                    ({ date: cat.date, value: cat.doc_count / total_doc_count }));
-            }
+    selectData(rawData: TimelineSeriesRaw[]): TimelineSeries[] {
+        let getValue: (item: DateResult, series: TimelineSeriesRaw) => number;
+        switch ([this.frequencyMeasure, this.normalizer]) {
+            case ['tokens', 'raw']:
+                getValue = (item, series) => item.match_count;
+                break;
 
+            case ['tokens', 'terms']:
+                getValue = (item, series) => item.match_count / item.token_count;
+                break;
+
+            case ['tokens', 'documents']:
+                getValue = (item, series) => item.match_count / item.token_count;
+                break;
+
+            case ['documents', 'percent']:
+                getValue = (item, series) => item.match_count / series.total_doc_count;
+                break;
+
+            default:
+                getValue = (item, series) => item.doc_count;
+                break;
         }
+
+        return rawData.map(series => {
+            const data = series.data.map(item => ({
+                date: item.date,
+                value: getValue(item, series)
+            }));
+            return {label: series.label, data: data};
+        });
     }
 
     setChart() {
-        const data = this.selectedData.map((item) => ({
-            x: item.date.toISOString(),
-            y: item.value,
-        }));
 
-        const datasets = [
-            {
+        const datasets = this.selectedData.map(series => {
+            const data = series.data.map(item => ({
+                x: item.date.toISOString(),
+                y: item.value,
+            }));
+            return {
                 xAxisID: 'xAxis',
                 yAxisID: 'yAxis',
-                label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
+                label: series.label,
                 data: data,
-            }
-        ];
+            };
+        });
 
         if (this.timeline) {
             if (this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day')) {
@@ -238,57 +249,67 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         if (triggedByDataUpdate || (this.currentTimeCategory !== previousTimeCategory)) {
             this.isLoading.emit(true);
-            const dataset = chart.data.datasets[0];
 
             // hide data for smooth transition
             chart.update(triggedByDataUpdate ? 'none' : 'hide');
 
-            // download zoomed in results
-            const filter = this.visualizedField.searchFilter;
-            filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
-            this.queryModelCopy.filters.push(filter);
+            chart.data.datasets.forEach(async (dataset, seriesIndex) => {
+                const series = this.rawData[seriesIndex];
+                // download zoomed in results
+                const filter = this.visualizedField.searchFilter;
+                filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
+                this.queryModelCopy.filters.push(filter);
 
-            let zoomedInResults: DateResult[];
 
-            const getDocCounts = this.searchService.dateHistogramSearch(
-                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                let zoomedInResults: TimelineSeriesRaw;
+
+                const docCounts = this.searchService.dateHistogramSearch(
+                    this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                        return {
+                            date: new Date(cat.key_as_string),
+                            doc_count: cat.doc_count
+                        };
+                    });
+                    const total_doc_count = _.sumBy(data, (item) => item.doc_count);
                     return {
-                        date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count
+                        data: data,
+                        total_doc_count: total_doc_count,
+                        searchRatio: series.searchRatio,
                     };
                 });
-                return data;
-            });
 
-            zoomedInResults = await getDocCounts;
+                zoomedInResults = await docCounts;
 
-            if (this.frequencyMeasure === 'tokens') {
-                const dataPromises = zoomedInResults.map((cat, index) => {
-                    return new Promise(resolve => {
-                        const start_date = cat.date;
-                        const binDocumentLimit = _.min([10000, _.ceil(zoomedInResults[index].doc_count * this.searchRatioDocuments)]);
-                        const end_date = index < (zoomedInResults.length - 1) ? zoomedInResults[index + 1].date : max;
-                        this.searchService.dateTermFrequencySearch(
-                            this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                            start_date, end_date)
-                            .then(result => {
-                            const data = result.data;
-                            zoomedInResults[index].match_count = data.match_count;
-                            zoomedInResults[index].total_doc_count = data.doc_count;
-                            zoomedInResults[index].token_count = data.token_count;
-                            resolve(true);
+                if (this.frequencyMeasure === 'tokens') {
+                    const dataPromises = zoomedInResults.data.map((cat, index) => {
+                        return new Promise(resolve => {
+                            const start_date = cat.date;
+                            const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+                            const end_date = index < (zoomedInResults.data.length - 1) ? zoomedInResults.data[index + 1].date : max;
+                            this.searchService.dateTermFrequencySearch(
+                                this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                                start_date, end_date)
+                                .then(result => {
+                                const data = result.data;
+                                zoomedInResults.data[index].match_count = data.match_count;
+                                zoomedInResults.data[index].total_doc_count = data.doc_count;
+                                zoomedInResults.data[index].token_count = data.token_count;
+                                resolve(true);
+                            });
                         });
                     });
-                });
-                await Promise.all(dataPromises);
-            }
+                    await Promise.all(dataPromises);
+                }
 
-            const selectedData = this.selectData(zoomedInResults,
-                this.rawData.reduce((s, f) => s + f.doc_count, 0)); // add overall total for percentages
+                const selectedData: TimelineSeries = this.selectData([zoomedInResults])[0];
+                dataset.data = selectedData.data.map((item: TimelineDataPoint) => ({
+                    x: item.date.toISOString(),
+                    y: item.value,
+                }));
 
-            // insert results in graph
-            dataset.data = selectedData.map((item) => ({x: item.date.toISOString(), y: item.value}));
+            });
+
             chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
             chart.update('show'); // fade into view
             this.isLoading.emit(false);
@@ -371,4 +392,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             return moment(date).format(dateFormat);
         };
     }
+
+    get percentageDocumentsSearched() {
+        return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
+    }
+
 }

@@ -23,7 +23,6 @@ export class BarChartComponent {
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -95,9 +94,4 @@ export class BarChartComponent {
             return (value: number) => value.toString();
         }
     }
-
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
-    }
-
 }
