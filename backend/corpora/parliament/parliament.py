@@ -69,7 +69,7 @@ class Parliament(Corpus):
             description='Search only within this time range.'
         ),
         visualizations=['timeline']
-    ) 
+    )
 
     house = Field(
         name='house',
@@ -118,7 +118,7 @@ class Parliament(Corpus):
                 "stemmed": {
                     "type": "text",
                     "analyzer": "stemmed",
-                    "term_vector": "with_positions_offsets", 
+                    "term_vector": "with_positions_offsets",
                 },
                 "length": {
                     "type":     "token_count",
@@ -129,8 +129,7 @@ class Parliament(Corpus):
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
-        visualizations=['wordcloud', 'ngram'],
-        highlight=True,
+        visualizations=['wordcloud', 'ngram']
     )
 
     speech_id = Field(
@@ -204,13 +203,13 @@ class Parliament(Corpus):
     )
 
     fields = [
-        country, date, 
+        country, date,
         debate_title, debate_id,
-        topic, house, 
+        topic, house,
         speech, speech_id,
-        speaker, speaker_id, 
+        speaker, speaker_id,
         speech_type,
-        role, 
+        role,
         party, party_id, party_full,
         page, column,
         ]

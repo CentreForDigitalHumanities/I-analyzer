@@ -11,7 +11,7 @@ from corpora.parliament.uk import ParliamentUK
 
 class ParliamentUKRecent(ParliamentUK, CSVCorpus):
     data_directory = current_app.config['PP_UK_RECENT_DATA']
-    
+
     def __init__(self):
         self.country.extractor = Constant(
             value='United Kingdom'
@@ -56,7 +56,7 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
 
         self.debate_id.extractor = CSV(
             field='debate_id'
-        ) 
+        )
 
         self.topic.extractor = Combined(
             CSV(field='heading_major'),
