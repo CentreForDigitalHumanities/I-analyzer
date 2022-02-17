@@ -144,7 +144,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         return rawData.map(series => {
             const data = series.data.map(item => ({
                 key: item.key,
-                value: getValue(item, series),
+                value: getValue(item, series) || 0,
             }));
             return {label: series.queryText, data: data};
         });
@@ -237,6 +237,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
     }
 
-
-
+    get queries(): string[] {
+        return this.rawData.map(series => series.queryText);
+    }
 }

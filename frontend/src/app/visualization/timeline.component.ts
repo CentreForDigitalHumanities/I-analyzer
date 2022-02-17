@@ -429,4 +429,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
         return false;
     }
+
+    get queries(): string[] {
+        return this.rawData.map(series => series.queryText);
+    }
 }

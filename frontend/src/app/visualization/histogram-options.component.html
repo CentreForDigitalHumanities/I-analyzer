@@ -1,6 +1,6 @@
 <form>
     <div class="columns">
-        <div class="column" *ngIf="queryText">
+        <div class="column" *ngIf="showTemFrequency">
             <div class="control" (change)="onChange('frequencyMeasure')">
                 <label class="label">Frequency of</label>
                 <label class="radio" iaBalloon="count the number of documents">

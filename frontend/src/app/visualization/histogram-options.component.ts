@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as _ from 'lodash';
 import { histogramOptions } from '../models';
 
 @Component({
@@ -7,7 +8,7 @@ import { histogramOptions } from '../models';
     styleUrls: ['./histogram-options.component.scss']
 })
 export class HistogramOptionsComponent implements OnInit {
-    @Input() queryText: string;
+    @Input() queries: string[];
     @Input() showTokenCountOption: boolean;
     @Output() options = new EventEmitter<histogramOptions>();
 
@@ -38,6 +39,10 @@ export class HistogramOptionsComponent implements OnInit {
         this.newQuery.emit(this.newQueryText);
         this.newQueryText = undefined;
         this.showAddQuery = false;
+    }
+
+    get showTemFrequency(): boolean {
+        return _.some(this.queries);
     }
 
 }
