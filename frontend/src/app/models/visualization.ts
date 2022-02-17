@@ -26,7 +26,7 @@ export type HistogramSeriesRaw = {
     data: AggregateResult[],
     total_doc_count: number,
     searchRatio: number,
-    label?: string,
+    queryText?: string,
 };
 
 export type TimelineDataPoint = {
@@ -43,7 +43,7 @@ export type TimelineSeriesRaw = {
     data: DateResult[],
     total_doc_count: number,
     searchRatio: number,
-    label?: string,
+    queryText?: string,
 };
 
 export type freqTableHeaders = {

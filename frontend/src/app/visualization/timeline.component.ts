@@ -24,8 +24,6 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    private queryModelCopy;
-
     public showHint: boolean;
 
     private currentTimeCategory: 'year'|'week'|'month'|'day';
@@ -42,16 +40,25 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        // doc counts should be requested if query has changed
-        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
+        // new doc counts should be requested if query has changed
+        const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
 
-        this.queryModelCopy = _.cloneDeep(this.queryModel);
+        if (refreshData) {
+            this.rawData = [
+                {
+                    queryText: this.queryModel.queryText,
+                    data: [],
+                    total_doc_count: 0,
+                    searchRatio: 1.0,
+                }
+            ];
+        }
+
         const min = new Date(this.visualizedField.searchFilter.currentData.min);
         const max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
         this.calculateTimeCategory(min, max);
-        this.prepareTimeline(loadDocCounts, loadTokenCounts);
+        this.prepareTimeline();
     }
 
     onOptionChange(options: histogramOptions) {
@@ -59,22 +66,15 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.normalizer = options.normalizer;
 
         if (this.rawData && this.timeline) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(series => (series.data.find((cat) => cat.match_count)))) {
-                this.prepareTimeline(false, true);
-            } else {
-                this.prepareTimeline(false, false);
-            }
-            if (this.timeline.isZoomedOrPanned()) {
-                this.loadZoomedInData(this.timeline, true);
-            }
+            this.prepareTimeline();
         }
     }
 
-    async prepareTimeline(loadDocCounts = false, loadTokenCounts = false) {
+    async prepareTimeline() {
         this.isLoading.emit(true);
 
-        if (loadDocCounts) { await this.requestDocumentData(); }
-        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
+        await this.requestDocumentData();
+        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
         this.selectedData = this.selectData(this.rawData);
 
@@ -83,52 +83,70 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
 
         this.setChart();
+
+        if (this.isZoomedIn) {
+            this.loadZoomedInData(this.timeline, true);
+        }
+
         this.isLoading.emit(false);
     }
 
     async requestDocumentData() {
-        let dataPromise: Promise<TimelineSeriesRaw[]>;
-
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
-        dataPromise = this.searchService.dateHistogramSearch(
-            this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
-                    return {
-                        date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count
+        const dataPromises = this.rawData.map((series, seriesIndex) => {
+            if (!series.data.length) {
+                const queryModelCopy = _.cloneDeep(this.queryModel);
+                queryModelCopy.queryText = series.queryText;
+                return this.searchService.dateHistogramSearch(
+                    this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                        return {
+                            date: new Date(cat.key_as_string),
+                            doc_count: cat.doc_count
+                        };
+                    });
+                    const total_doc_count = _.sumBy(data, (item) => item.doc_count);
+                    const searchRatio = this.documentLimit / total_doc_count;
+                    this.rawData[seriesIndex] = {
+                        data: data,
+                        total_doc_count: total_doc_count,
+                        searchRatio: searchRatio,
+                        queryText: series.queryText,
                     };
                 });
-                const total_doc_count = _.sumBy(data, (item) => item.doc_count);
-                const searchRatio = this.documentLimit / total_doc_count;
-                return [{data: data, total_doc_count: total_doc_count, searchRatio: searchRatio }];
-            });
+            }
+        });
 
-        this.rawData = await dataPromise;
+        await Promise.all(dataPromises);
 
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
-            series.data.map((cat, index) => {
-                return new Promise(resolve => {
-                    const start_date = cat.date;
-                    const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
-                    const end_date = index < (this.rawData.length - 1) ? series[index + 1].date : undefined;
-                    this.searchService.dateTermFrequencySearch(
-                        this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                        start_date, end_date)
-                        .then(result => {
-                        const data = result.data;
-                        cat.match_count = data.match_count;
-                        cat.total_doc_count = data.doc_count;
-                        cat.token_count = data.token_count;
-                        resolve(true);
+            if (series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+                const queryModelCopy = _.cloneDeep(this.queryModel);
+                queryModelCopy.queryText = series.queryText;
+                series.data.map((cat, index) => {
+                    return new Promise(resolve => {
+                        const start_date = cat.date;
+                        const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+                        const end_date = index < (this.rawData.length - 1) ? series[index + 1].date : undefined;
+                        this.searchService.dateTermFrequencySearch(
+                            this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                            start_date, end_date)
+                            .then(result => {
+                            const data = result.data;
+                            cat.match_count = data.match_count;
+                            cat.total_doc_count = data.doc_count;
+                            cat.token_count = data.token_count;
+                            resolve(true);
+                        });
                     });
                 });
-            });
+            }
         }));
 
         await Promise.all(dataPromises);
@@ -138,40 +156,31 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     selectData(rawData: TimelineSeriesRaw[]): TimelineSeries[] {
-        let getValue: (item: DateResult, series: TimelineSeriesRaw) => number;
-        switch ([this.frequencyMeasure, this.normalizer]) {
-            case ['tokens', 'raw']:
-                getValue = (item, series) => item.match_count;
-                break;
+        const valueFuncs = {
+            tokens: {
+                raw: (item, series) => item.match_count,
+                terms: (item, series) => item.match_count / item.token_count,
+                documents: (item, series) => item.match_count / item.total_doc_count
+            },
+            documents: {
+                raw: (item, series) => item.doc_count,
+                percent: (item, series) => item.doc_count / series.total_doc_count
+            }
+        };
 
-            case ['tokens', 'terms']:
-                getValue = (item, series) => item.match_count / item.token_count;
-                break;
-
-            case ['tokens', 'documents']:
-                getValue = (item, series) => item.match_count / item.token_count;
-                break;
-
-            case ['documents', 'percent']:
-                getValue = (item, series) => item.match_count / series.total_doc_count;
-                break;
-
-            default:
-                getValue = (item, series) => item.doc_count;
-                break;
-        }
+        const getValue: (item: DateResult, series: TimelineSeriesRaw) => number
+            = valueFuncs[this.frequencyMeasure][this.normalizer];
 
         return rawData.map(series => {
             const data = series.data.map(item => ({
                 date: item.date,
-                value: getValue(item, series)
+                value: getValue(item, series) || 0
             }));
-            return {label: series.label, data: data};
+            return {label: series.queryText, data: data};
         });
     }
 
     setChart() {
-
         const datasets = this.selectedData.map(series => {
             const data = series.data.map(item => ({
                 x: item.date.toISOString(),
@@ -255,16 +264,18 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
             chart.data.datasets.forEach(async (dataset, seriesIndex) => {
                 const series = this.rawData[seriesIndex];
+                const queryModelCopy = _.cloneDeep(this.queryModel);
+                queryModelCopy.queryText = series.queryText;
                 // download zoomed in results
                 const filter = this.visualizedField.searchFilter;
                 filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
-                this.queryModelCopy.filters.push(filter);
+                queryModelCopy.filters.push(filter);
 
 
                 let zoomedInResults: TimelineSeriesRaw;
 
                 const docCounts = this.searchService.dateHistogramSearch(
-                    this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                    this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
                     const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                         return {
                             date: new Date(cat.key_as_string),
@@ -288,7 +299,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                             const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
                             const end_date = index < (zoomedInResults.data.length - 1) ? zoomedInResults.data[index + 1].date : max;
                             this.searchService.dateTermFrequencySearch(
-                                this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
                                 start_date, end_date)
                                 .then(result => {
                                 const data = result.data;
@@ -397,4 +408,16 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
     }
 
+    get isZoomedIn(): boolean {
+        // check whether this.timeline is zoomed on xAxis
+
+        if (this.timeline) {
+            const initialBounds = this.timeline.getInitialScaleBounds().xAxis;
+            const currentBounds = { min : this.timeline.scales.xAxis.min, max: this.timeline.scales.xAxis.max };
+
+            return (initialBounds.min && initialBounds.min < currentBounds.min) ||
+                (initialBounds.max && initialBounds.max > currentBounds.max);
+        }
+        return false;
+    }
 }

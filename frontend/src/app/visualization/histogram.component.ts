@@ -23,33 +23,37 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     }
 
     async ngOnChanges(changes: SimpleChanges) {
-        // doc counts should be requested if query has changed
-        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
+        // new doc counts should be requested if query has changed
+        const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
 
+        if (refreshData) {
+            this.rawData = [
+                {
+                    queryText: this.queryModel.queryText,
+                    data: [],
+                    total_doc_count: 0,
+                    searchRatio: 1.0,
+                }
+            ];
+        }
 
-        this.prepareChart(loadDocCounts, loadTokenCounts);
+        this.prepareChart();
     }
 
     async onOptionChange(options: histogramOptions) {
         this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
 
-        if (this.rawData) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(series => series.data.find(cat => cat.match_count))) {
-                this.prepareChart(false, true);
-            } else {
-                this.prepareChart(false, false);
-            }
+        if (this.rawData && this.histogram) {
+            this.prepareChart();
         }
     }
 
-
-    async prepareChart(loadDocCounts = false, loadTokenCounts = false) {
+    async prepareChart() {
         this.isLoading.emit(true);
 
-        if (loadDocCounts) { await this.requestDocumentData(); }
-        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
+        await this.requestDocumentData();
+        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
         this.selectedData = this.selectData(this.rawData);
 
@@ -70,40 +74,48 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
         const aggregator = {name: this.visualizedField.name, size: size};
 
-        const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-            const data = visual.aggregations[this.visualizedField.name];
-            const total_doc_count = _.sumBy(data, item => item.doc_count);
-            const searchRatio = this.documentLimit / total_doc_count;
-
-            this.rawData = [{
-                data: data,
-                total_doc_count: total_doc_count,
-                searchRatio: searchRatio,
-            }];
-
-
+        const dataPromises = this.rawData.map((series, seriesIndex) => {
+            if (!series.data.length) { // retrieve data if it was not already loaded
+                const queryModelCopy = _.cloneDeep(this.queryModel);
+                queryModelCopy.queryText = series.queryText;
+                return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(visual => {
+                    const data = visual.aggregations[this.visualizedField.name];
+                    const total_doc_count = _.sumBy(data, item => item.doc_count);
+                    const searchRatio = this.documentLimit / total_doc_count;
+                    this.rawData[seriesIndex] = {
+                        data: data,
+                        total_doc_count: total_doc_count,
+                        searchRatio: searchRatio,
+                        queryText: series.queryText,
+                    };
+                });
+            }
         });
 
-        await dataPromise;
+        await Promise.all(dataPromises);
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
-            series.data.map((cat, index) => {
-                const binDocumentLimit = _.min([10000, _.round(cat.doc_count * series.searchRatio)]);
-                return new Promise(resolve => {
-                    this.searchService.aggregateTermFrequencySearch(
-                        this.corpus, this.queryModel, this.visualizedField.name, cat.key, binDocumentLimit)
-                        .then(result => {
-                            const data = result.data;
-                            cat.match_count = data.match_count;
-                            cat.total_doc_count = data.doc_count;
-                            cat.token_count = data.token_count;
-                            resolve(true);
-                        });
+            if (series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+                const queryModelCopy = _.cloneDeep(this.queryModel);
+                queryModelCopy.queryText = series.queryText;
+                return series.data.map((cat, index) => {
+                    const binDocumentLimit = _.min([10000, _.round(cat.doc_count * series.searchRatio)]);
+                    return new Promise(resolve => {
+                        this.searchService.aggregateTermFrequencySearch(
+                            this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                            .then(result => {
+                                const data = result.data;
+                                cat.match_count = data.match_count;
+                                cat.total_doc_count = data.doc_count;
+                                cat.token_count = data.token_count;
+                                resolve(true);
+                            });
+                    });
                 });
-            });
+            }
         }));
 
         await Promise.all(dataPromises);
@@ -114,34 +126,27 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     selectData(rawData: HistogramSeriesRaw[]): HistogramSeries[] {
         let getValue: (item: AggregateResult, series: HistogramSeriesRaw) => number;
-        switch ([this.frequencyMeasure, this.normalizer]) {
-            case ['tokens', 'raw']:
-                getValue = (item, series) => item.match_count;
-                break;
 
-            case ['tokens', 'terms']:
-                getValue = (item, series) => item.match_count / item.token_count;
-                break;
+        const valueFuncs = {
+            tokens: {
+                raw: (item, series) => item.match_count ,
+                terms: (item, series) => item.match_count / item.token_count,
+                documents: (item, series) => item.match_count / item.total_doc_count
+            },
+            documents: {
+                raw: (item, series) => item.doc_count,
+                percent: (item, series) => item.doc_count / series.total_doc_count
+            }
+        };
 
-            case ['tokens', 'documents']:
-                getValue = (item, series) => item.match_count / item.token_count;
-                break;
-
-            case ['documents', 'percent']:
-                getValue = (item, series) => item.match_count / series.total_doc_count;
-                break;
-
-            default:
-                getValue = (item, series) => item.doc_count;
-                break;
-        }
+        getValue = valueFuncs[this.frequencyMeasure][this.normalizer];
 
         return rawData.map(series => {
             const data = series.data.map(item => ({
                 key: item.key,
-                value: getValue(item, series)
+                value: getValue(item, series),
             }));
-            return {label: series.label, data: data};
+            return {label: series.queryText, data: data};
         });
     }
 
