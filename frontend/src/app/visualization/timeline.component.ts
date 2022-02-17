@@ -74,6 +74,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.prepareTimeline();
     }
 
+    clearAddedQueries() {
+        this.rawData = this.rawData.slice(0, 1);
+        this.prepareTimeline();
+    }
+
     async prepareTimeline() {
         this.isLoading.emit(true);
 
@@ -133,7 +138,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
-            if (series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 const queryModelCopy = _.cloneDeep(this.queryModel);
                 queryModelCopy.queryText = series.queryText;
                 series.data.map((cat, index) => {

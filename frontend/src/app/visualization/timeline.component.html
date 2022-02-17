@@ -7,7 +7,7 @@
 <div class="block">
     <ia-histogram-options
         [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable"
-        (options)="onOptionChange($event)" (newQuery)="addSeries($event)">
+        (options)="onOptionChange($event)" (newQuery)="addSeries($event)" (clearQueries)="clearAddedQueries()">
     </ia-histogram-options>
 </div>
 

@@ -46,6 +46,12 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.prepareChart();
     }
 
+    clearAddedQueries() {
+        this.rawData = this.rawData.slice(0, 1);
+        this.prepareChart();
+    }
+
+
     async prepareChart() {
         this.isLoading.emit(true);
 
@@ -98,7 +104,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
-            if (series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 const queryModelCopy = _.cloneDeep(this.queryModel);
                 queryModelCopy.queryText = series.queryText;
                 return series.data.map((cat, index) => {

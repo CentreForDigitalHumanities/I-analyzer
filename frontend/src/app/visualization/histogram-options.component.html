@@ -42,22 +42,34 @@
         </div>
     </div>
 
-    <div class="field" *ngIf="!showAddQuery">
+    <div class="field is-grouped">
         <div class="control">
-            <button class="button" (click)="showAddQuery = true">Compare with another query...</button>
+            <div class="field" *ngIf="!showAddQuery">
+                <div class="control">
+                    <button class="button" (click)="showAddQuery = true">Compare with another query...</button>
+                </div>
+            </div>
+        
+            <div class="field has-addons" *ngIf="showAddQuery">
+                <div class="control">
+                    <input class="input" type="text" name="query" [(ngModel)]="newQueryText">
+                </div>
+                <div class="control">
+                    <button class="button is-primary" (click)="addQuery()">
+                        <span class="icon">
+                            <i class="fa fa-plus"></i>
+                        </span>
+                        <span>Add</span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="field has-addons" *ngIf="showAddQuery">
-        <div class="control">
-            <input class="input" type="text" name="query" [(ngModel)]="newQueryText">
-        </div>
-        <div class="control">
-            <button class="button is-primary" (click)="addQuery()">
+        <div class="control" *ngIf="showAddQuery && queries.length > 1" >
+            <button class="button" (click)="signalClearQueries()">
                 <span class="icon">
-                    <i class="fa fa-plus"></i>
+                    <i class="fa fa-times"></i>
                 </span>
-                <span>Add</span>
+                <span>Reset</span>
             </button>
         </div>
     </div>

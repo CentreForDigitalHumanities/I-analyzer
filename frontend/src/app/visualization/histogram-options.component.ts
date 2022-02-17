@@ -18,6 +18,7 @@ export class HistogramOptionsComponent implements OnInit {
     showAddQuery = false;
     newQueryText: string;
     @Output() newQuery = new EventEmitter<string>();
+    @Output() clearQueries = new EventEmitter<void>();
 
     constructor() { }
 
@@ -38,7 +39,12 @@ export class HistogramOptionsComponent implements OnInit {
     addQuery() {
         this.newQuery.emit(this.newQueryText);
         this.newQueryText = undefined;
+
+    }
+
+    signalClearQueries() {
         this.showAddQuery = false;
+        this.clearQueries.emit();
     }
 
     get showTemFrequency(): boolean {
