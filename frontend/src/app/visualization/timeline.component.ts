@@ -57,7 +57,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const min = new Date(this.visualizedField.searchFilter.currentData.min);
         const max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
-        this.calculateTimeCategory(min, max);
+        this.currentTimeCategory = this.calculateTimeCategory(min, max);
         this.prepareTimeline();
     }
 
@@ -138,7 +138,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     return new Promise(resolve => {
                         const start_date = cat.date;
                         const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
-                        const end_date = index < (this.rawData.length - 1) ? series[index + 1].date : undefined;
+                        const end_date = index < (series.data.length - 1) ? series.data[index + 1].date : undefined;
                         this.searchService.dateTermFrequencySearch(
                             this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
                             start_date, end_date)
@@ -236,7 +236,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     return this.formatDate(Date.parse(tooltipItem.label as string));
                 },
                 label: (tooltipItem) => {
-                    const value = (tooltipItem.raw as {t: Date, y: number}).y;
+                    const value = tooltipItem.parsed.y;
                     return this.formatValue(value);
                 }
             }
@@ -260,30 +260,29 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     async loadZoomedInData(chart, triggedByDataUpdate = false) {
+        const initialTimeCategory = this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
         const previousTimeCategory = this.currentTimeCategory;
         const min = new Date(chart.scales.xAxis.min);
         const max = new Date(chart.scales.xAxis.max);
-        this.calculateTimeCategory(min, max);
+        this.currentTimeCategory = this.calculateTimeCategory(min, max);
 
-        if (triggedByDataUpdate || (this.currentTimeCategory !== previousTimeCategory)) {
+        if ((this.currentTimeCategory !== previousTimeCategory) ||
+            (triggedByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
             this.isLoading.emit(true);
 
             // hide data for smooth transition
             chart.update(triggedByDataUpdate ? 'none' : 'hide');
 
-            chart.data.datasets.forEach(async (dataset, seriesIndex) => {
+            let zoomedInResults: TimelineSeriesRaw[];
+            const docPromises: Promise<TimelineSeriesRaw>[] = chart.data.datasets.map((dataset, seriesIndex) => {
                 const series = this.rawData[seriesIndex];
                 const queryModelCopy = _.cloneDeep(this.queryModel);
                 queryModelCopy.queryText = series.queryText;
-                // download zoomed in results
                 const filter = this.visualizedField.searchFilter;
                 filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
                 queryModelCopy.filters.push(filter);
 
-
-                let zoomedInResults: TimelineSeriesRaw;
-
-                const docCounts = this.searchService.dateHistogramSearch(
+                return this.searchService.dateHistogramSearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
                     const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                         return {
@@ -296,41 +295,52 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                         data: data,
                         total_doc_count: total_doc_count,
                         searchRatio: series.searchRatio,
+                        queryText: series.queryText,
                     };
                 });
+            });
 
-                zoomedInResults = await docCounts;
+            zoomedInResults = await Promise.all(docPromises);
 
-                if (this.frequencyMeasure === 'tokens') {
-                    const dataPromises = zoomedInResults.data.map((cat, index) => {
+            if (this.frequencyMeasure === 'tokens') {
+                const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
+                    return series.data.map((cat, index) => {
+                        const queryModelCopy = _.cloneDeep(this.queryModel);
+                        queryModelCopy.queryText = series.queryText;
+                        // download zoomed in results
+                        const filter = this.visualizedField.searchFilter;
+                        filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
+                        queryModelCopy.filters.push(filter);
                         return new Promise(resolve => {
                             const start_date = cat.date;
                             const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
-                            const end_date = index < (zoomedInResults.data.length - 1) ? zoomedInResults.data[index + 1].date : max;
+                            const end_date = index < (series.data.length - 1) ? series.data[index + 1].date : max;
                             this.searchService.dateTermFrequencySearch(
                                 this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
                                 start_date, end_date)
                                 .then(result => {
                                 const data = result.data;
-                                zoomedInResults.data[index].match_count = data.match_count;
-                                zoomedInResults.data[index].total_doc_count = data.doc_count;
-                                zoomedInResults.data[index].token_count = data.token_count;
+                                series.data[index].match_count = data.match_count;
+                                series.data[index].total_doc_count = data.doc_count;
+                                series.data[index].token_count = data.token_count;
                                 resolve(true);
                             });
                         });
                     });
-                    await Promise.all(dataPromises);
-                }
+                });
+                await Promise.all(dataPromises);
+            }
 
-                const selectedData: TimelineSeries = this.selectData([zoomedInResults])[0];
-                dataset.data = selectedData.data.map((item: TimelineDataPoint) => ({
+            const selectedData: TimelineSeries[] = this.selectData(zoomedInResults);
+
+            selectedData.forEach((data, seriesIndex) => {
+                chart.data.datasets[seriesIndex].data = data.data.map((item: TimelineDataPoint) => ({
                     x: item.date.toISOString(),
                     y: item.value,
                 }));
-
             });
 
-            chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
+            chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
             chart.update('show'); // fade into view
             this.isLoading.emit(false);
         }
@@ -338,23 +348,23 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     zoomOut(): void {
         this.timeline.resetZoom();
-        this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
+        this.currentTimeCategory = this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
         this.timeline.options.scales.xAxis.time.unit = this.currentTimeCategory;
         this.timeline.update();
 
         this.setChart();
     }
 
-    public calculateTimeCategory(min: Date, max: Date) {
+    public calculateTimeCategory(min: Date, max: Date): 'year'|'month'|'week'|'day' {
         const diff = moment.duration(moment(max).diff(moment(min)));
         if (diff.asYears() >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'year';
+            return 'year';
         } else if (diff.asMonths() >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'month';
+            return 'month';
         } else if (diff.asWeeks() >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'week';
+            return 'week';
         } else {
-            this.currentTimeCategory = 'day';
+            return 'day';
         }
     }
 
