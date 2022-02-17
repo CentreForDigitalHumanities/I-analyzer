@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { Corpus, QueryModel } from '../models';
+import { Corpus, freqTableHeaders, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 
 @Component({
@@ -25,6 +25,9 @@ export class BarChartComponent {
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
+
+    tableHeaders: freqTableHeaders;
+    tableData: any[];
 
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter();

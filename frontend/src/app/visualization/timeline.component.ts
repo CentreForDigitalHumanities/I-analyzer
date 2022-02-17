@@ -52,13 +52,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     searchRatio: 1.0,
                 }
             ];
+            const min = new Date(this.visualizedField.searchFilter.currentData.min);
+            const max = new Date(this.visualizedField.searchFilter.currentData.max);
+            this.xDomain = [min, max];
+            this.currentTimeCategory = this.calculateTimeCategory(min, max);
+            this.prepareTimeline();
         }
-
-        const min = new Date(this.visualizedField.searchFilter.currentData.min);
-        const max = new Date(this.visualizedField.searchFilter.currentData.max);
-        this.xDomain = [min, max];
-        this.currentTimeCategory = this.calculateTimeCategory(min, max);
-        this.prepareTimeline();
     }
 
     onOptionChange(options: histogramOptions) {
@@ -88,6 +87,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
 
         this.setChart();
+
+        this.setTableHeaders();
+        this.setTableData();
 
         if (this.isZoomedIn) {
             this.loadZoomedInData(this.timeline, true);
@@ -387,7 +389,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    get tableHeaders(): freqTableHeaders {
+    setTableHeaders() {
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const formatDateValue = this.formatDate;
 
@@ -398,10 +400,16 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             };
         }
 
-        return [
+        this.tableHeaders = [
             { key: 'date', label: 'Date', format: formatDateValue },
             { key: 'value', label: rightColumnName, format: formatValue }
         ];
+    }
+
+    setTableData() {
+        if (this.selectedData && this.selectedData.length) {
+            this.tableData = this.selectedData[0].data;
+        }
     }
 
     get formatDate(): (date) => string {
@@ -441,6 +449,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     get queries(): string[] {
-        return this.rawData.map(series => series.queryText);
+        if (this.rawData) {
+            return this.rawData.map(series => series.queryText);
+        }
     }
 }

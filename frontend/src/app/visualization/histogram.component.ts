@@ -28,9 +28,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         if (refreshData) {
             this.rawData = [this.newSeries(this.queryModel.queryText)];
+            this.prepareChart();
         }
-
-        this.prepareChart();
     }
 
     onOptionChange(options: histogramOptions) {
@@ -53,13 +52,14 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
-        console.log(this.rawData);
-
         this.selectedData = this.selectData(this.rawData);
 
         if (!this.selectedData.length) {
             this.error.emit({message: 'No results'});
         }
+
+        this.setTableHeaders();
+        this.setTableData();
 
         this.setChart();
         this.isLoading.emit(false);
@@ -207,13 +207,19 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         };
     }
 
-    get tableHeaders(): freqTableHeaders {
+    setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        return [
+        this.tableHeaders = [
             { key: 'key', label: label },
             { key: 'value', label: header, format: this.formatValue }
         ];
+    }
+
+    setTableData() {
+        if (this.selectedData && this.selectedData.length) {
+            this.tableData = this.selectedData[0].data;
+        }
     }
 
     get defaultSort(): string {
@@ -238,6 +244,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     }
 
     get queries(): string[] {
-        return this.rawData.map(series => series.queryText);
+        if (this.rawData) {
+            return this.rawData.map(series => series.queryText);
+        }
     }
 }

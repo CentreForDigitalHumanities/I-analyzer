@@ -1,6 +1,6 @@
 <div class="block">
     <ia-histogram-options
-        [queryText]="queryModel ? queryModel.queryText : undefined" [showTokenCountOption]="totalTokenCountAvailable"
+        [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable"
         (options)="onOptionChange($event)" (newQuery)="addSeries($event)">
     </ia-histogram-options>
 </div>
@@ -10,7 +10,7 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="selectedData" [defaultSort]="defaultSort" [name]="visualizedField ? visualizedField.name : ''">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="defaultSort" [name]="visualizedField ? visualizedField.name : ''">
     </ia-freqtable>
 </div>
 
