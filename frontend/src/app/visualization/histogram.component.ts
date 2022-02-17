@@ -19,9 +19,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     rawData: HistogramSeriesRaw[];
     selectedData: HistogramSeries[];
 
-    ngOnInit() {
-    }
-
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
         const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;

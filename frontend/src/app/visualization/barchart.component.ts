@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -7,13 +7,20 @@ import { Chart, ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 
+const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
+const hintHidingMinDelay = 500;       // milliseconds
+const hintHidingDebounceTime = 1000;  // milliseconds
+
+
 @Component({
     selector: 'ia-barchart',
     templateUrl: './barchart.component.html',
     styleUrls: ['./barchart.component.scss']
 })
 
-export class BarChartComponent {
+export class BarChartComponent implements OnInit {
+    public showHint: boolean;
+
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
@@ -80,6 +87,30 @@ export class BarChartComponent {
         chartDefault.plugins.tooltip.displayColors = false;
         chartDefault.plugins.tooltip.intersect = false;
     }
+
+    ngOnInit() {
+        this.setupZoomHint();
+    }
+
+
+    /**
+     * Show the zooming hint once per session, hide automatically with a delay
+     * when the user moves the mouse.
+     */
+     setupZoomHint() {
+        if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
+            sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
+            this.showHint = true;
+            const hider = _.debounce(() => {
+                this.showHint = false;
+                document.body.removeEventListener('mousemove', hider);
+            }, hintHidingDebounceTime);
+            _.delay(() => {
+                document.body.addEventListener('mousemove', hider);
+            }, hintHidingMinDelay);
+        }
+    }
+
 
     // specified in timeline
     loadZoomedInData(chart) {}

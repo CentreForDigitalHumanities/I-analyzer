@@ -14,18 +14,12 @@ import { Chart, ChartOptions } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-moment';
 
-const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
-const hintHidingMinDelay = 500;       // milliseconds
-const hintHidingDebounceTime = 1000;  // milliseconds
-
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    public showHint: boolean;
-
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     private rawData: TimelineSeriesRaw[];
     private selectedData: TimelineSeries[];
@@ -34,10 +28,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     public xDomain: [Date, Date];
 
     timeline: any;
-
-    ngOnInit() {
-        this.setupZoomHint();
-    }
 
     ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -372,25 +362,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             return 'week';
         } else {
             return 'day';
-        }
-    }
-
-
-    /**
-     * Show the zooming hint once per session, hide automatically with a delay
-     * when the user moves the mouse.
-     */
-    setupZoomHint() {
-        if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
-            sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
-            this.showHint = true;
-            const hider = _.debounce(() => {
-                this.showHint = false;
-                document.body.removeEventListener('mousemove', hider);
-            }, hintHidingDebounceTime);
-            _.delay(() => {
-                document.body.addEventListener('mousemove', hider);
-            }, hintHidingMinDelay);
         }
     }
 
