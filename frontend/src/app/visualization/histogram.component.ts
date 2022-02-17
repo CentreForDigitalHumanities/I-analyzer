@@ -27,20 +27,13 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
 
         if (refreshData) {
-            this.rawData = [
-                {
-                    queryText: this.queryModel.queryText,
-                    data: [],
-                    total_doc_count: 0,
-                    searchRatio: 1.0,
-                }
-            ];
+            this.rawData = [this.newSeries(this.queryModel.queryText)];
         }
 
         this.prepareChart();
     }
 
-    async onOptionChange(options: histogramOptions) {
+    onOptionChange(options: histogramOptions) {
         this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
 
@@ -49,11 +42,18 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
     }
 
+    addSeries(queryText: string) {
+        this.rawData.push(this.newSeries(queryText));
+        this.prepareChart();
+    }
+
     async prepareChart() {
         this.isLoading.emit(true);
 
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
+
+        console.log(this.rawData);
 
         this.selectedData = this.selectData(this.rawData);
 
@@ -154,19 +154,22 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const all_labels = _.flatMap(this.selectedData, series => series.data.map(item => item.key));
         const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
         // TODO: sort labels by frequency
-        const datasets = this.selectedData.map(series => (
+        const datasets = this.selectedData.map((series, seriesIndex) => (
             {
-                label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
+                label: series.label ? series.label : '(no query)',
                 data: all_labels.map(key => {
                   const item = series.data.find(i => i.key === key);
                   return item ? item.value : 0;
-                })
+                }),
+                backgroundColor: this.colorPalette[seriesIndex],
+                hoverBackgroundColor: this.colorPalette[seriesIndex],
             }
         ));
 
         if (this.histogram) {
             this.histogram.data.labels = labels;
             this.histogram.data.datasets = datasets;
+            this.histogram.options.plugins.legend.display = datasets.length > 1;
             this.histogram.update();
         } else {
             this.initChart(labels, datasets);
@@ -187,6 +190,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                 }
             }
         };
+        options.plugins.legend = {display: datasets.length > 1};
         this.histogram = new Chart('histogram',
             {
                 type: 'bar',
@@ -232,6 +236,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     get percentageDocumentsSearched() {
         return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
     }
+
 
 
 }

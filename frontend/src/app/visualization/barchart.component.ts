@@ -29,7 +29,7 @@ export class BarChartComponent {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter();
 
-    public primaryColor = '#3F51B5';
+    public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
@@ -70,8 +70,8 @@ export class BarChartComponent {
 
     constructor(public searchService: SearchService, public dialogService: DialogService) {
         const chartDefault = Chart.defaults;
-        chartDefault.elements.bar.backgroundColor = this.primaryColor;
-        chartDefault.elements.bar.hoverBackgroundColor = this.primaryColor;
+        chartDefault.elements.bar.backgroundColor = this.colorPalette[0];
+        chartDefault.elements.bar.hoverBackgroundColor = this.colorPalette[0];
         chartDefault.interaction.axis = 'x';
         chartDefault.plugins.legend.display = false;
         chartDefault.plugins.tooltip.displayColors = false;
@@ -83,6 +83,15 @@ export class BarChartComponent {
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
+    }
+
+    newSeries(queryText: string) {
+        return {
+            queryText: queryText,
+            data: [],
+            total_doc_count: 0,
+            searchRatio: 1.0,
+        };
     }
 
     get formatValue(): (value: number) => string {

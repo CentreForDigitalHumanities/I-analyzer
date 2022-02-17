@@ -70,6 +70,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
+    addSeries(queryText: string) {
+        this.rawData.push(this.newSeries(queryText));
+        this.prepareTimeline();
+    }
+
     async prepareTimeline() {
         this.isLoading.emit(true);
 
@@ -181,7 +186,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     setChart() {
-        const datasets = this.selectedData.map(series => {
+        const datasets = this.selectedData.map((series, seriesIndex) => {
             const data = series.data.map(item => ({
                 x: item.date.toISOString(),
                 y: item.value,
@@ -189,8 +194,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             return {
                 xAxisID: 'xAxis',
                 yAxisID: 'yAxis',
-                label: series.label,
+                label: series.label ? series.label : '(no query)',
                 data: data,
+                backgroundColor: this.colorPalette[seriesIndex],
+                hoverBackgroundColor: this.colorPalette[seriesIndex],
             };
         });
 
@@ -199,6 +206,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 this.currentTimeCategory = this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
             }
             this.timeline.data.datasets = datasets;
+            this.timeline.options.plugins.legend.display = datasets.length > 1;
             this.timeline.update();
         } else {
             this.initChart(datasets);
@@ -235,6 +243,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         };
 
         options.scales.xAxis.type = 'time';
+        options.plugins.legend = {display: datasets.length > 1};
         this.timeline = new Chart('timeline',
             {
                 type: 'bar',

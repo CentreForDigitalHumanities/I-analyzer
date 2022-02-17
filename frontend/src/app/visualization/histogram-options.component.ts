@@ -14,6 +14,10 @@ export class HistogramOptionsComponent implements OnInit {
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
 
+    showAddQuery = false;
+    newQueryText: string;
+    @Output() newQuery = new EventEmitter<string>();
+
     constructor() { }
 
     ngOnInit(): void {
@@ -28,6 +32,12 @@ export class HistogramOptionsComponent implements OnInit {
             frequencyMeasure: this.frequencyMeasure,
             normalizer: this.normalizer,
         });
+    }
+
+    addQuery() {
+        this.newQuery.emit(this.newQueryText);
+        this.newQueryText = undefined;
+        this.showAddQuery = false;
     }
 
 }
