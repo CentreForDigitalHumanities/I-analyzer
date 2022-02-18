@@ -6,9 +6,12 @@ from flask import current_app
 import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
+from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 
 import re
+
+logger = logging.getLogger('indexing')
 
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
@@ -100,6 +103,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if id and id.startswith('nl.p.'):
             id = id[5:]
         return id
+    
+    def get_party_full(self, speech_node):
+        party_ref = speech_node.attrs.get(':party-ref')
+        if not party_ref:
+            return None
+        parents = list(speech_node.parents)
+        party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
+        return party_node
 
     def __init__(self):
         self.country.extractor = Constant(
@@ -118,6 +129,10 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute='pm:house',
             toplevel=True,
             transform=ParliamentNetherlands.format_house
+        )
+        self.house.search_filter=MultipleChoiceFilter(
+            description='Search only in debates from the selected houses',
+            option_count=2
         )
 
         self.debate_title.extractor = XML(
@@ -141,6 +156,28 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             flatten=True,
         )
 
+        # adjust the mapping:
+        # Dutch analyzer, multifield with exact text
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "standard",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "stemmed": {
+                "type": "text",
+                "analyzer": "dutch" 
+                },
+            "clean": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
+                }
+            }
+        }
+
         self.speech_id.extractor = XML(
             attribute=':id'
         )
@@ -160,6 +197,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             transform=ParliamentNetherlands.format_role
         )
 
+        self.role.search_filter=MultipleChoiceFilter(
+            description='Search for speeches by speakers with the the selected roles',
+            option_count=10
+        )
+
         self.party.extractor = Combined(
             XML(
                 attribute=':party'
@@ -169,9 +211,19 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             ),
             transform=ParliamentNetherlands.format_party,
         )
+        self.party.search_filter = MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=50
+        )
+        self.party.visualizations = ['histogram']
 
         self.party_id.extractor = XML(
             attribute=':party-ref'
+        )
+
+        self.party_full.extractor = XML(
+            attribute='pm:name',
+            transform_soup_func=self.get_party_full
         )
 
         self.page.extractor = Combined(

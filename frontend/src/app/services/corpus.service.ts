@@ -74,7 +74,7 @@ export class CorpusService {
             resultsOverview: data.results_overview,
             csvCore: data.csv_core,
             searchFieldCore: data.search_field_core,
-            visualizationType: data.visualization_type,
+            visualizations: data.visualizations,
             visualizationSort: data.visualization_sort,
             multiFields: data['es_mapping'].fields ? Object.keys(data['es_mapping'].fields) : undefined,
             hidden: data.hidden,
@@ -83,7 +83,7 @@ export class CorpusService {
             downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null
-        }
+        };
     }
 
     private parseSearchFilter(filter: any, fieldName: string): SearchFilter<SearchFilterData> {

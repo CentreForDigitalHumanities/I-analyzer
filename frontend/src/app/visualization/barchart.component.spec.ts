@@ -1,10 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, LogService, QueryService, SearchService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../services/index';
 import { ApiServiceMock } from '../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { UserServiceMock } from '../../mock-data/user';
+import { DialogServiceMock } from '../../mock-data/dialog';
 import { BarChartComponent } from './barchart.component';
 
 describe('BarchartComponent', () => {
@@ -20,7 +21,6 @@ describe('BarchartComponent', () => {
                     provide: ApiService, useValue: new ApiServiceMock()
                 },
                 ApiRetryService,
-                DataService,
                 {
                     provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
                 },
@@ -29,7 +29,8 @@ describe('BarchartComponent', () => {
                 SearchService,
                 {
                     provide: UserService, useValue: new UserServiceMock()
-                }
+                },
+                { provide: DialogService, useClass: DialogServiceMock },
             ],
             declarations: [BarChartComponent]
         }).compileComponents();

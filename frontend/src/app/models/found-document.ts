@@ -8,5 +8,6 @@ export type FoundDocument = {
     /**
     * Position of the document in the array of results
     */
-    position?: number
+    position?: number,
+    highlight?: {[fieldName: string]: string[]},
 };

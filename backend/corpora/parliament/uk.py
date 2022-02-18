@@ -7,6 +7,7 @@ from flask import current_app
 
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
+from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
 
 class ParliamentUK(Parliament, CSVCorpus):
@@ -85,6 +86,11 @@ class ParliamentUK(Parliament, CSVCorpus):
             transform=ParliamentUK.format_house
         )
 
+        self.house.search_filter=MultipleChoiceFilter(
+            description='Search only in debates from the selected houses',
+            option_count=2
+        )
+
         self.debate_id.extractor = CSV(
             field='debate_id'
         )
@@ -94,6 +100,28 @@ class ParliamentUK(Parliament, CSVCorpus):
             multiple=True,
             transform=lambda x : ' '.join(x)
         )
+
+        # adjust the mapping:
+        # English analyzer, multifield with exact text and non-stemmed version
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "standard",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "stemmed": {
+                "type": "text",
+                "analyzer": "english"
+                },
+            "clean": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
+                }
+            }
+        }
 
         self.speech_id.extractor = CSV(
             field='speech_id'

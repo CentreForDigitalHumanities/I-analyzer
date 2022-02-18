@@ -8,8 +8,11 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+    AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 import { stringify } from 'querystring';
+import { formatDate } from '@angular/common';
+
+const highlightFragmentSize = 50;
 
 @Injectable()
 export class SearchService {
@@ -80,16 +83,18 @@ export class SearchService {
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let user = await this.userService.getCurrentUser();
-        let query = new Query(queryModel, corpus.name, user.id);
-        let results = await this.elasticSearchService.search(corpus, queryModel);
+        const user = await this.userService.getCurrentUser();
+        const query = new Query(queryModel, corpus.name, user.id);
+        const fields = corpus.fields.filter( field => field.searchFieldCore);
+        const highlight = {field: fields[0].name, fragmentSize: highlightFragmentSize};
+        const results = await this.elasticSearchService.search(corpus, queryModel, highlight);
         query.totalResults = results.total;
         await this.queryService.save(query, true);
 
         return <SearchResults>{
             fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
-            documents: results.documents
+            documents: results.documents,
         };
     }
 
@@ -97,8 +102,31 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
+    public async aggregateTermFrequencySearch(corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number, size: number): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getAggregateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            field_name: fieldName,
+            field_value: fieldValue,
+            size: size,
+        });
+    }
+
     public async dateHistogramSearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
+    }
+
+    public async dateTermFrequencySearch<TKey>(corpus: Corpus, queryModel: QueryModel, fieldName: string, size: number, start_date: Date, end_date?: Date): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
+        return this.apiService.getDateTermFrequency({
+            corpus_name: corpus.name,
+            es_query: esQuery,
+            field: fieldName,
+            start_date: start_date.toISOString().slice(0, 10),
+            end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
+            size: size,
+        });
     }
 
     public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
@@ -185,7 +213,7 @@ export class SearchService {
                     }
                 });
             }).catch( result => {
-                reject({'message': result.message});
+                reject({ message: result.message });
             });
         });
     }
