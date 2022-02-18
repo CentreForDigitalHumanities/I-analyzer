@@ -39,6 +39,7 @@ ES_SEARCH_TIMEOUT = '30s'
 # needs to be a full (not relative) file path
 CORPORA = {
     'parliament-uk': '/Users/mace./Projects/I-analyzer/backend/corpora/parliament/uk.py',
+    'parliament-canada': '/Users/mace./Projects/I-analyzer/backend/corpora/parliament/canada.py',
 }
 
 SERVERS = {
@@ -60,6 +61,10 @@ SERVERS = {
 PP_ALIAS = 'parliament'
 PP_UK_DATA = '/Users/mace./Projects/People & Parliament Materials/UK'
 PP_UK_INDEX = 'parliament-uk'
+
+PP_CANADA_DATA = '/Users/mace./Projects/People & Parliament Materials/Canada'
+PP_CANADA_INDEX = 'parliament-canada'
+
 
 ### ES Settings, nodig voor alle People & Parliament corpora
 PP_ES_SETTINGS = {

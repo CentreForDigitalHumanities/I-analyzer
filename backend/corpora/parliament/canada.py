@@ -3,25 +3,121 @@ import logging
 
 from flask import current_app
 
-from parliament import Parliament
+from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
+from addcorpus.filters import MultipleChoiceFilter
+
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
     description = "Speeches from Canadian Parliament"
-    data_directory = current_app.config['PP_UK_DATA']
-    es_index = current_app.config['PP_UK_INDEX']
-    image = current_app.config['PP_UK_IMAGE']
-    #####  ES things to do together next week  #####
-    # es_settings = current_app.config['PP_ES_SETTINGS']
-    # es_settings['analysis']['filter'] = {
-    #     "stopwords": {
-    #       "type": "stop",
-    #       "stopwords": "_english_"
-    #     },
-    #     "stemmer": {
-    #         "type": "stemmer",
-    #         "language": "english"
-    #     }
-    # }
+    data_directory = current_app.config['PP_CANADA_DATA']
+    es_index = current_app.config['PP_CANADA_INDEX']
+    image = current_app.config['PP_CANADA_IMAGE']
+    es_settings = current_app.config['PP_ES_SETTINGS']
+    es_settings['analysis']['filter'] = {
+        "stopwords": {
+          "type": "stop",
+          "stopwords": "_english_"
+        },
+        "stemmer": {
+            "type": "stemmer",
+            "language": "english"
+        }
+    }
+
+    field_entry = 'speech_id'
+
+    def sources(self, start, end):
+        logger = logging.getLogger('indexing')
+        for csv_file in glob('{}/*.csv'.format(self.data_directory)):
+            yield csv_file, {}
+
+    # def format_house(house):
+    #     if 'commons' in house.lower():
+    #         return 'House of Commons'
+    #     if 'senate' in house.lower():  # pretty sure there are no entries from the senate in this corpus
+    #         return 'Senate'
+    
+    def __init__(self):
+        self.country.extractor = Constant(
+            value='Canada'
+        )
+
+        self.country.search_filter = None
+
+        self.date.extractor = CSV(
+            field='date_yyyy-mm-dd'
+        )
+
+        self.debate_id.extractor = CSV(
+            field='speech_id'
+        )
+
+        self.debate_title.extractor = CSV(
+            field='heading1'
+        )
+
+        self.house.description = 'House that the speaker belongs to'
+
+        self.house.extractor = CSV(
+            field='house'
+            # transform=ParliamentCanada.format_house
+        )
+
+        self.house.search_filter=MultipleChoiceFilter(
+            description='Search only in debates from the selected houses',
+            option_count=2
+        )
+
+        self.party.extractor = CSV(
+            field='speaker_party'
+        )
+
+        self.speaker.extractor = CSV(
+            field='speaker_name'
+        )
+
+        self.speaker_id.extractor = CSV(
+            field='speaker_id'
+        )
+
+        self.speech.extractor = CSV(
+            field='content',
+            multiple=True,
+            transform=lambda x : ' '.join(x)
+        )
+        
+        self.speech.es_mapping = {
+          "type" : "text",
+          "analyzer": "standard",
+          "term_vector": "with_positions_offsets", 
+          "fields": {
+            "stemmed": {
+                "type": "text",
+                "analyzer": "english"
+                },
+            "clean": {
+                "type": 'text',
+                "analyzer": "non-stemmed"
+                },
+            "length": {
+                "type": "token_count",
+                "analyzer": "standard",
+                }
+            }
+        }
+
+        self.speech_id.extractor = CSV(
+            field='sequence'
+        )
+        
+        self.speech_type.extractor = CSV(
+            field='speech_type'
+        )
+
+        
+        
+
+        
