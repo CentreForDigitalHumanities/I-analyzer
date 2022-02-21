@@ -5,8 +5,8 @@ import * as _ from 'lodash';
 
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
-    visualizationField, freqTableHeaders, histogramOptions, TimelineSeries, TimelineSeriesRaw } from '../models/index';
+import { Corpus, DateFrequencyPair, QueryModel, DateResult,
+    visualizationField, freqTableHeaders, histogramOptions, TimelineSeriesRaw } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
@@ -22,7 +22,6 @@ import 'chartjs-adapter-moment';
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     private rawData: TimelineSeriesRaw[];
-    private selectedData: TimelineSeries[];
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
     public xDomain: [Date, Date];
@@ -74,8 +73,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
-
-        this.selectedData = this.selectData(this.rawData);
 
         if (!this.rawData.length) {
             this.error.emit({message: 'No results'});
@@ -162,31 +159,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         // signal if total token counts are available
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
-    }
-
-    selectData(rawData: TimelineSeriesRaw[]): TimelineSeries[] {
-        const valueFuncs = {
-            tokens: {
-                raw: (item, series) => item.match_count,
-                terms: (item, series) => item.match_count / item.token_count,
-                documents: (item, series) => item.match_count / item.total_doc_count
-            },
-            documents: {
-                raw: (item, series) => item.doc_count,
-                percent: (item, series) => item.doc_count / series.total_doc_count
-            }
-        };
-
-        const getValue: (item: DateResult, series: TimelineSeriesRaw) => number
-            = valueFuncs[this.frequencyMeasure][this.normalizer];
-
-        return rawData.map(series => {
-            const data = series.data.map(item => ({
-                date: item.date,
-                value: getValue(item, series) || 0
-            }));
-            return {label: series.queryText, data: data};
-        });
     }
 
     setChart() {

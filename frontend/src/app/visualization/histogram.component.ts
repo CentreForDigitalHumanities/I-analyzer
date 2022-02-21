@@ -4,8 +4,8 @@ import { Chart } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions,
-    HistogramSeriesRaw, HistogramSeries } from '../models/index';
+    visualizationField, freqTableHeaders, histogramOptions,
+    HistogramSeriesRaw } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -17,7 +17,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     histogram: Chart;
 
     rawData: HistogramSeriesRaw[];
-    selectedData: HistogramSeries[];
 
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -54,8 +53,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
-
-        this.selectedData = this.selectData(this.rawData);
 
         if (!this.rawData.length) {
             this.error.emit({message: 'No results'});
@@ -133,32 +130,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         // signal if total token counts are available
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
-    }
-
-    selectData(rawData: HistogramSeriesRaw[]): HistogramSeries[] {
-        let getValue: (item: AggregateResult, series: HistogramSeriesRaw) => number;
-
-        const valueFuncs = {
-            tokens: {
-                raw: (item, series) => item.match_count ,
-                terms: (item, series) => item.match_count / item.token_count,
-                documents: (item, series) => item.match_count / item.total_doc_count
-            },
-            documents: {
-                raw: (item, series) => item.doc_count,
-                percent: (item, series) => item.doc_count / series.total_doc_count
-            }
-        };
-
-        getValue = valueFuncs[this.frequencyMeasure][this.normalizer];
-
-        return rawData.map(series => {
-            const data = series.data.map(item => ({
-                key: item.key,
-                value: getValue(item, series) || 0,
-            }));
-            return {label: series.queryText, data: data};
-        });
     }
 
     setChart() {

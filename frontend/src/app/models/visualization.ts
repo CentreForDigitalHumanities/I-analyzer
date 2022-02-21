@@ -12,31 +12,11 @@ export type visualizationField = {
     multiFields?: string[];
 };
 
-export type HistogramDataPoint = {
-    key: string,
-    value: number,
-};
-
-export type HistogramSeries = {
-    data: HistogramDataPoint[],
-    label?: string,
-};
-
 export type HistogramSeriesRaw = {
     data: AggregateResult[],
     total_doc_count: number,
     searchRatio: number,
     queryText?: string,
-};
-
-export type TimelineDataPoint = {
-    date: Date,
-    value: number,
-};
-
-export type TimelineSeries = {
-    data: TimelineDataPoint[],
-    label?: string,
 };
 
 export type TimelineSeriesRaw = {
