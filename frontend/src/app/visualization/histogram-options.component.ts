@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
+import { BehaviorSubject } from 'rxjs';
 import { histogramOptions } from '../models';
 
 @Component({
@@ -10,6 +11,7 @@ import { histogramOptions } from '../models';
 export class HistogramOptionsComponent implements OnChanges {
     @Input() queries: string[];
     @Input() showTokenCountOption: boolean;
+    @Input() isLoading: boolean;
     @Output() options = new EventEmitter<histogramOptions>();
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
@@ -24,9 +26,14 @@ export class HistogramOptionsComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queries) {
-            this.disableAddQueries = this.queries && this.queries.length >= 10;
+        if (changes.queries && changes.queries.previousValue) {
+            if (_.every(this.queries, query => query == null) && this.frequencyMeasure === 'tokens') {
+                this.frequencyMeasure = 'documents';
+                this.onChange('frequencyMeasure');
+            }
         }
+
+        this.disableAddQueries = this.isLoading || this.queries && this.queries.length >= 10;
     }
 
     onChange(parameter: 'frequencyMeasure'|'normalizer'): void {

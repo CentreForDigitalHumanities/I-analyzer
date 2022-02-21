@@ -29,7 +29,7 @@ export type TimelineSeriesRaw = {
 export type freqTableHeaders = {
     key: string,
     label: string,
-    format?: (value) => string
+    format?: (value) => string|undefined,
 }[];
 
 export type histogramOptions = {

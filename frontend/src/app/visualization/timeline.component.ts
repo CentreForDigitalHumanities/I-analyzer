@@ -41,6 +41,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     searchRatio: 1.0,
                 }
             ];
+            this.setQueries;
             const min = new Date(this.visualizedField.searchFilter.currentData.min);
             const max = new Date(this.visualizedField.searchFilter.currentData.max);
             this.xDomain = [min, max];
@@ -60,16 +61,18 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     addSeries(queryText: string) {
         this.rawData.push(this.newSeries(queryText));
+        this.setQueries();
         this.prepareTimeline();
     }
 
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
+        this.setQueries();
         this.prepareTimeline();
     }
 
     async prepareTimeline() {
-        this.isLoading.emit(true);
+        this.isLoading.next(true);
 
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
@@ -87,7 +90,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.loadZoomedInData(this.timeline, true);
         }
 
-        this.isLoading.emit(false);
+        this.isLoading.next(false);
     }
 
     async requestDocumentData() {
@@ -246,7 +249,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
             (triggedByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
-            this.isLoading.emit(true);
+            this.isLoading.next(true);
 
             // hide data for smooth transition
             chart.update(triggedByDataUpdate ? 'none' : 'hide');
@@ -326,7 +329,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
             chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
             chart.update('show'); // fade into view
-            this.isLoading.emit(false);
+            this.isLoading.next(false);
         }
     }
 
@@ -418,9 +421,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         return false;
     }
 
-    get queries(): string[] {
+    setQueries() {
         if (this.rawData) {
-            return this.rawData.map(series => series.queryText);
+            this.queries = this.rawData.map(series => series.queryText);
+        } else {
+            this.queries = [];
         }
     }
 }

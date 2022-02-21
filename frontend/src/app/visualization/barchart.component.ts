@@ -6,6 +6,7 @@ import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
+import { BehaviorSubject } from 'rxjs';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -36,6 +37,8 @@ export class BarChartComponent implements OnInit {
     tableHeaders: freqTableHeaders;
     tableData: any[];
 
+    queries: string[] = [];
+
     valueKeys = {
         tokens: {
             raw: 'match_count',
@@ -48,7 +51,7 @@ export class BarChartComponent implements OnInit {
         }
     };
 
-    @Output() isLoading = new EventEmitter<boolean>();
+    @Output() isLoading = new BehaviorSubject<boolean>(false);
     @Output() error = new EventEmitter();
 
     public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
@@ -140,13 +143,19 @@ export class BarChartComponent implements OnInit {
         };
     }
 
-    get formatValue(): (value: number) => string {
+    get formatValue(): (value?: number) => string|undefined {
         if (this.normalizer === 'percent') {
-            return (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
+            return (value?: number) => {
+                if (value !== undefined) {
+                    return `${_.round(100 * value, 1)}%`;
+                }
             };
         } else {
-            return (value: number) => value.toString();
+            return (value: number) => {
+                if (value !== undefined) {
+                    return value.toString();
+                }
+            };
         }
     }
 

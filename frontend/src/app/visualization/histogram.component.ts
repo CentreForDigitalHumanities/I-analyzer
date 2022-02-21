@@ -24,6 +24,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         if (refreshData) {
             this.rawData = [this.newSeries(this.queryModel.queryText)];
+            this.setQueries();
             this.prepareChart();
         }
     }
@@ -39,17 +40,19 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     addSeries(queryText: string) {
         this.rawData.push(this.newSeries(queryText));
+        this.setQueries();
         this.prepareChart();
     }
 
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
+        this.setQueries();
         this.prepareChart();
     }
 
 
     async prepareChart() {
-        this.isLoading.emit(true);
+        this.isLoading.next(true);
 
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
@@ -62,7 +65,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.setTableData();
 
         this.setChart();
-        this.isLoading.emit(false);
+        this.isLoading.next(false);
     }
 
     async requestDocumentData() {
@@ -261,9 +264,11 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
     }
 
-    get queries(): string[] {
+    setQueries() {
         if (this.rawData) {
-            return this.rawData.map(series => series.queryText);
+            this.queries = this.rawData.map(series => series.queryText);
+        } else {
+            this.queries = [];
         }
     }
 }
