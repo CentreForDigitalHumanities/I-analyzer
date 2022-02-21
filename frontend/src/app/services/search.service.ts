@@ -11,6 +11,8 @@ import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataT
     AggregateResult, AggregateFrequencyResults, AggregateQueryFeedback, SearchFilterData } from '../models/index';
 import { formatDate } from '@angular/common';
 
+const highlightFragmentSize = 50;
+
 @Injectable()
 export class SearchService {
     
@@ -80,16 +82,18 @@ export class SearchService {
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
-        let user = await this.userService.getCurrentUser();
-        let query = new Query(queryModel, corpus.name, user.id);
-        let results = await this.elasticSearchService.search(corpus, queryModel);
+        const user = await this.userService.getCurrentUser();
+        const query = new Query(queryModel, corpus.name, user.id);
+        const fields = corpus.fields.filter( field => field.searchFieldCore);
+        const highlight = {field: fields[0].name, fragmentSize: highlightFragmentSize};
+        const results = await this.elasticSearchService.search(corpus, queryModel, highlight);
         query.totalResults = results.total;
         await this.queryService.save(query, true);
 
         return <SearchResults>{
             fields: corpus.fields.filter(field => field.resultsOverview),
             total: results.total,
-            documents: results.documents
+            documents: results.documents,
         };
     }
 
