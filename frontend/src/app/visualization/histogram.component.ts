@@ -57,7 +57,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         this.selectedData = this.selectData(this.rawData);
 
-        if (!this.selectedData.length) {
+        if (!this.rawData.length) {
             this.error.emit({message: 'No results'});
         }
 
@@ -82,9 +82,15 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                 const queryModelCopy = _.cloneDeep(this.queryModel);
                 queryModelCopy.queryText = series.queryText;
                 return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(visual => {
-                    const data = visual.aggregations[this.visualizedField.name];
+                    let data = visual.aggregations[this.visualizedField.name];
                     const total_doc_count = _.sumBy(data, item => item.doc_count);
                     const searchRatio = this.documentLimit / total_doc_count;
+                    data = data.map(item => ({
+                        key: item.key,
+                        key_as_string: item.key_as_string,
+                        doc_count: item.doc_count,
+                        relative_doc_count: item.doc_count / total_doc_count,
+                    }));
                     this.rawData[seriesIndex] = {
                         data: data,
                         total_doc_count: total_doc_count,
@@ -114,6 +120,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                                 cat.match_count = data.match_count;
                                 cat.total_doc_count = data.doc_count;
                                 cat.token_count = data.token_count;
+                                cat.matches_by_doc_count = data.match_count / data.doc_count,
+                                cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined,
                                 resolve(true);
                             });
                     });
@@ -154,15 +162,14 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     }
 
     setChart() {
-        const all_labels = _.flatMap(this.selectedData, series => series.data.map(item => item.key));
-        const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
-        // TODO: sort labels by frequency
-        const datasets = this.selectedData.map((series, seriesIndex) => (
+        const valueKey = this.currentValueKey;
+        const labels = this.uniqueLabels();
+        const datasets = this.rawData.map((series, seriesIndex) => (
             {
-                label: series.label ? series.label : '(no query)',
-                data: all_labels.map(key => {
+                label: series.queryText ? series.queryText : '(no query)',
+                data: labels.map(key => {
                   const item = series.data.find(i => i.key === key);
-                  return item ? item.value : 0;
+                  return item ? item[valueKey] : 0;
                 }),
                 backgroundColor: this.colorPalette[seriesIndex],
                 hoverBackgroundColor: this.colorPalette[seriesIndex],
@@ -212,16 +219,60 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
     setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
-        const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        this.tableHeaders = [
-            { key: 'key', label: label },
-            { key: 'value', label: header, format: this.formatValue }
-        ];
+        const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+
+        const valueKey = this.currentValueKey;
+        if (this.rawData.length >= 1) {
+            this.tableHeaders = [ { key: 'key', label: label } ].concat(
+                this.rawData.map((series, seriesIndex) => {
+                    const query = series.queryText ? `"${series.queryText}"` : 'no query';
+                    const thisColumnName = this.rawData.length > 1 ? `${rightColumnName} (${query})` : rightColumnName;
+                    return {
+                        key: `${seriesIndex}_${valueKey}`,
+                        label: thisColumnName,
+                        format: this.formatValue,
+                    };
+                })
+            );
+        } else {
+            this.tableHeaders = [];
+        }
     }
 
     setTableData() {
-        if (this.selectedData && this.selectedData.length) {
-            this.tableData = this.selectedData[0].data;
+        const labels = this.uniqueLabels();
+        const valueKey = this.currentValueKey;
+
+        if (this.rawData && this.rawData.length) {
+            this.tableData = labels.map(label => {
+                const row = { key: label };
+                this.rawData.forEach((series, seriesIndex) => {
+                    const item = series.data.find(i => i.key === label);
+                    const value = item ? item[valueKey] : 0;
+                    row[`${seriesIndex}_${valueKey}`] = value;
+                });
+                return row;
+            });
+        }
+    }
+
+    uniqueLabels(): string[] {
+        if (this.rawData) {
+            const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.key));
+            const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
+            let sorted_labels: string[];
+            if (this.visualizedField.visualizationSort === 'key') {
+                sorted_labels = labels.sort();
+            } else {
+                const valueKey = this.currentValueKey;
+                sorted_labels = _.sortBy(labels, label =>
+                    _.sumBy(this.rawData, series => {
+                        const item = series.data.find(i => i.key === label);
+                        return -1 * (item ? item[valueKey] : 0);
+                    })
+                );
+            }
+            return sorted_labels;
         }
     }
 
@@ -229,7 +280,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         if (this.visualizedField && this.visualizedField.visualizationSort) {
             return 'key';
         }
-        return 'value';
+        return `0_${this.currentValueKey}`;
     }
 
     get formatValue(): (value: number) => string {

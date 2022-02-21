@@ -5,8 +5,3 @@ ia-timeline {
     z-index: 1;
     position: absolute;
 }
-
-.notification {
-    @include unselectable;
-    opacity: 0.75;
-}

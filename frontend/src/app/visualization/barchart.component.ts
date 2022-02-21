@@ -36,6 +36,18 @@ export class BarChartComponent implements OnInit {
     tableHeaders: freqTableHeaders;
     tableData: any[];
 
+    valueKeys = {
+        tokens: {
+            raw: 'match_count',
+            terms: 'matches_by_token_count',
+            documents: 'matches_by_doc_count',
+        },
+        documents: {
+            raw: 'doc_count',
+            percent: 'relative_doc_count',
+        }
+    };
+
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter();
 
@@ -136,5 +148,9 @@ export class BarChartComponent implements OnInit {
         } else {
             return (value: number) => value.toString();
         }
+    }
+
+    get currentValueKey(): string {
+        return this.valueKeys[this.frequencyMeasure][this.normalizer];
     }
 }

@@ -77,7 +77,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         this.selectedData = this.selectData(this.rawData);
 
-        if (!this.selectedData.length) {
+        if (!this.rawData.length) {
             this.error.emit({message: 'No results'});
         }
 
@@ -103,7 +103,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 queryModelCopy.queryText = series.queryText;
                 return this.searchService.dateHistogramSearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                    let data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                         return {
                             date: new Date(cat.key_as_string),
                             doc_count: cat.doc_count
@@ -111,6 +111,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     });
                     const total_doc_count = _.sumBy(data, (item) => item.doc_count);
                     const searchRatio = this.documentLimit / total_doc_count;
+                    data = data.map(item => ({
+                        date: item.date,
+                        doc_count: item.doc_count,
+                        relative_doc_count: item.doc_count / total_doc_count,
+                    }));
                     this.rawData[seriesIndex] = {
                         data: data,
                         total_doc_count: total_doc_count,
@@ -144,6 +149,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                             cat.match_count = data.match_count;
                             cat.total_doc_count = data.doc_count;
                             cat.token_count = data.token_count;
+                            cat.matches_by_doc_count = data.match_count / data.doc_count,
+                            cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined,
                             resolve(true);
                         });
                     });
@@ -183,15 +190,16 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
     }
 
     setChart() {
-        const datasets = this.selectedData.map((series, seriesIndex) => {
+        const valueKey = this.currentValueKey;
+        const datasets = this.rawData.map((series, seriesIndex) => {
             const data = series.data.map(item => ({
                 x: item.date.toISOString(),
-                y: item.value,
+                y: item[valueKey],
             }));
             return {
                 xAxisID: 'xAxis',
                 yAxisID: 'yAxis',
-                label: series.label ? series.label : '(no query)',
+                label: series.queryText ? series.queryText : '(no query)',
                 data: data,
                 backgroundColor: this.colorPalette[seriesIndex],
                 hoverBackgroundColor: this.colorPalette[seriesIndex],
@@ -261,6 +269,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const previousTimeCategory = this.currentTimeCategory;
         const min = new Date(chart.scales.xAxis.min);
         const max = new Date(chart.scales.xAxis.max);
+        const valueKey = this.currentValueKey;
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
@@ -281,13 +290,18 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
                 return this.searchService.dateHistogramSearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                    let data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
                         return {
                             date: new Date(cat.key_as_string),
                             doc_count: cat.doc_count
                         };
                     });
                     const total_doc_count = _.sumBy(data, (item) => item.doc_count);
+                    data = data.map(item => ({
+                        date: item.date,
+                        doc_count: item.doc_count,
+                        relative_doc_count: item.doc_count / total_doc_count,
+                    }));
                     return {
                         data: data,
                         total_doc_count: total_doc_count,
@@ -320,6 +334,9 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                                 series.data[index].match_count = data.match_count;
                                 series.data[index].total_doc_count = data.doc_count;
                                 series.data[index].token_count = data.token_count;
+                                series.data[index].matches_by_doc_count = data.match_count / data.doc_count;
+                                series.data[index].matches_by_token_count =
+                                    data.token_count ? data.match_count / data.token_count : undefined;
                                 resolve(true);
                             });
                         });
@@ -328,12 +345,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 await Promise.all(dataPromises);
             }
 
-            const selectedData: TimelineSeries[] = this.selectData(zoomedInResults);
-
-            selectedData.forEach((data, seriesIndex) => {
-                chart.data.datasets[seriesIndex].data = data.data.map((item: TimelineDataPoint) => ({
+            zoomedInResults.forEach((data, seriesIndex) => {
+                chart.data.datasets[seriesIndex].data = data.data.map((item: DateResult) => ({
                     x: item.date.toISOString(),
-                    y: item.value,
+                    y: item[valueKey],
                 }));
             });
 
@@ -376,17 +391,53 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             };
         }
 
-        this.tableHeaders = [
-            { key: 'date', label: 'Date', format: formatDateValue },
-            { key: 'value', label: rightColumnName, format: formatValue }
-        ];
+        const valueKey = this.currentValueKey;
+        if (this.rawData.length >= 1) {
+            this.tableHeaders = [ { key: 'date', label: 'Date', format: formatDateValue } ].concat(
+                this.rawData.map((series, seriesIndex) => {
+                    const query = series.queryText ? `"${series.queryText}"` : 'no query';
+                    const thisColumnName = this.rawData.length > 1 ? `${rightColumnName} (${query})` : rightColumnName;
+                    return {
+                        key: `${seriesIndex}.${valueKey}`,
+                        label: thisColumnName,
+                        format: formatValue,
+                    };
+                })
+            );
+        } else {
+            this.tableHeaders = [];
+        }
+
+
     }
 
     setTableData() {
-        if (this.selectedData && this.selectedData.length) {
-            this.tableData = this.selectedData[0].data;
+        const dates = this.uniqueDates();
+        const valueKey = this.currentValueKey;
+
+        if (this.rawData && this.rawData.length) {
+            this.tableData = dates.map(date => {
+                const row = { date: date };
+                this.rawData.forEach((series, seriesIndex) => {
+                    const item = series.data.find(i => i.date === date);
+                    const value = item ? item[valueKey] : 0;
+                    row[`${seriesIndex}.${valueKey}`] = value;
+                });
+                return row;
+            });
         }
     }
+
+    uniqueDates(): Date[] {
+        if (this.rawData) {
+            const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.date));
+            const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
+            let sorted_labels: Date[];
+            sorted_labels = labels.sort();
+            return labels;
+        }
+    }
+
 
     get formatDate(): (date) => string {
         let dateFormat: string;
