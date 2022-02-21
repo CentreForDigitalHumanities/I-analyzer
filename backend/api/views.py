@@ -258,6 +258,7 @@ def api_download_task():
         tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
+        filename = csvs.get()
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
         send_user_mail(
@@ -273,7 +274,7 @@ def api_download_task():
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
-        
+
 
 
 
@@ -635,7 +636,7 @@ def api_get_ngrams():
 def api_get_aggregate_term_frequency():
     if not request.json:
         abort(400)
-    
+
     results = analyze.get_aggregate_term_frequency(
         request.json['es_query'],
         request.json['corpus_name'],
@@ -661,7 +662,7 @@ def api_get_aggregate_term_frequency():
 def api_get_date_term_frequency():
     if not request.json:
         abort(400)
-    
+
     results = analyze.get_date_term_frequency(
         request.json['es_query'],
         request.json['corpus_name'],

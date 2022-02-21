@@ -25,8 +25,7 @@ def download_scroll(request_json, download_size=10000):
 
 @celery_app.task()
 def make_csv(results, request_json):
-    route = request_json['route']
-    query = re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
+    query = create_query(request_json)
     filepath = create_csv(results, request_json['fields'], query)
     return filepath
 
@@ -41,6 +40,13 @@ def get_wordcloud_data(request_json):
 def make_wordcloud_data(list_of_texts, request_json):
     word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
     return word_counts
+
+def create_query(request_json):
+    """
+    format the route of the search into a query string
+    """
+    route = request_json.get('route')
+    return re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
 
 
 def create_filename(query):
