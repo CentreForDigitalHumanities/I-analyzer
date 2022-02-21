@@ -258,7 +258,7 @@ def api_download_task():
         tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
-        filename = csvs.get()
+        filename = split(csvs.get())[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
         send_user_mail(
