@@ -10,7 +10,12 @@
         </ng-template>
         <ng-template pTemplate="body" let-entry>
             <tr>
-                <td *ngFor="let col of headers">{{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}</td>
+                <td *ngFor="let col of headers">
+                    {{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}
+                    <span *ngIf="entry[col.key] == undefined" class="has-text-grey-light">
+                        none
+                    </span>
+                </td>
             </tr>
         </ng-template>
         <ng-template pTemplate="footer">

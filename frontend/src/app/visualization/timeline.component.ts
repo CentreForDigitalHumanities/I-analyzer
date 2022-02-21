@@ -382,62 +382,33 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
     setTableHeaders() {
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        const formatDateValue = this.formatDate;
-
-        let formatValue: (value: number) => string | undefined;
-        if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        }
-
         const valueKey = this.currentValueKey;
-        if (this.rawData.length >= 1) {
-            this.tableHeaders = [ { key: 'date', label: 'Date', format: formatDateValue } ].concat(
-                this.rawData.map((series, seriesIndex) => {
-                    const query = series.queryText ? `"${series.queryText}"` : 'no query';
-                    const thisColumnName = this.rawData.length > 1 ? `${rightColumnName} (${query})` : rightColumnName;
-                    return {
-                        key: `${seriesIndex}.${valueKey}`,
-                        label: thisColumnName,
-                        format: formatValue,
-                    };
-                })
-            );
+
+        if (this.rawData.length > 1) {
+            this.tableHeaders = [
+                { key: 'date', label: 'Date', format: this.formatDate },
+                { key: 'queryText', label: 'Query' },
+                { key: valueKey, label: rightColumnName, format: this.formatValue }
+            ];
         } else {
-            this.tableHeaders = [];
+            this.tableHeaders = [
+                { key: 'date', label: 'Date', format: this.formatDate },
+                { key: valueKey, label: rightColumnName, format: this.formatValue }
+            ];
         }
-
-
     }
 
     setTableData() {
-        const dates = this.uniqueDates();
-        const valueKey = this.currentValueKey;
-
         if (this.rawData && this.rawData.length) {
-            this.tableData = dates.map(date => {
-                const row = { date: date };
-                this.rawData.forEach((series, seriesIndex) => {
-                    const item = series.data.find(i => i.date === date);
-                    const value = item ? item[valueKey] : 0;
-                    row[`${seriesIndex}.${valueKey}`] = value;
-                });
-                return row;
-            });
+            this.tableData = _.flatMap(this.rawData, series => 
+                series.data.map(item => {
+                    const result = _.cloneDeep(item) as any;
+                    result.queryText = series.queryText;
+                    return result;
+                })
+            );
         }
     }
-
-    uniqueDates(): Date[] {
-        if (this.rawData) {
-            const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.date));
-            const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
-            let sorted_labels: Date[];
-            sorted_labels = labels.sort();
-            return labels;
-        }
-    }
-
 
     get formatDate(): (date) => string {
         let dateFormat: string;

@@ -222,37 +222,30 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
 
         const valueKey = this.currentValueKey;
-        if (this.rawData.length >= 1) {
-            this.tableHeaders = [ { key: 'key', label: label } ].concat(
-                this.rawData.map((series, seriesIndex) => {
-                    const query = series.queryText ? `"${series.queryText}"` : 'no query';
-                    const thisColumnName = this.rawData.length > 1 ? `${rightColumnName} (${query})` : rightColumnName;
-                    return {
-                        key: `${seriesIndex}_${valueKey}`,
-                        label: thisColumnName,
-                        format: this.formatValue,
-                    };
-                })
-            );
+
+        if (this.rawData.length > 1) {
+            this.tableHeaders = [
+                { key: 'key', label: label },
+                { key: 'queryText', label: 'Query' },
+                { key: valueKey, label: rightColumnName, format: this.formatValue }
+            ];
         } else {
-            this.tableHeaders = [];
+            this.tableHeaders = [
+                { key: 'key', label: label },
+                { key: valueKey, label: rightColumnName, format: this.formatValue }
+            ];
         }
     }
 
     setTableData() {
-        const labels = this.uniqueLabels();
-        const valueKey = this.currentValueKey;
-
         if (this.rawData && this.rawData.length) {
-            this.tableData = labels.map(label => {
-                const row = { key: label };
-                this.rawData.forEach((series, seriesIndex) => {
-                    const item = series.data.find(i => i.key === label);
-                    const value = item ? item[valueKey] : 0;
-                    row[`${seriesIndex}_${valueKey}`] = value;
-                });
-                return row;
-            });
+            this.tableData = _.flatMap(this.rawData, series => 
+                series.data.map(item => {
+                    const result = _.cloneDeep(item) as any;
+                    result.queryText = series.queryText;
+                    return result;
+                })
+            );
         }
     }
 
@@ -280,7 +273,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         if (this.visualizedField && this.visualizedField.visualizationSort) {
             return 'key';
         }
-        return `0_${this.currentValueKey}`;
+        return this.currentValueKey;
     }
 
     get formatValue(): (value: number) => string {
