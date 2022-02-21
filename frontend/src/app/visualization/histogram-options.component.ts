@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { histogramOptions } from '../models';
 
@@ -7,7 +7,7 @@ import { histogramOptions } from '../models';
     templateUrl: './histogram-options.component.html',
     styleUrls: ['./histogram-options.component.scss']
 })
-export class HistogramOptionsComponent implements OnInit {
+export class HistogramOptionsComponent implements OnChanges {
     @Input() queries: string[];
     @Input() showTokenCountOption: boolean;
     @Output() options = new EventEmitter<histogramOptions>();
@@ -17,12 +17,16 @@ export class HistogramOptionsComponent implements OnInit {
 
     showAddQuery = false;
     newQueryText: string;
+    disableAddQueries = false;
     @Output() newQuery = new EventEmitter<string>();
     @Output() clearQueries = new EventEmitter<void>();
 
     constructor() { }
 
-    ngOnInit(): void {
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queries) {
+            this.disableAddQueries = this.queries && this.queries.length >= 10;
+        }
     }
 
     onChange(parameter: 'frequencyMeasure'|'normalizer'): void {

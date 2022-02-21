@@ -51,7 +51,7 @@ export class BarChartComponent implements OnInit {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter();
 
-    public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
+    public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {

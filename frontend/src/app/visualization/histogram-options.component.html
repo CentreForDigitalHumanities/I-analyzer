@@ -52,10 +52,10 @@
         
             <div class="field has-addons" *ngIf="showAddQuery">
                 <div class="control">
-                    <input class="input" type="text" name="query" [(ngModel)]="newQueryText">
+                    <input class="input" type="text" name="query" [(ngModel)]="newQueryText" [disabled]="disableAddQueries">
                 </div>
                 <div class="control">
-                    <button class="button is-primary" (click)="addQuery()">
+                    <button class="button is-primary" (click)="addQuery()" [disabled]="disableAddQueries">
                         <span class="icon">
                             <i class="fa fa-plus"></i>
                         </span>
