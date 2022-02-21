@@ -131,7 +131,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 const queryModelCopy = _.cloneDeep(this.queryModel);
                 queryModelCopy.queryText = series.queryText;
-                series.data.map((cat, index) => {
+                return series.data.map((cat, index) => {
                     return new Promise(resolve => {
                         const start_date = cat.date;
                         const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
