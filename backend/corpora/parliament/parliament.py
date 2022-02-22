@@ -69,8 +69,9 @@ class Parliament(Corpus):
             description='Search only within this time range.'
         ),
         visualizations=['timeline']
-    ) 
+    )
 
+    # human-readable name of house (commons, senate, etc)
     house = Field(
         name='house',
         display_name='House',
@@ -86,6 +87,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'text'},
     )
 
+    # unique ID for the debate
     debate_id = Field(
         name='debate_id',
         display_name='Debate ID',
@@ -93,6 +95,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # if debates are divided into topics, they can be specified here
     topic = Field(
         name='topic',
         display_name='Topic',
@@ -132,6 +135,7 @@ class Parliament(Corpus):
         visualizations=['wordcloud', 'ngram'],
     )
 
+    # unique (corpus-level) ID for the speech
     speech_id = Field(
         name='id',
         display_name='Speech ID',
@@ -139,6 +143,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # name of the speaker
     speaker = Field(
         name='speaker',
         display_name='Speaker',
@@ -153,6 +158,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # unique (corpus_level) ID for the speaker
     speaker_id = Field(
         name='speaker_id',
         display_name='Speaker ID',
@@ -160,6 +166,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # role fo the speaker (speaker, chair, MP, etc...)
     role = Field(
         name='role',
         display_name='Role',
@@ -167,6 +174,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # name of the party
     party = Field(
         name='party',
         display_name='Party',
@@ -174,6 +182,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # unique ID of the party
     party_id = Field(
         name='party_id',
         display_name='Party ID',
@@ -181,6 +190,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # human-readable name of the party
     party_full = Field(
         name='party_full',
         display_name='Party (full name)',
@@ -188,6 +198,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # page number
     page = Field(
         name='page',
         display_name='Page(s)',
@@ -195,6 +206,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'}
     )
 
+    # column number
     column = Field(
         name='column',
         display_name='Column',
