@@ -28,6 +28,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     }
 
     field_entry = 'speech_id'
+    required_field = 'content'
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

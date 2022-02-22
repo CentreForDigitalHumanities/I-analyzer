@@ -534,6 +534,13 @@ class CSVCorpus(Corpus):
         is treated as a document.
         '''
 
+    @property
+    def required_field(self):
+        '''
+        Some corpora have empty speech fields, e.g. in Canada there are empty fields for speech to create separate rows for header and subheader.
+        Skip rows with empty speech fields. 
+        '''
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -559,15 +566,20 @@ class CSVCorpus(Corpus):
             reader = csv.DictReader(f)
             document_id = None
             rows = []
-
             for row in reader:
                 is_new_document = True
+
+                if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
+                    continue
+                    
+
                 if self.field_entry:
                     identifier = row[self.field_entry]
                     if identifier == document_id:
                         is_new_document = False
                     else:
                         document_id = identifier
+
                 
                 if is_new_document and rows:
                     yield self.document_from_rows(rows)
