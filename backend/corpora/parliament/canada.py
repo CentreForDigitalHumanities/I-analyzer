@@ -11,7 +11,7 @@ from addcorpus.filters import MultipleChoiceFilter
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
-    description = "Speeches from Canadian Parliament"
+    description = "Speeches from the Senate and House of Commons"
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
