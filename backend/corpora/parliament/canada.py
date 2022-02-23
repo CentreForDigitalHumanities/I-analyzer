@@ -111,7 +111,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         }
 
         self.speech_id.extractor = CSV(
-            field='sequence'
+            field='speech_id'
         )
         
         self.speech_type.extractor = CSV(
