@@ -103,6 +103,13 @@ class Parliament(Corpus):
         es_mapping={'type': 'text'},
     )
 
+    topic2 = Field(
+        name='topic2',
+        display_name='Additional Topic',
+        description='Additional topic of the debate in which the speech was held',
+        es_mapping={'type': 'text'},
+    )
+
     # speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
     # stopword and stemmer filter need to be defined for each language
     speech = Field(
@@ -166,6 +173,13 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    speaker_constituency = Field(
+        name='speaker_constituency',
+        display_name='Speaker Constituency',
+        description='Constituency represented by the speaker',
+        es_mapping={'type': 'keyword'},
+    )
+
     # role fo the speaker (speaker, chair, MP, etc...)
     role = Field(
         name='role',
@@ -217,9 +231,9 @@ class Parliament(Corpus):
     fields = [
         country, date, 
         debate_title, debate_id,
-        topic, house, 
+        topic, topic2, house, 
         speech, speech_id,
-        speaker, speaker_id, 
+        speaker, speaker_id, speaker_constituency,
         speech_type,
         role, 
         party, party_id, party_full,

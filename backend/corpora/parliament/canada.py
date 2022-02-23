@@ -84,6 +84,10 @@ class ParliamentCanada(Parliament, CSVCorpus):
             field='speaker_id'
         )
 
+        self.speaker_constituency.extractor = CSV(
+            field='speaker_constituency'
+        )
+
         self.speech.extractor = CSV(
             field='content',
             multiple=True,
@@ -116,6 +120,14 @@ class ParliamentCanada(Parliament, CSVCorpus):
         
         self.speech_type.extractor = CSV(
             field='speech_type'
+        )
+
+        self.topic.extractor = CSV(
+            field='heading2'
+        )
+
+        self.topic2.extractor = CSV(
+            field='heading3'
         )
 
         
