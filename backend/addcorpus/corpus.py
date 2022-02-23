@@ -537,8 +537,8 @@ class CSVCorpus(Corpus):
     @property
     def required_field(self):
         '''
-        Some corpora have empty speech fields, e.g. in Canada there are empty fields for speech to create separate rows for header and subheader.
-        Skip rows with empty speech fields. 
+        Specifies a required field, for example the main content. Rows with
+        an empty value for `required_field` will be skipped.
         '''
 
     def source2dicts(self, source):
