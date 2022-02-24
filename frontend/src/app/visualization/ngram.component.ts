@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import { ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
-import { SearchService } from '../services';
+import { ApiService, SearchService } from '../services';
 
 @Component({
     selector: 'ia-ngram',
@@ -15,6 +15,7 @@ export class NgramComponent implements OnInit, OnChanges {
     @Input() visualizedField: visualizationField;
     @Input() asTable: boolean;
     @Output() isLoading = new EventEmitter<boolean>();
+    @Output() error = new EventEmitter<({ message: string })>();
 
     tableHeaders: freqTableHeaders = [
         { key: 'date', label: 'Date' },
@@ -82,8 +83,9 @@ export class NgramComponent implements OnInit, OnChanges {
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     maxDocuments: number|undefined;
 
+    runningTask: string;
 
-    constructor(private searchService: SearchService) { }
+    constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit(): void { }
 
@@ -146,29 +148,46 @@ export class NgramComponent implements OnInit, OnChanges {
         const analysis = this.analysis ? this.analysis : 'none';
         const maxSize = this.maxDocuments ? this.maxDocuments : 100;
 
-        this.searchService.getNgram(this.queryModel, this.corpus.name, this.visualizedField.name,
+        this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
             size, position, freqCompensation, analysis, maxSize)
-            .then(results => {
-                const result = results['graphData'];
-                this.setTableData(result);
-                result.datasets.forEach((data, index) => {
-                    data.borderColor = this.colorPalette[index];
-                    data.backgroundColor = 'rgba(0,0,0,0)';
-                    data.pointRadius = 0;
-                    data.pointHoverRadius = 0;
+            .then(result => {
+                this.runningTask = result['task_id'];
+                this.apiService.getTaskOutcome({'task_id': this.runningTask}).then(outcome => {
+                    if (outcome.success === true) {
+                        this.onDataLoaded(outcome.results);
+                    } else {
+                        this.error.emit({message: outcome.message});
+                    }
                 });
-                this.chartData = result;
-                this.isLoading.emit(false);
         }).catch(error => {
             this.chartData = undefined;
+            this.error.emit(error);
             this.isLoading.emit(false);
         });
     }
 
-    setTableData(results: { datasets: { label: string, data: number[] }[], labels: string[] }) {
+    onDataLoaded(result) {
+        this.setTableData(result);
+        const chartData = {
+            labels: result.time_points,
+            datasets: result.words
+        };
+
+        chartData.datasets.forEach((data, index) => {
+            data.borderColor = this.colorPalette[index];
+            data.backgroundColor = 'rgba(0,0,0,0)';
+            data.pointRadius = 0;
+            data.pointHoverRadius = 0;
+        });
+        this.chartData = chartData;
+        this.isLoading.emit(false);
+
+    }
+
+    setTableData(results: { words: { label: string, data: number[] }[], time_points: string[] }) {
         this.tableData = _.flatMap(
-            results.labels.map((date, index) => {
-                return results.datasets.map(dataset => ({
+            results.time_points.map((date, index) => {
+                return results.words.map(dataset => ({
                     date: date,
                     ngram: dataset.label,
                     freq: dataset.data[index],

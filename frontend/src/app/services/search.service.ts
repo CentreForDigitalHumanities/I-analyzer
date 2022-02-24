@@ -187,29 +187,18 @@ export class SearchService {
         });
     }
 
-    getNgram(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
+    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
         freqCompensation?: boolean, subField?: string, maxSize?: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return new Promise ( (resolve, reject) => {
-            this.apiService.getNgrams({
-                'es_query': esQuery,
-                'corpus_name': corpusName,
-                field: field,
-                ngram_size: ngramSize,
-                term_position: termPosition,
-                freq_compensation: freqCompensation,
-                subfield: subField,
-                max_size_per_interval: maxSize
-            }).then( result => {
-                resolve({
-                    'graphData': {
-                        'labels': result.word_data.time_points,
-                        'datasets': result.word_data.words,
-                    }
-                });
-            }).catch( result => {
-                reject({ message: result.message });
-            });
+        return this.apiService.ngramTasks({
+            'es_query': esQuery,
+            'corpus_name': corpusName,
+            field: field,
+            ngram_size: ngramSize,
+            term_position: termPosition,
+            freq_compensation: freqCompensation,
+            subfield: subField,
+            max_size_per_interval: maxSize
         });
     }
 

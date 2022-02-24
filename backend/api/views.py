@@ -477,13 +477,30 @@ def api_wordcloud_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
 
+@api.route('/ngram_tasks', methods=['POST'])
+@login_required
+def api_ngram_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
+    else:
+        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
+        ngram_counts = ngram_counts_task.apply_async()
+        if not ngram_counts_task:
+            return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
+        else:
+            return jsonify({'success': True, 'task_id': ngram_counts.id})
+
+
 
 @api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
 def api_task_outcome(task_id):
+    print(task_id)
     results = celery_app.AsyncResult(id=task_id)
+    print(results)
     if not results:
-        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+        return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
         try:
             outcome = results.get()
@@ -600,35 +617,6 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
-        })
-    return response
-
-@api.route('/get_ngrams', methods=['POST'])
-@login_required
-def api_get_ngrams():
-    if not request.json:
-        abort(400)
-
-    results = analyze.get_ngrams(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        ngram_size=request.json['ngram_size'],
-        term_positions=request.json['term_position'],
-        freq_compensation=request.json['freq_compensation'],
-        subfield=request.json['subfield'],
-        max_size_per_interval=request.json['max_size_per_interval']
-    )
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'word_data': results
         })
     return response
 
