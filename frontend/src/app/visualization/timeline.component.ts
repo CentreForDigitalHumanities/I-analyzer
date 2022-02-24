@@ -48,6 +48,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             this.xDomain = [min, max];
             this.currentTimeCategory = this.calculateTimeCategory(min, max);
             this.prepareTimeline();
+        } else if (changes.palette) {
+            this.prepareTimeline();
         }
     }
 

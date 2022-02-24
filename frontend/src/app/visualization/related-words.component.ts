@@ -36,8 +36,6 @@ export class RelatedWordsComponent implements OnChanges {
     tableData: [WordSimilarity];
 
     public zoomedInData; // data requested when clicking on a time interval
-    // colour-blind friendly colorPalette retrieved from colorbrewer2.org
-    public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
     public chartOptions: ChartOptions = {
         elements: {
             line: {
@@ -82,6 +80,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData() {
+        this.isLoading.emit(true);
         this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
             this.graphData = results['graphData'];
             this.graphData.datasets.map((d, index) => {
@@ -117,13 +116,15 @@ export class RelatedWordsComponent implements OnChanges {
                     .sort((a, b) => { return b.data[0] - a.data[0] })
                     .map((d, index) => {
                         d.backgroundColor = selectColor(this.palette, index);
-                    })
+                        d.hoverBackgroundColor = selectColor(this.palette, index);
+                    });
                 // hide grid lines as we only have one data point on x axis
                 this.chartOptions.scales.xAxis = {
                     grid: {
                         display: false
                     }
                 };
+                this.chartOptions.plugins.legend.labels.boxHeight = undefined;
                 this.isLoading.emit(false);
             })
             .catch(error => {
@@ -134,6 +135,7 @@ export class RelatedWordsComponent implements OnChanges {
     zoomBack() {
         this.zoomedInData = null;
         this.chartOptions.scales.xAxis = {};
+        this.chartOptions.plugins.legend.labels.boxHeight = 0;
     }
 
 }

@@ -27,6 +27,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             this.rawData = [this.newSeries(this.queryModel.queryText)];
             this.setQueries();
             this.prepareChart();
+        } else if (changes.palette) {
+            this.prepareChart();
         }
     }
 

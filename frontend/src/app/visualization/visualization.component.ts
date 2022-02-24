@@ -43,7 +43,19 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public isLoading = false;
     private childComponentLoading = false;
 
-    public palette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
+    public palettes = [
+        {
+            label: 'I-analyzer colours',
+            palette: ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD']
+        },
+        {
+            label: 'blue and brown',
+            // colour-blind friendly colorPalette retrieved from colorbrewer2.org
+            palette: ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
+        },
+    ];
+
+    public palette = this.palettes[0].palette;
 
     constructor() {
     }
