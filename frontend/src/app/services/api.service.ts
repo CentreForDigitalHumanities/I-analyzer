@@ -97,7 +97,7 @@ export class ApiService extends Resource {
     public ngramTasks: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
             subfield?: string, max_size_per_interval?: number },
-        { success: false, message: string } | { success: true, task_id: string }>;
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 
     @ResourceAction({

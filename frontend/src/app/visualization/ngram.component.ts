@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
@@ -9,7 +9,7 @@ import { ApiService, SearchService } from '../services';
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss']
 })
-export class NgramComponent implements OnInit, OnChanges {
+export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: visualizationField;
@@ -63,7 +63,7 @@ export class NgramComponent implements OnInit, OnChanges {
                         const label = tooltipItem.dataset.label;
                         const value = tooltipItem.raw;
                         if (value) { // skip 0 values
-                            return `${label}: ${Math.round((value) * 10000) / 10000}`;
+                            return `${label}: ${_.round(value, 4)}`;
                         }
                       },
                 }
@@ -83,11 +83,15 @@ export class NgramComponent implements OnInit, OnChanges {
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     maxDocuments: number|undefined;
 
-    runningTask: string;
+    tasksToCancel: string[];
 
     constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit(): void { }
+
+    ngOnDestroy(): void {
+        this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+    }
 
     ngOnChanges(): void {
         if (this.visualizedField.multiFields) {
@@ -151,8 +155,9 @@ export class NgramComponent implements OnInit, OnChanges {
         this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
             size, position, freqCompensation, analysis, maxSize)
             .then(result => {
-                this.runningTask = result['task_id'];
-                this.apiService.getTaskOutcome({'task_id': this.runningTask}).then(outcome => {
+                this.tasksToCancel = result.task_ids;
+                const childTask = result.task_ids[0];
+                this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
                     if (outcome.success === true) {
                         this.onDataLoaded(outcome.results);
                     } else {
