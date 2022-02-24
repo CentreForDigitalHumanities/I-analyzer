@@ -59,6 +59,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             if (this.corpus && this.corpus.fields) {
                 this.corpus.fields.filter(field => field.visualizations).forEach(field => {
                     field.visualizations.forEach(vis => {
+                        // for relatedwords, only inlcude if word models are present
                         if (vis != 'relatedwords' || this.corpus.word_models_present) {
                             this.visualizedFields.push({
                                 name: field.name,
