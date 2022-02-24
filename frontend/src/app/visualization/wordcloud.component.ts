@@ -26,6 +26,12 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Output() error = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
 
+    tableHeaders: freqTableHeaders = [
+        { key: 'key', label: 'Term' },
+        { key: 'doc_count', label: 'Frequency' }
+    ];
+
+
     public significantText: AggregateResult[];
     public disableLoadMore: boolean = false;
     private tasksToCancel: string[] = [];
@@ -52,8 +58,11 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (this.corpus && this.visualizedField && this.queryModel && this.batchSize) {
+        if ((this.corpus && this.visualizedField && this.queryModel && this.batchSize)  &&
+            (changes.corpus || changes.visualizedField || changes.queryModel || changes.batchSize)) {
             this.loadData(this.batchSize);
+        } else {
+            this.onDataLoaded();
         }
     }
 
@@ -138,12 +147,5 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             });
 
         layout.start();
-    }
-
-    get tableHeaders(): freqTableHeaders {
-        return [
-            { key: 'key', label: 'Term' },
-            { key: 'doc_count', label: 'Frequency' }
-        ];
     }
 }
