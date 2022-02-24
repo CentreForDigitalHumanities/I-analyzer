@@ -158,6 +158,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # speech type, e.g. question, intervention, point of order
     speech_type = Field(
         name='speech_type',
         display_name='Speech Type',
@@ -180,7 +181,7 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
-    # role fo the speaker (speaker, chair, MP, etc...)
+    # role of the speaker (speaker, chair, MP, etc...)
     role = Field(
         name='role',
         display_name='Role',
