@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
+import { select } from 'd3';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../models';
 
 import { DialogService, SearchService } from '../services/index';
+import { selectColor } from './select-color';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -12,6 +14,7 @@ export class RelatedWordsComponent implements OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
@@ -51,6 +54,12 @@ export class RelatedWordsComponent implements OnChanges {
             },
         },
         plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    boxHeight: 0, // flat boxes to the border is a line
+                }
+            },
             tooltip: {
                 displayColors: true,
                 callbacks: {
@@ -77,7 +86,7 @@ export class RelatedWordsComponent implements OnChanges {
             this.graphData = results['graphData'];
             this.graphData.datasets.map((d, index) => {
                 d.fill = false;
-                d.borderColor = this.colorPalette[index];
+                d.borderColor = selectColor(this.palette, index);
             });
 
             this.tableData = results['tableData'];
@@ -107,7 +116,7 @@ export class RelatedWordsComponent implements OnChanges {
                 this.zoomedInData.datasets
                     .sort((a, b) => { return b.data[0] - a.data[0] })
                     .map((d, index) => {
-                        d.backgroundColor = this.colorPalette[index];
+                        d.backgroundColor = selectColor(this.palette, index);
                     })
                 // hide grid lines as we only have one data point on x axis
                 this.chartOptions.scales.xAxis = {

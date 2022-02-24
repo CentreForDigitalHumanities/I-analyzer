@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import { Chart, ChartOptions } from 'chart.js';
 import Zoom from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-moment';
+import { selectColor } from './select-color';
 
 @Component({
     selector: 'ia-timeline',
@@ -176,8 +177,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 yAxisID: 'yAxis',
                 label: series.queryText ? series.queryText : '(no query)',
                 data: data,
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             };
         });
 

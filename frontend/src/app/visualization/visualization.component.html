@@ -18,18 +18,19 @@
     <div  [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [resultsCount]="resultsCount" [asTable]="freqtable"
+                [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
-                [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
+                [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)"></ia-ngram>
         </ng-container>
     </div>

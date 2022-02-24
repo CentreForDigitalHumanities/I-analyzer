@@ -21,6 +21,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Input() corpus: Corpus;
     @Input() resultsCount: number;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
@@ -112,7 +113,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             .attr("transform", "translate(" + this.width / 2 + "," + this.height / 2 + ")")
             .selectAll("text");
 
-        const fill = d3.scaleOrdinal(d3.schemeCategory10);
+        const fill = d3.scaleOrdinal(this.palette);
 
         const layout = cloud()
             .size([this.width, this.height])

@@ -7,6 +7,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     visualizationField, freqTableHeaders, histogramOptions,
     HistogramSeriesRaw } from '../models/index';
 import { BarChartComponent } from './barchart.component';
+import { selectColor } from './select-color';
 
 @Component({
     selector: 'ia-histogram',
@@ -145,8 +146,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                   const item = series.data.find(i => i.key === key);
                   return item ? item[valueKey] : 0;
                 }),
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             }
         ));
 

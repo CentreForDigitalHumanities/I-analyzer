@@ -7,6 +7,7 @@ import { Chart, ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
+import { selectColor } from './select-color';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -26,6 +27,7 @@ export class BarChartComponent implements OnInit {
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
@@ -53,8 +55,6 @@ export class BarChartComponent implements OnInit {
 
     @Output() isLoading = new BehaviorSubject<boolean>(false);
     @Output() error = new EventEmitter();
-
-    public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
@@ -95,8 +95,8 @@ export class BarChartComponent implements OnInit {
 
     constructor(public searchService: SearchService, public dialogService: DialogService) {
         const chartDefault = Chart.defaults;
-        chartDefault.elements.bar.backgroundColor = this.colorPalette[0];
-        chartDefault.elements.bar.hoverBackgroundColor = this.colorPalette[0];
+        chartDefault.elements.bar.backgroundColor = selectColor();
+        chartDefault.elements.bar.hoverBackgroundColor = selectColor();
         chartDefault.interaction.axis = 'x';
         chartDefault.plugins.legend.display = false;
         chartDefault.plugins.tooltip.displayColors = false;

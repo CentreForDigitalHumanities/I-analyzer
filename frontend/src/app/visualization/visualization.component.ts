@@ -43,6 +43,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public isLoading = false;
     private childComponentLoading = false;
 
+    public palette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
 
     constructor() {
     }
