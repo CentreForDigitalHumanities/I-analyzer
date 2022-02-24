@@ -75,7 +75,6 @@ def create_csv(results, fields, query):
                 entry.update( {field:result['_source'][field]} )
         highlights = result.get('highlight')
         if 'context' in fields and highlights:
-            fields.remove('context')
             hi_fields = highlights.keys()
             for hf in hi_fields:
                 for index, hi in enumerate(highlights[hf]):
@@ -88,6 +87,10 @@ def create_csv(results, fields, query):
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
     filename = create_filename(query)
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
+    try:
+        field_set.remove('context')
+    except KeyError:
+        pass
     # newline='' to prevent empty double lines
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=list(field_set), dialect='myDialect')
