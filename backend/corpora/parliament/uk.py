@@ -102,7 +102,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         )
 
         # adjust the mapping:
-        # English analyzer, multifield with exact text and non-stemmed version
+        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "standard",
@@ -114,7 +114,7 @@ class ParliamentUK(Parliament, CSVCorpus):
                 },
             "clean": {
                 "type": 'text',
-                "analyzer": "non-stemmed"
+                "analyzer": "clean"
                 },
             "length": {
                 "type": "token_count",

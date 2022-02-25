@@ -133,6 +133,31 @@ PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 PP_UK_IMAGE = 'uk.jpeg'
 PP_NL_IMAGE = 'netherlands.jpg'
 
+# Elasticsearch settings for People & Parliament corpora
+PP_ES_SETTINGS = {
+    "analysis": {
+        "analyzer": {
+            "clean": {
+                "tokenizer": "standard",
+                "char_filter": ["number_filter"],
+                "filter": ["lowercase", "stopwords"]
+            },
+            "stemmed": {
+                "tokenizer": "standard",
+                "char_filter": ["number_filter"],
+                "filter": ["lowercase", "stopwords", "stemmer"]
+            }
+        },
+        "char_filter":{
+            "number_filter":{
+                "type":"pattern_replace",
+                "pattern":"\\d+",
+                "replacement":""
+            }
+        }
+    }
+}
+
 #################
 
 # Celery configuration
