@@ -25,7 +25,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
-    es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
             "type": "stop",
@@ -51,7 +50,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                     yield xml_file
             else:
                 yield xml_file
-    
+
     def format_role(role):
         if role == 'mp':
             return role.upper()
@@ -60,7 +59,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     def find_topic(speech):
         return speech.find_parent('topic')
-    
+
     def format_house(house):
         if house == 'senate':
             return 'Eerste Kamer'
@@ -69,33 +68,33 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if house == 'other':
             return 'Other'
         return house
-    
+
     def find_last_pagebreak(node):
         "find the last pagebreak node before the start of the current node"
         is_tag = lambda x : type(x) == bs4.element.Tag
 
         #look for pagebreaks in previous nodes
-        for prev_node in node.previous_siblings:          
+        for prev_node in node.previous_siblings:
             if is_tag(prev_node):
                 breaks = prev_node.find_all('pagebreak')
                 if breaks:
                     return breaks[-1]
-        
+
         #if none was found, go up a level
         parent = node.parent
         if parent:
             return ParliamentNetherlands.find_last_pagebreak(parent)
-    
+
     def format_pages(pages):
         topic_start, topic_end, prev_break, last_break = pages
         if prev_break:
             if last_break:
                 return '{}-{}'.format(prev_break, last_break)
             return str(prev_break)
-        
+
         if topic_start and topic_end:
             return '{}-{}'.format(topic_start, topic_end)
-    
+
     def format_party(data):
         name, id = data
         if name:
@@ -103,7 +102,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         if id and id.startswith('nl.p.'):
             id = id[5:]
         return id
-    
+
     def get_party_full(self, speech_node):
         party_ref = speech_node.attrs.get(':party-ref')
         if not party_ref:
@@ -161,15 +160,15 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "standard",
-          "term_vector": "with_positions_offsets", 
+          "term_vector": "with_positions_offsets",
           "fields": {
             "stemmed": {
                 "type": "text",
-                "analyzer": "dutch" 
+                "analyzer": "dutch"
                 },
             "clean": {
                 "type": 'text',
-                "analyzer": "non-stemmed"
+                "analyzer": "clean"
                 },
             "length": {
                 "type": "token_count",
