@@ -126,7 +126,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
             field='heading2'
         )
 
-        self.topic2.extractor = CSV(
+        self.subtopic.extractor = CSV(
             field='heading3'
         )
 
