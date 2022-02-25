@@ -5,4 +5,4 @@ env/
 .env/
 elasticsearch-*/
 .python-version
-backen/.python-version
+backend/.python-version

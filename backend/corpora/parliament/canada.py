@@ -35,11 +35,11 @@ class ParliamentCanada(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
-    # def format_house(house):
-    #     if 'commons' in house.lower():
-    #         return 'House of Commons'
-    #     if 'senate' in house.lower():  # pretty sure there are no entries from the senate in this corpus
-    #         return 'Senate'
+    def format_house(house):
+        if 'commons' in house.lower():
+            return 'House of Commons'
+        if 'senate' in house.lower():  # pretty sure there are no entries from the senate in this corpus
+            return 'Senate'
     
     def __init__(self):
         self.country.extractor = Constant(
@@ -63,8 +63,8 @@ class ParliamentCanada(Parliament, CSVCorpus):
         self.house.description = 'House that the speaker belongs to'
 
         self.house.extractor = CSV(
-            field='house'
-            # transform=ParliamentCanada.format_house
+            field='house',
+            transform=ParliamentCanada.format_house
         )
 
         self.house.search_filter=MultipleChoiceFilter(
@@ -74,6 +74,10 @@ class ParliamentCanada(Parliament, CSVCorpus):
 
         self.party.extractor = CSV(
             field='speaker_party'
+        )
+
+        self.role.extractor = CSV(
+            field='speech_type'
         )
 
         self.speaker.extractor = CSV(
@@ -116,10 +120,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
 
         self.speech_id.extractor = CSV(
             field='speech_id'
-        )
-        
-        self.speech_type.extractor = CSV(
-            field='speech_type'
         )
 
         self.topic.extractor = CSV(
