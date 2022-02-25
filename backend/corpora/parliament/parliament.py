@@ -31,30 +31,6 @@ class Parliament(Corpus):
     max_date = datetime(year=2021, month=12, day=31)
     image = 'parliament.jpeg'
     data_directory = 'bogus'
-    # Elasticsearch settings for People & Parliament corpora
-    es_settings = {
-        "analysis": {
-            "analyzer": {
-                "clean": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords"]
-                },
-                "stemmed": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords", "stemmer"]
-                }
-            },
-            "char_filter":{
-                "number_filter":{
-                    "type":"pattern_replace",
-                    "pattern":"\\d+",
-                    "replacement":""
-                }
-            }
-        }
-    }
 
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.

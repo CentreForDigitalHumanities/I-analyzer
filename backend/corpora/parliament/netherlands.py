@@ -25,6 +25,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
+    es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
             "type": "stop",
