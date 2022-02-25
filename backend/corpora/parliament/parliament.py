@@ -103,10 +103,10 @@ class Parliament(Corpus):
         es_mapping={'type': 'text'},
     )
 
-    topic2 = Field(
-        name='topic2',
-        display_name='Additional Topic',
-        description='Additional topic of the debate in which the speech was held',
+    subtopic = Field(
+        name='subtopic',
+        display_name='Subtopic',
+        description='Subtopic of the debate in which the speech was held',
         es_mapping={'type': 'text'},
     )
 
