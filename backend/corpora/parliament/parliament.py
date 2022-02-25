@@ -103,8 +103,8 @@ class Parliament(Corpus):
         es_mapping={'type': 'text'},
     )
 
-    topic2 = Field(
-        name='topic2',
+    subtopic = Field(
+        name='subtopic',
         display_name='Additional Topic',
         description='Additional topic of the debate in which the speech was held',
         es_mapping={'type': 'text'},
@@ -128,7 +128,7 @@ class Parliament(Corpus):
                 "stemmed": {
                     "type": "text",
                     "analyzer": "stemmed",
-                    "term_vector": "with_positions_offsets", 
+                    "term_vector": "with_positions_offsets",
                 },
                 "length": {
                     "type":     "token_count",
@@ -139,7 +139,7 @@ class Parliament(Corpus):
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
-        visualizations=['wordcloud', 'ngram'],
+        visualizations=['wordcloud', 'ngram']
     )
 
     # unique (corpus-level) ID for the speech
@@ -229,13 +229,13 @@ class Parliament(Corpus):
     )
 
     fields = [
-        country, date, 
+        country, date,
         debate_title, debate_id,
-        topic, topic2, house, 
+        topic, subtopic, house, 
         speech, speech_id,
         speaker, speaker_id, speaker_constituency,
         speech_type,
-        role, 
+        role,
         party, party_id, party_full,
         page, column,
         ]
