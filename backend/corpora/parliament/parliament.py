@@ -158,7 +158,6 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
-    # speech type, e.g. question, intervention, point of order
     speech_type = Field(
         name='speech_type',
         display_name='Speech Type',
