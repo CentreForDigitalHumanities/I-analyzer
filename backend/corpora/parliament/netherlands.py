@@ -156,7 +156,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
 
         # adjust the mapping:
-        # Dutch analyzer, multifield with exact text
+        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "standard",
