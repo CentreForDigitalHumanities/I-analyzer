@@ -16,7 +16,7 @@ describe('Search Results Component', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(SearchResultsComponent);
-        let fields = ['a', 'b', 'c'].map(createField);
+        const fields = ['a', 'b', 'c'].map(createField);
         component = fixture.componentInstance;
         component.results = {
             fields,
@@ -24,7 +24,10 @@ describe('Search Results Component', () => {
                 'a': '1',
                 'b': '2',
                 'c': 'Hide-and-seek!'
-            }, '1', 1),
+            }, '1', 1,
+            {
+                'c': ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
+            }),
             createDocument({
                 'a': '3',
                 'b': '4',
@@ -57,8 +60,13 @@ describe('Search Results Component', () => {
         };
     }
 
-    function createDocument(fieldValues: { [name: string]: string }, id: string, relevance: number) {
-        return { id, relevance, fieldValues };
+    function createDocument(
+        fieldValues: { [name: string]: string },
+        id: string,
+        relevance: number,
+        highlight?: {[fieldName: string]: string[]}
+        ) {
+        return { id, relevance, fieldValues, highlight };
     }
 
     it('should be created', () => {
@@ -67,7 +75,7 @@ describe('Search Results Component', () => {
 
     it('should render result', async () => {
         await fixture.whenStable();
-        let compiled = fixture.debugElement.nativeElement;
+        const compiled = fixture.debugElement.nativeElement;
         expect(compiled.innerHTML).toContain('Wally is here');
     });
 });

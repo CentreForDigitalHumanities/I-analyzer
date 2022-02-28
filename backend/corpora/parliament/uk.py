@@ -34,25 +34,25 @@ class ParliamentUK(Parliament, CSVCorpus):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
-    
+
     def format_debate_title(title):
         if title.endswith('.'):
             title = title[:-1]
 
         return title.title()
-    
+
     def format_house(house):
         if 'commons' in house.lower():
             return 'House of Commons'
         if 'lords' in house.lower():
             return 'House of Lords'
-    
+
     def format_speaker(speaker):
         if speaker.startswith('*'):
             speaker = speaker[1:]
-        
+
         return speaker.title()
-    
+
     def format_columns(columns):
         if columns:
             unique_columns = set(columns)
@@ -62,7 +62,7 @@ class ParliamentUK(Parliament, CSVCorpus):
                 return '{}-{}'.format(start, stop)
             if len(unique_columns) == 1:
                 return list(unique_columns)[0]
-    
+
     def __init__(self):
         self.country.extractor = Constant(
             value='United Kingdom'
@@ -102,11 +102,11 @@ class ParliamentUK(Parliament, CSVCorpus):
         )
 
         # adjust the mapping:
-        # English analyzer, multifield with exact text and non-stemmed version
+        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
         self.speech.es_mapping = {
           "type" : "text",
           "analyzer": "standard",
-          "term_vector": "with_positions_offsets", 
+          "term_vector": "with_positions_offsets",
           "fields": {
             "stemmed": {
                 "type": "text",
@@ -114,7 +114,7 @@ class ParliamentUK(Parliament, CSVCorpus):
                 },
             "clean": {
                 "type": 'text',
-                "analyzer": "non-stemmed"
+                "analyzer": "clean"
                 },
             "length": {
                 "type": "token_count",

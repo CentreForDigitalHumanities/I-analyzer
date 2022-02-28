@@ -546,14 +546,14 @@ class CSVCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
-        
+
         if isinstance(source, str):
             filename = source
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
             filename = source[0]
-        
+
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
             reader = csv.DictReader(f)
@@ -568,15 +568,15 @@ class CSVCorpus(Corpus):
                         is_new_document = False
                     else:
                         document_id = identifier
-                
+
                 if is_new_document and rows:
                     yield self.document_from_rows(rows)
                     rows = [row]
                 else:
                     rows.append(row)
-            
+
             yield self.document_from_rows(rows)
-        
+
     def document_from_rows(self, rows):
         doc = {
             field.name: field.extractor.apply(
@@ -606,7 +606,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: histogram, timeline, wordcloud
+        options: histogram, timeline, wordcloud, relatedwords
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)

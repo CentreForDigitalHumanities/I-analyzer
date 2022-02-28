@@ -37,7 +37,16 @@
                                 <td>
                                     <b>{{field.displayName}}: </b>
                                 </td>
-                                <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                                <ng-container *ngIf="document.highlight && document.highlight[field.name]; else unhighlightedRow">
+                                    <td>
+                                        <ng-container *ngFor="let highlight of document.highlight[field.name]">
+                                            <tr><div ngPreserveWhitespaces style="word-break:break-word" [innerHtml]="highlight"></div></tr>
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
+                                <ng-template #unhighlightedRow>
+                                    <td style="word-break:break-word" [innerHtml]="document.fieldValues[field.name] | highlight:query:true"></td>
+                                </ng-template>
                             </tr>
                         </ng-container>
                     </table>

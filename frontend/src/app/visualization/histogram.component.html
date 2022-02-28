@@ -1,6 +1,6 @@
 <div class="block">
     <ia-histogram-options
-        [queryText]="queryModel ? queryModel.queryText : undefined" [showTokenCountOption]="totalTokenCountAvailable"
+        [queryText]="queryModel ? queryModel.queryText : ''" [showTokenCountOption]="totalTokenCountAvailable"
         (options)="onOptionChange($event)">
     </ia-histogram-options>
 </div>
@@ -14,7 +14,7 @@
     </ia-freqtable>
 </div>
 
-<div class="message is-warning" *ngIf="documentLimitExceeded && frequencyMeasure == 'tokens'">
+<div class="message is-warning" *ngIf="documenmtLimitExceeded && frequencyMeasure == 'tokens'">
     <div class="message-body">
         The results for your search include too many documents to count all matches.
         Only the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
