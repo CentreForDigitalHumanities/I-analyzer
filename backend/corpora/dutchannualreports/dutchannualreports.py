@@ -182,7 +182,7 @@ class DutchAnnualReports(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            visualizations=['wordcloud'],
+            visualizations=['wordcloud', 'relatedwords'],
             description='Text content of the page.',
             results_overview=True,
             extractor=XML(

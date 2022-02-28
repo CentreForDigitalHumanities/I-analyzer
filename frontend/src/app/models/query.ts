@@ -62,7 +62,8 @@ export type QueryModel = {
     fields?: string[],
     filters?: SearchFilter<SearchFilterData>[],
     sortBy?: string,
-    sortAscending?: boolean
+    sortAscending?: boolean,
+    highlight?: number,
 };
 
 /** These are the from / size parameters emitted by the pagination component */

@@ -8,7 +8,7 @@ export type SearchResults = {
         value: number,
         relation: string
     }
-}
+};
 
 export type ResultOverview = {
     queryText: string,

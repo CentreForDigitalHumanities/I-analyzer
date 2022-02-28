@@ -59,14 +59,17 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             if (this.corpus && this.corpus.fields) {
                 this.corpus.fields.filter(field => field.visualizations).forEach(field => {
                     field.visualizations.forEach(vis => {
-                        this.visualizedFields.push({
-                            name: field.name,
-                            displayName: field.displayName,
-                            visualization: vis,
-                            visualizationSort: field.visualizationSort,
-                            searchFilter: field.searchFilter,
-                            multiFields: field.multiFields,
-                        });
+                        // for relatedwords, only inlcude if word models are present
+                        if (vis != 'relatedwords' || this.corpus.word_models_present) {
+                            this.visualizedFields.push({
+                                name: field.name,
+                                displayName: field.displayName,
+                                visualization: vis,
+                                visualizationSort: field.visualizationSort,
+                                searchFilter: field.searchFilter,
+                                multiFields: field.multiFields,
+                            });
+                        }
                     });
                 });
             }
@@ -80,14 +83,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                         value: field
                     });
                 }
-            });
-            if (this.corpus.word_models_present === true) {
-                this.visDropdown.push({
-                    label: 'Related Words',
-                    value: 'relatedwords'
-                });
-            }
-            if (this.visualizedFields === undefined) {
+            });            if (this.visualizedFields === undefined) {
                 this.noVisualizations = true;
             } else {
                 this.noVisualizations = false;
@@ -111,17 +107,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    setVisualizedField(selectedField: 'relatedwords'|visualizationField) {
+    setVisualizedField(selectedField: visualizationField) {
         this.errorMessage = '';
         this.visualExists = true;
 
-        if (selectedField === 'relatedwords') {
-            this.visualizedField.visualization = selectedField;
-            this.visualizedField.name = selectedField;
-            this.visualizedField.displayName = this.visualizationsDisplayNames[selectedField];
-        } else {
-            this.visualizedField = selectedField;
-        }
+        this.visualizedField = selectedField;
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
 
