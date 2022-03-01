@@ -7,7 +7,7 @@ from flask import current_app
 
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus, Field
-from corpora.parliament.uk import ParliamentUK
+from corpora.parliament.uk import ParliamentUK, format_house, format_speaker
 
 class ParliamentUKRecent(ParliamentUK, CSVCorpus):
     data_directory = current_app.config['PP_UK_RECENT_DATA']
@@ -24,7 +24,7 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
 
         self.house.extractor = CSV(
             field='house',
-            transform=ParliamentUK.format_house
+            transform=format_house
         )
 
         self.speech_id.extractor = CSV(
@@ -39,7 +39,7 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
 
         self.speaker.extractor = CSV(
             field='speaker_name',
-            transform=ParliamentUK.format_speaker
+            transform=format_speaker
         )
 
         self.speaker_id.extractor = CSV(
