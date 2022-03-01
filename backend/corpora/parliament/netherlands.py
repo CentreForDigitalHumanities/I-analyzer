@@ -185,7 +185,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         self.speaker.extractor = Combined(
             XML(attribute=':function'),
             XML(attribute=':speaker'),
-            transform=lambda x: ' '.join(x)
+            transform=' '.join
         )
 
         self.speaker_id.extractor = XML(
@@ -198,17 +198,13 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
 
         self.role.search_filter=MultipleChoiceFilter(
-            description='Search for speeches by speakers with the the selected roles',
+            description='Search for speeches by speakers with the selected roles',
             option_count=10
         )
 
         self.party.extractor = Combined(
-            XML(
-                attribute=':party'
-                ),
-            XML(
-                attribute=':party-ref'
-            ),
+            XML(attribute=':party'),
+            XML(attribute=':party-ref'),
             transform=ParliamentNetherlands.format_party,
         )
         self.party.search_filter = MultipleChoiceFilter(
