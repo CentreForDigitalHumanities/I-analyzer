@@ -138,9 +138,9 @@ class XML(Extractor):
                      'xml_tag_entry': None
                  },
                  # a function [e.g. `my_func(soup)`]` to transform the soup directly
-                 transform_soup_func=None,
                  # after _select was called, i.e. before further processing (attributes, flattening, etc).
                  # Keep in mind that the soup passed could be None.
+                 transform_soup_func=None,
                  *nargs,
                  **kwargs
                  ):

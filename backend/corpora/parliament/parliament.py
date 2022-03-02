@@ -212,4 +212,4 @@ class Parliament(Corpus):
         role,
         party, party_id, party_full,
         page, column,
-        ]
+    ]
