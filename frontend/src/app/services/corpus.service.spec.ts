@@ -33,8 +33,8 @@ describe('CorpusService', () => {
         service = TestBed.inject(CorpusService);
     });
 
-    it('should be created', inject([CorpusService], (service: CorpusService) => {
-        expect(service).toBeTruthy();
+    it('should be created', inject([CorpusService], (corpusService: CorpusService) => {
+        expect(corpusService).toBeTruthy();
     }));
 
     it('should parse the list of corpora', () => {
@@ -174,17 +174,17 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
-            let mockMultipleChoiceData: SearchFilterData = {
+            const mockMultipleChoiceData: SearchFilterData = {
                 filterType: 'MultipleChoiceFilter',
                 optionCount: 42,
                 selected: []
             };
-            let mockRangeData: SearchFilterData = {
+            const mockRangeData: SearchFilterData = {
                 filterType: 'RangeFilter',
                 min: 1785,
                 max: 2010
             };
-            let allFields: CorpusField[] = [{
+            const allFields: CorpusField[] = [{
                 description: 'Banking concern to which the report belongs.',
                 displayName: 'Bank',
                 displayType: 'keyword',
