@@ -423,7 +423,7 @@ def get_term_frequency(es_query, corpus, size):
     # get total document count and (if available) token count for bin
     agg_query = deepcopy(es_query)
     agg_query['query']['bool'].pop('must') #remove search term filter
-    doc_count, token_count = get_total_docs_and_tokens(client, es_query, corpus, token_count_aggregators)
+    doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
 
     return match_count, doc_count, token_count
 
