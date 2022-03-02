@@ -41,7 +41,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                     searchRatio: 1.0,
                 }
             ];
-            this.setQueries;
+            this.setQueries();
             const min = new Date(this.visualizedField.searchFilter.currentData.min);
             const max = new Date(this.visualizedField.searchFilter.currentData.max);
             this.xDomain = [min, max];
