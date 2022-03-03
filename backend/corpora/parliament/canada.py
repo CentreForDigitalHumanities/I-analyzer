@@ -53,7 +53,8 @@ class ParliamentCanada(Parliament, CSVCorpus):
         )
 
         self.debate_id.extractor = CSV(
-            field='speech_id'
+            field='speech_id',
+            transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
         )
 
         self.debate_title.extractor = CSV(
@@ -109,7 +110,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
                 },
             "clean": {
                 "type": 'text',
-                "analyzer": "non-stemmed"
+                "analyzer": "clean"
                 },
             "length": {
                 "type": "token_count",

@@ -231,7 +231,7 @@ class Parliament(Corpus):
     fields = [
         country, date,
         debate_title, debate_id,
-        topic, house,
+        topic, subtopic, house, 
         speech, speech_id,
         speaker, speaker_id,
         speech_type,
