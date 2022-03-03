@@ -4,14 +4,15 @@
 name: Unit tests
 
 on:
-    push:
-        branches:
-            - 'develop'
-            - 'master'
-            - 'feature/**'
-            - 'bugfix/**'
-            - 'hotfix/**'
-            - 'release/**'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+      - 'master'
+      - 'feature/**'
+      - 'bugfix/**'
+      - 'hotfix/**'
+      - 'release/**'
 
 jobs:
   build:
