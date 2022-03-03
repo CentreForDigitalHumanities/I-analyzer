@@ -13,7 +13,7 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'parliament-uk': 'parliament/uk.py',
+        'parliament-uk': os.path.join(here, 'uk.py'),
     }
     SERVERS = {
         'default': config.SERVERS['default']
