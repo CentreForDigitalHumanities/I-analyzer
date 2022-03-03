@@ -109,7 +109,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
                 },
             "clean": {
                 "type": 'text',
-                "analyzer": "non-stemmed"
+                "analyzer": "clean"
                 },
             "length": {
                 "type": "token_count",
