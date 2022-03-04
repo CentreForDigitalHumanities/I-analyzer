@@ -64,78 +64,87 @@ class ParliamentUK(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
+    country = Parliament._country()
+    country.extractor = Constant(
+        value='United Kingdom'
+    )
+    country.search_filter = None
 
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='United Kingdom'
-        )
+    date = Parliament._date()
+    date.extractor = CSV(
+        field='speechdate',
+    )
 
-        self.country.search_filter = None
-
-        self.date.extractor = CSV(
-            field='speechdate',
-        )
-
-        self.debate_title.extractor = CSV(
-            field='debate',
-            transform=format_debate_title
-        )
-
-        self.house.description = 'House that the speaker belongs to'
-
-        self.house.extractor = CSV(
-            field='speaker_house',
-            transform=format_house
-        )
-
-        self.house.search_filter=MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
-            option_count=2
-        )
-
-        self.debate_id.extractor = CSV(
-            field='debate_id'
-        )
-
-        self.speech.extractor = CSV(
-            field='text',
-            multiple=True,
-            transform=lambda x : ' '.join(x)
-        )
-
-        # adjust the mapping:
-        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets",
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "english"
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "clean"
-                },
-            "length": {
-                "type": "token_count",
-                "analyzer": "standard",
-                }
+    debate_title = Parliament._debate_title()
+    debate_title.extractor = CSV(
+        field='debate',
+        transform=format_debate_title
+    )
+     
+    house =  Parliament._house()
+    house.extractor = CSV(
+        field='speaker_house',
+        transform=format_house
+    )
+    house.search_filter=MultipleChoiceFilter(
+        description='Search only in debates from the selected houses',
+        option_count=2
+    )
+    
+    debate_id = Parliament._debate_id()
+    debate_id.extractor = CSV(
+        field='debate_id'
+    )
+     
+    speech = Parliament._speech()
+    speech.extractor = CSV(
+        field='text',
+        multiple=True,
+        transform=lambda x : ' '.join(x)
+    )
+    speech.es_mapping = {
+        "type" : "text",
+        "analyzer": "standard",
+        "term_vector": "with_positions_offsets",
+        "fields": {
+        "stemmed": {
+            "type": "text",
+            "analyzer": "english"
+            },
+        "clean": {
+            "type": 'text',
+            "analyzer": "clean"
+            },
+        "length": {
+            "type": "token_count",
+            "analyzer": "standard",
             }
         }
+    }
+    
+    speech_id = Parliament._speech_id()
+    speech_id.extractor = CSV(
+        field='speech_id'
+    )
 
-        self.speech_id.extractor = CSV(
-            field='speech_id'
-        )
+    speaker = Parliament._speaker()
+    speaker.extractor = CSV(
+        field='speaker',
+        transform=format_speaker
+    )
+    
+    column = Parliament._column()
+    column.extractor = CSV(
+        field='src_column',
+        multiple=True,
+        transform=format_columns
+    )
 
-        self.speaker.extractor = CSV(
-            field='speaker',
-            transform=format_speaker
-        )
-
-        self.column.extractor = CSV(
-            field='src_column',
-            multiple=True,
-            transform=format_columns
-        )
+    fields = [
+        country, date,
+        debate_title, debate_id,
+        house, 
+        speech, speech_id,
+        speaker,
+        column,
+    ]
