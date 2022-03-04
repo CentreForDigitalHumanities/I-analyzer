@@ -1,5 +1,6 @@
 from glob import glob
 import logging
+from multiprocessing.sharedctypes import Value
 
 from flask import current_app
 
@@ -113,130 +114,152 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                 yield xml_file
 
 
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='Netherlands'
-        )
+    country = Parliament._country()
+    country.extractor = Constant(
+        value='Netherlands'
+    )
+    country.search_filter = None
 
-        self.country.search_filter = None
+    date = Parliament._date()
+    date.extractor = XML(
+        tag=['meta','dc:date'],
+        toplevel=True
+    )
 
-        self.date.extractor = XML(
-            tag=['meta','dc:date'],
-            toplevel=True
-        )
+    house = Parliament._house()
+    house.extractor = XML(
+        tag=['meta','dc:subject', 'pm:house'],
+        attribute='pm:house',
+        toplevel=True,
+        transform=format_house
+    )
+    house.search_filter=MultipleChoiceFilter(
+        description='Search only in debates from the selected houses',
+        option_count=2
+    )
 
-        self.house.extractor = XML(
-            tag=['meta','dc:subject', 'pm:house'],
-            attribute='pm:house',
-            toplevel=True,
-            transform=format_house
-        )
-        self.house.search_filter=MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
-            option_count=2
-        )
+    debate_title = Parliament._debate_title()
+    debate_title.extractor = XML(
+        tag=['meta', 'dc:title'],
+        toplevel=True,
+    )
 
-        self.debate_title.extractor = XML(
-            tag=['meta', 'dc:title'],
-            toplevel=True,
-        )
+    debate_id = Parliament._debate_id()
+    debate_id.extractor = XML(
+        tag=['meta', 'dc:identifier'],
+        toplevel=True,
+    )
 
-        self.debate_id.extractor = XML(
-            tag=['meta', 'dc:identifier'],
-            toplevel=True,
-        )
+    topic = Parliament._topic()
+    topic.extractor = XML(
+        transform_soup_func = find_topic,
+        attribute=':title',
+    )
 
-        self.topic.extractor = XML(
-            transform_soup_func = find_topic,
-            attribute=':title',
-        )
-
-        self.speech.extractor = XML(
-            tag='p',
-            multiple=True,
-            flatten=True,
-        )
-
-        # adjust the mapping:
-        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets",
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "dutch"
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "clean"
-                },
-            "length": {
-                "type": "token_count",
-                "analyzer": "standard",
-                }
+    speech = Parliament._speech()
+    speech.extractor = XML(
+        tag='p',
+        multiple=True,
+        flatten=True,
+    )
+    # adjust the mapping:
+    # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
+    speech.es_mapping = {
+        "type" : "text",
+        "analyzer": "standard",
+        "term_vector": "with_positions_offsets",
+        "fields": {
+        "stemmed": {
+            "type": "text",
+            "analyzer": "dutch"
+            },
+        "clean": {
+            "type": 'text',
+            "analyzer": "clean"
+            },
+        "length": {
+            "type": "token_count",
+            "analyzer": "standard",
             }
         }
+    }
 
-        self.speech_id.extractor = XML(
-            attribute=':id'
-        )
+    speech_id = Parliament._speech_id()
+    speech_id.extractor = XML(
+        attribute=':id'
+    )
 
-        self.speaker.extractor = Combined(
-            XML(attribute=':function'),
-            XML(attribute=':speaker'),
-            transform=' '.join
-        )
+    speaker = Parliament._speaker()
+    speaker.extractor = Combined(
+        XML(attribute=':function'),
+        XML(attribute=':speaker'),
+        transform=' '.join
+    )
 
-        self.speaker_id.extractor = XML(
-            attribute=':member-ref'
-        )
+    speaker_id = Parliament._speaker_id()
+    speaker_id.extractor = XML(
+        attribute=':member-ref'
+    )
 
-        self.role.extractor = XML(
-            attribute=':role',
-            transform=format_role
-        )
+    role = Parliament._role()
+    role.extractor = XML(
+        attribute=':role',
+        transform=format_role
+    )
+    role.search_filter=MultipleChoiceFilter(
+        description='Search for speeches by speakers with the selected roles',
+        option_count=10
+    )
 
-        self.role.search_filter=MultipleChoiceFilter(
-            description='Search for speeches by speakers with the selected roles',
-            option_count=10
-        )
+    party = Parliament._party()
+    party.extractor = Combined(
+        XML(attribute=':party'),
+        XML(attribute=':party-ref'),
+        transform=format_party,
+    )
+    party.search_filter = MultipleChoiceFilter(
+        description='Search in speeches from the selected parties',
+        option_count=50
+    )
+    party.visualizations = ['histogram']
 
-        self.party.extractor = Combined(
-            XML(attribute=':party'),
-            XML(attribute=':party-ref'),
-            transform=format_party,
-        )
-        self.party.search_filter = MultipleChoiceFilter(
-            description='Search in speeches from the selected parties',
-            option_count=50
-        )
-        self.party.visualizations = ['histogram']
+    party_id = Parliament._party_id()
+    party_id.extractor = XML(
+        attribute=':party-ref'
+    )
 
-        self.party_id.extractor = XML(
-            attribute=':party-ref'
-        )
+    party_full = Parliament._party_full()
+    party_full.extractor = XML(
+        attribute='pm:name',
+        transform_soup_func=get_party_full
+    )
 
-        self.party_full.extractor = XML(
-            attribute='pm:name',
-            transform_soup_func=get_party_full
-        )
+    page = Parliament._page()
+    page.extractor = Combined(
+        XML(transform_soup_func=find_topic,
+            attribute=':source-start-page'
+        ),
+        XML(transform_soup_func=find_topic,
+            attribute=':source-end-page'
+        ),
+        XML(transform_soup_func=find_last_pagebreak,
+            attribute=':originalpagenr',
+        ),
+        XML(tag=['stage-direction', 'pagebreak'],
+            attribute=':originalpagenr',
+            multiple=True,
+            transform=lambda pages : pages[-1] if pages else pages
+        ),
+        transform=format_pages,
+    )
 
-        self.page.extractor = Combined(
-            XML(transform_soup_func=find_topic,
-                attribute=':source-start-page'
-            ),
-            XML(transform_soup_func=find_topic,
-                attribute=':source-end-page'
-            ),
-            XML(transform_soup_func=find_last_pagebreak,
-                attribute=':originalpagenr',
-            ),
-            XML(tag=['stage-direction', 'pagebreak'],
-                attribute=':originalpagenr',
-                multiple=True,
-                transform=lambda pages : pages[-1] if pages else pages
-            ),
-            transform=format_pages,
-        )
+    fields = [
+        country, date,
+        debate_title, debate_id,
+        topic, house, 
+        speech, speech_id,
+        speaker, speaker_id,
+        role,
+        party, party_id, party_full,
+        page,
+    ]
