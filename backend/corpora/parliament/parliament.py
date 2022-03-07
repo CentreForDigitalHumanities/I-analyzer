@@ -292,15 +292,24 @@ class Parliament(Corpus):
     
     column = _column()
 
+    @property
+    def fields(self):
+        return self._fields
+    
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
 
-    fields = [
-        country, date,
-        debate_title, debate_id,
-        topic, subtopic, house, 
-        speech, speech_id,
-        speaker, speaker_id,
-        speech_type,
-        role,
-        party, party_id, party_full,
-        page, column,
-    ]
+
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.debate_title, self.debate_id,
+            self.topic, self.subtopic, self.house, 
+            self.speech, self.speech_id,
+            self.speaker, self.speaker_id,
+            self.speech_type,
+            self.role,
+            self.party, self.party_id, self.party_full,
+            self.page, self.column,
+        ]

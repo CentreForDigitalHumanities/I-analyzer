@@ -253,13 +253,3 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_pages,
     )
 
-    fields = [
-        country, date,
-        debate_title, debate_id,
-        topic, house, 
-        speech, speech_id,
-        speaker, speaker_id,
-        role,
-        party, party_id, party_full,
-        page,
-    ]

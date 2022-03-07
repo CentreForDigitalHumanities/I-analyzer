@@ -139,12 +139,3 @@ class ParliamentUK(Parliament, CSVCorpus):
         multiple=True,
         transform=format_columns
     )
-
-    fields = [
-        country, date,
-        debate_title, debate_id,
-        house, 
-        speech, speech_id,
-        speaker,
-        column,
-    ]
