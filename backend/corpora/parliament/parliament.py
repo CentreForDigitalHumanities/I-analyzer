@@ -49,6 +49,13 @@ class Parliament(Corpus):
                     'filename': filename
                 }
 
+    # FIELDS
+
+    # For each field, a function named `_foo()` should create a new  instance of a Field object.
+    # Add an attribute `foo` with the default Field instance, i.e. the return value of `_foo()`
+    # Subclasses can overwrite `foo`, making a new Field instance with `_foo()` and modifying its attributes.
+    # The `__init__` sets the `fields` attribute, which includes `self.foo`, 
+
     def _country():
         return Field(
             name='country',
@@ -87,7 +94,11 @@ class Parliament(Corpus):
             display_name='House',
             description='House in which the debate took place',
             es_mapping={'type': 'keyword'},
-            visualizations=['histogram'],
+            search_filter = MultipleChoiceFilter(
+                description='Search only in debates from the selected houses',
+                option_count=2
+            ),
+            visualizations = ['histogram']
         )
     
     house = _house()
@@ -292,6 +303,7 @@ class Parliament(Corpus):
     
     column = _column()
 
+    #define fields property so it can be set in __init__
     @property
     def fields(self):
         return self._fields

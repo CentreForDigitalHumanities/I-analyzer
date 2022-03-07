@@ -133,10 +133,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         toplevel=True,
         transform=format_house
     )
-    house.search_filter=MultipleChoiceFilter(
-        description='Search only in debates from the selected houses',
-        option_count=2
-    )
 
     debate_title = Parliament._debate_title()
     debate_title.extractor = XML(

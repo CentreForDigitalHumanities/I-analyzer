@@ -86,10 +86,6 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='speaker_house',
         transform=format_house
     )
-    house.search_filter=MultipleChoiceFilter(
-        description='Search only in debates from the selected houses',
-        option_count=2
-    )
     
     debate_id = Parliament._debate_id()
     debate_id.extractor = CSV(
