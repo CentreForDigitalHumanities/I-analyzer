@@ -1,5 +1,6 @@
 from glob import glob
 import logging
+import re
 
 from flask import current_app
 
@@ -54,7 +55,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
 
         self.debate_id.extractor = CSV(
             field='speech_id',
-            transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
+            # transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
         )
 
         self.debate_title.extractor = CSV(
