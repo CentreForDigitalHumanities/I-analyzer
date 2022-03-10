@@ -95,6 +95,14 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    # electoral term for the parliaments
+    electoral_term = Field(
+        name='electoral term',
+        display_name='Electoral Term',
+        description='Sequential number for the parliaments',
+        es_mapping={'type': 'keyword'},
+    )
+
     # if debates are divided into topics, they can be specified here
     topic = Field(
         name='topic',
@@ -173,6 +181,34 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    speaker_birthplace = Field(
+        name='speaker_birthplace',
+        display_name='Speaker birthplace',
+        description='Birthplace of the speaker',
+        es_mapping={'type': 'text'},
+    )
+    
+    speaker_birth_country = Field(
+        name='speaker_birth_country',
+        display_name='Speaker country of birth',
+        description='Speaker country of birth',
+        es_mapping={'type': 'text'},
+    )
+
+    speaker_birth_country = Field(
+        name='speaker_birth_country',
+        display_name='Speaker country of birth',
+        description='Speaker country of birth',
+        es_mapping={'type': 'text'},
+    )
+
+    speaker_birth_date = Field(
+        name='speaker_birth_date',
+        display_name='Speaker date of birth',
+        description='Speaker date of birth',
+        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+    )
+
     speaker_constituency = Field(
         name='speaker_constituency',
         display_name='Speaker Constituency',
@@ -180,11 +216,54 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    speaker_death_date = Field(
+        name='speaker_death_date',
+        display_name='Speaker date of death',
+        description='Speaker date of death',
+        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+    )
+
+    speaker_gender = Field(
+        name='speaker_gender',
+        display_name='Speaker Gender',
+        description='Speaker Gender',
+        es_mapping={'type': 'keyword'},
+    )
+
+    speaker_profession = Field(
+        name='speaker_profession',
+        display_name='Speaker Profession',
+        description='Speaker Profession',
+        es_mapping={'type': 'text'},
+    )
+
+    speaker_aristocracy = Field(
+        name='speaker_aristocracy',
+        display_name='Speaker Aristocracy',
+        description='Is the speaker a member of the aristocracy',
+        es_mapping={'type': 'keyword'},
+    )
+
+    speaker_academic_title = Field(
+        name='speaker_academic_title',
+        display_name='Speaker Academic Title',
+        description='Academic title of the speaker',
+        es_mapping={'type': 'text'},
+    )
+
+
     # role of the speaker (speaker, chair, MP, etc...)
     role = Field(
         name='role',
         display_name='Role',
         description='Role of the speaker in the debate',
+        es_mapping={'type': 'keyword'},
+    )
+
+    role_long = Field(
+        name='role_long',
+        display_name='Role Long',
+        description='Expanded description of role of the speaker in the debate',
         es_mapping={'type': 'keyword'},
     )
 
@@ -231,11 +310,17 @@ class Parliament(Corpus):
     fields = [
         country, date,
         debate_title, debate_id,
+        electoral_term,
         topic, subtopic, house, 
         speech, speech_id,
         speaker, speaker_id,
+        speaker_birthplace, speaker_birth_country,
+        speaker_birth_date, speaker_constituency,
+        speaker_death_date, speaker_gender,
+        speaker_profession, speaker_aristocracy,
+        speaker_academic_title,
         speech_type,
-        role,
+        role, role_long,
         party, party_id, party_full,
         page, column,
     ]
