@@ -8,13 +8,7 @@ from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
-
-def format_house(house):
-    if 'commons' in house.lower():
-        return 'House of Commons'
-    if 'senate' in house.lower():
-        return 'Senate'
-
+from corpora.parliament.uk import format_house
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'

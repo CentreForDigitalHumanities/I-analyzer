@@ -9,6 +9,7 @@ from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 # Corpora that include a `foo` field should initialise it with `foo()` and then modify attributes as needed.
 
 def country():
+    "Country in which the debate took place"
     return Field(
         name='country',
         display_name='Country',
@@ -17,6 +18,7 @@ def country():
     )
 
 def date():
+    "The date on which the debate took place."
     return Field(
         name='date',
         display_name='Date',
@@ -46,6 +48,7 @@ def house():
     )
 
 def debate_title():
+    "Title of the debate in which the speech was held"
     return Field(
         name='debate_title',
         display_name='Title of debate',
@@ -143,7 +146,7 @@ def speech_type():
     )
 
 def speaker_id():
-    "unique (corpus_level) ID for the speaker"
+    "unique (corpus level) ID for the speaker"
     return Field(
         name='speaker_id',
         display_name='Speaker ID',
@@ -152,6 +155,7 @@ def speaker_id():
     )
 
 def speaker_constituency():
+    "Constituency represented by the speaker"
     return Field(
         name='speaker_constituency',
         display_name='Speaker Constituency',
@@ -223,6 +227,7 @@ def column():
     )
 
 def sequence():
+    "integer index of the speech in a debate"
     return Field(
         name='sequence',
         display_name='Sequence',
