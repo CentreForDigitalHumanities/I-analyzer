@@ -41,7 +41,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
         value='Canada'
     )
 
-
     date = field_defaults.date()
     date.extractor = CSV(
         field='date_yyyy-mm-dd'

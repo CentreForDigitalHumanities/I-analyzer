@@ -16,7 +16,7 @@ class Parliament(Corpus):
 
     This defines some shared constants and provides some core fields.
     Child corpora should add or overwrite fields depending on what data
-    is available, then overwrite the `fields` property with their own definitions.
+    is available, then overwrite the `__init__` to set the `fields` property.
 
     Create indices (with alias 'peopleparliament') from
     the corpora specific definitions, and point the application

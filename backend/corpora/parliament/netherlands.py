@@ -1,6 +1,5 @@
 from glob import glob
 import logging
-from multiprocessing.sharedctypes import Value
 
 from flask import current_app
 
@@ -52,7 +51,7 @@ def find_last_pagebreak(node):
 
 def format_pages(pages):
     topic_start, topic_end, prev_break, last_break = pages
-    if prev_break and last_break:
+    if prev_break:
         if last_break:
             return format_page_numbers([prev_break, last_break])
         return str(prev_break)

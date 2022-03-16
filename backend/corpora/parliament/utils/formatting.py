@@ -1,8 +1,5 @@
 ## Various helper functions for formatting
 
-from typing import Dict
-
-
 def format_page_numbers(pages):
     """
     Given a list of page/column numbers, return a string formatted as '{min}-{max}',

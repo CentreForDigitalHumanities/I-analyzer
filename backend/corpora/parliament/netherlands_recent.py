@@ -171,5 +171,3 @@ class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
     )
 
     page = field_defaults.page()
-
-    
