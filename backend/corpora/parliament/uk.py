@@ -9,6 +9,7 @@ from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -64,34 +65,34 @@ class ParliamentUK(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
-    country = Parliament._country()
+    country = field_defaults.country()
     country.extractor = Constant(
         value='United Kingdom'
     )
 
-    date = Parliament._date()
+    date = field_defaults.date()
     date.extractor = CSV(
         field='speechdate',
     )
 
-    debate_title = Parliament._debate_title()
+    debate_title = field_defaults.debate_title()
     debate_title.extractor = CSV(
         field='debate',
         transform=format_debate_title
     )
      
-    house =  Parliament._house()
+    house =  field_defaults.house()
     house.extractor = CSV(
         field='speaker_house',
         transform=format_house
     )
     
-    debate_id = Parliament._debate_id()
+    debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
      
-    speech = Parliament._speech()
+    speech = field_defaults.speech()
     speech.extractor = CSV(
         field='text',
         multiple=True,
@@ -117,18 +118,18 @@ class ParliamentUK(Parliament, CSVCorpus):
         }
     }
     
-    speech_id = Parliament._speech_id()
+    speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
     )
 
-    speaker = Parliament._speaker()
+    speaker = field_defaults.speaker()
     speaker.extractor = CSV(
         field='speaker',
         transform=format_speaker
     )
     
-    column = Parliament._column()
+    column = field_defaults.column()
     column.extractor = CSV(
         field='src_column',
         multiple=True,

@@ -9,6 +9,7 @@ from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
 
 import re
 
@@ -114,18 +115,18 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                 yield xml_file
 
 
-    country = Parliament._country()
+    country = field_defaults.country()
     country.extractor = Constant(
         value='Netherlands'
     )
 
-    date = Parliament._date()
+    date = field_defaults.date()
     date.extractor = XML(
         tag=['meta','dc:date'],
         toplevel=True
     )
 
-    house = Parliament._house()
+    house = field_defaults.house()
     house.extractor = XML(
         tag=['meta','dc:subject', 'pm:house'],
         attribute='pm:house',
@@ -133,25 +134,25 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_house
     )
 
-    debate_title = Parliament._debate_title()
+    debate_title = field_defaults.debate_title()
     debate_title.extractor = XML(
         tag=['meta', 'dc:title'],
         toplevel=True,
     )
 
-    debate_id = Parliament._debate_id()
+    debate_id = field_defaults.debate_id()
     debate_id.extractor = XML(
         tag=['meta', 'dc:identifier'],
         toplevel=True,
     )
 
-    topic = Parliament._topic()
+    topic = field_defaults.topic()
     topic.extractor = XML(
         transform_soup_func = find_topic,
         attribute=':title',
     )
 
-    speech = Parliament._speech()
+    speech = field_defaults.speech()
     speech.extractor = XML(
         tag='p',
         multiple=True,
@@ -179,30 +180,30 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         }
     }
 
-    speech_id = Parliament._speech_id()
+    speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(
         attribute=':id'
     )
 
-    speaker = Parliament._speaker()
+    speaker = field_defaults.speaker()
     speaker.extractor = Combined(
         XML(attribute=':function'),
         XML(attribute=':speaker'),
         transform=' '.join
     )
 
-    speaker_id = Parliament._speaker_id()
+    speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = XML(
         attribute=':member-ref'
     )
 
-    role = Parliament._role()
+    role = field_defaults.role()
     role.extractor = XML(
         attribute=':role',
         transform=format_role
     )
 
-    party = Parliament._party()
+    party = field_defaults.party()
     party.extractor = Combined(
         XML(attribute=':party'),
         XML(attribute=':party-ref'),
@@ -210,18 +211,18 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
 
 
-    party_id = Parliament._party_id()
+    party_id = field_defaults.party_id()
     party_id.extractor = XML(
         attribute=':party-ref'
     )
 
-    party_full = Parliament._party_full()
+    party_full = field_defaults.party_full()
     party_full.extractor = XML(
         attribute='pm:name',
         transform_soup_func=get_party_full
     )
 
-    page = Parliament._page()
+    page = field_defaults.page()
     page.extractor = Combined(
         XML(transform_soup_func=find_topic,
             attribute=':source-start-page'
