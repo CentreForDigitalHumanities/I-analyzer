@@ -37,7 +37,7 @@ def test_uk(test_app):
     uk_corpus = load_corpus('parliament-uk')
 
     # Assert that indeed we are drawing sources from the testing folder
-    assert os.path.join(os.path.dirname(__file__), 'uk') == os.path.abspath(uk_corpus.data_directory)
+    assert os.path.join(os.path.dirname(__file__), 'data', 'uk') == os.path.abspath(uk_corpus.data_directory)
 
     # Obtain our mock source CSV
     sources = uk_corpus.sources(
@@ -50,4 +50,5 @@ def test_uk(test_app):
         doc = next(docs)
 
         for key in target:
+            assert key in doc
             assert doc[key] == target[key]

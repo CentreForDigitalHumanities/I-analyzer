@@ -30,7 +30,7 @@ def test_netherlands(test_app):
     nl_corpus = load_corpus('parliament-netherlands')
 
     # Assert that indeed we are drawing sources from the testing folder
-    assert os.path.join(os.path.dirname(__file__), 'netherlands') == os.path.abspath(nl_corpus.data_directory)
+    assert os.path.join(os.path.dirname(__file__), 'data', 'netherlands') == os.path.abspath(nl_corpus.data_directory)
 
     # Obtain our mock source XML
     sources = nl_corpus.sources(
@@ -43,4 +43,5 @@ def test_netherlands(test_app):
         doc = next(docs)
 
         for key in target:
+            assert key in doc
             assert doc[key] == target[key]
