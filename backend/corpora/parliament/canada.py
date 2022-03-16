@@ -41,6 +41,10 @@ class ParliamentCanada(Parliament, CSVCorpus):
             return 'House of Commons'
         if 'senate' in house.lower():  # pretty sure there are no entries from the senate in this corpus
             return 'Senate'
+
+    def format_debate_id(id): 
+        if re.match(r'\d{4}-\d{2}-\d{2}', id):
+            return lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
     
     def __init__(self):
         self.country.extractor = Constant(
@@ -55,7 +59,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
 
         self.debate_id.extractor = CSV(
             field='speech_id',
-            # transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
+            transform=ParliamentCanada.format_debate_id
         )
 
         self.debate_title.extractor = CSV(
