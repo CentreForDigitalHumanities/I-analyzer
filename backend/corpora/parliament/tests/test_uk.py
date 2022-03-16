@@ -57,6 +57,7 @@ def test_uk(test_app):
 
     # Obtain our mock source CSV
     sources = uk_corpus.sources(
+        # UK corpus does not implement start/end values for indexing
         start=datetime(1970,1,1),
         end=datetime(1970,1,1)
     )
