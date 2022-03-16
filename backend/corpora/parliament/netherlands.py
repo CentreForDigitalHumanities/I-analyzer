@@ -118,7 +118,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     country.extractor = Constant(
         value='Netherlands'
     )
-    country.search_filter = None
 
     date = Parliament._date()
     date.extractor = XML(
@@ -202,10 +201,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         attribute=':role',
         transform=format_role
     )
-    role.search_filter=MultipleChoiceFilter(
-        description='Search for speeches by speakers with the selected roles',
-        option_count=10
-    )
 
     party = Parliament._party()
     party.extractor = Combined(
@@ -213,11 +208,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         XML(attribute=':party-ref'),
         transform=format_party,
     )
-    party.search_filter = MultipleChoiceFilter(
-        description='Search in speeches from the selected parties',
-        option_count=50
-    )
-    party.visualizations = ['histogram']
+
 
     party_id = Parliament._party_id()
     party_id.extractor = XML(
@@ -248,4 +239,15 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         ),
         transform=format_pages,
     )
+
+    fields = [
+        country, date,
+        house,
+        debate_title, debate_id,
+        topic,
+        speech, speech_id,
+        speaker, speaker_id, role,
+        party, party_id, party_full,
+        page,
+    ]
 

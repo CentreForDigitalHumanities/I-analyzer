@@ -51,10 +51,9 @@ class Parliament(Corpus):
 
     # FIELDS
 
-    # For each field, a function named `_foo()` should create a new  instance of a Field object.
-    # Add an attribute `foo` with the default Field instance, i.e. the return value of `_foo()`
-    # Subclasses can overwrite `foo`, making a new Field instance with `_foo()` and modifying its attributes.
-    # The `__init__` sets the `fields` attribute, which includes `self.foo`, 
+    # For each field, a function named `_foo()` creates a new  instance of a Field object.
+    # For a few core fields, Parliament already defines `foo` as a field, using the default value `_foo()`
+    # If a subclass has a `foo` fields, it should make a new instance with `_foo()` and modify attributes as necessary.
 
     def _country():
         return Field(
@@ -62,13 +61,13 @@ class Parliament(Corpus):
             display_name='Country',
             description='Country in which the debate took place',
             es_mapping={'type': 'keyword'},
-            search_filter=MultipleChoiceFilter(
-                description='Search only in debates from selected countries',
-                option_count=10
-            )
         )
     
     country = _country()
+    country.search_filter = MultipleChoiceFilter(
+        description='Search only in debates from selected countries',
+        option_count=10
+    )
 
     def _date():
         return Field(
@@ -100,8 +99,6 @@ class Parliament(Corpus):
             ),
             visualizations = ['histogram']
         )
-    
-    house = _house()
 
     def _debate_title():
         return Field(
@@ -110,8 +107,6 @@ class Parliament(Corpus):
             description='Title of the debate in which the speech was held',
             es_mapping={'type': 'text'},
         )
-    
-    debate_title = _debate_title()
 
     def _debate_id():
         "unique ID for the debate"
@@ -121,8 +116,6 @@ class Parliament(Corpus):
             description='Unique identifier of the debate in which the speech was held',
             es_mapping={'type': 'keyword'},
         )
-    
-    debate_id = _debate_id()
 
     def _topic():
         "if debates are divided into topics, they are specified here"
@@ -132,8 +125,6 @@ class Parliament(Corpus):
             description='Topic of the debate in which the speech was held',
             es_mapping={'type': 'text'},
         )
-    
-    topic = _topic()
 
     def _subtopic():
         "further division of topics into subtopics"
@@ -143,8 +134,6 @@ class Parliament(Corpus):
             description='Subtopic of the debate in which the speech was held',
             es_mapping={'type': 'text'},
         )
-    
-    subtopic = _subtopic()
 
     def _speech():
         """
@@ -191,8 +180,6 @@ class Parliament(Corpus):
             description='Unique identifier of the speech',
             es_mapping={'type': 'keyword'},
         )
-    
-    speech_id = _speech_id()
 
     def _speaker():
         "name of the speaker"
@@ -202,8 +189,6 @@ class Parliament(Corpus):
             description='The speaker of the transcribed speech',
             es_mapping={'type': 'keyword'},
         )
-    
-    speaker = _speaker()
 
     def _speech_type():
         "type of speech, e.g. question, answer, interjection, point of order"
@@ -213,8 +198,6 @@ class Parliament(Corpus):
             description='The type of speech',
             es_mapping={'type': 'keyword'},
         )
-    
-    speech_type = _speech_type()
 
     def _speaker_id():
         "unique (corpus_level) ID for the speaker"
@@ -224,8 +207,6 @@ class Parliament(Corpus):
             description='Unique identifier of the speaker',
             es_mapping={'type': 'keyword'},
         )
-    
-    speaker_id = _speaker_id()
 
     def _speaker_constituency():
         return Field(
@@ -234,8 +215,6 @@ class Parliament(Corpus):
             description='Constituency represented by the speaker',
             es_mapping={'type': 'keyword'},
         )
-    
-    speaker_constituency = _speaker_constituency()
 
     def _role():
         "role of the speaker (speaker, chair, MP, etc...)"
@@ -244,9 +223,11 @@ class Parliament(Corpus):
             display_name='Role',
             description='Role of the speaker in the debate',
             es_mapping={'type': 'keyword'},
+            search_filter=MultipleChoiceFilter(
+                description='Search for speeches by speakers with the selected roles',
+                option_count=10
+            )
         )
-
-    role = _role()
 
     def _party():
         "name of the political party of the speaker"
@@ -255,9 +236,12 @@ class Parliament(Corpus):
             display_name='Party',
             description='Political party that the speaker belongs to',
             es_mapping={'type': 'keyword'},
+            search_filter= MultipleChoiceFilter(
+                description='Search in speeches from the selected parties',
+                option_count=50
+            ),
+            visualizations=['histogram']
         )
-    
-    party = _party()
 
     def _party_id():
         "unique ID of the party"
@@ -267,8 +251,6 @@ class Parliament(Corpus):
             description='Unique identifier of the political party the speaker belongs to',
             es_mapping={'type': 'keyword'},
         )
-    
-    party_id = _party_id()
 
     def _party_full():
         # human-readable name of the party
@@ -278,8 +260,6 @@ class Parliament(Corpus):
             description='Full name of the political party that the speaker belongs to',
             es_mapping={'type': 'keyword'},
         )
-    
-    party_full = _party_full()
 
     def _page():
         # page number
@@ -289,8 +269,6 @@ class Parliament(Corpus):
             description='Page(s) of the speech in the original document',
             es_mapping={'type': 'keyword'}
         )
-    
-    page = _page()
 
     def _column():
         # column number
@@ -300,28 +278,5 @@ class Parliament(Corpus):
             description='Column(s) of the speech in the original document',
             es_mapping={'type': 'keyword'}
         )
-    
-    column = _column()
 
-    #define fields property so it can be set in __init__
-    @property
-    def fields(self):
-        return self._fields
-    
-    @fields.setter
-    def fields(self, value):
-        self._fields = value
-
-
-    def __init__(self):
-        self.fields = [
-            self.country, self.date,
-            self.debate_title, self.debate_id,
-            self.topic, self.subtopic, self.house, 
-            self.speech, self.speech_id,
-            self.speaker, self.speaker_id,
-            self.speech_type,
-            self.role,
-            self.party, self.party_id, self.party_full,
-            self.page, self.column,
-        ]
+    fields = [ country, date, speech ]
