@@ -167,7 +167,7 @@ class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
     party_full.extractor = XML(
         tag=None,
         attribute='who',
-        transform=self.get_party_full
+        transform=get_party_full
     )
 
     page = field_defaults.page()

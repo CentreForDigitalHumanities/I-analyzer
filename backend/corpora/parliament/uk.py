@@ -8,6 +8,7 @@ from flask import current_app
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
+from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -28,17 +29,6 @@ def format_speaker(speaker):
         speaker = speaker[1:]
 
     return speaker.title()
-
-def format_columns(columns):
-    if columns:
-        unique_columns = set(columns)
-        if len(unique_columns) > 1:
-            start = min(unique_columns)
-            stop = max(unique_columns)
-            return '{}-{}'.format(start, stop)
-        if len(unique_columns) == 1:
-            return list(unique_columns)[0]
-
 
 class ParliamentUK(Parliament, CSVCorpus):
     title = 'People & Parliament (UK)'
@@ -128,12 +118,14 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='speaker',
         transform=format_speaker
     )
+
+    speaker_id = field_defaults.speaker_id()
     
     column = field_defaults.column()
     column.extractor = CSV(
         field='src_column',
         multiple=True,
-        transform=format_columns
+        transform=format_page_numbers
     )
 
     sequence = field_defaults.sequence()
@@ -144,6 +136,6 @@ class ParliamentUK(Parliament, CSVCorpus):
             self.debate_title, self.debate_id,
             self.house,
             self.speech, self.speech_id, self.sequence,
-            self.speaker,
+            self.speaker, self.speaker_id,
             self.column,
         ]

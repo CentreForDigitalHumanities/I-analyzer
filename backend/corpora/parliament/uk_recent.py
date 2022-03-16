@@ -80,3 +80,5 @@ class ParliamentUKRecent(ParliamentUK, CSVCorpus):
         field='sequence'
     )
 
+    column = field_defaults.column()
+

@@ -8,6 +8,7 @@ import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
 from addcorpus.filters import MultipleChoiceFilter
+from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
@@ -51,13 +52,13 @@ def find_last_pagebreak(node):
 
 def format_pages(pages):
     topic_start, topic_end, prev_break, last_break = pages
-    if prev_break:
+    if prev_break and last_break:
         if last_break:
-            return '{}-{}'.format(prev_break, last_break)
+            return format_page_numbers([prev_break, last_break])
         return str(prev_break)
 
     if topic_start and topic_end:
-        return '{}-{}'.format(topic_start, topic_end)
+        return format_page_numbers([topic_start, topic_end])
 
 def format_party(data):
     name, id = data

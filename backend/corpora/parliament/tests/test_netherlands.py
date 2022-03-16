@@ -22,7 +22,7 @@ target_docs = [
         'party': None,
         'party_id': None,
         'party_full': None,
-        'page': '493-493'
+        'page': '493'
     }
 ]
 
