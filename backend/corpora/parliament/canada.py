@@ -137,11 +137,12 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='heading3'
     )
 
-    fields = [
-        country, date,
-        debate_id, debate_title,
-        house,
-        speaker, speaker_id, speaker_constituency, role, party,
-        speech, speech_id,
-        topic, subtopic,
-    ]
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.debate_id, self.debate_title,
+            self.house,
+            self.speaker, self.speaker_id, self.speaker_constituency, self.role, self.party,
+            self.speech, self.speech_id,
+            self.topic, self.subtopic,
+        ]

@@ -58,4 +58,20 @@ class Parliament(Corpus):
     date = field_defaults.date()
     speech = field_defaults.speech()
 
-    fields = [ country, date, speech ]
+    #define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
+
+    def __init__(self):
+        # init function specifies list of fields - should be overwritten in subclasses.
+        # `fields` is specified here rather than than as a static property,
+        # to accommodate subclasses like ParliamentUK and ParliamentUKRecent,
+        # which should use the same fields list but may define different extractors 
+        # for individual fields
+
+        self.fields = [ self.country, self.date, self.speech ]

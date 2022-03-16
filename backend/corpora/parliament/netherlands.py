@@ -241,14 +241,15 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_pages,
     )
 
-    fields = [
-        country, date,
-        house,
-        debate_title, debate_id,
-        topic,
-        speech, speech_id,
-        speaker, speaker_id, role,
-        party, party_id, party_full,
-        page,
-    ]
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.house,
+            self.debate_title, self.debate_id,
+            self.topic,
+            self.speech, self.speech_id,
+            self.speaker, self.speaker_id, self.role,
+            self.party, self.party_id, self.party_full,
+            self.page,
+        ]
 

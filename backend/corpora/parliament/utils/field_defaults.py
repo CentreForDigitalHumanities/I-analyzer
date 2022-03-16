@@ -221,3 +221,11 @@ def column():
         description='Column(s) of the speech in the original document',
         es_mapping={'type': 'keyword'}
     )
+
+def sequence():
+    return Field(
+        name='sequence',
+        display_name='Sequence',
+        description='Index of the sequence of speeches in a debate',
+        es_mapping={'type': 'integer'},
+    )

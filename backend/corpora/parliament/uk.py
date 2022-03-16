@@ -136,11 +136,14 @@ class ParliamentUK(Parliament, CSVCorpus):
         transform=format_columns
     )
 
-    fields = [
-        country, date,
-        debate_title, debate_id,
-        house,
-        speech, speech_id,
-        speaker,
-        column,
-    ]
+    sequence = field_defaults.sequence()
+
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.debate_title, self.debate_id,
+            self.house,
+            self.speech, self.speech_id, self.sequence,
+            self.speaker,
+            self.column,
+        ]
