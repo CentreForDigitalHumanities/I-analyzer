@@ -83,7 +83,7 @@ def create_csv(results, fields, query):
                     soup = BeautifulSoup(hi, 'html.parser')
                     entry.update({highlight_field_name: soup.get_text()})
         entries.append(entry)
-    csv.register_dialect('myDialect', delimiter=',', quotechar='"',
+    csv.register_dialect('myDialect', delimiter=';', quotechar='"',
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
     filename = create_filename(query)
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
