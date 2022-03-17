@@ -13,9 +13,6 @@ def celery_config():
     }
 
 
-TIMES_USER_PASSWORD = '12345'
-
-
 class UnittestConfig:
     SECRET_KEY = 'poiuytrewqlkjhgfdsamnbvcxz'
     DEBUG = True
