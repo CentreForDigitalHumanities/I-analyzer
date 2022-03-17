@@ -194,6 +194,11 @@ def get_time_bins(es_query, corpus):
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
+
+    bins_max = bins[-1][1]
+    if bins_max < max_year:
+        bins.append((bins_max + 1, max_year))
+    
     return bins
 
 
