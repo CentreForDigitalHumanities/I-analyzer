@@ -1,7 +1,7 @@
-import pytest
 import api.analyze as analyze
 
 def test_wordcloud():
+    # simplified version of elasticsearch output
     documents = [
         { '_source': {
             'content': 'I-analyzer is great!',

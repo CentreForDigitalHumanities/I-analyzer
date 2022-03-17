@@ -26,6 +26,24 @@ class MockCorpus(Corpus):
         }
     )
 
+    content_deluxe = Field(
+        name = 'content_deluxe',
+        es_mapping= {
+            'type': 'text',
+            "fields": {
+                "clean": {
+                    "type": "text",
+                },
+                "stemmed": {
+                    "type": "text",
+                },
+                "length": {
+                    "type": "token_count",
+                }
+            }
+        }
+    )
+
     genre = Field(
         name = 'genre',
         es_mapping= {
@@ -33,4 +51,4 @@ class MockCorpus(Corpus):
         }
     )
 
-    fields = [date, content, genre]
+    fields = [date, content, content_deluxe, genre]
