@@ -7,11 +7,11 @@ def test_extract_data_for_term_frequency(test_app):
     highlight_target = {
 		"number_of_fragments": 100,
 		"fields": {
-			"content": {
+			"title": {
 				"type": "unified",
 				"fragment_size": 1
 			},
-            "content_deluxe": {
+            "content": {
 				"type": "unified",
 				"fragment_size": 1
 			},
@@ -23,17 +23,18 @@ def test_extract_data_for_term_frequency(test_app):
     }
     assert highlight_specs == highlight_target
 
-    # no .length multifield, so no aggregator
+    # no .length multifield for all fields, so no aggregator
     assert aggregators == None
 
-    # restrict the search field
-    highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', ['content_deluxe'])
+    # restrict the search field to one with token counts
+
+    highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', ['content'])
     
     # highlighter should be restricted as well
     highlight_target = {
 		"number_of_fragments": 100,
 		"fields": {
-            "content_deluxe": {
+            "content": {
 				"type": "unified",
 				"fragment_size": 1
 			},
@@ -43,9 +44,9 @@ def test_extract_data_for_term_frequency(test_app):
 
     # token count aggregator should be included
     aggregators_target = {
-        'token_count_content_deluxe': {
+        'token_count_content': {
             'sum': {
-                'field': 'content_deluxe.length'
+                'field': 'content.length'
             }
         }
     }

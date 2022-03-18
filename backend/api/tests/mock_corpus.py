@@ -1,33 +1,42 @@
 from datetime import datetime
-from addcorpus.corpus import Corpus, Field
+from addcorpus.corpus import Field, CSVCorpus
+from addcorpus.extract import CSV
+import os
 
 # Fake corpus class for unit tests
 
-class MockCorpus(Corpus):
+here = os.path.abspath(os.path.dirname(__file__))
+
+class MockCorpus(CSVCorpus):
     title = 'Mock Corpus'
     description = 'Corpus for testing'
     visualize = []
-    min_date = datetime(year=1900, month=1, day=1)
-    max_date = datetime(year=1999, month=12, day=31)
+    min_date = datetime(year=1800, month=1, day=1)
+    max_date = datetime(year=1899, month=12, day=31)
     image = 'test.jpeg'
     data_directory = 'bogus'
+
+    def sources(self, start=min_date, end=max_date):
+        return os.listdir(os.path.join(here, 'source_files'))
     
     date = Field(
         name = 'date',
         es_mapping = {
             'type': 'date',
-        }
+        },
+        extractor = CSV('date')
+    )
+
+    title = Field(
+        name = 'title',
+        es_mapping = {
+            'type': 'text',
+        },
+        extractor = CSV('title')
     )
 
     content = Field(
         name = 'content',
-        es_mapping = {
-            'type': 'text',
-        }
-    )
-
-    content_deluxe = Field(
-        name = 'content_deluxe',
         es_mapping= {
             'type': 'text',
             "fields": {
@@ -41,14 +50,16 @@ class MockCorpus(Corpus):
                     "type": "token_count",
                 }
             }
-        }
+        },
+        extractor = CSV('content')
     )
 
     genre = Field(
         name = 'genre',
         es_mapping= {
             'type': 'keyword'
-        }
+        },
+        extractor = CSV('genre')
     )
 
-    fields = [date, content, content_deluxe, genre]
+    fields = [date, title, content, genre]

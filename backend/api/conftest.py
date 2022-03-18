@@ -28,7 +28,7 @@ class UnittestConfig:
 
 
 @pytest.fixture(scope='session')
-def test_app(request):
+def test_app():
     """ Provide an instance of the application with Flask's test_client. """
     app = flask_app(UnittestConfig)
     app.testing = True
@@ -39,6 +39,9 @@ def test_app(request):
     # performed after running tests
     ctx.pop()
 
+@pytest.fixture(scope='session')
+def load_corpus(test_app):
+    yield None
 
 @pytest.fixture
 def basic_query():
@@ -72,8 +75,8 @@ def query_with_date_filter():
                 "filter": [{
                     "range": {
                     "date": {
-                        "gte": "1950-01-01",
-                        "lte": "1959-12-31",
+                        "gte": "1850-01-01",
+                        "lte": "1859-12-31",
                         "format": "yyyy-MM-dd"
                         }
                     }

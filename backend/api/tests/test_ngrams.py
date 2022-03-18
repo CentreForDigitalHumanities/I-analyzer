@@ -9,36 +9,36 @@ def test_total_time_interval_no_filter(test_app, basic_query):
     assert max_date == MockCorpus.max_date
 
 def test_total_time_interval_with_filter(test_app, query_with_date_filter):
-    # should use min_date/max_date specified in date filter (1950-1959)
+    # should use min_date/max_date specified in date filter (1850-1859)
     min_date, max_date = analyze.get_total_time_interval(query_with_date_filter, 'mock_corpus')
-    assert min_date == datetime(1950, 1, 1)
-    assert max_date == datetime(1959, 12, 31)
+    assert min_date == datetime(1850, 1, 1)
+    assert max_date == datetime(1859, 12, 31)
 
 def test_time_bins(test_app, basic_query, query_with_date_filter):
     # 100 year interval
     bins = analyze.get_time_bins(basic_query, 'mock-corpus')
     target_bins = [
-        (1900, 1904), (1905, 1909),
-        (1910, 1914), (1915, 1919),
-        (1920, 1924), (1925, 1929),
-        (1930, 1934), (1935, 1939),
-        (1940, 1944), (1945, 1949),
-        (1950, 1954), (1955, 1959),
-        (1960, 1964), (1965, 1969),
-        (1970, 1974), (1975, 1979),
-        (1980, 1984), (1985, 1989),
-        (1990, 1994), (1995, 1999)
+        (1800, 1804), (1805, 1809),
+        (1810, 1814), (1815, 1819),
+        (1820, 1824), (1825, 1829),
+        (1830, 1834), (1835, 1839),
+        (1840, 1844), (1845, 1849),
+        (1850, 1854), (1855, 1859),
+        (1860, 1864), (1865, 1869),
+        (1870, 1874), (1875, 1879),
+        (1880, 1884), (1885, 1889),
+        (1890, 1894), (1895, 1899)
     ]
     assert bins == target_bins
 
     # 10 year interval
     bins = analyze.get_time_bins(query_with_date_filter, 'mock-corpus')
     target_bins = [
-        (1950, 1950), (1951, 1951),
-        (1952, 1952), (1953, 1953),
-        (1954, 1954), (1955, 1955),
-        (1956, 1956), (1957, 1957),
-        (1958, 1958), (1959, 1959)
+        (1850, 1850), (1851, 1851),
+        (1852, 1852), (1853, 1853),
+        (1854, 1854), (1855, 1855),
+        (1856, 1856), (1857, 1857),
+        (1858, 1858), (1859, 1859)
     ]
     assert bins == target_bins
     
