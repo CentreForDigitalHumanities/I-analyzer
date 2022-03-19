@@ -82,5 +82,8 @@
     "peerDependencies": {
         "@types/pdfjs-dist": "^2.1.7",
         "pdfjs-dist": "2.5.207"
+    },
+    "overrides": {
+        "colors@>1.4.0": "1.4.0"
     }
 }
