@@ -48,9 +48,10 @@ def test_es_client(test_app):
     corpus = load_corpus('mock-corpus')
     index.create(client, corpus, False, True, False)
     index.populate(client, 'mock-corpus', corpus)
-    client.open('mock-corpus')
 
     yield client
+
+    client.delete('mock-corpus')
 
 @pytest.fixture
 def basic_query():
