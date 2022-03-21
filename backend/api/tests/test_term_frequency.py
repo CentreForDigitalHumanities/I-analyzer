@@ -1,5 +1,9 @@
 import api.analyze as analyze
 
+def test_data(test_app, test_es_client):
+    res = test_es_client.search(index="mock-corpus", body={"query": {"match_all": {}}})
+    assert res['hits']['total']['value'] == 3
+
 def test_extract_data_for_term_frequency(test_app):
     highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus')
 

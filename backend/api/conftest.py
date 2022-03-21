@@ -1,7 +1,10 @@
 import pytest
 import os
+from ianalyzer.factories.elasticsearch import elasticsearch
 import ianalyzer.config_fallback as config
 from ianalyzer.factories.app import flask_app
+import es.es_index as index
+from addcorpus.load_corpus import load_corpus
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -40,8 +43,14 @@ def test_app():
     ctx.pop()
 
 @pytest.fixture(scope='session')
-def load_corpus(test_app):
-    yield None
+def test_es_client(test_app):
+    client = elasticsearch('mock-corpus', UnittestConfig)
+    corpus = load_corpus('mock-corpus')
+    index.create(client, corpus, False, True, False)
+    index.populate(client, 'mock-corpus', corpus)
+    client.open('mock-corpus')
+
+    yield client
 
 @pytest.fixture
 def basic_query():
