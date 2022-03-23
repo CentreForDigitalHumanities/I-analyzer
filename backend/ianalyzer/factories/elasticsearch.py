@@ -1,14 +1,14 @@
 from elasticsearch import Elasticsearch
 
 from ianalyzer import config_fallback as config
-
+from flask import current_app
 
 def elasticsearch(corpus_name, cfg=config):
     '''
     Create ElasticSearch instance with default configuration.
     '''
-    server_name = cfg.CORPUS_SERVER_NAMES[corpus_name]
-    server_config = cfg.SERVERS[server_name]
+    server_name = current_app.config.get('CORPUS_SERVER_NAMES')[corpus_name]
+    server_config = current_app.config.get('SERVERS')[server_name]
     node = {'host': server_config['host'],
             'port': server_config['port']}
     if server_config.get('username'):

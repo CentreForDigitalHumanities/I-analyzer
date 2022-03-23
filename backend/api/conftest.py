@@ -44,14 +44,22 @@ def test_app():
 
 @pytest.fixture(scope='session')
 def test_es_client(test_app):
+    """
+    Create and populate an index for the mock corpus in elasticsearch.
+    Returns an elastic search client for the mock corpus.
+    """
     client = elasticsearch('mock-corpus', UnittestConfig)
     corpus = load_corpus('mock-corpus')
-    index.create(client, corpus, False, True, False)
-    index.populate(client, 'mock-corpus', corpus)
+    # index.create(client, corpus, False, True, False)
+    # response = index.populate(client, 'mock-corpus', corpus)
+
+    # client.search('mock-corpus',
+    #     body= {'query': {'match_all': {}}}
+    # )
 
     yield client
 
-    client.delete('mock-corpus')
+    # client.delete('mock-corpus')
 
 @pytest.fixture
 def basic_query():
