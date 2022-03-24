@@ -1,3 +1,4 @@
+from time import sleep
 import pytest
 import os
 from ianalyzer.factories.elasticsearch import elasticsearch
@@ -54,17 +55,27 @@ def test_es_client(test_app):
         client = None
     
     if client:
+        # add data from mock corpus
         corpus = load_corpus('mock-corpus')
-        # index.create(client, corpus, False, True, False)
-        # response = index.populate(client, 'mock-corpus', corpus)
+        index.create(client, corpus, False, True, False)
+        index.populate(client, 'mock-corpus', corpus)
 
-        # client.search('mock-corpus',
-        #     body= {'query': {'match_all': {}}}
-        # )
+        # population may not be finished at this point,
+        # so check if it's done, wait a while, check again
+        for _ in range(10): # limited retries
+            query = {'query': {'match_all': {}}}
+            result = client.search('mock-corpus', body= query)
+            doc_count = result['hits']['total']['value']
+
+            if doc_count == 3:
+                break
+
+            sleep(2) # wait a while
 
         yield client
 
-        # client.delete('mock-corpus')
+        # delete index when done
+        client.indices.delete('mock-corpus')
     else:
         yield None
 
