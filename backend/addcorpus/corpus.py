@@ -534,6 +534,13 @@ class CSVCorpus(Corpus):
         is treated as a document.
         '''
 
+    @property
+    def required_field(self):
+        '''
+        Specifies a required field, for example the main content. Rows with
+        an empty value for `required_field` will be skipped.
+        '''
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -559,9 +566,13 @@ class CSVCorpus(Corpus):
             reader = csv.DictReader(f)
             document_id = None
             rows = []
-
             for row in reader:
                 is_new_document = True
+
+                if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
+                    continue
+                    
+
                 if self.field_entry:
                     identifier = row[self.field_entry]
                     if identifier == document_id:
