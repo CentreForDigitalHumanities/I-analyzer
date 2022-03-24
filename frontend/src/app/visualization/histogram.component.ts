@@ -26,21 +26,6 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         }
     }
 
-
-    async loadData() {
-        await this.requestDocumentData();
-        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
-
-        if (!this.rawData.length) {
-            this.error.emit({message: 'No results'});
-        }
-
-        this.setTableHeaders();
-        this.setTableData();
-
-        this.setChart();
-    }
-
     async requestDocumentData() {
         let size = 0;
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {

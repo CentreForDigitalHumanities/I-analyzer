@@ -152,9 +152,30 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
         this.isLoading.next(false);
     }
 
-    // implemented on child components
-    async loadData() { }
+    async loadData() {
+        await this.requestDocumentData();
+        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
+        if (!this.rawData.length) {
+            this.error.emit({message: 'No results'});
+        }
+
+        this.setChart();
+
+        this.setTableHeaders();
+        this.setTableData();
+
+        if (this.isZoomedIn) {
+            this.zoomIn(this.chart, true);
+        }
+    }
+
+    // implemented on child components
+    requestDocumentData(): void { }
+    requestTermFrequencyData(): void { }
+    setChart(): void { }
+    setTableHeaders(): void { }
+    zoomIn(chart, triggeredByDataUpdate = false) {}
 
     /**
      * Show the zooming hint once per session, hide automatically with a delay
@@ -174,9 +195,6 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
         }
     }
 
-
-    // specified in timeline
-    zoomIn(chart) {}
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
@@ -236,6 +254,11 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
 
     get percentageDocumentsSearched() {
         return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
+    }
+
+    get isZoomedIn(): boolean {
+        // If no zooming-related scripts are implemented, just return false
+        return false;
     }
 
 }

@@ -48,24 +48,6 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }
     }
 
-    async loadData() {
-        await this.requestDocumentData();
-        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
-
-        if (!this.rawData.length) {
-            this.error.emit({message: 'No results'});
-        }
-
-        this.setChart();
-
-        this.setTableHeaders();
-        this.setTableData();
-
-        if (this.isZoomedIn) {
-            this.zoomIn(this.chart, true);
-        }
-    }
-
     async requestDocumentData() {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
