@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel, DateResult,
+import { Corpus, DateFrequencyPair, QueryModel, DateResult, AggregateResult,
     visualizationField, freqTableHeaders, histogramOptions, TimelineSeriesRaw } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
@@ -46,7 +46,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             const max = new Date(this.visualizedField.searchFilter.currentData.max);
             this.xDomain = [min, max];
             this.currentTimeCategory = this.calculateTimeCategory(min, max);
-            this.prepareTimeline();
+            this.prepareChart();
         }
     }
 
@@ -55,25 +55,23 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.normalizer = options.normalizer;
 
         if (this.rawData && this.timeline) {
-            this.prepareTimeline();
+            this.prepareChart();
         }
     }
 
     addSeries(queryText: string) {
         this.rawData.push(this.newSeries(queryText));
         this.setQueries();
-        this.prepareTimeline();
+        this.prepareChart();
     }
 
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
         this.setQueries();
-        this.prepareTimeline();
+        this.prepareChart();
     }
 
-    async prepareTimeline() {
-        this.isLoading.next(true);
-
+    async loadData() {
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
@@ -87,10 +85,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.setTableData();
 
         if (this.isZoomedIn) {
-            this.loadZoomedInData(this.timeline, true);
+            this.zoomIn(this.timeline, true);
         }
-
-        this.isLoading.next(false);
     }
 
     async requestDocumentData() {
@@ -238,102 +234,110 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         );
 
         this.timeline.canvas.ondblclick = (event) => this.zoomOut();
-
     }
 
-    async loadZoomedInData(chart, triggedByDataUpdate = false) {
+    zoomIn(chart, triggeredByDataUpdate = false) {
         const initialTimeCategory = this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
         const previousTimeCategory = this.currentTimeCategory;
         const min = new Date(chart.scales.xAxis.min);
         const max = new Date(chart.scales.xAxis.max);
-        const valueKey = this.currentValueKey;
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
 
         if ((this.currentTimeCategory !== previousTimeCategory) ||
-            (triggedByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
-            this.isLoading.next(true);
+            (triggeredByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
+            this.showLoading(
+                this.loadZoomedInData(
+                    chart,
+                    min, max,
+                    triggeredByDataUpdate = triggeredByDataUpdate,
+            ));
+        }
+    }
 
-            // hide data for smooth transition
-            chart.update(triggedByDataUpdate ? 'none' : 'hide');
+    async loadZoomedInData(chart, min: Date, max: Date, triggedByDataUpdate = false) {
+        // hide data for smooth transition
+        chart.update(triggedByDataUpdate ? 'none' : 'hide');
+        const valueKey = this.currentValueKey;
 
-            let zoomedInResults: TimelineSeriesRaw[];
-            const docPromises: Promise<TimelineSeriesRaw>[] = chart.data.datasets.map((dataset, seriesIndex) => {
-                const series = this.rawData[seriesIndex];
-                const queryModelCopy = _.cloneDeep(this.queryModel);
-                queryModelCopy.queryText = series.queryText;
-                const filter = this.visualizedField.searchFilter;
-                filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
-                queryModelCopy.filters.push(filter);
+        let zoomedInResults: TimelineSeriesRaw[];
+        const docPromises: Promise<TimelineSeriesRaw>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+            const series = this.rawData[seriesIndex];
+            let queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+            queryModelCopy = this.addQueryDateFilter(queryModelCopy, min, max);
 
-                return this.searchService.dateHistogramSearch(
-                    this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    let data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
-                        return {
-                            date: new Date(cat.key_as_string),
-                            doc_count: cat.doc_count
-                        };
-                    });
-                    const total_doc_count = _.sumBy(data, (item) => item.doc_count);
-                    data = data.map(item => ({
-                        date: item.date,
-                        doc_count: item.doc_count,
-                        relative_doc_count: item.doc_count / total_doc_count,
-                    }));
-                    return {
-                        data: data,
-                        total_doc_count: total_doc_count,
-                        searchRatio: series.searchRatio,
-                        queryText: series.queryText,
-                    };
-                });
+            return this.searchService.dateHistogramSearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                let data = result.aggregations[this.visualizedField.name]
+                    .filter(cat => cat.doc_count > 0)
+                    .map(this.aggregateResultToDatapoint);
+                const total_doc_count = this.totalDocCount(data);
+                data = data.map(item => ({
+                    date: item.date,
+                    doc_count: item.doc_count,
+                    relative_doc_count: item.doc_count / total_doc_count,
+                }));
+                return {
+                    data: data,
+                    total_doc_count: total_doc_count,
+                    searchRatio: series.searchRatio,
+                    queryText: series.queryText,
+                };
             });
+        });
 
-            zoomedInResults = await Promise.all(docPromises);
+        zoomedInResults = await Promise.all(docPromises);
 
-            if (this.frequencyMeasure === 'tokens') {
-                const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
-                    return series.data.map((cat, index) => {
-                        const queryModelCopy = _.cloneDeep(this.queryModel);
-                        queryModelCopy.queryText = series.queryText;
-                        // download zoomed in results
-                        const filter = this.visualizedField.searchFilter;
-                        filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
-                        queryModelCopy.filters.push(filter);
-                        return new Promise(resolve => {
-                            const start_date = cat.date;
-                            const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
-                            const end_date = index < (series.data.length - 1) ? series.data[index + 1].date : max;
-                            this.searchService.dateTermFrequencySearch(
-                                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                                start_date, end_date)
-                                .then(result => {
-                                const data = result.data;
-                                series.data[index].match_count = data.match_count;
-                                series.data[index].total_doc_count = data.doc_count;
-                                series.data[index].token_count = data.token_count;
-                                series.data[index].matches_by_doc_count = data.match_count / data.doc_count;
-                                series.data[index].matches_by_token_count =
-                                    data.token_count ? data.match_count / data.token_count : undefined;
-                                resolve(true);
-                            });
+        if (this.frequencyMeasure === 'tokens') {
+            const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
+                return series.data.map((cat, index) => {
+                    let queryModelCopy = _.cloneDeep(this.queryModel);
+                    queryModelCopy.queryText = series.queryText;
+                    // download zoomed in results
+                    queryModelCopy = this.addQueryDateFilter(queryModelCopy, min, max);
+                    return new Promise(resolve => {
+                        const start_date = cat.date;
+                        const binDocumentLimit = _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+                        const end_date = index < (series.data.length - 1) ? series.data[index + 1].date : max;
+                        this.searchService.dateTermFrequencySearch(
+                            this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                            start_date, end_date)
+                            .then(result => {
+                            const data = result.data;
+                            series.data[index].match_count = data.match_count;
+                            series.data[index].total_doc_count = data.doc_count;
+                            series.data[index].token_count = data.token_count;
+                            series.data[index].matches_by_doc_count = data.match_count / data.doc_count;
+                            series.data[index].matches_by_token_count =
+                                data.token_count ? data.match_count / data.token_count : undefined;
+                            resolve(true);
                         });
                     });
                 });
-                await Promise.all(dataPromises);
-            }
-
-            zoomedInResults.forEach((data, seriesIndex) => {
-                chart.data.datasets[seriesIndex].data = data.data.map((item: DateResult) => ({
-                    x: item.date.toISOString(),
-                    y: item[valueKey],
-                }));
             });
-
-            chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
-            chart.update('show'); // fade into view
-            this.isLoading.next(false);
+            await Promise.all(dataPromises);
         }
+
+        zoomedInResults.forEach((data, seriesIndex) => {
+            chart.data.datasets[seriesIndex].data = data.data.map((item: DateResult) => ({
+                x: item.date.toISOString(),
+                y: item[valueKey],
+            }));
+        });
+
+        chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        chart.update('show'); // fade into view
+
     }
+
+    addQueryDateFilter(query: QueryModel, min, max): QueryModel {
+        const queryModelCopy = _.cloneDeep(query);
+        // download zoomed in results
+        const filter = this.visualizedField.searchFilter;
+        filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
+        queryModelCopy.filters.push(filter);
+        return queryModelCopy;
+    }
+
 
     zoomOut(): void {
         this.timeline.resetZoom();

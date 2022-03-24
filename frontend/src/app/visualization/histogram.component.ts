@@ -50,10 +50,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.prepareChart();
     }
 
-
-    async prepareChart() {
-        this.isLoading.next(true);
-
+    async loadData() {
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
@@ -65,7 +62,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         this.setTableData();
 
         this.setChart();
-        this.isLoading.next(false);
     }
 
     async requestDocumentData() {

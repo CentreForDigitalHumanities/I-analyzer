@@ -87,7 +87,7 @@ export class BarChartComponent implements OnInit {
                     wheel: {
                         enabled: false,
                     },
-                    onZoom: ({chart}) => this.loadZoomedInData(chart),
+                    onZoom: ({chart}) => this.zoomIn(chart),
                 }
             }
         }
@@ -106,6 +106,21 @@ export class BarChartComponent implements OnInit {
     ngOnInit() {
         this.setupZoomHint();
     }
+
+    prepareChart() {
+        this.showLoading(
+            this.loadData()
+        );
+    }
+
+    async showLoading(promise) {
+        this.isLoading.next(true);
+        await promise;
+        this.isLoading.next(false);
+    }
+
+    // implemented on child components
+    async loadData() { }
 
 
     /**
@@ -128,7 +143,7 @@ export class BarChartComponent implements OnInit {
 
 
     // specified in timeline
-    loadZoomedInData(chart) {}
+    zoomIn(chart) {}
 
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
