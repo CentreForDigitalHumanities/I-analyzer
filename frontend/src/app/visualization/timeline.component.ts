@@ -99,17 +99,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         */
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) {
-                const queryModelCopy = _.cloneDeep(this.queryModel);
-                queryModelCopy.queryText = series.queryText;
+                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
                 return this.searchService.dateHistogramSearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    let data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
-                        return {
-                            date: new Date(cat.key_as_string),
-                            doc_count: cat.doc_count
-                        };
-                    });
-                    const total_doc_count = _.sumBy(data, (item) => item.doc_count);
+                    let data = result.aggregations[this.visualizedField.name]
+                        .filter(cat => cat.doc_count > 0)
+                        .map(this.aggregateResultToDatapoint);
+                    const total_doc_count = this.totalDocCount(data);
                     const searchRatio = this.documentLimit / total_doc_count;
                     data = data.map(item => ({
                         date: item.date,
@@ -131,11 +127,17 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
+    aggregateResultToDatapoint(cat: AggregateResult) {
+        return {
+            date: new Date(cat.key_as_string),
+            doc_count: cat.doc_count
+        };
+    }
+
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                const queryModelCopy = _.cloneDeep(this.queryModel);
-                queryModelCopy.queryText = series.queryText;
+                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
                 return series.data.map((cat, index) => {
                     return new Promise(resolve => {
                         const start_date = cat.date;

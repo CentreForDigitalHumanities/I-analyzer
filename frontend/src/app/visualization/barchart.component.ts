@@ -159,6 +159,16 @@ export class BarChartComponent implements OnInit {
         }
     }
 
+    setQueryText(query: QueryModel, queryText: string): QueryModel {
+        const queryModelCopy = _.cloneDeep(query);
+        queryModelCopy.queryText = queryText;
+        return queryModelCopy;
+    }
+
+    totalDocCount(data: any[]) {
+        return _.sumBy(data, item => item.doc_count);
+    }
+
     get currentValueKey(): string {
         return this.valueKeys[this.frequencyMeasure][this.normalizer];
     }

@@ -79,11 +79,10 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
 
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) { // retrieve data if it was not already loaded
-                const queryModelCopy = _.cloneDeep(this.queryModel);
-                queryModelCopy.queryText = series.queryText;
+                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
                 return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(visual => {
                     let data = visual.aggregations[this.visualizedField.name];
-                    const total_doc_count = _.sumBy(data, item => item.doc_count);
+                    const total_doc_count = this.totalDocCount(data);
                     const searchRatio = this.documentLimit / total_doc_count;
                     data = data.map(item => ({
                         key: item.key,
@@ -108,8 +107,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                const queryModelCopy = _.cloneDeep(this.queryModel);
-                queryModelCopy.queryText = series.queryText;
+                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
                 return series.data.map((cat, index) => {
                     const binDocumentLimit = _.min([10000, _.round(cat.doc_count * series.searchRatio)]);
                     return new Promise(resolve => {
