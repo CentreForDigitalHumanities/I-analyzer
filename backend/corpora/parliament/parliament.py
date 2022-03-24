@@ -46,6 +46,20 @@ class Parliament(Corpus):
                     'filename': filename
                 }
 
+    book_id = Field(
+        name='book_id',
+        display_name='Book ID',
+        description='Unique identifier of the book in which the speech was recorded',
+        es_mapping={'type': 'keyword'},
+    )
+
+    book_label = Field(
+        name='book_label',
+        display_name='Book Label',
+        description='Label of the book in which the speech was recorded',
+        es_mapping={'type': 'text'},
+    )
+
     country = Field(
         name='country',
         display_name='Country',
@@ -69,6 +83,13 @@ class Parliament(Corpus):
             description='Search only within this time range.'
         ),
         visualizations=['timeline']
+    )
+
+    date_is_estimate = Field(
+        name='date_is_estimate',
+        display_name='Date is estimate',
+        description='Whether the recorded date is an estimate',
+        es_mapping={'type':'boolean'}
     )
 
     # human-readable name of house (commons, senate, etc)
@@ -103,12 +124,26 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    parliament = Field(
+        name='parliament',
+        display_name='Parliament',
+        description='Parliament in which the speech was held',
+        es_mapping={'type': 'keyword'},
+    )
+
     # if debates are divided into topics, they can be specified here
     topic = Field(
         name='topic',
         display_name='Topic',
         description='Topic of the debate in which the speech was held',
         es_mapping={'type': 'text'},
+    )
+
+    session = Field(
+        name='session',
+        display_name='Session',
+        description='Session in which the speech is held',
+        es_mappting={'type': 'text'}
     )
 
     subtopic = Field(
@@ -267,6 +302,13 @@ class Parliament(Corpus):
         es_mapping={'type': 'keyword'},
     )
 
+    source_url = Field(
+        name='source_url',
+        display_name='Source url',
+        description='URL to source file of this speech',
+        es_mapping={'type':'keyword'}
+    )
+
     # name of the party
     party = Field(
         name='party',
@@ -308,18 +350,18 @@ class Parliament(Corpus):
     )
 
     fields = [
-        country, date,
+        book_id, book_label, country, date,
         debate_title, debate_id,
-        electoral_term,
-        topic, subtopic, house, 
-        speech, speech_id,
+        electoral_term, parliament,
+        topic, subtopic, house,
+        session, speech, speech_id,
         speaker, speaker_id,
         speaker_birthplace, speaker_birth_country,
         speaker_birth_date, speaker_constituency,
         speaker_death_date, speaker_gender,
         speaker_profession, speaker_aristocracy,
         speaker_academic_title,
-        speech_type,
+        speech_type, source_url,
         role, role_long,
         party, party_id, party_full,
         page, column,
