@@ -38,23 +38,9 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) { // retrieve data if it was not already loaded
                 const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-                return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(visual => {
-                    let data = visual.aggregations[this.visualizedField.name];
-                    const total_doc_count = this.totalDocCount(data);
-                    const searchRatio = this.documentLimit / total_doc_count;
-                    data = data.map(item => ({
-                        key: item.key,
-                        key_as_string: item.key_as_string,
-                        doc_count: item.doc_count,
-                        relative_doc_count: item.doc_count / total_doc_count,
-                    }));
-                    this.rawData[seriesIndex] = {
-                        data: data,
-                        total_doc_count: total_doc_count,
-                        searchRatio: searchRatio,
-                        queryText: series.queryText,
-                    };
-                });
+                return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(result =>
+                    this.rawData[seriesIndex] = this.docCountResultIntoSeries(result, series)
+                );
             }
         });
 
@@ -62,25 +48,37 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
+    docCountResultIntoSeries(result, series: HistogramSeriesRaw) {
+        let data = result.aggregations[this.visualizedField.name];
+        const total_doc_count = this.totalDocCount(data);
+        const searchRatio = this.documentLimit / total_doc_count;
+        data = this.includeTotalDocCount(data, total_doc_count);
+        return {
+            data: data,
+            total_doc_count: total_doc_count,
+            searchRatio: searchRatio,
+            queryText: series.queryText,
+        };
+    }
+
+    includeTotalDocCount(data: AggregateResult[], total: number): AggregateResult[] {
+        return data.map(item => ({
+            key: item.key,
+            key_as_string: item.key_as_string,
+            doc_count: item.doc_count,
+            relative_doc_count: item.doc_count / total,
+        }));
+    }
+
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-                return series.data.map((cat, index) => {
-                    const binDocumentLimit = _.min([10000, _.round(cat.doc_count * series.searchRatio)]);
-                    return new Promise(resolve => {
-                        this.searchService.aggregateTermFrequencySearch(
+                return series.data.map(cat => {
+                    const binDocumentLimit = this.documentLimitForCategory(cat, series);
+                    return this.searchService.aggregateTermFrequencySearch(
                             this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                            .then(result => {
-                                const data = result.data;
-                                cat.match_count = data.match_count;
-                                cat.total_doc_count = data.doc_count;
-                                cat.token_count = data.token_count;
-                                cat.matches_by_doc_count = data.match_count / data.doc_count,
-                                cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined,
-                                resolve(true);
-                            });
-                    });
+                            .then(result => this.addTermFrequencyToCategory(result, cat));
                 });
             }
         }));

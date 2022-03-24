@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { BarchartSeriesRaw, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
+import { AggregateResult, BarchartSeriesRaw, Corpus, DateResult, freqTableHeaders, histogramOptions, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 
@@ -177,6 +177,15 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
     setTableHeaders(): void { }
     zoomIn(chart, triggeredByDataUpdate = false) {}
 
+    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: DateResult|AggregateResult): void {
+        const data = result.data;
+        cat.match_count = data.match_count;
+        cat.total_doc_count = data.doc_count;
+        cat.token_count = data.token_count;
+        cat.matches_by_doc_count = data.match_count / data.doc_count,
+        cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
+    }
+
     /**
      * Show the zooming hint once per session, hide automatically with a delay
      * when the user moves the mouse.
@@ -245,6 +254,10 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
                 })
             );
         }
+    }
+
+    documentLimitForCategory(cat: AggregateResult|DateResult, series: RawDataSeries): number {
+        return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
     get currentValueKey(): string {
