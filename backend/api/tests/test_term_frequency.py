@@ -1,6 +1,9 @@
 import api.analyze as analyze
 import pytest
 
+from api.conftest import UnittestConfig
+from elasticsearch import Elasticsearch
+
 TOTAL_DOCS_IN_MOCK_CORPUS = 3
 TOTAL_WORDS_IN_MOCK_CORPUS = 67
 
@@ -33,7 +36,6 @@ def test_extract_data_for_term_frequency(test_app):
 
 def test_match_count(test_app, test_es_client):
     """Test counting matches of the search term"""
-
     if not test_es_client:
         pytest.skip('No elastic search client')
 
@@ -53,7 +55,6 @@ def test_match_count(test_app, test_es_client):
 
 def test_total_docs_and_tokens(test_app, test_es_client):
     """Test total document counter"""
-
     if not test_es_client:
         pytest.skip('No elastic search client')
 
@@ -84,6 +85,9 @@ def test_term_frequency(test_app, test_es_client):
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
 
 def test_histogram_term_frequency(test_app, test_es_client):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
     cases = [
         {
             'genre': 'Children',
@@ -112,6 +116,9 @@ def test_histogram_term_frequency(test_app, test_es_client):
         }
 
 def test_timeline_term_frequency(test_app, test_es_client):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
     cases = [
         {
             'min_date': '1800-01-01',

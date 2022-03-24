@@ -3,7 +3,7 @@ from elasticsearch import Elasticsearch
 from ianalyzer import config_fallback as config
 from flask import current_app
 
-def elasticsearch(corpus_name, cfg=config):
+def elasticsearch(corpus_name, cfg=config, sniff_on_start=False):
     '''
     Create ElasticSearch instance with default configuration.
     '''
@@ -14,4 +14,7 @@ def elasticsearch(corpus_name, cfg=config):
     if server_config.get('username'):
         node['http_auth'] = (server_config['username'],
                              server_config['password'])
-    return Elasticsearch([node], timeout=30, max_retries=10, retry_on_timeout=True)
+    return Elasticsearch([node],
+        timeout=30, max_retries=10, retry_on_timeout=True,
+        sniff_on_start=sniff_on_start
+    )
