@@ -96,19 +96,16 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
     corpus_server = current_app.config['SERVERS'][
         current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
     # Do bulk operation
-    response = es_helpers.bulk(
+    for result in es_helpers.bulk(
         client,
         actions,
         chunk_size=corpus_server['chunk_size'],
         max_chunk_bytes=corpus_server['max_chunk_bytes'],
         timeout=corpus_server['bulk_timeout'],
         stats_only=True,  # We want to know how many documents were added
-    )
-
-    for result in response:
+    ):
         logger.info('Indexed documents ({}).'.format(result))
 
-    return response
 
 
 def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):

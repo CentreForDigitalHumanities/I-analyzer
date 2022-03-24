@@ -50,6 +50,9 @@ def test_es_client(test_app):
     Returns an elastic search client for the mock corpus.
     """
     try:
+        # initiate an elasticsearch client
+        # sniff_on_start to check whether we can connect to the ES server
+        # allows skipping tests that require ES server if none is running
         client = elasticsearch('mock-corpus', UnittestConfig, sniff_on_start=True)
     except:
         client = None
