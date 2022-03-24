@@ -1,0 +1,210 @@
+<root xmlns:pmd="http://www.politicalmashup.nl/docinfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema-datatypes" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:pm="http://www.politicalmashup.nl">
+    <docinfo xmlns="http://www.politicalmashup.nl/docinfo">
+        <transformer pmd:version="1.1" pmd:result="pass" pmd:datetime="2012-06-11T01:06:53.927+02:00" pmd:name="nl-officielebekendmakingen-1995-2010.xsl">
+            <comment>Transformer works on files downloaded from https://zoek.officielebekendmakingen.nl/ RELAX NG: parlproceedings.rnc.</comment>
+            <comment>xml source format changed to current at 01-01-2011 (confirm this)</comment>
+            <comment>rebuilding original transformer in new common format</comment>
+        </transformer>
+    </docinfo>
+    <meta>
+        <dc:identifier>nl.proc.ob.d.h-ek-19992000-493-493</dc:identifier>
+        <dc:format>text/xml</dc:format>
+        <dc:type>Verbatim Proceedings</dc:type>
+        <dc:contributor>http://www.politicalmashup.nl</dc:contributor>
+        <dc:coverage>
+            <country dcterms:ISO3166-1="NL">Netherlands</country>
+        </dc:coverage>
+        <dc:creator>http://www.politicalmashup.nl</dc:creator>
+        <dc:language>
+            <pm:language dcterms:ISO639-2="dut">Dutch; Flemish</pm:language>
+        </dc:language>
+        <dc:publisher>https://zoek.officielebekendmakingen.nl/</dc:publisher>
+        <dc:rights> http://www.overheid.nl/overdesite/ should contain IPR information, but it doesn't. 
+            Investigation with the Koninklijke Bibliotheek (who keep the Proceedings data in the statengeneraaldigitaal.nl project) 
+            and the Tweede Kamer led to the following response:
+            
+            Van: Beijer A. [mailto:T.Beijer@tweedekamer.nl]
+            Verzonden: woensdag 13 oktober 2010 13:31
+            Aan: Statengeneraaldigitaal Info Mailbox
+            Onderwerp: RE: gebruik van de Handelingen voor onderzoek
+            
+            
+            
+            Beste Karin,
+            
+            
+            
+            Heb het nog even bij Jan Keukens nagevraagd. Maar er is geen overeenkomst nodig.
+            
+            Hij verwees nog naar de auteurswet.
+            
+            Hieronder artikel 11 van de auteurswet:
+            
+            Artikel 11
+            
+            Er bestaat geen auteursrecht op wetten, besluiten en verordeningen, door
+            de openbare macht uitgevaardigd, noch op rechterlijke uitspraken en
+            administratieve beslissingen.
+            
+            
+            
+            Groet,
+            Tonny
+            
+            070-3182458</dc:rights>
+        <dc:date>2000-01-18</dc:date>
+        <dc:title>Presentie en opening (dinsdag 18 januari 2000)</dc:title>
+        <dc:description>Presentie en opening (dinsdag 18 januari 2000)</dc:description>
+        <dc:source>
+            <dc:source>
+                <pm:link pm:linktype="pdf" pm:source="https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf"/>
+            </dc:source>
+            <dc:source pm:used-source="true">
+                <pm:link pm:linktype="xml" pm:source="https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.xml"/>
+            </dc:source>
+            <dc:source>
+                <pm:link pm:linktype="html" pm:source="https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.html"/>
+            </dc:source>
+        </dc:source>
+        <dc:subject>
+            <pm:house pm:house="senate">Eerste Kamer der Staten-Generaal</pm:house>
+            <pm:legislative-period>1999-2000</pm:legislative-period>
+            <pm:session-number>13</pm:session-number>
+            <pm:item-number/>
+            <pm:publication-date>2000-01-31</pm:publication-date>
+            <pm:categories>
+                <pm:entity>Bestuur <pm:entity> Parlement</pm:entity>
+                </pm:entity>
+            </pm:categories>
+        </dc:subject>
+        <dc:relation>
+            <pm:subject xsi:type="speaker">
+                <pm:actor>
+                    <pm:person pm:speaker="Jurgens" pm:role="chair" pm:member-ref="nl.m.01992" pm:function="De voorzitter"/>
+                </pm:actor>
+            </pm:subject>
+        </dc:relation>
+    </meta>
+    <proceedings xmlns="http://www.politicalmashup.nl" pm:id="nl.proc.ob.d.h-ek-19992000-493-493">
+        <topic pm:title="Presentie en opening" pm:source-start-page="493" pm:source-end-page="493" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1">
+            <stage-direction pm:type="chair" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.1">
+                <chair pm:speaker="Jurgens" pm:member-ref="nl.m.01992"/>
+            </stage-direction>
+            <stage-direction pm:type="intro" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.2">
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.2.1">13de vergadering</p>
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.2.2">Dinsdag</p>
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.2.3">18 januari 2000</p>
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.2.4">13.30 uur</p>
+            </stage-direction>
+            <stage-direction pm:type="intro" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.3">
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.3.1">Voorzitter: Jurgens</p>
+                <chair pm:speaker="Jurgens" pm:member-ref="nl.m.01992"/>
+            </stage-direction>
+            <stage-direction pm:type="present" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.4">
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.4.1">Tegenwoordig zijn 71 leden, te weten:</p>
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.4.2">Baarda, De Beer, Bemelmans-Videc, Van den Berg, Bierman, Bierman-Beukema toe Water, De Boer, Braks, Van den Broek-Laman Trip, Van Bruchem, Castricum, Dees, Doesburg, Dölle, Dupuis, Van Eekelen, Eversdijk, Van Gennip, Ginjaar, Hessing, Van Heukelum, Hilarides, Hirsch Ballin, Hofstede, Holdijk, Van den Hul-Omta, Jaarsma, De Jong, Jurgens, Ketting, Kneppers-Heynert, Korthals Altes, Van der Lans, Van Leeuwen, Lemstra, Van der Linden, Luijten, Lycklama à Nijeholt, Meindertsma, Pastoor, Pitstra, Platvoet, Le Poole, Rabbinge, Rensema, Roscam Abbing-Bos, Rosenthal, Ruers, Van Schijndel, Schoondergang-Horikx, Schuurman, Schuyer, Stekelenburg, Stevens, Swenker, Tan, Terlouw, Van Thijn, Timmerman-Buck, Varekamp, Ter Veld, Veling, De Vries, Werner, Wiegel, Witteveen, Woldring, De Wolff, Wolfson, Wöltgens en Zwerver,</p>
+                <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.4.3">en de heer Korthals, minister van Justitie.</p>
+                <members pm:status="present">
+                    <person pm:speaker="Baarda" pm:role="mp" pm:member-ref="nl.m.02837" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="De Beer" pm:role="mp" pm:member-ref="nl.m.01647" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Bemelmans-Videc" pm:role="mp" pm:member-ref="nl.m.02260" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Van den Berg" pm:role="mp" pm:member-ref="nl.m.02942" pm:party-ref="nl.p.sgp"/>
+                    <person pm:speaker="Bierman" pm:role="mp" pm:member-ref="nl.m.02944" pm:party-ref="nl.p.osf"/>
+                    <person pm:speaker="Bierman-Beukema toe Water" pm:role="mp" pm:member-ref="nl.m.02261" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="De Boer" pm:role="mp" pm:member-ref="nl.m.02891" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Braks" pm:role="mp" pm:member-ref="nl.m.01885" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Van den Broek-Laman Trip" pm:role="mp" pm:member-ref="nl.m.02601" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Van Bruchem" pm:role="mp" pm:member-ref="nl.m.02285" pm:party-ref="nl.p.rpf"/>
+                    <person pm:speaker="Castricum" pm:role="mp" pm:member-ref="nl.m.01886" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Dees" pm:role="mp" pm:member-ref="nl.m.01657" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Doesburg" pm:role="mp" pm:member-ref="nl.m.02283" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Dölle" pm:role="mp" pm:member-ref="nl.m.02262" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Dupuis" pm:role="mp" pm:member-ref="nl.m.02263" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Van Eekelen" pm:role="mp" pm:member-ref="nl.m.01889" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Eversdijk" pm:role="mp" pm:member-ref="nl.m.01891" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Van Gennip" pm:role="mp" pm:member-ref="nl.m.02864" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Ginjaar" pm:role="mp" pm:member-ref="nl.m.01945" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Hessing" pm:role="mp" pm:member-ref="nl.m.02923" pm:party-ref="nl.p.d66"/>
+                    <person pm:speaker="Van Heukelum" pm:role="mp" pm:member-ref="nl.m.02935" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Hilarides" pm:role="mp" pm:member-ref="nl.m.02865" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Hirsch Ballin" pm:role="mp" pm:member-ref="nl.m.02963" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Hofstede" pm:role="mp" pm:member-ref="nl.m.02924" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Holdijk" pm:role="mp" pm:member-ref="nl.m.02789" pm:party-ref="nl.p.sgp"/>
+                    <person pm:speaker="Van den Hul-Omta" pm:role="mp" pm:member-ref="nl.m.02264" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Jaarsma" pm:role="mp" pm:member-ref="nl.m.02848" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="De Jong" pm:role="mp" pm:member-ref="nl.m.02265" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Jurgens" pm:role="mp" pm:member-ref="nl.m.01992" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Ketting" pm:role="mp" pm:member-ref="nl.m.02926" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Kneppers-Heynert" pm:role="mp" pm:member-ref="nl.m.02266" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Korthals Altes" pm:role="mp" pm:member-ref="nl.m.02689" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Van der Lans" pm:role="mp" pm:member-ref="nl.m.02267" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Van Leeuwen" pm:role="mp" pm:member-ref="nl.m.00795" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Lemstra" pm:role="mp" pm:member-ref="nl.m.02268" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Van der Linden" pm:role="mp" pm:member-ref="nl.m.01899" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Luijten" pm:role="mp" pm:member-ref="nl.m.02936" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Lycklama à Nijeholt" pm:role="mp" pm:member-ref="nl.m.02929" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Meindertsma" pm:role="mp" pm:member-ref="nl.m.02270" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Pastoor" pm:role="mp" pm:member-ref="nl.m.02271" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Pitstra" pm:role="mp" pm:member-ref="nl.m.02868" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Platvoet" pm:role="mp" pm:member-ref="nl.m.02272" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Le Poole" pm:role="mp" pm:member-ref="nl.m.02930" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Rabbinge" pm:role="mp" pm:member-ref="nl.m.02284" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Rensema" pm:role="mp" pm:member-ref="nl.m.02931" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Roscam Abbing-Bos" pm:role="mp" pm:member-ref="nl.m.02934" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Rosenthal" pm:role="mp" pm:member-ref="nl.m.02273" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Ruers" pm:role="mp" pm:member-ref="nl.m.02919" pm:party-ref="nl.p.sp"/>
+                    <person pm:speaker="Van Schijndel" pm:role="mp" pm:member-ref="nl.m.02274" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Schoondergang-Horikx" pm:role="mp" pm:member-ref="nl.m.02937" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Schuurman" pm:role="mp" pm:member-ref="nl.m.02771" pm:party-ref="nl.p.rpf"/>
+                    <person pm:speaker="Schuyer" pm:role="mp" pm:member-ref="nl.m.02870" pm:party-ref="nl.p.d66"/>
+                    <person pm:speaker="Stekelenburg" pm:role="mp" pm:member-ref="nl.m.02275" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Stevens" pm:role="mp" pm:member-ref="nl.m.02874" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Swenker" pm:role="mp" pm:member-ref="nl.m.02276" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Tan" pm:role="mp" pm:member-ref="nl.m.02277" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Terlouw" pm:role="mp" pm:member-ref="nl.m.01719" pm:party-ref="nl.p.d66"/>
+                    <person pm:speaker="Van Thijn" pm:role="mp" pm:member-ref="nl.m.01363" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Timmerman-Buck" pm:role="mp" pm:member-ref="nl.m.02278" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Varekamp" pm:role="mp" pm:member-ref="nl.m.02939" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Ter Veld" pm:role="mp" pm:member-ref="nl.m.02715" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Veling" pm:role="mp" pm:member-ref="nl.m.02875" pm:party-ref="nl.p.gpv"/>
+                    <person pm:speaker="De Vries" pm:role="mp" pm:member-ref="nl.m.02286" pm:party-ref="nl.p.gpv"/>
+                    <person pm:speaker="Werner" pm:role="mp" pm:member-ref="nl.m.02609" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="Wiegel" pm:role="mp" pm:member-ref="nl.m.01542" pm:party-ref="nl.p.vvd"/>
+                    <person pm:speaker="Witteveen" pm:role="mp" pm:member-ref="nl.m.02279" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Woldring" pm:role="mp" pm:member-ref="nl.m.02280" pm:party-ref="nl.p.cda"/>
+                    <person pm:speaker="De Wolff" pm:role="mp" pm:member-ref="nl.m.02281" pm:party-ref="nl.p.gl"/>
+                    <person pm:speaker="Wolfson" pm:role="mp" pm:member-ref="nl.m.02282" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Wöltgens" pm:role="mp" pm:member-ref="nl.m.01908" pm:party-ref="nl.p.pvda"/>
+                    <person pm:speaker="Zwerver" pm:role="mp" pm:member-ref="nl.m.02941" pm:party-ref="nl.p.gl"/>
+                    <person pm:function="minister van Justitie." pm:member-ref="nl.m.02738" pm:role="government" pm:speaker="Korthals"/>
+                </members>
+            </stage-direction>
+            <scene pm:type="speaker" pm:speaker="Jurgens" pm:function="De voorzitter" pm:role="chair" pm:member-ref="nl.m.01992" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5">
+                <speech pm:speaker="Jurgens" pm:function="De voorzitter" pm:role="chair" pm:member-ref="nl.m.01992" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.1">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.1.1">Ik deel aan de Kamer mede, dat zijn ingekomen berichten van verhindering van de leden:</p>
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.1.2">Kohnstamm, wegens ziekte;</p>
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.1.3">Boorsma, wegens verblijf buitenslands.</p>
+                </speech>
+                <stage-direction pm:type="other" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.2">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.2.1">Deze berichten worden voor kennisgeving aangenomen.</p>
+                </stage-direction>
+                <speech pm:speaker="Jurgens" pm:function="De voorzitter" pm:role="chair" pm:member-ref="nl.m.01992" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.3">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.3.1">Ingekomen zijn twee beschikkingen van de voorzitters van de Eerste Kamer en van de Tweede Kamer der Staten-Generaal, houdende:  - aanwijzing van de heer L.H.G. Platvoet tot plaatsvervangend lid van de Raadgevende Interparlementaire Beneluxraad in de bestaande vacature;  - aanwijzing van de heer O.P.G. Vos tot lid van de Interparlementaire Commissie van de Nederlandse Taalunie in plaats van de heer J. Te Veldhuis.  </p>
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.3.2">Deze beschikkingen liggen op de griffie ter inzage. Ik stel voor, deze beschikkingen voor kennisgeving aan te nemen.</p>
+                </speech>
+                <stage-direction pm:type="other" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.4">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.4.1">Overeenkomstig het voorstel van de voorzitter wordt besloten.</p>
+                </stage-direction>
+                <speech pm:speaker="Jurgens" pm:function="De voorzitter" pm:role="chair" pm:member-ref="nl.m.01992" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.5">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.5.1">De overige ingekomen stukken staan op een lijst, die in de zaal ter inzage ligt. Op die lijst heb ik voorstellen gedaan over de wijze van behandeling. Als aan het einde van de vergadering daartegen geen bezwaren zijn ingekomen, neem ik aan, dat de Kamer zich met de voorstellen heeft verenigd.</p>
+                </speech>
+                <stage-direction pm:type="other" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.6">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.6.1">(Deze lijst is, met de lijst van besluiten, opgenomen aan het eind van deze editie.)</p>
+                </stage-direction>
+                <speech pm:speaker="Jurgens" pm:function="De voorzitter" pm:role="chair" pm:member-ref="nl.m.01992" pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.7">
+                    <p pm:id="nl.proc.ob.d.h-ek-19992000-493-493.1.5.7.1">Aangezien voor het voornemen tot het sluiten van uitvoeringsverdragen de verschillende verdragen die ter stilzwijgende goedkeuring zijn voorgelegd en de algemene maatregelen van bestuur die zijn voorgehangen en gedrukt onder de nrs. 23908 (R1519), nr. 42, 26882, 26889 (R1642), 26890, 26896, 26938 en 26939 de termijn is verstreken stel ik vast, dat wat deze Kamer betreft aan uitdrukkelijke goedkeuring van dit voornemen, deze verdragen en algemene maatregelen van bestuur geen behoefte bestaat.</p>
+                </speech>
+            </scene>
+        </topic>
+    </proceedings>
+</root>
