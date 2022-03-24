@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { Corpus, freqTableHeaders, QueryModel } from '../models';
+import { BarchartSeriesRaw, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 
@@ -19,8 +19,11 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./barchart.component.scss']
 })
 
-export class BarChartComponent implements OnInit {
+export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implements OnInit {
     public showHint: boolean;
+
+    rawData: RawDataSeries[];
+    chart: any;
 
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
@@ -107,6 +110,36 @@ export class BarChartComponent implements OnInit {
         this.setupZoomHint();
     }
 
+    onOptionChange(options: histogramOptions) {
+        this.frequencyMeasure = options.frequencyMeasure;
+        this.normalizer = options.normalizer;
+
+        if (this.rawData && this.chart) {
+            this.prepareChart();
+        }
+    }
+
+    addSeries(queryText: string) {
+        this.rawData.push(this.newSeries(queryText));
+        this.setQueries();
+        this.prepareChart();
+    }
+
+    clearAddedQueries() {
+        this.rawData = this.rawData.slice(0, 1);
+        this.setQueries();
+        this.prepareChart();
+    }
+
+
+    setQueries() {
+        if (this.rawData) {
+            this.queries = this.rawData.map(series => series.queryText);
+        } else {
+            this.queries = [];
+        }
+    }
+
     prepareChart() {
         this.showLoading(
             this.loadData()
@@ -149,7 +182,7 @@ export class BarChartComponent implements OnInit {
         this.dialogService.showManualPage('histogram');
     }
 
-    newSeries(queryText: string) {
+    newSeries(queryText: string): any {
         return {
             queryText: queryText,
             data: [],
@@ -184,7 +217,25 @@ export class BarChartComponent implements OnInit {
         return _.sumBy(data, item => item.doc_count);
     }
 
+    setTableData() {
+        if (this.rawData && this.rawData.length) {
+            this.tableData = _.flatMap(this.rawData, series =>
+                series.data.map(item => {
+                    const result = _.cloneDeep(item) as any;
+                    result.queryText = series.queryText;
+                    return result;
+                })
+            );
+        }
+    }
+
     get currentValueKey(): string {
         return this.valueKeys[this.frequencyMeasure][this.normalizer];
     }
+
+
+    get percentageDocumentsSearched() {
+        return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
+    }
+
 }

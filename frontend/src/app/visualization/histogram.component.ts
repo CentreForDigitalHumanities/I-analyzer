@@ -13,10 +13,7 @@ import { BarChartComponent } from './barchart.component';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    histogram: Chart;
-
-    rawData: HistogramSeriesRaw[];
+export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -29,26 +26,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
     }
 
-    onOptionChange(options: histogramOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
-        if (this.rawData && this.histogram) {
-            this.prepareChart();
-        }
-    }
-
-    addSeries(queryText: string) {
-        this.rawData.push(this.newSeries(queryText));
-        this.setQueries();
-        this.prepareChart();
-    }
-
-    clearAddedQueries() {
-        this.rawData = this.rawData.slice(0, 1);
-        this.setQueries();
-        this.prepareChart();
-    }
 
     async loadData() {
         await this.requestDocumentData();
@@ -144,11 +121,11 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             }
         ));
 
-        if (this.histogram) {
-            this.histogram.data.labels = labels;
-            this.histogram.data.datasets = datasets;
-            this.histogram.options.plugins.legend.display = datasets.length > 1;
-            this.histogram.update();
+        if (this.chart) {
+            this.chart.data.labels = labels;
+            this.chart.data.datasets = datasets;
+            this.chart.options.plugins.legend.display = datasets.length > 1;
+            this.chart.update();
         } else {
             this.initChart(labels, datasets);
         }
@@ -169,7 +146,7 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
             }
         };
         options.plugins.legend = {display: datasets.length > 1};
-        this.histogram = new Chart('histogram',
+        this.chart = new Chart('histogram',
             {
                 type: 'bar',
                 data: {
@@ -180,8 +157,8 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                 options: options
             });
 
-        this.histogram.canvas.ondblclick = (event) => {
-            (this.histogram as any).resetZoom();
+        this.chart.canvas.ondblclick = (event) => {
+            (this.chart as any).resetZoom();
         };
     }
 
@@ -202,18 +179,6 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                 { key: 'key', label: label },
                 { key: valueKey, label: rightColumnName, format: this.formatValue }
             ];
-        }
-    }
-
-    setTableData() {
-        if (this.rawData && this.rawData.length) {
-            this.tableData = _.flatMap(this.rawData, series => 
-                series.data.map(item => {
-                    const result = _.cloneDeep(item) as any;
-                    result.queryText = series.queryText;
-                    return result;
-                })
-            );
         }
     }
 
@@ -254,15 +219,4 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         }
     }
 
-    get percentageDocumentsSearched() {
-        return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
-    }
-
-    setQueries() {
-        if (this.rawData) {
-            this.queries = this.rawData.map(series => series.queryText);
-        } else {
-            this.queries = [];
-        }
-    }
 }

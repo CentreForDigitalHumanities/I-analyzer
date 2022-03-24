@@ -12,6 +12,14 @@ export type visualizationField = {
     multiFields?: string[];
 };
 
+// common type between histogram and timeline
+export type BarchartSeriesRaw = {
+    data: any[],
+    total_doc_count: number,
+    searchRatio: number,
+    queryText?: string,
+};
+
 export type HistogramSeriesRaw = {
     data: AggregateResult[],
     total_doc_count: number,

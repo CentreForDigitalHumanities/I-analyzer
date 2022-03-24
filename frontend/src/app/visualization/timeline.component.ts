@@ -19,14 +19,12 @@ import 'chartjs-adapter-moment';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
+export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> implements OnChanges, OnInit {
     private currentTimeCategory: 'year'|'week'|'month'|'day';
-    private rawData: TimelineSeriesRaw[];
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
     public xDomain: [Date, Date];
 
-    timeline: any;
 
     ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -50,27 +48,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    onOptionChange(options: histogramOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
-        if (this.rawData && this.timeline) {
-            this.prepareChart();
-        }
-    }
-
-    addSeries(queryText: string) {
-        this.rawData.push(this.newSeries(queryText));
-        this.setQueries();
-        this.prepareChart();
-    }
-
-    clearAddedQueries() {
-        this.rawData = this.rawData.slice(0, 1);
-        this.setQueries();
-        this.prepareChart();
-    }
-
     async loadData() {
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
@@ -85,7 +62,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.setTableData();
 
         if (this.isZoomedIn) {
-            this.zoomIn(this.timeline, true);
+            this.zoomIn(this.chart, true);
         }
     }
 
@@ -179,13 +156,13 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             };
         });
 
-        if (this.timeline) {
-            if (this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day')) {
-                this.currentTimeCategory = this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
+        if (this.chart) {
+            if (this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day')) {
+                this.currentTimeCategory = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
             }
-            this.timeline.data.datasets = datasets;
-            this.timeline.options.plugins.legend.display = datasets.length > 1;
-            this.timeline.update();
+            this.chart.data.datasets = datasets;
+            this.chart.options.plugins.legend.display = datasets.length > 1;
+            this.chart.update();
         } else {
             this.initChart(datasets);
         }
@@ -222,7 +199,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
         options.scales.xAxis.type = 'time';
         options.plugins.legend = {display: datasets.length > 1};
-        this.timeline = new Chart('timeline',
+        this.chart = new Chart('timeline',
             {
                 type: 'bar',
                 data: {
@@ -233,7 +210,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
             }
         );
 
-        this.timeline.canvas.ondblclick = (event) => this.zoomOut();
+        this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
 
     zoomIn(chart, triggeredByDataUpdate = false) {
@@ -340,10 +317,10 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
 
 
     zoomOut(): void {
-        this.timeline.resetZoom();
+        this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
-        this.timeline.options.scales.xAxis.time.unit = this.currentTimeCategory;
-        this.timeline.update();
+        this.chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        this.chart.update();
 
         this.setChart();
     }
@@ -379,18 +356,6 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    setTableData() {
-        if (this.rawData && this.rawData.length) {
-            this.tableData = _.flatMap(this.rawData, series => 
-                series.data.map(item => {
-                    const result = _.cloneDeep(item) as any;
-                    result.queryText = series.queryText;
-                    return result;
-                })
-            );
-        }
-    }
-
     get formatDate(): (date) => string {
         let dateFormat: string;
         switch (this.currentTimeCategory) {
@@ -410,16 +375,12 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         };
     }
 
-    get percentageDocumentsSearched() {
-        return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
-    }
-
     get isZoomedIn(): boolean {
-        // check whether this.timeline is zoomed on xAxis
+        // check whether this.chart is zoomed on xAxis
 
-        if (this.timeline) {
-            const initialBounds = this.timeline.getInitialScaleBounds().xAxis;
-            const currentBounds = { min : this.timeline.scales.xAxis.min, max: this.timeline.scales.xAxis.max };
+        if (this.chart) {
+            const initialBounds = this.chart.getInitialScaleBounds().xAxis;
+            const currentBounds = { min : this.chart.scales.xAxis.min, max: this.chart.scales.xAxis.max };
 
             return (initialBounds.min && initialBounds.min < currentBounds.min) ||
                 (initialBounds.max && initialBounds.max > currentBounds.max);
@@ -427,11 +388,4 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         return false;
     }
 
-    setQueries() {
-        if (this.rawData) {
-            this.queries = this.rawData.map(series => series.queryText);
-        } else {
-            this.queries = [];
-        }
-    }
 }
