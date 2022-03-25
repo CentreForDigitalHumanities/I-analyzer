@@ -52,6 +52,11 @@ def mock_csv_fields():
 
 def test_create_csv(mock_es_result, mock_csv_fields, mock_es_query, test_app):
     filename = create_csv(mock_es_result['hits']['hits'], mock_csv_fields, mock_es_query)
+    counter = 0
     with open(filename) as f:
-        csv_output = csv.DictReader(f)
-    assert csv_output != None
+        csv_output = csv.DictReader(f, delimiter=';', quotechar='"')
+        assert csv_output != None
+        for row in csv_output:
+            counter += 1
+            assert 'speech' in row
+        assert counter == 1
