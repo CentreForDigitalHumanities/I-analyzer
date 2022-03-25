@@ -1,16 +1,3 @@
-import pytest
-
-from flask import json
-from flask.testing import FlaskClient
-
-from ianalyzer.factories.app import flask_app
-
-
-
-class UnittestConfig:
-    SECRET_KEY = 'poiuytrewqlkjhgfdsamnbvcxz'
-    DEBUG = True
-    TESTING = True
 from time import sleep
 import pytest
 import os
