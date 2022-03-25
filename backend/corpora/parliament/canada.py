@@ -120,16 +120,10 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='speech_id'
     )
 
-<<<<<<< HEAD
-        self.subtopic.extractor = CSV(
-            field='heading3'
-        )
-=======
     topic = field_defaults.topic()
     topic.extractor = CSV(
         field='heading2'
     )
->>>>>>> 05572f160e08d4e7794f40de1c59ed3dd05a6b95
 
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
