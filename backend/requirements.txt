@@ -21,7 +21,9 @@ blinker==1.4
 celery==4.3.0
     # via -r requirements.in
 certifi==2019.3.9
-    # via requests
+    # via
+    #   elasticsearch
+    #   requests
 chardet==3.0.4
     # via requests
 click==7.0
@@ -30,7 +32,7 @@ coverage==4.5.3
     # via -r requirements.in
 defusedxml==0.6.0
     # via python3-saml
-elasticsearch==6.8.1
+elasticsearch==7.17.1
     # via -r requirements.in
 et-xmlfile==1.0.1
     # via openpyxl
@@ -151,3 +153,8 @@ wtforms==2.2.1
     #   flask-admin
 xmlsec==1.3.3
     # via python3-saml
+
+
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

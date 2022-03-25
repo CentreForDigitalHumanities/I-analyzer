@@ -138,9 +138,9 @@ class XML(Extractor):
                      'xml_tag_entry': None
                  },
                  # a function [e.g. `my_func(soup)`]` to transform the soup directly
-                 transform_soup_func=None,
                  # after _select was called, i.e. before further processing (attributes, flattening, etc).
                  # Keep in mind that the soup passed could be None.
+                 transform_soup_func=None,
                  *nargs,
                  **kwargs
                  ):
@@ -248,10 +248,10 @@ class XML(Extractor):
         _tabs = re.compile('\t+')
 
         return html.unescape(
-            _newlines.sub('\n',
-                          _softbreak.sub(' ',
-                                         _tabs.sub('', text)
-                                         )).strip()
+            _newlines.sub(
+                '\n',
+                _softbreak.sub(' ', _tabs.sub('', text))
+            ).strip()
         )
 
     def _attr(self, soup):
@@ -330,11 +330,11 @@ class CSV(Extractor):
         super().__init__(*nargs, **kwargs)
     
     def _apply(self, rows, *nargs, **kwargs):
-        if self.multiple:
-            return [row[self.field] for row in rows if self.field in row]
-        else:
-            row = rows[0]
-            if self.field in row:
+        if self.field in rows[0]:
+            if self.multiple:
+                return [row[self.field] for row in rows]
+            else:
+                row = rows[0]
                 return row[self.field]
 
 class ExternalFile(Extractor):

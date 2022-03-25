@@ -107,6 +107,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         logger.info('Indexed documents ({}).'.format(result))
 
 
+
 def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
