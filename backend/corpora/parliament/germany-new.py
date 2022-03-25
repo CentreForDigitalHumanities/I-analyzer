@@ -7,6 +7,8 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
+import corpora.parliament.utils.field_defaults as field_defaults
+
 
 class ParliamentGermanyNew(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany Bundestag - 1949-2021)'
@@ -34,116 +36,158 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='Germany'
-        )
+    def date_to_year(date):
+        return date.split('-')[0]
 
-        self.country.search_filter = None
+    country = field_defaults.country()
+    country.extractor = Constant(
+        value='Germany'
+    )
+    country.search_filter = None
 
-        self.date.extractor = CSV(
-            field='date'
-        )
+    date = field_defaults.date()
+    date.extractor = CSV(
+        field='date'
+    )
 
-        self.debate_id.extractor = CSV(
-            field='session'
-        )
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = CSV(
+        field='session'
+    )
 
-        self.electoral_term.extractor = CSV(
-            field='electoral_term'
-        )
+    electoral_term = field_defaults.electoral_term()
+    electoral_term.extractor = CSV(
+        field='electoral_term'
+    )
 
-        self.party.extractor = CSV(
-            field='party_abbreviation'
-        )
-        
-        self.party_full.extractor = CSV(
-            field='party_full_name'
-        )
+    party = field_defaults.party()
+    party.extractor = CSV(
+        field='party_abbreviation'
+    )
+    
+    party_full = field_defaults.party_full()
+    party_full.extractor = CSV(
+        field='party_full_name'
+    )
 
-        self.party_id.extractor = CSV(
-            field='party_id'
-        )
+    party_id = field_defaults.party_id()
+    party_id.extractor = CSV(
+        field='party_id'
+    )
 
-        self.role.extractor = CSV(
-            field='position_short'
-        )
-        self.role_long.extractor = CSV(
-            field='position-long'
-        )
+    role = field_defaults.role()
+    role.extractor = CSV(
+        field='position_short'
+    )
+    role_long = field_defaults.role_long()
+    role_long.extractor = CSV(
+        field='position-long'
+    )
 
-        self.speaker.extractor = Combined(
-            CSV(field='speaker_first_name'),
-            CSV(field='speaker_last_name'),
-            transform=lambda x: ' '.join(x)
-        )
+    speaker = field_defaults.speaker()
+    speaker.extractor = Combined(
+        CSV(field='speaker_first_name'),
+        CSV(field='speaker_last_name'),
+        transform=lambda x: ' '.join(x)
+    )
 
-        self.speaker_id.extractor = CSV(
-            field='speaker_id'
-        )
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = CSV(
+        field='speaker_id'
+    )
 
-        self.speaker_aristocracy.extractor = CSV(
-            field='speaker_aristocracy'
-        )
+    speaker_aristocracy = field_defaults.speaker_aristocracy()
+    speaker_aristocracy.extractor = CSV(
+        field='speaker_aristocracy'
+    )
 
-        self.speaker_academic_title.extractor = CSV(
-            field='speaker_academic_title'
-        )
+    speaker_academic_title = field_defaults.speaker_academic_title()
+    speaker_academic_title.extractor = CSV(
+        field='speaker_academic_title'
+    )
 
-        self.speaker_birth_country.extractor = CSV(
-            field='speaker_birth_country'
-        )
+    speaker_birth_country = field_defaults.speaker_birth_country()
+    speaker_birth_country.extractor = CSV(
+        field='speaker_birth_country'
+    )
 
-        self.speaker_birthplace.extractor = CSV(
-            field='speaker_birth_place'
-        )
+    speaker_birthplace = field_defaults.speaker_birthplace()
+    speaker_birthplace.extractor = CSV(
+        field='speaker_birth_place'
+    )
 
-        self.speaker_birth_date = CSV(
-            field='speaker_birth_date'
-        )
+    speaker_birth_year = field_defaults.speaker_birth_year()
+    speaker_birth_year.extractor = CSV(
+        field='speaker_birth_date',
+        transform=date_to_year
+    )
 
-        self.speaker_death_date = CSV(
-            field='speaker_death_date'
-        )
-        
-        self.speaker_gender = CSV(
-            field='speaker_gender'
-        )
+    speaker_death_year = field_defaults.speaker_death_year()
+    speaker_death_year.extractor = CSV(
+        field='speaker_death_date',
+        transform=date_to_year
+    )
+    
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = CSV(
+        field='speaker_gender'
+    )
 
-        self.speaker_profession = CSV(
-            field='speaker_profession'
-        )
+    speaker_profession = field_defaults.speaker_profession()
+    speaker_profession.extractor = CSV(
+        field='speaker_profession'
+    )
 
-        self.speech.extractor = CSV(
-            field='speech_content',
-            multiple=True,
-            transform=lambda x : ' '.join(x)
-        )
-
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets", 
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "german"
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "clean"
-                },
-            "length": {
-                "type": "token_count",
-                "analyzer": "standard",
-                }
+    speech = field_defaults.speech()
+    speech.extractor = CSV(
+        field='speech_content',
+        multiple=True,
+        transform=lambda x : ' '.join(x)
+    )
+    speech.es_mapping = {
+        "type" : "text",
+        "analyzer": "standard",
+        "term_vector": "with_positions_offsets", 
+        "fields": {
+        "stemmed": {
+            "type": "text",
+            "analyzer": "german"
+            },
+        "clean": {
+            "type": 'text',
+            "analyzer": "clean"
+            },
+        "length": {
+            "type": "token_count",
+            "analyzer": "standard",
             }
         }
+    }
 
-        self.speech_id.extractor = CSV(
-            field='id'
-        )
-        
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = CSV(
+        field='id'
+    )
+
+    source_url = field_defaults.source_url()
+    source_url.extractor = CSV(
+        field='document_url'
+    )
+    
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.debate_id, self.electoral_term,
+            self.speaker, self.speaker_id,
+            self.speaker_aristocracy, self.speaker_academic_title,
+            self.speaker_birth_country, self.speaker_birthplace,
+            self.speaker_birth_year, self.speaker_death_year, 
+            self.speaker_gender, self.speaker_profession,
+            self.role, self.role_long,
+            self.party, self.party_full, self.party_id,
+            self.speech, self.speech_id,
+            self.source_url,
+        ]
 
 
 
