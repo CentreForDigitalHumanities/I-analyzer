@@ -17,9 +17,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
 
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
-        const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-
-        if (refreshData) {
+        if (this.changesRequireRefresh(changes)) {
             this.rawData = [this.newSeries(this.queryModel.queryText)];
             this.setQueries();
             this.prepareChart();
@@ -37,15 +35,21 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
 
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) { // retrieve data if it was not already loaded
-                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-                return this.searchService.aggregateSearch(this.corpus, queryModelCopy, [aggregator]).then(result =>
-                    this.rawData[seriesIndex] = this.docCountResultIntoSeries(result, series)
-                );
+                this.requestSeriesDocumentData(series, aggregator).then(result =>
+                    this.rawData[seriesIndex] = result);
             }
         });
 
         await Promise.all(dataPromises);
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+    }
+
+    requestSeriesDocumentData(series: HistogramSeriesRaw,  aggregator): Promise<HistogramSeriesRaw> {
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        return this.searchService.aggregateSearch(
+            this.corpus, queryModelCopy, [aggregator]).then(result =>
+                    this.docCountResultIntoSeries(result, series)
+                );
     }
 
     docCountResultIntoSeries(result, series: HistogramSeriesRaw) {
@@ -73,13 +77,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-                return series.data.map(cat => {
-                    const binDocumentLimit = this.documentLimitForCategory(cat, series);
-                    return this.searchService.aggregateTermFrequencySearch(
-                            this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                            .then(result => this.addTermFrequencyToCategory(result, cat));
-                });
+                return series.data.map(cat => this.requestCategoryTermFrequencyData(cat, series));
             }
         }));
 
@@ -87,6 +85,14 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
 
         // signal if total token counts are available
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+    }
+
+    requestCategoryTermFrequencyData(cat: AggregateResult, series: HistogramSeriesRaw) {
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        const binDocumentLimit = this.documentLimitForCategory(cat, series);
+        return this.searchService.aggregateTermFrequencySearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                .then(result => this.addTermFrequencyToCategory(result, cat));
     }
 
     setChart() {

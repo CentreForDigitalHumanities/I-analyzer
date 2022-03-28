@@ -28,15 +28,14 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
 
     ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
-        const refreshData = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-
-        if (refreshData) {
+        if (this.changesRequireRefresh(changes)) {
             this.rawData = [
                 this.newSeries(this.queryModel.queryText)
             ];
             this.setQueries();
-            const min = new Date(this.visualizedField.searchFilter.currentData.min);
-            const max = new Date(this.visualizedField.searchFilter.currentData.max);
+            const currentDomain = this.visualizedField.searchFilter.currentData;
+            const min = new Date(currentDomain.min);
+            const max = new Date(currentDomain.max);
             this.xDomain = [min, max];
             this.currentTimeCategory = this.calculateTimeCategory(min, max);
             this.prepareChart();
@@ -49,14 +48,9 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         */
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) {
-                this.requestSeriesDocumentData(series, seriesIndex).then(result => 
+                this.requestSeriesDocumentData(series).then(result =>
                     this.rawData[seriesIndex] = result
                 );
-                const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-                return this.searchService.dateHistogramSearch(
-                    this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    this.rawData[seriesIndex] = this.docCountResultIntoSeries(result, series, true);
-                });
             }
         });
 
@@ -65,7 +59,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
-    requestSeriesDocumentData(series: TimelineSeriesRaw, seriesIndex: number, setSearchRatio = true): Promise<TimelineSeriesRaw> {
+    requestSeriesDocumentData(series: TimelineSeriesRaw, setSearchRatio = true): Promise<TimelineSeriesRaw> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.dateHistogramSearch(
             this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
@@ -104,10 +98,10 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
     }
 
     async requestTermFrequencyData() {
-        const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
+        const dataPromises = _.flatMap(this.rawData, (series => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 return series.data.map((cat, index) => {
-                    this.requestCategoryTermFrequencyData(cat, index, series, this.queryModel);
+                    this.requestCategoryTermFrequencyData(cat, index, series);
                 });
             }
         }));
@@ -118,8 +112,8 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeriesRaw, queryModel: QueryModel) {
-        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeriesRaw, queryModel = this.queryModel) {
+        const queryModelCopy = this.setQueryText(queryModel, series.queryText);
         const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
         const binDocumentLimit = this.documentLimitForCategory(cat, series);
 

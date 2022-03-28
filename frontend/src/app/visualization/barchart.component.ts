@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -108,6 +108,10 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
 
     ngOnInit() {
         this.setupZoomHint();
+    }
+
+    changesRequireRefresh(changes: SimpleChanges) {
+        return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
     }
 
     onOptionChange(options: histogramOptions) {
