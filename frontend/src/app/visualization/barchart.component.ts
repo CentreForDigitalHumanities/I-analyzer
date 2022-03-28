@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartSeriesRaw, Corpus, DateResult, freqTableHeaders, histogramOptions, QueryModel } from '../models';
+import { AggregateResult, BarchartResult, BarchartSeries, Corpus, DateResult, freqTableHeaders, histogramOptions, QueryModel } from '../models';
 import { zoom } from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 
@@ -19,10 +19,10 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./barchart.component.scss']
 })
 
-export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implements OnInit {
+export class BarChartComponent<DataSeries extends BarchartSeries, Result extends BarchartResult> implements OnInit {
     public showHint: boolean;
 
-    rawData: RawDataSeries[];
+    rawData: DataSeries[];
     chart: any;
 
     @Input() corpus: Corpus;
@@ -181,7 +181,7 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
     setTableHeaders(): void { }
     zoomIn(chart, triggeredByDataUpdate = false) {}
 
-    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: DateResult|AggregateResult): void {
+    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: Result): void {
         const data = result.data;
         cat.match_count = data.match_count;
         cat.total_doc_count = data.doc_count;
@@ -260,7 +260,7 @@ export class BarChartComponent<RawDataSeries extends BarchartSeriesRaw> implemen
         }
     }
 
-    documentLimitForCategory(cat: AggregateResult|DateResult, series: RawDataSeries): number {
+    documentLimitForCategory(cat: Result, series: DataSeries): number {
         return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 

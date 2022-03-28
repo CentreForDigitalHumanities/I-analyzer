@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel, DateResult, AggregateResult,
-    visualizationField, freqTableHeaders, histogramOptions, TimelineSeriesRaw } from '../models/index';
+    visualizationField, freqTableHeaders, histogramOptions, TimelineSeries } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
@@ -19,7 +19,7 @@ import 'chartjs-adapter-moment';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> implements OnChanges, OnInit {
+export class TimelineComponent extends BarChartComponent<TimelineSeries, DateResult> implements OnChanges, OnInit {
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
@@ -59,7 +59,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
-    requestSeriesDocumentData(series: TimelineSeriesRaw, setSearchRatio = true): Promise<TimelineSeriesRaw> {
+    requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.dateHistogramSearch(
             this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
@@ -68,7 +68,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
 
     }
 
-    docCountResultIntoSeries(result, series: TimelineSeriesRaw, setSearchRatio = true): TimelineSeriesRaw {
+    docCountResultIntoSeries(result, series: TimelineSeries, setSearchRatio = true): TimelineSeries {
         let data = result.aggregations[this.visualizedField.name]
             .map(this.aggregateResultToDateResult);
         const total_doc_count = this.totalDocCount(data);
@@ -112,7 +112,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeriesRaw, queryModel = this.queryModel) {
+    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
         const queryModelCopy = this.setQueryText(queryModel, series.queryText);
         const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
         const binDocumentLimit = this.documentLimitForCategory(cat, series);
@@ -156,7 +156,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }
     }
 
-    chartDataFromSeries(series: TimelineSeriesRaw): {x: string, y: number}[] {
+    chartDataFromSeries(series: TimelineSeries): {x: string, y: number}[] {
         const valueKey = this.currentValueKey;
         return series.data.map(item => ({
             x: item.date.toISOString(),
@@ -230,7 +230,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         // when zooming, hide data for smooth transition
         chart.update(triggedByDataUpdate ? 'none' : 'hide');
 
-        const docPromises: Promise<TimelineSeriesRaw>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+        const docPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
             const series = this.rawData[seriesIndex];
             const queryModelCopy = this.addQueryDateFilter(
                 this.setQueryText(this.queryModel, series.queryText),

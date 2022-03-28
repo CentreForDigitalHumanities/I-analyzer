@@ -13,21 +13,23 @@ export type visualizationField = {
 };
 
 // common type between histogram and timeline
-export type BarchartSeriesRaw = {
-    data: any[],
+export type BarchartResult = DateResult|AggregateResult;
+
+export type BarchartSeries = {
+    data: BarchartResult[],
     total_doc_count: number,
     searchRatio: number,
     queryText?: string,
 };
 
-export type HistogramSeriesRaw = {
+export type HistogramSeries = {
     data: AggregateResult[],
     total_doc_count: number,
     searchRatio: number,
     queryText?: string,
 };
 
-export type TimelineSeriesRaw = {
+export type TimelineSeries = {
     data: DateResult[],
     total_doc_count: number,
     searchRatio: number,

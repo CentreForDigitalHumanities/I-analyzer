@@ -5,7 +5,7 @@ import Zoom from 'chartjs-plugin-zoom';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     visualizationField, freqTableHeaders, histogramOptions,
-    HistogramSeriesRaw } from '../models/index';
+    HistogramSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -13,7 +13,7 @@ import { BarChartComponent } from './barchart.component';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> implements OnInit, OnChanges {
+export class HistogramComponent extends BarChartComponent<HistogramSeries, AggregateResult> implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -44,7 +44,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }
 
-    requestSeriesDocumentData(series: HistogramSeriesRaw,  aggregator): Promise<HistogramSeriesRaw> {
+    requestSeriesDocumentData(series: HistogramSeries,  aggregator): Promise<HistogramSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.aggregateSearch(
             this.corpus, queryModelCopy, [aggregator]).then(result =>
@@ -52,7 +52,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
                 );
     }
 
-    docCountResultIntoSeries(result, series: HistogramSeriesRaw) {
+    docCountResultIntoSeries(result, series: HistogramSeries) {
         let data = result.aggregations[this.visualizedField.name];
         const total_doc_count = this.totalDocCount(data);
         const searchRatio = this.documentLimit / total_doc_count;
@@ -87,7 +87,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    requestCategoryTermFrequencyData(cat: AggregateResult, series: HistogramSeriesRaw) {
+    requestCategoryTermFrequencyData(cat: AggregateResult, series: HistogramSeries) {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         const binDocumentLimit = this.documentLimitForCategory(cat, series);
         return this.searchService.aggregateTermFrequencySearch(
