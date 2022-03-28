@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel, DateResult, AggregateResult,
-    visualizationField, freqTableHeaders, histogramOptions, TimelineSeriesRaw } from '../models/index';
+    visualizationField, freqTableHeaders, histogramOptions, TimelineSeries } from '../models/index';
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
@@ -19,7 +19,7 @@ import 'chartjs-adapter-moment';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> implements OnChanges, OnInit {
+export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
@@ -43,9 +43,6 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
     }
 
     async requestDocumentData() {
-        /* date fields are returned with keys containing identifiers by elasticsearch
-        replace with string representation, contained in 'key_as_string' field
-        */
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) {
                 this.requestSeriesDocumentData(series).then(result =>
@@ -55,54 +52,33 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         });
 
         await Promise.all(dataPromises);
-
-        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+        this.checkDocumentLimitExceeded();
     }
 
-    requestSeriesDocumentData(series: TimelineSeriesRaw, setSearchRatio = true): Promise<TimelineSeriesRaw> {
+    aggregateResultToResult(cat: AggregateResult): DateResult {
+        /* date fields are returned with keys containing identifiers by elasticsearch
+        replace with string representation, contained in 'key_as_string' field
+        */
+        return {
+            date: new Date(cat.key_as_string),
+            doc_count: cat.doc_count,
+        };
+    }
+
+    requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.dateHistogramSearch(
             this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
                 this.docCountResultIntoSeries(result, series, setSearchRatio)
         );
-
-    }
-
-    docCountResultIntoSeries(result, series: TimelineSeriesRaw, setSearchRatio = true): TimelineSeriesRaw {
-        let data = result.aggregations[this.visualizedField.name]
-            .map(this.aggregateResultToDateResult);
-        const total_doc_count = this.totalDocCount(data);
-        const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
-        data = this.includeTotalDocCount(data, total_doc_count);
-        return {
-            data: data,
-            total_doc_count: total_doc_count,
-            searchRatio: searchRatio,
-            queryText: series.queryText,
-        };
-    }
-
-    includeTotalDocCount(data: DateResult[], total: number): DateResult[] {
-        return data.map(item => ({
-            date: item.date,
-            doc_count: item.doc_count,
-            relative_doc_count: item.doc_count / total,
-        }));
-    }
-
-    aggregateResultToDateResult(cat: AggregateResult): DateResult {
-        return {
-            date: new Date(cat.key_as_string),
-            doc_count: cat.doc_count
-        };
     }
 
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, (series => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map((cat, index) => {
-                    this.requestCategoryTermFrequencyData(cat, index, series);
-                });
+                return series.data.map((cat, index) =>
+                    this.requestCategoryTermFrequencyData(cat, index, series)
+                );
             }
         }));
 
@@ -112,7 +88,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeriesRaw, queryModel = this.queryModel) {
+    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
         const queryModelCopy = this.setQueryText(queryModel, series.queryText);
         const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
         const binDocumentLimit = this.documentLimitForCategory(cat, series);
@@ -124,6 +100,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
 
     }
 
+    /** time domain for a bin */
     categoryTimeDomain(cat, catIndex, series): [Date, Date] {
         const startDate = cat.date;
         const endDate = catIndex < (series.data.length - 1) ? series.data[catIndex + 1].date : undefined;
@@ -156,7 +133,8 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }
     }
 
-    chartDataFromSeries(series: TimelineSeriesRaw): {x: string, y: number}[] {
+    /** turn a data series into a chartjs-compatible data array */
+    chartDataFromSeries(series: TimelineSeries): {x: string, y: number}[] {
         const valueKey = this.currentValueKey;
         return series.data.map(item => ({
             x: item.date.toISOString(),
@@ -164,6 +142,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }));
     }
 
+    /** initalise a new chart */
     initChart(datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const margin = moment.duration(1, this.currentTimeCategory);
@@ -208,6 +187,11 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
 
+    /**
+     * Code that should be executed when zooming in, or when the chart data
+     * is updated while already zoomed in.
+     * Checks whether is is necessary to load zoomed-in data and does so if needed.
+     */
     zoomIn(chart, triggeredByDataUpdate = false) {
         const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);
         const previousTimeCategory = this.currentTimeCategory;
@@ -226,11 +210,20 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }
     }
 
-    async loadZoomedInData(chart, min: Date, max: Date, triggedByDataUpdate = false) {
+    /**
+     * load results for the zoomed-in window (using a narrower time category
+     * than the zoomed-out chart)
+     * @param chart chart object
+     * @param min minimum date in window
+     * @param max maximum date in window
+     * @param triggeredByDataUpdate whether the function was triggered by an update in
+     * the underlying data (affects animation only)
+     */
+    async loadZoomedInData(chart, min: Date, max: Date, triggeredByDataUpdate = false) {
         // when zooming, hide data for smooth transition
-        chart.update(triggedByDataUpdate ? 'none' : 'hide');
+        chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-        const docPromises: Promise<TimelineSeriesRaw>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+        const docPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
             const series = this.rawData[seriesIndex];
             const queryModelCopy = this.addQueryDateFilter(
                 this.setQueryText(this.queryModel, series.queryText),
@@ -263,6 +256,9 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
 
     }
 
+    /**
+     * Add a date filter to a query model restricting it to the provided min and max values.
+     */
     addQueryDateFilter(query: QueryModel, min, max): QueryModel {
         const queryModelCopy = _.cloneDeep(query);
         // download zoomed in results
@@ -272,7 +268,7 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         return queryModelCopy;
     }
 
-
+    /** trigger zoom out, update chart data accordingly */
     zoomOut(): void {
         this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
@@ -282,6 +278,10 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         this.setChart();
     }
 
+    /**
+     * Get the time category (year/month/week/day) that should be used in the graph,
+     * based on minimum and maximum dates on the x axis.
+     */
     public calculateTimeCategory(min: Date, max: Date): 'year'|'month'|'week'|'day' {
         const diff = moment.duration(moment(max).diff(moment(min)));
         if (diff.asYears() >= this.scaleDownThreshold) {
@@ -313,6 +313,10 @@ export class TimelineComponent extends BarChartComponent<TimelineSeriesRaw> impl
         }
     }
 
+    /**
+     * Format for dates based on the time category.
+     * Returns a formatting function.
+     */
     get formatDate(): (date) => string {
         let dateFormat: string;
         switch (this.currentTimeCategory) {

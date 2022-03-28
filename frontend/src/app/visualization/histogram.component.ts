@@ -5,7 +5,7 @@ import Zoom from 'chartjs-plugin-zoom';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     visualizationField, freqTableHeaders, histogramOptions,
-    HistogramSeriesRaw } from '../models/index';
+    HistogramSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -13,7 +13,7 @@ import { BarChartComponent } from './barchart.component';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> implements OnInit, OnChanges {
+export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -41,10 +41,10 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         });
 
         await Promise.all(dataPromises);
-        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+        this.checkDocumentLimitExceeded();
     }
 
-    requestSeriesDocumentData(series: HistogramSeriesRaw,  aggregator): Promise<HistogramSeriesRaw> {
+    requestSeriesDocumentData(series: HistogramSeries,  aggregator): Promise<HistogramSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.aggregateSearch(
             this.corpus, queryModelCopy, [aggregator]).then(result =>
@@ -52,32 +52,12 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
                 );
     }
 
-    docCountResultIntoSeries(result, series: HistogramSeriesRaw) {
-        let data = result.aggregations[this.visualizedField.name];
-        const total_doc_count = this.totalDocCount(data);
-        const searchRatio = this.documentLimit / total_doc_count;
-        data = this.includeTotalDocCount(data, total_doc_count);
-        return {
-            data: data,
-            total_doc_count: total_doc_count,
-            searchRatio: searchRatio,
-            queryText: series.queryText,
-        };
-    }
-
-    includeTotalDocCount(data: AggregateResult[], total: number): AggregateResult[] {
-        return data.map(item => ({
-            key: item.key,
-            key_as_string: item.key_as_string,
-            doc_count: item.doc_count,
-            relative_doc_count: item.doc_count / total,
-        }));
-    }
-
     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map(cat => this.requestCategoryTermFrequencyData(cat, series));
+                return series.data.map((cat, index) =>
+                    this.requestCategoryTermFrequencyData(cat, index, series)
+                );
             }
         }));
 
@@ -87,7 +67,7 @@ export class HistogramComponent extends BarChartComponent<HistogramSeriesRaw> im
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
-    requestCategoryTermFrequencyData(cat: AggregateResult, series: HistogramSeriesRaw) {
+    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         const binDocumentLimit = this.documentLimitForCategory(cat, series);
         return this.searchService.aggregateTermFrequencySearch(
