@@ -27,7 +27,6 @@
               "src/imageviewer.scss"
             ],
             "scripts": [
-              "node_modules/chart.js/dist/Chart.js"
             ],
             "aot": false,
             "vendorChunk": true,
@@ -82,7 +81,6 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
-              "node_modules/chart.js/dist/Chart.js"
             ],
             "styles": [
               "node_modules/primeicons/primeicons.css",
