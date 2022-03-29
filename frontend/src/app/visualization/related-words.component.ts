@@ -51,6 +51,9 @@ export class RelatedWordsComponent implements OnChanges {
             },
         },
         plugins: {
+            legend: {
+                display: true,
+            },
             tooltip: {
                 displayColors: true,
                 callbacks: {
