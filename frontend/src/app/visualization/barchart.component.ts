@@ -91,6 +91,10 @@ export class BarChartComponent {
             return (value: number) => {
                 return `${_.round(100 * value, 1)}%`;
             };
+        } else if (this.normalizer === 'documents') {
+            return (value: number) => {
+                return `${_.round(value, 4)}`;
+            } 
         } else {
             return (value: number) => value.toString();
         }
