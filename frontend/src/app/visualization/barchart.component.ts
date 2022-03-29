@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { SearchService, DialogService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
-import { zoom } from 'chartjs-plugin-zoom';
+import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { at } from 'lodash';
 
@@ -99,7 +99,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                     wheel: {
                         enabled: false,
                     },
-                    onZoom: ({chart}) => this.zoomIn(chart),
+                    onZoom: ({chart}) => this.onZoomIn(chart),
                 }
             }
         }
@@ -173,6 +173,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     /** load data for the graph (if needed) */
     async loadData() {
+        // load data if needed
         await this.requestDocumentData();
         if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
 
@@ -180,23 +181,114 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
             this.error.emit({message: 'No results'});
         }
 
+        // initialise or update chart
         this.setChart();
 
+        // update freqtable
         this.setTableHeaders();
         this.setTableData();
 
+        // load zoomed-in data if needed
         if (this.isZoomedIn) {
-            this.zoomIn(this.chart, true);
+            this.onZoomIn(this.chart, true);
         }
     }
 
+    /** retrieve document frequencies and store in `rawData` */
+    async requestDocumentData() {
+        const dataPromises = this.rawData.map((series, seriesIndex) => {
+            if (!series.data.length) { // retrieve data if it was not already loaded
+                return this.requestSeriesDocumentData(series).then(result =>
+                    this.rawData[seriesIndex] = result
+                );
+            }
+        });
+
+        await Promise.all(dataPromises);
+        this.checkDocumentLimitExceeded();
+    }
+
+    /** retrieve term frequencies and store in `rawData` */
+    async requestTermFrequencyData() {
+        const dataPromises = _.flatMap(this.rawData, (series => {
+            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+                return series.data.map((cat, index) =>
+                    this.requestCategoryTermFrequencyData(cat, index, series)
+                );
+            }
+        }));
+
+        await Promise.all(dataPromises);
+
+        // signal if total token counts are available
+        this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+    }
+
     // implemented on child components
-    requestDocumentData(): void { }
-    requestTermFrequencyData(): void { }
-    /** update chart (should be ran after updates to `rawData`) */
+
+    /** retrieve doc counts for a series */
+    requestSeriesDocumentData(series: typeof this.seriesType): Promise<typeof this.seriesType> {
+        return undefined;
+    }
+    /** retrieve term frequencies and store in `rawData` */
+    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: typeof this.seriesType): Promise<any> {
+        return undefined;
+    }
+    /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void { }
+    /** select the columns/headers for the frequency table */
     setTableHeaders(): void { }
-    zoomIn(chart, triggeredByDataUpdate = false) { }
+    /** code to be executed when zooming in, or when data is update while zommed in */
+    onZoomIn(chart, triggeredByDataUpdate = false) { }
+    /** options for the chart */
+    chartOptions(datasets): any {
+        return this.basicChartOptions;
+    }
+
+    /** initalise a new chart */
+    initChart() {
+        const labels = this.getLabels();
+        const datasets = this.getDatasets();
+        const options = this.chartOptions(datasets);
+        this.chart = new Chart('barchart',
+            {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                plugins: [ Zoom ],
+                options: options
+            }
+        );
+
+        this.chart.canvas.ondblclick = (event) => this.zoomOut();
+    }
+
+    /** reset zooming */
+    zoomOut(): void {
+        this.chart.resetZoom();
+    }
+
+    updateChartData() {
+        const labels = this.getLabels();
+        const datasets = this.getDatasets();
+        this.chart.labels = labels;
+        this.chart.data.datasets = datasets;
+        this.chart.options.plugins.legend.display = datasets.length > 1;
+        this.chart.update();
+    }
+
+    /** return x-axis labels */
+    getLabels(): string[] {
+        return undefined;
+    }
+
+    /** return dataset objects based on rawData */
+    getDatasets(): any[] {
+        return undefined;
+    }
+
 
     /**
      * Convert the result from an document search into a data series object.
@@ -223,6 +315,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         };
     }
 
+    /**
+     * Check whether any series found more documents than the document limit.
+     * This means that not all documents will be read when counting term frequency.
+    */
     checkDocumentLimitExceeded(): void {
         this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
     }

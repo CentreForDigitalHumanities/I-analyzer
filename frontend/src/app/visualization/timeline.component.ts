@@ -33,26 +33,18 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 this.newSeries(this.queryModel.queryText)
             ];
             this.setQueries();
-            const currentDomain = this.visualizedField.searchFilter.currentData;
-            const min = new Date(currentDomain.min);
-            const max = new Date(currentDomain.max);
-            this.xDomain = [min, max];
-            this.currentTimeCategory = this.calculateTimeCategory(min, max);
+            this.setTimeDomain();
             this.prepareChart();
         }
     }
 
-    async requestDocumentData() {
-        const dataPromises = this.rawData.map((series, seriesIndex) => {
-            if (!series.data.length) {
-                this.requestSeriesDocumentData(series).then(result =>
-                    this.rawData[seriesIndex] = result
-                );
-            }
-        });
-
-        await Promise.all(dataPromises);
-        this.checkDocumentLimitExceeded();
+    /** get min/max date for the entire graph and set domain and time category */
+    setTimeDomain() {
+        const currentDomain = this.visualizedField.searchFilter.currentData;
+        const min = new Date(currentDomain.min);
+        const max = new Date(currentDomain.max);
+        this.xDomain = [min, max];
+        this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
     aggregateResultToResult(cat: AggregateResult): DateResult {
@@ -65,6 +57,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         };
     }
 
+    /** retrieve doc counts for a series */
     requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.dateHistogramSearch(
@@ -73,21 +66,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         );
     }
 
-    async requestTermFrequencyData() {
-        const dataPromises = _.flatMap(this.rawData, (series => {
-            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map((cat, index) =>
-                    this.requestCategoryTermFrequencyData(cat, index, series)
-                );
-            }
-        }));
-
-        await Promise.all(dataPromises);
-
-        // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
-    }
-
+    /** retrieve term frequency for a series within a single bin */
     requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
         const queryModelCopy = this.setQueryText(queryModel, series.queryText);
         const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
@@ -108,7 +87,19 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     }
 
     setChart() {
-        const datasets = this.rawData.map((series, seriesIndex) => {
+        if (this.chart) {
+            const unit = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
+            if (unit) {
+                this.currentTimeCategory = unit;
+            }
+            this.updateChartData();
+        } else {
+            this.initChart();
+        }
+    }
+
+    getDatasets() {
+        return this.rawData.map((series, seriesIndex) => {
             const data = this.chartDataFromSeries(series);
             return {
                 xAxisID: 'xAxis',
@@ -119,18 +110,6 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 hoverBackgroundColor: this.colorPalette[seriesIndex],
             };
         });
-
-        if (this.chart) {
-            const unit = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
-            if (unit) {
-                this.currentTimeCategory = unit;
-            }
-            this.chart.data.datasets = datasets;
-            this.chart.options.plugins.legend.display = datasets.length > 1;
-            this.chart.update();
-        } else {
-            this.initChart(datasets);
-        }
     }
 
     /** turn a data series into a chartjs-compatible data array */
@@ -142,8 +121,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         }));
     }
 
-    /** initalise a new chart */
-    initChart(datasets) {
+    chartOptions(datasets) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const margin = moment.duration(1, this.currentTimeCategory);
         const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
@@ -173,18 +151,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         options.scales.xAxis.type = 'time';
         options.plugins.legend = {display: datasets.length > 1};
-        this.chart = new Chart('timeline',
-            {
-                type: 'bar',
-                data: {
-                    datasets: datasets
-                },
-                plugins: [ Zoom ],
-                options: options
-            }
-        );
-
-        this.chart.canvas.ondblclick = (event) => this.zoomOut();
+        return options;
     }
 
     /**
@@ -192,7 +159,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * is updated while already zoomed in.
      * Checks whether is is necessary to load zoomed-in data and does so if needed.
      */
-    zoomIn(chart, triggeredByDataUpdate = false) {
+    onZoomIn(chart, triggeredByDataUpdate = false) {
         const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);
         const previousTimeCategory = this.currentTimeCategory;
         const min = new Date(chart.scales.xAxis.min);

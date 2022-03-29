@@ -24,47 +24,24 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
     }
 
-    async requestDocumentData() {
+    /** specify aggregator object based on visualised field */
+    getAggregator() {
         let size = 0;
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
             size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
         }
-        const aggregator = {name: this.visualizedField.name, size: size};
-
-        const dataPromises = this.rawData.map((series, seriesIndex) => {
-            if (!series.data.length) { // retrieve data if it was not already loaded
-                this.requestSeriesDocumentData(series, aggregator).then(result =>
-                    this.rawData[seriesIndex] = result);
-            }
-        });
-
-        await Promise.all(dataPromises);
-        this.checkDocumentLimitExceeded();
+        return {name: this.visualizedField.name, size: size};
     }
 
-    requestSeriesDocumentData(series: HistogramSeries,  aggregator): Promise<HistogramSeries> {
+    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+        const aggregator = this.getAggregator();
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.aggregateSearch(
             this.corpus, queryModelCopy, [aggregator]).then(result =>
                     this.docCountResultIntoSeries(result, series)
                 );
-    }
-
-    async requestTermFrequencyData() {
-        const dataPromises = _.flatMap(this.rawData, ((series, seriesIndex) => {
-            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map((cat, index) =>
-                    this.requestCategoryTermFrequencyData(cat, index, series)
-                );
-            }
-        }));
-
-        await Promise.all(dataPromises);
-
-        // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
@@ -76,9 +53,17 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     setChart() {
+        if (this.chart) {
+            this.updateChartData();
+        } else {
+            this.initChart();
+        }
+    }
+
+    getDatasets() {
+        const labels = this.getLabels();
         const valueKey = this.currentValueKey;
-        const labels = this.uniqueLabels();
-        const datasets = this.rawData.map((series, seriesIndex) => (
+        return this.rawData.map((series, seriesIndex) => (
             {
                 label: series.queryText ? series.queryText : '(no query)',
                 data: labels.map(key => {
@@ -89,19 +74,9 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                 hoverBackgroundColor: this.colorPalette[seriesIndex],
             }
         ));
-
-        if (this.chart) {
-            this.chart.data.labels = labels;
-            this.chart.data.datasets = datasets;
-            this.chart.options.plugins.legend.display = datasets.length > 1;
-            this.chart.update();
-        } else {
-            this.initChart(labels, datasets);
-        }
-
     }
 
-    initChart(labels, datasets) {
+    chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
         options.scales.xAxis.type = 'category';
@@ -115,20 +90,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             }
         };
         options.plugins.legend = {display: datasets.length > 1};
-        this.chart = new Chart('histogram',
-            {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: datasets,
-                },
-                plugins: [ Zoom ],
-                options: options
-            });
-
-        this.chart.canvas.ondblclick = (event) => {
-            (this.chart as any).resetZoom();
-        };
+        return options;
     }
 
     setTableHeaders() {
@@ -151,7 +113,9 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
     }
 
-    uniqueLabels(): string[] {
+    getLabels(): string[] {
+        // make an array of all unique labels and sort
+
         if (this.rawData) {
             const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.key));
             const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
@@ -176,16 +140,6 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             return 'key';
         }
         return this.currentValueKey;
-    }
-
-    get formatValue(): (value: number) => string {
-        if (this.normalizer === 'percent') {
-            return (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        } else {
-            return (value: number) => value.toString();
-        }
     }
 
 }
