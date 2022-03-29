@@ -7,3 +7,7 @@ elasticsearch-*/
 .python-version
 backend/.python-version
 .pytest_cache
+
+Mees M1 ignores:
+backend/requirements_m1.txt
+backend/migrations/versions/migration_detainment_chamber/76a4b388c00b_.py
