@@ -1,8 +1,5 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
-
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -12,7 +9,7 @@ import { saveAs } from 'file-saver';
     encapsulation: ViewEncapsulation.None
 })
 export class FreqtableComponent {
-    @Input() headers: { key: string, label: string, transform?: (any) => string }[];
+    @Input() headers: { key: string, label: string, format?: (any) => string }[];
     @Input() data: any[];
     @Input() name: string;
     @Input() defaultSort: string;
@@ -20,13 +17,21 @@ export class FreqtableComponent {
 
     constructor() { }
 
-    parseTableData() {
+    parseTableData(): string[] {
         const data = this.data.map(row => {
-            const values = this.headers.map(col => row[col.key]);
+            const values = this.headers.map(col => this.getValue(row, col));
             return  `${_.join(values, ',')}\n`;
         });
         data.unshift(`${_.join(this.headers.map(col => col.label), ',')}\n`);
         return data;
+    }
+
+    getValue(row, column: { key: string, label: string, format?: (any) => string }) {
+        if (column.format) {
+            return column.format(row[column.key]);
+        } else {
+            return row[column.key];
+        }
     }
 
     downloadTable() {
