@@ -35,12 +35,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
-
-    def format_house(house):
-        if 'commons' in house.lower():
-            return 'House of Commons'
-        if 'senate' in house.lower():  # pretty sure there are no entries from the senate in this corpus
-            return 'Senate'
     
     country = field_defaults.country()
     country.extractor = Constant(

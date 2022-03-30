@@ -1,5 +1,6 @@
 from glob import glob
 import logging
+from datetime import datetime
 
 from flask import current_app
 
@@ -10,9 +11,13 @@ from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
+def date_to_year(date):
+    return date.split('-')[0]
+
 class ParliamentGermanyNew(Parliament, CSVCorpus):
-    title = 'People & Parliament (Germany Bundestag - 1949-2021)'
+    title = 'People & Parliament (Germany 1949-2021)'
     description = "Speeches from the Bundestag"
+    min_date = datetime(year=1849, month=1, day=1)
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
@@ -36,28 +41,24 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
-    def date_to_year(date):
-        return date.split('-')[0]
-
     country = field_defaults.country()
     country.extractor = Constant(
         value='Germany'
     )
-    country.search_filter = None
 
     date = field_defaults.date()
     date.extractor = CSV(
         field='date'
     )
 
+    house = field_defaults.house()
+    house.extractor = Constant(
+        value='Bundestag'
+    )
+
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='session'
-    )
-
-    electoral_term = field_defaults.electoral_term()
-    electoral_term.extractor = CSV(
-        field='electoral_term'
     )
 
     party = field_defaults.party()
@@ -177,7 +178,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     def __init__(self):
         self.fields = [
             self.country, self.date,
-            self.debate_id, self.electoral_term,
+            self.debate_id,
             self.speaker, self.speaker_id,
             self.speaker_aristocracy, self.speaker_academic_title,
             self.speaker_birth_country, self.speaker_birthplace,

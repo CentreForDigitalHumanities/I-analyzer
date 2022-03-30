@@ -71,28 +71,12 @@ def house():
         visualizations = ['histogram']
     )
 
-def electoral_term():
-    return Field(
-        name='electoral_term',
-        display_name='Electoral Term',
-        description='Sequential number for the parliaments',
-        es_mapping={'type': 'keyword'},
-    )
-
 def parliament():
     return Field(
         name='parliament',
         display_name='Parliament',
         description='Parliament in which the speech was held',
         es_mapping={'type': 'keyword'},
-    )
-
-def session():
-    return Field(
-        name='session',
-        display_name='Session',
-        description='Session in which the speech is held',
-        es_mapping={'type': 'text'}
     )
 
 def debate_title():
@@ -263,7 +247,7 @@ def speaker_aristocracy():
     return Field(
         name='speaker_aristocracy',
         display_name='Speaker Aristocracy',
-        description='Is the speaker a member of the aristocracy',
+        description='Is the speaker a member of the aristocracy?',
         es_mapping={'type': 'keyword'},
     )
 

@@ -1,5 +1,7 @@
 from glob import glob
 import logging
+from datetime import datetime
+
 
 from flask import current_app
 
@@ -13,6 +15,8 @@ import corpora.parliament.utils.field_defaults as field_defaults
 class ParliamentGermanyOld(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany Reichstag - 1867-1942)'
     description = "Speeches from the Reichstag"
+    min_date = datetime(year=1867, month=1, day=1)
+    max_date = datetime(year=1942, month=12, day=31)
     data_directory = current_app.config['PP_GERMANY_OLD_DATA']
     es_index = current_app.config['PP_GERMANY_OLD_INDEX']
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
@@ -67,11 +71,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         transform=standardize_bool
     )
 
-    session = field_defaults.session()
-    session.extractor = CSV(
-        field='sitzung'
-    )
-
     page = field_defaults.page()
     page.extractor = CSV(
         field='page_number'
@@ -100,7 +99,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
             self.book_id, self.book_label,
             self.parliament, 
             self.date, self.date_is_estimate,
-            self.session, 
             self.page, self.source_url,
             self.speech, self.speech_id,
         ]
