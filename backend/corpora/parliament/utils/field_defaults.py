@@ -207,7 +207,7 @@ def speaker_birth_country():
     return Field(
         name='speaker_birth_country',
         display_name='Speaker country of birth',
-        description='Speaker country of birth',
+        description='Country in which the speaker was born',
         es_mapping={'type': 'text'},
     )
 
@@ -215,7 +215,7 @@ def speaker_birth_year():
     return Field(
         name='speaker_birth_year',
         display_name='Speaker year of birth',
-        description='Speaker year of birth',
+        description='Year in which the speaker was born',
         es_mapping={'type': 'integer'}
     )
 
@@ -223,15 +223,15 @@ def speaker_death_year():
     return Field(
         name='speaker_death_year',
         display_name='Speaker year of death',
-        description='Speaker year of death',
+        description='Year in which the speaker died',
         es_mapping={'type': 'integer'},
     )
 
 def speaker_gender():
     return Field(
         name='speaker_gender',
-        display_name='Speaker Gender',
-        description='Speaker Gender',
+        display_name='Speaker gender',
+        description='Gender of the speaker',
         es_mapping={'type': 'keyword'},
     )
 
