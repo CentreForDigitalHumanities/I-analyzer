@@ -23,14 +23,21 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 export class BarChartComponent<Result extends BarchartResult> implements OnInit {
     public showHint: boolean;
 
-    // template for data series
+    /**
+     * template for a series
+     * each dataseries defines its own query text
+     * and sores results for that query
+     * `data` contains the results per bin on the x-axis
+     * elements of `data` are often called cat/category in the code
+     */
     private seriesType: {
         data: Result[],
-        total_doc_count: number,
-        searchRatio: number,
-        queryText?: string,
+        total_doc_count: number, // total documents matching the query across the series
+        searchRatio: number, // ratio of total_doc_count that can be searched through without exceeding documentLimit
+        queryText?: string, // replaces the text in this.queryModel when searching
     };
 
+    // rawData: a list of series
     rawData: (typeof this.seriesType)[];
     chart: any;
 
