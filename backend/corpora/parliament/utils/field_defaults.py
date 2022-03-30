@@ -246,8 +246,8 @@ def speaker_death_year():
 def speaker_gender():
     return Field(
         name='speaker_gender',
-        display_name='Speaker Gender',
-        description='Speaker Gender',
+        display_name='Speaker gender',
+        description='Gender of the speaker',
         es_mapping={'type': 'keyword'},
     )
 
