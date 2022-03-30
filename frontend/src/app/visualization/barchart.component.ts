@@ -448,10 +448,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     /**
      * Percentage of documents that was actually read when determining term frequency.
-     * This differs per series, but user message only gives one value, currently the maximum.
+     * This differs per series, but user message only gives one value, currently the minimum.
      */
     get percentageDocumentsSearched() {
-        return _.round(100 *  _.max(this.rawData.map(series => series.searchRatio)));
+        return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
     }
 
     /**
