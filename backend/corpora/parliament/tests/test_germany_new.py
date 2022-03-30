@@ -7,7 +7,6 @@ target_docs = [
         'country': 'Germany',
         'date': '1949-09-22',
         'debate_id': '7',
-        'electoral_term': '1',
         'speaker': 'Gebhard Seelos',
         'speaker_id': '11002141',
         'speaker_aristocracy': '',

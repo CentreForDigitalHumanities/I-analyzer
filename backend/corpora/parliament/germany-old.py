@@ -12,6 +12,9 @@ from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
+def standardize_bool(date_is_estimate):
+    return date_is_estimate.lower()
+
 class ParliamentGermanyOld(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany Reichstag - 1867-1942)'
     description = "Speeches from the Reichstag"
@@ -32,9 +35,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         }
     }
 
-    def standardize_bool(date_is_estimate):
-        return date_is_estimate.lower()
-
     field_entry = 'item_order'
     required_field = 'text'
 
@@ -42,8 +42,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     country.extractor = Constant(
         value='Germany'
     )
-
-    country.search_filter = None
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(
