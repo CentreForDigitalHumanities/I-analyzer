@@ -1,6 +1,7 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { saveAs } from 'file-saver';
+import { freqTableHeader, freqTableHeaders } from '../models';
 
 @Component({
     selector: 'ia-freqtable',
@@ -9,7 +10,7 @@ import { saveAs } from 'file-saver';
     encapsulation: ViewEncapsulation.None
 })
 export class FreqtableComponent {
-    @Input() headers: { key: string, label: string, format?: (any) => string }[];
+    @Input() headers: freqTableHeaders;
     @Input() data: any[];
     @Input() name: string;
     @Input() defaultSort: string;
@@ -26,12 +27,14 @@ export class FreqtableComponent {
         return data;
     }
 
-    getValue(row, column: { key: string, label: string, format?: (any) => string }) {
+    getValue(row, column: freqTableHeader) {
+        if (column.formatDownload) {
+            return column.formatDownload(row[column.key]);
+        }
         if (column.format) {
             return column.format(row[column.key]);
-        } else {
-            return row[column.key];
         }
+        return row[column.key];
     }
 
     downloadTable() {

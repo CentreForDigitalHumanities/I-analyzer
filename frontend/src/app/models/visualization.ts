@@ -21,11 +21,14 @@ export type TimelineDataPoint = {
     value: number,
 };
 
-export type freqTableHeaders = {
+export type freqTableHeader = {
     key: string,
     label: string,
-    format?: (value) => string
-}[];
+    format?: (value) => string,
+    formatDownload?: (value) => string,
+}
+
+export type freqTableHeaders = freqTableHeader[];
 
 export type histogramOptions = {
     frequencyMeasure: 'documents'|'tokens',
