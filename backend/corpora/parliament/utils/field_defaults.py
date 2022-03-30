@@ -231,7 +231,7 @@ def speaker_birth_year():
     return Field(
         name='speaker_birth_year',
         display_name='Speaker year of birth',
-        description='Speaker year of birth',
+        description='Year in which the speaker was born',
         es_mapping={'type': 'integer'}
     )
 
