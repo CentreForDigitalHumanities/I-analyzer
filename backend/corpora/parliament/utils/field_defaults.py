@@ -239,7 +239,7 @@ def speaker_death_year():
     return Field(
         name='speaker_death_year',
         display_name='Speaker year of death',
-        description='Speaker year of death',
+        description='Year in which the speaker died',
         es_mapping={'type': 'integer'},
     )
 
