@@ -345,15 +345,15 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         };
 
         let formatValue: (value: number) => string | undefined;
+        let formatDownloadValue:  (value: number) => string | undefined;
         if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
+            formatValue = (value: number) =>  `${_.round(100 * value, 1)}%`;
+            formatDownloadValue = (value: number) => `${_.round(100 * value, 1)}`;
         }
 
         return [
             { key: 'date', label: 'Date', format: formatDateValue },
-            { key: 'value', label: rightColumnName, format: formatValue }
+            { key: 'value', label: rightColumnName, format: formatValue, formatDownload: formatDownloadValue }
         ];
     }
 }

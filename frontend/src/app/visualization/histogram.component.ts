@@ -293,14 +293,14 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         let formatValue: (value: number) => string | undefined;
+        let formatDownloadValue:  (value: number) => string | undefined;
         if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
+            formatValue = (value: number) =>  `${_.round(100 * value, 1)}%`;
+            formatDownloadValue = (value: number) => `${_.round(100 * value, 1)}`;
         }
         return [
             { key: 'key', label: label },
-            { key: 'value', label: header, format: formatValue }
+            { key: 'value', label: header, format: formatValue, formatDownload: formatDownloadValue }
         ];
     }
 
