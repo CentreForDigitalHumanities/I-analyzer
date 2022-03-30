@@ -48,7 +48,6 @@ class Parliament(Corpus):
                 yield full_path, {
                     'filename': filename
                 }
-
     country = field_defaults.country()
     country.search_filter = MultipleChoiceFilter(
         description='Search only in debates from selected countries',

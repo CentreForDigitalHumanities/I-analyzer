@@ -8,3 +8,4 @@ elasticsearch-*/
 backend/.python-version
 backend/requirements_m1.txt
 backend/migrations/versions/migration_detainment_chamber
+.pytest_cache

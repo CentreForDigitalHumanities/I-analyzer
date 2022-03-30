@@ -1,7 +1,6 @@
 from glob import glob
 import logging
 import re
-
 from flask import current_app
 
 from corpora.parliament.parliament import Parliament
