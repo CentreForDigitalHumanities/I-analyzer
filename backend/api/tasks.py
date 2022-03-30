@@ -90,7 +90,7 @@ def create_csv(results, fields, query):
 field_set.discard('context')
     # newline='' to prevent empty double lines
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=sorted(list(field_set)), dialect='myDialect')
+        writer = csv.DictWriter(f, fieldnames=sorted(field_set), dialect='myDialect')
         writer.writeheader()
         for row in entries:
             writer.writerow(row)
