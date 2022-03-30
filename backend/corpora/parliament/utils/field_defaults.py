@@ -223,7 +223,7 @@ def speaker_birth_country():
     return Field(
         name='speaker_birth_country',
         display_name='Speaker country of birth',
-        description='Speaker country of birth',
+        description='Country in which the speaker was born',
         es_mapping={'type': 'text'},
     )
 
