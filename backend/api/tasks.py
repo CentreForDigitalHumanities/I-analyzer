@@ -87,10 +87,7 @@ def create_csv(results, fields, query):
                          quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
     filename = create_filename(query)
     filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
-    try:
-        field_set.remove('context')
-    except KeyError:
-        pass
+field_set.discard('context')
     # newline='' to prevent empty double lines
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=sorted(list(field_set)), dialect='myDialect')
