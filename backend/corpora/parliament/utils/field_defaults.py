@@ -246,7 +246,7 @@ def speaker_profession():
 def speaker_aristocracy():
     return Field(
         name='speaker_aristocracy',
-        display_name='Speaker Aristocracy',
+        display_name='Speaker aristocracy',
         description='Is the speaker a member of the aristocracy?',
         es_mapping={'type': 'keyword'},
     )

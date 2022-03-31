@@ -17,7 +17,7 @@ def date_to_year(date):
 class ParliamentGermanyNew(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany 1949-2021)'
     description = "Speeches from the Bundestag"
-    min_date = datetime(year=1849, month=1, day=1)
+    min_date = datetime(year=1949, month=1, day=1)
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
@@ -60,10 +60,11 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     debate_id.extractor = CSV(
         field='session'
     )
-
+    
+    # in Germany, abbreviations are the most common way to refer to parties
     party = field_defaults.party()
     party.extractor = CSV(
-        field='party_abbreviation'
+        field='party_abbreviation'  
     )
     
     party_full = field_defaults.party_full()
