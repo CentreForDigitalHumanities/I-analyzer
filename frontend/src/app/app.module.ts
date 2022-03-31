@@ -198,7 +198,7 @@ export const imports: any[] = [
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
     }),
     RadioButtonModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
     // SharedModule,
     SliderModule,
     TableModule,

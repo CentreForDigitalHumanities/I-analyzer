@@ -53,9 +53,9 @@ $inputTextColor: $text;
 $invalidInputBorderColor: $danger;
 $inputGroupTextColor: $text;
 
-@import "~primeng/resources/themes/nova-light/theme.css";
+@import "~primeng/resources/themes/nova/theme.css";
 
-.ui-button {
+.p-button {
     @extend .button;
 
     &:hover {
@@ -65,12 +65,12 @@ $inputGroupTextColor: $text;
     }
 }
 
-.ui-inputtext {
+.p-inputtext {
     @extend .input;
     border-color: $border;
 }
 
-.ui-buttonset .ui-button {
+.p-buttonset .p-button {
     margin-right: 5px;
     margin-bottom: 5px;
 
@@ -81,12 +81,12 @@ $inputGroupTextColor: $text;
     }
 }
 
-.ui-slider {
-    .ui-slider-handle {
+.p-slider {
+    .p-slider-handle {
         cursor: pointer;
     }
 
-    &.ui-slider-horizontal .ui-slider-range {
+    &.p-slider-horizontal .p-slider-range {
         border: none;
         height: calc(100% + 2px);
         margin: -1px 0;
@@ -99,15 +99,15 @@ $inputGroupTextColor: $text;
     color: $stateHighlightTextColor;
 }
 
-.ui-widget-header {
+.p-widget-header {
     background-color: $contrast-primary-color;
     color: $text-primary-color;
     font-weight: bold;
 }
 
 body {
-    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item {
-        &.ui-state-highlight {
+    .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+        &.p-highlight {
             background-color: $stateHighlightBgColor;
             color: $stateHighlightTextColor;
         }
@@ -118,7 +118,7 @@ body {
         }
     }
 
-    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
         background-color: $stateHighlightBgColor;
         color: $stateHighlightTextColor;
         &:hover {
@@ -127,10 +127,22 @@ body {
         }
     }
 
-    .ui-chkbox .ui-chkbox-box.ui-state-active {
+    .p-checkbox .p-checkbox-box.p-highlight {
         background-color: $primary;
         color: $primary-invert;
         border-color: $primary;
+        &:hover {
+            background-color: $primary;
+        }
+    }
+
+    .p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-highlight:hover {
+        border-color: $contrast-primary-color;
+        background: $contrast-primary-color;
+    }
+
+    .p-component {
+        font-family: inherit !important;
     }
 }
 

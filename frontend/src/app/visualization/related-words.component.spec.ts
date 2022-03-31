@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 
@@ -11,7 +11,7 @@ describe('RelatedWordsComponent', () => {
   let component: RelatedWordsComponent;
   let fixture: ComponentFixture<RelatedWordsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ FormsModule, ChartModule ],
       declarations: [ RelatedWordsComponent ],
