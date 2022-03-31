@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { commonTestBed } from '../common-test-bed';
 
@@ -8,7 +8,7 @@ describe('MultipleChoiceFilterComponent', () => {
   let component: MultipleChoiceFilterComponent;
   let fixture: ComponentFixture<MultipleChoiceFilterComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
   }));
 

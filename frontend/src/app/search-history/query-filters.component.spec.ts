@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { QueryFiltersComponent } from './query-filters.component';
@@ -7,7 +7,7 @@ describe('QueryFiltersComponent', () => {
   let component: QueryFiltersComponent;
   let fixture: ComponentFixture<QueryFiltersComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ FormsModule ],
       declarations: [ QueryFiltersComponent ]

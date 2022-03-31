@@ -1,4 +1,10 @@
 <div class="block">
+    <p class=notification *ngIf=showHint>
+        <b>Drag to zoom, double click to unzoom</b>
+    </p>
+</div>
+
+<div class="block">
     <ia-histogram-options
         [queryText]="queryModel ? queryModel.queryText : ''" [showTokenCountOption]="totalTokenCountAvailable"
         (options)="onOptionChange($event)">
@@ -6,11 +12,7 @@
 </div>
 
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
-    <div class="barchart" #timeline>
-        <p class=notification *ngIf=showHint>
-            <b>Drag to zoom, click to unzoom</b>
-        </p>
-    </div>
+    <canvas id="timeline" width="400" height="200" aria-label="timeline" role="img"></canvas>
 </div>
 
 <div class="block" *ngIf="asTable">

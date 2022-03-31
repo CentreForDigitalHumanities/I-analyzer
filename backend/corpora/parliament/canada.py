@@ -98,7 +98,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     speech.es_mapping = {
         "type" : "text",
         "analyzer": "standard",
-        "term_vector": "with_positions_offsets", 
+        "term_vector": "with_positions_offsets",
         "fields": {
         "stemmed": {
             "type": "text",

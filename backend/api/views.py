@@ -602,22 +602,25 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('/get_ngrams', methods=['POST'])
+@api.route('/ngrams', methods=['POST'])
 @login_required
-def api_get_ngrams():
+def api_ngrams():
     if not request.json:
         abort(400)
 
-    results = analyze.get_ngrams(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        ngram_size=request.json['ngram_size'],
-        term_positions=request.json['term_position'],
-        freq_compensation=request.json['freq_compensation'],
-        subfield=request.json['subfield'],
-        max_size_per_interval=request.json['max_size_per_interval']
-    )
+    try:
+        results = analyze.get_ngrams(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            ngram_size=request.json['ngram_size'],
+            term_positions=request.json['term_position'],
+            freq_compensation=request.json['freq_compensation'],
+            subfield=request.json['subfield'],
+            max_size_per_interval=request.json['max_size_per_interval']
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -631,19 +634,22 @@ def api_get_ngrams():
         })
     return response
 
-@api.route('get_aggregate_term_frequency', methods=['POST'])
+@api.route('aggregate_term_frequency', methods=['POST'])
 @login_required
-def api_get_aggregate_term_frequency():
+def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_aggregate_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        request.json['field_value'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_aggregate_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['field_value'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -657,20 +663,23 @@ def api_get_aggregate_term_frequency():
         })
     return response
 
-@api.route('get_date_term_frequency', methods=['POST'])
+@api.route('date_term_frequency', methods=['POST'])
 @login_required
-def api_get_date_term_frequency():
+def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_date_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        request.json['start_date'],
-        request.json['end_date'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_date_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['start_date'],
+            request.json['end_date'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string

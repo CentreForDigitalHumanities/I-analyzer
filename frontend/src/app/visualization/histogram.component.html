@@ -5,10 +5,8 @@
     </ia-histogram-options>
 </div>
 
-<div class="block" [ngClass]="{'is-hidden': asTable}">
-    <div class="barchart" #histogram>
-        <div class="tooltip"></div>
-    </div>
+<div class="block" [ngClass]="{ 'is-hidden': asTable }">
+    <canvas id="histogram" width="400" height="200" aria-label="histogram" role="img"></canvas>
 </div>
 
 <div class="block" *ngIf="asTable">

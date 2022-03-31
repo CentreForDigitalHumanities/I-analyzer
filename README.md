@@ -17,7 +17,7 @@ I-analyzer
 
 - migration files and utitilies (using flask-migrate)
 
-`ianalyzer/frontend` is an [Angular 4](https://angular.io/) web interface.
+`ianalyzer/frontend` is an [Angular 13](https://angular.io/) web interface.
 
 Project layout
 -------------------------------------------------------------------------------
