@@ -1,17 +1,11 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-
-// custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel, DateResult, AggregateResult,
-    visualizationField, freqTableHeaders, histogramOptions, TimelineSeries } from '../models/index';
-// import { default as scaleTimeCustom } from './timescale.js';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
-import { Chart, ChartOptions } from 'chart.js';
-import Zoom from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-moment';
 
 @Component({
@@ -20,11 +14,14 @@ import 'chartjs-adapter-moment';
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
+    /** time unit on the x-axis */
     private currentTimeCategory: 'year'|'week'|'month'|'day';
+    /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
-    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
+    /** formatting function for time in ES queries */
+    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d'); // Todo: use moment instead of d3
+    /** domain on the axis */
     public xDomain: [Date, Date];
-
 
     ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
@@ -57,7 +54,11 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         };
     }
 
-    /** retrieve doc counts for a series */
+    /** Retrieve doc counts for a series.
+     * @param series series object
+     * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
+     * True when retrieving results for the entire series, false when retrieving a window.
+     */
     requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
         const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
         return this.searchService.dateHistogramSearch(
@@ -66,7 +67,6 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         );
     }
 
-    /** retrieve term frequency for a series within a single bin */
     requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
         const queryModelCopy = this.setQueryText(queryModel, series.queryText);
         const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
@@ -88,6 +88,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
     setChart() {
         if (this.chart) {
+            // reset time unit to the one set in the chart
             const unit = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
             if (unit) {
                 this.currentTimeCategory = unit;
@@ -158,6 +159,9 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * Code that should be executed when zooming in, or when the chart data
      * is updated while already zoomed in.
      * Checks whether is is necessary to load zoomed-in data and does so if needed.
+     * @param chart chart object
+     * @param triggeredByDataUpdate whether the function was triggered by an update in the
+     * underlying data.
      */
     onZoomIn(chart, triggeredByDataUpdate = false) {
         const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);

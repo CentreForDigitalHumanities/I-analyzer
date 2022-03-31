@@ -20,15 +20,17 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./barchart.component.scss']
 })
 
+/** The barchartComponent is used to define shared functionality between the
+ * histogram and timeline components. It does not function as a stand-alone component. */
 export class BarChartComponent<Result extends BarchartResult> implements OnInit {
     public showHint: boolean;
 
     /**
-     * template for a series
-     * each dataseries defines its own query text
-     * and sores results for that query
-     * `data` contains the results per bin on the x-axis
-     * elements of `data` are often called cat/category in the code
+     * Template for a series, used for typedefs: don't store data here.
+     * Each dataseries defines its own query text
+     * and sores results for that query.
+     * `data` contains the results per bin on the x-axis.
+     * Elements of `data` are often called cat/category in the code.
      */
     private seriesType: {
         data: Result[],
@@ -39,6 +41,8 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     // rawData: a list of series
     rawData: (typeof this.seriesType)[];
+
+    // chart object
     chart: any;
 
     @Input() corpus: Corpus;
@@ -53,11 +57,18 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
+    // table data
     tableHeaders: freqTableHeaders;
     tableData: any[];
 
+    /** list of query used by each series in te graph */
     queries: string[] = [];
 
+    /** Stores the key that can be used in a Result object
+     * to retrieve the y-axis value.
+     * Key can be retrieved as
+     * `valueKeys[frequencyMeasure][normalizer]`
+     */
     valueKeys = {
         tokens: {
             raw: 'match_count',
@@ -127,7 +138,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     }
 
     /** check whether input changes should force reloading the data */
-    changesRequireRefresh(changes: SimpleChanges) {
+    changesRequireRefresh(changes: SimpleChanges): boolean {
         return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
     }
 
@@ -141,21 +152,34 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     }
 
-    /** add a series to the graph */
+    /** add a new series (i.e. a new query) to the graph. */
     addSeries(queryText: string) {
         this.rawData.push(this.newSeries(queryText));
         this.setQueries();
         this.prepareChart();
     }
 
-    /** remove any additional queries, only keep the original */
+    /** make a blank series object */
+    newSeries(queryText: string): (typeof this.seriesType) {
+        return {
+            queryText: queryText,
+            data: [],
+            total_doc_count: 0,
+            searchRatio: 1.0,
+        };
+    }
+
+    /** Remove any additional queries from the histogramOptions component.
+     * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
         this.setQueries();
         this.prepareChart();
     }
 
-    /** set the value of the `queries` property based on `rawData` */
+    /** set the value of the `queries` property based on `rawData`.
+     * Queries is used by the histogramOptions component.
+     */
     setQueries() {
         if (this.rawData) {
             this.queries = this.rawData.map(series => series.queryText);
@@ -164,7 +188,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     }
 
-    /** load any data needed for the graph and update */
+    /** Show a loading spinner and load data for the graph.
+     * This function should be called after (potential) changes to parameters.
+     */
     prepareChart() {
         this.showLoading(
             this.loadData()
@@ -178,7 +204,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.isLoading.next(false);
     }
 
-    /** load data for the graph (if needed) */
+    /** load data for the graph (if needed), update the graph and freqtable. */
     async loadData() {
         // load data if needed
         await this.requestDocumentData();
@@ -201,7 +227,8 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     }
 
-    /** retrieve document frequencies and store in `rawData` */
+    /** Retrieve all document frequencies and store in `rawData`.
+     * Document frequencies are only loaded if they are not already in the data. */
     async requestDocumentData() {
         const dataPromises = this.rawData.map((series, seriesIndex) => {
             if (!series.data.length) { // retrieve data if it was not already loaded
@@ -215,8 +242,59 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.checkDocumentLimitExceeded();
     }
 
-    /** retrieve term frequencies and store in `rawData` */
-    async requestTermFrequencyData() {
+    /**
+     * Convert the result from an document search into a data series object.
+     * - Converts to the relevant Result type using `aggregateResultToResult`
+     * - Adds the total document count and search ratio for retrieving term frequencies.
+     * - Adds the relative document count.
+     * @param result result from aggregation search
+     * @param series series object that this data belongs to
+     * @param setSearchRatio whether the search ratio should be reset. Defaults to `true`,
+     * may be set to `false` when loading a portion of the series during zoom.
+     * @returns a copy of the series with the document counts included.
+     */
+    docCountResultIntoSeries(result, series: (typeof this.seriesType), setSearchRatio = true): (typeof this.seriesType) {
+        let data = result.aggregations[this.visualizedField.name]
+            .map(this.aggregateResultToResult);
+        const total_doc_count = this.totalDocCount(data);
+        const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
+        data = this.includeRelativeDocCount(data, total_doc_count);
+        return {
+            data: data,
+            total_doc_count: total_doc_count,
+            searchRatio: searchRatio,
+            queryText: series.queryText,
+        };
+    }
+
+    /** convert the output of an aggregation search to the relevant result type */
+    aggregateResultToResult(cat: AggregateResult): Result {
+        return cat as Result;
+    }
+
+    /** fill in the `relative_doc_count` property for an array of datapoints.
+     */
+    includeRelativeDocCount(data: Result[], total: number): Result[] {
+        return data.map(item => {
+            const result = _.clone(item);
+            result.relative_doc_count = result.doc_count / total;
+            return result;
+        });
+    }
+
+    /**
+     * Check whether any series found more documents than the document limit.
+     * This means that not all documents will be read when counting term frequency.
+    */
+     checkDocumentLimitExceeded(): void {
+        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+    }
+
+
+    /** Retrieve all term frequencies and store in `rawData`.
+     * Term frequencies are only loaded if they were not already there.
+     */
+     async requestTermFrequencyData() {
         const dataPromises = _.flatMap(this.rawData, (series => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 return series.data.map((cat, index) =>
@@ -231,23 +309,65 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
     }
 
+    /** total document count for a data array */
+    totalDocCount(data: Result[]) {
+        return _.sumBy(data, item => item.doc_count);
+    }
+
+    /**
+     * calculate the maximum number of documents to read through in a bin
+     * when determining term frequency.
+     */
+     documentLimitForCategory(cat: Result, series: (typeof this.seriesType)): number {
+        return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
+    }
+
+
+    /**
+     * add term frequency data to a Result object
+     * @param result output from request for term frequencies
+     * @param cat Result object where the data should be added
+     */
+    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: Result): void {
+        const data = result.data;
+        cat.match_count = data.match_count;
+        cat.total_doc_count = data.doc_count;
+        cat.token_count = data.token_count;
+        cat.matches_by_doc_count = data.match_count / data.doc_count,
+        cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
+    }
+
     // implemented on child components
 
-    /** retrieve doc counts for a series */
+    /** Retrieve doc counts for a series */
     requestSeriesDocumentData(series: typeof this.seriesType): Promise<typeof this.seriesType> {
         return undefined;
     }
-    /** retrieve term frequencies and store in `rawData` */
-    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: typeof this.seriesType): Promise<any> {
+    /**
+     * retrieve term frequencies for a bin and store in `rawData`
+     * @param cat the Result object of one bin/category in one series of the data.
+     * @param catIndex the index of the bin/category in the series.
+     * @param series the series object that the bin/category belongs to.
+     * @returns a Promise object, finishes when the frequencies have been inserted into the result.
+     */
+    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: typeof this.seriesType): Promise<void> {
         return undefined;
     }
     /** update or initialise chart (should be ran after updates to `rawData`) */
-    setChart(): void { }
+    setChart(): void {
+        if (this.chart) {
+            this.updateChartData();
+        } else {
+            this.initChart();
+        }
+    }
     /** select the columns/headers for the frequency table */
     setTableHeaders(): void { }
-    /** code to be executed when zooming in, or when data is update while zommed in */
+    /** code to be executed when zooming in, or when parameters are updated while zoomed in */
     onZoomIn(chart, triggeredByDataUpdate = false) { }
-    /** options for the chart */
+    /** options for the chart.
+     * @param datasets array of dataset objects for the chart
+     */
     chartOptions(datasets): any {
         return this.basicChartOptions;
     }
@@ -277,6 +397,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.chart.resetZoom();
     }
 
+    /** After updating `rawData`, this executes the update in the chart. */
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
@@ -286,77 +407,18 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.chart.update();
     }
 
-    /** return x-axis labels */
+    /** Return x-axis labels for the chartJS dataset.
+     * Can be left undefined depending on data format.
+     */
     getLabels(): string[] {
         return undefined;
     }
 
-    /** return dataset objects based on rawData */
+    /** return chartJS dataset objects based on rawData */
     getDatasets(): any[] {
         return undefined;
     }
 
-
-    /**
-     * Convert the result from an document search into a data series object.
-     * - Converts to the relevant Result type using `aggregateResultToResult`
-     * - Adds the total document count and search ratio for retrieving term frequencies.
-     * - Adds the relative document count.
-     * @param result result from aggregation search
-     * @param series series object that this data belongs to
-     * @param setSearchRatio whether the search ratio should be reset. Defaults to `true`,
-     * may be set to `false` when loading a portion of the series during zoom.
-     * @returns a copy of the series with the document counts included.
-     */
-    docCountResultIntoSeries(result, series: (typeof this.seriesType), setSearchRatio = true): (typeof this.seriesType) {
-        let data = result.aggregations[this.visualizedField.name]
-            .map(this.aggregateResultToResult);
-        const total_doc_count = this.totalDocCount(data);
-        const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
-        data = this.includeRelativeDocCount(data, total_doc_count);
-        return {
-            data: data,
-            total_doc_count: total_doc_count,
-            searchRatio: searchRatio,
-            queryText: series.queryText,
-        };
-    }
-
-    /**
-     * Check whether any series found more documents than the document limit.
-     * This means that not all documents will be read when counting term frequency.
-    */
-    checkDocumentLimitExceeded(): void {
-        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
-    }
-
-    /** convert the output of an aggregation search to the relevant result type */
-    aggregateResultToResult(cat: AggregateResult): Result {
-        return cat as Result;
-    }
-
-    /** fill in the `relative_doc_count` property for an array of datapoints */
-    includeRelativeDocCount(data: Result[], total: number): Result[] {
-        return data.map(item => {
-            const result = _.clone(item);
-            result.relative_doc_count = result.doc_count / total;
-            return result;
-        });
-    }
-
-    /**
-     * add term frequency data to a result object
-     * @param result result from request for term frequencies
-     * @param cat result object where the data should be added
-     */
-    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: Result): void {
-        const data = result.data;
-        cat.match_count = data.match_count;
-        cat.total_doc_count = data.doc_count;
-        cat.token_count = data.token_count;
-        cat.matches_by_doc_count = data.match_count / data.doc_count,
-        cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
-    }
 
     /**
      * Show the zooming hint once per session, hide automatically with a delay
@@ -379,16 +441,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     /** show documentation page */
     showHistogramDocumentation() {
         this.dialogService.showManualPage('histogram');
-    }
-
-    /** make a blank series object */
-    newSeries(queryText: string): (typeof this.seriesType) {
-        return {
-            queryText: queryText,
-            data: [],
-            total_doc_count: 0,
-            searchRatio: 1.0,
-        };
     }
 
     /** based on current parameters, get a formatting function for y-axis values */
@@ -415,10 +467,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         return queryModelCopy;
     }
 
-    /** total document count for a data array */
-    totalDocCount(data: Result[]) {
-        return _.sumBy(data, item => item.doc_count);
-    }
 
     /** assemble the array of table data */
     setTableData() {
@@ -431,14 +479,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 })
             );
         }
-    }
-
-    /**
-     * calculate the maximum number of documents to read through in a bin
-     * when determining term frequency.
-     */
-    documentLimitForCategory(cat: Result, series: (typeof this.seriesType)): number {
-        return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
     /** which key of a Result object should be used as the y-axis value */
