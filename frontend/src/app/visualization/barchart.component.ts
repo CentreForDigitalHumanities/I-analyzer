@@ -7,7 +7,7 @@ import * as d3Format from 'd3-format';
 import * as d3Brush from 'd3-brush';
 import * as _ from 'lodash';
 
-import { DataService, SearchService } from '../services/index';
+import { SearchService, DialogService } from '../services/index';
 
 @Component({
     selector: 'ia-barchart',
@@ -39,8 +39,7 @@ export class BarChartComponent {
     private idleTimeout: any;
     private idleDelay: number;
 
-    // dataService is needed for pushing filtered data from timeline component
-    constructor(public dataService: DataService, public searchService: SearchService) { }
+    constructor(public searchService: SearchService, public dialogService: DialogService) { }
 
     calculateCanvas() {
         this.height = this.chartElement.offsetHeight - this.margin.top - this.margin.bottom;
@@ -52,7 +51,7 @@ export class BarChartComponent {
          adjust the y range
          */
         this.yDomain = [0, this.yMax];
-        this.yTicks = this.yDomain[1] > 10 ? 10 : this.yMax;
+        this.yTicks = this.yDomain[1] > 10 || this.yDomain[1] < 1 ? 10 : this.yMax;
         this.yScale.domain(this.yDomain).range([this.height, 0]);
     }
 
@@ -73,10 +72,22 @@ export class BarChartComponent {
         * - change axis label and ticks
         */
 
-        this.yDomain = percent ? [0, this.yMax / this.totalCount] : [0, this.yMax];
+
+        this.yDomain = [0, this.yMax];
         this.yScale.domain(this.yDomain);
 
-        const tickFormat = percent ? d3Format.format('.0%') : d3Format.format('d');
+        const fraction = this.yDomain[1] < 1;
+        let tickFormat;
+        if (percent) {
+            tickFormat = d3Format.format('.0%');
+        } else if (fraction) {
+            const p = d3Format.precisionRound(this.yMax / this.yTicks, this.yMax);
+            tickFormat = d3Format.format('.' + p + 'r');
+        } else {
+            tickFormat = d3Format.format('d');
+        }
+
+
         this.yAxisClass = d3Axis.axisLeft(this.yScale).ticks(this.yTicks).tickFormat(tickFormat);
         this.yAxis.call(this.yAxisClass);
 

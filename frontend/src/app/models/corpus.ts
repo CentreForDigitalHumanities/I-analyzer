@@ -33,7 +33,7 @@ export type ElasticSearchIndex = {
     doctype: DocumentType,
     index: string,
     serverName: string
-}
+};
 
 export type DocumentType = 'article';
 
@@ -48,12 +48,13 @@ export type CorpusField = {
     resultsOverview?: boolean,
     csvCore?: boolean,
     searchFieldCore?: boolean,
-    visualizationType?: string,
+    visualizations?: string[],
     visualizationSort?: string,
+    multiFields?: string[],
     hidden: boolean,
     sortable: boolean,
     searchable: boolean,
     downloadable: boolean,
     name: string,
-    searchFilter: SearchFilter<SearchFilterData> | null
-}
+    searchFilter: SearchFilter<SearchFilterData> | null,
+};

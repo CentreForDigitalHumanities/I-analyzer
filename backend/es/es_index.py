@@ -46,9 +46,11 @@ def create(client, corpus_definition, add, clear, prod):
             sys.exit(1)
 
         logger.info('Adding prod settings to index')
-        if not settings['index']['number_of_replicas'] == 0:
-            settings['index']['number_of_replicas'] = 0
-        settings['index']['number_of_shards'] = 5
+        if not settings.get('index'):
+            settings['index'] = {
+                'number_of_replicas' : 0,
+                'number_of_shards': 5
+            }
 
     logger.info('Attempting to create index `{}`...'.format(
         corpus_definition.es_index))
@@ -86,6 +88,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         {
             '_op_type': 'index',
             '_index': corpus_definition.es_index,
+            '_id' : doc.get('id'),
             '_source': doc
         } for doc in docs
     )
@@ -104,6 +107,7 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         logger.info('Indexed documents ({}).'.format(result))
 
 
+
 def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
@@ -115,6 +119,7 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
     client = elasticsearch(corpus_name)
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
+    # import pdb; pdb.set_trace()
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))

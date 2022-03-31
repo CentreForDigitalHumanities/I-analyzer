@@ -226,8 +226,7 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filename = tasks.create_filename(request.json['route'])
-        filepath = tasks.make_csv.delay(search_results, filename, request.json)
+        filepath = tasks.make_csv.delay(search_results, request.json)
         csv_file = filepath.get()
         if not csv_file:
             return jsonify({'success': False, 'message': 'Could not create csv file.'})
@@ -255,11 +254,11 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    filename = tasks.create_filename(request.json['route'])
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(filename, request.json))
+        tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
+        filename = split(csvs.get())[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
         send_user_mail(
@@ -275,7 +274,7 @@ def api_download_task():
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
-        
+
 
 
 
@@ -600,5 +599,96 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
+        })
+    return response
+
+@api.route('/ngrams', methods=['POST'])
+@login_required
+def api_ngrams():
+    if not request.json:
+        abort(400)
+
+    try:
+        results = analyze.get_ngrams(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            ngram_size=request.json['ngram_size'],
+            term_positions=request.json['term_position'],
+            freq_compensation=request.json['freq_compensation'],
+            subfield=request.json['subfield'],
+            max_size_per_interval=request.json['max_size_per_interval']
+        )
+    except KeyError:
+        abort(400)
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'word_data': results
+        })
+    return response
+
+@api.route('aggregate_term_frequency', methods=['POST'])
+@login_required
+def api_aggregate_term_frequency():
+    if not request.json:
+        abort(400)
+
+    try:
+        results = analyze.get_aggregate_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['field_value'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
+        })
+    return response
+
+@api.route('date_term_frequency', methods=['POST'])
+@login_required
+def api_date_term_frequency():
+    if not request.json:
+        abort(400)
+
+    try:
+        results = analyze.get_date_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['start_date'],
+            request.json['end_date'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
         })
     return response

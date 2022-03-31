@@ -1,27 +1,27 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { ApiService, ApiRetryService, DataService, ElasticSearchService, LogService, QueryService, SearchService, UserService } from '../services/index';
+import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../services/index';
 import { ApiServiceMock } from '../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
 import { UserServiceMock } from '../../mock-data/user';
-import { TermFrequencyComponent } from './term-frequency.component';
+import { DialogServiceMock } from '../../mock-data/dialog';
+import { HistogramComponent } from './histogram.component';
 
-describe('TermFrequencyComponent', () => {
-  let component: TermFrequencyComponent;
-  let fixture: ComponentFixture<TermFrequencyComponent>;
+describe('HistogramCompoment', () => {
+  let component: HistogramComponent;
+  let fixture: ComponentFixture<HistogramComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
         imports: [ FormsModule ],
-        declarations: [ TermFrequencyComponent ],
+        declarations: [ HistogramComponent ],
         providers: [ 
             {
     
                 provide: ApiService, useValue: new ApiServiceMock()
             },
             ApiRetryService,
-            DataService,
             {
                 provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
             },
@@ -30,14 +30,15 @@ describe('TermFrequencyComponent', () => {
             SearchService,
             {
                 provide: UserService, useValue: new UserServiceMock()
-            }
+            },
+            { provide: DialogService, useClass: DialogServiceMock },
         ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TermFrequencyComponent);
+    fixture = TestBed.createComponent(HistogramComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

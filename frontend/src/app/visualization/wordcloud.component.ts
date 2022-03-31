@@ -1,10 +1,11 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
-import { AggregateData } from '../models/index';
-import { DialogService } from '../services/index';
+import { AggregateResult, visualizationField, QueryModel, Corpus, freqTableHeaders } from '../models/index';
+import { DialogService, SearchService, ApiService } from '../services/index';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -13,50 +14,102 @@ import { DialogService } from '../services/index';
     encapsulation: ViewEncapsulation.None
 })
 
-export class WordcloudComponent implements OnChanges, OnInit {
+export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @ViewChild('wordcloud', { static: true }) private chartContainer: ElementRef;
-    @Input('searchData') public significantText: AggregateData;
-    @Input('disableLoadMore') public disableLoadMore: boolean;
-    @Output('loadMore')
-    public loadMoreDataEmitter = new EventEmitter();
+    @Input() visualizedField: visualizationField;
+    @Input() queryModel: QueryModel;
+    @Input() corpus: Corpus;
+    @Input() resultsCount: number;
+    @Input() asTable: boolean;
+
+    @Output() error = new EventEmitter();
+    @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    public significantText: AggregateResult[];
+    public disableLoadMore: boolean = false;
+    private tasksToCancel: string[] = [];
+
+    private batchSize = 1000;
 
     private width = 600;
     private height = 400;
     private scaleFontSize = d3.scaleLinear();
-    public isLoading = false;
 
     private chartElement: any;
     private svg: any;
 
-    constructor(private dialogService: DialogService) { }
+    tableHeaders = [
+        { key: 'key', label: 'Term' },
+        { key: 'doc_count', label: 'Frequency' }
+    ];
+
+    constructor(private dialogService: DialogService, private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit() {
+        if (this.resultsCount > 0) {
+            this.disableLoadMore = this.resultsCount < this.batchSize;
+        }
+    }
 
+    ngOnDestroy() {
+        this.apiService.abortTasks({'task_ids': this.tasksToCancel});
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.chartElement = this.chartContainer.nativeElement;
-        const significantText = changes.significantText.currentValue;
-        if (significantText !== undefined && significantText !== changes.significantText.previousValue) {
-            this.isLoading = false;
-            d3.selectAll('svg').remove();
-            const inputRange = d3.extent(significantText.map(d => d.doc_count)) as number[];
-            const outputRange = [20, 80];
-            this.scaleFontSize.domain(inputRange).range(outputRange);
-            this.drawWordCloud(significantText);
+        if (changes.visualizedField || changes.queryModel || changes.corpus) {
+            if (this.corpus && this.visualizedField && this.queryModel) {
+                this.loadData(this.batchSize);
+            }
         }
+    }
+
+    loadData(size: number = null) {
+        this.isLoading.next(true);
+        this.searchService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
+            this.significantText = result[this.visualizedField.name];
+            this.onDataLoaded();
+        })
+        .catch(error => {
+            this.error.emit(error);
+        });
+    }
+
+    loadMoreData() {
+        this.isLoading.next(true);
+        const queryModel = this.queryModel;
+        if (queryModel) {
+            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
+                this.tasksToCancel = result['taskIds'];
+                    const childTask = result['taskIds'][0];
+                    this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
+                        if (outcome['success'] === true) {
+                            this.significantText = outcome['results'];
+                            this.onDataLoaded();
+                        } else {
+                            this.error.emit(outcome);
+                        }
+                    });
+            });
+        }
+    }
+
+    onDataLoaded() {
+        this.isLoading.next(false);
+        this.chartElement = this.chartContainer.nativeElement;
+        d3.selectAll('svg').remove();
+        const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
+        const outputRange = [20, 80];
+        this.scaleFontSize.domain(inputRange).range(outputRange);
+        this.drawWordCloud(this.significantText);
+
     }
 
     showWordcloudDocumentation() {
         this.dialogService.showManualPage('wordcloud');
     }
 
-    loadMoreData() {
-        this.loadMoreDataEmitter.emit();
-        this.isLoading = true;
-    }
 
-    drawWordCloud(significantText: AggregateData) {
+    drawWordCloud(significantText: AggregateResult[]) {
         this.svg = d3.select(this.chartElement)
             .append("svg")
             .attr("width", this.width)
@@ -92,5 +145,4 @@ export class WordcloudComponent implements OnChanges, OnInit {
 
         layout.start();
     }
-
 }

@@ -39,7 +39,7 @@ def get_es_host_or_404(server_name):
 def require_access(corpus_name):
     """ Abort if the current user is not authorized for corpus_name. """
     if not current_user.has_access(corpus_name):
-        abort(401) # Unauthorized
+        abort(401)  # Unauthorized
 
 
 def proxy_es(address):
@@ -70,16 +70,17 @@ def proxy_es(address):
         },
     )
 
-@es.route('/<server_name>', methods=['HEAD'])
-@login_required
+
+@ es.route('/<server_name>', methods=['HEAD'])
+@ login_required
 def forward_head(server_name):
     """ Forward requests that check whether the ES server is still up. """
     host = get_es_host_or_404(server_name)
     return proxy_es(host)
 
 
-@es.route('/<server_name>/_search/scroll', methods=['POST'])
-@login_required
+@ es.route('/<server_name>/_search/scroll', methods=['POST'])
+@ login_required
 def forward_scroll(server_name):
     """ Forward scroll requests (needed for large downloads). """
     host = get_es_host_or_404(server_name)
@@ -87,13 +88,11 @@ def forward_scroll(server_name):
     return proxy_es(address)
 
 
-@es.route('/<server_name>/<corpus_name>/_search', methods=['POST'])
-@login_required
+@ es.route('/<server_name>/<corpus_name>/_search', methods=['POST'])
+@ login_required
 def forward_search(server_name, corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
     host = get_es_host_or_404(server_name)
     address = '{}/{}/_search'.format(host, corpus_name)
     return proxy_es(address)
-
-

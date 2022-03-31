@@ -1,21 +1,15 @@
-<p-table [value]="tableData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
+<p-table [value]="data" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
     <ng-template pTemplate="header">
         <tr class="is-selected">
-            <th [pSortableColumn]="'key'">
-                {{visualizedField.displayName}}
-                <p-sortIcon [field]="'key'"></p-sortIcon>
-            </th>
-            <th [pSortableColumn]="'doc_count'">
-                <ng-container>{{rightColumnName}}</ng-container>
-                <p-sortIcon [field]="'doc_count'"></p-sortIcon>
+            <th *ngFor="let col of headers" [pSortableColumn]="col.key">
+                {{col.label}}
+                <p-sortIcon [field]="col.key"></p-sortIcon>
             </th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-entry>
         <tr>
-            <td>{{entry.key}}</td>
-            <td *ngIf="!asPercent">{{entry.doc_count || entry.similarity}}</td>
-            <td *ngIf="asPercent">{{entry.doc_count_fraction | percent:'1.0-2'}}</td>
+            <td *ngFor="let col of headers">{{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}</td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">

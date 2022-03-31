@@ -8,7 +8,7 @@ export type SearchResults = {
         value: number,
         relation: string
     }
-}
+};
 
 export type ResultOverview = {
     queryText: string,
@@ -20,9 +20,18 @@ export type AggregateQueryFeedback = {
     aggregations: AggregateData
 }
 
+export type AggregateFrequencyResults = {
+    success: boolean,
+    message?: string,
+    data?: AggregateResult[];
+}
+
 export type AggregateResult = {
     key: string,
     doc_count: number,
+    match_count?: number,
+    token_count?: number,
+    total_doc_count?: number,
     key_as_string?: string
 }
 
@@ -32,9 +41,12 @@ export type DateFrequencyPair = {
     doc_count: number;
 }
 
-export type TimelineData = {
-    data: DateFrequencyPair[];
-    timeInterval: string;
+export type DateResult = {
+    date: Date,
+    doc_count: number,
+    match_count?: number,
+    token_count?: number,
+    total_doc_count?: number,
 }
 
 export type AggregateData = {
@@ -54,4 +66,11 @@ export type RelatedWordsResults = {
         [word: string]: number[]
     },
     time_points: string[]
+}
+
+export type NgramResults = {
+    words: {
+        [word: string]: number[]
+    }
+    time_points: string[];
 }

@@ -8,6 +8,8 @@ import itertools
 import inspect
 import json
 import bs4
+import csv
+import sys
 from datetime import datetime, timedelta
 import logging
 logger = logging.getLogger('indexing')
@@ -81,7 +83,7 @@ class Corpus(object):
         is zero on index creation (this is better while creating an index). Should you choose
         to overwrite this, consider copying this setting.
         '''
-        return { 'index' : { 'number_of_replicas' : 0 }}
+        return {'index': {'number_of_replicas': 0}}
 
     @property
     def fields(self):
@@ -313,7 +315,7 @@ class XMLCorpus(Corpus):
             soup = self.soup_from_xml(filename)
             metadata = source[1] or None
             soup = self.soup_from_xml(filename)
-        if 'external_file' in metadata:
+        if metadata and 'external_file' in metadata:
             external_fields = [field for field in self.fields if
                                isinstance(field.extractor, extract.XML) and
                                field.extractor.external_file]
@@ -519,6 +521,87 @@ class HTMLCorpus(XMLCorpus):
             }
 
 
+class CSVCorpus(Corpus):
+    '''
+    An CSVCorpus is any corpus that extracts its data from CSV sources.
+    '''
+
+    @property
+    def field_entry(self):
+        '''
+        If applicable, the field that identifies entries. Subsequent rows with the same
+        value for this field are treated as a single document. If left blank, each row
+        is treated as a document.
+        '''
+
+    @property
+    def required_field(self):
+        '''
+        Specifies a required field, for example the main content. Rows with
+        an empty value for `required_field` will be skipped.
+        '''
+
+    def source2dicts(self, source):
+        # make sure the field size is as big as the system permits
+        csv.field_size_limit(sys.maxsize)
+        for field in self.fields:
+            if not isinstance(field.extractor, (
+                extract.Choice,
+                extract.Combined,
+                extract.CSV,
+                extract.Constant,
+            )):
+                raise RuntimeError(
+                    "Specified extractor method cannot be used with a CSV corpus")
+
+        if isinstance(source, str):
+            filename = source
+        if isinstance(source, bytes):
+            raise NotImplementedError()
+        else:
+            filename = source[0]
+
+        with open(filename, 'r') as f:
+            logger.info('Reading CSV file {}...'.format(filename))
+            reader = csv.DictReader(f)
+            document_id = None
+            rows = []
+            for row in reader:
+                is_new_document = True
+
+                if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
+                    continue
+                    
+
+                if self.field_entry:
+                    identifier = row[self.field_entry]
+                    if identifier == document_id:
+                        is_new_document = False
+                    else:
+                        document_id = identifier
+
+                if is_new_document and rows:
+                    yield self.document_from_rows(rows)
+                    rows = [row]
+                else:
+                    rows.append(row)
+
+            yield self.document_from_rows(rows)
+
+    def document_from_rows(self, rows):
+        doc = {
+            field.name: field.extractor.apply(
+                # The extractor is put to work by simply throwing at it
+                # any and all information it might need
+                rows=rows,
+            )
+            for field in self.fields if field.indexed
+        }
+
+        return doc
+
+
+
 # Fields ######################################################################
 
 class Field(object):
@@ -533,8 +616,8 @@ class Field(object):
     - whether they appear in the overview of results (results_overview)
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
-    - whether they are associated with a visualization type (visualization_type)
-        options: term_frequency, timeline, wordcloud
+    - whether they are associated with a visualization type (visualizations)
+        options: histogram, timeline, wordcloud, relatedwords
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)
@@ -556,7 +639,7 @@ class Field(object):
                  results_overview=False,
                  csv_core=False,
                  search_field_core=False,
-                 visualization_type=None,
+                 visualizations=None,
                  visualization_sort=None,
                  es_mapping={'type': 'text'},
                  search_filter=None,
@@ -575,7 +658,7 @@ class Field(object):
         self.results_overview = results_overview
         self.csv_core = csv_core
         self.search_field_core = search_field_core
-        self.visualization_type = visualization_type
+        self.visualizations = visualizations
         self.visualization_sort = visualization_sort
         self.es_mapping = es_mapping
         self.indexed = indexed

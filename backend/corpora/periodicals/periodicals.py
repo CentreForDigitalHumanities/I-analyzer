@@ -82,7 +82,7 @@ class Periodicals(XMLCorpus):
             display_name='Formatted Date',
             description='Publication date, formatted from the full date',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            term_frequency=True,
+            histogram=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -92,7 +92,7 @@ class Periodicals(XMLCorpus):
             ),
             extractor=extract.Metadata('date'),
             csv_core=True,
-            visualization_type='timeline'
+            visualizations=['timeline']
         ),
         Field(
             name='date_pub',
@@ -120,7 +120,7 @@ class Periodicals(XMLCorpus):
         Field(
             name='periodical',
             display_name='Periodical name',
-            term_frequency=True,
+            histogram=True,
             results_overview=True,
             es_mapping={'type': 'keyword'},
             description='Periodical name.',
@@ -130,7 +130,7 @@ class Periodicals(XMLCorpus):
             ),
             extractor=extract.Metadata('title'),
             csv_core=True,
-            visualization_type='term_frequency'
+            visualizations=['histogram']
         ),
         Field(
             name='content',
@@ -140,7 +140,7 @@ class Periodicals(XMLCorpus):
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
-            visualization_type="wordcloud"
+            visualizations=["wordcloud"]
         ),
         Field(
             name='ocr',
@@ -179,7 +179,7 @@ class Periodicals(XMLCorpus):
                     'match': 'id'
                 }
             ),
-            visualization_type='wordcloud'
+            visualizations=['wordcloud']
         ),
         Field(
             name='start_column',
@@ -248,7 +248,7 @@ class Periodicals(XMLCorpus):
                 description='Accept only articles in these categories.',
                 option_count=26
             ),
-            visualization_type='term_frequency'
+            visualizations=['histogram']
         ),
         Field(
             name='page_no',

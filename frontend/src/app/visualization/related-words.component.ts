@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../models';
 
 import { DialogService, SearchService } from '../services/index';
 @Component({
@@ -7,7 +8,14 @@ import { DialogService, SearchService } from '../services/index';
     styleUrls: ['./related-words.component.scss']
 })
 export class RelatedWordsComponent implements OnChanges {
-    @Input() searchData: {
+    @Input() queryModel: QueryModel;
+    @Input() corpus: Corpus;
+    @Input() asTable: boolean;
+
+    @Output() error = new EventEmitter();
+    @Output() isLoading = new EventEmitter<boolean>();
+
+    graphData: {
         labels: string[],
         datasets: {
             label: string,
@@ -16,8 +24,13 @@ export class RelatedWordsComponent implements OnChanges {
             borderColor?: string
         }[]
     };
-    @Input() queryText: string;
-    @Input() corpusName: string;
+
+    tableHeaders: freqTableHeaders = [
+        { key: 'key', label: 'Term' },
+        { key: 'similarity', label: 'Similarity' }
+    ];
+    tableData: [WordSimilarity];
+
     public zoomedInData; // data requested when clicking on a time interval
     // colour-blind friendly colorPalette retrieved from colorbrewer2.org
     public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
@@ -36,21 +49,33 @@ export class RelatedWordsComponent implements OnChanges {
             }],
             xAxes: [],
         }
-    }
-    private event: any;
-    @Output('error')
-    public errorEmitter = new EventEmitter<string>();
+    };
 
     constructor(private dialogService: DialogService, private searchService: SearchService) { }
 
     ngOnChanges() {
-        this.searchData.datasets.map((d, index) => {
-            d.fill = false;
-            d.borderColor = this.colorPalette[index];
+        this.getData();
+    }
+
+    getData() {
+        this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
+            this.graphData = results['graphData'];
+            this.graphData.datasets.map((d, index) => {
+                d.fill = false;
+                d.borderColor = this.colorPalette[index];
+            });
+
+            this.tableData = results['tableData'];
+            console.log(this.tableData);
+            this.isLoading.emit(false);
         })
-        if (this.zoomedInData) {
-            this.zoomTimeInterval(this.event);
-        }
+            .catch(error => {
+                this.graphData = undefined;
+                this.tableData = undefined;
+                this.isLoading.emit(false);
+                this.error.emit(error);
+
+            });
     }
 
     showRelatedWordsDocumentation() {
@@ -58,11 +83,11 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     zoomTimeInterval(event: any) {
-        this.event = event;
+        this.isLoading.emit(true);
         this.searchService.getRelatedWordsTimeInterval(
-            this.queryText,
-            this.corpusName,
-            this.searchData.labels[event.element._index])
+            this.queryModel.queryText,
+            this.corpus.name,
+            this.graphData.labels[event.element._index])
             .then(results => {
                 this.zoomedInData = results['graphData'];
                 this.zoomedInData.datasets
@@ -76,10 +101,11 @@ export class RelatedWordsComponent implements OnChanges {
                         display: false
                     }
                 }];
+                this.isLoading.emit(false);
             })
             .catch(error => {
-                this.errorEmitter.emit(error['message']);
-            })
+                this.error.emit(error['message']);
+            });
     }
 
     zoomBack() {

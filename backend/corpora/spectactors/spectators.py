@@ -67,7 +67,7 @@ class Spectators(XMLCorpus):
             display_name='Date',
             description='Publication date.',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-            term_frequency=True,
+            histogram=True,
             results_overview=True,
             search_filter=filters.DateFilter(
                 min_date,
@@ -102,7 +102,7 @@ class Spectators(XMLCorpus):
         Field(
             name='magazine',
             display_name='Magazine name',
-            term_frequency=True,
+            histogram=True,
             results_overview=True,
             es_mapping={'type': 'keyword'},
             description='Magazine name.',

@@ -115,7 +115,7 @@ class DutchAnnualReports(XMLCorpus):
             display_name='Year',
             description='Year of the financial report.',
             results_overview=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             es_mapping={'type': 'integer'},
             search_filter=RangeFilter(
                 description='Restrict the years from which search results will be returned.',
@@ -132,7 +132,7 @@ class DutchAnnualReports(XMLCorpus):
             display_name='Company',
             description='Company to which the report belongs.',
             results_overview=True,
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Search only within these companies.',
@@ -182,7 +182,7 @@ class DutchAnnualReports(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            visualization_type='wordcloud',
+            visualizations=['wordcloud', 'relatedwords'],
             description='Text content of the page.',
             results_overview=True,
             extractor=XML(

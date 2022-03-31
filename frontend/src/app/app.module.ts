@@ -12,6 +12,7 @@ import { NgxMdModule } from 'ngx-md';
 import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
@@ -26,7 +27,7 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DataService, DialogService, DownloadService, 
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService, 
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
@@ -55,7 +56,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { TermFrequencyComponent } from './visualization/term-frequency.component';
+import { HistogramComponent } from './visualization/histogram.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -63,6 +64,8 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
+import { NgramComponent } from './visualization/ngram.component';
+import { HistogramOptionsComponent } from './visualization/histogram-options.component';
 
 
 const appRoutes: Routes = [
@@ -119,7 +122,6 @@ export const declarations: any[] = [
     AppComponent,
     BalloonDirective,
     BarChartComponent,
-    // BaseFilterComponent,
     BooleanFilterComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
@@ -132,6 +134,7 @@ export const declarations: any[] = [
     FreqtableComponent,
     HomeComponent,
     HighlightPipe,
+    HistogramComponent,
     ImageViewComponent,
     ImageNavigationComponent,
     ManualComponent,
@@ -158,18 +161,17 @@ export const declarations: any[] = [
     LoginComponent,
     ScrollToDirective,
     ScanImageComponent,
-    BarChartComponent,
-    VisualizationComponent,
-    WordcloudComponent,
     TimelineComponent,
     RelatedWordsComponent,
     DocumentViewComponent,
     SearchHistoryComponent,
     SelectFieldComponent,
-    TermFrequencyComponent,
+    HistogramComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
+    NgramComponent,
+    HistogramOptionsComponent,
 ];
 
 export const imports: any[] = [
@@ -195,6 +197,7 @@ export const imports: any[] = [
     ResourceModule.forRoot({
         handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
     }),
+    RadioButtonModule,
     RouterModule.forRoot(appRoutes),
     // SharedModule,
     SliderModule,
@@ -207,7 +210,6 @@ export const providers: any[] = [
     ApiRetryService,
     CorpusService,
     ConfigService,
-    DataService,
     DialogService,
     DownloadService,
     ElasticSearchService,

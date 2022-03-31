@@ -130,12 +130,40 @@ PERIODICALS_SCAN_IMAGE_TYPE = 'image/jpeg'
 PERIODICALS_IMAGE = 'Fleet_Street.jpg'
 PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
+PP_UK_IMAGE = 'uk.jpeg'
+PP_NL_IMAGE = 'netherlands.jpg'
+
+# Elasticsearch settings for People & Parliament corpora
+PP_ES_SETTINGS = {
+    "analysis": {
+        "analyzer": {
+            "clean": {
+                "tokenizer": "standard",
+                "char_filter": ["number_filter"],
+                "filter": ["lowercase", "stopwords"]
+            },
+            "stemmed": {
+                "tokenizer": "standard",
+                "char_filter": ["number_filter"],
+                "filter": ["lowercase", "stopwords", "stemmer"]
+            }
+        },
+        "char_filter":{
+            "number_filter":{
+                "type":"pattern_replace",
+                "pattern":"\\d+",
+                "replacement":""
+            }
+        }
+    }
+}
+
 #################
 
 # Celery configuration
 CELERY_BROKER_URL = 'amqp://'
 CELERY_BACKEND = 'amqp'
-CSV_FILES_PATH =  'api/csv_files'
+CSV_FILES_PATH = 'api/csv_files'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization

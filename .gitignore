@@ -4,3 +4,6 @@
 env/
 .env/
 elasticsearch-*/
+.python-version
+backend/.python-version
+.pytest_cache

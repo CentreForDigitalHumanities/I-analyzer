@@ -27,14 +27,14 @@ export class CorpusService {
             return Promise.resolve(true);
         }
         return this.get().then(all => {
-            let corpus = all.find(c => c.name == corpusName);
+            const corpus = all.find(c => c.name === corpusName);
             if (!corpus) {
                 return false;
             } else {
                 this.currentCorpusSubject.next(corpus);
                 return true;
             }
-        })
+        });
     }
 
     public get(): Promise<Corpus[]> {
@@ -42,13 +42,13 @@ export class CorpusService {
     }
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
-        let currentUser = await this.userService.getCurrentUser();
-        let availableCorpora = Object.keys(data).filter(name => currentUser.canAccessCorpus(name));
+        const currentUser = await this.userService.getCurrentUser();
+        const availableCorpora = Object.keys(data).filter(name => currentUser.canAccessCorpus(name));
         return availableCorpora.map(corpus => this.parseCorpusItem(corpus, data[corpus]));
     }
 
     private parseCorpusItem(name: string, data: any): Corpus {
-        let allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
+        const allFields: CorpusField[] = data.fields.map(item => this.parseField(item));
         return new Corpus(
             data.server_name,
             name,
@@ -74,15 +74,16 @@ export class CorpusService {
             resultsOverview: data.results_overview,
             csvCore: data.csv_core,
             searchFieldCore: data.search_field_core,
-            visualizationType: data.visualization_type,
+            visualizations: data.visualizations,
             visualizationSort: data.visualization_sort,
+            multiFields: data['es_mapping'].fields ? Object.keys(data['es_mapping'].fields) : undefined,
             hidden: data.hidden,
             sortable: data.sortable,
             searchable: data.searchable,
             downloadable: data.downloadable,
             name: data.name,
-            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null
-        }
+            searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null,
+        };
     }
 
     private parseSearchFilter(filter: any, fieldName: string): SearchFilter<SearchFilterData> {
@@ -92,28 +93,28 @@ export class CorpusService {
                 defaultData = {
                     filterType: filter.name,
                     checked: false
-                }
+                };
                 break;
             case 'MultipleChoiceFilter':
                 defaultData = {
                     filterType: filter.name,
                     optionCount: filter.option_count,
                     selected: []
-                }
+                };
                 break;
             case 'RangeFilter':
                 defaultData = {
                     filterType: filter.name,
                     min: filter.lower,
                     max: filter.upper
-                }
+                };
                 break;
             case 'DateFilter':
                 defaultData = {
                     filterType: filter.name,
                     min: this.formatDate(new Date(filter.lower)),
                     max: this.formatDate(new Date(filter.upper))
-                }
+                };
                 break;
         }
         return {
@@ -122,7 +123,7 @@ export class CorpusService {
             useAsFilter: false,
             defaultData: defaultData,
             currentData: defaultData
-        }
+        };
     }
 
     private parseDate(date: any): Date {

@@ -137,9 +137,10 @@ class XML(Extractor):
                      'xml_tag_toplevel': None,
                      'xml_tag_entry': None
                  },
-                 transform_soup_func=None, # a function [e.g. `my_func(soup)`]` to transform the soup directly
-                    # after _select was called, i.e. before further processing (attributes, flattening, etc).
-                    # Keep in mind that the soup passed could be None.
+                 # a function [e.g. `my_func(soup)`]` to transform the soup directly
+                 # after _select was called, i.e. before further processing (attributes, flattening, etc).
+                 # Keep in mind that the soup passed could be None.
+                 transform_soup_func=None,
                  *nargs,
                  **kwargs
                  ):
@@ -178,7 +179,7 @@ class XML(Extractor):
                 if not soup:
                     return None
             tag = self.tag[-1]
-            
+
         # Find and return a tag which is a sibling of a secondary tag
         # e.g., we need a category tag associated with a specific id
         if self.secondary_tag:
@@ -198,7 +199,6 @@ class XML(Extractor):
             return soup.find(tag, recursive=self.recursive)
         else:
             return soup.find(tag, recursive=self.recursive)
-        
 
     def _apply(self, soup_top, soup_entry, *nargs, **kwargs):
         if 'metadata' in kwargs:
@@ -248,10 +248,10 @@ class XML(Extractor):
         _tabs = re.compile('\t+')
 
         return html.unescape(
-            _newlines.sub('\n',
-                          _softbreak.sub(' ', 
-                          _tabs.sub('', text)
-                          )).strip()
+            _newlines.sub(
+                '\n',
+                _softbreak.sub(' ', _tabs.sub('', text))
+            ).strip()
         )
 
     def _attr(self, soup):
@@ -260,8 +260,12 @@ class XML(Extractor):
         '''
 
         if isinstance(soup, bs4.element.Tag):
+            if self.attribute == 'name':
+                return soup.name
             return soup.attrs.get(self.attribute)
         else:
+            if self.attribute == 'name':
+                return [ node.name for node in soup]
             return [
                 node.attrs.get(self.attribute)
                 for node in soup if node.attrs.get(self.attribute) is not None
@@ -313,6 +317,25 @@ class HTML(XML):
         else:
             return(soup.find(tag, {self.attribute_filter['attribute']: self.attribute_filter['value']}))
 
+class CSV(Extractor):
+    '''
+    This extractor extracts values from a CSV row.
+    '''
+    def __init__(self, 
+            field, 
+            multiple=False,
+            *nargs, **kwargs):
+        self.field = field
+        self.multiple = multiple
+        super().__init__(*nargs, **kwargs)
+    
+    def _apply(self, rows, *nargs, **kwargs):
+        if self.field in rows[0]:
+            if self.multiple:
+                return [row[self.field] for row in rows]
+            else:
+                row = rows[0]
+                return row[self.field]
 
 class ExternalFile(Extractor):
 
