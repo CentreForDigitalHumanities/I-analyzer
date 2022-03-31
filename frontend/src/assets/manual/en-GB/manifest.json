@@ -26,5 +26,9 @@
     },
     {   "id": "ngrams",
         "title": "Common n-grams visualization"
+    },
+    {
+        "id": "download",
+        "title": "Downloading data"
     }
 ]
