@@ -608,16 +608,19 @@ def api_ngrams():
     if not request.json:
         abort(400)
 
-    results = analyze.get_ngrams(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        ngram_size=request.json['ngram_size'],
-        term_positions=request.json['term_position'],
-        freq_compensation=request.json['freq_compensation'],
-        subfield=request.json['subfield'],
-        max_size_per_interval=request.json['max_size_per_interval']
-    )
+    try:
+        results = analyze.get_ngrams(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            ngram_size=request.json['ngram_size'],
+            term_positions=request.json['term_position'],
+            freq_compensation=request.json['freq_compensation'],
+            subfield=request.json['subfield'],
+            max_size_per_interval=request.json['max_size_per_interval']
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -637,13 +640,16 @@ def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_aggregate_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        request.json['field_value'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_aggregate_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['field_value'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -663,14 +669,17 @@ def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_date_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        request.json['start_date'],
-        request.json['end_date'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_date_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['start_date'],
+            request.json['end_date'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
