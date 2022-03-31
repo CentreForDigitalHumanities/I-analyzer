@@ -44,7 +44,7 @@
     "font-awesome": "^4.7.0",
     "iv-viewer": "^2.0.1",
     "lodash": "^4.17.21",
-    "marked": "^0.7.0",
+    "marked": "^4.0.10",
     "moment": "^2.29.1",
     "ng2-pdf-viewer": "6.3.2",
     "ngx-cookie-service": "^2.4.0",
