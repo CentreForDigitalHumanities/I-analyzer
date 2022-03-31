@@ -41,15 +41,24 @@ def test_ngrams(client, test_app, ngram_body):
     client.times_login()
     post_response = client.post('/api/ngrams', json=ngram_body)
     assert post_response.status_code == 200
+    del ngram_body['ngram_size']
+    post_response = client.post('/api/ngrams', json=ngram_body)
+    assert post_response.status_code == 400
 
 @pytest.mark.usefixtures("client", "times_user", "session")
 def test_aggregate_term_frequency(client, test_app, aggregate_term_frequency_body):
     client.times_login()
     post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 200
+    del aggregate_term_frequency_body['es_query']
+    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
+    assert post_response.status_code == 400
 
 @pytest.mark.usefixtures("client", "times_user", "session")
 def test_date_term_frequency(client, test_app, date_term_frequency_body):
     client.times_login()
     post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
     assert post_response.status_code == 200
+    del date_term_frequency_body['corpus_name']
+    post_response = client.post('/api/aggregate_term_frequency', json=date_term_frequency_body)
+    assert post_response.status_code == 400
