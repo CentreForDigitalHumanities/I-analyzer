@@ -30,6 +30,12 @@ class UnittestConfig:
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
 
+@pytest.fixture(scope='session')
+def celery_config():
+    return {
+        'broker_url': 'amqp://',
+        'result_backend': 'amqp'
+    }
 
 @pytest.fixture(scope='session')
 def test_app():
@@ -56,7 +62,7 @@ def test_es_client(test_app):
         client = elasticsearch('mock-corpus', UnittestConfig, sniff_on_start=True)
     except:
         client = None
-    
+
     if client:
         # add data from mock corpus
         corpus = load_corpus('mock-corpus')
