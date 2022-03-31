@@ -23,7 +23,7 @@ export class FreqtableComponent {
     parseTableData() {
         const data = this.data.map(row => {
             const values = this.headers.map(col => row[col.key]);
-            return  `${_.join(values, ',')}\n`;
+            return  `${_.join(values, ';')}\n`;
         });
         data.unshift(`${_.join(this.headers.map(col => col.label), ',')}\n`);
         return data;

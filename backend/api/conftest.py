@@ -38,10 +38,11 @@ def celery_config():
     }
 
 @pytest.fixture(scope='session')
-def test_app():
+def test_app(request, tmpdir_factory):
     """ Provide an instance of the application with Flask's test_client. """
     app = flask_app(UnittestConfig)
     app.testing = True
+    app.config['CSV_FILES_PATH'] = str(tmpdir_factory.mktemp('test_files'))
     ctx = app.app_context()
     ctx.push()
     yield app

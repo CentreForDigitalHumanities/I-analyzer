@@ -7,3 +7,4 @@ elasticsearch-*/
 .python-version
 backend/.python-version
 .pytest_cache
+saml/

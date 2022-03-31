@@ -571,7 +571,7 @@ class CSVCorpus(Corpus):
 
                 if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
                     continue
-                    
+
 
                 if self.field_entry:
                     identifier = row[self.field_entry]
