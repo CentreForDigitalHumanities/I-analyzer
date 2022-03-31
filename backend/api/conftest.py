@@ -37,7 +37,6 @@ def celery_config():
         'result_backend': 'amqp'
     }
 
-
 @pytest.fixture(scope='session')
 def test_app(request, tmpdir_factory):
     """ Provide an instance of the application with Flask's test_client. """
