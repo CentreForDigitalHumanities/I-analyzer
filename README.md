@@ -19,10 +19,7 @@ I-analyzer
 
 `ianalyzer/frontend` is an [Angular 13](https://angular.io/) web interface.
 
-Project layout
--------------------------------------------------------------------------------
-
-Each corpus is defined by subclassing the `Corpus` class, found in `addcorpus/common.py`, and registering that class in `backend/ianalyzer/config.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+See the documentation for [a more extensive overview](./documentation/Overview.md)
 
 Prerequisites
 -------------------------------------------------------------------------------
@@ -31,6 +28,8 @@ Prerequisites
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
+
+The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
 Running
 -------------------------------------------------------------------------------
@@ -74,6 +73,7 @@ Install `pip-tools` in your virtualenv. Run `pip-sync` or `pip install -r api/re
  3. Commit the changes to `backend/requirements.{in,txt}` at the same time.
 
 The above steps do not actually install the package; you can do this at any stage using `pip install` or afterwards using `pip-sync`.
+
 
 ### Testing
 
