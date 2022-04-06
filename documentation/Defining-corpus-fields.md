@@ -25,9 +25,9 @@ The one way in which multifields _are_ used is to allow different analyzers on t
 - `*.stemmed`: uses a language-specific analyzer to filter stopwords and stem words.
 - `*.length`: specifies the token count of the text, which is useful for aggregations.
 
-If you add fields with these names to the `es_mapping` of a text field, it enables some features in visualisations. If you add a multifield with these names that does not contain the expected type of data, some visualisations may not work.
+If you add fields with these names to the `es_mapping` of a text field, it enables some features in visualisations. If you add a multifield with these names that does not contain the expected type of data, some visualisations may not work. Do not do this.
 
-In addition the es_mapping, `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
+The property `indexed` determines whether the field should be included in the elasticsearch index. If set to `False`, the field can be displayed in the results, but it is not searchable.
 
 ## Interface parameters
 
@@ -41,9 +41,9 @@ The following properties determine how a field appears in the interface.
 
 `search_filter` can be set if the interface should include a search filter widget for the field. I-analyzer includes date filters, multiplechoice filters (used for keyword data), range filters, and boolean filters. See [filters.py](../backend/addcorpus/filters.py).
 
-`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. Date fields can use `['timeline']`. Use `['histogram']` for keyword fields, as well as boolean/numeric fields that may be considered categorical or ordinal. For text fields, you can use `['wordcloud', 'ngram']` for text fields. If the corpus has word embeddings and they are trained on a field, add `'related_words'` to that field's visualisations.
+`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. Date fields can use `['timeline']`. Use `['histogram']` for keyword fields, as well as boolean/numeric fields that may be considered categorical or ordinal. For text fields, you can use `['wordcloud', 'ngram']`. If the corpus has word embeddings and they are trained on a field, add `'relatedwords'` to that field's visualisations.
 
-In the case of the `'histogram'` visualisation, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
+If the field includes the `'histogram'` visualisation, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
 
 `search_field_core` determines if a field is listed by default when selecting specific fields to search in. If it is not set to `True`, the user would have to click on "show all fields" to see it.
 

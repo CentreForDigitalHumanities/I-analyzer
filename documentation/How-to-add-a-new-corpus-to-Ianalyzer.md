@@ -61,6 +61,8 @@ You do not need to define all of these variables in the config: they may also be
 These can be retrieved in the corpus definition, for example:
 
 ```python
+from flask import current_app
+
 class Times(XMLCorpus):
     title = "Times"
     description = "Newspaper archive, 1785-2010"
@@ -71,7 +73,7 @@ class Times(XMLCorpus):
     ...
 ```
 
-_**WHAT IS CORPUS SELECTION IN THE COMMANDS ABOVE?**_(AHJ)
+### Corpus selection
 
 The dictionary `CORPORA` defines the name of the corpora and their filepath. `CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests.
 
