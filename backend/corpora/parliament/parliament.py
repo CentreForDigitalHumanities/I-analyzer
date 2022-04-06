@@ -62,7 +62,7 @@ class Parliament(Corpus):
     @property
     def fields(self):
         return self._fields
-
+    
     @fields.setter
     def fields(self, value):
         self._fields = value

@@ -35,7 +35,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
-
+    
     country = field_defaults.country()
     country.extractor = Constant(
         value='Canada'
