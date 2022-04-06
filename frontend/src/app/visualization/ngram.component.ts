@@ -131,7 +131,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             break;
             case 'freq_compensation': {
                 this.freqCompensation = value;
-                this.chartOptions.scales.yAxes[0].scaleLabel.labelString = value ? 'Weighed frequency' : 'Frequency';
+                (this.chartOptions.scales.yAxis as any).title.text = value ? 'Weighed frequency' : 'Frequency';
             }
             break;
             case 'analysis': {

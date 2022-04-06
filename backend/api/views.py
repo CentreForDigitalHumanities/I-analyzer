@@ -495,9 +495,7 @@ def api_ngram_tasks():
 @api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
 def api_task_outcome(task_id):
-    print(task_id)
     results = celery_app.AsyncResult(id=task_id)
-    print(results)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
