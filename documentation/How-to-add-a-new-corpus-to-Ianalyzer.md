@@ -15,14 +15,14 @@ The corpus class should define the following properties:
 - `image`: a path or url to the image used for the corpus in the interface.
 - `fields`: a list of `Field` objects. See [defining corpus fields](./Defining-corpus-fields.md).
 
-The corpus class should also define a function `sources()` which generates source flies (presumably within on `data_directory`).
-
 The following properties are optional:
 - `es_alias`: an alias for the index in elasticsearch.
 - `es_settings`: overwrites the `settings` property of the elasticsearch index.
 - `scan_image_type`: the filetype of scanned documents, if these are included.
 - `allow_image_download`
 - `desription_page`: URL to markdown document with a comprehensive description
+
+The corpus class should also define a function `sources(self, start, end)` which iterates source flies (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 
 ### XML / HTML corpora
 
@@ -73,8 +73,17 @@ class Times(XMLCorpus):
 
 _**WHAT IS CORPUS SELECTION IN THE COMMANDS ABOVE?**_(AHJ)
 
-The dictionary `CORPORA` defines the name of the corpora (typically identical to `ES_INDEX` of the given corpus) and their filepath. `CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests.
+The dictionary `CORPORA` defines the name of the corpora and their filepath. `CORPUS_SERVER_NAMES` defines to which server (defined in `SERVERS`) the backend should make requests.
 
+The `CORPORA` dict is defined as
+
+```python
+CORPORA = {
+    'times': '.../times.py',
+}
+```
+
+The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.  
 
 ### default_config vs. config
 `config_fallback.py` regulates that all information in `config.py` overrules information in `default_config.py`. All sensitive information (server names, user names, passwords) should be in `config.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment. 
@@ -85,3 +94,5 @@ Optional flags:
 - `-s 1990-01-01` sets different start date for indexing
 - `-e 2000-12-31` sets different end data for indexing
 - `-d` specifies that an existing index of `CORPUSNAME_ES_INDEX` should be deleted first (if not specified, defaults to `False`, meaning that extra data can be added while existing data is not overwritten)
+
+The start and end date flags are passed on the `sources` function of the corpus (see above). If you did not utilise them there, they will not do anything.
