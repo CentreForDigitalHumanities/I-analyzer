@@ -7,7 +7,7 @@ from flask import current_app
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import MultipleChoiceFilter
+from addcorpus.filters import DateFilter, MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
@@ -50,6 +50,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     date.extractor = CSV(
         field='date'
     )
+    date.search_filter.lower = min_date
 
     house = field_defaults.house()
     house.extractor = Constant(

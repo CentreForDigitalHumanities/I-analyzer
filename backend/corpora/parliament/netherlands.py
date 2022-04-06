@@ -1,3 +1,4 @@
+from datetime import datetime
 from glob import glob
 import logging
 
@@ -82,6 +83,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     title = "People & Parliament (Netherlands)"
     description = "Speeches from the First and Second Chamber of the Netherlands"
+    min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
@@ -125,6 +127,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         tag=['meta','dc:date'],
         toplevel=True
     )
+    date.search_filter.lower = min_date
 
     house = field_defaults.house()
     house.extractor = XML(
