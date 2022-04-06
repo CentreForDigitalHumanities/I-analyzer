@@ -132,7 +132,7 @@ PERIODICALS_DESCRIPTION_PAGE = '19thCenturyUKPeriodicals.md'
 
 PP_UK_IMAGE = 'uk.jpeg'
 PP_NL_IMAGE = 'netherlands.jpg'
-PP_GERMANY_NEW_IMAGE = 'germany-new.jpg'
+PP_GERMANY_NEW_IMAGE = 'germany-new.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
 
 # Elasticsearch settings for People & Parliament corpora
