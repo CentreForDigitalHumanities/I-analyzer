@@ -6,15 +6,18 @@ import os.path as op
 from flask import current_app
 
 from addcorpus.corpus import Corpus, Field
-from addcorpus.extract import XML, Constant
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
+import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 
 class Parliament(Corpus):
     '''
     Base class for speeches in the People & Parliament project.
 
-    This supplies the frontend with the information it needs.
-    Child corpora should only provide extractors for each field.
+    This defines some shared constants and provides some core fields.
+    Child corpora should add or overwrite fields depending on what data
+    is available, then overwrite the `__init__` to set the `fields` property.
+
     Create indices (with alias 'peopleparliament') from
     the corpora specific definitions, and point the application
     to this base corpus.
@@ -27,8 +30,8 @@ class Parliament(Corpus):
     es_index = current_app.config['PP_ALIAS']
     # scan_image_type = 'image/png'
     # fields below are required by code but not actually used
-    min_date = datetime(year=1800, month=1, day=1)
-    max_date = datetime(year=2021, month=12, day=31)
+    min_date = MIN_DATE
+    max_date = MAX_DATE
     image = 'parliament.jpeg'
     data_directory = 'bogus'
 
@@ -46,170 +49,29 @@ class Parliament(Corpus):
                     'filename': filename
                 }
 
-    country = Field(
-        name='country',
-        display_name='Country',
-        description='Country in which the debate took place',
-        es_mapping={'type': 'keyword'},
-        search_filter=MultipleChoiceFilter(
-            description='Search only in debates from selected countries',
-            option_count=10
-        )
+    country = field_defaults.country()
+    country.search_filter = MultipleChoiceFilter(
+        description='Search only in debates from selected countries',
+        option_count=10
     )
 
-    date = Field(
-        name='date',
-        display_name='Date',
-        description='The date on which the debate took place.',
-        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
-        results_overview=True,
-        search_filter=DateFilter(
-            min_date,
-            max_date,
-            description='Search only within this time range.'
-        ),
-        visualizations=['timeline']
-    )
+    date = field_defaults.date()
+    speech = field_defaults.speech()
 
-    house = Field(
-        name='house',
-        display_name='House',
-        description='House in which the debate took place',
-        es_mapping={'type': 'keyword'},
-        visualizations=['histogram'],
-    )
+    #define fields property so it can be set in __init__
+    @property
+    def fields(self):
+        return self._fields
+    
+    @fields.setter
+    def fields(self, value):
+        self._fields = value
 
-    debate_title = Field(
-        name='debate_title',
-        display_name='Title of debate',
-        description='Title of the debate in which the speech was held',
-        es_mapping={'type': 'text'},
-    )
+    def __init__(self):
+        # init function specifies list of fields - should be overwritten in subclasses.
+        # `fields` is specified here rather than than as a static property,
+        # to accommodate subclasses like ParliamentUK and ParliamentUKRecent,
+        # which should use the same fields list but may define different extractors
+        # for individual fields
 
-    debate_id = Field(
-        name='debate_id',
-        display_name='Debate ID',
-        description='Unique identifier of the debate in which the speech was held',
-        es_mapping={'type': 'keyword'},
-    )
-
-    topic = Field(
-        name='topic',
-        display_name='Topic',
-        description='Topic of the debate in which the speech was held',
-        es_mapping={'type': 'text'},
-    )
-
-    # speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
-    # stopword and stemmer filter need to be defined for each language
-    speech = Field(
-        name='speech',
-        display_name='Speech',
-        description='The transcribed speech',
-        # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = {
-            "type" : "text",
-            "fields": {
-                "clean": {
-                    "type": "text",
-                    "analyzer": "clean",
-                    "term_vector": "with_positions_offsets"
-                },
-                "stemmed": {
-                    "type": "text",
-                    "analyzer": "stemmed",
-                    "term_vector": "with_positions_offsets",
-                },
-                "length": {
-                    "type":     "token_count",
-                    "analyzer": "standard"
-                }
-            }
-        },
-        results_overview=True,
-        search_field_core=True,
-        display_type='text_content',
-        visualizations=['wordcloud', 'ngram']
-    )
-
-    speech_id = Field(
-        name='id',
-        display_name='Speech ID',
-        description='Unique identifier of the speech',
-        es_mapping={'type': 'keyword'},
-    )
-
-    speaker = Field(
-        name='speaker',
-        display_name='Speaker',
-        description='The speaker of the transcribed speech',
-        es_mapping={'type': 'keyword'},
-    )
-
-    speech_type = Field(
-        name='speech_type',
-        display_name='Speech Type',
-        description='The type of speech',
-        es_mapping={'type': 'keyword'},
-    )
-
-    speaker_id = Field(
-        name='speaker_id',
-        display_name='Speaker ID',
-        description='Unique identifier of the speaker',
-        es_mapping={'type': 'keyword'},
-    )
-
-    role = Field(
-        name='role',
-        display_name='Role',
-        description='Role of the speaker in the debate',
-        es_mapping={'type': 'keyword'},
-    )
-
-    party = Field(
-        name='party',
-        display_name='Party',
-        description='Political party that the speaker belongs to',
-        es_mapping={'type': 'keyword'},
-    )
-
-    party_id = Field(
-        name='party_id',
-        display_name='Party ID',
-        description='Unique identifier of the political party the speaker belongs to',
-        es_mapping={'type': 'keyword'},
-    )
-
-    party_full = Field(
-        name='party_full',
-        display_name='Party (full name)',
-        description='Full name of the political party that the speaker belongs to',
-        es_mapping={'type': 'keyword'},
-    )
-
-    page = Field(
-        name='page',
-        display_name='Page(s)',
-        description='Page(s) of the speech in the original document',
-        es_mapping={'type': 'keyword'}
-    )
-
-    column = Field(
-        name='column',
-        display_name='Column',
-        description='Column(s) of the speech in the original document',
-        es_mapping={'type': 'keyword'}
-    )
-
-    fields = [
-        country, date,
-        debate_title, debate_id,
-        topic, house,
-        speech, speech_id,
-        speaker, speaker_id,
-        speech_type,
-        role,
-        party, party_id, party_full,
-        page, column,
-        ]
+        self.fields = [ self.country, self.date, self.speech ]

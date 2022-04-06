@@ -1,6 +1,7 @@
 # WebUi
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.3.0.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.2.3
+This version of Angular uses Node 12.22.10.
 
 # Prerequisites
 

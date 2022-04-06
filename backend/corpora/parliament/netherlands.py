@@ -1,3 +1,4 @@
+from datetime import datetime
 from glob import glob
 import logging
 
@@ -7,11 +8,73 @@ import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined
 from addcorpus.filters import MultipleChoiceFilter
+from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
 
 import re
 
 logger = logging.getLogger('indexing')
+
+def format_role(role):
+    if role == 'mp':
+        return role.upper()
+    else:
+        return role.title() if type(role) == str else role
+
+def find_topic(speech):
+    return speech.find_parent('topic')
+
+def format_house(house):
+    if house == 'senate':
+        return 'Eerste Kamer'
+    if house == 'commons':
+        return 'Tweede Kamer'
+    if house == 'other':
+        return 'Other'
+    return house
+
+def find_last_pagebreak(node):
+    "find the last pagebreak node before the start of the current node"
+    is_tag = lambda x : type(x) == bs4.element.Tag
+
+    #look for pagebreaks in previous nodes
+    for prev_node in node.previous_siblings:
+        if is_tag(prev_node):
+            breaks = prev_node.find_all('pagebreak')
+            if breaks:
+                return breaks[-1]
+
+    #if none was found, go up a level
+    parent = node.parent
+    if parent:
+        return find_last_pagebreak(parent)
+
+def format_pages(pages):
+    topic_start, topic_end, prev_break, last_break = pages
+    if prev_break:
+        if last_break:
+            return format_page_numbers([prev_break, last_break])
+        return str(prev_break)
+
+    if topic_start and topic_end:
+        return format_page_numbers([topic_start, topic_end])
+
+def format_party(data):
+    name, id = data
+    if name:
+        return name
+    if id and id.startswith('nl.p.'):
+        id = id[5:]
+    return id
+
+def get_party_full(speech_node):
+    party_ref = speech_node.attrs.get(':party-ref')
+    if not party_ref:
+        return None
+    parents = list(speech_node.parents)
+    party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
+    return party_node
 
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
@@ -20,6 +83,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     title = "People & Parliament (Netherlands)"
     description = "Speeches from the First and Second Chamber of the Netherlands"
+    min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
@@ -52,194 +116,143 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             else:
                 yield xml_file
 
-    def format_role(role):
-        if role == 'mp':
-            return role.upper()
-        else:
-            return role.title() if type(role) == str else role
 
-    def find_topic(speech):
-        return speech.find_parent('topic')
+    country = field_defaults.country()
+    country.extractor = Constant(
+        value='Netherlands'
+    )
 
-    def format_house(house):
-        if house == 'senate':
-            return 'Eerste Kamer'
-        if house == 'commons':
-            return 'Tweede Kamer'
-        if house == 'other':
-            return 'Other'
-        return house
+    date = field_defaults.date()
+    date.extractor = XML(
+        tag=['meta','dc:date'],
+        toplevel=True
+    )
+    date.search_filter.lower = min_date
 
-    def find_last_pagebreak(node):
-        "find the last pagebreak node before the start of the current node"
-        is_tag = lambda x : type(x) == bs4.element.Tag
+    house = field_defaults.house()
+    house.extractor = XML(
+        tag=['meta','dc:subject', 'pm:house'],
+        attribute='pm:house',
+        toplevel=True,
+        transform=format_house
+    )
 
-        #look for pagebreaks in previous nodes
-        for prev_node in node.previous_siblings:
-            if is_tag(prev_node):
-                breaks = prev_node.find_all('pagebreak')
-                if breaks:
-                    return breaks[-1]
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = XML(
+        tag=['meta', 'dc:title'],
+        toplevel=True,
+    )
 
-        #if none was found, go up a level
-        parent = node.parent
-        if parent:
-            return ParliamentNetherlands.find_last_pagebreak(parent)
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = XML(
+        tag=['meta', 'dc:identifier'],
+        toplevel=True,
+    )
 
-    def format_pages(pages):
-        topic_start, topic_end, prev_break, last_break = pages
-        if prev_break:
-            if last_break:
-                return '{}-{}'.format(prev_break, last_break)
-            return str(prev_break)
+    topic = field_defaults.topic()
+    topic.extractor = XML(
+        transform_soup_func = find_topic,
+        attribute=':title',
+    )
 
-        if topic_start and topic_end:
-            return '{}-{}'.format(topic_start, topic_end)
-
-    def format_party(data):
-        name, id = data
-        if name:
-            return name
-        if id and id.startswith('nl.p.'):
-            id = id[5:]
-        return id
-
-    def get_party_full(self, speech_node):
-        party_ref = speech_node.attrs.get(':party-ref')
-        if not party_ref:
-            return None
-        parents = list(speech_node.parents)
-        party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
-        return party_node
-
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='Netherlands'
-        )
-
-        self.country.search_filter = None
-
-        self.date.extractor = XML(
-            tag=['meta','dc:date'],
-            toplevel=True
-        )
-
-        self.house.extractor = XML(
-            tag=['meta','dc:subject', 'pm:house'],
-            attribute='pm:house',
-            toplevel=True,
-            transform=ParliamentNetherlands.format_house
-        )
-        self.house.search_filter=MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
-            option_count=2
-        )
-
-        self.debate_title.extractor = XML(
-            tag=['meta', 'dc:title'],
-            toplevel=True,
-        )
-
-        self.debate_id.extractor = XML(
-            tag=['meta', 'dc:identifier'],
-            toplevel=True,
-        )
-
-        self.topic.extractor = XML(
-            transform_soup_func = ParliamentNetherlands.find_topic,
-            attribute=':title',
-        )
-
-        self.speech.extractor = XML(
-            tag='p',
-            multiple=True,
-            flatten=True,
-        )
-
-        # adjust the mapping:
-        # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
-        self.speech.es_mapping = {
-          "type" : "text",
-          "analyzer": "standard",
-          "term_vector": "with_positions_offsets",
-          "fields": {
-            "stemmed": {
-                "type": "text",
-                "analyzer": "dutch"
-                },
-            "clean": {
-                "type": 'text',
-                "analyzer": "clean"
-                },
-            "length": {
-                "type": "token_count",
-                "analyzer": "standard",
-                }
+    speech = field_defaults.speech()
+    speech.extractor = XML(
+        tag='p',
+        multiple=True,
+        flatten=True,
+    )
+    # adjust the mapping:
+    # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
+    speech.es_mapping = {
+        "type" : "text",
+        "analyzer": "standard",
+        "term_vector": "with_positions_offsets",
+        "fields": {
+        "stemmed": {
+            "type": "text",
+            "analyzer": "dutch"
+            },
+        "clean": {
+            "type": 'text',
+            "analyzer": "clean"
+            },
+        "length": {
+            "type": "token_count",
+            "analyzer": "standard",
             }
         }
+    }
 
-        self.speech_id.extractor = XML(
-            attribute=':id'
-        )
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = XML(
+        attribute=':id'
+    )
 
-        self.speaker.extractor = Combined(
-            XML(attribute=':function'),
-            XML(attribute=':speaker'),
-            transform=lambda x: ' '.join(x)
-        )
+    speaker = field_defaults.speaker()
+    speaker.extractor = Combined(
+        XML(attribute=':function'),
+        XML(attribute=':speaker'),
+        transform=' '.join
+    )
 
-        self.speaker_id.extractor = XML(
-            attribute=':member-ref'
-        )
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = XML(
+        attribute=':member-ref'
+    )
 
-        self.role.extractor = XML(
-            attribute=':role',
-            transform=ParliamentNetherlands.format_role
-        )
+    role = field_defaults.role()
+    role.extractor = XML(
+        attribute=':role',
+        transform=format_role
+    )
 
-        self.role.search_filter=MultipleChoiceFilter(
-            description='Search for speeches by speakers with the the selected roles',
-            option_count=10
-        )
+    party = field_defaults.party()
+    party.extractor = Combined(
+        XML(attribute=':party'),
+        XML(attribute=':party-ref'),
+        transform=format_party,
+    )
 
-        self.party.extractor = Combined(
-            XML(
-                attribute=':party'
-                ),
-            XML(
-                attribute=':party-ref'
-            ),
-            transform=ParliamentNetherlands.format_party,
-        )
-        self.party.search_filter = MultipleChoiceFilter(
-            description='Search in speeches from the selected parties',
-            option_count=50
-        )
-        self.party.visualizations = ['histogram']
 
-        self.party_id.extractor = XML(
-            attribute=':party-ref'
-        )
+    party_id = field_defaults.party_id()
+    party_id.extractor = XML(
+        attribute=':party-ref'
+    )
 
-        self.party_full.extractor = XML(
-            attribute='pm:name',
-            transform_soup_func=self.get_party_full
-        )
+    party_full = field_defaults.party_full()
+    party_full.extractor = XML(
+        attribute='pm:name',
+        transform_soup_func=get_party_full
+    )
 
-        self.page.extractor = Combined(
-            XML(transform_soup_func=ParliamentNetherlands.find_topic,
-                attribute=':source-start-page'
-            ),
-            XML(transform_soup_func=ParliamentNetherlands.find_topic,
-                attribute=':source-end-page'
-            ),
-            XML(transform_soup_func=ParliamentNetherlands.find_last_pagebreak,
-                attribute=':originalpagenr',
-            ),
-            XML(tag=['stage-direction', 'pagebreak'],
-                attribute=':originalpagenr',
-                multiple=True,
-                transform=lambda pages : pages[-1] if pages else pages
-            ),
-            transform=ParliamentNetherlands.format_pages,
-        )
+    page = field_defaults.page()
+    page.extractor = Combined(
+        XML(transform_soup_func=find_topic,
+            attribute=':source-start-page'
+        ),
+        XML(transform_soup_func=find_topic,
+            attribute=':source-end-page'
+        ),
+        XML(transform_soup_func=find_last_pagebreak,
+            attribute=':originalpagenr',
+        ),
+        XML(tag=['stage-direction', 'pagebreak'],
+            attribute=':originalpagenr',
+            multiple=True,
+            transform=lambda pages : pages[-1] if pages else pages
+        ),
+        transform=format_pages,
+    )
+
+    def __init__(self):
+        self.fields = [
+            self.country, self.date,
+            self.house,
+            self.debate_title, self.debate_id,
+            self.topic,
+            self.speech, self.speech_id,
+            self.speaker, self.speaker_id, self.role,
+            self.party, self.party_id, self.party_full,
+            self.page,
+        ]
+

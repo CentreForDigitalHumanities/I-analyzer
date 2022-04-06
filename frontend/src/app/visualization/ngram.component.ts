@@ -47,6 +47,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             },
         },
         plugins: {
+            legend: {
+                display: true,
+            },
             tooltip: {
                 intersect: false,
                 displayColors: true,

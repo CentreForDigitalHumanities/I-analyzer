@@ -621,17 +621,20 @@ def api_get_related_words_time_interval():
 
 @api.route('get_aggregate_term_frequency', methods=['POST'])
 @login_required
-def api_get_aggregate_term_frequency():
+def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_aggregate_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        request.json['field_value'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_aggregate_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['field_value'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -645,20 +648,23 @@ def api_get_aggregate_term_frequency():
         })
     return response
 
-@api.route('get_date_term_frequency', methods=['POST'])
+@api.route('date_term_frequency', methods=['POST'])
 @login_required
-def api_get_date_term_frequency():
+def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    results = analyze.get_date_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        request.json['start_date'],
-        request.json['end_date'],
-        request.json['size'],
-    )
+    try:
+        results = analyze.get_date_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['start_date'],
+            request.json['end_date'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string

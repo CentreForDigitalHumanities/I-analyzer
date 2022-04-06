@@ -126,7 +126,7 @@ export class SearchService {
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
-            field: fieldName,
+            field_name: fieldName,
             start_date: start_date.toISOString().slice(0, 10),
             end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
             size: size,
@@ -185,7 +185,7 @@ export class SearchService {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({'graphData': {
-                                'labels': result['related_word_data'].time_points, 
+                                'labels': result['related_word_data'].time_points,
                                 'datasets':result['related_word_data'].similar_words_subsets
                             }
                     });

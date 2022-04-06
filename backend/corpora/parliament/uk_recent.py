@@ -7,71 +7,78 @@ from flask import current_app
 
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus, Field
-from corpora.parliament.uk import ParliamentUK
+from corpora.parliament.uk import ParliamentUK, format_house, format_speaker
+import corpora.parliament.utils.field_defaults as field_defaults
 
 class ParliamentUKRecent(ParliamentUK, CSVCorpus):
     data_directory = current_app.config['PP_UK_RECENT_DATA']
 
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='United Kingdom'
-        )
-        self.country.search_filter = None
+    country = field_defaults.country()
+    country.extractor = Constant(
+        value='United Kingdom'
+    )
 
-        self.date.extractor = CSV(
-            field='date_yyyy-mm-dd'
-        )
+    date = field_defaults.date()
+    date.extractor = CSV(
+        field='date_yyyy-mm-dd'
+    )
 
-        self.house.extractor = CSV(
-            field='house',
-            transform=ParliamentUK.format_house
-        )
+    house = field_defaults.house()
+    house.extractor = CSV(
+        field='house',
+        transform=format_house
+    )
 
-        self.speech_id.extractor = CSV(
-            field='speech_id'
-        )
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = CSV(
+        field='speech_id'
+    )
 
-        self.speech.extractor = CSV(
-            field='content',
-            multiple=True,
-            transform=lambda x : ' '.join(x)
-        )
+    speech = field_defaults.speech()
+    speech.es_mapping = ParliamentUK.speech.es_mapping
+    speech.extractor = CSV(
+        field='content',
+        multiple=True,
+        transform=lambda x : ' '.join(x)
+    )
 
-        self.speaker.extractor = CSV(
-            field='speaker_name',
-            transform=ParliamentUK.format_speaker
-        )
+    speaker = field_defaults.speaker()
+    speaker.extractor = CSV(
+        field='speaker_name',
+        transform=format_speaker
+    )
 
-        self.speaker_id.extractor = CSV(
-            field='speaker_id'
-        )
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = CSV(
+        field='speaker_id'
+    )
 
-        self.speech_type.extractor = CSV(
-            field='speech_type'
-        )
+    speech_type = field_defaults.speech_type()
+    speech_type.extractor = CSV(
+        field='speech_type'
+    )
 
-        self.debate_title.extractor = CSV(
-            field='debate'
-        )
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = CSV(
+        field='debate'
+    )
+    
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = CSV(
+        field='debate_id'
+    )
 
-        self.debate_id.extractor = CSV(
-            field='debate_id'
-        )
+    topic = field_defaults.topic()
+    topic.extractor = Combined(
+        CSV(field='heading_major'),
+        CSV(field='heading_minor'),
+        transform=lambda x: ' '.join(x)
+    )
 
-        self.topic.extractor = Combined(
-            CSV(field='heading_major'),
-            CSV(field='heading_minor'),
-            transform=lambda x: ' '.join(x)
-        )
+    sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field='sequence'
+    )
 
-        sequence = Field(
-            name='sequence',
-            display_name='Sequence',
-            description='Index of the sequence of speeches in a debate',
-            es_mapping={'type': 'integer'},
-            extractor=CSV(
-                field='sequence'
-            )
-        )
+    column = field_defaults.column()
 
-        self.fields.append(sequence)
