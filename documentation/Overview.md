@@ -37,4 +37,4 @@ The core of the frontend application is the `src/app/search/search.component`, p
 
 There are various visualizations in `src/app/visualization/`, with `visualization.component` as the main component which checks which visualization type is to be displayed, and calling on `search.service` for the appropriate data. As a rule, keyword fields call Elasticsearch internally, while other visualizations (wordcloud, related words) query information via `api.service` from the Python backend.
 
-For more about users, authentication and authorization, see [Authentication and authorization](./Authentication-and-authorization)
+For more about users, authentication and authorization, see [Authentication and authorization](./Authentication-and-authorization.md)

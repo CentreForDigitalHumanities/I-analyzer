@@ -609,7 +609,7 @@ class Field(object):
     Fields may hold the following data:
     - a short hand name (name)
     - the name shown shown to the user (display name)
-    - what kind of data they contain, e.g. text, keywords... (display type)
+    - what kind of ata they contain, e.g. text, keywords... (display type)
     - an explanation of the field (description)
     - whether they are added to the Elasticsearch index (indexed)
     - whether they are hidden from the frontend (hidden)
@@ -617,7 +617,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: histogram, timeline, wordcloud, relatedwords
+        options: histogram, timeline, wordcloud, relatedwords, ngram
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)
