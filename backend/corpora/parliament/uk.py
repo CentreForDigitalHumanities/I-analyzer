@@ -107,7 +107,8 @@ class ParliamentUK(Parliament, CSVCorpus):
             }
         }
     }
-    
+    speech.visualizations.remove('ngram')
+     
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
