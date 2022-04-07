@@ -41,6 +41,20 @@ def make_wordcloud_data(list_of_texts, request_json):
     word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
     return word_counts
 
+@celery_app.task()
+def get_ngram_data(request_json):
+    results = analyze.get_ngrams(
+        request_json['es_query'],
+        request_json['corpus_name'],
+        request_json['field'],
+        ngram_size=request_json['ngram_size'],
+        term_positions=request_json['term_position'],
+        freq_compensation=request_json['freq_compensation'],
+        subfield=request_json['subfield'],
+        max_size_per_interval=request_json['max_size_per_interval']
+    )
+    return results
+
 def create_query(request_json):
     """
     format the route of the search into a query string
