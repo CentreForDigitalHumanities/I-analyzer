@@ -609,7 +609,7 @@ class Field(object):
     Fields may hold the following data:
     - a short hand name (name)
     - the name shown shown to the user (display name)
-    - what kind of ata they contain, e.g. text, keywords... (display type)
+    - what kind of data they contain, e.g. text, keywords... (display type)
     - an explanation of the field (description)
     - whether they are added to the Elasticsearch index (indexed)
     - whether they are hidden from the frontend (hidden)
