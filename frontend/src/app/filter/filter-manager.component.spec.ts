@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { commonTestBed } from '../common-test-bed';
 
@@ -9,7 +9,7 @@ describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
   let fixture: ComponentFixture<FilterManagerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
   }));
 

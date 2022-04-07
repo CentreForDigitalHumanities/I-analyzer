@@ -1,10 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 
-import * as d3Scale from 'd3-scale';
 import * as d3TimeFormat from 'd3-time-format';
-import * as d3Time from 'd3-time';
-import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
+
 
 // custom definition of scaleTime to avoid Chrome issue with displaying historical dates
 import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
@@ -12,6 +10,9 @@ import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
 // import { default as scaleTimeCustom } from './timescale.js';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
+import { Chart, ChartOptions } from 'chart.js';
+import Zoom from 'chartjs-plugin-zoom';
+import 'chartjs-adapter-moment';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -23,32 +24,18 @@ const hintHidingDebounceTime = 1000;  // milliseconds
     styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @ViewChild('timeline', { static: true }) private timelineContainer: ElementRef;
-    @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField;
-    @Input() asTable: boolean;
-
-    @Output() isLoading = new EventEmitter<boolean>();
-    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
-
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
-
     private queryModelCopy;
 
-    public xScale: d3Scale.ScaleTime<any, any>;
     public showHint: boolean;
 
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
-    documentLimitExceeded = false; // whether the results include documents than the limit
-
-    private currentTimeCategory: string;
+    private currentTimeCategory: 'year'|'week'|'month'|'day';
     private rawData: DateResult[];
     private selectedData: TimelineDataPoint[];
     private scaleDownThreshold = 10;
     private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
+    public xDomain: [Date, Date];
+
+    timeline: any;
 
     ngOnInit() {
         this.setupZoomHint();
@@ -59,18 +46,11 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
         const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
 
-        if (this.chartElement === undefined) {
-            this.chartElement = this.timelineContainer.nativeElement;
-            this.calculateCanvas();
-        }
         this.queryModelCopy = _.cloneDeep(this.queryModel);
         const min = new Date(this.visualizedField.searchFilter.currentData.min);
         const max = new Date(this.visualizedField.searchFilter.currentData.max);
         this.xDomain = [min, max];
         this.calculateTimeCategory(min, max);
-        this.xScale = d3Scale.scaleTime()
-            .range([0, this.width])
-            .clamp(true);
         this.prepareTimeline(loadDocCounts, loadTokenCounts);
     }
 
@@ -78,11 +58,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
 
-        if (this.rawData) {
+        if (this.rawData && this.timeline) {
             if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
                 this.prepareTimeline(false, true);
             } else {
                 this.prepareTimeline(false, false);
+            }
+            if (this.timeline.isZoomedOrPanned()) {
+                this.loadZoomedInData(this.timeline, true);
             }
         }
     }
@@ -93,25 +76,14 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         if (loadDocCounts) { await this.requestDocumentData(); }
         if (loadTokenCounts) { await this.requestTermFrequencyData(); }
 
-        this.selectData();
+        this.selectedData = this.selectData(this.rawData);
 
-        this.setDateRange();
-        this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-        this.totalCount = _.sumBy(this.selectedData, d => d.value);
+        if (!this.selectedData.length) {
+            this.error.emit({message: 'No results'});
+        }
 
-        this.setupYScale();
-        this.createChart(this.visualizedField.displayName);
-        this.rescaleY(this.normalizer === 'percent');
-        this.drawChartData();
-        this.setupBrushBehaviour();
+        this.setChart();
         this.isLoading.emit(false);
-    }
-
-    setDateRange() {
-        const min = new Date(this.visualizedField.searchFilter.currentData.min);
-        const max = new Date(this.visualizedField.searchFilter.currentData.max);
-        this.xDomain = [min, max];
-        this.xScale.domain(this.xDomain);
     }
 
     async requestDocumentData() {
@@ -141,7 +113,7 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         const dataPromises = this.rawData.map((cat, index) => {
             return new Promise(resolve => {
                 const start_date = cat.date;
-                const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
+                const binDocumentLimit = _.min([10000, _.ceil(this.rawData[index].doc_count * this.searchRatioDocuments)]);
                 const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
                 this.searchService.dateTermFrequencySearch(
                     this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
@@ -159,144 +131,192 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         await Promise.all(dataPromises);
 
         // signal if total token counts are available
-        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
-
+        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
     }
 
-    selectData(): void {
+    selectData(rawData: DateResult[], total_doc_count?: number): TimelineDataPoint[] {
         if (this.frequencyMeasure === 'tokens') {
             if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
+                return rawData.map(cat =>
                     ({ date: cat.date, value: cat.match_count }));
             } else if (this.normalizer === 'terms') {
-                this.selectedData = this.rawData.map(cat =>
+                return rawData.map(cat =>
                     ({ date: cat.date, value: cat.match_count / cat.token_count }));
             } else if (this.normalizer === 'documents') {
-                this.selectedData = this.rawData.map(cat =>
+                return rawData.map(cat =>
                     ({ date: cat.date, value: cat.match_count / cat.total_doc_count }));
             }
         } else {
             if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
+                return rawData.map(cat =>
                     ({ date: cat.date, value: cat.doc_count }));
             } else {
-                const total_doc_count = this.rawData.reduce((s, f) => s + f.doc_count, 0);
-                this.selectedData = this.rawData.map(cat =>
+                total_doc_count = total_doc_count || rawData.reduce((s, f) => s + f.doc_count, 0);
+                return rawData.map(cat =>
                     ({ date: cat.date, value: cat.doc_count / total_doc_count }));
             }
 
         }
     }
 
-    drawChartData() {
-        /**
-        * bind data to chart, remove or update existing bars, add new bars
-        */
-        const update = this.chart.selectAll('.bar')
-            .data(this.selectedData);
+    setChart() {
+        const data = this.selectedData.map((item) => ({
+            x: item.date.toISOString(),
+            y: item.value,
+        }));
 
-        // remove exiting bars
-        update.exit().remove();
+        const datasets = [
+            {
+                xAxisID: 'xAxis',
+                yAxisID: 'yAxis',
+                label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
+                data: data,
+            }
+        ];
 
-        // update existing bars
-        this.chart.selectAll('.bar').transition()
-            .attr('x', d => this.xScale(d.date))
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', d => this.calculateBarWidth(d.date))
-            .attr('height', d => this.height - this.yScale(d.value));
+        if (this.timeline) {
+            if (this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day')) {
+                this.currentTimeCategory = this.timeline.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
+            }
+            this.timeline.data.datasets = datasets;
+            this.timeline.update();
+        } else {
+            this.initChart(datasets);
+        }
 
-        // add new bars
-        update
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', d => this.xScale(d.date))
-            .attr('width', d => this.calculateBarWidth(d.date))
-            .attr('y', this.yScale(0)) // set to zero first for smooth transition
-            .attr('height', 0)
-            .transition().duration(750)
-            .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.value))
-            .attr('height', d => this.height - this.yScale(d.value));
     }
 
+    initChart(datasets) {
+        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const margin = moment.duration(1, this.currentTimeCategory);
+        const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
+        const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
+        const options = this.basicChartOptions;
+        const xAxis = options.scales.xAxis;
+        (xAxis as any).title.text = xAxisLabel;
+        xAxis.type = 'time';
+        (xAxis as any).time = {
+            minUnit: 'day',
+            unit: this.currentTimeCategory,
+        };
+        xAxis.min = xMin.toISOString();
+        xAxis.max = xMax.toISOString();
+        options.plugins.tooltip = {
+            callbacks: {
+                title: ([tooltipItem]) => {
+                    return this.formatDate(Date.parse(tooltipItem.label as string));
+                },
+                label: (tooltipItem) => {
+                    const value = (tooltipItem.raw as {t: Date, y: number}).y;
+                    return this.formatValue(value);
+                }
+            }
+        };
 
-    zoomIn() {
-        const xExtent = this.xScale.domain();
+        options.scales.xAxis.type = 'time';
+        this.timeline = new Chart('timeline',
+            {
+                type: 'bar',
+                data: {
+                    datasets: datasets
+                },
+                plugins: [ Zoom ],
+                options: options
+            }
+        );
+
+        this.timeline.canvas.ondblclick = (event) => this.zoomOut();
+
+    }
+
+    async loadZoomedInData(chart, triggedByDataUpdate = false) {
         const previousTimeCategory = this.currentTimeCategory;
-        this.calculateTimeCategory(xExtent[0], xExtent[1]);
-        // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
-        if (this.currentTimeCategory === 'day' && previousTimeCategory === this.currentTimeCategory) {
-            // zoom in without rearranging underlying data
-            this.rescaleX();
-            this.chart.selectAll('.bar')
-                .transition().duration(750)
-                .attr('x', d => this.xScale(d.date))
-                .attr('y', d => this.yScale(d.doc_count))
-                .attr('width', d => this.calculateBarWidth(d.date));
-        }
-        else {
+        const min = new Date(chart.scales.xAxis.min);
+        const max = new Date(chart.scales.xAxis.max);
+        this.calculateTimeCategory(min, max);
+
+        if (triggedByDataUpdate || (this.currentTimeCategory !== previousTimeCategory)) {
+            this.isLoading.emit(true);
+            const dataset = chart.data.datasets[0];
+
+            // hide data for smooth transition
+            chart.update(triggedByDataUpdate ? 'none' : 'hide');
+
+            // download zoomed in results
             const filter = this.visualizedField.searchFilter;
-            filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
+            filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
             this.queryModelCopy.filters.push(filter);
-            this.prepareTimeline().then(() => {
-                this.setupYScale();
-                this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-                this.rescaleY(this.normalizer === 'percent');
-                this.drawChartData();
-                this.rescaleX();
+
+            let zoomedInResults: DateResult[];
+
+            const getDocCounts = this.searchService.dateHistogramSearch(
+                this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
+                    return {
+                        date: new Date(cat.key_as_string),
+                        doc_count: cat.doc_count
+                    };
+                });
+                return data;
             });
+
+            zoomedInResults = await getDocCounts;
+
+            if (this.frequencyMeasure === 'tokens') {
+                const dataPromises = zoomedInResults.map((cat, index) => {
+                    return new Promise(resolve => {
+                        const start_date = cat.date;
+                        const binDocumentLimit = _.min([10000, _.ceil(zoomedInResults[index].doc_count * this.searchRatioDocuments)]);
+                        const end_date = index < (zoomedInResults.length - 1) ? zoomedInResults[index + 1].date : max;
+                        this.searchService.dateTermFrequencySearch(
+                            this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                            start_date, end_date)
+                            .then(result => {
+                            const data = result.data;
+                            zoomedInResults[index].match_count = data.match_count;
+                            zoomedInResults[index].total_doc_count = data.doc_count;
+                            zoomedInResults[index].token_count = data.token_count;
+                            resolve(true);
+                        });
+                    });
+                });
+                await Promise.all(dataPromises);
+            }
+
+            const selectedData = this.selectData(zoomedInResults,
+                this.rawData.reduce((s, f) => s + f.doc_count, 0)); // add overall total for percentages
+
+            // insert results in graph
+            dataset.data = selectedData.map((item) => ({x: item.date.toISOString(), y: item.value}));
+            chart.scales.xAxis.options.time.unit = this.currentTimeCategory;
+            chart.update('show'); // fade into view
+            this.isLoading.emit(false);
         }
     }
 
-    zoomOut() {
-        this.currentTimeCategory = 'year';
-        this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
-        this.prepareTimeline().then(() => {
-            this.setDateRange();
-            this.setupYScale();
-            this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-            this.rescaleY(this.normalizer === 'percent');
-            this.rescaleX();
-            this.drawChartData();
-        });
+    zoomOut(): void {
+        this.timeline.resetZoom();
+        this.calculateTimeCategory(this.xDomain[0], this.xDomain[1]);
+        this.timeline.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        this.timeline.update();
+
+        this.setChart();
     }
 
-    calculateTimeCategory(min: Date, max: Date) {
-        if (d3Time.timeYear.count(min, max) >= this.scaleDownThreshold) {
+    public calculateTimeCategory(min: Date, max: Date) {
+        const diff = moment.duration(moment(max).diff(moment(min)));
+        if (diff.asYears() >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'year';
-            // this.timeFormat = d3.timeFormat("%Y");
-        } else if (d3Time.timeMonth.count(min, max) >= this.scaleDownThreshold) {
+        } else if (diff.asMonths() >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'month';
-            // this.timeFormat = d3.timeFormat("%B");
-        } else if (d3Time.timeWeek.count(min, max) >= this.scaleDownThreshold) {
+        } else if (diff.asWeeks() >= this.scaleDownThreshold) {
             this.currentTimeCategory = 'week';
-            // this.timeFormat = d3.timeFormat("%b %d");
         } else {
             this.currentTimeCategory = 'day';
-            // this.timeFormat = d3.timeFormat("%a %d");
         }
     }
 
-    calculateBarWidth(startDate: Date) {
-        let endDate: Date;
-        switch (this.currentTimeCategory) {
-            case 'year':
-                endDate = d3Time.timeYear.ceil(startDate);
-                break;
-            case 'month':
-                endDate = d3Time.timeMonth.ceil(startDate);
-                break;
-            case 'week':
-                endDate = d3Time.timeWeek.ceil(startDate);
-                break;
-            case 'day':
-                endDate = d3Time.timeDay.ceil(startDate);
-                break;
-        }
-        return this.xScale(endDate) - this.xScale(startDate);
-    }
 
     /**
      * Show the zooming hint once per session, hide automatically with a delay
@@ -316,17 +336,24 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
         }
     }
 
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
-    }
-
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
-    }
-
     get tableHeaders(): freqTableHeaders {
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        const formatDateValue = this.formatDate;
 
+        let formatValue: (value: number) => string | undefined;
+        if (this.normalizer === 'percent') {
+            formatValue = (value: number) => {
+                return `${_.round(100 * value, 1)}%`;
+            };
+        }
+
+        return [
+            { key: 'date', label: 'Date', format: formatDateValue },
+            { key: 'value', label: rightColumnName, format: formatValue, formatDownload: this.formatDownloadValue }
+        ];
+    }
+
+    get formatDate(): (date) => string {
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
@@ -340,21 +367,8 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 break;
         }
 
-        const formatDateValue = (date: Date) => {
+        return (date: Date) => {
             return moment(date).format(dateFormat);
         };
-
-        let formatValue: (value: number) => string | undefined;
-        let formatDownloadValue:  (value: number) => string | undefined;
-        if (this.normalizer === 'percent') {
-            formatValue = (value: number) =>  `${_.round(100 * value, 1)}%`;
-            formatDownloadValue = (value: number) => `${_.round(100 * value, 1)}`;
-        }
-
-        return [
-            { key: 'date', label: 'Date', format: formatDateValue },
-            { key: 'value', label: rightColumnName, format: formatValue, formatDownload: formatDownloadValue }
-        ];
     }
 }
-

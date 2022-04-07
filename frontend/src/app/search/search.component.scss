@@ -58,24 +58,24 @@ a.corpus-name {
 //Removed the label of the multiselect so that only the icon is visible. Also the padding of the icon is adjusted.
 ::ng-deep ia-select-field {
 
-    .ui-multiselect-label-container {
+    .p-multiselect-label-container {
     display: none;
     }
 
-    .ui-multiselect .ui-multiselect-trigger {
+    .p-multiselect .p-multiselect-trigger {
         padding: 0px 0px;
         position: inherit;
         color: $primary;
     }
 
-    .button.ui-widget {
+    .button.p-widget {
         font-size: 1rem;
         border: 1px solid $primary;
     }
 }
 
 ::ng-deep p-dialog {
-    .ui-dialog-content {
+    .p-dialog-content {
         max-height: 600px;
         min-height: 200px;
         overflow-x: hidden;
