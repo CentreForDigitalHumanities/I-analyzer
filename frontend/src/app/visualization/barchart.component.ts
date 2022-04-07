@@ -96,6 +96,16 @@ export class BarChartComponent {
         }
     }
 
+    get formatDownloadValue(): (value: number) => string {
+        if (this.normalizer === 'percent') {
+            return (value: number) => {
+                return `${_.round(100 * value, 1)}`;
+            };
+        } else {
+            return (value: number) => value.toString();
+        }
+    }
+
     get percentageDocumentsSearched() {
         return _.round(100 * this.searchRatioDocuments);
     }
