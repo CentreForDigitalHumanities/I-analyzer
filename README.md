@@ -7,9 +7,9 @@ I-analyzer
 
 - the models (user, role, corpus) and configuration files (in module ianalyzer)
 
-- an 'api' module that enables users to search through an ElasticSearch index of a text corpus, and stream search results into a CSV file. `Flask` is used for serving the interface and generating results.
+- an 'api' module that enables users to search through an ElasticSearch index of a text corpus and stream search results into a CSV file. `Flask` is used for serving the interface and generating results. The module also performs more complex analysis of search results for visualisations.
 
-- An 'addcorpus' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. XML data is parsed with `beautifulsoup4` + `lxml` and passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
+- An 'addcorpus' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. Source files can be XML or HTML format (which are parsed with `beautifulsoup4` + `lxml`) or CSV. The data is passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
 
 - A 'corpora' module containing corpus definitions and metadata of the currently implemented coprora 
 
@@ -19,20 +19,17 @@ I-analyzer
 
 `ianalyzer/frontend` is an [Angular 13](https://angular.io/) web interface.
 
-Project layout
--------------------------------------------------------------------------------
-
-Each corpus is defined by subclassing the `Corpus` class, found in `addcorpus/common.py`, and registering that class in `backend/ianalyzer/config.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+See the documentation for [a more extensive overview](./documentation/Overview.md)
 
 Prerequisites
 -------------------------------------------------------------------------------
 
-* Python >=3.4, <=3.7
+* Python >=3.6, <=3.7
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
 
-The Wiki includes a [recipe for installing the prerequisites on Debian 10](https://github.com/UUDigitalHumanitieslab/I-analyzer/wiki/Local-Debian-I-Analyzer-setup).
+The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
 Running
 -------------------------------------------------------------------------------
@@ -76,6 +73,7 @@ Install `pip-tools` in your virtualenv. Run `pip-sync` or `pip install -r api/re
  3. Commit the changes to `backend/requirements.{in,txt}` at the same time.
 
 The above steps do not actually install the package; you can do this at any stage using `pip install` or afterwards using `pip-sync`.
+
 
 ### Testing
 
