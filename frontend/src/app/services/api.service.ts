@@ -63,7 +63,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
+    { success: false, message: string } | { success: true, results: AggregateResult[] }
     >
 
     @ResourceAction({
@@ -92,17 +92,17 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_ngrams'
+        path: '/ngram_tasks'
     })
-    public getNgrams: ResourceMethod<
+    public ngramTasks: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
             subfield?: string, max_size_per_interval?: number },
-        { success: boolean, message?: string, word_data?: NgramResults }>;
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_aggregate_term_frequency'
+        path: '/aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
         { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, field_value: string|number, size: number },
@@ -110,10 +110,10 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_date_term_frequency'
+        path: '/date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field: string, start_date: string, end_date: string, size: number },
+        { es_query: EsQuery, corpus_name: string, field_name: string, start_date: string, end_date: string, size: number },
         { success: boolean, message?: string, data?: AggregateResult }>;
 
     @ResourceAction({

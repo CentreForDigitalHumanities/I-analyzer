@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../services/index';
@@ -12,7 +12,7 @@ describe('HistogramCompoment', () => {
   let component: HistogramComponent;
   let fixture: ComponentFixture<HistogramComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
         imports: [ FormsModule ],
         declarations: [ HistogramComponent ],

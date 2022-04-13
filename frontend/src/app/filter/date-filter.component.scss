@@ -1,8 +1,8 @@
 @import "../../_utilities";
 
-::ng-deep .ui-datepicker {
+::ng-deep .p-datepicker {
     margin: 1px 0;
-    .ui-state-active {
+    .p-highlight {
         background-color: $primary !important;
     };
 }

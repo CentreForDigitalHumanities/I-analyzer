@@ -1,13 +1,8 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, SimpleChanges, Output, EventEmitter } from '@angular/core';
-import * as d3 from 'd3-selection';
-import * as d3Scale from 'd3-scale';
-import * as d3Format from 'd3-format';
-import * as d3Axis from 'd3-axis';
-import * as d3Array from 'd3-array';
+import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
-import { AggregateResult, Corpus, QueryModel, MultipleChoiceFilterData, RangeFilterData,
-    visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions } from '../models/index';
+import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
+    HistogramSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -15,299 +10,119 @@ import { BarChartComponent } from './barchart.component';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    @ViewChild('histogram', { static: true }) private histogramContainer: ElementRef;
-    @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField: visualizationField;
-    @Input() asTable: boolean;
-
-    @Output() isLoading = new EventEmitter<boolean>();
-
-    rawData: AggregateResult[];
-    selectedData: HistogramDataPoint[];
-
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
-
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
-    documentLimitExceeded = false; // whether some bins have more documents than the limit
-    totalTokenCountAvailable: boolean; // whether the data includes token count totals
-
-    private xBarWidth: number;
-    private xBarHalf: number;
-    private tooltip: any;
-    private maxCategories = 30;
-
-    ngOnInit() {
-    }
+export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
-        // doc counts should be requested if query has changed
-        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
-
-        if (this.chartElement === undefined) {
-            this.chartElement = this.histogramContainer.nativeElement;
-            this.calculateCanvas();
-        }
-
-        this.prepareChart(loadDocCounts, loadTokenCounts);
-    }
-
-    async onOptionChange(options: histogramOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
-        if (this.rawData) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
-                this.prepareChart(false, true);
-            } else {
-                this.prepareChart(false, false);
-            }
+        // new doc counts should be requested if query has changed
+        if (this.changesRequireRefresh(changes)) {
+            this.rawData = [this.newSeries(this.queryModel.queryText)];
+            this.setQueries();
+            this.prepareChart();
         }
     }
 
-
-    async prepareChart(loadDocCounts = false, loadTokenCounts = false) {
-        this.isLoading.emit(true);
-
-        if (loadDocCounts) { await this.requestDocumentData(); }
-        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
-
-        this.selectData();
-
-        if (typeof this.selectedData[0].key === 'number') {
-            this.selectedData = _.sortBy(this.selectedData, d => d.key);
-        } else {
-            this.selectedData = _.sortBy(this.selectedData, d => -1 * d.value);
-        }
-
-        this.xDomain = [-.5, this.selectedData.length - .5];
-        this.calculateBarWidth(this.selectedData.length);
-        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
-        this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-        this.totalCount = _.sumBy(this.selectedData, d => d.value);
-
-        this.setupYScale();
-        this.createChart(this.visualizedField.displayName, this.rawData.length);
-        this.rescaleY(this.normalizer === 'percent');
-        this.setupBrushBehaviour();
-        this.drawChartData();
-        this.setupTooltip();
-        this.isLoading.emit(false);
-    }
-
-    async requestDocumentData() {
+    /** specify aggregator object based on visualised field;
+     * used in document requests.
+    */
+    getAggregator() {
         let size = 0;
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
             size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
         }
-        const aggregator = {name: this.visualizedField.name, size: size};
-
-        const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-            this.rawData = visual.aggregations[this.visualizedField.name];
-            const total_documents = _.sum(this.rawData.map(d => d.doc_count));
-            this.searchRatioDocuments = this.documentLimit / total_documents;
-            this.documentLimitExceeded = this.documentLimit < total_documents;
-        });
-
-        await dataPromise;
+        return {name: this.visualizedField.name, size: size};
     }
 
-    async requestTermFrequencyData() {
-        const dataPromises = this.rawData.map((cat, index) => {
-            const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
-            return new Promise(resolve => {
-                this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, this.queryModel, this.visualizedField.name, cat.key, binDocumentLimit)
-                    .then(result => {
-                        const data = result.data;
-                        this.rawData[index].match_count = data.match_count;
-                        this.rawData[index].total_doc_count = data.doc_count;
-                        this.rawData[index].token_count = data.token_count;
-                        resolve(true);
-                    });
-            });
-        });
-
-        await Promise.all(dataPromises);
-
-        // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
+    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+        const aggregator = this.getAggregator();
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        return this.searchService.aggregateSearch(
+            this.corpus, queryModelCopy, [aggregator]).then(result =>
+                    this.docCountResultIntoSeries(result, series)
+                );
     }
 
-    selectData(): void {
-        if (this.frequencyMeasure === 'tokens') {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count }));
-            } else if (this.normalizer === 'terms') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count / cat.token_count }));
-            } else if (this.normalizer === 'documents') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count / cat.total_doc_count }));
-            }
-        } else {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.doc_count }));
+    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        const binDocumentLimit = this.documentLimitForCategory(cat, series);
+        return this.searchService.aggregateTermFrequencySearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                .then(result => this.addTermFrequencyToCategory(result, cat));
+    }
+
+
+    getLabels(): string[] {
+        // make an array of all unique labels and sort
+
+        if (this.rawData) {
+            const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.key));
+            const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
+            let sorted_labels: string[];
+            if (this.visualizedField.visualizationSort === 'key') {
+                sorted_labels = labels.sort();
             } else {
-                const total_doc_count = this.rawData.reduce((s, f) => s + f.doc_count, 0);
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.doc_count / total_doc_count }));
+                const valueKey = this.currentValueKey;
+                sorted_labels = _.sortBy(labels, label =>
+                    _.sumBy(this.rawData, series => {
+                        const item = series.data.find(i => i.key === label);
+                        return -1 * (item ? item[valueKey] : 0);
+                    })
+                );
             }
+            return sorted_labels;
         }
     }
 
-    calculateBarWidth(noCategories) {
-        this.xBarWidth = .95 * this.width / noCategories;
-        this.xBarHalf = this.xBarWidth / 2;
+    getDatasets() {
+        const labels = this.getLabels();
+        const valueKey = this.currentValueKey;
+        return this.rawData.map((series, seriesIndex) => (
+            {
+                label: series.queryText ? series.queryText : '(no query)',
+                data: labels.map(key => {
+                  const item = series.data.find(i => i.key === key);
+                  return item ? item[valueKey] : 0;
+                }),
+                backgroundColor: this.colorPalette[seriesIndex],
+                hoverBackgroundColor: this.colorPalette[seriesIndex],
+            }
+        ));
     }
 
-
-    drawChartData() {
-        /**
-        * bind data to chart, remove or update existing bars, add new bars
-        */
-
-        const update = this.chart
-            .selectAll('.bar')
-            .data(this.selectedData);
-
-        // remove exiting bars
-        update.exit().remove();
-
-        this.xAxisClass.tickValues(this.selectedData.map(d => d.key)).tickFormat(d3Format.format('s'));
-        // x axis ticks
-        this.xAxis.selectAll('text')
-            .data(this.selectedData)
-            .text(d => d.key)
-            .style('text-anchor', 'end')
-            .attr('dx', '-.8em')
-            .attr('dy', '.15em')
-            .attr('transform', 'rotate(-35)');
-
-        // update existing bars
-        this.chart.selectAll('.bar').transition()
-            .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', this.xBarWidth)
-            .attr('height', d => this.height - this.yScale(d.value));
-
-
-        if (this.selectedData.length > this.maxCategories) {
-            // remove x axis ticks
-            this.xAxis.selectAll('.tick').remove();
-
-            // add new bars
-            update
-                .enter()
-                .append('rect')
-                .attr('class', 'bar')
-                .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-                .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) // set to zero first for smooth transition
-                .attr('height', 0)
-                .transition().duration(750)
-                .delay((d, i) => i * 10)
-                .attr('y', d => this.yScale(d.value))
-                .attr('height', d => this.height - this.yScale(d.value))
-
-            // add tooltips
-            this.chart.selectAll('.bar')
-                .on('mouseover', (event, d) => {
-                    const yPos = this.height + 5 * this.margin.top;
-                    const xPos = event.offsetX;
-                    this.tooltip
-                        .text(d.key)
-                        .style('left', xPos + 'px')
-                        .style('top', yPos + 'px')
-                        .style('visibility', 'visible');
-                }).on('mouseout', () => this.tooltip.style('visibility', 'hidden'));
-        } else {
-            // add new bars, without tooltips
-            update
-                .enter()
-                .append('rect')
-                .attr('class', 'bar')
-                .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-                .attr('width', this.xBarWidth)
-                .attr('y', this.yScale(0)) // set to zero first for smooth transition
-                .attr('height', 0)
-                .transition().duration(750)
-                .delay((d, i) => i * 10)
-                .attr('y', d => this.yScale(d.value))
-                .attr('height', d => this.height - this.yScale(d.value))
-        }
+    chartOptions(datasets: any[]) {
+        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const options = this.basicChartOptions;
+        options.scales.xAxis.type = 'category';
+        (options.scales.xAxis as any).title.text = xAxisLabel;
+        options.plugins.tooltip = {
+            callbacks: {
+                label: (tooltipItem) => {
+                    const value = (tooltipItem.raw as number);
+                    return this.formatValue(value);
+                }
+            }
+        };
+        options.plugins.legend = {display: datasets.length > 1};
+        return options;
     }
 
-    setupTooltip() {
-        // select the tooltip in the template
-        this.tooltip = d3.select('.tooltip');
-    }
-
-
-    zoomIn() {
-        const selection = this.selectedData.filter((d, i) => i >= this.xScale.domain()[0] && i <= this.xScale.domain()[1]);
-        this.calculateBarWidth(selection.length + 1);
-
-        this.chart.selectAll('.bar')
-            .transition().duration(750)
-            .attr('x', (d, i) => this.xScale(i) - this.xBarHalf)
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', this.xBarWidth);
-
-        if (selection.length < this.maxCategories) {
-            this.xAxis
-                .call(d3Axis.axisBottom(this.xScale).ticks(selection.length))
-                .selectAll('.tick text')
-                .text((d, i) => selection[i].key)
-                .attr('text-anchor', 'end')
-                .attr('transform', 'rotate(-35)');
-        }
-    }
-
-    zoomOut() {
-        this.xDomain = [-.5, this.selectedData.length - .5];
-        this.calculateBarWidth(this.selectedData.length);
-        this.xScale = d3Scale.scaleLinear().domain(this.xDomain).rangeRound([0, this.width]);
-        this.xAxis
-            .call(d3Axis.axisBottom(this.xScale).ticks(this.selectedData.length));
-        this.drawChartData();
-    }
-
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
-    }
-
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
-    }
-
-    get tableHeaders(): freqTableHeaders {
+    setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        let formatValue: (value: number) => string | undefined;
-        if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        }
-        return [
+        this.tableHeaders = [
             { key: 'key', label: label },
-            { key: 'value', label: header, format: formatValue }
+            { key: this.currentValueKey, label: header, format: this.formatValue, formatDownload: this.formatDownloadValue }
         ];
     }
 
+
+    /** On what property should the data be sorted? */
     get defaultSort(): string {
         if (this.visualizedField && this.visualizedField.visualizationSort) {
             return 'key';
         }
-        return 'value';
+        return this.currentValueKey;
     }
+
 }
