@@ -30,7 +30,7 @@
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
                 [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
-                (isLoading)="onIsLoading($event)"></ia-ngram>
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>

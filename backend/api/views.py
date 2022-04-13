@@ -476,13 +476,28 @@ def api_wordcloud_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
 
+@api.route('/ngram_tasks', methods=['POST'])
+@login_required
+def api_ngram_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
+    else:
+        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
+        ngram_counts = ngram_counts_task.apply_async()
+        if not ngram_counts_task:
+            return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
+        else:
+            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+
+
 
 @api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
 def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
-        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+        return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
         try:
             outcome = results.get()
@@ -602,39 +617,7 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('/ngrams', methods=['POST'])
-@login_required
-def api_ngrams():
-    if not request.json:
-        abort(400)
-
-    try:
-        results = analyze.get_ngrams(
-            request.json['es_query'],
-            request.json['corpus_name'],
-            request.json['field_name'],
-            ngram_size=request.json['ngram_size'],
-            term_positions=request.json['term_position'],
-            freq_compensation=request.json['freq_compensation'],
-            subfield=request.json['subfield'],
-            max_size_per_interval=request.json['max_size_per_interval']
-        )
-    except KeyError:
-        abort(400)
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'word_data': results
-        })
-    return response
-
-@api.route('aggregate_term_frequency', methods=['POST'])
+@api.route('get_aggregate_term_frequency', methods=['POST'])
 @login_required
 def api_aggregate_term_frequency():
     if not request.json:

@@ -63,7 +63,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
+    { success: false, message: string } | { success: true, results: AggregateResult[] }
     >
 
     @ResourceAction({
@@ -92,13 +92,12 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/ngrams'
+        path: '/ngram_tasks'
     })
-    public getNgrams: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field_name: string, ngram_size?: number,
-            term_position?: number[], freq_compensation?: boolean,
+    public ngramTasks: ResourceMethod<
+        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
             subfield?: string, max_size_per_interval?: number },
-        { success: boolean, message?: string, word_data?: NgramResults }>;
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 
     @ResourceAction({

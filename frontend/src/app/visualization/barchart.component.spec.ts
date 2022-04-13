@@ -9,8 +9,8 @@ import { DialogServiceMock } from '../../mock-data/dialog';
 import { BarChartComponent } from './barchart.component';
 
 describe('BarchartComponent', () => {
-    let component: BarChartComponent;
-    let fixture: ComponentFixture<BarChartComponent>;
+    let component: BarChartComponent<any>;
+    let fixture: ComponentFixture<BarChartComponent<any>>;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({

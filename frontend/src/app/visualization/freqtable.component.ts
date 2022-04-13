@@ -43,5 +43,4 @@ export class FreqtableComponent {
         const filename = this.name + '.csv';
         saveAs(blob, filename);
     }
-
 }

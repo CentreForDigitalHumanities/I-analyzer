@@ -1,10 +1,8 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, ViewChild, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
-import { Chart } from 'chart.js';
-import Zoom from 'chartjs-plugin-zoom';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    visualizationField, HistogramDataPoint, freqTableHeaders, histogramOptions } from '../models/index';
+    HistogramSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({
@@ -12,145 +10,87 @@ import { BarChartComponent } from './barchart.component';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent implements OnInit, OnChanges {
-    histogram: Chart;
-
-    rawData: AggregateResult[];
-    selectedData: HistogramDataPoint[];
-
-    ngOnInit() {
-    }
+export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
     async ngOnChanges(changes: SimpleChanges) {
-        // doc counts should be requested if query has changed
-        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
-
-
-        this.prepareChart(loadDocCounts, loadTokenCounts);
-    }
-
-    async onOptionChange(options: histogramOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
-        if (this.rawData) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
-                this.prepareChart(false, true);
-            } else {
-                this.prepareChart(false, false);
-            }
+        // new doc counts should be requested if query has changed
+        if (this.changesRequireRefresh(changes)) {
+            this.rawData = [this.newSeries(this.queryModel.queryText)];
+            this.setQueries();
+            this.prepareChart();
         }
     }
 
-
-    async prepareChart(loadDocCounts = false, loadTokenCounts = false) {
-        this.isLoading.emit(true);
-
-        if (loadDocCounts) { await this.requestDocumentData(); }
-        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
-
-        this.selectData();
-
-        if (this.visualizedField.visualizationSort) {
-            this.selectedData = _.sortBy(this.selectedData, d => d.key);
-        } else {
-            this.selectedData = _.sortBy(this.selectedData, d => -1 * d.value);
-        }
-
-        if (!this.selectedData.length) {
-            this.error.emit({message: 'No results'});
-        }
-
-        this.setChart();
-        this.isLoading.emit(false);
-    }
-
-    async requestDocumentData() {
+    /** specify aggregator object based on visualised field;
+     * used in document requests.
+    */
+    getAggregator() {
         let size = 0;
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
             size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
         }
-        const aggregator = {name: this.visualizedField.name, size: size};
-
-        const dataPromise = this.searchService.aggregateSearch(this.corpus, this.queryModel, [aggregator]).then(visual => {
-            this.rawData = visual.aggregations[this.visualizedField.name];
-            const total_documents = _.sum(this.rawData.map(d => d.doc_count));
-            this.searchRatioDocuments = this.documentLimit / total_documents;
-            this.documentLimitExceeded = this.documentLimit < total_documents;
-        });
-
-        await dataPromise;
+        return {name: this.visualizedField.name, size: size};
     }
 
-    async requestTermFrequencyData() {
-        const dataPromises = this.rawData.map((cat, index) => {
-            const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
-            return new Promise(resolve => {
-                this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, this.queryModel, this.visualizedField.name, cat.key, binDocumentLimit)
-                    .then(result => {
-                        const data = result.data;
-                        this.rawData[index].match_count = data.match_count;
-                        this.rawData[index].total_doc_count = data.doc_count;
-                        this.rawData[index].token_count = data.token_count;
-                        resolve(true);
-                    });
-            });
-        });
-
-        await Promise.all(dataPromises);
-
-        // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(cat => cat.token_count) !== undefined;
+    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+        const aggregator = this.getAggregator();
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        return this.searchService.aggregateSearch(
+            this.corpus, queryModelCopy, [aggregator]).then(result =>
+                    this.docCountResultIntoSeries(result, series)
+                );
     }
 
-    selectData(): void {
-        if (this.frequencyMeasure === 'tokens') {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count }));
-            } else if (this.normalizer === 'terms') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count / cat.token_count }));
-            } else if (this.normalizer === 'documents') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.match_count / cat.total_doc_count }));
-            }
-        } else {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.doc_count }));
+    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        const binDocumentLimit = this.documentLimitForCategory(cat, series);
+        return this.searchService.aggregateTermFrequencySearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                .then(result => this.addTermFrequencyToCategory(result, cat));
+    }
+
+
+    getLabels(): string[] {
+        // make an array of all unique labels and sort
+
+        if (this.rawData) {
+            const all_labels = _.flatMap(this.rawData, series => series.data.map(item => item.key));
+            const labels = all_labels.filter((key, index) => all_labels.indexOf(key) === index);
+            let sorted_labels: string[];
+            if (this.visualizedField.visualizationSort === 'key') {
+                sorted_labels = labels.sort();
             } else {
-                const total_doc_count = this.rawData.reduce((s, f) => s + f.doc_count, 0);
-                this.selectedData = this.rawData.map(cat =>
-                    ({ key: cat.key, value: cat.doc_count / total_doc_count }));
+                const valueKey = this.currentValueKey;
+                sorted_labels = _.sortBy(labels, label =>
+                    _.sumBy(this.rawData, series => {
+                        const item = series.data.find(i => i.key === label);
+                        return -1 * (item ? item[valueKey] : 0);
+                    })
+                );
             }
+            return sorted_labels;
         }
     }
 
-    setChart() {
-        const labels = this.selectedData.map((item) => item.key);
-        const datasets = [
+    getDatasets() {
+        const labels = this.getLabels();
+        const valueKey = this.currentValueKey;
+        return this.rawData.map((series, seriesIndex) => (
             {
-                label: this.queryModel && this.queryModel.queryText ? this.queryModel.queryText : '(no query)',
-                data: this.selectedData.map((item) => item.value),
+                label: series.queryText ? series.queryText : '(no query)',
+                data: labels.map(key => {
+                  const item = series.data.find(i => i.key === key);
+                  return item ? item[valueKey] : 0;
+                }),
+                backgroundColor: this.colorPalette[seriesIndex],
+                hoverBackgroundColor: this.colorPalette[seriesIndex],
             }
-        ];
-
-        if (this.histogram) {
-            this.histogram.data.labels = labels;
-            this.histogram.data.datasets = datasets;
-            this.histogram.update();
-        } else {
-            this.initChart(labels, datasets);
-        }
-
+        ));
     }
 
-    initChart(labels, datasets) {
+    chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
         options.scales.xAxis.type = 'category';
@@ -163,23 +103,11 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
                 }
             }
         };
-        this.histogram = new Chart('histogram',
-            {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: datasets,
-                },
-                plugins: [ Zoom ],
-                options: options
-            });
-
-        this.histogram.canvas.ondblclick = (event) => {
-            (this.histogram as any).resetZoom();
-        };
+        options.plugins.legend = {display: datasets.length > 1};
+        return options;
     }
 
-    get tableHeaders(): freqTableHeaders {
+    setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         return [
@@ -188,11 +116,13 @@ export class HistogramComponent extends BarChartComponent implements OnInit, OnC
         ];
     }
 
+
+    /** On what property should the data be sorted? */
     get defaultSort(): string {
         if (this.visualizedField && this.visualizedField.visualizationSort) {
             return 'key';
         }
-        return 'value';
+        return this.currentValueKey;
     }
 
 }
