@@ -11,14 +11,25 @@ import { saveAs } from 'file-saver';
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class FreqtableComponent {
+export class FreqtableComponent implements OnChanges {
     @Input() headers: { key: string, label: string, transform?: (any) => string }[];
     @Input() data: any[];
-    @Input() name: string;
-    @Input() defaultSort: string;
+    @Input() name: string; // name for CSV file
+    @Input() defaultSort: string; // default field for sorting
+    @Input() requiredField: string; // field required to include row in web view
+
     public defaultSortOrder = '-1';
+    filteredData: any[];
 
     constructor() { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.requiredField && this.data) {
+            this.filteredData = this.data.filter(row => row[this.requiredField]);
+        } else {
+            this.filteredData = this.data;
+        }
+    }
 
     parseTableData() {
         const data = this.data.map(row => {
