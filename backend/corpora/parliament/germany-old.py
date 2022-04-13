@@ -62,6 +62,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     date.extractor = CSV(
         field='date'
     )
+    date.search_filter.lower = min_date
+    date.search_filter.upper = max_date
 
     date_is_estimate = field_defaults.date_is_estimate()
     date_is_estimate.extractor = CSV(
