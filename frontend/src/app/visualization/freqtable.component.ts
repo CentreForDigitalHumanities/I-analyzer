@@ -1,9 +1,7 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
-
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import { saveAs } from 'file-saver';
+import { freqTableHeader, freqTableHeaders } from '../models';
 
 @Component({
     selector: 'ia-freqtable',
@@ -12,7 +10,7 @@ import { saveAs } from 'file-saver';
     encapsulation: ViewEncapsulation.None
 })
 export class FreqtableComponent {
-    @Input() headers: { key: string, label: string, transform?: (any) => string }[];
+    @Input() headers: freqTableHeaders;
     @Input() data: any[];
     @Input() name: string;
     @Input() defaultSort: string;
@@ -20,13 +18,23 @@ export class FreqtableComponent {
 
     constructor() { }
 
-    parseTableData() {
+    parseTableData(): string[] {
         const data = this.data.map(row => {
-            const values = this.headers.map(col => row[col.key]);
-            return  `${_.join(values, ';')}\n`;
+            const values = this.headers.map(col => this.getValue(row, col));
+            return  `${_.join(values, ',')}\n`;
         });
         data.unshift(`${_.join(this.headers.map(col => col.label), ',')}\n`);
         return data;
+    }
+
+    getValue(row, column: freqTableHeader) {
+        if (column.formatDownload) {
+            return column.formatDownload(row[column.key]);
+        }
+        if (column.format) {
+            return column.format(row[column.key]);
+        }
+        return row[column.key];
     }
 
     downloadTable() {
