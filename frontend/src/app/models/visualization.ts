@@ -1,3 +1,4 @@
+import { AggregateResult, DateResult } from '.';
 import { SearchFilter, SearchFilterData } from './search-filter';
 
 // the corpusFields has an array of visualizations
@@ -11,20 +12,27 @@ export type visualizationField = {
     multiFields?: string[];
 };
 
-export type HistogramDataPoint = {
-    key: string,
-    value: number,
+// common type between histogram and timeline
+export type BarchartResult = DateResult|AggregateResult;
+
+export type HistogramSeries = {
+    data: AggregateResult[],
+    total_doc_count: number,
+    searchRatio: number,
+    queryText?: string,
 };
 
-export type TimelineDataPoint = {
-    date: Date,
-    value: number,
+export type TimelineSeries = {
+    data: DateResult[],
+    total_doc_count: number,
+    searchRatio: number,
+    queryText?: string,
 };
 
 export type freqTableHeaders = {
     key: string,
     label: string,
-    format?: (value) => string
+    format?: (value) => string|undefined,
 }[];
 
 export type histogramOptions = {
