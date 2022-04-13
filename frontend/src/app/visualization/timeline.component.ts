@@ -274,7 +274,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
                 { key: 'queryText', label: 'Query' },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
+                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
             this.tableHeaders = [

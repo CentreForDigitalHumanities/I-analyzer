@@ -109,22 +109,11 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
-        const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-
-        const valueKey = this.currentValueKey;
-
-        if (this.rawData.length > 1) {
-            this.tableHeaders = [
-                { key: 'key', label: label },
-                { key: 'queryText', label: 'Query' },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
-            ];
-        } else {
-            this.tableHeaders = [
-                { key: 'key', label: label },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
-            ];
-        }
+        const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        this.tableHeaders = [
+            { key: 'key', label: label },
+            { key: this.currentValueKey, label: header, format: this.formatValue, formatDownload: this.formatDownloadValue }
+        ];
     }
 
 

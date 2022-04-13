@@ -29,11 +29,14 @@ export type TimelineSeries = {
     queryText?: string,
 };
 
-export type freqTableHeaders = {
+export type freqTableHeader = {
     key: string,
     label: string,
-    format?: (value) => string|undefined,
-}[];
+    format?: (value) => string,
+    formatDownload?: (value) => string,
+}
+
+export type freqTableHeaders = freqTableHeader[];
 
 export type histogramOptions = {
     frequencyMeasure: 'documents'|'tokens',
