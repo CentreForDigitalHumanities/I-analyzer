@@ -9,6 +9,7 @@ from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 # Corpora that include a `foo` field should initialise it with `foo()` and then modify attributes as needed.
 
 def book_id():
+    """Unique ID of the book in which the speech was recorded"""
     return Field(
         name='book_id',
         display_name='Book ID',
@@ -17,6 +18,7 @@ def book_id():
     )
 
 def book_label():
+    """Label of the book in which the speech was recorded"""
     return Field(
         name='book_label',
         display_name='Book Label',
@@ -50,6 +52,7 @@ def date():
     )
 
 def date_is_estimate():
+    """Wether the date field is an estimate. Boolean value."""
     return Field(
         name='date_is_estimate',
         display_name='Date is estimate',
@@ -72,6 +75,7 @@ def house():
     )
 
 def parliament():
+    """?"""
     return Field(
         name='parliament',
         display_name='Parliament',
@@ -196,6 +200,7 @@ def speaker_constituency():
     )
 
 def speaker_birthplace():
+    """Birthplace of the speaker (string)"""
     return Field(
         name='speaker_birthplace',
         display_name='Speaker birthplace',
@@ -204,6 +209,7 @@ def speaker_birthplace():
     )
 
 def speaker_birth_country():
+    """Birth country of the speaker (string)"""
     return Field(
         name='speaker_birth_country',
         display_name='Speaker country of birth',
@@ -212,6 +218,7 @@ def speaker_birth_country():
     )
 
 def speaker_birth_year():
+    """Year in which the speaker was born (int)"""
     return Field(
         name='speaker_birth_year',
         display_name='Speaker year of birth',
@@ -220,6 +227,7 @@ def speaker_birth_year():
     )
 
 def speaker_death_year():
+    """Year in which the speaker died (int)"""
     return Field(
         name='speaker_death_year',
         display_name='Speaker year of death',
@@ -228,6 +236,7 @@ def speaker_death_year():
     )
 
 def speaker_gender():
+    """Gender of the speaker."""
     return Field(
         name='speaker_gender',
         display_name='Speaker gender',
@@ -236,14 +245,16 @@ def speaker_gender():
     )
 
 def speaker_profession():
+    """Profession of the speaker."""
     return Field(
         name='speaker_profession',
         display_name='Speaker Profession',
-        description='Speaker Profession',
+        description='Profession of the speaker',
         es_mapping={'type': 'text'},
     )
 
 def speaker_aristocracy():
+    """Whether the speaker is a member of the aristocracy"""
     return Field(
         name='speaker_aristocracy',
         display_name='Speaker aristocracy',
@@ -252,6 +263,7 @@ def speaker_aristocracy():
     )
 
 def speaker_academic_title():
+    """Academic title of the speaker"""
     return Field(
         name='speaker_academic_title',
         display_name='Speaker Academic Title',
@@ -274,6 +286,7 @@ def role():
     )
 
 def role_long():
+    """Expanded description of the value for `role`."""
     return Field(
         name='role_long',
         display_name='Role Long',
@@ -314,7 +327,7 @@ def party_full():
     )
 
 def page():
-    "page number"
+    "page number or range (string)"
     return Field(
         name='page',
         display_name='Page(s)',
@@ -323,7 +336,7 @@ def page():
     )
 
 def column():
-    "column number (used in UK data)"
+    "column number or range (used in UK data) (string)"
     return Field(
         name='column',
         display_name='Column',
@@ -332,6 +345,7 @@ def column():
     )
 
 def source_url():
+    """url of the source file"""
     return Field(
         name='source_url',
         display_name='Source url',
