@@ -31,7 +31,7 @@ The `images` directory contains the images used in the corpus overview.
 
 The title of each corpus should be `People & Parliament ({country})`. If there are separate corpora for different time periods, as in the German data, include the time range in the title: `People & Parliament ({country} - {time range})`
 
-The subtitle provides some context for the project and states the houses of parliament. In a biparliamentary system, it should be `Speeches from the {house of commons} and {senate}`, where you substitute these terms with the names of the corresponding houses in the source language. In a uniparliamentary system, or in cases where we only have data from one house, the subtitle is `Speeches from the {house}`.
+The subtitle provides some context for the project and states the houses of parliament. In a biparliamentary system, it should be `Speeches from the {senate} and {house of commons}`, where you substitute these terms with the names of the corresponding houses in the source language. In a uniparliamentary system, or in cases where we only have data from one house, the subtitle is `Speeches from the {house}`.
 
 ## Fields
 

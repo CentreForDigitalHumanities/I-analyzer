@@ -82,7 +82,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
 
     title = "People & Parliament (Netherlands)"
-    description = "Speeches from the First and Second Chamber of the Netherlands"
+    description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
