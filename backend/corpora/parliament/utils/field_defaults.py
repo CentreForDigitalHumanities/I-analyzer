@@ -90,6 +90,8 @@ def debate_title():
         display_name='Title of debate',
         description='Title of the debate in which the speech was held',
         es_mapping={'type': 'text'},
+        results_overview=True,
+        search_field_core=True,
     )
 
 def debate_id():
@@ -170,6 +172,8 @@ def speaker():
         display_name='Speaker',
         description='The speaker of the transcribed speech',
         es_mapping={'type': 'keyword'},
+        results_overview=True,
+        search_field_core=True,
     )
 
 def speech_type():
