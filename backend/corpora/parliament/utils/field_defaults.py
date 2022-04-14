@@ -174,6 +174,7 @@ def speaker():
         es_mapping={'type': 'keyword'},
         results_overview=True,
         search_field_core=True,
+        visualizations=['histogram']
     )
 
 def speech_type():
@@ -201,6 +202,7 @@ def speaker_constituency():
         display_name='Speaker Constituency',
         description='Constituency represented by the speaker',
         es_mapping={'type': 'keyword'},
+        visualizations=['histogram']
     )
 
 def speaker_birthplace():
@@ -246,6 +248,7 @@ def speaker_gender():
         display_name='Speaker gender',
         description='Gender of the speaker',
         es_mapping={'type': 'keyword'},
+        visualizations=['histogram'],
     )
 
 def speaker_profession():
@@ -286,7 +289,8 @@ def role():
         search_filter=MultipleChoiceFilter(
             description='Search for speeches by speakers with the selected roles',
             option_count=10
-        )
+        ),
+        visualizations=['histogram'],
     )
 
 def role_long():
