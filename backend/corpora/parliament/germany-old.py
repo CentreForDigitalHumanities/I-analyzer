@@ -83,8 +83,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         transform=lambda x : ' '.join(x)
     )
     
-    source_url = field_defaults.source_url()
-    source_url.extractor = CSV(
+    url = field_defaults.url()
+    url.extractor = CSV(
         field='img_url'
     )
 
@@ -99,6 +99,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
             self.book_id, self.book_label,
             self.parliament, 
             self.date, self.date_is_estimate,
-            self.page, self.source_url,
+            self.page, self.url,
             self.speech, self.speech_id,
         ]

@@ -172,8 +172,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='id'
     )
 
-    source_url = field_defaults.source_url()
-    source_url.extractor = CSV(
+    url = field_defaults.url()
+    url.extractor = CSV(
         field='document_url'
     )
     
@@ -189,7 +189,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
             self.role, self.role_long,
             self.party, self.party_full, self.party_id,
             self.speech, self.speech_id,
-            self.source_url,
+            self.url,
         ]
 
 

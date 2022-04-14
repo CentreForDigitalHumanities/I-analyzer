@@ -344,10 +344,10 @@ def column():
         es_mapping={'type': 'keyword'}
     )
 
-def source_url():
+def url():
     """url of the source file"""
     return Field(
-        name='source_url',
+        name='url',
         display_name='Source url',
         description='URL to source file of this speech',
         es_mapping={'type':'keyword'}
