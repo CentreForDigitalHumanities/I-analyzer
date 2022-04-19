@@ -21,7 +21,7 @@ def book_label():
     """Label of the book in which the speech was recorded"""
     return Field(
         name='book_label',
-        display_name='Book Label',
+        display_name='Book label',
         description='Label of the book in which the speech was recorded',
         es_mapping={'type': 'text'},
     )
@@ -181,7 +181,7 @@ def speech_type():
     "type of speech, e.g. question, answer, interjection, point of order"
     return Field(
         name='speech_type',
-        display_name='Speech Type',
+        display_name='Speech type',
         description='The type of speech',
         es_mapping={'type': 'keyword'},
     )
@@ -199,7 +199,7 @@ def speaker_constituency():
     "Constituency represented by the speaker"
     return Field(
         name='speaker_constituency',
-        display_name='Speaker Constituency',
+        display_name='Speaker constituency',
         description='Constituency represented by the speaker',
         es_mapping={'type': 'keyword'},
         visualizations=['histogram']
@@ -209,7 +209,7 @@ def speaker_birthplace():
     """Birthplace of the speaker (string)"""
     return Field(
         name='speaker_birthplace',
-        display_name='Speaker birthplace',
+        display_name='Speaker place of birth',
         description='Birthplace of the speaker',
         es_mapping={'type': 'text'},
     )
@@ -255,7 +255,7 @@ def speaker_profession():
     """Profession of the speaker."""
     return Field(
         name='speaker_profession',
-        display_name='Speaker Profession',
+        display_name='Speaker profession',
         description='Profession of the speaker',
         es_mapping={'type': 'text'},
     )
@@ -273,7 +273,7 @@ def speaker_academic_title():
     """Academic title of the speaker"""
     return Field(
         name='speaker_academic_title',
-        display_name='Speaker Academic Title',
+        display_name='Speaker academic title',
         description='Academic title of the speaker',
         es_mapping={'type': 'text'},
     )
@@ -297,7 +297,7 @@ def role_long():
     """Expanded description of the value for `role`."""
     return Field(
         name='role_long',
-        display_name='Role Long',
+        display_name='Role (long)',
         description='Expanded description of role of the speaker in the debate',
         es_mapping={'type': 'keyword'},
     )
@@ -347,7 +347,7 @@ def column():
     "column number or range (used in UK data) (string)"
     return Field(
         name='column',
-        display_name='Column',
+        display_name='Column(s)',
         description='Column(s) of the speech in the original document',
         es_mapping={'type': 'keyword'}
     )
