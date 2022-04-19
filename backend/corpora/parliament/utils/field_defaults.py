@@ -171,7 +171,12 @@ def speaker():
         name='speaker',
         display_name='Speaker',
         description='The speaker of the transcribed speech',
-        es_mapping={'type': 'keyword'},
+        es_mapping={
+            'type': 'keyword',
+            'fields': {
+                'text': { 'type': 'text' }
+            }
+        },
         results_overview=True,
         search_field_core=True,
         visualizations=['histogram']
@@ -211,7 +216,7 @@ def speaker_birthplace():
         name='speaker_birthplace',
         display_name='Speaker place of birth',
         description='Birthplace of the speaker',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'keyword'},
     )
 
 def speaker_birth_country():
@@ -220,7 +225,7 @@ def speaker_birth_country():
         name='speaker_birth_country',
         display_name='Speaker country of birth',
         description='Country in which the speaker was born',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'keyword'},
     )
 
 def speaker_birth_year():
@@ -257,7 +262,7 @@ def speaker_profession():
         name='speaker_profession',
         display_name='Speaker profession',
         description='Profession of the speaker',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'keyword'},
     )
 
 def speaker_aristocracy():
@@ -275,7 +280,7 @@ def speaker_academic_title():
         name='speaker_academic_title',
         display_name='Speaker academic title',
         description='Academic title of the speaker',
-        es_mapping={'type': 'text'},
+        es_mapping={'type': 'keyword'},
     )
 
 
@@ -299,7 +304,7 @@ def role_long():
         name='role_long',
         display_name='Role (long)',
         description='Expanded description of role of the speaker in the debate',
-        es_mapping={'type': 'keyword'},
+        es_mapping={'type': 'text'},
     )
 
 def party():
@@ -331,7 +336,7 @@ def party_full():
         name='party_full',
         display_name='Party (full name)',
         description='Full name of the political party that the speaker belongs to',
-        es_mapping={'type': 'keyword'},
+        es_mapping={'type': 'text'},
     )
 
 def page():
