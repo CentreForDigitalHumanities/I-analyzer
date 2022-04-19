@@ -136,9 +136,27 @@ export class SearchComponent implements OnInit {
     }
 
     private getQueryFields(): string[] | null {
-        const fields = this.selectedSearchFields.map(field => field.name);
+        if (this.selectedSearchFields) { return null; }
+
+        const fields = _.flatMap(this.selectedSearchFields, field => {
+            const multifields = this.searchableMultifields(field);
+            const multifieldNames = multifields.map(subfield => `${field}.${subfield}`);
+            return [field.name].concat(multifieldNames);
+        });
+
         if (!fields.length) { return null; }
         return fields;
+    }
+
+    private searchableMultifields(field: CorpusField) {
+        if (field && field.multiFields) {
+            const searchables = ['clean', 'stemmed'];
+            return field.multiFields.map(subfield =>
+                searchables.includes(subfield)
+            );
+        } else {
+            return [];
+        }
     }
 
     private createQueryModel() {
