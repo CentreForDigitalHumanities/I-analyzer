@@ -22,7 +22,8 @@ target_docs = [
         'party': None,
         'party_id': None,
         'party_full': None,
-        'page': '493'
+        'page': '493',
+        'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf'
     }
 ]
 

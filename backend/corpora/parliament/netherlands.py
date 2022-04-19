@@ -1,6 +1,7 @@
 from datetime import datetime
 from glob import glob
 import logging
+from attr import attr
 
 from flask import current_app
 
@@ -75,6 +76,13 @@ def get_party_full(speech_node):
     parents = list(speech_node.parents)
     party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
     return party_node
+
+def get_source(meta_node):
+    if type(meta_node) == bs4.element.Tag:
+        link_node = meta_node.find('pm:link')
+        return link_node
+
+    return ''
 
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
@@ -244,6 +252,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_pages,
     )
 
+    url = field_defaults.url()
+    url.extractor = XML(
+        tag=['meta', 'dc:source'],
+        transform_soup_func=get_source,
+        toplevel=True,
+        attribute='pm:source',
+    )
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
@@ -253,6 +269,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role,
             self.party, self.party_id, self.party_full,
-            self.page,
+            self.page, self.url,
         ]
 
