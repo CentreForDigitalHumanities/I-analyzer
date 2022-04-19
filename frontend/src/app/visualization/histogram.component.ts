@@ -26,6 +26,10 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     */
     getAggregator() {
         let size = 0;
+        if (!this.visualizedField.searchFilter) {
+            return {name: this.visualizedField.name, size: 100};
+        }
+
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
