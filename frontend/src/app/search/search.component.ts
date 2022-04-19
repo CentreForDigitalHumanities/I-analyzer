@@ -140,20 +140,26 @@ export class SearchComponent implements OnInit {
 
         const fields = _.flatMap(this.selectedSearchFields, field => {
             const multifields = this.searchableMultifields(field);
-            const multifieldNames = multifields.map(subfield => `${field}.${subfield}`);
-            return [field.name].concat(multifieldNames);
+            return [field.name].concat(multifields);
         });
 
         if (!fields.length) { return null; }
         return fields;
     }
 
-    private searchableMultifields(field: CorpusField) {
+    /**
+     * returns array of all searchable subfields for a field.
+     * empty array if there are none.
+    */
+    private searchableMultifields(field: CorpusField): string[] {
         if (field && field.multiFields) {
+            // list known searchable subfields (a numeric field like `length` should not be included)
             const searchables = ['clean', 'stemmed'];
-            return field.multiFields.map(subfield =>
+            const subfields = field.multiFields.filter(subfield =>
                 searchables.includes(subfield)
             );
+            const fullNames = subfields.map(subfield => `${field.name}.${subfield}`);
+            return fullNames;
         } else {
             return [];
         }
