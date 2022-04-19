@@ -89,7 +89,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
+            const unit = (this.chart.options.scales.xAxis as any).time.unit as ('year'|'week'|'month'|'day');
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -243,7 +243,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     zoomOut(): void {
         this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
-        this.chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        (this.chart.options.scales.xAxis as any).time.unit = this.currentTimeCategory;
         this.chart.update();
 
         this.setChart();
