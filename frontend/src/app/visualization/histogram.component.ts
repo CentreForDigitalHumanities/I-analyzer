@@ -18,6 +18,11 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             this.rawData = [
                 this.newSeries(this.queryModel.queryText)
             ];
+            if (this.chart) {
+                // clear canvas an reset chart object
+                this.chart.destroy();
+                this.chart = undefined;
+            }
             this.setQueries();
             this.prepareChart();
         }

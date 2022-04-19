@@ -29,6 +29,11 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             this.rawData = [
                 this.newSeries(this.queryModel.queryText)
             ];
+            if (this.chart) {
+                // clear canvas an reset chart object
+                this.chart.destroy();
+                this.chart = undefined;
+            }
             this.setQueries();
             this.setTimeDomain();
             this.prepareChart();
