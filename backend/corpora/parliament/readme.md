@@ -19,7 +19,7 @@ The `images` directory contains the images used in the corpus overview.
 
 - Make a corpus class. It should be a child class of `Parliament` and the corpus class for your type of source file, i.e. `CSVCorpus`, `XMLCorpus`, etc.
 - Define the title and description. See below.
-- If the time range of your data is notably more narrow than the `min_date` and `max_date` in [constants](./utils/constants.py), specify the `min_date` and/or `max_date` of your corpus. If the time range is wider, change the dates in the constants file.
+- Set the corpus date range if needed. See below.
 - Define the index name and data directory from config.
 - Add an (open license) image of the parliament in `./images/`.
 - Define `es_settings` property. Import `PP_ES_SETTINGS` from config, and add language-specific analyzers. Include an analyzer `stopwords` and `stemmer`.
@@ -32,6 +32,14 @@ The `images` directory contains the images used in the corpus overview.
 The title of each corpus should be `People & Parliament ({country})`. If there are separate corpora for different time periods, as in the German data, include the time range in the title: `People & Parliament ({country} - {time range})`
 
 The subtitle provides some context for the project and states the houses of parliament. In a biparliamentary system, it should be `Speeches from the {senate} and {house of commons}`, where you substitute these terms with the names of the corresponding houses in the source language. In a uniparliamentary system, or in cases where we only have data from one house, the subtitle is `Speeches from the {house}`.
+
+### Date range
+
+By default, corpora use the date range specified in [constants](./utils/constants.py). The dates in that file should provide the lower and upper bound for _all_ parliament corpora.
+
+If the time range of your data is notably more narrow than the default values, specify the `min_date` and/or `max_date` of your corpus. (Make sure to adapt the date filter as well, see below in the list of fields.)
+
+If the time range is wider, change the dates in the constants file accordingly. Note that this will widen the range for _all_ corpora, so you will probably need to specify more narrow date ranges for corpora that use the default values.
 
 ## Fields
 
@@ -53,21 +61,23 @@ Whether the provided date is an estimate. You only need to include this if it is
 
 House of parliament where the debate took place. Use the source language ("Eerste Kamer" rather than "senate") and title case.
 
-You may want to include an `"Other"` option for extraparliamentary debates.
+If the corpus includes extraparliamentary debates, specify them as `"Other"`.
 
-If there is only one house in the dataset, include this field with a `Constant` extractor, so it is clear to the user what house speeches belong to. Delete the search filter and visualisation properties in that case.
+If there is only one house in the dataset, include this field with a `Constant` extractor, so it is clear to the user what house speeches belong to. Clear the search filter and visualisation properties in that case.
 
 ### Debate title
 
 Title of the debate in the source language. Use title case. Remove leading or trailing punctuation.
 
-Debate is generally synomymous with session.
+"Debate" is generally synomymous with "session".
 
 ### Debate ID, speech ID, speaker ID, party ID
 
 Various unique IDs. The uniqueless is on the level of the country corpus.
 
 Speech ID will be used as the index of the document in elasticsearch, so it is not optional.
+
+A debate ID is not technically required, but useful for finding speeches from the same session. If the data does not provide debate IDs, you can generate one from the date (and house, if there is more than one).
 
 ### Topic, subtopic
 
@@ -83,25 +93,27 @@ The speaker's full name. The formatting is often limited by the source data. Her
 4. Last name (Doe)
 5. Title (The prime minister, The honorable gentleman)
 
+Titles are often contextual, and may change over a person's career. Therefore, it is preferred to leave out the title _if_ the data provides speakers' full names. If it is not so specific, just include any information available.
+
 The speaker name can be searched as a text field, so don't worry too much about including "reduntant" words.
 
 Some datasets occasionally include trailing punctuation (typically `:`), which should be filtered out.
 
-### Speaker birth year, birth place,  death year, death place, gender, profession, aristocracy, and academic title
+### Speaker birth year, birth place, birth country, death year, gender, profession, aristocracy, and academic title
 
-Various pieces of background information about a speaker. Can be added if it is present in the source data.
-
-Gender, aristocracy and academic title might be inferred form the speaker's title if they are not included explicitly. Given the interests of the People & Parliament project, this does not seem worth our time, however.
+Various pieces of background information about a speaker. Can be added if it is present in the source data. These are not particulary important to the people and parliament project, so cleanup/processing is not worh our time.
 
 ### Role, role long
 
 The role of the speaker in the debate, like MP, Speaker, Government, etc.
 
+"Role long" provides an expanded description, which cannot be used for filtering or visualisation.
+
 ### Party, party full
 
-Party is the commonly used name for the party. This is the primary party field; `party_id` and `party_full` provide extra information. It is presented as a search filter and visualisation.
+"Party" should give the commonly used name for the party. This is the primary party field; `party_id` and `party_full` provide extra information. It is presented as a search filter and visualisation.
 
-As many party names are abbreviations, the field `party full` may provide the unabbreviated party name.
+As many party names are abbreviations, the field `party full` may be included to give the unabbreviated party name.
 
 ### Page, column, book label, book id, source url
 
@@ -109,7 +121,7 @@ These all refer to the original source document and the location of the speech t
 
 For pages or columns, it is preferred that they are formatted as `{page}` or `{min page}-{max page}`.
 
-If you have a page range for a larger section but not for the specific speech, you can add this as the page range: it's better than nothing.
+If you have a page range for a larger section that contains the speech, but not the speech itself, you can add this as the page range.
 
 ### Sequence
 
