@@ -87,10 +87,9 @@ def debate_title():
     "Title of the debate in which the speech was held"
     return Field(
         name='debate_title',
-        display_name='Title of debate',
+        display_name='Debate title',
         description='Title of the debate in which the speech was held',
         es_mapping={'type': 'text'},
-        results_overview=True,
         search_field_core=True,
     )
 
@@ -110,6 +109,7 @@ def topic():
         display_name='Topic',
         description='Topic of the debate in which the speech was held',
         es_mapping={'type': 'text'},
+        search_field_core=True,
     )
 
 def subtopic():
@@ -373,4 +373,5 @@ def sequence():
         display_name='Sequence',
         description='Index of the sequence of speeches in a debate',
         es_mapping={'type': 'integer'},
+        sortable=True,
     )
