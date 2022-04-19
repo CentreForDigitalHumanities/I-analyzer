@@ -38,7 +38,7 @@ def get_wordcloud_data(request_json):
 
 @celery_app.task()
 def make_wordcloud_data(list_of_texts, request_json):
-    word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+    word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
     return word_counts
 
 def create_query(request_json):

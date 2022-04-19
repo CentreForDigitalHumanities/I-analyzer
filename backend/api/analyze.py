@@ -22,17 +22,56 @@ from flask import current_app
 
 NUMBER_SIMILAR = 8
 
-def make_wordcloud_data(documents, field):
-    texts = []
+def get_wordcloud_tokens(field, termvectors):
+    """
+    Returns the tokens from a field and the total token frequency (ttf)
+    """
+    terms = termvectors['term_vectors'][field]['terms']
+    return [{'term': term, 'ttf': terms[term]['ttf']}
+        for term in terms for token in terms[term]['tokens']]
+    # return sorted(all_tokens, key=lambda token: token['ttf'])
+
+def make_wordcloud_data(documents, field, corpus):
+    """
+    Looks for a speech.clean field and fetches termvector frequencies
+    Returns 50 most frequent tokens from the speech.clean field
+    if no .clean present in the corpus, it uses the unedited speech field
+    """
+    client = elasticsearch(corpus)
+    all_tokens = []
+    sorted_tokens = []
     for document in documents:
-        content = document['_source'][field]
-        if content and content != '':
-            texts.append(content)
-    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
-    counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names()
-    output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
+        id = document['_id']
+        cleanfield = str(field + '.clean')
+        try:  # try to get termvectors of the .clean subfield
+            termvectors = client.termvectors(
+                index=corpus,
+                doc_type='_doc',
+                id=id,
+                term_statistics=True,
+                fields = [cleanfield]
+            )
+        except:  # otherwise use the normal field
+            print('no .clean cleanfield in index')
+            termvectors = client.termvectors(
+                index=corpus,
+                doc_type='_doc',
+                id=id,
+                term_statistics=True,
+                fields = [field]
+            )    
+
+        if cleanfield in termvectors['term_vectors']:
+            document_tokens = get_wordcloud_tokens(cleanfield, termvectors)
+        elif field in termvectors['term_vectors']:
+            document_tokens = get_wordcloud_tokens(field, termvectors)
+        
+        for token in document_tokens:
+            if token not in all_tokens:
+                all_tokens.append({'term': token['term'], 'ttf': token['ttf']})
+
+    sorted_tokens = sorted(all_tokens, key=lambda token: token['ttf'], reverse=True)
+    output = [{'key': token['term'], 'doc_count': token['ttf']} for token in sorted_tokens[0:50]]
     return output
 
 
