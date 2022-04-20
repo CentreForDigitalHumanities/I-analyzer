@@ -14,7 +14,7 @@ export class FreqtableComponent implements OnChanges {
     @Input() data: any[];
     @Input() name: string; // name for CSV file
     @Input() defaultSort: string; // default field for sorting
-    @Input() requiredField: string; // field required to include row in web view
+    @Input() requiredColumn: string; // field required to include row in web view
 
     public defaultSortOrder = '-1';
     filteredData: any[];
@@ -22,8 +22,8 @@ export class FreqtableComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.requiredField && this.data) {
-            this.filteredData = this.data.filter(row => row[this.requiredField]);
+        if (this.requiredColumn && this.data) {
+            this.filteredData = this.data.filter(row => row[this.requiredColumn]);
         } else {
             this.filteredData = this.data;
         }

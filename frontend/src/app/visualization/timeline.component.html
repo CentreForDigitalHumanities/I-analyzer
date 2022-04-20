@@ -17,7 +17,7 @@
 
 <div class="block" *ngIf="asTable">
     <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name"
-        [requiredField]="currentValueKey">
+        [requiredColumn]="currentValueKey">
     </ia-freqtable>
 </div>
 
