@@ -27,7 +27,7 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[], highlightFragmentSize?: number): EsQuery | EsQuerySorted {
+    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
         if (queryModel.queryText) {
             clause = {
@@ -68,12 +68,12 @@ export class ElasticSearchService {
             }];
         }
 
-        if (queryModel.queryText && highlightFragmentSize) {
+        if (fields && queryModel.queryText && queryModel.highlight) {
             const highlightFields = fields.filter(field => field.searchable);
             query.highlight = {
                 fields: highlightFields.map( field => {
                     return { [field.name]: {
-                        fragment_size: highlightFragmentSize,
+                        fragment_size: queryModel.highlight,
                         pre_tags: ['<span class="highlight">'],
                         post_tags: ['</span>'],
                         order: 'score'
@@ -134,7 +134,7 @@ export class ElasticSearchService {
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
         });
         return {
             completed: true,
@@ -173,11 +173,10 @@ export class ElasticSearchService {
     public async search(
         corpusDefinition: Corpus,
         queryModel: QueryModel,
-        highlightFragmentSize: number,
         size?: number,
     ): Promise<SearchResults> {
         const connection = (await this.connections)[corpusDefinition.serverName];
-        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields, highlightFragmentSize);
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
         const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response);
@@ -188,11 +187,11 @@ export class ElasticSearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
         const connection = (await this.connections)[corpusDefinition.serverName];
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
         const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
         return this.parseResponse(response);
