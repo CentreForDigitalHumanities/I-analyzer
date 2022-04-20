@@ -71,13 +71,13 @@ export class ElasticSearchService {
         if (fields && queryModel.queryText && queryModel.highlight) {
             const highlightFields = fields.filter(field => field.searchable);
             query.highlight = {
+                fragment_size: queryModel.highlight,
+                pre_tags: ['<span class="highlight">'],
+                post_tags: ['</span>'],
+                order: 'score',
                 fields: highlightFields.map( field => {
-                    return { [field.name]: {
-                        fragment_size: queryModel.highlight,
-                        pre_tags: ['<span class="highlight">'],
-                        post_tags: ['</span>'],
-                        order: 'score'
-                }};
+                    return { [field.name]: { }
+                };
             })
             };
         }

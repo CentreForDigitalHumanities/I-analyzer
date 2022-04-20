@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
-const HIGHLIGHT = 50;
+const HIGHLIGHT = 200;
 
 @Component({
     selector: 'ia-search',
