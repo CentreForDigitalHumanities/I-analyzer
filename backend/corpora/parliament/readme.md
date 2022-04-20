@@ -1,4 +1,4 @@
-This directory defines corpora for parliamentary speeches, made for the People & Parliament project. Each country has its own corpus, but the corpora should the same structure and formatting wherever possible. This readme is intended to record any conventions we arrived at in the project.
+This directory defines corpora for parliamentary speeches, made for the People & Parliament project. Each country has its own corpus, but the corpora share the same structure and formatting wherever possible. This readme is intended to record any conventions we arrived at in the project.
 
 ## Directory setup
 
@@ -23,7 +23,7 @@ The `images` directory contains the images used in the corpus overview.
 - Define the index name and data directory from config.
 - Add an (open license) image of the parliament in `./images/`.
 - Define `es_settings` property. Import `PP_ES_SETTINGS` from config, and add language-specific analyzers. Include an analyzer `stopwords` and `stemmer`.
-- Check which of the fields in `field_defaults.py` contain information that is present in your source files. For each, make a new instance using the default function. Define the extractor. If needed, you can overwrite other properties. Do not overwrite `name` or `display_name`. See below for more documentation on specific fields.
+- Check which of the fields in `field_defaults.py` contain information that is present in your source files. For each, make a new instance using the default function. Define the extractor. If needed, you can override other properties. Do not override `name` or `display_name`. See below for more documentation on specific fields.
 - If your source files contain relevant information that is not an existing field, add it in `field_defaults.py`, leaving out the extractor. Then define it in your class as desired. Make sure to add proper documentation for your field.
 - Define the `fields` property in `__init__(self)`.
 
@@ -125,6 +125,6 @@ If you have a page range for a larger section that contains the speech, but not 
 
 ### Sequence
 
-This indicates the order of debates within a speech. To view a debate in order, the speaker can filter a particular debate, and then sort by sequence. 
+This indicates the order of debates within a speech. To view a debate in order, the user can filter a particular debate, and then sort by sequence. 
 
 Since their primary purpose is sorting, it is fine if the sequence skips numbers.
