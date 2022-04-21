@@ -9,14 +9,25 @@ import { freqTableHeader, freqTableHeaders } from '../models';
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class FreqtableComponent {
+export class FreqtableComponent implements OnChanges {
     @Input() headers: freqTableHeaders;
     @Input() data: any[];
-    @Input() name: string;
-    @Input() defaultSort: string;
+    @Input() name: string; // name for CSV file
+    @Input() defaultSort: string; // default field for sorting
+    @Input() requiredColumn: string; // field required to include row in web view
+
     public defaultSortOrder = '-1';
+    filteredData: any[];
 
     constructor() { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.requiredColumn && this.data) {
+            this.filteredData = this.data.filter(row => row[this.requiredColumn]);
+        } else {
+            this.filteredData = this.data;
+        }
+    }
 
     parseTableData(): string[] {
         const data = this.data.map(row => {

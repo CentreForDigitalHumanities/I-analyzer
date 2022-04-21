@@ -43,7 +43,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     rawData: (typeof this.seriesType)[];
 
     // chart object
-    chart: any;
+    chart: Chart;
 
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
@@ -401,7 +401,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
-        this.chart.labels = labels;
+        this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
         this.chart.update();
