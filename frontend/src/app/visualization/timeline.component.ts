@@ -158,7 +158,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         // zoom limits
         options.plugins.zoom.limits = {
             xAxis: {
-                // use numeric values as zoom plugin does not accept string
+                // convert dates to numeric rather than string here,
+                // as zoom plugin does not accept strings
                 min: xMin.valueOf(),
                 max: xMax.valueOf(),
             }
