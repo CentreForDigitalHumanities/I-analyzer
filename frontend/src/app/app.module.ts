@@ -66,6 +66,7 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { NgramComponent } from './visualization/ngram.component';
 import { HistogramOptionsComponent } from './visualization/histogram-options.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
 const appRoutes: Routes = [
@@ -185,6 +186,7 @@ export const imports: any[] = [
     DialogModule,
     DropdownModule,
     FormsModule,
+    FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrf_token',

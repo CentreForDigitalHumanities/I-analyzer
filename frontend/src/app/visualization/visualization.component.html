@@ -5,12 +5,14 @@
 <div class="level" *ngIf="!noVisualizations" #viscontrol>
     <div class="level-left">
         <div class="level-item">
-            <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]" (onChange)="setVisualizedField($event.value)"></ia-dropdown>
+            <ia-dropdown *ngIf="visDropdown" [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]" (onChange)="setVisualizedField($event.value)"></ia-dropdown>
         </div>
     </div>
     <div class="level-right">
         <div class="level-item" *ngIf="!freqtable">
-            <ia-dropdown [options]="palettes" [value]="palettes[0]" optionLabel="label" (onChange)="palette = $event.palette"></ia-dropdown>
+            <ia-dropdown *ngIf="palettes"
+                [icon]="faPalette"
+                [options]="palettes" [value]="palettes[0]" optionLabel="label" (onChange)="palette = $event.palette"></ia-dropdown>
         </div>
         <div class="level-item">
             <!-- Buttons for switching between table and graphical representation -->

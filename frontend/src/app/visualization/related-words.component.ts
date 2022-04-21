@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { select } from 'd3';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../models';
 
 import { DialogService, SearchService } from '../services/index';
@@ -40,7 +39,7 @@ export class RelatedWordsComponent implements OnChanges {
         elements: {
             line: {
                 tension: 0, // disables bezier curves
-            }
+            },
         },
         scales: {
             xAxis: {},
@@ -55,7 +54,7 @@ export class RelatedWordsComponent implements OnChanges {
             legend: {
                 display: true,
                 labels: {
-                    boxHeight: 0, // flat boxes to the border is a line
+                    boxHeight: 0, // flat boxes so the border is a line
                 }
             },
             tooltip: {
@@ -105,6 +104,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     zoomTimeInterval(event: any) {
+        console.log(event);
         this.isLoading.emit(true);
         this.searchService.getRelatedWordsTimeInterval(
             this.queryModel.queryText,
