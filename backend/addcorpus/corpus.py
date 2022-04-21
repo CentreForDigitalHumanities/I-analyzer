@@ -534,6 +534,13 @@ class CSVCorpus(Corpus):
         is treated as a document.
         '''
 
+    @property
+    def required_field(self):
+        '''
+        Specifies a required field, for example the main content. Rows with
+        an empty value for `required_field` will be skipped.
+        '''
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -546,37 +553,41 @@ class CSVCorpus(Corpus):
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
-        
+
         if isinstance(source, str):
             filename = source
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
             filename = source[0]
-        
+
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
             reader = csv.DictReader(f)
             document_id = None
             rows = []
-
             for row in reader:
                 is_new_document = True
+
+                if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
+                    continue
+
+
                 if self.field_entry:
                     identifier = row[self.field_entry]
                     if identifier == document_id:
                         is_new_document = False
                     else:
                         document_id = identifier
-                
+
                 if is_new_document and rows:
                     yield self.document_from_rows(rows)
                     rows = [row]
                 else:
                     rows.append(row)
-            
+
             yield self.document_from_rows(rows)
-        
+
     def document_from_rows(self, rows):
         doc = {
             field.name: field.extractor.apply(
@@ -606,7 +617,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: histogram, timeline, wordcloud
+        options: histogram, timeline, wordcloud, relatedwords, ngram
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)

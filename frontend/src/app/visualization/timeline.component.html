@@ -12,11 +12,12 @@
 </div>
 
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
-    <canvas id="timeline" width="400" height="200" aria-label="timeline" role="img"></canvas>
+    <canvas id="barchart" width="400" height="200" aria-label="timeline" role="img"></canvas>
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name"
+        [requiredColumn]="currentValueKey">
     </ia-freqtable>
 </div>
 

@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Chart, ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
-import { SearchService } from '../services';
+import { ApiService, SearchService } from '../services';
 import { selectColor } from './select-color';
 
 @Component({
@@ -10,13 +10,14 @@ import { selectColor } from './select-color';
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss']
 })
-export class NgramComponent implements OnInit, OnChanges {
+export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: visualizationField;
     @Input() asTable: boolean;
     @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
+    @Output() error = new EventEmitter<({ message: string })>();
 
     tableHeaders: freqTableHeaders = [
         { key: 'date', label: 'Date' },
@@ -81,7 +82,7 @@ export class NgramComponent implements OnInit, OnChanges {
                         const label = tooltipItem.dataset.label;
                         const value = tooltipItem.raw;
                         if (value) { // skip 0 values
-                            return `${label}: ${Math.round((value) * 10000) / 10000}`;
+                            return `${label}: ${_.round(value, 4)}`;
                         }
                       },
                 }
@@ -101,10 +102,15 @@ export class NgramComponent implements OnInit, OnChanges {
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     maxDocuments: number|undefined;
 
+    tasksToCancel: string[];
 
-    constructor(private searchService: SearchService) { }
+    constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit(): void { }
+
+    ngOnDestroy(): void {
+        this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.corpus || changes.visualizedField) {
@@ -183,26 +189,47 @@ export class NgramComponent implements OnInit, OnChanges {
         const analysis = this.analysis ? this.analysis : 'none';
         const maxSize = this.maxDocuments ? this.maxDocuments : 100;
 
-        this.searchService.getNgram(this.queryModel, this.corpus.name, this.visualizedField.name,
+        this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
             size, position, freqCompensation, analysis, maxSize)
-            .then(results => {
-                const result = results['graphData'];
-                this.setTableData(result);
-                result.datasets.forEach((data, index) => {
-                    data.borderColor = selectColor(this.palette, index);
+            .then(result => {
+                this.tasksToCancel = result.task_ids;
+                const childTask = result.task_ids[0];
+                this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
+                    if (outcome.success === true) {
+                        this.onDataLoaded(outcome.results);
+                    } else {
+                        this.error.emit({message: outcome.message});
+                    }
                 });
-                this.chartData = result;
-                this.isLoading.emit(false);
         }).catch(error => {
             this.chartData = undefined;
+            this.error.emit(error);
             this.isLoading.emit(false);
         });
     }
 
-    setTableData(results: { datasets: { label: string, data: number[] }[], labels: string[] }) {
+    onDataLoaded(result) {
+        this.setTableData(result);
+        const chartData = {
+            labels: result.time_points,
+            datasets: result.words
+        };
+
+        chartData.datasets.forEach((data, index) => {
+            data.borderColor = selectColor(this.palette, index);
+            data.backgroundColor = 'rgba(0,0,0,0)';
+            data.pointRadius = 0;
+            data.pointHoverRadius = 0;
+        });
+        this.chartData = chartData;
+        this.isLoading.emit(false);
+
+    }
+
+    setTableData(results: { words: { label: string, data: number[] }[], time_points: string[] }) {
         this.tableData = _.flatMap(
-            results.labels.map((date, index) => {
-                return results.datasets.map(dataset => ({
+            results.time_points.map((date, index) => {
+                return results.words.map(dataset => ({
                     date: date,
                     ngram: dataset.label,
                     freq: dataset.data[index],

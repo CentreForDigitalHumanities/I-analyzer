@@ -9,15 +9,61 @@ from flask import current_app
 
 from addcorpus.extract import Constant, Combined, XML
 from addcorpus.corpus import XMLCorpus, Field
-from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.netherlands import ParliamentNetherlands
+import corpora.parliament.utils.field_defaults as field_defaults
 
 with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
     soup = BeautifulSoup(f.read(), 'xml')
 
+def format_house(url):
+    ''' given a string of either eerstekamer.nl or tweedekamer.nl,
+    return a string "Eerste Kamer" or "Tweede Kamer" '''
+    try:
+        split_string = url.split('.')[-2]
+    except:
+        return None
+    if split_string=='eerstekamer':
+        return 'Eerste Kamer'
+    else:
+        return 'Tweede Kamer'
+
+def get_speaker(who):
+    person = get_person(who)
+    surname = person.find('surname').text
+    forename = person.find('forename').textc
+    return '{} {}'.format(forename, surname)
+
+def get_person(who):
+    person = soup.find(attrs={'xml:id':who[1:]})
+    return person
+
+def get_party_id(who):
+    person = get_person(who)
+    if not person:
+        return None
+    member_of = person.find(attrs={'role': 'member'})
+    if not member_of:
+        return None
+    party_id = member_of.attrs['ref']
+    return party_id
+
+def get_party(who):
+    party_id = get_party_id(who)
+    if not party_id:
+        return None
+    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'init'}).text
+    return party
+
+def get_party_full(who):
+    party_id = get_party_id(who)
+    if not party_id:
+        return None
+    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'yes'}).text
+    return party
+
 class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
     """ Corpus definition of recent Dutch parliamentary data,
-    saved in ParlaMINT TEI xml format 
+    saved in ParlaMINT TEI xml format
     """
     data_directory = current_app.config['PP_NL_RECENT_DATA']
     tag_entry = 'u'
@@ -32,137 +78,99 @@ class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
             for xml_file in glob('{}/{}/*.xml'.format(self.data_directory, year)):
                 yield xml_file
 
+    country = field_defaults.country()
+    country.extractor = Constant(
+        value='Netherlands'
+    )
 
-    def __init__(self):
-        self.country.extractor = Constant(
-            value='Netherlands'
-        )
+    date = field_defaults.date()
+    date.extractor = XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl', 'date'],
+        toplevel=True
+    )
 
-        self.country.search_filter = None
+    house = field_defaults.house()
+    house.extractor = XML(
+        tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl','idno'],
+        toplevel=True,
+        transform=format_house
+    )
 
-        self.date.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl', 'date'],
-            toplevel=True
-        )
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = XML(
+        tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
+        multiple=True,
+        toplevel=True,
+        transform=lambda titles: titles[-2] if len(titles) else titles
+    )
 
-        self.house.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl','idno'],
-            toplevel=True,
-            transform=self.format_house
-        )
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = XML(
+        tag=None,
+        attribute='xml:id',
+        toplevel=True,
+    )
 
-        self.debate_title.extractor = XML(
-            tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
-            multiple=True,
-            toplevel=True,
-            transform=lambda titles: titles[-2] if len(titles) else titles
-        )
+    topic = field_defaults.topic()
+    topic.extractor = XML(
+        tag=['note'],
+        toplevel=True,
+        recursive=True
+    )
 
-        self.debate_id.extractor = XML(
-            tag=None,
-            attribute='xml:id',
-            toplevel=True,
-        )
+    party_id = field_defaults.party_id()
+    party_id.extractor = XML(
+        tag=None,
+        attribute='who',
+        transform=get_party_id
+    )
 
-        self.topic.extractor = XML(
-            tag=['note'],
-            toplevel=True,
-            recursive=True
-        )
+    party = field_defaults.party()
+    party.extractor = XML(
+        tag=None,
+        attribute='who',
+        transform=get_party
+    )
 
-        self.party_id.extractor = XML(
-            tag=None,
-            attribute='who',
-            transform=self.get_party_id
-        )
+    speech = field_defaults.speech()
+    speech.es_mapping = ParliamentNetherlands.speech.es_mapping
+    speech.extractor = XML(
+        tag=['seg'],
+        multiple=True,
+        flatten=True,
+    )
 
-        self.party.extractor = XML(
-            tag=None,
-            attribute='who',
-            transform=self.get_party
-        )
-        self.party.search_filter = MultipleChoiceFilter(
-            description='Search in speeches from the selected parties',
-            option_count=50
-        )
-        self.party.visualizations = ['histogram']
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = XML(
+        tag=None,
+        attribute='xml:id'
+    )
 
-        self.speech.extractor = XML(
-            tag=['seg'],
-            multiple=True,
-            flatten=True,
-        )
+    speaker = field_defaults.speaker()
+    speaker.extractor = XML(
+        tag=None,
+        attribute='who',
+        transform=get_speaker
+    )
 
-        self.speech_id.extractor = XML(
-            tag=None,
-            attribute='xml:id'
-        )
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = XML(
+        tag=None,
+        attribute='who'
+    )
 
-        self.speaker.extractor = XML(
-            tag=None,
-            attribute='who',
-            transform=self.get_speaker
-        )
+    role = field_defaults.role()
+    role.extractor = XML(
+        tag=None,
+        attribute='ana',
+        transform=lambda x: x[1:].title()
+    )
 
-        self.speaker_id.extractor = XML(
-            tag=None,
-            attribute='who'
-        )
+    party_full = field_defaults.party_full()
+    party_full.extractor = XML(
+        tag=None,
+        attribute='who',
+        transform=get_party_full
+    )
 
-        self.role.extractor = XML(
-            tag=None,
-            attribute='ana',
-            transform=lambda x: x[1:].title()
-        )
-
-        self.party_full.extractor = XML(
-            tag=None,
-            attribute='who',
-            transform=self.get_party_full
-        )
-
-
-    def format_house(self, url):
-        ''' given a string of either eerstekamer.nl or tweedekamer.nl,
-        return a string "Eerste Kamer" or "Tweede Kamer" '''
-        try:
-            split_string = url.split('.')[-2]
-        except:
-            return None
-        if split_string=='eerstekamer':
-            return 'Eerste Kamer'
-        else:
-            return 'Tweede Kamer'
-
-    def get_speaker(self, who):
-        person = self.get_person(who)
-        surname = person.find('surname').text
-        forename = person.find('forename').textc
-        return '{} {}'.format(forename, surname)
-    
-    def get_person(self, who):
-        person = soup.find(attrs={'xml:id':who[1:]})
-        return person
-
-    def get_party_id(self, who):
-        person = self.get_person(who)
-        if not person:
-            return None
-        party_id = person.find(attrs={'role': 'member'}).attrs['ref']
-        return party_id
-    
-    def get_party(self, who):
-        party_id = self.get_party_id(who)
-        if not party_id:
-            return None
-        party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'init'}).text
-        return party
-    
-    def get_party_full(self, who):
-        party_id = self.get_party_id(who)
-        if not party_id:
-            return None
-        party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'yes'}).text
-        return party
-
-    
+    page = field_defaults.page()

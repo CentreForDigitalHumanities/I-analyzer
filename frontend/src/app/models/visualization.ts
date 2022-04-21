@@ -12,25 +12,31 @@ export type visualizationField = {
     multiFields?: string[];
 };
 
-export type HistogramSeriesRaw = {
+// common type between histogram and timeline
+export type BarchartResult = DateResult|AggregateResult;
+
+export type HistogramSeries = {
     data: AggregateResult[],
     total_doc_count: number,
     searchRatio: number,
     queryText?: string,
 };
 
-export type TimelineSeriesRaw = {
+export type TimelineSeries = {
     data: DateResult[],
     total_doc_count: number,
     searchRatio: number,
     queryText?: string,
 };
 
-export type freqTableHeaders = {
+export type freqTableHeader = {
     key: string,
     label: string,
-    format?: (value) => string|undefined,
-}[];
+    format?: (value) => string,
+    formatDownload?: (value) => string,
+}
+
+export type freqTableHeaders = freqTableHeader[];
 
 export type histogramOptions = {
     frequencyMeasure: 'documents'|'tokens',

@@ -226,8 +226,7 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filename = tasks.create_filename(request.json['route'])
-        filepath = tasks.make_csv.delay(search_results, filename, request.json)
+        filepath = tasks.make_csv.delay(search_results, request.json)
         csv_file = filepath.get()
         if not csv_file:
             return jsonify({'success': False, 'message': 'Could not create csv file.'})
@@ -255,11 +254,11 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    filename = tasks.create_filename(request.json['route'])
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(filename, request.json))
+        tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
+        filename = split(csvs.get())[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
         send_user_mail(
@@ -275,7 +274,7 @@ def api_download_task():
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
-        
+
 
 
 
@@ -477,13 +476,28 @@ def api_wordcloud_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
 
+@api.route('/ngram_tasks', methods=['POST'])
+@login_required
+def api_ngram_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
+    else:
+        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
+        ngram_counts = ngram_counts_task.apply_async()
+        if not ngram_counts_task:
+            return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
+        else:
+            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+
+
 
 @api.route('/task_outcome/<task_id>', methods=['GET'])
 @login_required
 def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
-        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+        return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
         try:
             outcome = results.get()
@@ -603,48 +617,22 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('/get_ngrams', methods=['POST'])
-@login_required
-def api_get_ngrams():
-    if not request.json:
-        abort(400)
-
-    results = analyze.get_ngrams(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        ngram_size=request.json['ngram_size'],
-        term_positions=request.json['term_position'],
-        freq_compensation=request.json['freq_compensation'],
-        subfield=request.json['subfield'],
-        max_size_per_interval=request.json['max_size_per_interval']
-    )
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'word_data': results
-        })
-    return response
-
 @api.route('get_aggregate_term_frequency', methods=['POST'])
 @login_required
-def api_get_aggregate_term_frequency():
+def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
-    
-    results = analyze.get_aggregate_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field_name'],
-        request.json['field_value'],
-        request.json['size'],
-    )
+
+    try:
+        results = analyze.get_aggregate_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['field_value'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
@@ -658,20 +646,23 @@ def api_get_aggregate_term_frequency():
         })
     return response
 
-@api.route('get_date_term_frequency', methods=['POST'])
+@api.route('date_term_frequency', methods=['POST'])
 @login_required
-def api_get_date_term_frequency():
+def api_date_term_frequency():
     if not request.json:
         abort(400)
-    
-    results = analyze.get_date_term_frequency(
-        request.json['es_query'],
-        request.json['corpus_name'],
-        request.json['field'],
-        request.json['start_date'],
-        request.json['end_date'],
-        request.json['size'],
-    )
+
+    try:
+        results = analyze.get_date_term_frequency(
+            request.json['es_query'],
+            request.json['corpus_name'],
+            request.json['field_name'],
+            request.json['start_date'],
+            request.json['end_date'],
+            request.json['size'],
+        )
+    except KeyError:
+        abort(400)
 
     if isinstance(results, str):
         # the method returned an error string
