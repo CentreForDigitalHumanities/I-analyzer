@@ -1,19 +1,27 @@
 import api.analyze as analyze
 
+"""
+TODO: finish the wordcloud test after issue is resolved with testing (22/4/2022)
+"""
 def test_wordcloud():
     # simplified version of elasticsearch output
     documents = [
         { '_source': {
             'content': 'I-analyzer is great!',
+            'id' : 'id1',
+            
         } },
         { '_source': {
             'content': 'I love to analyze in I-analyzer.',
+            'id' : 'id2',
         } },
         { '_source': {
-            'content': 'I love I-analyzer.'
+            'content': 'I love I-analyzer.',
+            'id' : 'id2',
         } },
         { '_source': {
-            'content': 'I could analyze all day.'
+            'content': 'I could analyze all day.',
+            'id' : 'id3',
         } }
     ]
 
@@ -27,16 +35,11 @@ def test_wordcloud():
         { 'key': 'analyze', 'doc_count': 2 }
     ]
 
-    output = analyze.make_wordcloud_data(documents, 'content')
+    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
 
     for item in target_unfiltered:
         term = item['key'],
         doc_count = item['doc_count']
-
-        long_enough = len(term) >= 3
-        not_too_frequent = doc_count < 0.7 * len(documents)
-
-        if long_enough and not_too_frequent:
-            assert output == term
-            match = next(item for item in output if item['key'] == term)
-            assert match
+        assert output == term
+        match = next(item for item in output if item['key'] == term)
+        assert match
