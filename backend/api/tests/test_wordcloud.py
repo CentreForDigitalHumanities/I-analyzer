@@ -8,20 +8,20 @@ def test_wordcloud():
     documents = [
         { '_source': {
             'content': 'I-analyzer is great!',
-            'id' : 'id1',
+            '_id' : 'id1',
             
         } },
         { '_source': {
             'content': 'I love to analyze in I-analyzer.',
-            'id' : 'id2',
+            '_id' : 'id2',
         } },
         { '_source': {
             'content': 'I love I-analyzer.',
-            'id' : 'id2',
+            '_id' : 'id2',
         } },
         { '_source': {
             'content': 'I could analyze all day.',
-            'id' : 'id3',
+            '_id' : 'id3',
         } }
     ]
 
