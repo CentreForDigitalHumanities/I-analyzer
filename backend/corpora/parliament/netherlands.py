@@ -85,6 +85,10 @@ def get_source(meta_node):
 
     return ''
 
+def get_sequence(node, tag_entry):
+    previous = node.find_all_previous(tag_entry)
+    return len(previous) + 1 # start from 1
+
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
     Class for indexing Dutch parliamentary data
@@ -261,6 +265,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         attribute='pm:source',
     )
 
+    sequence = field_defaults.sequence()
+    sequence.extractor = XML(
+        extract_soup_func = lambda node : get_sequence(node, 'speech')
+    )
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
@@ -270,6 +279,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role,
             self.party, self.party_id, self.party_full,
-            self.page, self.url,
+            self.page, self.url, self.sequence
         ]
 

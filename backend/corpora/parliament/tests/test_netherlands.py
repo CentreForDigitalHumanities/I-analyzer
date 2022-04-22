@@ -23,7 +23,8 @@ target_docs = [
         'party_id': None,
         'party_full': None,
         'page': '493',
-        'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf'
+        'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf',
+        'sequence': 1,
     }
 ]
 

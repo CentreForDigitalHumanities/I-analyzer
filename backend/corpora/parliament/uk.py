@@ -130,6 +130,9 @@ class ParliamentUK(Parliament, CSVCorpus):
     )
 
     sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field='speech_id'
+    )
 
     def __init__(self):
         self.fields = [
