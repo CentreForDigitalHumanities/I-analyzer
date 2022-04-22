@@ -4,8 +4,9 @@ import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
 import { AggregateResult, visualizationField, QueryModel, Corpus, freqTableHeaders } from '../models/index';
-import { DialogService, SearchService, ApiService } from '../services/index';
+import { SearchService, ApiService } from '../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { selectColor } from './select-color';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -45,7 +46,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     private chartElement: any;
     private svg: any;
 
-    constructor(private dialogService: DialogService, private searchService: SearchService, private apiService: ApiService) { }
+    constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit() {
         if (this.resultsCount > 0) {
@@ -58,7 +59,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if ((this.corpus && this.visualizedField && this.queryModel && this.batchSize)  &&
+        if ((this.corpus && this.visualizedField && this.queryModel && this.batchSize && this.palette)  &&
             (changes.corpus || changes.visualizedField || changes.queryModel || changes.batchSize)) {
             this.loadData(this.batchSize);
         } else {
@@ -99,18 +100,13 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     onDataLoaded() {
         this.isLoading.next(false);
         this.chartElement = this.chartContainer.nativeElement;
-        d3.selectAll('svg').remove();
+        d3.select('#wordcloud:first-child').remove();
         const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
         const outputRange = [20, 80];
         this.scaleFontSize.domain(inputRange).range(outputRange);
         this.drawWordCloud(this.significantText);
 
     }
-
-    showWordcloudDocumentation() {
-        this.dialogService.showManualPage('wordcloud');
-    }
-
 
     drawWordCloud(significantText: AggregateResult[]) {
         this.svg = d3.select(this.chartElement)

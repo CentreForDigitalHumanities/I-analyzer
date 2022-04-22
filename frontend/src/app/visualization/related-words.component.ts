@@ -99,10 +99,6 @@ export class RelatedWordsComponent implements OnChanges {
             });
     }
 
-    showRelatedWordsDocumentation() {
-        this.dialogService.showManualPage('relatedwords');
-    }
-
     zoomTimeInterval(event: any) {
         console.log(event);
         this.isLoading.emit(true);

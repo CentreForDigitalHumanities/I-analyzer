@@ -9,27 +9,26 @@
         </div>
     </div>
     <div class="level-right">
-        <div class="level-item" *ngIf="!freqtable">
-            <ia-dropdown *ngIf="palettes"
-                [icon]="faPalette"
-                [options]="palettes" [value]="palettes[0]" optionLabel="label" (onChange)="palette = $event.palette"></ia-dropdown>
-        </div>
         <div class="level-item">
-            <!-- Buttons for switching between table and graphical representation -->
-            <button [class.button]="true" [class.is-primary]="freqtable" (click)="freqtable = true" style="float:right">
-                <i class="fa fa-table" aria-hidden="true"></i>
-            </button>
-
-            <button [class.button]="true" [class.is-primary]="!freqtable" (click)="freqtable = false" style="float:right">
-                <i class="fa fa-bar-chart" aria-hidden="true"></i>
-            </button>
+            <div class="field has-addons">
+                <!-- Buttons for switching between table and graphical representation -->
+                <div class="control">
+                    <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    </button>    
+                </div>
+                <div class="control">
+                    <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
+                        <i class="fa fa-table" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-
 <ng-container *ngIf="visualExists; else noVisualsMessage">
-    <div  [ngClass]="{'is-loading':isLoading}">
+    <div class="block" [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
@@ -49,6 +48,25 @@
         </ng-container>
     </div>
 </ng-container>
+
+<div class="level">
+    <div class="level-left">
+        <div class="level-item">
+            <button class="button" (click)="showHelp()">
+                <span class="icon">
+                    <fa-icon [icon]="faQuestion"></fa-icon>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="level-right">
+        <div class="level-item" *ngIf="!freqtable">
+            <ia-dropdown *ngIf="palettes"
+                [icon]="faPalette"
+                [options]="palettes" [value]="palettes[0]" optionLabel="label" (onChange)="palette = $event.palette"></ia-dropdown>
+        </div>
+    </div>
+</div>
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>

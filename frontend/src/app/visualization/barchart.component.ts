@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 
 import * as _ from 'lodash';
 
-import { SearchService, DialogService } from '../services/index';
+import { SearchService } from '../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
 import Zoom from 'chartjs-plugin-zoom';
@@ -122,7 +122,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     };
 
-    constructor(public searchService: SearchService, public dialogService: DialogService) {
+    constructor(public searchService: SearchService) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
         chartDefault.elements.bar.hoverBackgroundColor = selectColor();
@@ -435,11 +435,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 document.body.addEventListener('mousemove', hider);
             }, hintHidingMinDelay);
         }
-    }
-
-    /** show documentation page */
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
     }
 
     /** based on current parameters, get a formatting function for y-axis values */

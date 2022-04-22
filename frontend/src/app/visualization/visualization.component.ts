@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 
 import { Corpus, QueryModel, visualizationField } from '../models/index';
 import { PALETTES } from './select-color';
-import { faPalette } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion, faPalette } from '@fortawesome/free-solid-svg-icons';
+import { DialogService } from '../services';
 
 @Component({
     selector: 'ia-visualization',
@@ -40,6 +41,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         histogram: 'histogram',
         relatedwords: 'Related words',
     };
+    public manualPages = {
+        ngram: 'ngrams',
+        relatedwords: 'relatedwords',
+        wordcloud: 'wordcloud',
+        timeline: 'histogram',
+        histogram: 'histogram'
+    };
 
 
     public visualExists = false;
@@ -50,8 +58,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public palette = PALETTES[0].palette;
 
     faPalette = faPalette;
+    faQuestion = faCircleQuestion;
 
-    constructor() {
+    constructor(private dialogService: DialogService) {
     }
 
     ngDoCheck() {
@@ -132,6 +141,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     onIsLoading(event: boolean) {
         this.childComponentLoading = event;
+    }
+
+    showHelp() {
+        const manualPage = this.manualPages[this.visualizedField.visualization];
+        this.dialogService.showManualPage(manualPage);
     }
 
 }
