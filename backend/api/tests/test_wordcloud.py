@@ -7,22 +7,17 @@ def test_wordcloud():
     # simplified version of elasticsearch output
     documents = [
         { '_source': {
-            'content': 'I-analyzer is great!',
-            '_id' : 'id1',
-            
-        } },
+            'content': 'I-analyzer is great!'
+        }, '_id' : 'id1'},
         { '_source': {
-            'content': 'I love to analyze in I-analyzer.',
-            '_id' : 'id2',
-        } },
+            'content': 'I love to analyze in I-analyzer.'
+        }, '_id' : 'id2'},
         { '_source': {
-            'content': 'I love I-analyzer.',
-            '_id' : 'id2',
-        } },
+            'content': 'I love I-analyzer.'
+        }, '_id' : 'id3'},
         { '_source': {
-            'content': 'I could analyze all day.',
-            '_id' : 'id3',
-        } }
+            'content': 'I could analyze all day.'
+        }, '_id' : 'id4' }
     ]
 
     target_unfiltered = [
