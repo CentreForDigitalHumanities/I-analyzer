@@ -61,9 +61,18 @@
     </div>
     <div class="level-right">
         <div class="level-item" *ngIf="!freqtable">
-            <ia-dropdown *ngIf="palettes"
-                [icon]="faPalette"
-                [options]="palettes" [value]="palettes[0]" optionLabel="label" (onChange)="palette = $event.palette"></ia-dropdown>
+            <p-dropdown *ngIf="palettes" [options]="palettes" [(ngModel)]="palette">
+                <ng-template pTemplate="selectedItem">
+                    <span class="icon">
+                        <fa-icon [icon]="faPalette"></fa-icon>
+                    </span>
+                </ng-template>
+                <ng-template let-palette pTemplate="item">
+                    <span class="icon" *ngFor="let color of palette" [style.color]="color">
+                        <fa-icon [icon]="faSquare"></fa-icon>
+                    </span>
+                </ng-template>
+            </p-dropdown>
         </div>
     </div>
 </div>
