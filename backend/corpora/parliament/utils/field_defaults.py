@@ -345,7 +345,8 @@ def page():
         name='page',
         display_name='Page(s)',
         description='Page(s) of the speech in the original document',
-        es_mapping={'type': 'keyword'}
+        es_mapping={'type': 'keyword'},
+        searchable=False,
     )
 
 def column():
@@ -354,7 +355,8 @@ def column():
         name='column',
         display_name='Column(s)',
         description='Column(s) of the speech in the original document',
-        es_mapping={'type': 'keyword'}
+        es_mapping={'type': 'keyword'},
+        searchable=False,
     )
 
 def url():
@@ -363,7 +365,8 @@ def url():
         name='url',
         display_name='Source url',
         description='URL to source file of this speech',
-        es_mapping={'type':'keyword'}
+        es_mapping={'type':'keyword'},
+        searchable=False,
     )
 
 def sequence():
@@ -374,4 +377,5 @@ def sequence():
         description='Index of the sequence of speeches in a debate',
         es_mapping={'type': 'integer'},
         sortable=True,
+        searchable=False,
     )
