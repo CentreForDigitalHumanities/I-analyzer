@@ -79,7 +79,8 @@ def get_party_full(speech_node):
 
 def get_source(meta_node):
     if type(meta_node) == bs4.element.Tag:
-        link_node = meta_node.find('pm:link')
+        is_link = lambda node: 'pm:linktype' in node.attrs and node['pm:linktype'] == 'pdf'
+        link_node = meta_node.find(is_link)
         return link_node
 
     return ''
