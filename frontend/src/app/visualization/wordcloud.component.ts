@@ -100,7 +100,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     onDataLoaded() {
         this.isLoading.next(false);
         this.chartElement = this.chartContainer.nativeElement;
-        d3.select('#wordcloud:first-child').remove();
+        d3.select('svg.wordcloud').remove();
         const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
         const outputRange = [20, 80];
         this.scaleFontSize.domain(inputRange).range(outputRange);
@@ -111,6 +111,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     drawWordCloud(significantText: AggregateResult[]) {
         this.svg = d3.select(this.chartElement)
             .append("svg")
+            .classed('wordcloud', true)
             .attr("width", this.width)
             .attr("height", this.height);
         const chart = this.svg
