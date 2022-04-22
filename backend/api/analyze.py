@@ -71,7 +71,8 @@ def make_wordcloud_data(documents, field, corpus):
                 all_tokens.append({'term': token['term'], 'ttf': token['ttf']})
 
     sorted_tokens = sorted(all_tokens, key=lambda token: token['ttf'], reverse=True)
-    output = [{'key': token['term'], 'doc_count': token['ttf']} for token in sorted_tokens[0:50]]
+    ntokens_in_cloud = 50 if len(sorted_tokens) > 50 else len(sorted_tokens)
+    output = [{'key': token['term'], 'doc_count': token['ttf']} for token in sorted_tokens[0:ntokens_in_cloud]]
     return output
 
 
