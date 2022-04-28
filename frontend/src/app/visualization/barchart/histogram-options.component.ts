@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { histogramOptions } from '../models';
+import { histogramOptions } from '../../models';
 
 @Component({
     selector: 'ia-histogram-options',

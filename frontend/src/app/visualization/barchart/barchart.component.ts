@@ -2,12 +2,12 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 
 import * as _ from 'lodash';
 
-import { SearchService } from '../services/index';
+import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
-import { selectColor } from './select-color';
+import { selectColor } from '../select-color';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
