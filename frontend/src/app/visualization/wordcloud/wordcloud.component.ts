@@ -3,10 +3,9 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnIni
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
-import { AggregateResult, visualizationField, QueryModel, Corpus, freqTableHeaders } from '../models/index';
-import { SearchService, ApiService } from '../services/index';
+import { AggregateResult, visualizationField, QueryModel, Corpus, freqTableHeaders } from '../../models/index';
+import { DialogService, SearchService, ApiService } from '../../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { selectColor } from './select-color';
 
 @Component({
     selector: 'ia-wordcloud',
