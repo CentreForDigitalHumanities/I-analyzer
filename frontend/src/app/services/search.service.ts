@@ -41,7 +41,7 @@ export class SearchService {
      */
     public createQueryModel(
         queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
-        sortField: CorpusField = null, sortAscending = false
+        sortField: CorpusField = null, sortAscending = false, highlight: number = null
     ): QueryModel {
         const model: QueryModel = {
             queryText: queryText,
@@ -51,6 +51,9 @@ export class SearchService {
         };
         if (fields) {
             model.fields = fields;
+        }
+        if (highlight) {
+            model.highlight = highlight;
         }
         return model;
     }
@@ -78,6 +81,9 @@ export class SearchService {
         } else {
             delete route['sort'];
         }
+        if (queryModel.highlight) {
+            route['highlight'] = `${queryModel.highlight}`;
+        } else { delete route['highlight']; }
         return route;
     }
 
@@ -133,7 +139,7 @@ export class SearchService {
         });
     }
 
-    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
+    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
             return new Promise( (resolve, reject) => {
@@ -150,7 +156,7 @@ export class SearchService {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
             return new Promise( (resolve, reject) => {
-                if (result['success']===true) {
+                if (result['success'] === true) {
                     resolve({taskIds: result['task_ids']});
                 } else {
                     reject({error: result['message']});
@@ -165,7 +171,7 @@ export class SearchService {
                 if (result['success'] === true) {
                     resolve({'graphData': {
                                 'labels': result['related_word_data'].time_points,
-                                'datasets':result['related_word_data'].similar_words_subsets
+                                'datasets': result['related_word_data'].similar_words_subsets
                             },
                             'tableData': result['related_word_data'].similar_words_all
                     });
@@ -186,7 +192,7 @@ export class SearchService {
                 if (result['success'] === true) {
                     resolve({'graphData': {
                                 'labels': result['related_word_data'].time_points,
-                                'datasets':result['related_word_data'].similar_words_subsets
+                                'datasets': result['related_word_data'].similar_words_subsets
                             }
                     });
                 } else {
