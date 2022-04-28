@@ -14,9 +14,10 @@ import corpora.parliament.utils.field_defaults as field_defaults
 
 
 def add_length_multifield(mapping):
-    mapping['length'] = {
+    mapping['fields'] = {'length' : {
         "type": "token_count",
         "analyzer": "standard",
+        }
     }
     return mapping
 
@@ -71,6 +72,7 @@ class ParliamentUKCombined(Parliament, CSVCorpus):
     country.extractor = Constant(
         value='United Kingdom'
     )
+
     country.es_mapping = add_length_multifield(country.es_mapping)
 
     date = field_defaults.date()
