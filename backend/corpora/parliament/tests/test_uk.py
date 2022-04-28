@@ -34,7 +34,7 @@ target_docs = [
         'sequence': '0'
     }
 ]
-
+    
 def test_uk(test_app):
     uk_corpus = load_corpus('parliament-uk')
 
