@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../services/index';
@@ -9,15 +9,14 @@ import { DialogServiceMock } from '../../mock-data/dialog';
 import { BarChartComponent } from './barchart.component';
 
 describe('BarchartComponent', () => {
-    let component: BarChartComponent;
-    let fixture: ComponentFixture<BarChartComponent>;
+    let component: BarChartComponent<any>;
+    let fixture: ComponentFixture<BarChartComponent<any>>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            providers: [ 
+            providers: [
                 {
-        
                     provide: ApiService, useValue: new ApiServiceMock()
                 },
                 ApiRetryService,
@@ -39,7 +38,6 @@ describe('BarchartComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(BarChartComponent);
         component = fixture.componentInstance;
-        component.chartElement = document.createElement('div');
         fixture.detectChanges();
     });
 

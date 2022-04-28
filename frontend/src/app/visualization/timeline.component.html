@@ -1,20 +1,23 @@
 <div class="block">
+    <p class=notification *ngIf=showHint>
+        <b>Drag to zoom, double click to unzoom</b>
+    </p>
+</div>
+
+<div class="block">
     <ia-histogram-options
-        [queryText]="queryModel ? queryModel.queryText : ''" [showTokenCountOption]="totalTokenCountAvailable"
-        (options)="onOptionChange($event)">
+        [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
+        (options)="onOptionChange($event)" (newQuery)="addSeries($event)" (clearQueries)="clearAddedQueries()">
     </ia-histogram-options>
 </div>
 
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
-    <div class="barchart" #timeline>
-        <p class=notification *ngIf=showHint>
-            <b>Drag to zoom, click to unzoom</b>
-        </p>
-    </div>
+    <canvas id="barchart" width="400" height="200" aria-label="timeline" role="img"></canvas>
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="selectedData" [defaultSort]="'date'" [name]="visualizedField.name">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name"
+        [requiredColumn]="currentValueKey">
     </ia-freqtable>
 </div>
 

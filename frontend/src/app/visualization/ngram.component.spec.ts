@@ -1,35 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ApiService, ApiRetryService, LogService, QueryService, UserService, ElasticSearchService, SearchService } from '../services/index';
-import { ApiServiceMock } from '../../mock-data/api';
-import { ElasticSearchServiceMock } from '../../mock-data/elastic-search';
-import { UserServiceMock } from '../../mock-data/user';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 import { NgramComponent } from './ngram.component';
 
 describe('NgramComponent', () => {
   let component: NgramComponent;
   let fixture: ComponentFixture<NgramComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ NgramComponent ],
-      providers: [
-        {      
-            provide: ApiService, useValue: new ApiServiceMock()
-        },
-        ApiRetryService,
-        {
-            provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
-        },
-        LogService,
-        QueryService,
-        SearchService,
-        {
-            provide: UserService, useValue: new UserServiceMock()
-        },
-      ]
-    })
-    .compileComponents();
-  });
+  beforeEach(waitForAsync(() => {
+    commonTestBed().testingModule.compileComponents();
+}));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(NgramComponent);

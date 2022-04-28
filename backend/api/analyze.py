@@ -1,5 +1,6 @@
 
 import enum
+from itertools import count
 import os
 from os.path import join
 import math
@@ -153,8 +154,13 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
 
     # find ngrams
 
-    docs = tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval)
-    ngrams = count_ngrams(docs, freq_compensation)
+    docs, total_frequencies = tokens_by_time_interval(
+        corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval
+    )
+    if freq_compensation:
+        ngrams = get_top_10_ngrams(docs, total_frequencies)
+    else:
+        ngrams = get_top_10_ngrams(docs)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
@@ -219,7 +225,8 @@ def set_date_filter(es_query, date_filter):
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
     client = elasticsearch(corpus)
-    output = []
+    ngrams_per_bin = []
+    ngram_ttfs = dict()
 
     query_text = es_query['query']['bool']['must']['simple_query_string']['query']
     field = field if subfield == 'none' else '.'.join([field, subfield])
@@ -255,7 +262,7 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
             body = es_query,
         )
 
-        bin_output = []
+        bin_ngrams = Counter()
 
         for hit in search_results['hits']['hits']:
             id = hit['_id']
@@ -285,26 +292,27 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
                                 ngram = sorted_tokens[start:stop]
                                 words = ' '.join([token['term'] for token in ngram])
                                 ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                                bin_output.append((words, ttf))
+                                ngram_ttfs[words] = ttf
+                                bin_ngrams.update({ words: 1})
 
         # output per bin: all tokens from this time interval
-        output.append(bin_output)
+        ngrams_per_bin.append(bin_ngrams)
 
-    return output
+    return ngrams_per_bin, ngram_ttfs
 
-def count_ngrams(docs, divide_by_ttf):
+def get_top_10_ngrams(counters, total_frequencies = None):
     """
     Converts a list of documents with tokens into 10 dataseries, listing the
     frequency of the top 10 tokens and their frequency in each document.
 
     Input:
-    - `docs`: a list of 'documents'. Each document should be a list of tokens, where each token is
-    a (content, ttf) tuple. The content is presumably a string containing an ngram, but can be any immutable object.
-    The ttf is an integer reflecting the total term frequency of the content. In practice, this is the average frequency of each
-    word in the ngram. This is the frequency across the corpus, and should not vary between instances of the same ngram.
-    The division into documents reflects how the data is grouped (e.g. by time interval).
-    - `divide_by_ttf`: boolean. If False, get the raw counts of each token. If True, divide the count by the ttf
-    specified in the tuple.
+    - `docs`: a list of Counter objects with ngram frequencies. The division into counters reflects how the data is grouped,
+    i.e. by time interval. Each counter object reflects how often ngram tokens have been observed per interval. Presumably,
+    each token is a string containing an ngram.
+    but can be any immutable object. The division into documents reflects how the data is grouped (e.g. by time interval).
+    - `total_frequencies`: dict or `None`. If a dict, it should give the total frequency for every ngram that features in `docs`. In
+    practice, this is the average frequency of each word in the ngram. If the dict is provided, the frequency of the ngram will be divided
+    by it.
 
     Output:
     A list of 10 data series. Each series is a dict with two keys: `'label'` contains the content of a token (presumably an
@@ -312,27 +320,25 @@ def count_ngrams(docs, divide_by_ttf):
     this is absolute or relative to the total term frequencies provided.
     """
 
-    counters = [Counter(doc) for doc in docs]
-
     total_counter = Counter()
     for c in counters:
         total_counter.update(c)
         
-    if divide_by_ttf:
-        score = lambda f, ttf : f / ttf
-        relative_total_counter = {(word, ttf): score(total_counter[(word, ttf)], ttf) for (word, ttf) in total_counter}
-        words = sorted(relative_total_counter.keys(), key=lambda word : relative_total_counter[word], reverse=True)[:10]
+    if total_frequencies:
+        def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
+        def overall_frequency(ngram): return frequency(ngram, total_counter)
+        top_10_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:10]
     else:
-        score = lambda f, ttf: f
-        words = [word for word, count in total_counter.most_common(10)]
+        def frequency(ngram, counter): return counter[ngram]
+        top_10_ngrams = [word for word, freq in total_counter.most_common(10)]
 
 
     output = [{
-            'label': word[0],
-            'data': [score(c[word], word[1])
+            'label': ngram,
+            'data': [frequency(ngram, c)
                 for c in counters]
         }
-        for word in words]
+        for ngram in top_10_ngrams]
 
     return output
 

@@ -19,7 +19,7 @@
         <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
-                (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
     		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
@@ -30,7 +30,7 @@
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
                 [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
-                (isLoading)="onIsLoading($event)"></ia-ngram>
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>

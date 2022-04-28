@@ -39,11 +39,11 @@ export class SearchResultsComponent implements OnChanges {
 
     public results: SearchResults;
 
-    public resultsPerPage: number = 20;
+    public resultsPerPage = 20;
     public totalResults: number;
     private maximumDisplayed: number;
 
-    public fromIndex: number = 0;
+    public fromIndex = 0;
 
     public queryText: string;
 
@@ -57,7 +57,7 @@ export class SearchResultsComponent implements OnChanges {
     /**
      * Whether a document has been selected to be shown.
      */
-    public showDocument: boolean = false;
+    public showDocument = false;
     /**
      * The document to view separately.
      */
@@ -75,11 +75,11 @@ export class SearchResultsComponent implements OnChanges {
         }
     }
 
-    @HostListener("window:scroll", [])
+    @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results were scrolled down beyond 68 pixels from top (position underneath sticky search bar)
         // this introduces a box shadow
-        if (this.resultsNavigation != undefined) {
+        if (this.resultsNavigation !== undefined) {
             this.isScrolledDown = this.resultsNavigation.nativeElement.getBoundingClientRect().y === 68;
         }
     }
@@ -111,7 +111,7 @@ export class SearchResultsComponent implements OnChanges {
         this.fromIndex = searchParameters.from;
         this.resultsPerPage = searchParameters.size;
         this.results = await this.searchService.loadResults(this.corpus, this.queryModel, searchParameters.from, searchParameters.size);
-        this.results.documents.map( (d,i) => d.position = i + searchParameters.from + 1 );
+        this.results.documents.map( (d, i) => d.position = i + searchParameters.from + 1 );
         this.isLoading = false;
     }
 
@@ -121,7 +121,7 @@ export class SearchResultsComponent implements OnChanges {
         this.isLoading = false;
     }
 
-    public goToScan(document: FoundDocument, event:any) {
+    public goToScan(document: FoundDocument, event: any) {
         this.onViewDocument(document);
         this.documentTabIndex = 1;
         event.stopPropagation();

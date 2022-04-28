@@ -1,3 +1,4 @@
+from typing import Counter
 import api.analyze as analyze
 from mock_corpus import MockCorpus
 from datetime import datetime
@@ -43,36 +44,38 @@ def test_time_bins(test_app, basic_query, query_with_date_filter):
     assert bins == target_bins
     
 
-def test_count_ngrams():
+def test_top_10_ngrams():
     docs = [
-        [ ('a', 100), ('b', 200)],
-        [ ('b', 200), ('c', 150)],
-        [ ('a', 100)]
+        ['a', 'b'],
+        ['a', 'b', 'c'],
+        ['a', 'c']
     ]
 
-    counts = {
-        'a': [1, 0, 1],
+    counts = [Counter(doc) for doc in docs]
+
+    target_data = {
+        'a': [1, 1, 1],
         'b': [1, 1, 0],
-        'c': [0, 1, 0]
+        'c': [0, 1, 1]
     }
-    
+   
     ttf = {
         'a': 100,
         'b': 200,
         'c': 150,
     }
 
-    output_absolute = analyze.count_ngrams(docs, False)
-    for word in counts:
+    output_absolute = analyze.get_top_10_ngrams(counts)
+    for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
-        assert dataset_absolute['data'] == counts[word]
+        assert dataset_absolute['data'] == target_data[word]
     
 
-    output_relative = analyze.count_ngrams(docs, True)
+    output_relative = analyze.get_top_10_ngrams(counts, ttf)
 
-    for word in counts:
+    for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
         relative_frequencies = {
-            w: [c / ttf[w] for c in counts[w]]
-            for w in counts }
+            w: [c / ttf[w] for c in target_data[w]]
+            for w in target_data }
         assert dataset_relative['data'] == relative_frequencies[word]

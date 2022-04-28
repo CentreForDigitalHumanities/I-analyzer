@@ -1,332 +1,309 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-import * as d3Scale from 'd3-scale';
 import * as d3TimeFormat from 'd3-time-format';
-import * as d3Time from 'd3-time';
-import * as d3Array from 'd3-array';
 import * as _ from 'lodash';
 
-// custom definition of scaleTime to avoid Chrome issue with displaying historical dates
-import { Corpus, DateFrequencyPair, QueryModel, DateResult, TimelineDataPoint,
-    visualizationField, freqTableHeaders, histogramOptions } from '../models/index';
-// import { default as scaleTimeCustom } from './timescale.js';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
-
-const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
-const hintHidingMinDelay = 500;       // milliseconds
-const hintHidingDebounceTime = 1000;  // milliseconds
+import 'chartjs-adapter-moment';
 
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent implements OnChanges, OnInit {
-    @ViewChild('timeline', { static: true }) private timelineContainer: ElementRef;
-    @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
-    @Input() visualizedField;
-    @Input() asTable: boolean;
-
-    @Output() isLoading = new EventEmitter<boolean>();
-    @Output() totalTokenCountAvailable = new EventEmitter<boolean>();
-
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
-    normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
-
-    private queryModelCopy;
-
-    public xScale: d3Scale.ScaleTime<any, any>;
-    public showHint: boolean;
-
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
-    searchRatioDocuments: number; // ratio of documents that can be search without exceeding documentLimit
-    documentLimitExceeded = false; // whether the results include documents than the limit
-
-    private currentTimeCategory: string;
-    private rawData: DateResult[];
-    private selectedData: TimelineDataPoint[];
+export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
+    /** time unit on the x-axis */
+    private currentTimeCategory: 'year'|'week'|'month'|'day';
+    /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
-    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d');
-
-    ngOnInit() {
-        this.setupZoomHint();
-    }
+    /** formatting function for time in ES queries */
+    private timeFormat: any = d3TimeFormat.timeFormat('%Y-%m-%d'); // Todo: use moment instead of d3
+    /** domain on the axis */
+    public xDomain: [Date, Date];
 
     ngOnChanges(changes: SimpleChanges) {
-        // doc counts should be requested if query has changed
-        const loadDocCounts = (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
-        const loadTokenCounts = (this.frequencyMeasure === 'tokens') && loadDocCounts;
-
-        if (this.chartElement === undefined) {
-            this.chartElement = this.timelineContainer.nativeElement;
-            this.calculateCanvas();
-        }
-        this.queryModelCopy = _.cloneDeep(this.queryModel);
-        const min = new Date(this.visualizedField.searchFilter.currentData.min);
-        const max = new Date(this.visualizedField.searchFilter.currentData.max);
-        this.xDomain = [min, max];
-        this.calculateTimeCategory(min, max);
-        this.xScale = d3Scale.scaleTime()
-            .range([0, this.width])
-            .clamp(true);
-        this.prepareTimeline(loadDocCounts, loadTokenCounts);
-    }
-
-    onOptionChange(options: histogramOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
-        if (this.rawData) {
-            if (this.frequencyMeasure === 'tokens' && !this.rawData.find(cat => cat.match_count)) {
-                this.prepareTimeline(false, true);
-            } else {
-                this.prepareTimeline(false, false);
+        // new doc counts should be requested if query has changed
+        if (this.changesRequireRefresh(changes)) {
+            this.rawData = [
+                this.newSeries(this.queryModel.queryText)
+            ];
+            if (this.chart) {
+                // clear canvas an reset chart object
+                this.chart.destroy();
+                this.chart = undefined;
             }
+            this.setQueries();
+            this.setTimeDomain();
+            this.prepareChart();
         }
     }
 
-    async prepareTimeline(loadDocCounts = false, loadTokenCounts = false) {
-        this.isLoading.emit(true);
-
-        if (loadDocCounts) { await this.requestDocumentData(); }
-        if (loadTokenCounts) { await this.requestTermFrequencyData(); }
-
-        this.selectData();
-
-        this.setDateRange();
-        this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-        this.totalCount = _.sumBy(this.selectedData, d => d.value);
-
-        this.setupYScale();
-        this.createChart(this.visualizedField.displayName);
-        this.rescaleY(this.normalizer === 'percent');
-        this.drawChartData();
-        this.setupBrushBehaviour();
-        this.isLoading.emit(false);
-    }
-
-    setDateRange() {
-        const min = new Date(this.visualizedField.searchFilter.currentData.min);
-        const max = new Date(this.visualizedField.searchFilter.currentData.max);
+    /** get min/max date for the entire graph and set domain and time category */
+    setTimeDomain() {
+        const currentDomain = this.visualizedField.searchFilter.currentData;
+        const min = new Date(currentDomain.min);
+        const max = new Date(currentDomain.max);
         this.xDomain = [min, max];
-        this.xScale.domain(this.xDomain);
+        this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    async requestDocumentData() {
-        let dataPromise: Promise<{date: Date, doc_count: number}[]>;
-
+    aggregateResultToResult(cat: AggregateResult): DateResult {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
-        dataPromise = this.searchService.dateHistogramSearch(
-            this.corpus, this.queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                const data = result.aggregations[this.visualizedField.name].filter(cat => cat.doc_count > 0).map(cat => {
-                    return {
-                        date: new Date(cat.key_as_string),
-                        doc_count: cat.doc_count
-                    };
-                });
-                return data;
-            });
-
-        this.rawData = await dataPromise;
-        const total_documents = _.sum(this.rawData.map(d => d.doc_count));
-        this.searchRatioDocuments = this.documentLimit / total_documents;
-        this.documentLimitExceeded = this.documentLimit < total_documents;
+        return {
+            date: new Date(cat.key_as_string),
+            doc_count: cat.doc_count,
+        };
     }
 
-    async requestTermFrequencyData() {
-        const dataPromises = this.rawData.map((cat, index) => {
-            return new Promise(resolve => {
-                const start_date = cat.date;
-                const binDocumentLimit = _.min([10000, _.round(this.rawData[index].doc_count * this.searchRatioDocuments)]);
-                const end_date = index < (this.rawData.length - 1) ? this.rawData[index + 1].date : undefined;
-                this.searchService.dateTermFrequencySearch(
-                    this.corpus, this.queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                    start_date, end_date)
-                    .then(result => {
-                    const data = result.data;
-                    this.rawData[index].match_count = data.match_count;
-                    this.rawData[index].total_doc_count = data.doc_count;
-                    this.rawData[index].token_count = data.token_count;
-                    resolve(true);
-                });
-            });
-        });
+    /** Retrieve doc counts for a series.
+     * @param series series object
+     * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
+     * True when retrieving results for the entire series, false when retrieving a window.
+     */
+    requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
+        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        return this.searchService.dateHistogramSearch(
+            this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
+                this.docCountResultIntoSeries(result, series, setSearchRatio)
+        );
+    }
 
-        await Promise.all(dataPromises);
+    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
+        const queryModelCopy = this.setQueryText(queryModel, series.queryText);
+        const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
+        const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
-        // signal if total token counts are available
-        this.totalTokenCountAvailable.emit(this.rawData.find(cat => cat.token_count) !== undefined);
+        return this.searchService.dateTermFrequencySearch(
+            this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
+            ...timeDomain)
+            .then(result => this.addTermFrequencyToCategory(result, cat));
 
     }
 
-    selectData(): void {
-        if (this.frequencyMeasure === 'tokens') {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count }));
-            } else if (this.normalizer === 'terms') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count / cat.token_count }));
-            } else if (this.normalizer === 'documents') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, value: cat.match_count / cat.total_doc_count }));
+    /** time domain for a bin */
+    categoryTimeDomain(cat, catIndex, series): [Date, Date] {
+        const startDate = cat.date;
+        const endDate = catIndex < (series.data.length - 1) ? series.data[catIndex + 1].date : undefined;
+        return [startDate, endDate];
+    }
+
+    setChart() {
+        if (this.chart) {
+            // reset time unit to the one set in the chart
+            const unit = (this.chart.options.scales.xAxis as any).time.unit as ('year'|'week'|'month'|'day');
+            if (unit) {
+                this.currentTimeCategory = unit;
             }
+            this.updateChartData();
         } else {
-            if (this.normalizer === 'raw') {
-                this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, value: cat.doc_count }));
-            } else {
-                const total_doc_count = this.rawData.reduce((s, f) => s + f.doc_count, 0);
-                this.selectedData = this.rawData.map(cat =>
-                    ({ date: cat.date, value: cat.doc_count / total_doc_count }));
-            }
-
+            this.initChart();
         }
     }
 
-    drawChartData() {
-        /**
-        * bind data to chart, remove or update existing bars, add new bars
-        */
-        const update = this.chart.selectAll('.bar')
-            .data(this.selectedData);
-
-        // remove exiting bars
-        update.exit().remove();
-
-        // update existing bars
-        this.chart.selectAll('.bar').transition()
-            .attr('x', d => this.xScale(d.date))
-            .attr('y', d => this.yScale(d.value))
-            .attr('width', d => this.calculateBarWidth(d.date))
-            .attr('height', d => this.height - this.yScale(d.value));
-
-        // add new bars
-        update
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', d => this.xScale(d.date))
-            .attr('width', d => this.calculateBarWidth(d.date))
-            .attr('y', this.yScale(0)) // set to zero first for smooth transition
-            .attr('height', 0)
-            .transition().duration(750)
-            .delay((d, i) => i * 10)
-            .attr('y', d => this.yScale(d.value))
-            .attr('height', d => this.height - this.yScale(d.value));
-    }
-
-
-
-    zoomIn() {
-        const xExtent = this.xScale.domain();
-        const previousTimeCategory = this.currentTimeCategory;
-        this.calculateTimeCategory(xExtent[0], xExtent[1]);
-        // check if xExtent, counted in current time category, is smaller than scaleDownThreshold
-        if (this.currentTimeCategory === 'day' && previousTimeCategory === this.currentTimeCategory) {
-            // zoom in without rearranging underlying data
-            this.rescaleX();
-            this.chart.selectAll('.bar')
-                .transition().duration(750)
-                .attr('x', d => this.xScale(d.date))
-                .attr('y', d => this.yScale(d.doc_count))
-                .attr('width', d => this.calculateBarWidth(d.date));
-        }
-        else {
-            const filter = this.visualizedField.searchFilter;
-            filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(xExtent[0]), max: this.timeFormat(xExtent[1]) };
-            this.queryModelCopy.filters.push(filter);
-            this.prepareTimeline().then(() => {
-                this.setupYScale();
-                this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-                this.rescaleY(this.normalizer === 'percent');
-                this.drawChartData();
-                this.rescaleX();
-            });
-        }
-    }
-
-    zoomOut() {
-        this.currentTimeCategory = 'year';
-        this.visualizedField.searchFilter.currentData = this.visualizedField.searchFilter.defaultData;
-        this.prepareTimeline().then(() => {
-            this.setDateRange();
-            this.setupYScale();
-            this.yMax = d3Array.max(this.selectedData.map(d => d.value));
-            this.rescaleY(this.normalizer === 'percent');
-            this.rescaleX();
-            this.drawChartData();
+    getDatasets() {
+        return this.rawData.map((series, seriesIndex) => {
+            const data = this.chartDataFromSeries(series);
+            return {
+                xAxisID: 'xAxis',
+                yAxisID: 'yAxis',
+                label: series.queryText ? series.queryText : '(no query)',
+                data: data,
+                backgroundColor: this.colorPalette[seriesIndex],
+                hoverBackgroundColor: this.colorPalette[seriesIndex],
+            };
         });
     }
 
-    calculateTimeCategory(min: Date, max: Date) {
-        if (d3Time.timeYear.count(min, max) >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'year';
-            // this.timeFormat = d3.timeFormat("%Y");
-        } else if (d3Time.timeMonth.count(min, max) >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'month';
-            // this.timeFormat = d3.timeFormat("%B");
-        } else if (d3Time.timeWeek.count(min, max) >= this.scaleDownThreshold) {
-            this.currentTimeCategory = 'week';
-            // this.timeFormat = d3.timeFormat("%b %d");
-        } else {
-            this.currentTimeCategory = 'day';
-            // this.timeFormat = d3.timeFormat("%a %d");
-        }
+    /** turn a data series into a chartjs-compatible data array */
+    chartDataFromSeries(series: TimelineSeries): {x: string, y: number}[] {
+        const valueKey = this.currentValueKey;
+        return series.data.map(item => ({
+            x: item.date.toISOString(),
+            y: item[valueKey],
+        }));
     }
 
-    calculateBarWidth(startDate: Date) {
-        let endDate: Date;
-        switch (this.currentTimeCategory) {
-            case 'year':
-                endDate = d3Time.timeYear.ceil(startDate);
-                break;
-            case 'month':
-                endDate = d3Time.timeMonth.ceil(startDate);
-                break;
-            case 'week':
-                endDate = d3Time.timeWeek.ceil(startDate);
-                break;
-            case 'day':
-                endDate = d3Time.timeDay.ceil(startDate);
-                break;
-        }
-        return this.xScale(endDate) - this.xScale(startDate);
+    chartOptions(datasets) {
+        const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
+        const margin = moment.duration(1, this.currentTimeCategory);
+        const xMin = moment(this.xDomain[0]).subtract(margin).toDate();
+        const xMax = moment(this.xDomain[1]).add(margin).toDate();
+
+        const options = this.basicChartOptions;
+        const xAxis = options.scales.xAxis;
+        (xAxis as any).title.text = xAxisLabel;
+        xAxis.type = 'time';
+        (xAxis as any).time = {
+            minUnit: 'day',
+            unit: this.currentTimeCategory,
+        };
+        xAxis.min = xMin.toISOString();
+        xAxis.max = xMax.toISOString();
+        options.plugins.tooltip = {
+            callbacks: {
+                title: ([tooltipItem]) => {
+                    return this.formatDate(Date.parse(tooltipItem.label as string));
+                },
+                label: (tooltipItem) => {
+                    const value = tooltipItem.parsed.y;
+                    return this.formatValue(value);
+                }
+            }
+        };
+
+        // zoom limits
+        options.plugins.zoom.limits = {
+            xAxis: {
+                // convert dates to numeric rather than string here,
+                // as zoom plugin does not accept strings
+                min: xMin.valueOf(),
+                max: xMax.valueOf(),
+            }
+        };
+
+        options.scales.xAxis.type = 'time';
+        options.plugins.legend = {display: datasets.length > 1};
+        return options;
     }
 
     /**
-     * Show the zooming hint once per session, hide automatically with a delay
-     * when the user moves the mouse.
+     * Code that should be executed when zooming in, or when the chart data
+     * is updated while already zoomed in.
+     * Checks whether is is necessary to load zoomed-in data and does so if needed.
+     * @param chart chart object
+     * @param triggeredByDataUpdate whether the function was triggered by an update in the
+     * underlying data.
      */
-    setupZoomHint() {
-        if (!sessionStorage.getItem(hintSeenSessionStorageKey)) {
-            sessionStorage.setItem(hintSeenSessionStorageKey, 'true');
-            this.showHint = true;
-            const hider = _.debounce(() => {
-                this.showHint = false;
-                document.body.removeEventListener('mousemove', hider);
-            }, hintHidingDebounceTime);
-            _.delay(() => {
-                document.body.addEventListener('mousemove', hider);
-            }, hintHidingMinDelay);
+    onZoomIn(chart, triggeredByDataUpdate = false) {
+        const initialTimeCategory = this.calculateTimeCategory(...this.xDomain);
+        const previousTimeCategory = this.currentTimeCategory;
+        const min = new Date(chart.scales.xAxis.min);
+        const max = new Date(chart.scales.xAxis.max);
+        this.currentTimeCategory = this.calculateTimeCategory(min, max);
+
+        if ((this.currentTimeCategory !== previousTimeCategory) ||
+            (triggeredByDataUpdate && this.currentTimeCategory !== initialTimeCategory)) {
+            this.showLoading(
+                this.loadZoomedInData(
+                    chart,
+                    min, max,
+                    triggeredByDataUpdate = triggeredByDataUpdate,
+            ));
         }
     }
 
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
+    /**
+     * load results for the zoomed-in window (using a narrower time category
+     * than the zoomed-out chart)
+     * @param chart chart object
+     * @param min minimum date in window
+     * @param max maximum date in window
+     * @param triggeredByDataUpdate whether the function was triggered by an update in
+     * the underlying data (affects animation only)
+     */
+    async loadZoomedInData(chart, min: Date, max: Date, triggeredByDataUpdate = false) {
+        // when zooming, hide data for smooth transition
+        chart.update(triggeredByDataUpdate ? 'none' : 'hide');
+
+        const docPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+            const series = this.rawData[seriesIndex];
+            const queryModelCopy = this.addQueryDateFilter(
+                this.setQueryText(this.queryModel, series.queryText),
+                min, max);
+
+            return this.searchService.dateHistogramSearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
+                    return this.docCountResultIntoSeries(result, series, false);
+            });
+        });
+
+        const zoomedInResults = await Promise.all(docPromises);
+
+        if (this.frequencyMeasure === 'tokens') {
+            const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
+                return series.data.map((cat, index) => {
+                    const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
+                    this.requestCategoryTermFrequencyData(cat, index, series, queryModelCopy);
+                });
+            });
+            await Promise.all(dataPromises);
+        }
+
+        zoomedInResults.forEach((data, seriesIndex) => {
+            chart.data.datasets[seriesIndex].data = this.chartDataFromSeries(data);
+        });
+
+        chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        chart.update('show'); // fade into view
+
     }
 
-    get percentageDocumentsSearched() {
-        return _.round(100 * this.searchRatioDocuments);
+    /**
+     * Add a date filter to a query model restricting it to the provided min and max values.
+     */
+    addQueryDateFilter(query: QueryModel, min, max): QueryModel {
+        const queryModelCopy = _.cloneDeep(query);
+        // download zoomed in results
+        const filter = this.visualizedField.searchFilter;
+        filter.currentData = { filterType: 'DateFilter', min: this.timeFormat(min), max: this.timeFormat(max) };
+        queryModelCopy.filters.push(filter);
+        return queryModelCopy;
     }
 
-    get tableHeaders(): freqTableHeaders {
+    /** trigger zoom out, update chart data accordingly */
+    zoomOut(): void {
+        this.chart.resetZoom();
+        this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
+        (this.chart.options.scales.xAxis as any).time.unit = this.currentTimeCategory;
+        this.chart.update();
+
+        this.setChart();
+    }
+
+    /**
+     * Get the time category (year/month/week/day) that should be used in the graph,
+     * based on minimum and maximum dates on the x axis.
+     */
+    public calculateTimeCategory(min: Date, max: Date): 'year'|'month'|'week'|'day' {
+        const diff = moment.duration(moment(max).diff(moment(min)));
+        if (diff.asYears() >= this.scaleDownThreshold) {
+            return 'year';
+        } else if (diff.asMonths() >= this.scaleDownThreshold) {
+            return 'month';
+        } else if (diff.asWeeks() >= this.scaleDownThreshold) {
+            return 'week';
+        } else {
+            return 'day';
+        }
+    }
+
+    setTableHeaders() {
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        const valueKey = this.currentValueKey;
 
+        if (this.rawData.length > 1) {
+            this.tableHeaders = [
+                { key: 'date', label: 'Date', format: this.formatDate },
+                { key: 'queryText', label: 'Query' },
+                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+            ];
+        } else {
+            this.tableHeaders = [
+                { key: 'date', label: 'Date', format: this.formatDate },
+                { key: valueKey, label: rightColumnName, format: this.formatValue }
+            ];
+        }
+    }
+
+    /**
+     * Format for dates based on the time category.
+     * Returns a formatting function.
+     */
+    get formatDate(): (date) => string {
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
@@ -340,21 +317,22 @@ export class TimelineComponent extends BarChartComponent implements OnChanges, O
                 break;
         }
 
-        const formatDateValue = (date: Date) => {
+        return (date: Date) => {
             return moment(date).format(dateFormat);
         };
-
-        let formatValue: (value: number) => string | undefined;
-        if (this.normalizer === 'percent') {
-            formatValue = (value: number) => {
-                return `${_.round(100 * value, 1)}%`;
-            };
-        }
-
-        return [
-            { key: 'date', label: 'Date', format: formatDateValue },
-            { key: 'value', label: rightColumnName, format: formatValue }
-        ];
     }
-}
 
+    get isZoomedIn(): boolean {
+        // check whether this.chart is zoomed on xAxis
+
+        if (this.chart) {
+            const initialBounds = this.chart.getInitialScaleBounds().xAxis;
+            const currentBounds = { min : this.chart.scales.xAxis.min, max: this.chart.scales.xAxis.max };
+
+            return (initialBounds.min && initialBounds.min < currentBounds.min) ||
+                (initialBounds.max && initialBounds.max > currentBounds.max);
+        }
+        return false;
+    }
+
+}

@@ -48,12 +48,13 @@ class Parliament(Corpus):
                 yield full_path, {
                     'filename': filename
                 }
+
     country = field_defaults.country()
     country.search_filter = MultipleChoiceFilter(
         description='Search only in debates from selected countries',
         option_count=10
     )
-    
+
     date = field_defaults.date()
     speech = field_defaults.speech()
 
@@ -70,7 +71,7 @@ class Parliament(Corpus):
         # init function specifies list of fields - should be overwritten in subclasses.
         # `fields` is specified here rather than than as a static property,
         # to accommodate subclasses like ParliamentUK and ParliamentUKRecent,
-        # which should use the same fields list but may define different extractors 
+        # which should use the same fields list but may define different extractors
         # for individual fields
 
         self.fields = [ self.country, self.date, self.speech ]

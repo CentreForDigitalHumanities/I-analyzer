@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { commonTestBed } from '../common-test-bed';
@@ -9,7 +9,7 @@ describe('DocumentViewComponent', () => {
     let component: DocumentViewComponent;
     let fixture: ComponentFixture<DocumentViewComponent>;
 
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         commonTestBed().testingModule.compileComponents();
     }));
 
