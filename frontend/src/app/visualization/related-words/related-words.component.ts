@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../models';
+import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../../models';
 
-import { DialogService, SearchService } from '../services/index';
+import { DialogService, SearchService } from '../../services/index';
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',

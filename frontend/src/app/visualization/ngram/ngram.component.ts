@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../models';
-import { ApiService, SearchService } from '../services';
+import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../../models';
+import { ApiService, SearchService } from '../../services';
 
 @Component({
     selector: 'ia-ngram',

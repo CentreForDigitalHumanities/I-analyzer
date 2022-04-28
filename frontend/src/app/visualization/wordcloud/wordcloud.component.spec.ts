@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { DialogService, SearchService, ApiService } from '../services/index';
-import { ApiServiceMock } from '../../mock-data/api';
-import { DialogServiceMock } from '../../mock-data/dialog';
-import { SearchServiceMock } from '../../mock-data/search';
+import { DialogService, SearchService, ApiService } from '../../services/index';
+import { ApiServiceMock } from '../../../mock-data/api';
+import { DialogServiceMock } from '../../../mock-data/dialog';
+import { SearchServiceMock } from '../../../mock-data/search';
 import { WordcloudComponent } from './wordcloud.component';
 
 describe('WordcloudComponent', () => {

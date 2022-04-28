@@ -46,14 +46,14 @@ import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
 import { BarChartComponent } from './visualization/barchart/barchart.component';
 import { TimelineComponent } from './visualization/barchart/timeline.component';
-import { WordcloudComponent } from './visualization/wordcloud.component';
+import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
-import { RelatedWordsComponent } from './visualization/related-words.component';
+import { RelatedWordsComponent } from './visualization/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
@@ -64,7 +64,7 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { NgramComponent } from './visualization/ngram.component';
+import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
 
 
