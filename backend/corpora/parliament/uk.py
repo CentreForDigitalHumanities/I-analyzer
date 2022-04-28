@@ -12,13 +12,6 @@ from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
-def add_length_multifield(mapping):
-    mapping['length'] = {
-        "type": "token_count",
-        "analyzer": "standard",
-    }
-    return mapping
-
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -67,7 +60,6 @@ class ParliamentUK(Parliament, CSVCorpus):
     country.extractor = Constant(
         value='United Kingdom'
     )
-    country.es_mapping = add_length_multifield(country.es_mapping)
 
     date = field_defaults.date()
     date.extractor = CSV(
@@ -79,20 +71,17 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='debate',
         transform=format_debate_title
     )
-    debate_title.es_mapping = add_length_multifield(debate_title.es_mapping)
      
     house =  field_defaults.house()
     house.extractor = CSV(
         field='speaker_house',
         transform=format_house
     )
-    house.es_mapping = add_length_multifield(house.es_mapping)
     
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
-    debate_id.es_mapping = add_length_multifield(debate_id.es_mapping)
      
     speech = field_defaults.speech()
     speech.extractor = CSV(
@@ -125,17 +114,14 @@ class ParliamentUK(Parliament, CSVCorpus):
     speech_id.extractor = CSV(
         field='speech_id'
     )
-    speech.es_mapping = add_length_multifield(speech_id.es_mapping)
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(
         field='speaker',
         transform=format_speaker
     )
-    speaker.es_mapping = add_length_multifield(speaker.es_mapping)
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.es_mapping = add_length_multifield(speaker_id.es_mapping)
     
     column = field_defaults.column()
     column.extractor = CSV(
@@ -143,10 +129,8 @@ class ParliamentUK(Parliament, CSVCorpus):
         multiple=True,
         transform=format_page_numbers
     )
-    column.es_mapping = add_length_multifield(column.es_mapping)
 
     sequence = field_defaults.sequence()
-    sequence.es_mapping = add_length_multifield(sequence.es_mapping)
 
     def __init__(self):
         self.fields = [

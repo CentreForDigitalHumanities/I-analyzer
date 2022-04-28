@@ -12,6 +12,14 @@ from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
+
+def add_length_multifield(mapping):
+    mapping['length'] = {
+        "type": "token_count",
+        "analyzer": "standard",
+    }
+    return mapping
+
 def format_debate_title(title):
     if title.endswith('.'):
         title = title[:-1]
@@ -63,6 +71,7 @@ class ParliamentUKCombined(Parliament, CSVCorpus):
     country.extractor = Constant(
         value='United Kingdom'
     )
+    country.es_mapping = add_length_multifield(country.es_mapping)
 
     date = field_defaults.date()
     date.extractor = CSV(
@@ -74,17 +83,20 @@ class ParliamentUKCombined(Parliament, CSVCorpus):
         field='debate',
         transform=format_debate_title
     )
+    debate_title.es_mapping = add_length_multifield(debate_title.es_mapping)
      
     house =  field_defaults.house()
     house.extractor = CSV(
         field='house',
         transform=format_house
     )
+    house.es_mapping = add_length_multifield(house.es_mapping)
     
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
+    debate_id.es_mapping = add_length_multifield(debate_id.es_mapping)
      
     speech = field_defaults.speech()
     speech.extractor = CSV(
@@ -116,40 +128,43 @@ class ParliamentUKCombined(Parliament, CSVCorpus):
     speech_id.extractor = CSV(
         field='speech_id'
     )
+    speech_id.es_mapping = add_length_multifield(speech_id.es_mapping)
 
     speech_type = field_defaults.speech_type()
     speech_type.extractor = CSV(
         field='speech_type'
     )
-
+    speech_type.es_mapping = add_length_multifield(speech_type.es_mapping)
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(
         field='speaker_name',
         transform=format_speaker
     )
+    speaker.es_mapping = add_length_multifield(speaker.es_mapping)
 
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = CSV(
         field='speaker_id',
     )
+    speaker_id.es_mapping = add_length_multifield(speaker_id.es_mapping)
 
     topic = field_defaults.topic()
     topic.extractor = CSV(
         field='heading_major',
     )
+    topic.es_mapping = add_length_multifield(topic.es_mapping)
     
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
         field='heading_minor',
     )
+    subtopic.es_mapping = add_length_multifield(subtopic.es_mapping)
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
         field='sequence',
     )
-    
-
 
     def __init__(self):
         self.fields = [
