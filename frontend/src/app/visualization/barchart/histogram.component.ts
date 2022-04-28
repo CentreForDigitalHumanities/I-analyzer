@@ -2,7 +2,7 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../models/index';
+    HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 
 @Component({

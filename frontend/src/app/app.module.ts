@@ -44,8 +44,8 @@ import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
-import { BarChartComponent } from './visualization/barchart.component';
-import { TimelineComponent } from './visualization/timeline.component';
+import { BarChartComponent } from './visualization/barchart/barchart.component';
+import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
@@ -56,7 +56,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './visualization/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { HistogramComponent } from './visualization/histogram.component';
+import { HistogramComponent } from './visualization/barchart/histogram.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -65,7 +65,7 @@ import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { NgramComponent } from './visualization/ngram.component';
-import { HistogramOptionsComponent } from './visualization/histogram-options.component';
+import { HistogramOptionsComponent } from './visualization/barchart/histogram-options.component';
 
 
 const appRoutes: Routes = [
