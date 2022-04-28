@@ -447,13 +447,13 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     get formatValue(): (value?: number) => string|undefined {
         if (this.normalizer === 'percent') {
             return (value?: number) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     return `${_.round(100 * value, 1)}%`;
                 }
             };
         } else {
             return (value: number) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     return value.toString();
                 }
             };
