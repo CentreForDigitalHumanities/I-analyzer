@@ -38,7 +38,7 @@ export type freqTableHeader = {
 
 export type freqTableHeaders = freqTableHeader[];
 
-export type histogramOptions = {
+export type barchartOptions = {
     frequencyMeasure: 'documents'|'tokens',
     normalizer: 'raw'|'percent'|'documents'|'terms',
 };
