@@ -8,9 +8,14 @@ target_docs = [
         'date': '1872-02-06',
         'house': 'House of Commons',
         'debate_title': 'NEW WRITS DURING THE RECESS.',
+        'debate_id': '',
         'speech': "acquainted the House, —that he had issued Warrants for New Writs, for Truro, v. Hon. John Cranch Walker Vivian, Under Secretary to the Eight hon. Edward Cardwell; for Plymouth, Sir Robert Porrett Collier, knight, one of the Justices of the Court of Common Pleas; Dover, George Jessel, esquire, Solicitor General; York County (West Riding, Northern Division), Sir Francis Crossley, baronet, deceased; Limerick City, Francis William Russell, esquire, deceased; Galway County, Eight hon. William Henry Gregory, Governor and Commander in Chief of the Island of Ceylon and its dependencies; Kerry, Eight hon. Valentine Augustus Browne, commonly called Viscount Castlerosse, now Earl of Kenmare.",
         'id': 'guldi_c19_365565',
         'speaker': 'Mr. SPEAKER',
+        'speaker_id': '',
+        'speech_type': '',
+        'topic': '',
+        'subtopic': '',
         'sequence': '365565'
     },
     {
