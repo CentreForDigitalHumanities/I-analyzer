@@ -13,6 +13,14 @@ from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 
 
+def add_length_multifield(mapping):
+    mapping['fields'] = {'length' : {
+        "type": "token_count",
+        "analyzer": "standard",
+        }
+    }
+    return mapping
+
 def format_debate_title(title):
     if title.endswith('.'):
         title = title[:-1]
@@ -20,9 +28,11 @@ def format_debate_title(title):
     return title.title()
 
 def format_house(house):
-    if 'commons' in house.lower():
+    if 'commons_wmhall' in house.lower():
+        return 'House of Commons - Westminster Hall'
+    elif 'commons' in house.lower():
         return 'House of Commons'
-    if 'lords' in house.lower():
+    elif 'lords' in house.lower():
         return 'House of Lords'
 
 def format_speaker(speaker):
@@ -61,9 +71,11 @@ class ParliamentUK(Parliament, CSVCorpus):
         value='United Kingdom'
     )
 
+    country.es_mapping = add_length_multifield(country.es_mapping)
+
     date = field_defaults.date()
     date.extractor = CSV(
-        field='speechdate',
+        field='date',
     )
 
     debate_title = field_defaults.debate_title()
@@ -71,21 +83,24 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='debate',
         transform=format_debate_title
     )
+    debate_title.es_mapping = add_length_multifield(debate_title.es_mapping)
      
     house =  field_defaults.house()
     house.extractor = CSV(
-        field='speaker_house',
+        field='house',
         transform=format_house
     )
+    house.es_mapping = add_length_multifield(house.es_mapping)
     
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
+    debate_id.es_mapping = add_length_multifield(debate_id.es_mapping)
      
     speech = field_defaults.speech()
     speech.extractor = CSV(
-        field='text',
+        field='content',
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
@@ -108,36 +123,56 @@ class ParliamentUK(Parliament, CSVCorpus):
             }
         }
     }
-    speech.visualizations.remove('ngram')
     
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
     )
+    speech_id.es_mapping = add_length_multifield(speech_id.es_mapping)
+
+    speech_type = field_defaults.speech_type()
+    speech_type.extractor = CSV(
+        field='speech_type'
+    )
+    speech_type.es_mapping = add_length_multifield(speech_type.es_mapping)
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(
-        field='speaker',
+        field='speaker_name',
         transform=format_speaker
     )
+    speaker.es_mapping = add_length_multifield(speaker.es_mapping)
 
     speaker_id = field_defaults.speaker_id()
-    
-    column = field_defaults.column()
-    column.extractor = CSV(
-        field='src_column',
-        multiple=True,
-        transform=format_page_numbers
+    speaker_id.extractor = CSV(
+        field='speaker_id',
     )
+    speaker_id.es_mapping = add_length_multifield(speaker_id.es_mapping)
+
+    topic = field_defaults.topic()
+    topic.extractor = CSV(
+        field='heading_major',
+    )
+    topic.es_mapping = add_length_multifield(topic.es_mapping)
+    
+    subtopic = field_defaults.subtopic()
+    subtopic.extractor = CSV(
+        field='heading_minor',
+    )
+    subtopic.es_mapping = add_length_multifield(subtopic.es_mapping)
 
     sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field='sequence',
+    )
 
     def __init__(self):
         self.fields = [
             self.country, self.date,
             self.debate_title, self.debate_id,
+            self.topic, self.subtopic,
             self.house,
-            self.speech, self.speech_id, self.sequence,
+            self.speech, self.speech_id, self.speech_type,
+            self.sequence,
             self.speaker, self.speaker_id,
-            self.column,
         ]
