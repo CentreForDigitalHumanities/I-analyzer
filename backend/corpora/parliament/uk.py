@@ -59,7 +59,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         }
     }
 
-    field_entry = 'id'
+    field_entry = 'speech_id'
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
