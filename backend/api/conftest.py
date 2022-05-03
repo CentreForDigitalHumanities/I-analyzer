@@ -97,28 +97,3 @@ def basic_query():
             }
         }
     }
-
-@pytest.fixture
-def query_with_date_filter():
-    return {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": "test",
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": [{
-                    "range": {
-                    "date": {
-                        "gte": "1850-01-01",
-                        "lte": "1859-12-31",
-                        "format": "yyyy-MM-dd"
-                        }
-                    }
-                }]
-            }
-        }
-    }
