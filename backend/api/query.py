@@ -1,6 +1,14 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from typing import Dict
 from datetime import date, datetime
+
+def get_query_text(query):
+    """Get the text in the query"""
+    raise NotImplementedError
+
+def get_search_fields(query):
+    """Get the search fields specified in the query."""
+    raise NotImplementedError
 
 def get_filters(query: Dict):
     """Get the list of filters in a query, or `None` if there are none."""
@@ -17,7 +25,7 @@ def parse_date(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
 
 def get_date_range(query: Dict):
-    """Returns the filtered date range for a query, `None` if there is no query."""
+    """Returns the filtered date range for a query."""
     filters = get_filters(query)
     if filters:
         datefilters = list(filter(is_date_filter, filters))
@@ -31,6 +39,8 @@ def get_date_range(query: Dict):
             max_date = min(max_dates) if len(max_dates) else None
 
             return min_date, max_date
+    
+    return None, None
 
 def add_filter(query, filter):
     """Add a filter to a query"""
@@ -46,11 +56,8 @@ def add_filter(query, filter):
     new_query['query']['bool']['filter'] = filters
     return new_query
 
-
 def make_date_filter(min_date = None, max_date = None):
-    params = {
-        'format': 'yyyy-MM-dd',
-    }
+    params = { 'format': 'yyyy-MM-dd' }
     if min_date:
         params['gte'] = date.strftime(min_date, '%Y-%m-%d')
     
@@ -62,3 +69,20 @@ def make_date_filter(min_date = None, max_date = None):
             'date': params
         }
     }
+
+def make_term_filter(field, value):
+    return {
+        'term': {
+            field: value
+        }
+    }
+
+def remove_query(query):
+    """
+    Remove the query part of the query object
+    (i.e. the search text)
+    """
+
+    new_query = deepcopy(query)
+    new_query['query']['bool'].pop('must') #remove search term filter
+    return new_query

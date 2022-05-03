@@ -18,6 +18,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
+import api.query as query
 
 from flask import current_app
 
@@ -164,23 +165,25 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
+
 def get_total_time_interval(es_query, corpus):
     """
     Min and max date for the search query and corpus. Returns the dates from the query if provided,
     otherwise the min and max date from the corpus definition.
     """
 
-    datefilter = next((f for f in es_query['query']['bool']['filter'] if 'range' in f and 'date' in f['range']), None)
+    query_min, query_max = query.get_date_range(es_query)
 
-    if datefilter:
-        data = datefilter['range']['date']
-        min_date = datetime.strptime(data['gte'], '%Y-%m-%d')
-        max_date = datetime.strptime(data['lte'], '%Y-%m-%d')
-    else:
-        corpus_class = load_corpus(corpus)
-        min_date = corpus_class.min_date
-        max_date = corpus_class.max_date
-    
+    if query_min and query_max:
+        return query_min, query_max
+
+    corpus_class = load_corpus(corpus)
+    corpus_min = corpus_class.min_date
+    corpus_max = corpus_class.max_date
+
+    min_date = query_min if query_min and query_min > corpus_min else corpus_min
+    max_date = query_max if query_max and query_max < corpus_max else corpus_max
+
     return min_date, max_date
 
 
@@ -206,21 +209,6 @@ def get_time_bins(es_query, corpus):
         bins.append((bins_max + 1, max_year))
     
     return bins
-
-def set_date_filter(es_query, date_filter):
-    # add filter key if needed
-    if 'filter' not in es_query['query']['bool']:
-        es_query['query']['bool']['filter'] = []
-
-    # select filters that are not a date range
-    filters = [ f for f in es_query['query']['bool']['filter'] 
-        if 'range' not in f and 'date' not in f['range']]
-
-    # add date filter
-    filters.append(date_filter)
-    es_query['query']['bool']['filter'] = filters
-
-    return es_query
  
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
@@ -244,16 +232,8 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         end_date = datetime(end_year, 12, 31)
 
         # filter query on this time bin
-        date_filter = {
-            'range': {
-                'date': {
-                    'gte': datetime.strftime(start_date, '%Y-%m-%d'),
-                    'lte': datetime.strftime(end_date, '%Y-%m-%d'),
-                    'format': 'yyyy-MM-dd',
-                }
-            }
-        }
-        es_query = set_date_filter(es_query, date_filter)
+        date_filter = query.make_date_filter(start_date, end_date)
+        es_query = query.add_filter(es_query, date_filter)
 
         #search for the query text
         search_results = client.search(
@@ -345,18 +325,10 @@ def get_top_10_ngrams(counters, total_frequencies = None):
 def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
 
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else datetime.now()
+    end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
 
-    date_filter = {
-        'range': {
-            field: {
-                'gte': datetime.strftime(start_date, '%Y-%m-%d'),
-                'lte': datetime.strftime(end_date, '%Y-%m-%d'),
-                'format': 'yyyy-MM-dd',
-            }
-        }
-    }
-    es_query = set_date_filter(es_query, date_filter)
+    date_filter = query.make_date_filter(start_date, end_date)
+    es_query = query.add_filter(es_query, date_filter)
     es_query['track_total_hits'] = True
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
@@ -460,17 +432,15 @@ def get_term_frequency(es_query, corpus, size):
     match_count = get_match_count(client, deepcopy(es_query), corpus, size, highlight_specs)
 
     # get total document count and (if available) token count for bin
-    agg_query = deepcopy(es_query)
-    agg_query['query']['bool'].pop('must') #remove search term filter
+    agg_query = query.remove_query(es_query) #remove search term filter
     doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
 
     return match_count, doc_count, token_count
 
 def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
     # filter for relevant value
-    es_query['query']['bool']['filter'].append(
-        { 'term': { field_name: field_value }}
-    )
+    term_filter = query.make_term_filter(field_name, field_value)
+    es_query = query.add_filter(es_query, term_filter)
     es_query['track_total_hits'] = True
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
