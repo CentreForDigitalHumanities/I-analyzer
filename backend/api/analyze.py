@@ -16,6 +16,7 @@ from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
 from datetime import datetime, timedelta
+from es.search import get_index, total_hits, search, hits
 from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
@@ -212,14 +213,15 @@ def get_time_bins(es_query, corpus):
  
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
-    client = elasticsearch(corpus)
+    index = get_index(corpus)
+    client = elasticsearch(index)
     ngrams_per_bin = []
     ngram_ttfs = dict()
 
-    query_text = es_query['query']['bool']['must']['simple_query_string']['query']
+    query_text = query.get_query_text(es_query)
     field = field if subfield == 'none' else '.'.join([field, subfield])
     analyzed_query_text = client.indices.analyze(
-        index = corpus,
+        index = index,
         body={
             'text': query_text,
             'field': field,
@@ -236,10 +238,11 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         es_query = query.add_filter(es_query, date_filter)
 
         #search for the query text
-        search_results = client.search(
-            index=corpus,
+        search_results = search(
+            corpus=corpus,
+            query_model = es_query,
+            client = client,
             size = max_size_per_interval,
-            body = es_query,
         )
 
         bin_ngrams = Counter()
@@ -249,7 +252,7 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
             # get the term vectors for the hit
             termvectors = client.termvectors(
-                index=corpus,
+                index=index,
                 doc_type='_doc',
                 id=id,
                 term_statistics=True,
@@ -381,18 +384,19 @@ def extract_data_for_term_frequency(corpus, search_fields = None):
     return highlight_specs, token_count_aggregators
 
 def get_match_count(es_client, query, corpus, size, highlight_specs):
-    query['highlight'] = highlight_specs
-    highlight_results = es_client.search(
-        index=corpus,
+    highlight_results = search(
+        corpus = corpus,
+        query_model= query,
+        client = es_client,
         size = size,
-        body = query,
+        highlight = highlight_specs
     )
 
-    hits = [hit for hit in highlight_results['hits']['hits'] if 'highlight' in hit]
+    highlight_hits = [hit for hit in hits(highlight_results) if 'highlight' in hit]
     highlight_matches = (sum(len(hit['highlight'][key])
-        for hit in hits for key in hit['highlight'].keys()
+        for hit in highlight_hits for key in hit['highlight'].keys()
     ))
-    skipped_docs = highlight_results['hits']['total']['value'] - len(list(hits))
+    skipped_docs = total_hits(highlight_results) - len(list(highlight_hits))
     match_count = highlight_matches + skipped_docs
 
     return match_count
@@ -400,15 +404,14 @@ def get_match_count(es_client, query, corpus, size, highlight_specs):
 def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators):
     if token_count_aggregators:
         query['aggs'] = token_count_aggregators
-    
-    query['size'] = 0 # don't include documents
 
-    results = es_client.search(
-        index=corpus,
-        body = query,
+    results = search(
+        corpus = corpus,
+        query_model = query,
+        size = 0 # don't include documents
     )
 
-    doc_count = results['hits']['total']['value']
+    doc_count = total_hits(results)
     
     if token_count_aggregators:
         token_count = int(sum(
@@ -423,7 +426,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
 
-    fields = es_query['query']['bool']['must']['simple_query_string'].get('fields')
+    fields = query.get_search_fields(es_query)
 
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
     highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)

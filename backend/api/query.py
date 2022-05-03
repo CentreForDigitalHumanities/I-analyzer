@@ -1,14 +1,25 @@
+from ast import keyword
 from copy import deepcopy
 from typing import Dict
 from datetime import date, datetime
 
 def get_query_text(query):
     """Get the text in the query"""
-    raise NotImplementedError
+    try:
+        text = query['query']['bool']['must']['simple_query_string']['query']
+    except KeyError:
+        text = None
+    
+    return text
 
 def get_search_fields(query):
     """Get the search fields specified in the query."""
-    raise NotImplementedError
+    try:
+        fields = query['query']['bool']['must']['simple_query_string']['fields']
+    except KeyError:
+        fields = None
+    
+    return fields
 
 def get_filters(query: Dict):
     """Get the list of filters in a query, or `None` if there are none."""
@@ -40,7 +51,7 @@ def get_date_range(query: Dict):
 
             return min_date, max_date
     
-    return None, None
+    return None, None    
 
 def add_filter(query, filter):
     """Add a filter to a query"""
