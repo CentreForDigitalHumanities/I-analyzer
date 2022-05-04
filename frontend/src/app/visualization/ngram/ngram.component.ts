@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { ChartOptions } from 'chart.js';
+import { ChartOptions, Chart } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../../models';
 import { ApiService, SearchService } from '../../services';
@@ -24,55 +24,16 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     ];
     tableData: { date: string, ngram: string, freq: number }[];
 
-    public chartData: any;
+    numberOfNgrams = 10;
+
+    timeLabels: string[] = [];
+    data: {
+        ngram: string,
+        total: number,
+        frequencies: number[]
+    }[] = [];
+
     public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
-    public chartOptions: ChartOptions = {
-        elements: {
-            line: {
-                tension: 0, // disables bezier curves
-            }
-        },
-        scales: {
-            yAxis: {
-                title: {
-                    display: true,
-                    text: 'Weighed frequency'
-                }
-            },
-            xAxis: {
-                title: {
-                    display: true,
-                    text: 'Date',
-                }
-            },
-        },
-        plugins: {
-            legend: {
-                display: true,
-            },
-            tooltip: {
-                intersect: false,
-                displayColors: true,
-                callbacks: {
-                    labelColor(tooltipItem: any): any {
-                        const color = tooltipItem.dataset.borderColor;
-                        return {
-                            borderColor: color,
-                            backgroundColor: color,
-                            borderWidth: 0,
-                        };
-                    },
-                    label(tooltipItem: any): string {
-                        const label = tooltipItem.dataset.label;
-                        const value = tooltipItem.raw;
-                        if (value) { // skip 0 values
-                            return `${label}: ${_.round(value, 4)}`;
-                        }
-                      },
-                }
-            }
-        }
-    };
 
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
@@ -131,7 +92,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             break;
             case 'freq_compensation': {
                 this.freqCompensation = value;
-                (this.chartOptions.scales.yAxis as any).title.text = value ? 'Weighed frequency' : 'Frequency';
             }
             break;
             case 'analysis': {
@@ -168,7 +128,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 });
         }).catch(error => {
-            this.chartData = undefined;
+            this.data = undefined;
             this.error.emit(error);
             this.isLoading.emit(false);
         });
@@ -176,20 +136,28 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     onDataLoaded(result) {
         this.setTableData(result);
-        const chartData = {
-            labels: result.time_points,
-            datasets: result.words
-        };
 
-        chartData.datasets.forEach((data, index) => {
-            data.borderColor = this.colorPalette[index];
-            data.backgroundColor = 'rgba(0,0,0,0)';
-            data.pointRadius = 0;
-            data.pointHoverRadius = 0;
+        this.timeLabels = result.time_points;
+        this.data = result.words.map(item => {
+            const total = _.sum(item.data);
+            const decimals = this.chooseDemicals(total);
+            const format = value => _.round(value, decimals);
+            console.log(decimals);
+            return {
+                ngram: item.label,
+                total: total,
+                frequencies: item.data.map(format)
+            };
         });
-        this.chartData = chartData;
         this.isLoading.emit(false);
+    }
 
+    chooseDemicals(total: number): number {
+        const log = Math.log10(total);
+        const rounded = Math.floor(log);
+        const inverse = -1 * rounded;
+        const oneOrderPrecision = inverse + 1;
+        return Math.max(oneOrderPrecision, 0);
     }
 
     setTableData(results: { words: { label: string, data: number[] }[], time_points: string[] }) {
@@ -205,5 +173,12 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+    get ngramIndices(): number[] {
+        return _.range(0, this.numberOfNgrams);
+    }
+
+    get timeIndices(): number[] {
+        return _.range(this.timeLabels.length);
+    }
 
 }

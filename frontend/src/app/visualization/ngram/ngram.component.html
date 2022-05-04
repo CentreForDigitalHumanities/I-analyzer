@@ -56,8 +56,35 @@
     </div>
 </div>
 
-<div class="block" *ngIf="!asTable">
-    <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+<div class="table-container" *ngIf="!asTable">
+    <table class="table is-fullwidth is-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Phrase
+                </th>
+                <th>
+                    Total frequency
+                </th>
+                <th *ngFor="let label of timeLabels">
+                    {{label}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of data">
+                <td>
+                    {{item.ngram}}
+                </td>
+                <td>
+                    {{item.total}}
+                </td>
+                <td *ngFor="let t of timeIndices">
+                    {{item.frequencies[t]}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <div class="block" *ngIf="asTable">
