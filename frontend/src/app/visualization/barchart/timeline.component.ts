@@ -3,7 +3,7 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../models/index';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';

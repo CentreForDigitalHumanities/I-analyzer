@@ -5,10 +5,10 @@
 </div>
 
 <div class="block">
-    <ia-histogram-options
+    <ia-barchart-options
         [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
         (options)="onOptionChange($event)" (newQuery)="addSeries($event)"  (clearQueries)="clearAddedQueries()">
-    </ia-histogram-options>
+    </ia-barchart-options>
 </div>
 
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
