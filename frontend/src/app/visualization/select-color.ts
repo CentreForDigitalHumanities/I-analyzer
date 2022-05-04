@@ -4,8 +4,8 @@ export const PALETTES = [
     ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30'],
     // d3 category10 palette
     ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf' ],
-    // black only - occasionally useful for printing
-    ['#000']
+    // greyscale - occasionally useful for printing
+    ['#000', '#bbb', '#444']
 ];
 
 export function selectColor(palette?: string[], index?: number): string {
