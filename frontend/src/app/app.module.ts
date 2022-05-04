@@ -67,6 +67,7 @@ import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanP
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
+import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 
 
 const appRoutes: Routes = [
@@ -149,6 +150,7 @@ export const declarations: any[] = [
     QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
+    PaletteSelectComponent,
     PrivacyComponent,
     RangeFilterComponent,
     RegistrationComponent,

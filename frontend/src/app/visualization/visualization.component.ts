@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { Corpus, QueryModel, visualizationField } from '../models/index';
 import { PALETTES } from './select-color';
-import { faCircleQuestion, faPalette, faSquare } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 
 @Component({
@@ -54,12 +54,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public isLoading = false;
     private childComponentLoading = false;
 
-    public palettes = PALETTES;
     public palette = PALETTES[0];
 
-    faPalette = faPalette;
     faQuestion = faCircleQuestion;
-    faSquare = faSquare;
 
     constructor(private dialogService: DialogService) {
     }
