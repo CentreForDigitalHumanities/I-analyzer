@@ -19,7 +19,7 @@ export class DropdownComponent<T> implements OnDestroy {
     public options: T[] = [];
 
     @Input()
-    public placeholder: string = '';
+    public placeholder = '';
 
     @Input()
     public optionLabel: keyof T | undefined = undefined;
@@ -82,7 +82,7 @@ export class DropdownComponent<T> implements OnDestroy {
             if (event.keyCode === KeyCode.Down) {
                 event.preventDefault();
                 index++;
-                if (index != this.options.length) {
+                if (index !== this.options.length) {
                     this.select(this.options[index], false);
                 }
             }

@@ -15,9 +15,8 @@ describe('BarchartComponent', () => {
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            providers: [ 
+            providers: [
                 {
-        
                     provide: ApiService, useValue: new ApiServiceMock()
                 },
                 ApiRetryService,

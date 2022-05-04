@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -27,7 +27,7 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService, 
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService,
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
@@ -136,12 +136,15 @@ export const declarations: any[] = [
     HomeComponent,
     HighlightPipe,
     HistogramComponent,
+    HistogramOptionsComponent,
     ImageViewComponent,
     ImageNavigationComponent,
+    LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     MultipleChoiceFilterComponent,
+    NgramComponent,
     NotificationsComponent,
     QueryFiltersComponent,
     QueryTextPipe,
@@ -152,6 +155,7 @@ export const declarations: any[] = [
     RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
+    ScanImageComponent,
     ScanPdfComponent,
     ScrollToDirective,
     SearchComponent,
@@ -159,20 +163,10 @@ export const declarations: any[] = [
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    LoginComponent,
-    ScrollToDirective,
-    ScanImageComponent,
-    TimelineComponent,
-    RelatedWordsComponent,
-    DocumentViewComponent,
-    SearchHistoryComponent,
     SelectFieldComponent,
-    HistogramComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
-    NgramComponent,
-    HistogramOptionsComponent,
 ];
 
 export const imports: any[] = [

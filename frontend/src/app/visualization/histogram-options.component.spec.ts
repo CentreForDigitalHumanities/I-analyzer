@@ -1,4 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+
+import { commonTestBed } from '../common-test-bed';
 
 import { HistogramOptionsComponent } from './histogram-options.component';
 
@@ -6,16 +8,16 @@ describe('HistogramOptionsComponent', () => {
   let component: HistogramOptionsComponent;
   let fixture: ComponentFixture<HistogramOptionsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ HistogramOptionsComponent ]
-    })
-    .compileComponents();
-  });
+  beforeEach(waitForAsync(() => {
+      commonTestBed().testingModule.compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HistogramOptionsComponent);
     component = fixture.componentInstance;
+    component.queries = ['spam', 'spam', 'eggs', 'spam'];
+    component.showTokenCountOption = true;
+    component.isLoading = true;
     fixture.detectChanges();
   });
 

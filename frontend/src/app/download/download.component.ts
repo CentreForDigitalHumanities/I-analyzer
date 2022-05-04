@@ -88,8 +88,7 @@ export class DownloadComponent implements OnChanges {
     private getCsvFields(): CorpusField[] {
         if (this.selectedCsvFields === undefined) {
             return this.corpus.fields.filter(field => field.csvCore);
-        }
-        else return this.selectedCsvFields;
+        } else { return this.selectedCsvFields; }
     }
 
 

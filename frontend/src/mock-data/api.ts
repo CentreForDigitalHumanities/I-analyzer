@@ -8,6 +8,10 @@ export class ApiServiceMock {
     constructor(public fakeResult: { [path: string]: any } = {}) {
     }
 
+    public abortTasks() {
+        return {'success': true};
+    }
+
     public get(path: string): Promise<any> {
         return Promise.resolve(this.fakeResult[path]);
     }
