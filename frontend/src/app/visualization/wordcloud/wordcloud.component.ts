@@ -21,9 +21,16 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Input() corpus: Corpus;
     @Input() resultsCount: number;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
+
+    tableHeaders: freqTableHeaders = [
+        { key: 'key', label: 'Term' },
+        { key: 'doc_count', label: 'Frequency' }
+    ];
+
 
     public significantText: AggregateResult[];
     public disableLoadMore: boolean = false;
@@ -38,12 +45,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     private chartElement: any;
     private svg: any;
 
-    tableHeaders = [
-        { key: 'key', label: 'Term' },
-        { key: 'doc_count', label: 'Frequency' }
-    ];
-
-    constructor(private dialogService: DialogService, private searchService: SearchService, private apiService: ApiService) { }
+    constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit() {
         if (this.resultsCount > 0) {
@@ -56,10 +58,11 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.visualizedField || changes.queryModel || changes.corpus) {
-            if (this.corpus && this.visualizedField && this.queryModel) {
-                this.loadData(this.batchSize);
-            }
+        if ((this.corpus && this.visualizedField && this.queryModel && this.batchSize && this.palette)  &&
+            (changes.corpus || changes.visualizedField || changes.queryModel || changes.batchSize)) {
+            this.loadData(this.batchSize);
+        } else {
+            this.onDataLoaded();
         }
     }
 
@@ -96,7 +99,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     onDataLoaded() {
         this.isLoading.next(false);
         this.chartElement = this.chartContainer.nativeElement;
-        d3.selectAll('svg').remove();
+        d3.select('svg.wordcloud').remove();
         const inputRange = d3.extent(this.significantText.map(d => d.doc_count)) as number[];
         const outputRange = [20, 80];
         this.scaleFontSize.domain(inputRange).range(outputRange);
@@ -104,14 +107,10 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     }
 
-    showWordcloudDocumentation() {
-        this.dialogService.showManualPage('wordcloud');
-    }
-
-
     drawWordCloud(significantText: AggregateResult[]) {
         this.svg = d3.select(this.chartElement)
             .append("svg")
+            .classed('wordcloud', true)
             .attr("width", this.width)
             .attr("height", this.height);
         const chart = this.svg
@@ -119,7 +118,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             .attr("transform", "translate(" + this.width / 2 + "," + this.height / 2 + ")")
             .selectAll("text");
 
-        const fill = d3.scaleOrdinal(d3.schemeCategory10);
+        const fill = d3.scaleOrdinal(this.palette);
 
         const layout = cloud()
             .size([this.width, this.height])

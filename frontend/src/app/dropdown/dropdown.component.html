@@ -1,6 +1,9 @@
 <div class="dropdown" [ngClass]="{'is-active': showDropdown}">
     <div class="dropdown-trigger" (click)="toggleDropdown()">
         <button class="button" aria-haspopup="true">
+            <span class="icon" *ngIf="icon">
+                <fa-icon [icon]="icon"></fa-icon>
+            </span>
             <span *ngIf="optionLabel && value">{{value[optionLabel]}}</span>
             <span *ngIf="!optionLabel && value">{{value}}</span>
             <span *ngIf="!value">{{placeholder}}</span>

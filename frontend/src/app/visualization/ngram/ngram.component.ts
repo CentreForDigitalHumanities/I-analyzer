@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { ChartOptions } from 'chart.js';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Chart, ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
+import { selectColor } from '../select-color';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../../models';
 import { ApiService, SearchService } from '../../services';
 
@@ -14,6 +15,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() corpus: Corpus;
     @Input() visualizedField: visualizationField;
     @Input() asTable: boolean;
+    @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
 
@@ -24,12 +26,23 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     ];
     tableData: { date: string, ngram: string, freq: number }[];
 
-    public chartData: any;
-    public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
+    public chartData: {
+        labels: string[],
+        datasets: {
+            label: string,
+            data: number[],
+            borderColor?: string,
+        }[]
+    };
     public chartOptions: ChartOptions = {
         elements: {
             line: {
                 tension: 0, // disables bezier curves
+                fill: false,
+            },
+            point: {
+                radius: 0,
+                hoverRadius: 0,
             }
         },
         scales: {
@@ -49,6 +62,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         plugins: {
             legend: {
                 display: true,
+                labels: {
+                    boxHeight: 0, // flat boxes to the border is a line
+                }
             },
             tooltip: {
                 intersect: false,
@@ -96,18 +112,31 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
     }
 
-    ngOnChanges(): void {
-        if (this.visualizedField.multiFields) {
-            this.analysisOptions = [{label: 'None', value: 'none'}]
-                .concat(this.visualizedField.multiFields.map(subfield => {
-                    const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
-                    return { value: subfield, label: displayStrings[subfield]};
-                }));
-        } else {
-            this.analysisOptions = undefined;
-        }
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel || changes.corpus || changes.visualizedField) {
+            if (this.visualizedField.multiFields) {
+                this.analysisOptions = [{label: 'None', value: 'none'}]
+                    .concat(this.visualizedField.multiFields.map(subfield => {
+                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
+                        return { value: subfield, label: displayStrings[subfield]};
+                    }));
+            } else {
+                this.analysisOptions = undefined;
+            }
 
-        this.loadGraph();
+            this.loadGraph();
+        } else if (changes.palette && this.chartData) {
+            this.chartData = {
+                labels: this.chartData.labels,
+                datasets: this.chartData.datasets.map((dataset, index) => (
+                    {
+                        label: dataset.label,
+                        data: dataset.data,
+                        borderColor: selectColor(this.palette, index)
+                    }
+                ))
+            };
+        }
     }
 
     onOptionChange(control: 'size'|'position'|'freq_compensation'|'analysis'|'max_size',
@@ -131,7 +160,12 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             break;
             case 'freq_compensation': {
                 this.freqCompensation = value;
-                (this.chartOptions.scales.yAxis as any).title.text = value ? 'Weighed frequency' : 'Frequency';
+                this.chartOptions.scales['yAxis'] = {
+                    title: {
+                        display: true,
+                        text: value ? 'Weighed frequency' : 'Frequency'
+                    }
+                };
             }
             break;
             case 'analysis': {
@@ -182,7 +216,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         chartData.datasets.forEach((data, index) => {
-            data.borderColor = this.colorPalette[index];
+            data.borderColor = selectColor(this.palette, index);
             data.backgroundColor = 'rgba(0,0,0,0)';
             data.pointRadius = 0;
             data.pointHoverRadius = 0;

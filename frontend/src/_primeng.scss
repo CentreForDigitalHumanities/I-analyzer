@@ -144,6 +144,20 @@ body {
     .p-component {
         font-family: inherit !important;
     }
+
+    .p-dropdown-label {
+        box-shadow: none !important;
+    }
+
+    .p-dropdown {
+        // make borders match ia-dropdown component
+        border-color: rgb(218, 218, 218);
+
+        &:hover {
+            border-color: rgb(184, 184, 184) !important; 
+        }
+    }
+
 }
 
 .is-round{

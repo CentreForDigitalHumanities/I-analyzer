@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../../models';
-
+import { selectColor } from '../select-color';
 import { DialogService, SearchService } from '../../services/index';
+
 @Component({
     selector: 'ia-related-words',
     templateUrl: './related-words.component.html',
@@ -12,6 +13,7 @@ export class RelatedWordsComponent implements OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
@@ -33,13 +35,11 @@ export class RelatedWordsComponent implements OnChanges {
     tableData: [WordSimilarity];
 
     public zoomedInData; // data requested when clicking on a time interval
-    // colour-blind friendly colorPalette retrieved from colorbrewer2.org
-    public colorPalette = ['#a6611a', '#dfc27d', '#80cdc1', '#018571', '#543005', '#bf812d', '#f6e8c3', '#c7eae5', '#35978f', '#003c30']
     public chartOptions: ChartOptions = {
         elements: {
             line: {
                 tension: 0, // disables bezier curves
-            }
+            },
         },
         scales: {
             xAxis: {},
@@ -53,6 +53,9 @@ export class RelatedWordsComponent implements OnChanges {
         plugins: {
             legend: {
                 display: true,
+                labels: {
+                    boxHeight: 0, // flat boxes so the border is a line
+                }
             },
             tooltip: {
                 displayColors: true,
@@ -76,11 +79,12 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData() {
+        this.isLoading.emit(true);
         this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
             this.graphData = results['graphData'];
             this.graphData.datasets.map((d, index) => {
                 d.fill = false;
-                d.borderColor = this.colorPalette[index];
+                d.borderColor = selectColor(this.palette, index);
             });
 
             this.tableData = results['tableData'];
@@ -95,11 +99,8 @@ export class RelatedWordsComponent implements OnChanges {
             });
     }
 
-    showRelatedWordsDocumentation() {
-        this.dialogService.showManualPage('relatedwords');
-    }
-
     zoomTimeInterval(event: any) {
+        console.log(event);
         this.isLoading.emit(true);
         this.searchService.getRelatedWordsTimeInterval(
             this.queryModel.queryText,
@@ -110,14 +111,16 @@ export class RelatedWordsComponent implements OnChanges {
                 this.zoomedInData.datasets
                     .sort((a, b) => { return b.data[0] - a.data[0] })
                     .map((d, index) => {
-                        d.backgroundColor = this.colorPalette[index];
-                    })
+                        d.backgroundColor = selectColor(this.palette, index);
+                        d.hoverBackgroundColor = selectColor(this.palette, index);
+                    });
                 // hide grid lines as we only have one data point on x axis
                 this.chartOptions.scales.xAxis = {
                     grid: {
                         display: false
                     }
                 };
+                this.chartOptions.plugins.legend.labels.boxHeight = undefined;
                 this.isLoading.emit(false);
             })
             .catch(error => {
@@ -128,6 +131,7 @@ export class RelatedWordsComponent implements OnChanges {
     zoomBack() {
         this.zoomedInData = null;
         this.chartOptions.scales.xAxis = {};
+        this.chartOptions.plugins.legend.labels.boxHeight = 0;
     }
 
 }
