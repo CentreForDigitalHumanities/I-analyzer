@@ -1,7 +1,11 @@
 from typing import Counter
 import api.analyze as analyze
+import api.query as query
 from mock_corpus import MockCorpus
 from datetime import datetime
+
+FILTER_MIN_DATE = datetime(1850, 1, 1)
+FILTER_MAX_DATE = datetime(1859, 12, 31)
 
 def test_total_time_interval_no_filter(test_app, basic_query):
     # no date filter: should use corpus min_date/max_date
@@ -9,13 +13,16 @@ def test_total_time_interval_no_filter(test_app, basic_query):
     assert min_date == MockCorpus.min_date
     assert max_date == MockCorpus.max_date
 
-def test_total_time_interval_with_filter(test_app, query_with_date_filter):
+def test_total_time_interval_with_filter(test_app, basic_query):
+    datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
+    query_with_date_filter = query.add_filter(basic_query, datefilter)
+
     # should use min_date/max_date specified in date filter (1850-1859)
     min_date, max_date = analyze.get_total_time_interval(query_with_date_filter, 'mock_corpus')
-    assert min_date == datetime(1850, 1, 1)
-    assert max_date == datetime(1859, 12, 31)
+    assert min_date == FILTER_MIN_DATE
+    assert max_date == FILTER_MAX_DATE
 
-def test_time_bins(test_app, basic_query, query_with_date_filter):
+def test_time_bins(test_app, basic_query):
     # 100 year interval
     bins = analyze.get_time_bins(basic_query, 'mock-corpus')
     target_bins = [
@@ -33,6 +40,8 @@ def test_time_bins(test_app, basic_query, query_with_date_filter):
     assert bins == target_bins
 
     # 10 year interval
+    datefilter = query.make_date_filter(FILTER_MIN_DATE, FILTER_MAX_DATE)
+    query_with_date_filter = query.add_filter(basic_query, datefilter)
     bins = analyze.get_time_bins(query_with_date_filter, 'mock-corpus')
     target_bins = [
         (1850, 1850), (1851, 1851),
