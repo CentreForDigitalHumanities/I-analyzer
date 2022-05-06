@@ -83,7 +83,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
                     const childTask = result['taskIds'][0];
                     this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
-                            this.significantText = outcome['results'];
+                            this.significantText = outcome['results'] as AggregateResult[];
                             this.onDataLoaded();
                         } else {
                             this.error.emit(outcome);

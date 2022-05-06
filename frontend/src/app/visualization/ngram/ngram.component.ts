@@ -26,9 +26,15 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     ];
     tableData: { date: string, ngram: string, freq: number }[];
 
+    chartData: any;
+    chartOptions: any;
+    chart: Chart;
+
     numberOfNgrams = 10;
 
     timeLabels: string[] = [];
+    ngrams: string[] = [];
+    
     data: {
         ngram: string,
         total: number,
@@ -136,51 +142,136 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         });
     }
 
-    onDataLoaded(result) {
-        this.setTableData(result);
+    onDataLoaded(result: NgramResults) {
+        this.tableData = this.makeTableData(result);
+        this.chartData = this.makeChartdata(result);
+        this.chartOptions = this.makeChartOptions(result);
+        this.chart = this.makeChart();
 
-        this.timeLabels = result.time_points;
-        this.data = result.words.map(item => {
-            const total = _.sum(item.data);
-            const decimals = this.chooseDemicals(total);
-            const format = value => _.round(value, decimals);
-            console.log(decimals);
-            return {
-                ngram: item.label,
-                total: total,
-                frequencies: item.data.map(format)
-            };
-        });
         this.isLoading.emit(false);
     }
 
-    chooseDemicals(total: number): number {
-        const log = Math.log10(total);
-        const rounded = Math.floor(log);
-        const inverse = -1 * rounded;
-        const oneOrderPrecision = inverse + 1;
-        return Math.max(oneOrderPrecision, 0);
-    }
-
-    setTableData(results: NgramResults) {
-        this.tableData = _.flatMap(
-            results.time_points.map((date, index) => {
-                return results.words.map(dataset => ({
+    makeTableData(result: NgramResults): any[] {
+        return _.flatMap(
+            result.time_points.map((date, index) => {
+                return result.words.map(dataset => ({
                     date: date,
                     ngram: dataset.label,
                     freq: dataset.data[index],
                 }));
             })
         );
-
     }
 
-    get ngramIndices(): number[] {
-        return _.range(0, this.numberOfNgrams);
+    makeChartdata(result: NgramResults): any {
+        this.timeLabels = result.time_points;
+        this.ngrams = result.words.map(item => item.label);
+
+        const datasets = _.reverse( // reverse drawing order so datasets are drawn OVER the one above them
+            result.words.map((item, index) => {
+                const points = this.getDataPoints(item.data, index);
+                return {
+                    label: item.label,
+                    data: points,
+                    borderColor: this.colorPalette[index],
+                    fill: {
+                        target: {value: index},
+                        above: this.getGradient.bind(this),
+                    },
+                };
+            })
+        );
+
+        return {
+            labels: this.timeLabels,
+            datasets,
+        };
     }
 
-    get timeIndices(): number[] {
-        return _.range(this.timeLabels.length);
+    getGradient(context) {
+        const borderColor = context.dataset.borderColor as string;
+
+        if (borderColor.startsWith('#') && borderColor.length === 7) { // hex color
+            const red = parseInt(borderColor.slice(1, 3), 16);
+            const green = parseInt(borderColor.slice(3, 5), 16);
+            const blue = parseInt(borderColor.slice(5, 7), 16);
+
+            return `rgba(${red}, ${green}, ${blue}, 0.5)`;
+        }
     }
+
+    makeChartOptions(result: NgramResults): ChartOptions {
+        return {
+            elements: {
+                point: {
+                    radius: 0,
+                    hoverRadius: 0,
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        text: 'Date'
+                    },
+                    position: 'top',
+                },
+                y: {
+                    reverse: true,
+                    title: {
+                        text: 'Ngram'
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        callback: (val, index) => {
+                            return this.ngrams[val];
+                        }
+                    }
+                },
+            },
+            plugins: {
+                filler: {
+                    propagate: true,
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            const ngram = tooltipItem.dataset.label;
+                            const value = (tooltipItem.raw as any).value;
+                            return `${ngram}: ${value}`;
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    getDataPoints(data: number[], ngramIndex: number) {
+        const yValues = this.getYValues(data, ngramIndex);
+
+        return _.zip(data, yValues).map(([value, y], x) => ({
+            y,
+            value,
+            x,
+        }));
+    }
+
+    getYValues(data: number[], ngramIndex: number): number[] {
+        const scaled = this.scaleValues(data);
+        return scaled.map(value => ngramIndex - value);
+    }
+
+    scaleValues(data: number[]): number[] {
+        const max = _.max(data);
+        return data.map(point => 1.1 * point / max);
+    }
+
+    makeChart() {
+        return new Chart('chart', {
+            type: 'line',
+            data: this.chartData,
+            options: this.chartOptions,
+        });
+    }
+
 
 }
