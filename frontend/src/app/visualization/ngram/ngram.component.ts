@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { ChartOptions, Chart } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, visualizationField } from '../../models';
+import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults } from '../../models';
 import { ApiService, SearchService } from '../../services';
+
+
 
 @Component({
     selector: 'ia-ngram',
@@ -122,7 +124,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 const childTask = result.task_ids[0];
                 this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
                     if (outcome.success === true) {
-                        this.onDataLoaded(outcome.results);
+                        this.onDataLoaded(outcome.results as NgramResults);
                     } else {
                         this.error.emit({message: outcome.message});
                     }
@@ -160,7 +162,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         return Math.max(oneOrderPrecision, 0);
     }
 
-    setTableData(results: { words: { label: string, data: number[] }[], time_points: string[] }) {
+    setTableData(results: NgramResults) {
         this.tableData = _.flatMap(
             results.time_points.map((date, index) => {
                 return results.words.map(dataset => ({
