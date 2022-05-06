@@ -21,12 +21,14 @@ def get_search_fields(query):
     
     return fields
 
-def get_filters(query: Dict):
+def get_filters(query):
     """Get the list of filters in a query, or `None` if there are none."""
     try:
-        return query['query']['bool']['filter']
+        filters = query['query']['bool']['filter']
     except KeyError:
-        return None
+        filters = None
+
+    return filters
 
 def is_date_filter(filter):
     """Checks if a filter object is a date filter"""
