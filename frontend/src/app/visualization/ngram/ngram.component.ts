@@ -168,10 +168,12 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.timeLabels = result.time_points;
         this.ngrams = result.words.map(item => item.label);
 
-        const datasets = _.reverse( // reverse drawing order so datasets are drawn OVER the one above them
+        const datasets: any[] = _.reverse( // reverse drawing order so datasets are drawn OVER the one above them
             result.words.map((item, index) => {
                 const points = this.getDataPoints(item.data, index);
                 return {
+                    type: 'line',
+                    xAxisID: 'x',
                     label: item.label,
                     data: points,
                     borderColor: selectColor(this.palette, index),
@@ -182,6 +184,27 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 };
             })
         );
+
+        const totals = result.words.map(item => _.sum(item.data));
+        const totalsData = totals.map((value, index) => ({
+            x: value,
+            y: index,
+        }));
+        const colors = totals.map((value, index) => selectColor(this.palette, index))
+
+        const totalsDataset = {
+            type: 'bar',
+            xAxisID: 'xTotal',
+            indexAxis: 'y',
+            label: 'total frequency',
+            backgroundColor: colors,
+            hoverBackgroundColor: colors,
+            data: totalsData,
+        };
+
+        datasets.push(totalsDataset);
+
+        console.log(datasets);
 
         return {
             labels: this.timeLabels,
@@ -218,11 +241,29 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 }
             },
             scales: {
-                x: {
+                xTotal: {
+                    type: 'linear',
                     title: {
-                        text: 'Date'
+                        text: 'Total Frequency',
+                        display: true,
+                    },
+                    ticks: {
+                        display: false,
                     },
                     position: 'top',
+                    stack: '1',
+                    stackWeight: 2,
+                    display: true,
+                },
+                x: {
+                    type: 'category',
+                    title: {
+                        text: 'Frequency over time',
+                        display: true,
+                    },
+                    position: 'top',
+                    stack: '1',
+                    stackWeight: 8,
                 },
                 y: {
                     reverse: true,
@@ -238,6 +279,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 },
             },
             plugins: {
+                legend: { display: false },
                 filler: {
                     propagate: true,
                 },
@@ -245,7 +287,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     callbacks: {
                         label: (tooltipItem) => {
                             const ngram = tooltipItem.dataset.label;
-                            const value = (tooltipItem.raw as any).value;
+                            const value = (tooltipItem.raw as any).value || (tooltipItem.raw as any).x ;
                             return `${ngram}: ${value}`;
                         }
                     }
