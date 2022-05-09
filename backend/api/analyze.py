@@ -235,12 +235,12 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
         # filter query on this time bin
         date_filter = query.make_date_filter(start_date, end_date)
-        es_query = query.add_filter(es_query, date_filter)
+        narrow_query = query.add_filter(es_query, date_filter)
 
         #search for the query text
         search_results = search(
             corpus=corpus,
-            query_model = es_query,
+            query_model = narrow_query,
             client = client,
             size = max_size_per_interval,
         )
