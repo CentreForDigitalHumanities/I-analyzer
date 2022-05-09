@@ -35,12 +35,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     timeLabels: string[] = [];
     ngrams: string[] = [];
-    
-    data: {
-        ngram: string,
-        total: number,
-        frequencies: number[]
-    }[] = [];
 
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
@@ -139,7 +133,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 });
         }).catch(error => {
-            this.data = undefined;
             this.error.emit(error);
             this.isLoading.emit(false);
         });
