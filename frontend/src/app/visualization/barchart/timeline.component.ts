@@ -7,6 +7,7 @@ import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../../m
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
+import { selectColor } from '../select-color';
 
 @Component({
     selector: 'ia-timeline',
@@ -36,6 +37,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             }
             this.setQueries();
             this.setTimeDomain();
+            this.prepareChart();
+        } else if (changes.palette) {
             this.prepareChart();
         }
     }
@@ -112,8 +115,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 yAxisID: 'yAxis',
                 label: series.queryText ? series.queryText : '(no query)',
                 data: data,
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             };
         });
     }

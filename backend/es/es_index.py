@@ -57,10 +57,8 @@ def create(client, corpus_definition, add, clear, prod):
     try:
         client.indices.create(
             index=corpus_definition.es_index,
-            body={
-                'settings': settings,
-                'mappings': corpus_definition.es_mapping()
-            }
+            settings = settings,
+            mappings = corpus_definition.es_mapping(),
         )
     except RequestError as e:
         if not 'already_exists' in e.error:

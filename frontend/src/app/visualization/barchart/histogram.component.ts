@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
+import { selectColor } from '../select-color';
 
 @Component({
     selector: 'ia-histogram',
@@ -24,6 +25,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                 this.chart = undefined;
             }
             this.setQueries();
+            this.prepareChart();
+        } else if (changes.palette) {
             this.prepareChart();
         }
     }
@@ -91,8 +94,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                   const item = series.data.find(i => i.key === key);
                   return item ? item[valueKey] : 0;
                 }),
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             }
         ));
     }

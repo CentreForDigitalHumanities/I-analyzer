@@ -64,8 +64,10 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
+import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 
 
 const appRoutes: Routes = [
@@ -148,6 +150,7 @@ export const declarations: any[] = [
     QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
+    PaletteSelectComponent,
     PrivacyComponent,
     RangeFilterComponent,
     RegistrationComponent,
@@ -179,6 +182,7 @@ export const imports: any[] = [
     DialogModule,
     DropdownModule,
     FormsModule,
+    FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrf_token',

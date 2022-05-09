@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ChartOptions, Chart } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults } from '../../models';
+import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
-
 
 
 @Component({
@@ -16,6 +16,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() corpus: Corpus;
     @Input() visualizedField: visualizationField;
     @Input() asTable: boolean;
+    @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
 
@@ -41,8 +42,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         frequencies: number[]
     }[] = [];
 
-    public colorPalette = ['#88CCEE', '#44AA99', '#117733', '#332288', '#DDCC77', '#999933', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
-
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
     size: number|undefined = undefined;
@@ -65,18 +64,22 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
     }
 
-    ngOnChanges(): void {
-        if (this.visualizedField.multiFields) {
-            this.analysisOptions = [{label: 'None', value: 'none'}]
-                .concat(this.visualizedField.multiFields.map(subfield => {
-                    const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
-                    return { value: subfield, label: displayStrings[subfield]};
-                }));
-        } else {
-            this.analysisOptions = undefined;
-        }
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.queryModel || changes.corpus || changes.visualizedField) {
+            if (this.visualizedField.multiFields) {
+                this.analysisOptions = [{label: 'None', value: 'none'}]
+                    .concat(this.visualizedField.multiFields.map(subfield => {
+                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
+                        return { value: subfield, label: displayStrings[subfield]};
+                    }));
+            } else {
+                this.analysisOptions = undefined;
+            }
 
-        this.loadGraph();
+            this.loadGraph();
+        } else if (changes.palette && this.chartData) {
+            this.updateChartColors();
+        }
     }
 
     onOptionChange(control: 'size'|'position'|'freq_compensation'|'analysis'|'max_size',
@@ -173,7 +176,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 return {
                     label: item.label,
                     data: points,
-                    borderColor: this.colorPalette[index],
+                    borderColor: selectColor(this.palette, index),
                     fill: {
                         target: {value: index},
                         above: this.getGradient.bind(this),
@@ -186,6 +189,13 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             labels: this.timeLabels,
             datasets,
         };
+    }
+
+    updateChartColors() {
+        this.chartData.datasets.forEach((dataset, index) => {
+            dataset.borderColor = selectColor(this.palette, index)
+        });
+        this.chart.update();
     }
 
     getGradient(context) {
