@@ -193,7 +193,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     updateChartColors() {
         this.chartData.datasets.forEach((dataset, index) => {
-            dataset.borderColor = selectColor(this.palette, index)
+            const inverseIndex = this.chartData.datasets.length - (index + 1);
+            dataset.borderColor = selectColor(this.palette, inverseIndex);
         });
         this.chart.update();
     }
