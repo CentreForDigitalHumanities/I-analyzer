@@ -177,7 +177,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     borderColor: selectColor(this.palette, index),
                     fill: {
                         target: {value: index},
-                        above: this.getGradient.bind(this),
+                        above: this.getFillColor.bind(this),
                     },
                 };
             })
@@ -197,7 +197,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.chart.update();
     }
 
-    getGradient(context) {
+    getFillColor(context) {
         const borderColor = context.dataset.borderColor as string;
 
         if (borderColor.startsWith('#') && borderColor.length === 7) { // hex color
