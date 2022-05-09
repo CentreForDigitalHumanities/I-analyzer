@@ -149,7 +149,12 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.tableData = this.makeTableData(result);
         this.chartData = this.makeChartdata(result);
         this.chartOptions = this.makeChartOptions(result);
-        this.chart = this.makeChart();
+
+        if (this.chart) {
+            this.chart.update();
+        } else {
+            this.chart = this.makeChart();
+        }
 
         this.isLoading.emit(false);
     }
