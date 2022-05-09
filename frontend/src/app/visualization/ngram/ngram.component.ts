@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ChartOptions, Chart } from 'chart.js';
+import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults } from '../../models';
 import { selectColor } from '../select-color';
@@ -141,7 +141,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     onDataLoaded(result: NgramResults) {
         this.tableData = this.makeTableData(result);
         this.chartData = this.makeChartdata(result);
-        this.chartOptions = this.makeChartOptions(result);
+        this.chartOptions = this.makeChartOptions(this.chartData);
 
         if (this.chart) {
             this.chart.update();
@@ -230,7 +230,12 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    makeChartOptions(result: NgramResults): ChartOptions {
+    makeChartOptions(data: ChartData): ChartOptions {
+        const totalsData = _.last(data.datasets).data;
+        const totals = totalsData.map((item: any) => item.x);
+        const maxTotal = _.max(totals);
+        console.log(maxTotal);
+
         return {
             elements: {
                 point: {
@@ -248,9 +253,10 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     ticks: {
                         display: false,
                     },
+                    max: maxTotal * 1.05,
                     position: 'top',
                     stack: '1',
-                    stackWeight: 2,
+                    stackWeight: 1.5,
                     display: true,
                 },
                 x: {
@@ -261,7 +267,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     },
                     position: 'top',
                     stack: '1',
-                    stackWeight: 8,
+                    stackWeight: 8.5,
                 },
                 y: {
                     reverse: true,
