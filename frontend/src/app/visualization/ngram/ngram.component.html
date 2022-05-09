@@ -56,7 +56,7 @@
     </div>
 </div>
 
-<div class="table-container" *ngIf="!asTable">
+<div [ngClass]="{ 'is-hidden': asTable }">
     <canvas id="chart" width="400" height="200"></canvas>
 </div>
 

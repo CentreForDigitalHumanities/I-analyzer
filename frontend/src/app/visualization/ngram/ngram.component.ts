@@ -204,8 +204,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
         datasets.push(totalsDataset);
 
-        console.log(datasets);
-
         return {
             labels: this.timeLabels,
             datasets,
