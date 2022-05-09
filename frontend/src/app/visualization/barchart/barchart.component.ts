@@ -102,7 +102,13 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 min: 0,
             }
         },
+        interaction: {
+            axis: 'x',
+        },
         plugins: {
+            legend: {
+                display: false,
+            },
             zoom: {
                 zoom: {
                     mode: 'x',
@@ -126,8 +132,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
         chartDefault.elements.bar.hoverBackgroundColor = selectColor();
-        chartDefault.interaction.axis = 'x';
-        chartDefault.plugins.legend.display = false;
         chartDefault.plugins.tooltip.displayColors = false;
         chartDefault.plugins.tooltip.intersect = false;
     }
