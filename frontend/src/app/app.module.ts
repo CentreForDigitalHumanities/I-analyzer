@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, Injector, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -27,7 +27,7 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService, 
+import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService,
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
@@ -44,19 +44,19 @@ import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
-import { BarChartComponent } from './visualization/barchart.component';
-import { TimelineComponent } from './visualization/timeline.component';
-import { WordcloudComponent } from './visualization/wordcloud.component';
+import { BarChartComponent } from './visualization/barchart/barchart.component';
+import { TimelineComponent } from './visualization/barchart/timeline.component';
+import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
-import { RelatedWordsComponent } from './visualization/related-words.component';
+import { RelatedWordsComponent } from './visualization/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
-import { HistogramComponent } from './visualization/histogram.component';
+import { HistogramComponent } from './visualization/barchart/histogram.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { RequestResetComponent } from './reset-password/request-reset.component';
 import { PaginationComponent } from './pagination/pagination.component';
@@ -64,8 +64,10 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { NgramComponent } from './visualization/ngram.component';
-import { HistogramOptionsComponent } from './visualization/histogram-options.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgramComponent } from './visualization/ngram/ngram.component';
+import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
+import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 
 
 const appRoutes: Routes = [
@@ -135,22 +137,27 @@ export const declarations: any[] = [
     HomeComponent,
     HighlightPipe,
     HistogramComponent,
+    barchartOptionsComponent,
     ImageViewComponent,
     ImageNavigationComponent,
+    LoginComponent,
     ManualComponent,
     ManualNavigationComponent,
     MenuComponent,
     MultipleChoiceFilterComponent,
+    NgramComponent,
     NotificationsComponent,
     QueryFiltersComponent,
     QueryTextPipe,
     PaginationComponent,
+    PaletteSelectComponent,
     PrivacyComponent,
     RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
     ResetPasswordComponent,
     RequestResetComponent,
+    ScanImageComponent,
     ScanPdfComponent,
     ScrollToDirective,
     SearchComponent,
@@ -158,20 +165,10 @@ export const declarations: any[] = [
     SearchRelevanceComponent,
     SearchResultsComponent,
     SearchSortingComponent,
-    LoginComponent,
-    ScrollToDirective,
-    ScanImageComponent,
-    TimelineComponent,
-    RelatedWordsComponent,
-    DocumentViewComponent,
-    SearchHistoryComponent,
     SelectFieldComponent,
-    HistogramComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
-    NgramComponent,
-    HistogramOptionsComponent,
 ];
 
 export const imports: any[] = [
@@ -185,6 +182,7 @@ export const imports: any[] = [
     DialogModule,
     DropdownModule,
     FormsModule,
+    FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
         cookieName: 'csrf_token',

@@ -41,7 +41,10 @@ def get_party_id(who):
     person = get_person(who)
     if not person:
         return None
-    party_id = person.find(attrs={'role': 'member'}).attrs['ref']
+    member_of = person.find(attrs={'role': 'member'})
+    if not member_of:
+        return None
+    party_id = member_of.attrs['ref']
     return party_id
 
 def get_party(who):
@@ -60,7 +63,7 @@ def get_party_full(who):
 
 class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
     """ Corpus definition of recent Dutch parliamentary data,
-    saved in ParlaMINT TEI xml format 
+    saved in ParlaMINT TEI xml format
     """
     data_directory = current_app.config['PP_NL_RECENT_DATA']
     tag_entry = 'u'

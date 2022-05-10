@@ -19,7 +19,8 @@ describe('CorpusService', () => {
     userServiceMock.currentUser.role.corpora.push(...[
         { name: 'test1', description: '' },
         { name: 'test2', description: '' },
-        { name: 'times', description: '' },]);
+        { name: 'times', description: '' },
+    ]);
 
     beforeEach(() => {
         TestBed.configureTestingModule({

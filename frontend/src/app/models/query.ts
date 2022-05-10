@@ -40,12 +40,12 @@ export class Query {
     /**
      * Whether the download was prematurely ended.
      */
-    public aborted: boolean = false;
+    public aborted = false;
 
     /**
      * Number of transferred (e.g. actually downloaded) documents. Note that this does not say anything about the size of those documents.
      */
-    public transferred: number = 0;
+    public transferred = 0;
 
     /**
      * Number of total results available for the query.
@@ -53,21 +53,21 @@ export class Query {
     public totalResults: {
         value: number,
         relation: string
-    }
+    };
 }
 
 /** This is the client's representation of the query by the user, shared between components */
-export type QueryModel = {
-    queryText: string,
-    fields?: string[],
-    filters?: SearchFilter<SearchFilterData>[],
-    sortBy?: string,
-    sortAscending?: boolean,
-    highlight?: number,
-};
+export interface QueryModel {
+    queryText: string;
+    fields?: string[];
+    filters?: SearchFilter<SearchFilterData>[];
+    sortBy?: string;
+    sortAscending?: boolean;
+    highlight?: number;
+}
 
 /** These are the from / size parameters emitted by the pagination component */
-export type SearchParameters = {
-    from: number,
-    size: number
+export interface SearchParameters {
+    from: number;
+    size: number;
 }

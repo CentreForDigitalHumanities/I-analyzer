@@ -8,6 +8,22 @@ from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
 
 # Corpora that include a `foo` field should initialise it with `foo()` and then modify attributes as needed.
 
+def book_id():
+    return Field(
+        name='book_id',
+        display_name='Book ID',
+        description='Unique identifier of the book in which the speech was recorded',
+        es_mapping={'type': 'keyword'},
+    )
+
+def book_label():
+    return Field(
+        name='book_label',
+        display_name='Book Label',
+        description='Label of the book in which the speech was recorded',
+        es_mapping={'type': 'text'},
+    )
+
 def country():
     "Country in which the debate took place"
     return Field(
@@ -33,6 +49,14 @@ def date():
         visualizations=['timeline']
     )
 
+def date_is_estimate():
+    return Field(
+        name='date_is_estimate',
+        display_name='Date is estimate',
+        description='Whether the recorded date is an estimate',
+        es_mapping={'type':'boolean'}
+    )
+
 def house():
     "human-readable name of house (commons, senate, etc)"
     return Field(
@@ -45,6 +69,14 @@ def house():
             option_count=2
         ),
         visualizations = ['histogram']
+    )
+
+def parliament():
+    return Field(
+        name='parliament',
+        display_name='Parliament',
+        description='Title of the parliament (i.e. the collection of individual elected to parliament)',
+        es_mapping={'type': 'keyword'},
     )
 
 def debate_title():
@@ -163,6 +195,71 @@ def speaker_constituency():
         es_mapping={'type': 'keyword'},
     )
 
+def speaker_birthplace():
+    return Field(
+        name='speaker_birthplace',
+        display_name='Speaker birthplace',
+        description='Birthplace of the speaker',
+        es_mapping={'type': 'text'},
+    )
+
+def speaker_birth_country():
+    return Field(
+        name='speaker_birth_country',
+        display_name='Speaker country of birth',
+        description='Country in which the speaker was born',
+        es_mapping={'type': 'text'},
+    )
+
+def speaker_birth_year():
+    return Field(
+        name='speaker_birth_year',
+        display_name='Speaker year of birth',
+        description='Year in which the speaker was born',
+        es_mapping={'type': 'integer'}
+    )
+
+def speaker_death_year():
+    return Field(
+        name='speaker_death_year',
+        display_name='Speaker year of death',
+        description='Year in which the speaker died',
+        es_mapping={'type': 'integer'},
+    )
+
+def speaker_gender():
+    return Field(
+        name='speaker_gender',
+        display_name='Speaker gender',
+        description='Gender of the speaker',
+        es_mapping={'type': 'keyword'},
+    )
+
+def speaker_profession():
+    return Field(
+        name='speaker_profession',
+        display_name='Speaker Profession',
+        description='Speaker Profession',
+        es_mapping={'type': 'text'},
+    )
+
+def speaker_aristocracy():
+    return Field(
+        name='speaker_aristocracy',
+        display_name='Speaker aristocracy',
+        description='Aristocratic title of the speaker',
+        es_mapping={'type': 'keyword'},
+    )
+
+def speaker_academic_title():
+    return Field(
+        name='speaker_academic_title',
+        display_name='Speaker Academic Title',
+        description='Academic title of the speaker',
+        es_mapping={'type': 'text'},
+    )
+
+
 def role():
     "role of the speaker (speaker, chair, MP, etc...)"
     return Field(
@@ -174,6 +271,14 @@ def role():
             description='Search for speeches by speakers with the selected roles',
             option_count=10
         )
+    )
+
+def role_long():
+    return Field(
+        name='role_long',
+        display_name='Role Long',
+        description='Expanded description of role of the speaker in the debate',
+        es_mapping={'type': 'keyword'},
     )
 
 def party():
@@ -224,6 +329,14 @@ def column():
         display_name='Column',
         description='Column(s) of the speech in the original document',
         es_mapping={'type': 'keyword'}
+    )
+
+def source_url():
+    return Field(
+        name='source_url',
+        display_name='Source url',
+        description='URL to source file of this speech',
+        es_mapping={'type':'keyword'}
     )
 
 def sequence():

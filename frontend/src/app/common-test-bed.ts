@@ -37,9 +37,8 @@ export function commonTestBed() {
             deps: [Injector, ApiService, CookieService],
             multi: true
         },
-        { 
+        {
             provide: DialogService, useClass: DialogServiceMock
-
         },
         {
             provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
@@ -48,7 +47,7 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}) } 
+            provide: Router, useValue: { events: of({}) }
         },
         {
             provide: SearchService, useValue: new SearchServiceMock()
@@ -56,7 +55,7 @@ export function commonTestBed() {
         {
             provide: UserService, useValue: new UserServiceMock()
         },
-    )
+    );
 
     return {
         testingModule: TestBed.configureTestingModule({
@@ -67,16 +66,16 @@ export function commonTestBed() {
     };
 }
 
-export function csrfProviderFactory(inject: Injector, provider: ApiService, cookieService: CookieService): Function {    
-    return () => {        
-        if (!cookieService.check('csrf_token')) { 
-            provider.ensureCsrf().then(result => {                 
+export function csrfProviderFactory(inject: Injector, provider: ApiService, cookieService: CookieService): Function {
+    return () => {
+        if (!cookieService.check('csrf_token')) {
+            provider.ensureCsrf().then(result => {
                 if (!result || !result.success) {
-                    throw new Error("CSRF token could not be collected.");
+                    throw new Error('CSRF token could not be collected.');
                 }
-            })
+            });
         }
-    }
+    };
 }
 
 export class MockElementRef { nativeElement = {}; }

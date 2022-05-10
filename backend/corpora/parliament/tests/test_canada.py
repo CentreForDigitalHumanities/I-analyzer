@@ -20,7 +20,7 @@ target_docs = [
     }
 ]
 
-def test_uk(test_app):
+def test_canada(test_app):
     corpus = load_corpus('parliament-canada')
 
     # Assert that indeed we are drawing sources from the testing folder

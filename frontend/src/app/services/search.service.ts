@@ -41,7 +41,7 @@ export class SearchService {
      */
     public createQueryModel(
         queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
-        sortField: CorpusField = null, sortAscending = false
+        sortField: CorpusField = null, sortAscending = false, highlight: number = null
     ): QueryModel {
         const model: QueryModel = {
             queryText: queryText,
@@ -51,6 +51,9 @@ export class SearchService {
         };
         if (fields) {
             model.fields = fields;
+        }
+        if (highlight) {
+            model.highlight = highlight;
         }
         return model;
     }
@@ -78,6 +81,9 @@ export class SearchService {
         } else {
             delete route['sort'];
         }
+        if (queryModel.highlight) {
+            route['highlight'] = `${queryModel.highlight}`;
+        } else { delete route['highlight']; }
         return route;
     }
 
@@ -126,14 +132,14 @@ export class SearchService {
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
-            field: fieldName,
+            field_name: fieldName,
             start_date: start_date.toISOString().slice(0, 10),
             end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
             size: size,
         });
     }
 
-    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any>{
+    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
             return new Promise( (resolve, reject) => {
@@ -150,7 +156,7 @@ export class SearchService {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
             return new Promise( (resolve, reject) => {
-                if (result['success']===true) {
+                if (result['success'] === true) {
                     resolve({taskIds: result['task_ids']});
                 } else {
                     reject({error: result['message']});
@@ -165,7 +171,7 @@ export class SearchService {
                 if (result['success'] === true) {
                     resolve({'graphData': {
                                 'labels': result['related_word_data'].time_points,
-                                'datasets':result['related_word_data'].similar_words_subsets
+                                'datasets': result['related_word_data'].similar_words_subsets
                             },
                             'tableData': result['related_word_data'].similar_words_all
                     });
@@ -185,8 +191,8 @@ export class SearchService {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({'graphData': {
-                                'labels': result['related_word_data'].time_points, 
-                                'datasets':result['related_word_data'].similar_words_subsets
+                                'labels': result['related_word_data'].time_points,
+                                'datasets': result['related_word_data'].similar_words_subsets
                             }
                     });
                 } else {
@@ -196,29 +202,18 @@ export class SearchService {
         });
     }
 
-    getNgram(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
+    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
         freqCompensation?: boolean, subField?: string, maxSize?: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return new Promise ( (resolve, reject) => {
-            this.apiService.getNgrams({
-                'es_query': esQuery,
-                'corpus_name': corpusName,
-                field: field,
-                ngram_size: ngramSize,
-                term_position: termPosition,
-                freq_compensation: freqCompensation,
-                subfield: subField,
-                max_size_per_interval: maxSize
-            }).then( result => {
-                resolve({
-                    'graphData': {
-                        'labels': result.word_data.time_points,
-                        'datasets': result.word_data.words,
-                    }
-                });
-            }).catch( result => {
-                reject({ message: result.message });
-            });
+        return this.apiService.ngramTasks({
+            'es_query': esQuery,
+            'corpus_name': corpusName,
+            field: field,
+            ngram_size: ngramSize,
+            term_position: termPosition,
+            freq_compensation: freqCompensation,
+            subfield: subField,
+            max_size_per_interval: maxSize
         });
     }
 

@@ -9,10 +9,10 @@ import { SearchParameters } from '../models/index';
 })
 export class PaginationComponent implements OnChanges {
     @Input() public totalResults: number;
-    
+
     public totalPages: number;
-    public fromIndex: number = 0;
-    public resultsPerPage: number = 20;
+    public fromIndex = 0;
+    public resultsPerPage = 20;
     public currentPages: number[];
     public currentPage: number;
 
@@ -30,22 +30,19 @@ export class PaginationComponent implements OnChanges {
 
     public async loadResults(page: number) {
 
-        if (this.currentPage == page) {
+        if (this.currentPage === page) {
             return true;
-        }       
+        }
         this.currentPage = page;
         this.fromIndex = (this.currentPage - 1) * this.resultsPerPage;
 
         // setting variables for pagination view
-        if (page == 1) {
+        if (page === 1) {
             this.currentPages = [1, 2, 3];
-            
-        }
-        else if (page == this.totalPages && this.totalResults > this.resultsPerPage*2) {
-            this.currentPages = [this.totalPages-2, this.totalPages-1, this.totalPages];
-        }
-        else {
-            this.currentPages = [page-1, page, page+1];
+        } else if (page === this.totalPages && this.totalResults > this.resultsPerPage * 2) {
+            this.currentPages = [this.totalPages - 2, this.totalPages - 1, this.totalPages];
+        } else {
+            this.currentPages = [page - 1, page, page + 1];
         }
 
         this.loadResultsEvent.emit({from: this.fromIndex, size: this.resultsPerPage});

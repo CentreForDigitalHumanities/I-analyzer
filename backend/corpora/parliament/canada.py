@@ -1,3 +1,4 @@
+from datetime import datetime
 from glob import glob
 import logging
 import re
@@ -13,6 +14,7 @@ from corpora.parliament.uk import format_house
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
     description = "Speeches from House of Commons"
+    min_date = datetime(year = 1901, month = 1, day = 1)
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
@@ -35,7 +37,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
-
+    
     country = field_defaults.country()
     country.extractor = Constant(
         value='Canada'
@@ -45,6 +47,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     date.extractor = CSV(
         field='date_yyyy-mm-dd'
     )
+    date.search_filter.lower = min_date
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
@@ -98,7 +101,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     speech.es_mapping = {
         "type" : "text",
         "analyzer": "standard",
-        "term_vector": "with_positions_offsets", 
+        "term_vector": "with_positions_offsets",
         "fields": {
         "stemmed": {
             "type": "text",

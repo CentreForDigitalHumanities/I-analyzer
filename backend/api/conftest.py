@@ -30,12 +30,19 @@ class UnittestConfig:
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
 
+@pytest.fixture(scope='session')
+def celery_config():
+    return {
+        'broker_url': 'amqp://',
+        'result_backend': 'amqp'
+    }
 
 @pytest.fixture(scope='session')
-def test_app():
+def test_app(request, tmpdir_factory):
     """ Provide an instance of the application with Flask's test_client. """
     app = flask_app(UnittestConfig)
     app.testing = True
+    app.config['CSV_FILES_PATH'] = str(tmpdir_factory.mktemp('test_files'))
     ctx = app.app_context()
     ctx.push()
     yield app
@@ -56,29 +63,20 @@ def test_es_client(test_app):
         client = elasticsearch('mock-corpus', UnittestConfig, sniff_on_start=True)
     except:
         client = None
-    
+
     if client:
         # add data from mock corpus
         corpus = load_corpus('mock-corpus')
         index.create(client, corpus, False, True, False)
         index.populate(client, 'mock-corpus', corpus)
 
-        # population may not be finished at this point,
-        # so check if it's done, wait a while, check again
-        for _ in range(10): # limited retries
-            query = {'query': {'match_all': {}}}
-            result = client.search('mock-corpus', body= query)
-            doc_count = result['hits']['total']['value']
-
-            if doc_count == 3:
-                break
-
-            sleep(2) # wait a while
+        # ES is "near real time", so give it a second before we start searching the index
+        sleep(2)
 
         yield client
 
         # delete index when done
-        client.indices.delete('mock-corpus')
+        client.indices.delete(index = 'mock-corpus')
     else:
         yield None
 
@@ -96,31 +94,6 @@ def basic_query():
                     }
                 },
                 "filter": []
-            }
-        }
-    }
-
-@pytest.fixture
-def query_with_date_filter():
-    return {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": "test",
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": [{
-                    "range": {
-                    "date": {
-                        "gte": "1850-01-01",
-                        "lte": "1859-12-31",
-                        "format": "yyyy-MM-dd"
-                        }
-                    }
-                }]
             }
         }
     }
