@@ -3,7 +3,7 @@ import api.analyze as analyze
 """
 TODO: finish the wordcloud test after issue is resolved with testing (22/4/2022)
 """
-def test_wordcloud():
+def test_wordcloud(test_app, test_es_client):
     # simplified version of elasticsearch output
     documents = [
         { '_source': {
