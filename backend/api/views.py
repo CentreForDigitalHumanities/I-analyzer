@@ -454,11 +454,12 @@ def api_wordcloud():
     if request.json['size']>1000:
         abort(400)
     else:
-        list_of_texts = search.search(
+        result = search.search(
             corpus = request.json['corpus'],
             query_model = request.json['query'],
             size = request.json['size']
         )
+        list_of_texts = search.hits(result)
         word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
