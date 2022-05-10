@@ -1,21 +1,28 @@
 import api.analyze as analyze
+from es import search
+import pytest
 
 """
 TODO: finish the wordcloud test after issue is resolved with testing (22/4/2022)
 """
 def test_wordcloud(test_app, test_es_client):
-    # simplified version of elasticsearch output
-    documents = [
-        { '_source': {
-            'content': 'You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.'
-        }, '_id' : 'id1'},
-        { '_source': {
-            'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.'
-        }, '_id' : 'id2'},
-        { '_source': {
-            'content': 'Alice in Wonderland","Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do.'
-        }, '_id' : 'id3'}
-    ]
+    if not test_es_client:
+            pytest.skip('No elastic search client')
+
+    query = {
+        "query": {
+            "match_all": {}
+        }
+    }
+
+    result = search.search(
+        corpus = 'mock-corpus',
+        query_model = query,
+        size = 10
+    )
+
+    documents = search.hits(result)
+
 
     target_unfiltered = [
         { 'key': 'of', 'doc_count': 5 },
@@ -73,21 +80,12 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'acknowledge', 'doc_count': 1 }, 
         { 'key': 'accompanied', 'doc_count': 1 }
     ]
-    # target_unfiltered = [
-    #     { 'key':  'I', 'doc_count': 4 },
-    #     { 'key': 'analyzer', 'doc_count': 3 },
-    #     { 'key': 'is', 'doc_count': 1 },
-    #     { 'key': 'great', 'doc_count': 1 },
-    #     { 'key': 'love', 'doc_count': 2 },
-    #     { 'key': 'to', 'doc_count': 1 },
-    #     { 'key': 'analyze', 'doc_count': 2 }
-    # ]
 
     output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
 
     for item in target_unfiltered:
         term = item['key'],
         doc_count = item['doc_count']
-        assert output == term
-        match = next(item for item in output if item['key'] == term)
-        assert match
+        for hit in output:
+            if term == hit['key']:
+                assert doc_count == hit['doc_count']
