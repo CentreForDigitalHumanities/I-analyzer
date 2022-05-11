@@ -60,15 +60,15 @@ def date_is_estimate():
         es_mapping={'type':'boolean'}
     )
 
-def house():
+def chamber():
     "human-readable name of house (commons, senate, etc)"
     return Field(
-        name='house',
-        display_name='House',
-        description='House in which the debate took place',
+        name='chamber',
+        display_name='Chamber',
+        description='Chamber in which the debate took place',
         es_mapping=BASIC_KEYWORD_MAPPING,
         search_filter = MultipleChoiceFilter(
-            description='Search only in debates from the selected houses',
+            description='Search only in debates from the selected chamber(s)',
             option_count=2
         ),
         visualizations = ['histogram']

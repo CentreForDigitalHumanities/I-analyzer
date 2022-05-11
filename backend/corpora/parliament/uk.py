@@ -73,18 +73,18 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='debate',
         transform=format_debate_title
     )
-     
-    house =  field_defaults.house()
-    house.extractor = CSV(
+
+    chamber =  field_defaults.chamber()
+    chamber.extractor = CSV(
         field='house',
         transform=format_house
     )
-    
+
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
-     
+
     speech = field_defaults.speech()
     speech.extractor = CSV(
         field='content',
@@ -136,7 +136,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     topic.extractor = CSV(
         field='heading_major',
     )
-    
+
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
         field='heading_minor',
@@ -152,7 +152,7 @@ class ParliamentUK(Parliament, CSVCorpus):
             self.country, self.date,
             self.debate_title, self.debate_id,
             self.topic, self.subtopic,
-            self.house,
+            self.chamber,
             self.speech, self.speech_id, self.speech_type,
             self.sequence,
             self.speaker, self.speaker_id,
