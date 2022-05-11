@@ -71,7 +71,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='house',
         transform=format_house
     )
-    chamber.es_mapping = add_length_multifield(house.es_mapping)
+    chamber.es_mapping = add_length_multifield(chamber.es_mapping)
 
     country = field_defaults.country()
     country.extractor = Constant(
@@ -171,7 +171,7 @@ class ParliamentUK(Parliament, CSVCorpus):
             self.country, self.date,
             self.debate_title, self.debate_id,
             self.topic, self.subtopic,
-            self.house,
+            self.chamber,
             self.speech, self.speech_id, self.speech_type,
             self.sequence,
             self.speaker, self.speaker_id,
