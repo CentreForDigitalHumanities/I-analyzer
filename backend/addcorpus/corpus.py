@@ -275,13 +275,13 @@ class XMLCorpus(Corpus):
     @property
     def tag_toplevel(self):
         '''
-        The top-level tag in the source documents.
+        The top-level tag in the source documents. Either a string of a function that maps metadata to a string.
         '''
 
     @property
     def tag_entry(self):
         '''
-        The tag that corresponds to a single document entry.
+        The tag that corresponds to a single document entry. Either a string of a function that maps metadata to a string.
         '''
 
     def source2dicts(self, source):
@@ -327,8 +327,8 @@ class XMLCorpus(Corpus):
             external_dict = {}
             external_fields = None
         # Extract fields from the soup
-        tag = self.tag_entry
-        bowl = self.bowl_from_soup(soup)
+        tag = self.get_entry_tag(metadata)
+        bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
             for spoon in bowl.find_all(tag):
                 regular_field_dict = {field.name: field.extractor.apply(
@@ -348,6 +348,18 @@ class XMLCorpus(Corpus):
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
+
+    def get_entry_tag(self, metadata):
+        if type(self.tag_entry) == str:
+            return self.tag_entry
+        else:
+            return self.tag_entry(metadata)
+
+    def get_toplevel_tag(self, metadata):
+        if type(self.tag_toplevel) == str:
+            return self.tag_toplevel
+        else:
+            return self.tag_toplevel(metadata)
 
     def external_source2dict(self, soup, external_fields, metadata):
         '''
@@ -395,15 +407,15 @@ class XMLCorpus(Corpus):
         '''
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
-    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata = {}):
         '''
         Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.tag_toplevel
+            toplevel_tag = self.get_toplevel_tag(metadata)
         if entry_tag == None:
-            entry_tag = self.tag_entry
+            entry_tag = self.get_entry_tag(metadata)
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
 
