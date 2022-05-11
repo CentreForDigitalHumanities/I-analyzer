@@ -1,13 +1,15 @@
+from curses import meta
 from datetime import datetime
 from glob import glob
 import logging
 from attr import attr
-
+from bs4 import BeautifulSoup
+from os.path import join
 from flask import current_app
 
 import bs4
 from addcorpus.corpus import XMLCorpus
-from addcorpus.extract import XML, Constant, Combined
+from addcorpus.extract import XML, Constant, Combined, Choice
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
@@ -16,6 +18,10 @@ import corpora.parliament.utils.field_defaults_old as field_defaults
 import re
 
 logger = logging.getLogger('indexing')
+
+with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
+    soup = BeautifulSoup(f.read(), 'xml')
+
 
 def format_role(role):
     if role == 'mp':
@@ -34,6 +40,18 @@ def format_house(house):
     if house == 'other':
         return 'Other'
     return house
+
+def format_house_recent(url):
+    ''' given a string of either eerstekamer.nl or tweedekamer.nl,
+    return a string "Eerste Kamer" or "Tweede Kamer" '''
+    try:
+        split_string = url.split('.')[-2]
+    except:
+        return None
+    if split_string=='eerstekamer':
+        return 'Eerste Kamer'
+    else:
+        return 'Tweede Kamer'
 
 def find_last_pagebreak(node):
     "find the last pagebreak node before the start of the current node"
@@ -89,6 +107,44 @@ def get_sequence(node, tag_entry):
     previous = node.find_all_previous(tag_entry)
     return len(previous) + 1 # start from 1
 
+def is_old(metadata):
+    return metadata['dataset'] == 'old'
+
+def get_speaker_recent(who):
+    person = get_person(who)
+    surname = person.find('surname').text
+    forename = person.find('forename').textc
+    return '{} {}'.format(forename, surname)
+
+def get_person(who):
+    person = soup.find(attrs={'xml:id':who[1:]})
+    return person
+
+def get_party_id_recent(who):
+    person = get_person(who)
+    if not person:
+        return None
+    member_of = person.find(attrs={'role': 'member'})
+    if not member_of:
+        return None
+    party_id = member_of.attrs['ref']
+    return party_id
+
+def get_party_recent(who):
+    party_id = get_party_id_recent(who)
+    if not party_id:
+        return None
+    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'init'}).text
+    return party
+
+def get_party_full_recent(who):
+    party_id = get_party_id_recent(who)
+    if not party_id:
+        return None
+    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'yes'}).text
+    return party
+
+
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
     Class for indexing Dutch parliamentary data
@@ -98,10 +154,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
+    data_directory_recent = current_app.config['PP_NL_RECENT_DATA']
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
-    tag_toplevel = 'root'
-    tag_entry = 'speech'
+    tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
+    tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
@@ -117,6 +174,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
+
+        #old data
         for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
             period_match = re.search(r'[0-9]{8}', xml_file)
             if period_match:
@@ -125,9 +184,14 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                 end_year = int(period[4:])
 
                 if end_year >= start.year and start_year <= end.year:
-                    yield xml_file
+                    yield xml_file, { 'dataset': 'old' }
             else:
-                yield xml_file
+                yield xml_file, { 'dataset': 'old' }
+
+        # new data
+        for year in range(start.year, end.year):
+            for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
+                yield xml_file, { 'dataset': 'recent' }
 
 
     country = field_defaults.country()
@@ -136,43 +200,91 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
 
     date = field_defaults.date()
-    date.extractor = XML(
-        tag=['meta','dc:date'],
-        toplevel=True
+    date.extractor = Choice(
+        XML(
+            tag=['meta','dc:date'],
+            toplevel=True,
+            applicable = is_old
+        ),
+        XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl', 'date'],
+            toplevel=True
+        )
     )
     date.search_filter.lower = min_date
 
     house = field_defaults.house()
-    house.extractor = XML(
-        tag=['meta','dc:subject', 'pm:house'],
-        attribute='pm:house',
-        toplevel=True,
-        transform=format_house
+    house.extractor = Choice(
+        XML(
+            tag=['meta','dc:subject', 'pm:house'],
+            attribute='pm:house',
+            toplevel=True,
+            transform=format_house,
+            applicable = is_old
+        ),
+        XML(
+            tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl','idno'],
+            toplevel=True,
+            transform=format_house_recent
+        )
     )
 
     debate_title = field_defaults.debate_title()
-    debate_title.extractor = XML(
-        tag=['meta', 'dc:title'],
-        toplevel=True,
+    debate_title.extractor = Choice(
+        XML(
+            tag=['meta', 'dc:title'],
+            toplevel=True,
+            applicable = is_old
+        ),
+        XML(
+            tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
+            multiple=True,
+            toplevel=True,
+            transform=lambda titles: titles[-2] if len(titles) else titles
+        )
     )
 
     debate_id = field_defaults.debate_id()
-    debate_id.extractor = XML(
-        tag=['meta', 'dc:identifier'],
-        toplevel=True,
+    debate_id.extractor = Choice(
+        XML(
+            tag=['meta', 'dc:identifier'],
+            toplevel=True,
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='xml:id',
+            toplevel=True,
+        )
     )
 
     topic = field_defaults.topic()
-    topic.extractor = XML(
-        transform_soup_func = find_topic,
-        attribute=':title',
+    topic.extractor = Choice(
+        XML(
+            transform_soup_func = find_topic,
+            attribute=':title',
+            applicable = is_old,
+        ),
+        XML(
+            tag=['note'],
+            toplevel=True,
+            recursive=True
+        )
     )
 
     speech = field_defaults.speech()
-    speech.extractor = XML(
-        tag='p',
-        multiple=True,
-        flatten=True,
+    speech.extractor = Choice(
+        XML(
+            tag='p',
+            multiple=True,
+            flatten=True,
+            applicable = is_old
+        ),
+        XML(
+            tag=['seg'],
+            multiple=True,
+            flatten=True,
+        )
     )
     # adjust the mapping:
     # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
@@ -197,45 +309,99 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     }
 
     speech_id = field_defaults.speech_id()
-    speech_id.extractor = XML(
-        attribute=':id'
+    speech_id.extractor = Choice(
+        XML(
+            attribute=':id',
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='xml:id'
+        )
     )
 
     speaker = field_defaults.speaker()
-    speaker.extractor = Combined(
-        XML(attribute=':function'),
-        XML(attribute=':speaker'),
-        transform=' '.join
+    speaker.extractor = Choice(
+        Combined(
+            XML(attribute=':function'),
+            XML(attribute=':speaker'),
+            transform=' '.join,
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='who',
+            transform=get_speaker_recent
+        )
     )
 
     speaker_id = field_defaults.speaker_id()
-    speaker_id.extractor = XML(
-        attribute=':member-ref'
+    speaker_id.extractor = Choice(
+        XML(
+            attribute=':member-ref',
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='who'
+        )
     )
 
     role = field_defaults.role()
-    role.extractor = XML(
-        attribute=':role',
-        transform=format_role
+    role.extractor = Choice(
+        XML(
+            attribute=':role',
+            transform=format_role,
+            applicable = is_old,
+        ),
+        XML(
+            tag=None,
+            attribute='ana',
+            transform=lambda x: x[1:].title()
+        )
     )
 
     party = field_defaults.party()
-    party.extractor = Combined(
-        XML(attribute=':party'),
-        XML(attribute=':party-ref'),
-        transform=format_party,
+    party.extractor = Choice(
+        Combined(
+            XML(attribute=':party'),
+            XML(attribute=':party-ref'),
+            transform=format_party,
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='who',
+            transform=get_party_recent
+        )
     )
 
 
     party_id = field_defaults.party_id()
-    party_id.extractor = XML(
-        attribute=':party-ref'
+    party_id.extractor = Choice(
+        XML(
+            attribute=':party-ref',
+            applicable = is_old
+        ),
+        XML(
+            tag=None,
+            attribute='who',
+            transform=get_party_id_recent
+        )
     )
 
     party_full = field_defaults.party_full()
-    party_full.extractor = XML(
-        attribute='pm:name',
-        transform_soup_func=get_party_full
+    party_full.extractor = Choice(
+        XML(
+            attribute='pm:name',
+            transform_soup_func=get_party_full,
+            applicable = is_old,
+        ),
+        XML(
+            tag=None,
+            attribute='who',
+            transform=get_party_full_recent
+        )
     )
 
     page = field_defaults.page()
