@@ -189,6 +189,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const totalsData = totals.map((value, index) => ({
             x: value,
             y: index,
+            ngram: this.ngrams[index],
         }));
         const colors = totals.map((value, index) => selectColor(this.palette, index))
 
@@ -289,9 +290,24 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 },
                 tooltip: {
                     callbacks: {
+                        title: (tooltipItems) => {
+                            const tooltipItem = tooltipItems[0];
+                            if (tooltipItem.dataset.xAxisID === 'xTotal') {
+                                return 'Total frequency';
+                            } else {
+                                return tooltipItem.label;
+                            }
+                        },
                         label: (tooltipItem) => {
-                            const ngram = tooltipItem.dataset.label;
-                            const value = (tooltipItem.raw as any).value || (tooltipItem.raw as any).x ;
+                            let ngram: string;
+                            let value: number;
+                            if (tooltipItem.dataset.xAxisID === 'xTotal') {
+                                ngram = (tooltipItem.raw as any).ngram;
+                                value = (tooltipItem.raw as any).x;
+                            } else {
+                                ngram = tooltipItem.dataset.label;
+                                value = (tooltipItem.raw as any).value;
+                            }
                             return `${ngram}: ${value}`;
                         }
                     }
