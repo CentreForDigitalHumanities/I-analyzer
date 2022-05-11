@@ -8,7 +8,7 @@ target_docs = [
         'country': 'Canada',
         'debate_title': 'Government Orders',
         'debate_id': 'ca.proc.d.2015-02-02',
-        'house': 'House of Commons',
+        'chamber': 'House of Commons',
         'party': 'New Democratic Party',
         'speaker': 'Jack Harris',
         'speaker_id': 'c846297d-8bc7-4e69-b6eb-31d0e19f7ec1',
