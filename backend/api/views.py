@@ -622,7 +622,7 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('get_aggregate_term_frequency', methods=['POST'])
+@api.route('aggregate_term_frequency', methods=['POST'])
 @login_required
 def api_aggregate_term_frequency():
     if not request.json:

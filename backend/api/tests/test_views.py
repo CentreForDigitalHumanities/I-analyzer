@@ -49,10 +49,10 @@ def test_aggregate_term_frequency(client, test_app, test_es_client, aggregate_te
     if not test_es_client:
         pytest.skip('No elastic search client')
     client.times_login()
-    post_response = client.post('/api/get_aggregate_term_frequency', json=aggregate_term_frequency_body)
+    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 200
     del aggregate_term_frequency_body['es_query']
-    post_response = client.post('/api/get_aggregate_term_frequency', json=aggregate_term_frequency_body)
+    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 400
 
 @pytest.mark.usefixtures("client", "times_user", "session")
