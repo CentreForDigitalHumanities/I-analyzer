@@ -149,7 +149,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         self.fields = [
             self.country, self.date,
             self.debate_id, self.debate_title,
-            self.house,
+            self.chamber,
             self.speaker, self.speaker_id, self.speaker_constituency, self.role, self.party,
             self.speech, self.speech_id,
             self.topic, self.subtopic,
