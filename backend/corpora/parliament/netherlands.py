@@ -1,6 +1,7 @@
 from datetime import datetime
 from glob import glob
 import logging
+from attr import attr
 
 from flask import current_app
 
@@ -10,7 +11,7 @@ from addcorpus.extract import XML, Constant, Combined
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.field_defaults_old as field_defaults
 
 import re
 
@@ -76,13 +77,25 @@ def get_party_full(speech_node):
     party_node = parents[-1].find('organization', attrs={'pm:ref':party_ref})
     return party_node
 
+def get_source(meta_node):
+    if type(meta_node) == bs4.element.Tag:
+        is_link = lambda node: 'pm:linktype' in node.attrs and node['pm:linktype'] == 'pdf'
+        link_node = meta_node.find(is_link)
+        return link_node
+
+    return ''
+
+def get_sequence(node, tag_entry):
+    previous = node.find_all_previous(tag_entry)
+    return len(previous) + 1 # start from 1
+
 class ParliamentNetherlands(Parliament, XMLCorpus):
     '''
     Class for indexing Dutch parliamentary data
     '''
 
     title = "People & Parliament (Netherlands)"
-    description = "Speeches from the First and Second Chamber of the Netherlands"
+    description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
     es_index = current_app.config['PP_NL_INDEX']
@@ -244,6 +257,19 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_pages,
     )
 
+    # url = field_defaults.url()
+    # url.extractor = XML(
+    #     tag=['meta', 'dc:source'],
+    #     transform_soup_func=get_source,
+    #     toplevel=True,
+    #     attribute='pm:source',
+    # )
+
+    # sequence = field_defaults.sequence()
+    # sequence.extractor = XML(
+    #     extract_soup_func = lambda node : get_sequence(node, 'speech')
+    # )
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
@@ -253,6 +279,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role,
             self.party, self.party_id, self.party_full,
-            self.page,
+            self.page, #self.url, self.sequence
         ]
 
