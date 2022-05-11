@@ -10,7 +10,7 @@ from flask import current_app
 from addcorpus.extract import Constant, Combined, XML
 from addcorpus.corpus import XMLCorpus, Field
 from corpora.parliament.netherlands import ParliamentNetherlands
-import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.field_defaults_old as field_defaults
 
 with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
     soup = BeautifulSoup(f.read(), 'xml')

@@ -9,7 +9,7 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
-import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.field_defaults_old as field_defaults
 
 
 def standardize_bool(date_is_estimate):

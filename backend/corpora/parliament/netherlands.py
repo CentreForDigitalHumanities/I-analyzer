@@ -11,7 +11,7 @@ from addcorpus.extract import XML, Constant, Combined
 from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.field_defaults_old as field_defaults
 
 import re
 
