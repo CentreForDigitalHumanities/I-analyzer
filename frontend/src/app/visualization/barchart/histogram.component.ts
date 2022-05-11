@@ -2,8 +2,9 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../models/index';
+    HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
+import { selectColor } from '../select-color';
 
 @Component({
     selector: 'ia-histogram',
@@ -15,8 +16,17 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     async ngOnChanges(changes: SimpleChanges) {
         // new doc counts should be requested if query has changed
         if (this.changesRequireRefresh(changes)) {
-            this.rawData = [this.newSeries(this.queryModel.queryText)];
+            this.rawData = [
+                this.newSeries(this.queryModel.queryText)
+            ];
+            if (this.chart) {
+                // clear canvas an reset chart object
+                this.chart.destroy();
+                this.chart = undefined;
+            }
             this.setQueries();
+            this.prepareChart();
+        } else if (changes.palette) {
             this.prepareChart();
         }
     }
@@ -88,8 +98,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                   const item = series.data.find(i => i.key === key);
                   return item ? item[valueKey] : 0;
                 }),
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             }
         ));
     }

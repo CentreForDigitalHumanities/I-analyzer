@@ -79,7 +79,7 @@ def parliament():
     return Field(
         name='parliament',
         display_name='Parliament',
-        description='Parliament in which the speech was held',
+        description='Title of the parliament (i.e. the collection of individual elected to parliament)',
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
@@ -274,7 +274,7 @@ def speaker_aristocracy():
     return Field(
         name='speaker_aristocracy',
         display_name='Speaker aristocracy',
-        description='Is the speaker a member of the aristocracy?',
+        description='Aristocratic title of the speaker',
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 

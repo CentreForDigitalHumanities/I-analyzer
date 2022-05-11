@@ -5,10 +5,10 @@
 </div>
 
 <div class="block">
-    <ia-histogram-options
+    <ia-barchart-options
         [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
         (options)="onOptionChange($event)" (newQuery)="addSeries($event)"  (clearQueries)="clearAddedQueries()">
-    </ia-histogram-options>
+    </ia-barchart-options>
 </div>
 
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
@@ -16,7 +16,8 @@
 </div>
 
 <div class="block" *ngIf="asTable">
-    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="defaultSort" [name]="visualizedField ? visualizedField.name : ''">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="defaultSort"
+        [name]="visualizedField ? visualizedField.name : ''" [requiredColumn]="currentValueKey">
     </ia-freqtable>
 </div>
 
@@ -27,9 +28,3 @@
         the rest are assumed to have only one match for your query.
     </div>
 </div>
-
-<a class="button" (click)="showHistogramDocumentation()">
-    <span class="icon">
-        <i class="fa fa-question-circle"></i>
-    </span>
-</a>

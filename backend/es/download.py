@@ -2,19 +2,21 @@ from elasticsearch import Elasticsearch
 from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
+from es.search import get_index, search, hits
 
 def scroll(corpus, query_model, download_size=None):
-    client = elasticsearch(corpus)
+    index = get_index(corpus)
+    client = elasticsearch(index)
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
     size = current_app.config['SERVERS'][server]['scroll_page_size']
     output = []
     search_results = client.search(
-        index=corpus,
+        index=index,
         size = size,
         scroll = scroll_timeout,
-        body = query_model,
         timeout = '60s'
+        **query_model,
     )
     output.extend(search_results['hits']['hits'])
     if not download_size or download_size > search_results['hits']['total']['value']:
@@ -32,10 +34,9 @@ def scroll(corpus, query_model, download_size=None):
 
 
 def normal_search(corpus, query_model, size):
-    client = elasticsearch(corpus)
-    search_results = client.search(
-        index=corpus,
+    result = search(
+        corpus = corpus,
+        query_model=query_model,
         size = size,
-        body = query_model
     )
-    return search_results['hits']['hits']
+    return hits(result)

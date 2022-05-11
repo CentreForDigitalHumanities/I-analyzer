@@ -3,10 +3,11 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../models/index';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
+import { selectColor } from '../select-color';
 
 @Component({
     selector: 'ia-timeline',
@@ -29,8 +30,15 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             this.rawData = [
                 this.newSeries(this.queryModel.queryText)
             ];
+            if (this.chart) {
+                // clear canvas an reset chart object
+                this.chart.destroy();
+                this.chart = undefined;
+            }
             this.setQueries();
             this.setTimeDomain();
+            this.prepareChart();
+        } else if (changes.palette) {
             this.prepareChart();
         }
     }
@@ -89,7 +97,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = this.chart.options.scales.xAxis.time.unit as ('year'|'week'|'month'|'day');
+            const unit = (this.chart.options.scales.xAxis as any).time.unit as ('year'|'week'|'month'|'day');
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -107,8 +115,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 yAxisID: 'yAxis',
                 label: series.queryText ? series.queryText : '(no query)',
                 data: data,
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             };
         });
     }
@@ -147,6 +155,16 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                     const value = tooltipItem.parsed.y;
                     return this.formatValue(value);
                 }
+            }
+        };
+
+        // zoom limits
+        options.plugins.zoom.limits = {
+            xAxis: {
+                // convert dates to numeric rather than string here,
+                // as zoom plugin does not accept strings
+                min: xMin.valueOf(),
+                max: xMax.valueOf(),
             }
         };
 
@@ -243,7 +261,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     zoomOut(): void {
         this.chart.resetZoom();
         this.currentTimeCategory = this.calculateTimeCategory(...this.xDomain);
-        this.chart.options.scales.xAxis.time.unit = this.currentTimeCategory;
+        (this.chart.options.scales.xAxis as any).time.unit = this.currentTimeCategory;
         this.chart.update();
 
         this.setChart();

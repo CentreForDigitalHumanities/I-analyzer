@@ -2,12 +2,12 @@ import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@
 
 import * as _ from 'lodash';
 
-import { SearchService, DialogService } from '../services/index';
+import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, histogramOptions, QueryModel } from '../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, barchartOptions, QueryModel } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
-import { at } from 'lodash';
+import { selectColor } from '../select-color';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -43,12 +43,13 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     rawData: (typeof this.seriesType)[];
 
     // chart object
-    chart: any;
+    chart: Chart;
 
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
     @Input() visualizedField;
     @Input() asTable: boolean;
+    @Input() palette: string[];
 
     frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
@@ -83,8 +84,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     @Output() isLoading = new BehaviorSubject<boolean>(false);
     @Output() error = new EventEmitter();
-
-    public colorPalette = ['#3F51B5', '#88CCEE', '#44AA99', '#117733', '#999933', '#DDCC77', '#CC6677', '#882255', '#AA4499', '#DDDDDD'];
 
     basicChartOptions: ChartOptions = { // chart options not suitable for Chart.defaults.global
         scales: {
@@ -123,10 +122,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     };
 
-    constructor(public searchService: SearchService, public dialogService: DialogService) {
+    constructor(public searchService: SearchService) {
         const chartDefault = Chart.defaults;
-        chartDefault.elements.bar.backgroundColor = this.colorPalette[0];
-        chartDefault.elements.bar.hoverBackgroundColor = this.colorPalette[0];
+        chartDefault.elements.bar.backgroundColor = selectColor();
+        chartDefault.elements.bar.hoverBackgroundColor = selectColor();
         chartDefault.interaction.axis = 'x';
         chartDefault.plugins.legend.display = false;
         chartDefault.plugins.tooltip.displayColors = false;
@@ -143,7 +142,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     }
 
     /** update graph after changes to the option menu (i.e. frequency measure / normalizer) */
-    onOptionChange(options: histogramOptions) {
+    onOptionChange(options: barchartOptions) {
         this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
 
@@ -169,7 +168,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         };
     }
 
-    /** Remove any additional queries from the histogramOptions component.
+    /** Remove any additional queries from the barchartOptions component.
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
@@ -178,7 +177,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     }
 
     /** set the value of the `queries` property based on `rawData`.
-     * Queries is used by the histogramOptions component.
+     * Queries is used by the barchartOptions component.
      */
     setQueries() {
         if (this.rawData) {
@@ -401,7 +400,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
-        this.chart.labels = labels;
+        this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
         this.chart.update();
@@ -438,22 +437,17 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         }
     }
 
-    /** show documentation page */
-    showHistogramDocumentation() {
-        this.dialogService.showManualPage('histogram');
-    }
-
     /** based on current parameters, get a formatting function for y-axis values */
     get formatValue(): (value?: number) => string|undefined {
         if (this.normalizer === 'percent') {
             return (value?: number) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     return `${_.round(100 * value, 1)}%`;
                 }
             };
         } else {
             return (value: number) => {
-                if (value !== undefined) {
+                if (value !== undefined && value !== null) {
                     return value.toString();
                 }
             };

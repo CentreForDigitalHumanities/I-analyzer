@@ -35,7 +35,7 @@ In addition to the properties above, the corpus class must define:
 ### CSV corpora
 If your source files are CSV files, your corpus definition should subclass `CSVCorpus`.
 
-The CSV files will be read row by row, 
+The CSV files will be read row by row. You can write the definition so each document is based on a single row, or so that each document is based on a group of adjacent rows.
 
 In addition to the properties above, CSV corpora have the following optional properties:
 - `field_entry`: specifies a field in de CSV that corresponds to a single document entry. A new document is begins whenever the value in this field changes. If left undefined, each row of the CSV will be indexed as a separate document.

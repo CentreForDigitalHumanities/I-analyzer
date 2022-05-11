@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HistogramOptionsComponent } from './histogram-options.component';
+import { PaletteSelectComponent } from './palette-select.component';
 
-describe('HistogramOptionsComponent', () => {
-  let component: HistogramOptionsComponent;
-  let fixture: ComponentFixture<HistogramOptionsComponent>;
+describe('PaletteSelectComponent', () => {
+  let component: PaletteSelectComponent;
+  let fixture: ComponentFixture<PaletteSelectComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HistogramOptionsComponent ]
+      declarations: [ PaletteSelectComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HistogramOptionsComponent);
+    fixture = TestBed.createComponent(PaletteSelectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
