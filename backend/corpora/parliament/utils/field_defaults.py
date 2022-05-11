@@ -24,6 +24,20 @@ def book_label():
         es_mapping={'type': 'text'},
     )
 
+def chamber():
+    "human-readable name of chamber (commons, senate, etc)"
+    return Field(
+        name='chamber',
+        display_name='Chamber',
+        description='Chamber in which the debate took place',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in debates from the selected chamber(s)',
+            option_count=2
+        ),
+        visualizations = ['histogram']
+    )
+
 def country():
     "Country in which the debate took place"
     return Field(

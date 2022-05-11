@@ -66,6 +66,13 @@ class ParliamentUK(Parliament, CSVCorpus):
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
+    chamber =  field_defaults.chamber()
+    chamber.extractor = CSV(
+        field='house',
+        transform=format_house
+    )
+    chamber.es_mapping = add_length_multifield(house.es_mapping)
+
     country = field_defaults.country()
     country.extractor = Constant(
         value='United Kingdom'
@@ -84,20 +91,13 @@ class ParliamentUK(Parliament, CSVCorpus):
         transform=format_debate_title
     )
     debate_title.es_mapping = add_length_multifield(debate_title.es_mapping)
-     
-    house =  field_defaults.house()
-    house.extractor = CSV(
-        field='house',
-        transform=format_house
-    )
-    house.es_mapping = add_length_multifield(house.es_mapping)
-    
+
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='debate_id'
     )
     debate_id.es_mapping = add_length_multifield(debate_id.es_mapping)
-     
+
     speech = field_defaults.speech()
     speech.extractor = CSV(
         field='content',
@@ -123,7 +123,7 @@ class ParliamentUK(Parliament, CSVCorpus):
             }
         }
     }
-    
+
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
@@ -154,7 +154,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='heading_major',
     )
     topic.es_mapping = add_length_multifield(topic.es_mapping)
-    
+
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
         field='heading_minor',
