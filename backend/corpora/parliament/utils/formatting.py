@@ -14,3 +14,15 @@ def format_page_numbers(pages):
             return start
         else:
             return '{}-{}'.format(start, stop)
+
+def underscore_to_space(input_string, title_case=True):
+    """
+    Given an input string with underscores, replace underscores with spaces
+    Optionally, transform the parts of the string into title case
+    """
+    if input_string:
+        parts = input_string.split('_')
+        if title_case:
+            parts = [p.title() for p in parts if typeof(p[0])]
+        return ' '.join(parts_upper)
+

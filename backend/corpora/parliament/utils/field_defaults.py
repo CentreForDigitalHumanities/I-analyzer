@@ -24,6 +24,13 @@ def book_label():
         es_mapping={'type': 'text'},
     )
 
+def constitution():
+    return Field(
+        name='constitution',
+        display_name='Constitution',
+        description='The constitution under which the speech was held'
+    )
+
 def country():
     "Country in which the debate took place"
     return Field(
@@ -57,6 +64,8 @@ def date_is_estimate():
         es_mapping={'type':'boolean'}
     )
 
+
+
 def house():
     "human-readable name of house (commons, senate, etc)"
     return Field(
@@ -69,14 +78,6 @@ def house():
             option_count=2
         ),
         visualizations = ['histogram']
-    )
-
-def parliament():
-    return Field(
-        name='parliament',
-        display_name='Parliament',
-        description='Title of the parliament (i.e. the collection of individual elected to parliament)',
-        es_mapping={'type': 'keyword'},
     )
 
 def debate_title():
@@ -94,6 +95,15 @@ def debate_id():
         name='debate_id',
         display_name='Debate ID',
         description='Unique identifier of the debate in which the speech was held',
+        es_mapping={'type': 'keyword'},
+    )
+
+def legislature():
+    ""
+    return Field(
+        name='legislature',
+        display_name='Legislature',
+        description='Title of individuals elected to parliament',
         es_mapping={'type': 'keyword'},
     )
 
@@ -322,6 +332,15 @@ def page():
         es_mapping={'type': 'keyword'}
     )
 
+def page_source():
+    "page number in source document (can contain letters)"
+    return Field(
+        name='page_source',
+        display_name='Source page number',
+        description='Page number in source document',
+        es_mapping={'type': 'keyword'}
+    )
+
 def column():
     "column number (used in UK data)"
     return Field(
@@ -346,4 +365,13 @@ def sequence():
         display_name='Sequence',
         description='Index of the sequence of speeches in a debate',
         es_mapping={'type': 'integer'},
+    )
+
+def url():
+    "url to source from which the data is extracted"
+    return Field(
+        name='url',
+        display_name='URL',
+        description='URL to source file of this speech',
+        es_mapping={'type':'keyword'}
     )
