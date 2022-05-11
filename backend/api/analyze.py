@@ -253,7 +253,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
             # get the term vectors for the hit
             termvectors = client.termvectors(
                 index=index,
-                doc_type='_doc',
                 id=id,
                 term_statistics=True,
                 fields = [field]
