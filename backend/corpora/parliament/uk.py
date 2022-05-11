@@ -11,15 +11,7 @@ from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-
-
-def add_length_multifield(mapping):
-    mapping['fields'] = {'length' : {
-        "type": "token_count",
-        "analyzer": "standard",
-        }
-    }
-    return mapping
+from corpora.parliament.utils.mapping import add_length_multifield
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -77,7 +69,6 @@ class ParliamentUK(Parliament, CSVCorpus):
     country.extractor = Constant(
         value='United Kingdom'
     )
-
     country.es_mapping = add_length_multifield(country.es_mapping)
 
     date = field_defaults.date()
