@@ -10,7 +10,6 @@ from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
-from corpora.parliament.utils.mapping import add_length_multifield
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
@@ -44,13 +43,11 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='house',
         transform=format_house
     )
-    chamber.es_mapping = add_length_multifield(chamber.es_mapping)
 
     country = field_defaults.country()
     country.extractor = Constant(
         value='Canada'
     )
-    country.es_mapping = add_length_multifield(country.es_mapping)
 
     date = field_defaults.date()
     date.extractor = CSV(
@@ -63,43 +60,36 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='speech_id',
         transform=lambda x: x[:re.search(r'\d{4}-\d{2}-\d{2}', x).span()[1]]
     )
-    debate_id.es_mapping = add_length_multifield(debate_id.es_mapping)
 
     debate_title = field_defaults.debate_title()
     debate_title.extractor = CSV(
         field='heading1'
     )
-    debate_title.es_mapping = add_length_multifield(debate_title.es_mapping)
 
     party = field_defaults.party()
     party.extractor = CSV(
         field='speaker_party'
     )
-    party.es_mapping = add_length_multifield(party.es_mapping)
 
     role = field_defaults.role()
     role.extractor = CSV(
         field='speech_type'
     )
-    role.es_mapping = add_length_multifield(role.es_mapping)
 
     speaker = field_defaults.speaker()
     speaker.extractor = CSV(
         field='speaker_name'
     )
-    speaker.es_mapping = add_length_multifield(speaker.es_mapping)
 
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = CSV(
         field='speaker_id'
     )
-    speaker_id.es_mapping = add_length_multifield(speaker.es_mapping)
 
     speaker_constituency = field_defaults.speaker_constituency()
     speaker_constituency.extractor = CSV(
         field='speaker_constituency'
     )
-    speaker_constituency.es_mapping = add_length_multifield(speaker_constituency.es_mapping)
 
     speech = field_defaults.speech()
     speech.extractor = CSV(
@@ -131,19 +121,16 @@ class ParliamentCanada(Parliament, CSVCorpus):
     speech_id.extractor = CSV(
         field='speech_id'
     )
-    speech_id.es_mapping = add_length_multifield(speech_id.es_mapping)
 
     topic = field_defaults.topic()
     topic.extractor = CSV(
         field='heading2'
     )
-    topic.es_mapping = add_length_multifield(topic.es_mapping)
 
     subtopic = field_defaults.subtopic()
     subtopic.extractor = CSV(
         field='heading3'
     )
-    subtopic.es_mapping = add_length_multifield(subtopic.es_mapping)
 
     def __init__(self):
         self.fields = [
