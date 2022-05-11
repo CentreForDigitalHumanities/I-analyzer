@@ -257,18 +257,18 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         transform=format_pages,
     )
 
-    url = field_defaults.url()
-    url.extractor = XML(
-        tag=['meta', 'dc:source'],
-        transform_soup_func=get_source,
-        toplevel=True,
-        attribute='pm:source',
-    )
+    # url = field_defaults.url()
+    # url.extractor = XML(
+    #     tag=['meta', 'dc:source'],
+    #     transform_soup_func=get_source,
+    #     toplevel=True,
+    #     attribute='pm:source',
+    # )
 
-    sequence = field_defaults.sequence()
-    sequence.extractor = XML(
-        extract_soup_func = lambda node : get_sequence(node, 'speech')
-    )
+    # sequence = field_defaults.sequence()
+    # sequence.extractor = XML(
+    #     extract_soup_func = lambda node : get_sequence(node, 'speech')
+    # )
 
     def __init__(self):
         self.fields = [
@@ -279,6 +279,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role,
             self.party, self.party_id, self.party_full,
-            self.page, self.url, self.sequence
+            self.page, #self.url, self.sequence
         ]
 

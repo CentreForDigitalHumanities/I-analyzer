@@ -175,6 +175,6 @@ class ParliamentNetherlandsRecent(ParliamentNetherlands, XMLCorpus):
 
     page = field_defaults.page()
 
-    url = field_defaults.url()
+    # url = field_defaults.url()
 
-    sequence = field_defaults.sequence()
+    # sequence = field_defaults.sequence()

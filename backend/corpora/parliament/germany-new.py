@@ -172,7 +172,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='id'
     )
 
-    url = field_defaults.url()
+    url = field_defaults.source_url()
     url.extractor = CSV(
         field='document_url'
     )
