@@ -77,7 +77,7 @@ class ParliamentUK(Parliament, CSVCorpus):
     debate_title.extractor = CSV(
         field='debate',
         transform=format_debate_title
-    ))
+    )
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
