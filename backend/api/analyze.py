@@ -157,7 +157,7 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
     # find ngrams
 
     docs, total_frequencies = tokens_by_time_interval(
-        corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval
+        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval
     )
     if freq_compensation:
         ngrams = get_top_10_ngrams(docs, total_frequencies)
@@ -212,7 +212,7 @@ def get_time_bins(es_query, corpus):
     return bins
  
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
     index = get_index(corpus)
     client = elasticsearch(index)
     ngrams_per_bin = []
@@ -254,14 +254,19 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
             termvectors = client.termvectors(
                 index=index,
                 id=id,
-                term_statistics=True,
+                term_statistics=freq_compensation,
                 fields = [field]
             )
 
             if field in termvectors['term_vectors']:
                 terms = termvectors['term_vectors'][field]['terms']
                 
-                all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
+                all_tokens = [
+                    {
+                        'position': token['position'],
+                        'term': term,
+                        'ttf': terms[term]['ttf'] if freq_compensation else 0,
+                    }
                     for term in terms for token in terms[term]['tokens']]
                 sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
 
