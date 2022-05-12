@@ -11,10 +11,15 @@ def elasticsearch(corpus_name, cfg=config, sniff_on_start=False):
     server_config = current_app.config.get('SERVERS')[server_name]
     node = {'host': server_config['host'],
             'port': server_config['port']}
-    if server_config.get('username'):
-        node['http_auth'] = (server_config['username'],
-                             server_config['password'])
+    if server_config.get('certs_location') and server_config.get('api_key'):
+        # settings to connect via SSL are present
+        return Elasticsearch([node],
+            request_timeout=30, max_retries=10, retry_on_timeout=True,
+            sniff_on_start=sniff_on_start,
+            ca_certs = server_config.get('certs_location'),
+            api_key = (server_config.get('api_id'), server_config.get('api_key'))
+        )
     return Elasticsearch([node],
-        timeout=30, max_retries=10, retry_on_timeout=True,
+        request_timeout=30, max_retries=10, retry_on_timeout=True,
         sniff_on_start=sniff_on_start
     )
