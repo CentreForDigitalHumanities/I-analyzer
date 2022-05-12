@@ -104,6 +104,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     tasksToCancel: string[];
 
+    resultsCache: {[parameters: string]: any} = {};
+
     constructor(private searchService: SearchService, private apiService: ApiService) { }
 
     ngOnInit(): void { }
@@ -189,23 +191,30 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const analysis = this.analysis ? this.analysis : 'none';
         const maxSize = this.maxDocuments ? this.maxDocuments : 100;
 
-        this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
-            size, position, freqCompensation, analysis, maxSize)
-            .then(result => {
-                this.tasksToCancel = result.task_ids;
-                const childTask = result.task_ids[0];
-                this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
-                    if (outcome.success === true) {
-                        this.onDataLoaded(outcome.results);
-                    } else {
-                        this.error.emit({message: outcome.message});
-                    }
-                });
-        }).catch(error => {
-            this.chartData = undefined;
-            this.error.emit(error);
-            this.isLoading.emit(false);
-        });
+        const cachedResult = this.getCachedResult(size, position, freqCompensation, analysis, maxSize);
+
+        if (cachedResult) {
+            this.onDataLoaded(cachedResult);
+        } else {
+            this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
+                size, position, freqCompensation, analysis, maxSize)
+                .then(result => {
+                    this.tasksToCancel = result.task_ids;
+                    const childTask = result.task_ids[0];
+                    this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
+                        if (outcome.success === true) {
+                            this.cacheResult(outcome.results, size, position, freqCompensation, analysis, maxSize);
+                            this.onDataLoaded(outcome.results);
+                        } else {
+                            this.error.emit({message: outcome.message});
+                        }
+                    });
+            }).catch(error => {
+                this.chartData = undefined;
+                this.error.emit(error);
+                this.isLoading.emit(false);
+            });
+        }
     }
 
     onDataLoaded(result) {
@@ -239,5 +248,20 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+    cacheResult(result: any, size: number, position: number[], freqCompensation: boolean, analysis: string, maxSize: number): void {
+        const key = this.parametersKey(size, position, freqCompensation, analysis, maxSize);
+        this.resultsCache[key] = result;
+    }
+
+    getCachedResult(size: number, position: number[], freqCompensation: boolean, analysis: string, maxSize: number): any {
+        const key = this.parametersKey(size, position, freqCompensation, analysis, maxSize);
+        if (_.has(this.resultsCache, key)) {
+            return this.resultsCache[key];
+        }
+    }
+
+    parametersKey(size: number, position: number[], freqCompensation: boolean, analysis: string, maxSize: number): string {
+        return `${size}/${position}/${freqCompensation}/${analysis}/${maxSize}`;
+    }
 
 }
