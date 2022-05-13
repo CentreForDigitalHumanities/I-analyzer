@@ -1,4 +1,5 @@
 
+from audioop import reverse
 import enum
 from itertools import count
 import os
@@ -268,24 +269,102 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
                         'ttf': terms[term]['ttf'] if freq_compensation else 0,
                     }
                     for term in terms for token in terms[term]['tokens']]
-                sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
-
-                for i, token in enumerate(sorted_tokens):
+                
+                for token in all_tokens:
                     if token['term'] in query_tokens:
-                        for j in term_positions:
-                            start = i - j
-                            stop = i - j + ngram_size
-                            if start >= 0 and stop <= len(sorted_tokens):
-                                ngram = sorted_tokens[start:stop]
-                                words = ' '.join([token['term'] for token in ngram])
-                                ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                                ngram_ttfs[words] = ttf
-                                bin_ngrams.update({ words: 1})
+                        ngrams = find_ngrams(token, all_tokens, ngram_size, term_positions)
+                        for ngram in ngrams:
+                            words = ' '.join([token['term'] for token in ngram])
+                            ttf = sum(token['ttf'] for token in ngram) / len(ngram)
+                            ngram_ttfs[words] = ttf
+                            bin_ngrams.update({ words: 1})
 
         # output per bin: all tokens from this time interval
         ngrams_per_bin.append(bin_ngrams)
 
     return ngrams_per_bin, ngram_ttfs
+
+def find_ngrams(token, tokens, ngram_size = 2, positions = [0,1]):
+    if positions[-1] > 0:
+        prev_tokens = find_previous_tokens(token, tokens, ngram_size - 1)
+    else:
+        prev_tokens = []
+    if positions[0] < ngram_size - 1:
+        next_tokens = find_next_tokens(token, tokens, ngram_size - 1)
+    else:
+        next_tokens = []
+
+    ngrams = (
+        make_ngram(token, prev_tokens, next_tokens, ngram_size, position)
+        for position in positions
+    )
+
+    return [ngram for ngram in ngrams if ngram]
+
+def make_ngram(token, prev_tokens, next_tokens, ngram_size, position):
+    prev_size = position
+    next_size = ngram_size - (position + 1)
+
+    if prev_size <= len(prev_tokens) and next_size <= len(next_tokens):
+        return prev_tokens[len(prev_tokens) - prev_size:] + [token] + next_tokens[:next_size]
+
+
+def find_next_tokens(token, tokens, window_size=1):
+    position = token['position']
+    ngram = [token]
+
+    following_tokens = [t for t in tokens if t['position'] > position]
+
+    if len(following_tokens):
+        for i in range(window_size):
+            last_token = ngram[i]
+            next_token = find_next_token(last_token, following_tokens)
+            if next_token:
+                ngram.append(next_token)
+            else:
+                break
+
+    if len(ngram) > 1:
+        return ngram[1:]
+    else:
+        return []
+
+def find_next_token(token, tokens):
+    position = token['position']
+    max_position = max(tokens, key=lambda token: token['position'])['position']
+
+    for target in range(position + 1, max_position + 1):
+        token = next((t for t in tokens if t['position'] == target), None)
+        if token:
+            return token
+
+def find_previous_tokens(token, tokens, window_size=1):
+    position = token['position']
+    ngram = [token]
+
+    preceding_tokens = [t for t in tokens if t['position'] < position]
+
+    if len(preceding_tokens):
+        for i in range(window_size):
+            last_token = ngram[0]
+            next_token = find_previous_token(last_token, preceding_tokens)
+            if next_token:
+                ngram.insert(0, next_token)
+            else:
+                break
+
+    if len(ngram) > 1:
+        return ngram[:-1]
+    else:
+        return []
+
+def find_previous_token(token, tokens):
+    position = token['position']
+    for target in reversed(range(position)):
+        token = next((t for t in tokens if t['position'] == target), None)
+        if token:
+            return token
+
 
 def get_top_10_ngrams(counters, total_frequencies = None):
     """
