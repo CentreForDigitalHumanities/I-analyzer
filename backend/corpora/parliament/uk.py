@@ -62,6 +62,7 @@ class ParliamentUK(Parliament, CSVCorpus):
         field='house',
         transform=format_house
     )
+    chamber.search_filter.option_count = 3
 
     country = field_defaults.country()
     country.extractor = Constant(
