@@ -113,7 +113,7 @@ def is_old(metadata):
 def get_speaker_recent(who):
     person = get_person(who)
     surname = person.find('surname').text
-    forename = person.find('forename').textc
+    forename = person.find('forename').text
     return '{} {}'.format(forename, surname)
 
 def get_person(who):
@@ -170,7 +170,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             "language": "dutch"
         }
     }
-
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
@@ -405,22 +404,25 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
 
     page = field_defaults.page()
-    page.extractor = Combined(
-        XML(transform_soup_func=find_topic,
-            attribute=':source-start-page'
-        ),
-        XML(transform_soup_func=find_topic,
-            attribute=':source-end-page'
-        ),
-        XML(transform_soup_func=find_last_pagebreak,
-            attribute=':originalpagenr',
-        ),
-        XML(tag=['stage-direction', 'pagebreak'],
-            attribute=':originalpagenr',
-            multiple=True,
-            transform=lambda pages : pages[-1] if pages else pages
-        ),
-        transform=format_pages,
+    page.extractor = Choice(
+        Combined(
+            XML(transform_soup_func=find_topic,
+                attribute=':source-start-page'
+            ),
+            XML(transform_soup_func=find_topic,
+                attribute=':source-end-page'
+            ),
+            XML(transform_soup_func=find_last_pagebreak,
+                attribute=':originalpagenr',
+            ),
+            XML(tag=['stage-direction', 'pagebreak'],
+                attribute=':originalpagenr',
+                multiple=True,
+                transform=lambda pages : pages[-1] if pages else pages
+            ),
+            transform=format_pages,
+            applicable = is_old,
+        )
     )
 
     # url = field_defaults.url()

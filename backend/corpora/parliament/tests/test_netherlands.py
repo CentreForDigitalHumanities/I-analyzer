@@ -28,6 +28,25 @@ target_docs = [
     }
 ]
 
+target_docs_recent = [
+    {
+        'country': 'Netherlands',
+        'date': '2017-01-31',
+        'house': 'Tweede Kamer',
+        'debate_title': 'Report of the meeting of the Dutch Lower House, Meeting 46, Session 23 (2017-01-31)',
+        'debate_id': 'ParlaMint-NL_2017-01-31-tweedekamer-23',
+        'topic': 'Rapport "Welvaart in kaart"',
+        'speech': 'Ik heet de minister van Economische Zaken van harte welkom.',
+        'id': 'ParlaMint-NL_2017-01-31-tweedekamer-23.u1',
+        'speaker_id': '#KhadijaArib',
+        'speaker': 'Khadija Arib',
+        'role': 'Chair',
+        'party': 'PvdA',
+        'party_id': '#party.PvdA',
+        'party_full': 'Partij van de Arbeid',
+    }
+]
+
 def test_netherlands(test_app):
     nl_corpus = load_corpus('parliament-netherlands')
 
@@ -37,11 +56,32 @@ def test_netherlands(test_app):
     # Obtain our mock source XML
     sources = nl_corpus.sources(
         start=nl_corpus.min_date,
-        end=nl_corpus.max_date
+        end=datetime(2015, 1, 1)
     )
     docs = nl_corpus.documents(sources)
 
     for target in target_docs:
+        doc = next(docs)
+
+        for key in target:
+            assert key in doc
+            assert doc[key] == target[key]
+
+def test_netherlands_recent(test_app):
+    nl_corpus = load_corpus('parliament-netherlands')
+
+    # Assert that indeed we are drawing sources from the testing folder
+    test_folder = os.path.join(os.path.dirname(__file__), 'data', 'netherlands-recent')
+    assert test_folder == os.path.abspath(nl_corpus.data_directory_recent)
+
+    # Obtain our mock source XML
+    sources = nl_corpus.sources(
+        start=datetime(2015, 1, 1),
+        end=nl_corpus.max_date
+    )
+    docs = nl_corpus.documents(sources)
+
+    for target in target_docs_recent:
         doc = next(docs)
 
         for key in target:
