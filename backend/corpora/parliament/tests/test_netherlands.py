@@ -6,7 +6,7 @@ target_docs = [
     {
         'country': 'Netherlands',
         'date': '2000-01-18',
-        'house': 'Eerste Kamer',
+        'chamber': 'Eerste Kamer',
         'debate_title': 'Presentie en opening (dinsdag 18 januari 2000)',
         'debate_id': 'nl.proc.ob.d.h-ek-19992000-493-493',
         'topic': 'Presentie en opening',
@@ -23,8 +23,8 @@ target_docs = [
         'party_id': None,
         'party_full': None,
         'page': '493',
-        # 'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf',
-        # 'sequence': 1,
+        'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf',
+        'sequence': 1,
     }
 ]
 
@@ -32,7 +32,7 @@ target_docs_recent = [
     {
         'country': 'Netherlands',
         'date': '2017-01-31',
-        'house': 'Tweede Kamer',
+        'chamber': 'Tweede Kamer',
         'debate_title': 'Report of the meeting of the Dutch Lower House, Meeting 46, Session 23 (2017-01-31)',
         'debate_id': 'ParlaMint-NL_2017-01-31-tweedekamer-23',
         'topic': 'Rapport "Welvaart in kaart"',

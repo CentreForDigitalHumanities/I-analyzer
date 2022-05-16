@@ -10,10 +10,9 @@ from flask import current_app
 import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined, Choice
-from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.field_defaults_old as field_defaults
+import corpora.parliament.utils.field_defaults  as field_defaults
 
 import re
 
@@ -212,8 +211,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
     date.search_filter.lower = min_date
 
-    house = field_defaults.house()
-    house.extractor = Choice(
+    chamber = field_defaults.chamber()
+    chamber.extractor = Choice(
         XML(
             tag=['meta','dc:subject', 'pm:house'],
             attribute='pm:house',
@@ -285,27 +284,6 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             flatten=True,
         )
     )
-    # adjust the mapping:
-    # Dutch analyzer, multifield with exact text, cleaned and stemmed version, and token count
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "dutch"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Choice(
@@ -425,28 +403,36 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
     )
 
-    # url = field_defaults.url()
-    # url.extractor = XML(
-    #     tag=['meta', 'dc:source'],
-    #     transform_soup_func=get_source,
-    #     toplevel=True,
-    #     attribute='pm:source',
-    # )
+    url = field_defaults.url()
+    url.extractor = Choice(
+        XML(
+            tag=['meta', 'dc:source'],
+            transform_soup_func=get_source,
+            toplevel=True,
+            attribute='pm:source',
+            applicable = is_old,
+        ),
+        Constant(None)
+    )
 
-    # sequence = field_defaults.sequence()
-    # sequence.extractor = XML(
-    #     extract_soup_func = lambda node : get_sequence(node, 'speech')
-    # )
+    sequence = field_defaults.sequence()
+    sequence.extractor = Choice(
+        XML(
+            extract_soup_func = lambda node : get_sequence(node, 'speech'),
+            applicable = is_old
+        ),
+        Constant(None)
+    )
 
     def __init__(self):
         self.fields = [
             self.country, self.date,
-            self.house,
+            self.chamber,
             self.debate_title, self.debate_id,
             self.topic,
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role,
             self.party, self.party_id, self.party_full,
-            self.page, #self.url, self.sequence
+            self.page, self.url, self.sequence
         ]
 
