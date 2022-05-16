@@ -18,8 +18,9 @@ import re
 
 logger = logging.getLogger('indexing')
 
-with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
-    soup = BeautifulSoup(f.read(), 'xml')
+if 'PP_NL_RECENT_DATA' in current_app.config:
+    with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
+        soup = BeautifulSoup(f.read(), 'xml')
 
 
 def format_role(role):
@@ -164,7 +165,12 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year = 1815, month = 1, day = 1)
     data_directory = current_app.config['PP_NL_DATA']
-    data_directory_recent = current_app.config['PP_NL_RECENT_DATA']
+
+    if 'PP_NL_RECENT_DATA' in current_app.config:
+        data_directory_recent = current_app.config['PP_NL_RECENT_DATA']
+    else:
+        data_directory_recent = None
+
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
@@ -198,9 +204,10 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                 yield xml_file, { 'dataset': 'old' }
 
         # new data
-        for year in range(start.year, end.year):
-            for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
-                yield xml_file, { 'dataset': 'recent' }
+        if self.data_directory_recent:
+            for year in range(start.year, end.year):
+                for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
+                    yield xml_file, { 'dataset': 'recent' }
 
 
     country = field_defaults.country()
