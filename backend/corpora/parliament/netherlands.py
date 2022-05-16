@@ -115,6 +115,11 @@ def get_speaker_recent(who):
     forename = person.find('forename').text
     return '{} {}'.format(forename, surname)
 
+def get_speaker_gender_recent(who):
+    person = get_person(who)
+    gender = person.find('sex').text
+    return gender
+
 def get_person(who):
     person = soup.find(attrs={'xml:id':who[1:]})
     return person
@@ -142,6 +147,12 @@ def get_party_full_recent(who):
         return None
     party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'yes'}).text
     return party
+
+def get_sequence_recent(id):
+    pattern = r'u(\d+)$'
+    match = re.search(pattern, id)
+    if match:
+        return int(match.group(1))
 
 
 class ParliamentNetherlands(Parliament, XMLCorpus):
@@ -324,6 +335,19 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
     )
 
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = Choice(
+        Constant(
+            None,
+            applicable=is_old
+        ),
+        XML(
+            tag=None,
+            attribute='who',
+            transform=get_speaker_gender_recent
+        )
+    )
+
     role = field_defaults.role()
     role.extractor = Choice(
         XML(
@@ -404,15 +428,12 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
 
     url = field_defaults.url()
-    url.extractor = Choice(
-        XML(
-            tag=['meta', 'dc:source'],
-            transform_soup_func=get_source,
-            toplevel=True,
-            attribute='pm:source',
-            applicable = is_old,
-        ),
-        Constant(None)
+    url.extractor = XML(
+        tag=['meta', 'dc:source'],
+        transform_soup_func=get_source,
+        toplevel=True,
+        attribute='pm:source',
+        applicable = is_old,
     )
 
     sequence = field_defaults.sequence()
@@ -421,7 +442,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             extract_soup_func = lambda node : get_sequence(node, 'speech'),
             applicable = is_old
         ),
-        Constant(None)
+        XML(
+            tag=None,
+            attribute='xml:id',
+            transform = get_sequence_recent,
+        )
     )
 
     def __init__(self):
@@ -431,7 +456,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.debate_title, self.debate_id,
             self.topic,
             self.speech, self.speech_id,
-            self.speaker, self.speaker_id, self.role,
+            self.speaker, self.speaker_id, self.role, self.speaker_gender,
             self.party, self.party_id, self.party_full,
             self.page, self.url, self.sequence
         ]

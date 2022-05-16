@@ -38,12 +38,15 @@ target_docs_recent = [
         'topic': 'Rapport "Welvaart in kaart"',
         'speech': 'Ik heet de minister van Economische Zaken van harte welkom.',
         'id': 'ParlaMint-NL_2017-01-31-tweedekamer-23.u1',
-        'speaker_id': '#KhadijaArib',
         'speaker': 'Khadija Arib',
+        'speaker_id': '#KhadijaArib',
+        'speaker_gender': 'vrouw',
         'role': 'Chair',
         'party': 'PvdA',
         'party_id': '#party.PvdA',
         'party_full': 'Partij van de Arbeid',
+        'url': None,
+        'sequence': 1,
     }
 ]
 
