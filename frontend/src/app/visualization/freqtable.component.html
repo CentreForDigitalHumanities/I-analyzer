@@ -1,8 +1,8 @@
-<div class="horizontal-scroll">
-    <p-table [value]="filteredData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
+<div class="horizontal-scroll block">
+    <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
         <ng-template pTemplate="header">
             <tr class="is-selected">
-                <th *ngFor="let col of headers" [pSortableColumn]="col.key">
+                <th *ngFor="let col of formattedHeaders" [pSortableColumn]="col.key">
                     {{col.label}}
                     <p-sortIcon [field]="col.key"></p-sortIcon>
                 </th>
@@ -10,7 +10,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-entry>
             <tr>
-                <td *ngFor="let col of headers">
+                <td *ngFor="let col of formattedHeaders">
                     {{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}
                     <span *ngIf="entry[col.key] == undefined" class="has-text-grey-light">
                         none
@@ -18,14 +18,22 @@
                 </td>
             </tr>
         </ng-template>
-        <ng-template pTemplate="footer">
-            <a class="button" (click)="downloadTable()">
-                <span class="icon is-small">
-                    <i class="fa fa-download"></i>
-                </span>
-                <span>Download table data</span>
-            </a>
-        </ng-template>
-    </p-table>
-    
+    </p-table>    
+</div>
+
+<div class="field is-grouped">
+    <div class="control" *ngIf="factorColumns">
+        <ia-dropdown placeholder="long format" [options]="factorColumns" optionLabel="label"
+            canDeselect="true" (onChange)="setWideFormat($event)">
+        </ia-dropdown>
+    </div>
+
+    <div class="control">
+        <a class="button" (click)="downloadTable()">
+            <span class="icon is-small">
+                <i class="fa fa-download"></i>
+            </span>
+            <span>Download table data</span>
+        </a>
+    </div>
 </div>

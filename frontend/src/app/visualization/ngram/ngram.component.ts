@@ -20,8 +20,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Output() error = new EventEmitter<({ message: string })>();
 
     tableHeaders: freqTableHeaders = [
-        { key: 'date', label: 'Date' },
-        { key: 'ngram', label: 'N-gram' },
+        { key: 'date', label: 'Date', isFactor: true, },
+        { key: 'ngram', label: 'N-gram', isFactor: true, },
         { key: 'freq', label: 'Frequency' }
     ];
     tableData: { date: string, ngram: string, freq: number }[];

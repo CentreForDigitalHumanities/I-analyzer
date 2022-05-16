@@ -290,8 +290,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'queryText', label: 'Query' },
+                { key: 'date', label: 'Date', format: this.formatDate, isFactor: true, },
+                { key: 'queryText', label: 'Query', isFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
