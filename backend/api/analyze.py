@@ -55,7 +55,6 @@ def make_wordcloud_data(documents, field, corpus):
                 fields = [cleanfield]
             )
         except:  # otherwise use the normal field
-            print('no .clean cleanfield in index')
             termvectors = client.termvectors(
                 index=corpus,
                 doc_type='_doc',
