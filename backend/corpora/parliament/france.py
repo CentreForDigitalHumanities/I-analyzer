@@ -37,15 +37,9 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         for csv_file in glob('{}/*/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
-    archive_id = fields_default.archive_id()
-    archive_id.extractor = CSV(
-        field='archive_id'
-    )
-
     book_id = fields_defaults.book_id()
     book_id.extractor = Combined(
         CSV(field='book_id'),
-        CSV(field='archive_id'),
         CSV(field='book_part_id'),
         transform=lambda x: ' '.join(x)
     )

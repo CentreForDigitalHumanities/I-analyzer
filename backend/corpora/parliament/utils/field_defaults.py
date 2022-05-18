@@ -24,13 +24,6 @@ def book_label():
         es_mapping={'type': 'text'},
     )
 
-def constitution():
-    return Field(
-        name='constitution',
-        display_name='Constitution',
-        description='The constitution under which the speech was held'
-    )
-
 def country():
     "Country in which the debate took place"
     return Field(
@@ -64,6 +57,13 @@ def date_is_estimate():
         es_mapping={'type':'boolean'}
     )
 
+
+def era():
+    return Field(
+        name='era',
+        display_name='Era',
+        description='The parliamentary era in which the speech or debate was held'
+    )
 
 
 def house():
