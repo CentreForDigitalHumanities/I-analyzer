@@ -58,43 +58,87 @@ export class FreqtableComponent implements OnChanges {
         }
 
         if (this.wideFormatColumn !== undefined) {
-            const wideFormat = this.transformWideFormat(filteredData, this.wideFormatColumn);
-            this.formattedHeaders = wideFormat[0];
-            this.formattedData = wideFormat[1];
+            const [headers, data] = this.transformWideFormat(this.wideFormatColumn, filteredData);
+            this.formattedHeaders = headers;
+            this.formattedData = data;
         } else {
             this.formattedHeaders = this.headers;
             this.formattedData = this.data;
         }
     }
 
-    transformWideFormat(data: any[], headerIndex: number ): [freqTableHeaders, any[]] {
-        const factor = this.headers[headerIndex];
-        const values = _.uniq(data.map(row => row[factor.key]));
+    transformWideFormat(headerIndex: number, data: any[]): [freqTableHeaders, any[]] {
+        const mainFactor = this.headers[headerIndex];
+        const formatValue = (value, header) => header.format ? header.format(value) : value;
+
+        const factorValues = _.uniqBy(
+            data.map(row => row[mainFactor.key]),
+            value => formatValue(value, mainFactor)
+        );
+
+        const newKey = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
+            `${header.key}###${formatValue(factorValue, factor)}`;
+
+        const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
+            `${header.key} (${factor.label} = ${formatValue(factorValue, factor)})`;
 
         const otherHeaders = this.headers.filter((header, index) => index !== headerIndex);
         const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
             if (header.isFactor) {
+                // other factors are kept as-is
                 return [header];
             } else {
-                return _.map(values, value => {
-                    const formattedValue = factor.format ? factor.format(value) : value;
-                    const label = `${header.label} (${factor.label} = ${formattedValue})`;
-                    const newHeader: freqTableHeader = {
-                        label,
-                        key: `${header.key}_${formattedValue}`,
+                // for non-factor headers, make one column for each value of `mainFactor`
+                return _.map(factorValues, value => (
+                    {
+                        label: newLabel(header, mainFactor, value),
+                        key: newKey(header, mainFactor, value),
                         format: header.format,
                         formatDownload: header.formatDownload,
-                    };
-                    return newHeader;
-                });
+                    } as freqTableHeader
+                ));
             }
         });
 
-        const newData = [];
+        // other factors
+        const factorColumns = newHeaders.filter(header => header.isFactor);
 
-        console.log(newData);
+        const newData = _.uniqBy(
+            data,
+            row => {
+                const values = factorColumns.map(column => formatValue(row[column.key], row));
+                return _.join(values, '/');
+            }
+        );
 
-        return [newHeaders, data];
+        newData.forEach(newRow => {
+            this.headers.forEach(header => {
+                if (! header.isFactor) {
+                    factorValues.forEach(factorValue => {
+                        const key = newKey(header, mainFactor, factorValue);
+
+                        const rowData = data.find(row => {
+                            if (row[mainFactor.key] !== factorValue) {
+                                return false;
+                            }
+                            const matchFactors = _.every(
+                                factorColumns,
+                                factor => row[factor.key] === newRow[factor.key]
+                            );
+                            return matchFactors;
+                        });
+
+                        if (rowData !== undefined) {
+                            const value = rowData[header.key];
+                            newRow[key] = value;
+                        }
+                    });
+                }
+            });
+        });
+
+
+        return [newHeaders, newData];
     }
 
     parseTableData(): string[] {
