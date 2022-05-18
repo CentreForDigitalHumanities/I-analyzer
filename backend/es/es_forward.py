@@ -16,10 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def ensure_http(hostname):
-    """ If hostname does not include the http scheme, prepend it. """
-    prefix = ''
-    if not hostname.startswith('http'):
-        prefix = 'http:'
+    """ If hostname does not include the http or https scheme, prepend https. """
+    if hostname.startswith('http'):
+        return hostname
+    else:
+        prefix = 'https:'
         if not hostname.startswith('/'):
             prefix += '//'
     return prefix + hostname
@@ -48,12 +49,16 @@ def proxy_es(address):
     if request.mimetype.count('json'):
         kwargs['json'] = request.get_json(cache=False)
     try:
+        headers = {'Authorization': 'ApiKey VHd1TnQ0QUJFNW05a1FiQXp3bGQ6OXNuVlZmbjBSVXFvdW5yS2R3V0NGQQ=='}
+
         es_response = requests.request(
             request.method,
             address,
+            headers=headers,
             params=request.args,
             stream=True,
             timeout=TIMEOUT_SECONDS,
+            verify='/Applications/elasticsearch-8.0.0/config/certs/http_ca.crt',
             **kwargs
         )
     except ConnectionError:
@@ -62,12 +67,6 @@ def proxy_es(address):
         abort(504)  # Gateway Timeout
     return Response(
         es_response.raw.stream(),
-        status=es_response.status_code,
-        content_type=es_response.headers['Content-Type'],
-        headers={
-            key: es_response.headers[key]
-            for key in PASSTHROUGH_HEADERS if key in es_response.headers
-        },
     )
 
 
@@ -93,6 +92,7 @@ def forward_scroll(server_name):
 def forward_search(server_name, corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
+    print(request.get_data())
     host = get_es_host_or_404(server_name)
     address = '{}/{}/_search'.format(host, corpus_name)
     return proxy_es(address)
