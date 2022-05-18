@@ -22,7 +22,7 @@ from flask_login import LoginManager, login_required, login_user, \
 from flask_mail import Message
 
 from ianalyzer import models, celery_app
-from es import download
+from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 
 from api.user_mail import send_user_mail
@@ -454,7 +454,12 @@ def api_wordcloud():
     if request.json['size']>1000:
         abort(400)
     else:
-        list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
+        result = search.search(
+            corpus = request.json['corpus'],
+            query_model = request.json['es_query'],
+            size = request.json['size']
+        )
+        list_of_texts = search.hits(result)
         word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
@@ -617,7 +622,7 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('get_aggregate_term_frequency', methods=['POST'])
+@api.route('aggregate_term_frequency', methods=['POST'])
 @login_required
 def api_aggregate_term_frequency():
     if not request.json:

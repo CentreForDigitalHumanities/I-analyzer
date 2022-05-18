@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 
-import { DialogService, SearchService } from '../services/index';
-import { DialogServiceMock } from '../../mock-data/dialog';
-import { SearchServiceMock } from '../../mock-data/search';
+import { DialogService, SearchService } from '../../services/index';
+import { DialogServiceMock } from '../../../mock-data/dialog';
+import { SearchServiceMock } from '../../../mock-data/search';
 import { RelatedWordsComponent } from './related-words.component';
 
 describe('RelatedWordsComponent', () => {

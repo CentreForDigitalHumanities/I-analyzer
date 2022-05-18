@@ -2,8 +2,9 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../models/index';
+    HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
+import { selectColor } from '../select-color';
 
 @Component({
     selector: 'ia-histogram',
@@ -25,6 +26,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             }
             this.setQueries();
             this.prepareChart();
+        } else if (changes.palette) {
+            this.prepareChart();
         }
     }
 
@@ -33,6 +36,10 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     */
     getAggregator() {
         let size = 0;
+        if (!this.visualizedField.searchFilter) {
+            return {name: this.visualizedField.name, size: 100};
+        }
+
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
@@ -91,8 +98,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                   const item = series.data.find(i => i.key === key);
                   return item ? item[valueKey] : 0;
                 }),
-                backgroundColor: this.colorPalette[seriesIndex],
-                hoverBackgroundColor: this.colorPalette[seriesIndex],
+                backgroundColor: selectColor(this.palette, seriesIndex),
+                hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             }
         ));
     }

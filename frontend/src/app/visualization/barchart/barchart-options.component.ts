@@ -1,18 +1,18 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
-import { histogramOptions } from '../models';
+import { barchartOptions } from '../../models';
 
 @Component({
-    selector: 'ia-histogram-options',
-    templateUrl: './histogram-options.component.html',
-    styleUrls: ['./histogram-options.component.scss']
+    selector: 'ia-barchart-options',
+    templateUrl: './barchart-options.component.html',
+    styleUrls: ['./barchart-options.component.scss']
 })
-export class HistogramOptionsComponent implements OnChanges {
+export class barchartOptionsComponent implements OnChanges {
     @Input() queries: string[];
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
-    @Output() options = new EventEmitter<histogramOptions>();
+    @Output() options = new EventEmitter<barchartOptions>();
 
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';

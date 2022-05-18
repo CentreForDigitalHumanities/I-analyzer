@@ -44,6 +44,12 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         transform=lambda x: ' '.join(x)
     )
 
+    chamber = field_defaults.chamber()
+    chamber.extractor = CSV(
+        field='chamber',
+        transform=underscore_to_space
+    )
+
     constitution = field_defaults.constitution()
     constitution.extractor = CSV(
         field='era',
@@ -65,11 +71,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='date_is_estimate'
     )
 
-    house = field_defaults.house()
-    house.extractor = CSV(
-        field='chamber',
-        transform=underscore_to_space
-    )
+
 
     legislature = field_defaults.legislature()
     legistlature.extractor = CSV(

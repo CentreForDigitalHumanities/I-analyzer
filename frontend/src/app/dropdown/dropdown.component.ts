@@ -24,6 +24,8 @@ export class DropdownComponent<T> implements OnDestroy {
     @Input()
     public optionLabel: keyof T | undefined = undefined;
 
+    @Input() icon: any;
+
     @Output()
     public onChange = new EventEmitter<T>();
 

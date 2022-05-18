@@ -2,38 +2,69 @@
     <b> This corpus has no fields with associated visualizations. </b>
 </div>
 
-<div class="block" *ngIf="!noVisualizations" #viscontrol>
-	<p-dropdown [options]="visDropdown" (onChange)="setVisualizedField($event.value)"></p-dropdown>
-	<!-- Buttons for switching between table and graphical representation -->
-	<button [class.button]="true" [class.is-primary]="freqtable" (click)="freqtable = true" style="float:right">
-		<i class="fa fa-table" aria-hidden="true"></i>
-	</button>
-
-	<button [class.button]="true" [class.is-primary]="!freqtable" (click)="freqtable = false" style="float:right">
-		<i class="fa fa-bar-chart" aria-hidden="true"></i>
-	</button>
+<div class="level" *ngIf="!noVisualizations" #viscontrol>
+    <div class="level-left">
+        <div class="level-item">
+            <ia-dropdown *ngIf="visDropdown" [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]" (onChange)="setVisualizedField($event.value)"></ia-dropdown>
+        </div>
+    </div>
+    <div class="level-right">
+        <div class="level-item">
+            <div class="field has-addons">
+                <!-- Buttons for switching between table and graphical representation -->
+                <div class="control">
+                    <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
+                        <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                    </button>    
+                </div>
+                <div class="control">
+                    <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
+                        <i class="fa fa-table" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <ng-container *ngIf="visualExists; else noVisualsMessage">
-    <div  [ngClass]="{'is-loading':isLoading}">
+    <div class="block" [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
     		</ia-histogram>
     		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable"
+    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [resultsCount]="resultsCount" [asTable]="freqtable"
+                [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
             <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
-                [asTable]="freqtable" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
-            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField" [asTable]="freqtable"
+                [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
+            <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
         </ng-container>
     </div>
 </ng-container>
+
+<div class="level">
+    <div class="level-left">
+        <div class="level-item">
+            <button class="button" (click)="showHelp()">
+                <span class="icon">
+                    <fa-icon [icon]="faQuestion"></fa-icon>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="level-right">
+        <div class="level-item" *ngIf="!freqtable">
+            <ia-palette-select (paletteChanged)="palette = $event"></ia-palette-select>
+        </div>
+    </div>
+</div>
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>

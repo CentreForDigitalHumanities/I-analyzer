@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { commonTestBed } from '../common-test-bed';
+import { commonTestBed } from '../../common-test-bed';
 
-import { HistogramOptionsComponent } from './histogram-options.component';
+import { barchartOptionsComponent } from './barchart-options.component';
 
-describe('HistogramOptionsComponent', () => {
-  let component: HistogramOptionsComponent;
-  let fixture: ComponentFixture<HistogramOptionsComponent>;
+describe('barchartOptionsComponent', () => {
+  let component: barchartOptionsComponent;
+  let fixture: ComponentFixture<barchartOptionsComponent>;
 
   beforeEach(waitForAsync(() => {
       commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HistogramOptionsComponent);
+    fixture = TestBed.createComponent(barchartOptionsComponent);
     component = fixture.componentInstance;
     component.queries = ['spam', 'spam', 'eggs', 'spam'];
     component.showTokenCountOption = true;

@@ -37,7 +37,13 @@ class ParliamentCanada(Parliament, CSVCorpus):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):
             yield csv_file, {}
-    
+
+    chamber = field_defaults.chamber()
+    chamber.extractor = CSV(
+        field='house',
+        transform=format_house
+    )
+
     country = field_defaults.country()
     country.extractor = Constant(
         value='Canada'
@@ -58,13 +64,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
     debate_title = field_defaults.debate_title()
     debate_title.extractor = CSV(
         field='heading1'
-    )
-
-    house = field_defaults.house()
-    house.description = 'House that the speaker belongs to'
-    house.extractor = CSV(
-        field='house',
-        transform=format_house
     )
 
     party = field_defaults.party()
@@ -137,7 +136,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         self.fields = [
             self.country, self.date,
             self.debate_id, self.debate_title,
-            self.house,
+            self.chamber,
             self.speaker, self.speaker_id, self.speaker_constituency, self.role, self.party,
             self.speech, self.speech_id,
             self.topic, self.subtopic,

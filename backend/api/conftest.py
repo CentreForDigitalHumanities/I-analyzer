@@ -76,7 +76,7 @@ def test_es_client(test_app):
         yield client
 
         # delete index when done
-        client.indices.delete('mock-corpus')
+        client.indices.delete(index = 'mock-corpus')
     else:
         yield None
 
@@ -94,31 +94,6 @@ def basic_query():
                     }
                 },
                 "filter": []
-            }
-        }
-    }
-
-@pytest.fixture
-def query_with_date_filter():
-    return {
-        "query": {
-            "bool": {
-                "must": {
-                    "simple_query_string": {
-                        "query": "test",
-                        "lenient": True,
-                        "default_operator": "or"
-                    }
-                },
-                "filter": [{
-                    "range": {
-                    "date": {
-                        "gte": "1850-01-01",
-                        "lte": "1859-12-31",
-                        "format": "yyyy-MM-dd"
-                        }
-                    }
-                }]
             }
         }
     }

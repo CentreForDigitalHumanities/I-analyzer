@@ -141,6 +141,10 @@ class XML(Extractor):
                  # after _select was called, i.e. before further processing (attributes, flattening, etc).
                  # Keep in mind that the soup passed could be None.
                  transform_soup_func=None,
+                 # a function to extract a value directly from the soup object, instead of using the content string
+                 # or giving an attribute
+                # Keep in mind that the soup passed could be None.
+                 extract_soup_func=None,
                  *nargs,
                  **kwargs
                  ):
@@ -155,6 +159,7 @@ class XML(Extractor):
         self.secondary_tag = secondary_tag if secondary_tag['tag'] != None else None
         self.external_file = external_file if external_file['xml_tag_toplevel'] else None
         self.transform_soup_func = transform_soup_func
+        self.extract_soup_func = extract_soup_func
         super().__init__(*nargs, **kwargs)
 
     def _select(self, soup, metadata=None):
@@ -214,7 +219,9 @@ class XML(Extractor):
             return None
 
         # Use appropriate extractor
-        if self.attribute:
+        if self.extract_soup_func:
+            return self.extract_soup_func(soup)
+        elif self.attribute:
             return self._attr(soup)
         else:
             if self.flatten:
