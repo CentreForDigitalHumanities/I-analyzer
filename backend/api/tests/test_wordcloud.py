@@ -94,6 +94,9 @@ def test_wordcloud(test_app, test_es_client):
 
 def test_wordcloud_filtered(test_app, test_es_client):
     """Test the word cloud on a query with date filter"""
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
 
     filtered_query = make_filtered_query()
 
