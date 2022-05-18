@@ -1,6 +1,8 @@
 import api.analyze as analyze
 from es import search
 import pytest
+import api.query as query
+from datetime import datetime
 
 """
 TODO: finish the wordcloud test after issue is resolved with testing (22/4/2022)
@@ -89,3 +91,44 @@ def test_wordcloud(test_app, test_es_client):
         for hit in output:
             if term == hit['key']:
                 assert doc_count == hit['doc_count']
+
+def test_wordcloud_filtered(test_app, test_es_client):
+    """Test the word cloud on a query with date filter"""
+
+    filtered_query = make_filtered_query()
+
+    target_filtered = [
+        { 'key': 'it', 'doc_count': 1 },
+        { 'key': 'is', 'doc_count': 1 },
+        { 'key': 'a', 'doc_count': 4 },
+        { 'key': 'of', 'doc_count':  2 }
+    ]
+
+    result = search.search(
+        corpus = 'mock-corpus',
+        query_model = filtered_query,
+        size = 10,
+        client = test_es_client
+    )
+
+    documents = search.hits(result)
+    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
+
+    for item in target_filtered:
+        term = item['key']
+        doc_count = item['doc_count']
+        print(term, doc_count)
+        for hit in output:
+            if term == hit['key']:
+                assert doc_count == hit['doc_count']
+
+def make_filtered_query():
+    empty_query = {
+        "query": {
+            "bool": {
+                "filter": []
+            }
+        }
+    }
+    datefilter = query.make_date_filter(max_date = datetime(year = 1813, month=12, day=31))
+    return query.add_filter(empty_query, datefilter)
