@@ -74,6 +74,7 @@ describe('FreqtableComponent', () => {
         const numberOfFruits = 2;
         const numberOfVeggies = 3;
 
+
         const [fruitHeaders, fruitData] = component.transformWideFormat(0, data);
 
         // verify shape of data
@@ -146,12 +147,11 @@ describe('FreqtableComponent', () => {
             },
         ];
 
-        _.zip(fruitData, expectedFruitData).forEach(([row, expected]) => {
+        _.zip(veggieData, expectedVeggieData).forEach(([row, expected]) => {
             Object.keys(expected).forEach(property => {
                 expect(row[property]).toBe(expected[property]);
             });
         });
-
 
     });
 });
