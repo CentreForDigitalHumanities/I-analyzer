@@ -80,7 +80,7 @@ export class FreqtableComponent implements OnChanges {
             `${header.key}###${formatValue(factorValue, factor)}`;
 
         const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
-            `${header.key} (${factor.label} = ${formatValue(factorValue, factor)})`;
+            `${header.label} (${factor.label} = ${formatValue(factorValue, factor)})`;
 
         const otherHeaders = this.headers.filter((header, index) => index !== headerIndex);
         const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
