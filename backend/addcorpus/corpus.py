@@ -275,13 +275,13 @@ class XMLCorpus(Corpus):
     @property
     def tag_toplevel(self):
         '''
-        The top-level tag in the source documents. Either a string of a function that maps metadata to a string.
+        The top-level tag in the source documents. Either a string or a function that maps metadata to a string.
         '''
 
     @property
     def tag_entry(self):
         '''
-        The tag that corresponds to a single document entry. Either a string of a function that maps metadata to a string.
+        The tag that corresponds to a single document entry. Either a string or a function that maps metadata to a string.
         '''
 
     def source2dicts(self, source):
