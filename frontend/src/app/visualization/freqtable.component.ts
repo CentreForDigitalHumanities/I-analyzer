@@ -34,11 +34,11 @@ export class FreqtableComponent implements OnChanges {
 
     checkWideFormat(): void {
         if (this.headers && this.headers.find(header => header.isFactor)) {
-            const names = this.headers.map((header, index) => ({
+            const factors = this.filterFactors(this.headers);
+            this.factorColumns = factors.map((header, index) => ({
                 label: `Group by ${header.label}`,
                 headerIndex: index,
             }));
-            this.factorColumns = names;
         } else {
             this.factorColumns = undefined;
         }
@@ -63,7 +63,7 @@ export class FreqtableComponent implements OnChanges {
             this.formattedData = data;
         } else {
             this.formattedHeaders = this.headers;
-            this.formattedData = this.data;
+            this.formattedData = filteredData;
         }
     }
 
@@ -78,7 +78,7 @@ export class FreqtableComponent implements OnChanges {
         const newHeaders = this.wideFormatHeaders(mainFactor, mainFactorValues);
 
         // other factors
-        const factorColumns = newHeaders.filter(header => header.isFactor);
+        const factorColumns = this.filterFactors(newHeaders);
 
         const newData = _.uniqBy(
             data,
@@ -89,7 +89,7 @@ export class FreqtableComponent implements OnChanges {
         );
 
         mainFactorValues.forEach(factorValue => {
-            const filteredData = data.filter(row => row[mainFactor.key] === factorValue);
+            const filteredData = data.filter(row => this.getValue(row, mainFactor) === factorValue);
 
             newData.forEach(newRow => {
                 this.headers.forEach(header => {
@@ -99,7 +99,7 @@ export class FreqtableComponent implements OnChanges {
                         const rowData = filteredData.find(row =>
                             _.every(
                                 factorColumns,
-                                factor => _.isEqual(row[factor.key], newRow[factor.key])
+                                factor => this.getValue(row, factor) === this.getValue(newRow, factor)
                             )
                         );
 
@@ -142,6 +142,10 @@ export class FreqtableComponent implements OnChanges {
 
     wideFormatColumnKey(header: freqTableHeader, mainFactor: freqTableHeader, mainFactorValue): string {
         return `${header.key}###${this.formatValue(mainFactorValue, mainFactor)}`;
+    }
+
+    filterFactors(headers: freqTableHeaders): freqTableHeaders {
+        return headers.filter(header => header.isFactor);
     }
 
     parseTableData(): string[] {
