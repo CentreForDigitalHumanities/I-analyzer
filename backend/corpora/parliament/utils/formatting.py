@@ -23,6 +23,6 @@ def underscore_to_space(input_string, title_case=True):
     if input_string:
         parts = input_string.split('_')
         if title_case:
-            parts = [p.title() for p in parts if typeof(p[0])]
-        return ' '.join(parts_upper)
+            parts = [p.title() for p in parts if type(p[0]) == str]
+        return ' '.join(parts)
 

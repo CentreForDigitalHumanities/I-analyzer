@@ -144,6 +144,29 @@ def subtopic():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def session():
+    """
+    in which session the debate or speech occurred
+    there may be several sessions within a given date
+    """
+    return Field(
+        name='session',
+        display_name='Session',
+        description='Session in which the debate or speech occurred',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+    )
+
+def session_type():
+    """
+    the type of session in which the debate or speech occurred
+    """
+    return Field(
+        name='session_type',
+        display_name='Session type',
+        description='Type of session in which the debate or speech occurred',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+    )
+
 def speech():
     """
     speech is a multifield with subfields clean (lowercase, stopwords, no numbers) and stemmed (as clean, but also stemmed)
