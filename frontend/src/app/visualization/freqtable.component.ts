@@ -89,7 +89,7 @@ export class FreqtableComponent implements OnChanges {
         );
 
         mainFactorValues.forEach(factorValue => {
-            const filteredData = data.filter(row => this.getValue(row, mainFactor) === factorValue);
+            const filteredData = data.filter(row => this.getValue(row, mainFactor) === this.formatValue(factorValue, mainFactor));
 
             newData.forEach(newRow => {
                 this.headers.forEach(header => {

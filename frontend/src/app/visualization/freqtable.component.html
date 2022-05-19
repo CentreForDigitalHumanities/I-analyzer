@@ -1,5 +1,6 @@
-<div class="horizontal-scroll block">
-    <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
+<div class="block">
+    <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}
+        [scrollable]="true" scrollDirection="horizontal">
         <ng-template pTemplate="header">
             <tr class="is-selected">
                 <th *ngFor="let col of formattedHeaders" [pSortableColumn]="col.key">
