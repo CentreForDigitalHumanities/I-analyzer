@@ -11,7 +11,7 @@ def format_page_numbers(pages):
         stop = max(pages)
 
         if start == stop:
-            return start
+            return str(start)
         else:
             return '{}-{}'.format(start, stop)
 
