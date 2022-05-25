@@ -66,6 +66,7 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { NgramComponent } from './visualization/ngram.component';
 import { HistogramOptionsComponent } from './visualization/histogram-options.component';
+import { HighlightSelectorComponent } from './search/highlight-selector.component';
 
 
 const appRoutes: Routes = [
@@ -134,6 +135,7 @@ export const declarations: any[] = [
     FreqtableComponent,
     HomeComponent,
     HighlightPipe,
+    HighlightSelectorComponent,
     HistogramComponent,
     HistogramOptionsComponent,
     ImageViewComponent,
@@ -230,7 +232,7 @@ export const providers: any[] = [
     declarations,
     imports,
     providers,
-    bootstrap: [AppComponent],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
 
