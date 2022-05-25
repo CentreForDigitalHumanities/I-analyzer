@@ -31,6 +31,8 @@ CORPUS_TEST_DATA = [
             "book_id" : "2_cri_1965-1966-ordinaire1_027",
             "chamber" : "Assemblee Nationale",
             "country" : "France",
+            "debate_id" : "1965-10-20_2",
+            "debate_type" : "Ordinaire",
             "date" : "1965-10-20",
             "date_is_estimate": False,
             "era" : "5Th Republic",
@@ -38,8 +40,6 @@ CORPUS_TEST_DATA = [
             "page" : "0",
             "page_source" : "2_cri_1965-1966-ordinaire1_027.pdf",
             "sequence" : "2",
-            "session" : "Deuxième séance 2",
-            "session_type" : "ordinaire",
             "speech" : "Trois questions orales sans débat de MM  . Davoust, Fanton et Ansquer à M . le ministre des finances et des affaires économiques.",
             "id" : "fr_5th_republic_assemblee_nationale_1965_2_0",
             "url" : "https://archives.assemblee-nationale.fr/2/cri/1965-1966-ordinaire1/027.pdf"
