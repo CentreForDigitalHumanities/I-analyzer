@@ -64,7 +64,6 @@ import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterCom
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
-import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
@@ -137,7 +136,6 @@ export const declarations: any[] = [
     FreqtableComponent,
     HomeComponent,
     HighlightPipe,
-    HighlightSelectorComponent,
     HistogramComponent,
     barchartOptionsComponent,
     ImageViewComponent,
@@ -234,8 +232,9 @@ export const providers: any[] = [
 
 @NgModule({
     declarations,
+    imports,
     providers,
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
 export class AppModule { }
 
