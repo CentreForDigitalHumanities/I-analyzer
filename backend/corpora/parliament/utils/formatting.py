@@ -22,6 +22,6 @@ def underscore_to_space(input_string, title_case=True):
     """
     if input_string:
         parts = input_string.split('_')
-        joined = ' '.join(parts)
+        joined = ' '.join([part for part in parts if part])
         return joined.title() if title_case else joined
 
