@@ -63,7 +63,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { success: false, message: string } | { success: true, results: AggregateResult[] }
+    { success: false, message: string } | { success: true, results: AggregateResult[]|NgramResults }
     >
 
     @ResourceAction({

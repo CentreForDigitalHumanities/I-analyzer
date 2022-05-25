@@ -56,11 +56,22 @@
     </div>
 </div>
 
-<div class="block" *ngIf="!asTable">
-    <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+
+<div [ngClass]="{ 'is-hidden': asTable }">
+    <div class="block">
+        <canvas id="chart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="field">
+        <label class="checkbox" iaBalloon="scale the line graph for each ngram to the same size">
+            <input type="checkbox" [checked]="fixLineGraphHeights" (change)="setFixLineHeights($event)">
+            Fixed height for line graphs
+        </label>
+    </div>
 </div>
 
 <div class="block" *ngIf="asTable">
     <ia-freqtable [headers]="tableHeaders" [data]="tableData" [defaultSort]="'date'" [name]="visualizedField.name+'-ngrams'">
     </ia-freqtable>
 </div>
+
