@@ -67,6 +67,27 @@ class ParliamentFrance(Parliament, CSVCorpus):
         transform=lambda x: x=='True'
     )
 
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = Combined(
+        CSV(field='date'),
+        CSV(field='seance_order'),
+        transform=lambda x: '_'.join(filter(None, x))
+    )
+
+    # debate title is not included in field list below
+    # the values of 'seance' field seem very limited (Première séance, Deuxième séance, etc.,)
+    # so we don't want this to be treated as a text field
+    debate_title = field_defaults.debate_title()
+    debate_title.extractor = CSV(
+        field='seance'
+    )
+
+    debate_type = field_defaults.debate_type()
+    debate_type.extractor = CSV(
+        field='session_type',
+        transform=lambda x: x.title(),
+    )
+
     era = field_defaults.era()
     era.extractor = CSV(
         field='era',
@@ -91,18 +112,6 @@ class ParliamentFrance(Parliament, CSVCorpus):
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
         field='sequence'
-    )
-
-    session = field_defaults.session()
-    session.extractor = Combined(
-        CSV(field='seance'),
-        CSV(field='seance_order'),
-        transform=lambda x: ' '.join(filter(None, x))
-    )
-
-    session_type = field_defaults.session_type()
-    session_type.extractor = CSV(
-        field='session_type'
     )
 
     speech = field_defaults.speech()
@@ -145,11 +154,11 @@ class ParliamentFrance(Parliament, CSVCorpus):
             self.chamber,
             self.country,
             self.date, self.date_is_estimate,
+            self.debate_id, self.debate_type,
             self.era,
             self.legislature,
             self.page, self.page_source,
             self.sequence,
-            self.session, self.session_type,
             self.speech, self.speech_id,
             self.url,
         ]
