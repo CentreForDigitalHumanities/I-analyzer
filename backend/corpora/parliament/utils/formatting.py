@@ -22,7 +22,6 @@ def underscore_to_space(input_string, title_case=True):
     """
     if input_string:
         parts = input_string.split('_')
-        if title_case:
-            parts = [p.title() for p in parts if type(p[0]) == str]
-        return ' '.join(parts)
+        joined = ' '.join(parts)
+        return joined.title() if title_case else joined
 
