@@ -20,6 +20,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
 
+    result: NgramResults;
+
     tableHeaders: freqTableHeaders = [
         { key: 'date', label: 'Date' },
         { key: 'ngram', label: 'N-gram' },
@@ -32,6 +34,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     chart: Chart;
 
     numberOfNgrams = 10;
+
+    fixLineGraphHeights = true;
+    maxDataPoint: number;
 
     timeLabels: string[] = [];
     ngrams: string[] = [];
@@ -139,6 +144,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     onDataLoaded(result: NgramResults) {
+        this.result = result;
+        this.setmaxDataPoint(result);
+
         this.tableData = this.makeTableData(result);
         this.chartData = this.makeChartdata(result);
         this.chartOptions = this.makeChartOptions(this.chartData);
@@ -235,7 +243,6 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const totalsData = _.last(data.datasets).data;
         const totals = totalsData.map((item: any) => item.x);
         const maxTotal = _.max(totals);
-        console.log(maxTotal);
 
         return {
             elements: {
@@ -332,7 +339,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     scaleValues(data: number[]): number[] {
-        const max = _.max(data);
+        const max = this.fixLineGraphHeights ? _.max(data) : this.maxDataPoint;
         return data.map(point => 1.1 * point / max);
     }
 
@@ -344,5 +351,21 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         });
     }
 
+    setmaxDataPoint(result: NgramResults) {
+        this.maxDataPoint = _.max(
+            _.map(result.words,
+                item => _.max(item.data)
+            )
+        );
+    }
+
+    setFixLineHeights(event) {
+        this.fixLineGraphHeights = event.target.checked;
+        if (this.chart) {
+            this.chartData = this.makeChartdata(this.result);
+            this.chart.data = this.chartData;
+            this.chart.update();
+        }
+    }
 
 }
