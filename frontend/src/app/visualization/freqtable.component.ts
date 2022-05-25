@@ -36,7 +36,7 @@ export class FreqtableComponent implements OnChanges {
         if (this.headers && this.headers.find(header => header.isFactor)) {
             const factors = this.filterFactors(this.headers);
             this.factorColumns = factors.map((header, index) => ({
-                label: `Group by ${header.label}`,
+                label: `wide format (by ${header.label})`,
                 headerIndex: index,
             }));
         } else {
@@ -149,11 +149,11 @@ export class FreqtableComponent implements OnChanges {
     }
 
     parseTableData(): string[] {
-        const data = this.data.map(row => {
-            const values = this.headers.map(col => this.getValue(row, col, true));
+        const data = this.formattedData.map(row => {
+            const values = this.formattedHeaders.map(col => this.getValue(row, col, true));
             return  `${_.join(values, ',')}\n`;
         });
-        data.unshift(`${_.join(this.headers.map(col => col.label), ',')}\n`);
+        data.unshift(`${_.join(this.formattedHeaders.map(col => col.label), ',')}\n`);
         return data;
     }
 
