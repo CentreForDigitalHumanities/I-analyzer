@@ -200,7 +200,7 @@ def test_imports(test_app, corpus_object):
         for key in target:
             assert key in doc
             assert doc[key] == target[key]
-    docs = get_documents(corpus)
+    docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
 
 def get_documents(corpus, start, end):
