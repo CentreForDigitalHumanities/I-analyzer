@@ -18,6 +18,7 @@ target_docs = [
         'id': 'nl.proc.ob.d.h-ek-19992000-493-493.1.5.1',
         'speaker': 'De voorzitter Jurgens',
         'speaker_id': 'nl.m.01992',
+        'speaker_gender': None,
         'role': 'Chair',
         'party': None,
         'party_id': None,
@@ -45,6 +46,7 @@ target_docs_recent = [
         'party': 'PvdA',
         'party_id': '#party.PvdA',
         'party_full': 'Partij van de Arbeid',
+        'page': None,
         'url': None,
         'sequence': 1,
     }
