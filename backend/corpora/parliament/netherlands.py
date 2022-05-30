@@ -196,12 +196,12 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             if period_match:
                 period = period_match.group(0)
                 start_year = int(period[:4])
-                end_year = int(period[4:])
 
-                if end_year >= start.year and start_year <= end.year:
+                if start_year >= start.year and start_year < end.year:
                     yield xml_file, { 'dataset': 'old' }
             else:
-                yield xml_file, { 'dataset': 'old' }
+                message = 'File {} is not indexed, because the filename has no recognisable date'.format(xml_file)
+                logger.log(msg=message)
 
         # new data
         if self.data_directory_recent:
