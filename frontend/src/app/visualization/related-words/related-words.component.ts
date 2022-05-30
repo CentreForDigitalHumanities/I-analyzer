@@ -30,7 +30,7 @@ export class RelatedWordsComponent implements OnChanges {
 
     tableHeaders: freqTableHeaders = [
         { key: 'key', label: 'Term' },
-        { key: 'similarity', label: 'Similarity' }
+        { key: 'similarity', label: 'Similarity', format: this.formatValue }
     ];
     tableData: [WordSimilarity];
 
@@ -132,6 +132,11 @@ export class RelatedWordsComponent implements OnChanges {
         this.zoomedInData = null;
         this.chartOptions.scales.xAxis = {};
         this.chartOptions.plugins.legend.labels.boxHeight = 0;
+    }
+
+    formatValue(value: number): string {
+
+        return `${value.toPrecision(3)}`;
     }
 
 }
