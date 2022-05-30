@@ -80,13 +80,13 @@ def test_top_10_ngrams():
         'c': 150,
     }
 
-    output_absolute = analyze.get_top_10_ngrams(counts)
+    output_absolute = analyze.get_top_n_ngrams(counts)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
     
 
-    output_relative = analyze.get_top_10_ngrams(counts, ttf)
+    output_relative = analyze.get_top_n_ngrams(counts, ttf)
 
     for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
@@ -299,3 +299,19 @@ def test_find_ngrams():
         sort_by_position = lambda ngrams: sorted(ngrams, key=start_position)
 
         assert sort_by_position(found) == sort_by_position(expected)
+
+def test_number_of_ngrams(test_app, test_es_client, basic_query):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
+    # search for a word that occurs a few times
+    query = basic_query
+    query['query']['bool']['must']['simple_query_string']['query'] = 'to'
+
+    max_frequency = 6
+
+    for size in range(1, max_frequency + 2):
+        result = analyze.get_ngrams(query, 'mock-corpus', 'content', number_of_ngrams= size)
+        series = result['words']
+
+        assert len(series) == min(max_frequency, size)

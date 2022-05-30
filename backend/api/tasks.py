@@ -51,7 +51,8 @@ def get_ngram_data(request_json):
         term_positions=request_json['term_position'],
         freq_compensation=request_json['freq_compensation'],
         subfield=request_json['subfield'],
-        max_size_per_interval=request_json['max_size_per_interval']
+        max_size_per_interval=request_json['max_size_per_interval'],
+        number_of_ngrams=request_json['number_of_ngrams']
     )
     return results
 

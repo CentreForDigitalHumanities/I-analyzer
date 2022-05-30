@@ -149,7 +149,9 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50):
+def get_ngrams(es_query, corpus, field,
+    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
+    number_of_ngrams=10):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
@@ -161,9 +163,9 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
         corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval
     )
     if freq_compensation:
-        ngrams = get_top_10_ngrams(docs, total_frequencies)
+        ngrams = get_top_n_ngrams(docs, total_frequencies, number_of_ngrams)
     else:
-        ngrams = get_top_10_ngrams(docs)
+        ngrams = get_top_n_ngrams(docs, dict(), number_of_ngrams)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
@@ -366,10 +368,10 @@ def find_previous_token(token, tokens):
             return token
 
 
-def get_top_10_ngrams(counters, total_frequencies = None):
+def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
     """
-    Converts a list of documents with tokens into 10 dataseries, listing the
-    frequency of the top 10 tokens and their frequency in each document.
+    Converts a list of documents with tokens into n dataseries, listing the
+    frequency of the top n tokens and their frequency in each document.
 
     Input:
     - `docs`: a list of Counter objects with ngram frequencies. The division into counters reflects how the data is grouped,
@@ -389,14 +391,16 @@ def get_top_10_ngrams(counters, total_frequencies = None):
     total_counter = Counter()
     for c in counters:
         total_counter.update(c)
+
+    number_of_results = min(number_of_ngrams, len(total_counter))
         
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
-        top_10_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:10]
+        top_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:number_of_results]
     else:
         def frequency(ngram, counter): return counter[ngram]
-        top_10_ngrams = [word for word, freq in total_counter.most_common(10)]
+        top_ngrams = [word for word, freq in total_counter.most_common(number_of_results)]
 
 
     output = [{
@@ -404,7 +408,7 @@ def get_top_10_ngrams(counters, total_frequencies = None):
             'data': [frequency(ngram, c)
                 for c in counters]
         }
-        for ngram in top_10_ngrams]
+        for ngram in top_ngrams]
 
     return output
 

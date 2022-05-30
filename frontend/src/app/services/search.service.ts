@@ -212,7 +212,8 @@ export class SearchService {
             term_position: params.positions,
             freq_compensation: params.freqCompensation,
             subfield: params.analysis,
-            max_size_per_interval: params.maxDocuments
+            max_size_per_interval: params.maxDocuments,
+            number_of_ngrams: params.numberOfNgrams,
         });
     }
 
