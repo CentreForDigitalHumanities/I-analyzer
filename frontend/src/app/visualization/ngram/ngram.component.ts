@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults, NgramParameters } from '../../models';
@@ -19,6 +19,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
+
+    @ViewChild('chart-container') chartContainer: ElementRef;
 
     tableHeaders: freqTableHeaders = [
         { key: 'date', label: 'Date' },
@@ -131,11 +133,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.chartData = this.makeChartdata(result);
         this.chartOptions = this.makeChartOptions(this.chartData);
 
-
-        console.log(this.chartData);
-        console.log(this.chartOptions);
-
         if (this.chart) {
+            this.chart.data = this.chartData;
+            this.chart.options = this.chartOptions;
             this.chart.update();
         } else {
             this.chart = this.makeChart();
@@ -245,6 +245,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const maxTotal = _.max(totals);
 
         return {
+            responsive: true,
+            maintainAspectRatio: false,
             elements: {
                 point: {
                     radius: 0,
