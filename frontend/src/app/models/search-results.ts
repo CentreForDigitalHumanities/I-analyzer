@@ -76,7 +76,8 @@ export type RelatedWordsResults = {
 
 export type NgramResults = {
     words: {
-        [word: string]: number[]
-    }
-    time_points: string[];
-}
+        label: string,
+        data: number[],
+    }[],
+    time_points: string[],
+};
