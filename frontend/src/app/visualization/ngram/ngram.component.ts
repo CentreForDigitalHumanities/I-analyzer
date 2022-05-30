@@ -25,7 +25,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     tableHeaders: freqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true, },
         { key: 'ngram', label: 'N-gram', isSecondaryFactor: true, },
-        { key: 'freq', label: 'Frequency', format: this.formatValue }
+        { key: 'freq', label: 'Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue }
     ];
     tableData: { date: string, ngram: string, freq: number }[];
 
@@ -374,5 +374,13 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         return `${value.toPrecision(3)}`;
+    }
+
+    formatDownloadValue(value: number): string {
+        if (value === 0) {
+            return '0';
+        }
+
+        return `${value}`;
     }
 }
