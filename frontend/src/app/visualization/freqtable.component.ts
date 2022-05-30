@@ -114,7 +114,7 @@ export class FreqtableComponent implements OnChanges {
 
     wideFormatHeaders(mainFactor: freqTableHeader, factorValues: any[]) {
         const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
-            `${header.label} (${factor.label} = ${this.formatValue(factorValue, factor)})`;
+            `${header.label} (${this.formatValue(factorValue, factor)})`;
 
         const otherHeaders = this.headers.filter((header, index) => header.key !== mainFactor.key);
         const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
