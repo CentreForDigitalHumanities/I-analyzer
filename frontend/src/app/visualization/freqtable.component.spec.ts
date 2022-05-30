@@ -34,16 +34,17 @@ describe('FreqtableComponent', () => {
             {
                 key: 'fruit',
                 label: 'Fruit',
-                isFactor: true,
+                isMainFactor: true,
             }, {
                 key: 'veggie',
                 label: 'Veggie',
-                isFactor: true,
+                isSecondaryFactor: true,
             }, {
                 key: 'quantity',
                 label: 'Quantity'
             }
         ];
+        component.wideFormatColumn = 0;
 
         const data = [
             {
@@ -75,7 +76,7 @@ describe('FreqtableComponent', () => {
         const numberOfVeggies = 3;
 
 
-        const [fruitHeaders, fruitData] = component.transformWideFormat(0, data);
+        const [fruitHeaders, fruitData] = component.transformWideFormat(data);
 
         // verify shape of data
         expect(fruitHeaders.length).toBe(numberOfFruits * numericColumns + (factorColums - 1));
@@ -86,7 +87,7 @@ describe('FreqtableComponent', () => {
             {
                 key: 'veggie',
                 label: 'Veggie',
-                isFactor: true,
+                isSecondaryFactor: true,
             }, {
                 key: 'quantity###apple',
                 label: 'Quantity (Fruit = apple)'
@@ -127,7 +128,23 @@ describe('FreqtableComponent', () => {
 
         // verify shape when grouping by veggie
 
-        const [veggieHeaders, veggieData] = component.transformWideFormat(1, data);
+        component.headers = [
+            {
+                key: 'fruit',
+                label: 'Fruit',
+                isSecondaryFactor: true,
+            }, {
+                key: 'veggie',
+                label: 'Veggie',
+                isMainFactor: true,
+            }, {
+                key: 'quantity',
+                label: 'Quantity'
+            }
+        ];
+        component.wideFormatColumn = 1;
+
+        const [veggieHeaders, veggieData] = component.transformWideFormat(data);
         expect(veggieHeaders.length).toBe(numberOfVeggies * numericColumns + (factorColums - 1));
         expect(veggieData.length).toBe(numberOfFruits);
 

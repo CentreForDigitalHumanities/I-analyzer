@@ -21,8 +21,8 @@ export class FreqtableComponent implements OnChanges {
     formattedHeaders: freqTableHeaders;
     formattedData: any[];
 
-    factorColumns: { label: string, headerIndex?: number }[];
     wideFormatColumn: number;
+    format: 'long'|'wide' = 'long';
 
     constructor() { }
 
@@ -33,19 +33,16 @@ export class FreqtableComponent implements OnChanges {
     }
 
     checkWideFormat(): void {
-        if (this.headers && this.headers.find(header => header.isFactor)) {
-            const factors = this.filterFactors(this.headers);
-            this.factorColumns = factors.map((header, index) => ({
-                label: `wide format (by ${header.label})`,
-                headerIndex: index,
-            }));
+        if (this.headers && this.headers.find(header => header.isMainFactor)) {
+            this.wideFormatColumn = _.range(this.headers.length)
+                .find(index => this.headers[index].isMainFactor);
         } else {
-            this.factorColumns = undefined;
+            this.wideFormatColumn = undefined;
         }
     }
 
-    setWideFormat(column): void {
-        this.wideFormatColumn = column ? column.headerIndex : undefined;
+    setFormat(format: 'long'|'wide'): void {
+        this.format = format;
         this.formatData();
     }
 
@@ -57,8 +54,8 @@ export class FreqtableComponent implements OnChanges {
             filteredData = this.data;
         }
 
-        if (this.wideFormatColumn !== undefined) {
-            const [headers, data] = this.transformWideFormat(this.wideFormatColumn, filteredData);
+        if (this.format === 'wide') {
+            const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
         } else {
@@ -67,8 +64,8 @@ export class FreqtableComponent implements OnChanges {
         }
     }
 
-    transformWideFormat(headerIndex: number, data: any[]): [freqTableHeaders, any[]] {
-        const mainFactor = this.headers[headerIndex];
+    transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
+        const mainFactor = this.headers[this.wideFormatColumn];
 
         const mainFactorValues = _.uniqBy(
             data.map(row => row[mainFactor.key]),
@@ -93,7 +90,7 @@ export class FreqtableComponent implements OnChanges {
 
             newData.forEach(newRow => {
                 this.headers.forEach(header => {
-                    if (! header.isFactor) {
+                    if (! header.isSecondaryFactor) {
                         const key = this.wideFormatColumnKey(header, mainFactor, factorValue);
 
                         const rowData = filteredData.find(row =>
@@ -121,7 +118,7 @@ export class FreqtableComponent implements OnChanges {
 
         const otherHeaders = this.headers.filter((header, index) => header.key !== mainFactor.key);
         const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
-            if (header.isFactor) {
+            if (header.isSecondaryFactor) {
                 // other factors are kept as-is
                 return [header];
             } else {
@@ -145,7 +142,7 @@ export class FreqtableComponent implements OnChanges {
     }
 
     filterFactors(headers: freqTableHeaders): freqTableHeaders {
-        return headers.filter(header => header.isFactor);
+        return headers.filter(header => header.isSecondaryFactor);
     }
 
     parseTableData(): string[] {

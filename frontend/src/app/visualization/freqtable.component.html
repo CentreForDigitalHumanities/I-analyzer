@@ -21,19 +21,27 @@
     </p-table>    
 </div>
 
-<div class="field is-grouped">
-    <div class="control" *ngIf="factorColumns">
-        <ia-dropdown placeholder="long format" [options]="factorColumns" optionLabel="label"
-            canDeselect="true" (onChange)="setWideFormat($event)">
-        </ia-dropdown>
+<div class="level">
+    <div class="level-left">
+        <div class="level-item" *ngIf="wideFormatColumn !== undefined" iaBalloon="change the format for the table">
+            <div class="field has-addons">
+                <div class="control">
+                    <button class="button" [class.is-primary]="format == 'long'" (click)="setFormat('long')">long format</button>
+                </div>
+                <div class="control">
+                    <button class="button" [class.is-primary]="format == 'wide'" (click)="setFormat('wide')">wide format</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="control">
-        <a class="button" (click)="downloadTable()">
-            <span class="icon is-small">
-                <i class="fa fa-download"></i>
-            </span>
-            <span>Download table data</span>
-        </a>
+    <div class="level-right">
+        <div class="level-item">
+            <a class="button" (click)="downloadTable()">
+                <span class="icon is-small">
+                    <i class="fa fa-download"></i>
+                </span>
+                <span>Download table data</span>
+            </a>
+        </div>
     </div>
 </div>

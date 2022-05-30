@@ -34,7 +34,8 @@ export type freqTableHeader = {
     label: string,
     format?: (value) => string,
     formatDownload?: (value) => string,
-    isFactor?: boolean,
+    isMainFactor?: boolean,
+    isSecondaryFactor?: boolean,
 };
 
 export type freqTableHeaders = freqTableHeader[];

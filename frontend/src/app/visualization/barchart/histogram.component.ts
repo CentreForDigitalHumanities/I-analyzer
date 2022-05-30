@@ -128,8 +128,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'key', label: label, isFactor: true, },
-                { key: 'queryText', label: 'Query', isFactor: true, },
+                { key: 'key', label: label, isSecondaryFactor: true, },
+                { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
