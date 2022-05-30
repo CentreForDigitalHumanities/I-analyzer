@@ -74,6 +74,15 @@ def date_is_estimate():
         es_mapping={'type':'boolean'}
     )
 
+
+def era():
+    return Field(
+        name='era',
+        display_name='Era',
+        description='The parliamentary era in which the speech or debate was held'
+    )
+
+
 def chamber():
     "human-readable name of house (commons, senate, etc)"
     return Field(
@@ -88,12 +97,12 @@ def chamber():
         visualizations = ['histogram']
     )
 
-def parliament():
-    """?"""
+def debate_type():
+    "Type of debate in which the speech occurred"
     return Field(
-        name='parliament',
-        display_name='Parliament',
-        description='Title of the parliament (i.e. the collection of individual elected to parliament)',
+        name='debate_type',
+        display_name='Debate type',
+        description='Type of debate in which the speech occurred',
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
@@ -116,6 +125,15 @@ def debate_id():
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
+def legislature():
+    ""
+    return Field(
+        name='legislature',
+        display_name='Legislature',
+        description='Title of individuals elected to parliament',
+        es_mapping={'type': 'keyword'},
+    )
+
 def topic():
     "if debates are divided into topics, they are specified here"
     return Field(
@@ -134,6 +152,20 @@ def subtopic():
         description='Subtopic of the debate in which the speech was held',
         es_mapping=BASIC_TEXT_MAPPING,
     )
+
+def session():
+    """
+    in which session the debate or speech occurred
+    there may be several sessions within a given date
+    """
+    return Field(
+        name='session',
+        display_name='Session',
+        description='Session in which the debate or speech occurred',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+    )
+
+
 
 def speech():
     """
@@ -367,6 +399,15 @@ def page():
         searchable=False,
     )
 
+def page_source():
+    "page number in source document (can contain letters)"
+    return Field(
+        name='page_source',
+        display_name='Source page number',
+        description='Page number in source document',
+        es_mapping={'type': 'keyword'}
+    )
+
 def column():
     "column number or range (used in UK data) (string)"
     return Field(
@@ -396,4 +437,13 @@ def sequence():
         es_mapping={'type': 'integer'},
         sortable=True,
         searchable=False,
+    )
+
+def url():
+    "url to source from which the data is extracted"
+    return Field(
+        name='url',
+        display_name='URL',
+        description='URL to source file of this speech',
+        es_mapping={'type':'keyword'}
     )

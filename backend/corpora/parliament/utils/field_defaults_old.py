@@ -58,7 +58,8 @@ def date_is_estimate():
     )
 
 def house():
-    "human-readable name of house (commons, senate, etc)"
+    """ human-readable name of house (commons, senate, etc)
+    This field has been renamed to chamber """
     return Field(
         name='house',
         display_name='House',
@@ -72,6 +73,8 @@ def house():
     )
 
 def parliament():
+    """ This field has been renamed to 'era'
+    """
     return Field(
         name='parliament',
         display_name='Parliament',
