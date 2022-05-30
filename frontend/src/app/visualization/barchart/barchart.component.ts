@@ -309,7 +309,11 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         await Promise.all(dataPromises);
 
         // signal if total token counts are available
-        this.totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+        const totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+        if (this.frequencyMeasure === 'tokens' && totalTokenCountAvailable && !this.totalTokenCountAvailable) {
+            this.normalizer = 'terms';
+        }
+        this.totalTokenCountAvailable = totalTokenCountAvailable;
     }
 
     /** total document count for a data array */

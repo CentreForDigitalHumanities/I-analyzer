@@ -58,7 +58,6 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        console.log(cat);
         if (cat.doc_count) {
             const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
             const binDocumentLimit = this.documentLimitForCategory(cat, series);
