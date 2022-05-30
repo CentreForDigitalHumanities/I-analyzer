@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults, NgramParameters } from '../../models';
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-ngram',
@@ -38,23 +39,24 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
-    _size: number;
     positionsOptions = [{label: 'any', value: [0, 1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
-    _positions: number[];
     freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
-    _freqCompensation: boolean;
     analysisOptions: {label: string, value: string}[];
-    _analysis: string;
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
-    _maxDocuments: number;
     numberOfNgramsOptions = [10, 20, 50, 100].map(n => ({label: `${n}`, value: n}));
-    _numberOfNgrams: number;
 
     tasksToCancel: string[];
 
     resultsCache: {[parameters: string]: any} = {};
+    currentParameters: NgramParameters;
+    lastParameters: NgramParameters;
+    parametersChanged = false;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {}
+    faCheck = faCheck;
+    faTimes = faTimes;
+
+    constructor(private searchService: SearchService, private apiService: ApiService) {
+    }
 
     ngOnInit(): void { }
 
@@ -74,15 +76,28 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 this.analysisOptions = undefined;
             }
 
+            this.setDefaultParameters();
             this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
     }
 
+    setDefaultParameters() {
+        this.currentParameters = {
+            size: this.sizeOptions[0].value,
+            positions: this.positionsOptions[0].value,
+            freqCompensation: this.freqCompensationOptions[0].value,
+            analysis: 'none',
+            maxDocuments: 100,
+            numberOfNgrams: 10,
+        };
+    }
+
     loadGraph() {
         this.isLoading.emit(true);
 
+        this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
 
         if (cachedResult) {
@@ -343,76 +358,64 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     setFixLineHeights(event) {
         this.fixLineGraphHeights = event.target.checked;
         if (this.chart) {
-            const result = this.getCachedResult(this.currentParameters);
+            const result = this.getCachedResult(this.lastParameters);
             this.chartData = this.makeChartdata(result);
             this.chart.data = this.chartData;
             this.chart.update();
         }
     }
 
-    get currentParameters(): NgramParameters {
-        return {
-            size: this.size,
-            positions: this.positions,
-            freqCompensation: this.freqCompensation,
-            analysis: this.analysis,
-            maxDocuments: this.maxDocuments,
-            numberOfNgrams: this.numberOfNgrams,
-        };
+    setPositionsOptions(size) {
+        // set positions dropdown options and reset its value
+        const positions = Array.from(Array(size).keys());
+        this.positionsOptions =  [ { value: positions, label: 'any' } ]
+        .concat(positions.map(position => {
+            return { value : [position], label: ['first', 'second', 'third'][position] };
+        }));
+        this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
-    get size(): number {
-        return this._size || this.sizeOptions[0].value;
+
+    onParameterChange(parameter: string, value: any) {
+        this.currentParameters[parameter] = value;
+
+        if (parameter === 'size') { this.setPositionsOptions(value); }
+
+        this.parametersChanged = true;
     }
 
-    set size(value: number) {
-        this._size = value;
+    cancelChanges() {
+        this.setPositionsOptions(this.lastParameters.size);
+        this.currentParameters = this.lastParameters;
+        this.parametersChanged = false;
+    }
+
+    confirmChanges() {
+        this.parametersChanged = false;
         this.loadGraph();
     }
 
-    get positions(): number[] {
-        return this._positions || Array.from(Array(this.size).keys());
+    get currentSizeOption() {
+        return this.sizeOptions.find(item => item.value === this.currentParameters.size);
     }
 
-    set positions(value: number[]) {
-        this._positions = value;
-        this.loadGraph();
+    get currentPositionsOption() {
+        return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
     }
 
-    get freqCompensation(): boolean {
-        return this._freqCompensation !== undefined ?
-            this._freqCompensation : this.freqCompensationOptions[0].value;
+    get currentFreqCompensationOption() {
+        return this.freqCompensationOptions.find(item => item.value === this.currentParameters.freqCompensation);
     }
 
-    set freqCompensation(value: boolean) {
-        this._freqCompensation = value;
-        this.loadGraph();
+    get currentAnalysisOption() {
+        return this.analysisOptions.find(item => item.value === this.currentParameters.analysis);
     }
 
-    get analysis(): string {
-        return this._analysis || 'none';
+    get currentMaxDocumentsOption() {
+        return this.maxDocumentsOptions.find(item => item.value === this.currentParameters.maxDocuments);
     }
 
-    set analysis(value: string) {
-        this._analysis = value;
-        this.loadGraph();
-    }
-
-    get maxDocuments(): number {
-        return this._maxDocuments || 100;
-    }
-
-    set maxDocuments(value: number) {
-        this._maxDocuments = value;
-        this.loadGraph();
-    }
-
-    get numberOfNgrams(): number {
-        return this._numberOfNgrams || 10;
-    }
-
-    set numberOfNgrams(value: number) {
-        this._numberOfNgrams = value;
-        this.loadGraph();
+    get currentNumberOfNgramsOption() {
+        return this.numberOfNgramsOptions.find(item => item.value === this.currentParameters.numberOfNgrams);
     }
 }
