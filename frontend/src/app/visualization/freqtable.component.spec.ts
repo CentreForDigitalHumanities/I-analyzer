@@ -90,10 +90,10 @@ describe('FreqtableComponent', () => {
                 isSecondaryFactor: true,
             }, {
                 key: 'quantity###apple',
-                label: 'Quantity (Fruit = apple)'
+                label: 'Quantity (apple)'
             }, {
                 key: 'quantity###banana',
-                label: 'Quantity (Fruit = banana)'
+                label: 'Quantity (banana)'
             }
         ];
 
