@@ -99,11 +99,13 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     loadGraph() {
         this.isLoading.emit(true);
 
+        const changeAspectRatio = this.chart && this.lastParameters.numberOfNgrams !== this.currentParameters.numberOfNgrams;
+
         this.lastParameters = _.clone(this.currentParameters);
         const cachedResult = this.getCachedResult(this.currentParameters);
 
         if (cachedResult) {
-            this.onDataLoaded(cachedResult);
+            this.onDataLoaded(cachedResult, changeAspectRatio);
         } else {
             this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
@@ -113,7 +115,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                     this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
                         if (outcome.success === true) {
                             this.cacheResult(outcome.results, this.currentParameters);
-                            this.onDataLoaded(outcome.results);
+                            this.onDataLoaded(outcome.results, changeAspectRatio);
                         } else {
                             this.error.emit({message: outcome.message});
                         }
@@ -126,7 +128,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    onDataLoaded(result) {
+    onDataLoaded(result, changeAspectRatio = false) {
         this.setmaxDataPoint(result);
 
         this.tableData = this.makeTableData(result);
@@ -134,6 +136,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         this.chartOptions = this.makeChartOptions(this.chartData);
 
         if (this.chart) {
+            if (changeAspectRatio) {
+                this.resetChartHeight();
+            }
             this.chart.data = this.chartData;
             this.chart.options = this.chartOptions;
             this.chart.update();
@@ -142,6 +147,13 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.isLoading.emit(false);
+    }
+
+    resetChartHeight() {
+        // updating aspect ratio has no effect if canvas height is set
+        // set to null before updating
+        this.chart.canvas.style.height = null;
+        this.chart.canvas.height = null;
     }
 
     makeTableData(result: NgramResults): any[] {
@@ -244,9 +256,10 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const totals = totalsData.map((item: any) => item.x);
         const maxTotal = _.max(totals);
 
+        const numberOfRows = data.datasets.length - 1;
+
         return {
-            responsive: true,
-            maintainAspectRatio: false,
+            aspectRatio: 24 / (4 + numberOfRows),
             elements: {
                 point: {
                     radius: 0,
