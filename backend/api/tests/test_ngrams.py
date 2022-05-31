@@ -153,3 +153,47 @@ def test_absolute_bigrams(test_app, test_es_client, basic_query):
                 assert freq == ngram['frequencies_per_bin'][bin]
             else:
                 assert freq == 0
+
+def test_bigrams_with_quote(test_app, test_es_client, basic_query):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
+    cases = [
+        {
+            'query': '"to hear"',
+            'ngrams': [
+                'rejoice to hear',
+                'to hear that'
+            ]
+        }, {
+            'query': '"to hear", "to do"',
+            'ngrams': {
+                'rejoice to hear',
+                'to hear that',
+                'nothing to do',
+            }
+        }, {
+            'query': '"single man" fortune',
+            'ngrams': {
+                'a single man',
+                'single man in',
+                'good fortune',
+                'fortune must',
+            }
+        }
+    ]
+    
+    for case in cases:
+        # search for a word that occurs a few times
+        query = basic_query
+        query['query']['bool']['must']['simple_query_string']['query'] = case['query']
+
+        result = analyze.get_ngrams(query, 'mock-corpus', 'content', freq_compensation=False)
+
+        ngrams = case['ngrams']
+
+        assert len(result['words']) == len(ngrams)
+
+        for ngram in ngrams:
+            data = next((item for item in result['words'] if item['label'] == ngram), None)
+            assert data
