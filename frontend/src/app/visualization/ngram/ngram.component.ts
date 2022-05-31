@@ -398,7 +398,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     onParameterChange(parameter: string, value: any) {
         this.currentParameters[parameter] = value;
 
-        if (parameter === 'size') { this.setPositionsOptions(value); }
+        if (parameter === 'size' && value) { this.setPositionsOptions(value); }
 
         this.parametersChanged = true;
     }
@@ -415,26 +415,38 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     get currentSizeOption() {
-        return this.sizeOptions.find(item => item.value === this.currentParameters.size);
+        if (this.currentParameters) {
+            return this.sizeOptions.find(item => item.value === this.currentParameters.size);
+        }
     }
 
     get currentPositionsOption() {
-        return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
+        if (this.currentParameters) {
+            return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
+        }
     }
 
     get currentFreqCompensationOption() {
-        return this.freqCompensationOptions.find(item => item.value === this.currentParameters.freqCompensation);
+        if (this.currentParameters) {
+            return this.freqCompensationOptions.find(item => item.value === this.currentParameters.freqCompensation);
+        }
     }
 
     get currentAnalysisOption() {
-        return this.analysisOptions.find(item => item.value === this.currentParameters.analysis);
+        if (this.currentParameters) {
+            return this.analysisOptions.find(item => item.value === this.currentParameters.analysis);
+        }
     }
 
     get currentMaxDocumentsOption() {
-        return this.maxDocumentsOptions.find(item => item.value === this.currentParameters.maxDocuments);
+        if (this.currentParameters) {
+            return this.maxDocumentsOptions.find(item => item.value === this.currentParameters.maxDocuments);
+        }
     }
 
     get currentNumberOfNgramsOption() {
-        return this.numberOfNgramsOptions.find(item => item.value === this.currentParameters.numberOfNgrams);
+        if (this.currentParameters) {
+            return this.numberOfNgramsOptions.find(item => item.value === this.currentParameters.numberOfNgrams);
+        }
     }
 }
