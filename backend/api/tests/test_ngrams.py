@@ -1,3 +1,6 @@
+from cmath import exp
+import enum
+from random import sample
 from typing import Counter
 import api.analyze as analyze
 import api.query as query
@@ -77,13 +80,13 @@ def test_top_10_ngrams():
         'c': 150,
     }
 
-    output_absolute = analyze.get_top_10_ngrams(counts)
+    output_absolute = analyze.get_top_n_ngrams(counts)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
     
 
-    output_relative = analyze.get_top_10_ngrams(counts, ttf)
+    output_relative = analyze.get_top_n_ngrams(counts, ttf)
 
     for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
@@ -197,3 +200,162 @@ def test_bigrams_with_quote(test_app, test_es_client, basic_query):
         for ngram in ngrams:
             data = next((item for item in result['words'] if item['label'] == ngram), None)
             assert data
+
+TOKENS_EXAMPLE = [
+    {
+        'position': 0,
+        'term': 'You',
+    },
+    {
+        'position': 2,
+        'term': 'rejoice',
+    },
+    {
+        'position': 4,
+        'term': 'hear',
+    },
+    {
+        'position': 7,
+        'term': 'disaster'
+    },
+    {
+        'position': 9,
+        'term': 'accompanied'
+    },
+    {
+        'position': 14,
+        'term': 'enterprise'
+    },
+    {
+        'position': 18,
+        'term': 'regarded'
+    },
+    {
+        'position': 21,
+        'term': 'evil'
+    },
+    {
+        'position': 22,
+        'term': 'forebodings'
+    }
+]
+
+def shuffle(lst):
+    '''returns list/iterator in random order.
+    Preferred to `random.shuffle` because that function is in-place'''
+    return sample(lst, k=len(lst))
+
+def test_find_adjacent_token():
+    for (i, token) in enumerate(TOKENS_EXAMPLE):
+        # shuffle order and let function identify adjacent tokens
+        shuffled_tokens = shuffle(TOKENS_EXAMPLE)
+        found_next = analyze.find_next_token(token, shuffled_tokens)
+        found_prev = analyze.find_previous_token(token, shuffled_tokens)
+
+        if i < len(TOKENS_EXAMPLE) - 1:
+            expected_next = TOKENS_EXAMPLE[i + 1]
+        else:
+            expected_next = None
+
+        assert expected_next == found_next
+
+        if i > 0:
+            expected_prev = TOKENS_EXAMPLE[i - 1]
+        else:
+            expected_prev = None
+        
+        assert expected_prev == found_prev
+
+def test_find_adjacent_tokens():
+    for (i, token) in enumerate(TOKENS_EXAMPLE):
+        for n in range(1,3):
+            print('TERM:', token['term'])
+            print('ORDER:', n)
+            # shuffle order and let function identify adjacent tokens
+            shuffled_tokens = shuffle(TOKENS_EXAMPLE)
+            found_next = analyze.find_next_tokens(token, shuffled_tokens, n)
+            found_prev = analyze.find_previous_tokens(token, shuffled_tokens, n)
+
+            if i < len(TOKENS_EXAMPLE) - 1:
+                stop_index = min(len(TOKENS_EXAMPLE) + 1, i + n + 1)
+                expected_next = TOKENS_EXAMPLE[i + 1 : stop_index]
+            else:
+                expected_next = []
+
+            assert expected_next == found_next
+
+            if i > 0:
+                start_index = max(0, i - n)
+                expected_prev = TOKENS_EXAMPLE[start_index : i]
+            else:
+                expected_prev = []
+
+            if expected_prev != found_prev:
+                print('EXPECTED:', expected_prev)
+                print('FOUND:', found_prev)
+            assert expected_prev == found_prev
+
+def test_find_ngrams():
+    cases = [
+        {
+            'index': 3,
+            'ngram_size': 2,
+            'positions': [0,1],
+            'expected': [(2,4), (3,5)]
+        },
+        {
+            'index': 0,
+            'ngram_size': 2,
+            'positions': [0,1],
+            'expected': [(0,2)]
+        },
+        {
+            'index': 3,
+            'ngram_size': 3,
+            'positions': [0,1,2],
+            'expected': [(1,4), (2,5), (3,6)]
+        },
+        {
+            'index': 3,
+            'ngram_size': 3,
+            'positions': [0],
+            'expected': [(3,6)]
+        },
+        {
+            'index': 3,
+            'ngram_size': 3,
+            'positions': [2],
+            'expected': [(1,4)]
+        }
+    ]
+
+    for case in cases:
+        shuffled_tokens = shuffle(TOKENS_EXAMPLE)
+        token = TOKENS_EXAMPLE[case['index']]
+        found = analyze.find_ngrams(token,
+            shuffled_tokens,
+            ngram_size = case['ngram_size'],
+            positions = case['positions']
+        )
+        expected = [ TOKENS_EXAMPLE[start:stop] for start, stop in case['expected'] ]
+
+        start_position = lambda ngram: ngram[0]['position']
+        sort_by_position = lambda ngrams: sorted(ngrams, key=start_position)
+
+        assert sort_by_position(found) == sort_by_position(expected)
+
+def test_number_of_ngrams(test_app, test_es_client, basic_query):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
+    # search for a word that occurs a few times
+    query = basic_query
+    query['query']['bool']['must']['simple_query_string']['query'] = 'to'
+
+    max_frequency = 6
+
+    for size in range(1, max_frequency + 2):
+        result = analyze.get_ngrams(query, 'mock-corpus', 'content', number_of_ngrams= size)
+        series = result['words']
+
+        assert len(series) == min(max_frequency, size)

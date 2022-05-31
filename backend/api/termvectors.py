@@ -16,7 +16,7 @@ def get_tokens(terms, sort=True):
     return all_tokens
 
 def list_tokens(term, details):
-    ttf = details['ttf'] if 'ttf' in details else None
+    ttf = details['ttf'] if 'ttf' in details else 0
     positions = [token['position'] for token in details['tokens']]
 
     return [ {

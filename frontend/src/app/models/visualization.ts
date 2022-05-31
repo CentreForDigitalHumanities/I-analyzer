@@ -42,3 +42,12 @@ export type barchartOptions = {
     frequencyMeasure: 'documents'|'tokens',
     normalizer: 'raw'|'percent'|'documents'|'terms',
 };
+
+export type NgramParameters = {
+    size: number,
+    positions: number[],
+    freqCompensation: boolean,
+    analysis: string,
+    maxDocuments: number,
+    numberOfNgrams: number,
+};
