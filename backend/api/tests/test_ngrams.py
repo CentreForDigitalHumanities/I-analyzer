@@ -94,9 +94,6 @@ def test_top_10_ngrams():
         assert dataset_relative['data'] == relative_frequencies[word]
 
 def test_absolute_bigrams(test_app, test_es_client, basic_query):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
-
     # search for a word that occurs a few times
     query = basic_query
     query['query']['bool']['must']['simple_query_string']['query'] = 'to'
