@@ -236,9 +236,6 @@ TOKENS_EXAMPLE = [
 ]
 
 def test_number_of_ngrams(test_app, test_es_client, basic_query):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
-
     # search for a word that occurs a few times
     query = basic_query
     query['query']['bool']['must']['simple_query_string']['query'] = 'to'
