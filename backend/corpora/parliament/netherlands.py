@@ -220,7 +220,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         XML(
             tag=['meta','dc:date'],
             toplevel=True,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl', 'date'],
@@ -236,7 +236,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute='pm:house',
             toplevel=True,
             transform=format_house,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=['teiHeader', 'fileDesc', 'sourceDesc','bibl','idno'],
@@ -250,7 +250,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         XML(
             tag=['meta', 'dc:title'],
             toplevel=True,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
@@ -265,7 +265,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         XML(
             tag=['meta', 'dc:identifier'],
             toplevel=True,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=None,
@@ -279,7 +279,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         XML(
             transform_soup_func = find_topic,
             attribute=':title',
-            applicable = is_old,
+            applicable=is_old,
         ),
         XML(
             tag=['note'],
@@ -294,7 +294,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             tag='p',
             multiple=True,
             flatten=True,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=['seg'],
@@ -307,7 +307,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     speech_id.extractor = Choice(
         XML(
             attribute=':id',
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=None,
@@ -321,7 +321,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             XML(attribute=':function'),
             XML(attribute=':speaker'),
             transform=' '.join,
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=None,
@@ -334,7 +334,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     speaker_id.extractor = Choice(
         XML(
             attribute=':member-ref',
-            applicable = is_old
+            applicable=is_old
         ),
         XML(
             tag=None,
@@ -454,6 +454,11 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute='xml:id',
             transform = get_sequence_recent,
         )
+    )
+
+    source_archive = field_defaults.source_archive()
+    source_archive.extractor = Constant(
+        value='PoliticalMashup' if is_old else 'ParlaMINT'
     )
 
     def __init__(self):
