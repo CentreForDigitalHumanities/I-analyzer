@@ -237,3 +237,24 @@ class Corpus(db.Model):
 
     def __repr__(self):
         return self.name
+
+
+class Visualisation(db.Model):
+    '''
+    Cached results for a visualisation
+    '''
+
+    def __init__(self, visualization_type, corpus, parameters):
+        self.visualization_type = visualization_type
+        self.corpus_name = corpus
+        self.parameters = parameters
+        self.started = datetime.now()
+        self.completed = None
+        self.result = None
+    
+    def __repr__(self):
+        return f'Visualisation #{self.id}: {self.visualization_type} made at {self.started}'
+    
+    @property
+    def is_done(self):
+        return self.completed != None
