@@ -467,6 +467,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             self.chamber,
             self.debate_title, self.debate_id,
             self.topic,
+            self.source_archive,
             self.speech, self.speech_id,
             self.speaker, self.speaker_id, self.role, self.speaker_gender,
             self.party, self.party_id, self.party_full,
