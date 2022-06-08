@@ -3,69 +3,69 @@ import pytest
 from flask import json
 
 FORWARD_CASES = {
-    'head_bogus': (                  # for each of these tuples:
-        True,                          # whether to authenticate first
-        'HEAD',                        # request method
-        '/es/bogus',                   # route on our application
-        None,                          # request content, if any
-        'http://localhost:9200',       # ES URL (not) to be proxied
-        None,                          # forwarded response content if proxied
-        404,                           # expected http status from our view
-    ),
-    'head_unauthenticated': (
-        False,
-        'HEAD',
-        '/es/default',
-        None,
-        'http://localhost:9200',
-        None,
-        401,
-    ),
-    'head_success': (
-        True,
-        'HEAD',
-        '/es/default',
-        None,
-        'http://localhost:9200',
-        '',
-        200,
-    ),
-    'scroll_unauthenticated': (
-        False,
-        'POST',
-        '/es/default/_search/scroll?scroll=3m',
-        {'scroll_id': 'bladiebla'},
-        'http://localhost:9200/_search/scroll?scroll=3m',
-        None,
-        401,
-    ),
-    'scroll_bogus': (
-        True,
-        'POST',
-        '/es/bogus/_search/scroll?scroll=3m',
-        {'scroll_id': 'bladiebla'},
-        'http://localhost:9200/_search/scroll?scroll=3m',
-        None,
-        404,
-    ),
-    'scroll_empty': (
-        True,
-        'POST',
-        '/es/default/_search/scroll?scroll=3m',
-        {},
-        'http://localhost:9200/_search/scroll?scroll=3m',
-        {'error': 'No scroll ID provided'},
-        400,
-    ),
-    'scroll_success': (
-        True,
-        'POST',
-        '/es/default/_search/scroll?scroll=3m',
-        {'scroll_id': 'bladiebla'},
-        'http://localhost:9200/_search/scroll?scroll=3m',
-        {'hits': {}},
-        200,
-    ),
+    # 'head_bogus': (                  # for each of these tuples:
+    #     True,                          # whether to authenticate first
+    #     'HEAD',                        # request method
+    #     '/es/bogus',                   # route on our application
+    #     None,                          # request content, if any
+    #     'http://localhost:9200',       # ES URL (not) to be proxied
+    #     None,                          # forwarded response content if proxied
+    #     404,                           # expected http status from our view
+    # ),
+    # 'head_unauthenticated': (
+    #     False,
+    #     'HEAD',
+    #     '/es/default',
+    #     None,
+    #     'http://localhost:9200',
+    #     None,
+    #     401,
+    # ),
+    # 'head_success': (
+    #     True,
+    #     'HEAD',
+    #     '/es/default',
+    #     None,
+    #     'http://localhost:9200',
+    #     '',
+    #     200,
+    # ),
+    # 'scroll_unauthenticated': (
+    #     False,
+    #     'POST',
+    #     '/es/default/_search/scroll?scroll=3m',
+    #     {'scroll_id': 'bladiebla'},
+    #     'http://localhost:9200/_search/scroll?scroll=3m',
+    #     None,
+    #     401,
+    # ),
+    # 'scroll_bogus': (
+    #     True,
+    #     'POST',
+    #     '/es/bogus/_search/scroll?scroll=3m',
+    #     {'scroll_id': 'bladiebla'},
+    #     'http://localhost:9200/_search/scroll?scroll=3m',
+    #     None,
+    #     404,
+    # ),
+    # 'scroll_empty': (
+    #     True,
+    #     'POST',
+    #     '/es/default/_search/scroll?scroll=3m',
+    #     {},
+    #     'http://localhost:9200/_search/scroll?scroll=3m',
+    #     {'error': 'No scroll ID provided'},
+    #     400,
+    # ),
+    # 'scroll_success': (
+    #     True,
+    #     'POST',
+    #     '/es/default/_search/scroll?scroll=3m',
+    #     {'scroll_id': 'bladiebla'},
+    #     'http://localhost:9200/_search/scroll?scroll=3m',
+    #     {'hits': {}},
+    #     200,
+    # ),
     'search_unauthenticated': (
         False,
         'POST',
@@ -161,7 +161,7 @@ def mock_es(requests, forward_response, method, es_address, status):
     requests.add(requests.Response(**rargs))
 
 
-def test_es_forwarding_views(test_app, times_user, client, requests, session, scenario):
+def test_es_forwarding_views(test_app, test_es_client, times_user, client, requests, session, scenario):
     (authenticate, method, route, data,
      es_address, forward_response, status) = scenario
     if isinstance(data, dict):

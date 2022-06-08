@@ -10,7 +10,8 @@ def elasticsearch(corpus_name, cfg=config, sniff_on_start=False):
     server_name = current_app.config.get('CORPUS_SERVER_NAMES')[corpus_name]
     server_config = current_app.config.get('SERVERS')[server_name]
     node = {'host': server_config['host'],
-            'port': server_config['port']}
+            'port': server_config['port'],
+            'scheme': 'https'}
     if server_config.get('certs_location') and server_config.get('api_key'):
         # settings to connect via SSL are present
         return Elasticsearch([node],

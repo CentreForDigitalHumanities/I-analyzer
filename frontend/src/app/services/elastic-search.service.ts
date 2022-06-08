@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, Corpus, CorpusField, ElasticSearchIndex, QueryModel, SearchResults,
     AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
@@ -100,9 +100,9 @@ export class ElasticSearchService {
         return aggregation;
     }
 
-    private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
+    private executeAggregate(index: Corpus, aggregationModel) {
         return this.connections.then((connections) => connections[index.serverName].client.search({
-            index: index.index,
+            index: index.name,
             size: 0,
             body: aggregationModel
         }));
@@ -111,10 +111,10 @@ export class ElasticSearchService {
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private async execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number, from?: number) {
+    private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
         const connection = (await this.connections)[index.serverName];
         return connection.client.search<T>({
-            index: index.index,
+            index: index.name,
             from: from,
             size: size,
             body: esQuery
@@ -122,7 +122,7 @@ export class ElasticSearchService {
     }
 
     public async aggregateSearch<TKey>(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel,
         aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
         const aggregations = {};
@@ -143,7 +143,7 @@ export class ElasticSearchService {
     }
 
     public async dateHistogramSearch<TKey>(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel,
         fieldName: string,
         timeInterval: string): Promise<AggregateQueryFeedback> {
@@ -305,8 +305,7 @@ export class Client {
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
         const url = `${this.host}/${searchParams.index}/_search`;
         const optionDict = {
-            'size': searchParams.size.toString(),
-            'track_total_hits': 'true'
+            'size': searchParams.size.toString()
         };
         if (searchParams.from) {
             optionDict['from'] = searchParams.from.toString();

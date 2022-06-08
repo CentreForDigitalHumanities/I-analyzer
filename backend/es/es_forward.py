@@ -1,4 +1,5 @@
 import logging
+import json
 
 import requests
 from requests.exceptions import Timeout, ConnectionError
@@ -7,7 +8,9 @@ from flask import current_app, request, json, abort, Response
 from flask_login import login_required, current_user
 
 from ianalyzer import config_fallback as config
+from ianalyzer.factories.elasticsearch import elasticsearch
 from . import es
+from .search import get_index
 
 PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
 TIMEOUT_SECONDS = 30
@@ -92,7 +95,12 @@ def forward_scroll(server_name):
 def forward_search(server_name, corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
-    print(request.get_data())
-    host = get_es_host_or_404(server_name)
-    address = '{}/{}/_search'.format(host, corpus_name)
-    return proxy_es(address)
+    client = elasticsearch(corpus_name)
+    index = get_index(corpus_name)
+    results = client.search(
+        index=index,
+        body=json.loads(request.get_data()),
+        track_total_hits=True,
+        **request.args.to_dict()
+    )
+    return Response(json.dumps(results.raw))
