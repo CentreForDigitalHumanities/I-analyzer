@@ -1,5 +1,3 @@
-from cmath import exp
-import enum
 from random import sample
 from typing import Counter
 import api.analyze as analyze

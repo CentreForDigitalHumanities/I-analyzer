@@ -1,22 +1,14 @@
-
-from audioop import reverse
-import enum
-from itertools import count
 import os
 from os.path import join
-import math
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
 from collections import Counter
-from pydoc import doc
-from re import match
-from unittest import skip
 from sklearn.feature_extraction.text import CountVectorizer
 from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
 from es.search import get_index, total_hits, search, hits
 from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
