@@ -41,9 +41,6 @@ def test_search(test_app, test_es_client, basic_query):
     """
     Test some search requests based on queries manipulated in the query module
     """
-    if not test_es_client:
-        pytest.skip('No elastic search client')
-
     query_no_text = query.remove_query(basic_query)
     result = search(
         corpus = 'mock-corpus',

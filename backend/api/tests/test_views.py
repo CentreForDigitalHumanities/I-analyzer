@@ -38,27 +38,21 @@ def ngram_body(basic_query):
 
 @pytest.mark.usefixtures("client", "times_user", "session")
 def test_ngrams(client, test_app, test_es_client, ngram_body):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
     client.times_login()
     post_response = client.post('/api/ngram_tasks', json=ngram_body)
     assert post_response.status_code == 200
 
 @pytest.mark.usefixtures("client", "times_user", "session")
 def test_aggregate_term_frequency(client, test_app, test_es_client, aggregate_term_frequency_body):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
     client.times_login()
-    post_response = client.post('/api/get_aggregate_term_frequency', json=aggregate_term_frequency_body)
+    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 200
     del aggregate_term_frequency_body['es_query']
-    post_response = client.post('/api/get_aggregate_term_frequency', json=aggregate_term_frequency_body)
+    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 400
 
 @pytest.mark.usefixtures("client", "times_user", "session")
 def test_date_term_frequency(client, test_app, test_es_client, date_term_frequency_body):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
     client.times_login()
     post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
     assert post_response.status_code == 200

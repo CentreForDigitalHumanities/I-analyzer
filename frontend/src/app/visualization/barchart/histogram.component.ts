@@ -58,11 +58,15 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-        const binDocumentLimit = this.documentLimitForCategory(cat, series);
-        return this.searchService.aggregateTermFrequencySearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                .then(result => this.addTermFrequencyToCategory(result, cat));
+        if (cat.doc_count) {
+            const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+            const binDocumentLimit = this.documentLimitForCategory(cat, series);
+            return this.searchService.aggregateTermFrequencySearch(
+                    this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                    .then(result => this.addTermFrequencyToCategory(result, cat));
+        } else {
+            return new Promise<void>(resolve => resolve());
+        }
     }
 
 

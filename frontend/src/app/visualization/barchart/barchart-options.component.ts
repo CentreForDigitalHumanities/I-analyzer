@@ -34,11 +34,19 @@ export class barchartOptionsComponent implements OnChanges {
         }
 
         this.disableAddQueries = this.isLoading || this.queries && this.queries.length >= 10;
+
+        if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
+            this.normalizer = 'terms';
+        }
     }
 
     onChange(parameter: 'frequencyMeasure'|'normalizer'): void {
         if (parameter === 'frequencyMeasure') {
-            this.normalizer = 'raw';
+            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+                this.normalizer = 'raw';
+            } else {
+                this.normalizer = 'terms';
+            }
         }
 
         this.options.emit({

@@ -80,6 +80,9 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         end or corpus_definition.max_date)
     docs = corpus_definition.documents(files)
 
+    if not type(corpus_definition.es_index)==str:
+        raise Exception('es_index is not a string')
+
     # Each source document is decorated as an indexing operation, so that it
     # can be sent to ElasticSearch in bulk
     actions = (
