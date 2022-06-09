@@ -1,4 +1,4 @@
-from ianalyzer.models import Visualisation
+from ianalyzer.models import Visualisation, db, User
 
 def make_visualization(visualization_type, corpus, parameters, visualize_function):
     """
@@ -28,18 +28,22 @@ def check_visualization_cache(visualization_type, corpus, parameters):
     parameter_key = stringify_parameters(parameters, visualization_type)
     result = Visualisation.query.filter_by(
         visualization_type=visualization_type,
-        corpus=corpus,
+        corpus_name=corpus,
         parameters=parameter_key
     ).first()
 
-    if result and result.is_done:
+    if result:
         return result.id
 
 def stringify_parameters(parameters, visualization_type):
-    return 'test'
+    return str(parameters)
 
 def store_new_visualisation(visualization_type, corpus, parameters):
-    vis = Visualisation(visualization_type, corpus, parameters)
+    parameter_key = stringify_parameters(parameters, visualization_type)
+    vis = Visualisation(visualization_type, corpus, parameter_key)
+    db.session.add(vis)
+    db.session.commit()
+
     return vis.id
 
 def store_visualization_result(id, result):
