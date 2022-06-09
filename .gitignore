@@ -11,7 +11,6 @@ backend/migrations/versions/migration_detainment_chamber
 .pytest_cache
 saml/
 
-Mees M1 ignores:
+# Mees M1 ignores:
 backend/requirements_m1.txt
-backend/migrations/versions/migration_detainment_chamber/76a4b388c00b_.py
 
