@@ -1,8 +1,8 @@
-<div class="horizontal-scroll">
-    <p-table [value]="filteredData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
+<div class="block table-container">
+    <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
         <ng-template pTemplate="header">
             <tr class="is-selected">
-                <th *ngFor="let col of headers" [pSortableColumn]="col.key">
+                <th *ngFor="let col of formattedHeaders" [pSortableColumn]="col.key">
                     {{col.label}}
                     <p-sortIcon [field]="col.key"></p-sortIcon>
                 </th>
@@ -10,7 +10,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-entry>
             <tr>
-                <td *ngFor="let col of headers">
+                <td *ngFor="let col of formattedHeaders">
                     {{col.format != undefined ? col.format(entry[col.key]) : entry[col.key]}}
                     <span *ngIf="entry[col.key] == undefined" class="has-text-grey-light">
                         none
@@ -18,14 +18,30 @@
                 </td>
             </tr>
         </ng-template>
-        <ng-template pTemplate="footer">
+    </p-table>    
+</div>
+
+<div class="level">
+    <div class="level-left">
+        <div class="level-item" *ngIf="wideFormatColumn !== undefined" iaBalloon="change the format for the table">
+            <div class="field has-addons">
+                <div class="control">
+                    <button class="button" [class.is-primary]="format == 'long'" (click)="setFormat('long')">long format</button>
+                </div>
+                <div class="control">
+                    <button class="button" [class.is-primary]="format == 'wide'" (click)="setFormat('wide')">wide format</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="level-right">
+        <div class="level-item">
             <a class="button" (click)="downloadTable()">
                 <span class="icon is-small">
                     <i class="fa fa-download"></i>
                 </span>
                 <span>Download table data</span>
             </a>
-        </ng-template>
-    </p-table>
-    
+        </div>
+    </div>
 </div>

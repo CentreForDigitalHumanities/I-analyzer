@@ -294,14 +294,14 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'queryText', label: 'Query' },
+                { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
+                { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
+                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
             ];
         }
     }
