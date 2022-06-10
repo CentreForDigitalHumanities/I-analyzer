@@ -13,7 +13,7 @@ export type visualizationField = {
     multiFields?: string[];
 };
 
-// common type between histogram and timeline
+// common type for all histogram/timeline results
 export type BarchartResult = DateResult|AggregateResult;
 
 export type HistogramSeries = {

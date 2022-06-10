@@ -61,7 +61,7 @@
 <ng-container *ngIf="visualExists; else noVisualsMessage">
     <div class="block" [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
-            <div *ngSwitchCase="'resultscount'">
+            <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
                 [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'" 
                 [asTable]="freqtable" [palette]="palette"
@@ -71,8 +71,8 @@
                 [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
-            </div>
-            <div *ngSwitchCase="'termfrequency'">
+            </ng-container>
+            <ng-container *ngSwitchCase="'termfrequency'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
                     [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
@@ -82,14 +82,7 @@
                     [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
-            </div>
-            <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
-                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">
-    		</ia-histogram>
-    		<ia-timeline *ngSwitchCase=" 'timeline' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-    		    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
-                (isLoading)="onIsLoading($event)" (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
+            </ng-container>
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>

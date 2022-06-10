@@ -43,16 +43,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         ngram: 'Neighbouring words',
         wordcloud: 'Most frequent words',
         relatedwords: 'Related words',
-        timeline: 'timeline',
-        histogram: 'histogram',
-
     };
     public manualPages = {
         ngram: 'ngrams',
         relatedwords: 'relatedwords',
         wordcloud: 'wordcloud',
-        timeline: 'histogram',
-        histogram: 'histogram'
+        resultscount: 'numberofresults',
+        termfrequency: 'termfrequency',
     };
 
 

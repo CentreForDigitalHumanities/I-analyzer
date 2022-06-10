@@ -78,7 +78,7 @@ class JewishInscriptions(XMLCorpus):
             ),
             csv_core=True,
             sortable=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             visualization_sort='key',
             results_overview=True
         ),
@@ -118,7 +118,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['text', 'body', 'incipit'],
                 toplevel=False,
             ),
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='names',
@@ -193,7 +193,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'history', 'origin', 'provenance'],
                 toplevel=False,
             ),
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='inscription_type',
@@ -220,7 +220,7 @@ class JewishInscriptions(XMLCorpus):
                 toplevel=False,
             ),
             csv_core=True,
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='iconography_desc',
@@ -245,7 +245,7 @@ class JewishInscriptions(XMLCorpus):
                 toplevel=False,
             ),
             csv_core=True,
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='language',
@@ -261,7 +261,7 @@ class JewishInscriptions(XMLCorpus):
                 toplevel=False,
             ),
             csv_core=True,
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='no_surviving',

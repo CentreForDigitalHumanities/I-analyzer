@@ -94,7 +94,7 @@ describe('CorpusService', () => {
                     'results_overview': false,
                     'csv_core': false,
                     'search_field_core': false,
-                    'visualizations': ['histogram'],
+                    'visualizations': ['resultscount', 'termfrequency'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'MultipleChoiceFilter',
@@ -116,7 +116,7 @@ describe('CorpusService', () => {
                     'csv_core': true,
                     'search_field_core': false,
                     'histogram': false,
-                    'visualizations': ['histogram'],
+                    'visualizations': ['resultscount', 'termfrequency'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'RangeFilter',
@@ -192,7 +192,7 @@ describe('CorpusService', () => {
                 resultsOverview: false,
                 csvCore: false,
                 searchFieldCore: false,
-                visualizations: ['histogram'],
+                visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
                 hidden: true,
@@ -219,7 +219,7 @@ describe('CorpusService', () => {
                 resultsOverview: true,
                 csvCore: true,
                 searchFieldCore: false,
-                visualizations: ['histogram'],
+                visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
                 searchFilter: {
