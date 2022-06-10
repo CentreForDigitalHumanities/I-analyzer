@@ -2,7 +2,7 @@ import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@an
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, visualizationField } from '../models/index';
+import { Corpus, QueryModel, CorpusField } from '../models/index';
 import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
@@ -17,15 +17,15 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
 
-    public allVisualizationFields: visualizationField[];
+    public allVisualizationFields: CorpusField[];
 
     public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
 
     public visualizationType: string;
-    public filteredVisualizationFields: visualizationField[];
-    public visualizedField: visualizationField;
+    public filteredVisualizationFields: CorpusField[];
+    public visualizedField: CorpusField;
 
     public noResults = 'Did not find data to visualize.';
     public foundNoVisualsMessage: string = this.noResults;
@@ -74,30 +74,17 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if (changes['corpus']) {
             this.allVisualizationFields = [];
             if (this.corpus && this.corpus.fields) {
-                this.corpus.fields.filter(field => field.visualizations).forEach(field => {
-                    field.visualizations.forEach(vis => {
-                        // for relatedwords, only inlcude if word models are present
-                        if (vis !== 'relatedwords' || this.corpus.word_models_present) {
-                            this.allVisualizationFields.push({
-                                name: field.name,
-                                displayName: field.displayName,
-                                displayType: field.displayType,
-                                visualization: vis,
-                                visualizationSort: field.visualizationSort,
-                                searchFilter: field.searchFilter,
-                                multiFields: field.multiFields,
-                            });
-                        }
-                    });
-                });
+                this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations);
             }
             this.visDropdown = [];
 
-            const visualisationTypes = _.uniq(this.allVisualizationFields.map(field => field.visualization));
+            const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
             const filteredTypes = visualisationTypes.filter(visType => {
                 const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
                     .find(vis => vis === visType);
-                return !requiresSearchTerm || this.queryModel.queryText;
+                const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
+                const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;
+                return searchTermSatisfied && wordModelsSatisfied;
             });
             filteredTypes.forEach(visType =>
                 this.visDropdown.push({
@@ -110,7 +97,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 this.noVisualizations = true;
             } else {
                 this.noVisualizations = false;
-                this.setVisualizationType(this.allVisualizationFields[0].visualization);
+                this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
             }
         } else if (changes['queryModel']) {
             this.checkResults();
@@ -133,7 +120,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     setVisualizationType(visType: string) {
         this.visualizationType = visType;
         this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
-            field.visualization === visType
+            field.visualizations.includes(visType)
         );
         this.fieldDropdown = this.filteredVisualizationFields.map(field => ({
             label: field.displayName || field.name,
@@ -142,7 +129,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.visualizedField = this.filteredVisualizationFields[0];
     }
 
-    setVisualizedField(selectedField: visualizationField) {
+    setVisualizedField(selectedField: CorpusField) {
         this.errorMessage = '';
         this.visualExists = true;
 
@@ -161,7 +148,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     showHelp() {
-        const manualPage = this.manualPages[this.visualizedField.visualization];
+        const manualPage = this.manualPages[this.visualizationType];
         this.dialogService.showManualPage(manualPage);
     }
 

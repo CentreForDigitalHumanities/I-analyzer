@@ -1,18 +1,6 @@
 import { AggregateResult, DateResult } from '.';
 import { SearchFilter, SearchFilterData } from './search-filter';
 
-// the corpusFields has an array of visualizations
-// the visualizationField represents one pairing of corpus field + visualization
-export type visualizationField = {
-    name: string,
-    visualization: string,
-    displayName?: string,
-    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
-    visualizationSort?: string,
-    searchFilter?: SearchFilter<SearchFilterData> | null,
-    multiFields?: string[];
-};
-
 // common type for all histogram/timeline results
 export type BarchartResult = DateResult|AggregateResult;
 
