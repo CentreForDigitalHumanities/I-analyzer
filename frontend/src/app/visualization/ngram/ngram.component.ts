@@ -330,7 +330,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                                 ngram = tooltipItem.dataset.label;
                                 value = (tooltipItem.raw as any).value;
                             }
-                            return `${ngram}: ${value}`;
+                            return `${ngram}: ${this.formatValue(value)}`;
                         }
                     }
                 }
