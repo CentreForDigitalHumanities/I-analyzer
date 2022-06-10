@@ -2,11 +2,42 @@
     <b> This corpus has no fields with associated visualizations. </b>
 </div>
 
+<div class="columns">
+    <div class="column">
+        <div class="field" *ngIf="visDropdown">
+            <label class="label">
+                What do you want to visualise?
+            </label>
+            <div class="control">
+                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]"
+                    (onChange)="setVisualizationType($event.value)"></ia-dropdown>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <label class="field" *ngIf="fieldDropdown">
+            <label class="label">
+                <span *ngIf="visualizationType == 'resultscount' || visualizationType == 'termfrequency'">
+                    Compare frequency by...
+                </span>
+                <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
+                    Count frequencies in...
+                </span>
+                <span *ngIf="visualizationType == 'relatedwords'">
+                    Use word models trained on...
+                </span>
+            </label>
+            <div class="control">
+                <ia-dropdown [options]="fieldDropdown" optionLabel="label" [value]="fieldDropdown[0]"
+                    (onChange)="setVisualizedField($event.value)"></ia-dropdown>
+            </div>
+        </label>
+    </div>
+</div>
+
+
 <div class="level" *ngIf="!noVisualizations" #viscontrol>
     <div class="level-left">
-        <div class="level-item">
-            <ia-dropdown *ngIf="visDropdown" [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]" (onChange)="setVisualizedField($event.value)"></ia-dropdown>
-        </div>
     </div>
     <div class="level-right">
         <div class="level-item">
@@ -30,6 +61,28 @@
 <ng-container *ngIf="visualExists; else noVisualsMessage">
     <div class="block" [ngClass]="{'is-loading':isLoading}">
         <ng-container [ngSwitch]="visualizedField.visualization">
+            <div *ngSwitchCase="'resultscount'">
+                <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
+                [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'" 
+                [asTable]="freqtable" [palette]="palette"
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
+                (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
+            <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
+                (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
+                (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
+            </div>
+            <div *ngSwitchCase="'termfrequency'">
+                <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
+                    [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [asTable]="freqtable" [palette]="palette"
+                    (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
+                    (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
+                <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
+                    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
+                    (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
+                    (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
+            </div>
             <ia-histogram *ngSwitchCase="'histogram'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)" (totalTokenCountAvailable)="showTokenCountOption = $event">

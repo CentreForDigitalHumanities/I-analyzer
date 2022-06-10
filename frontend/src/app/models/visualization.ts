@@ -7,6 +7,7 @@ export type visualizationField = {
     name: string,
     visualization: string,
     displayName?: string,
+    displayType: 'text_content' | 'px' | 'keyword' | 'integer' | 'text' | 'date' | 'boolean',
     visualizationSort?: string,
     searchFilter?: SearchFilter<SearchFilterData> | null,
     multiFields?: string[];

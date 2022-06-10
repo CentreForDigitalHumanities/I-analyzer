@@ -17,12 +17,14 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
 
-    public visualizedFields: visualizationField[];
+    public allVisualizationFields: visualizationField[];
 
     public histogramDocumentLimit = 10000;
 
     public showTableButtons: boolean;
 
+    public visualizationType: string;
+    public filteredVisualizationFields: visualizationField[];
     public visualizedField: visualizationField;
 
     public noResults = 'Did not find data to visualize.';
@@ -31,15 +33,19 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public noVisualizations: boolean;
 
     public visDropdown: SelectItem[];
-    public groupedVisualizations: SelectItemGroup[];
+    public fieldDropdown: SelectItem[];
+
     public visualizations: string [];
     public freqtable = false;
     public visualizationsDisplayNames = {
-        ngram: 'common n-grams',
-        wordcloud: 'wordcloud',
+        resultscount: 'Number of results',
+        termfrequency: 'Frequency of the search term',
+        ngram: 'Neighbouring words',
+        wordcloud: 'Most frequent words',
+        relatedwords: 'Related words',
         timeline: 'timeline',
         histogram: 'histogram',
-        relatedwords: 'Related words',
+
     };
     public manualPages = {
         ngram: 'ngrams',
@@ -69,15 +75,16 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['corpus']) {
-            this.visualizedFields = [];
+            this.allVisualizationFields = [];
             if (this.corpus && this.corpus.fields) {
                 this.corpus.fields.filter(field => field.visualizations).forEach(field => {
                     field.visualizations.forEach(vis => {
                         // for relatedwords, only inlcude if word models are present
-                        if (vis != 'relatedwords' || this.corpus.word_models_present) {
-                            this.visualizedFields.push({
+                        if (vis !== 'relatedwords' || this.corpus.word_models_present) {
+                            this.allVisualizationFields.push({
                                 name: field.name,
                                 displayName: field.displayName,
+                                displayType: field.displayType,
                                 visualization: vis,
                                 visualizationSort: field.visualizationSort,
                                 searchFilter: field.searchFilter,
@@ -88,22 +95,25 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
                 });
             }
             this.visDropdown = [];
-            this.visualizedFields.forEach(field => {
-                const requires_search_term = ['ngram', 'relatedwords']
-                    .find(vis_type => vis_type === field.visualization);
-                if (!requires_search_term || this.queryModel.queryText) {
-                    this.visDropdown.push({
-                        label: `${field.displayName} (${this.visualizationsDisplayNames[field.visualization]})`,
-                        value: field
-                    });
-                }
-            });
 
-            if (!this.visualizedFields) {
+            const visualisationTypes = _.uniq(this.allVisualizationFields.map(field => field.visualization));
+            const filteredTypes = visualisationTypes.filter(visType => {
+                const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
+                    .find(vis => vis === visType);
+                return !requiresSearchTerm || this.queryModel.queryText;
+            });
+            filteredTypes.forEach(visType =>
+                this.visDropdown.push({
+                    label: this.visualizationsDisplayNames[visType],
+                    value: visType
+                })
+            );
+
+            if (!this.allVisualizationFields) {
                 this.noVisualizations = true;
             } else {
                 this.noVisualizations = false;
-                this.visualizedField = this.visualizedFields[0];
+                this.setVisualizationType(this.allVisualizationFields[0].visualization);
             }
         } else if (changes['queryModel']) {
             this.checkResults();
@@ -121,6 +131,18 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         } else {
             this.foundNoVisualsMessage = this.noResults;
         }
+    }
+
+    setVisualizationType(visType: string) {
+        this.visualizationType = visType;
+        this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
+            field.visualization === visType
+        );
+        this.fieldDropdown = this.filteredVisualizationFields.map(field => ({
+            label: field.displayName || field.name,
+            value: field
+        }));
+        this.visualizedField = this.filteredVisualizationFields[0];
     }
 
     setVisualizedField(selectedField: visualizationField) {

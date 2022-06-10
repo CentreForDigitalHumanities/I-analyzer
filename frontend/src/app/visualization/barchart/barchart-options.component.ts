@@ -14,7 +14,7 @@ export class barchartOptionsComponent implements OnChanges {
     @Input() isLoading: boolean;
     @Output() options = new EventEmitter<barchartOptions>();
 
-    public frequencyMeasure: 'documents'|'tokens' = 'documents';
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
 
     showAddQuery = false;
@@ -26,10 +26,11 @@ export class barchartOptionsComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queries && changes.queries.previousValue) {
-            if (_.every(this.queries, query => query == null) && this.frequencyMeasure === 'tokens') {
-                this.frequencyMeasure = 'documents';
-                this.onChange('frequencyMeasure');
+        if (changes.frequencyMeasure) {
+            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+                this.normalizer = 'raw';
+            } else {
+                this.normalizer = 'terms';
             }
         }
 
@@ -41,14 +42,6 @@ export class barchartOptionsComponent implements OnChanges {
     }
 
     onChange(parameter: 'frequencyMeasure'|'normalizer'): void {
-        if (parameter === 'frequencyMeasure') {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.normalizer = 'raw';
-            } else {
-                this.normalizer = 'terms';
-            }
-        }
-
         this.options.emit({
             frequencyMeasure: this.frequencyMeasure,
             normalizer: this.normalizer,

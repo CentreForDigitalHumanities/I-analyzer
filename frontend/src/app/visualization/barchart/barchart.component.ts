@@ -51,7 +51,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
@@ -147,7 +147,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     /** update graph after changes to the option menu (i.e. frequency measure / normalizer) */
     onOptionChange(options: barchartOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
         this.normalizer = options.normalizer;
 
         if (this.rawData && this.chart) {
