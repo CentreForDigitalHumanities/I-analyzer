@@ -17,3 +17,7 @@
 .is-loading {
     @extend %content-loader;
 }
+
+.download-button {
+	margin-right: 1em;
+}

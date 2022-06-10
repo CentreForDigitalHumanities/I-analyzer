@@ -5,6 +5,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
+import * as htmlToImage from 'html-to-image';
 
 @Component({
     selector: 'ia-histogram',
@@ -152,5 +153,24 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
         return this.currentValueKey;
     }
+
+    onImageRequested() {
+        const filenamestring: string = `histogram_${this.corpus.name}_${this.visualizedField.name}.png`;
+        var node:any = document.getElementById('barchart');
+        htmlToImage.toPng(node)
+          .then(function (dataUrl) {
+            var img = new Image();
+            img.src = dataUrl;
+            // document.body.appendChild(img); // For testing purposes
+            var anchor = document.createElement("a");
+            anchor.href = dataUrl;
+            anchor.download = filenamestring;
+            anchor.click();
+          })
+          .catch(function (error) {
+            console.log('oops, something went wrong!', error);
+          });        
+
+        }
 
 }

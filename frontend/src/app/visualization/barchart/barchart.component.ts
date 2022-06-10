@@ -124,7 +124,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                     },
                     onZoom: ({chart}) => this.onZoomIn(chart),
                 }
-            }
+            },
+            title: {
+                display: true,
+                text: `placeholder`,
+                align: 'center',
+            },
         }
     };
 
@@ -384,6 +389,11 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         const labels = this.getLabels();
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
+        if (this.queryModel.queryText == null) {
+            options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        } else {
+            options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        }
         this.chart = new Chart('barchart',
             {
                 type: 'bar',
@@ -395,6 +405,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 options: options
             }
         );
+        
 
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
@@ -411,6 +422,14 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
+        if (this.queryModel.queryText == null) {
+            this.chart.options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        } else if (this.normalizer == 'documents') {
+            this.chart.options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, normalized by ${this.normalizer})`;
+        }
+        else {
+            this.chart.options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        }
         this.chart.update();
     }
 
