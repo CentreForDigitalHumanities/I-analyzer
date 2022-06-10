@@ -60,7 +60,7 @@
 
 <ng-container *ngIf="visualExists; else noVisualsMessage">
     <div class="block" [ngClass]="{'is-loading':isLoading}">
-        <ng-container [ngSwitch]="visualizedField.visualization">
+        <ng-container [ngSwitch]="visualizationType">
             <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
                 [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'" 

@@ -1,26 +1,26 @@
 <form>
     <div class="field">
-        <div class="control" (change)="onChange('normalizer')">
+        <div class="control" (change)="onChange()">
             <label class="label">Normalization</label>
             <label class="radio"
                 iaBalloon="Number of {{frequencyMeasure == 'documents' ? 'documents' : 'observations of the search term'}}">
-                <input type="radio" name="normalizer" (click)="normalizer='raw'" [checked]="normalizer=='raw'">
+                <input type="radio" name="normalizer" (click)="currentNormalizer='raw'" [checked]="currentNormalizer=='raw'">
                 None
             </label>
             <label *ngIf="frequencyMeasure=='documents'" class="radio"
                 iaBalloon="Divide by the total amount of documents">
-                <input type="radio" name="normalizer" (click)="normalizer='percent'" [checked]="normalizer=='percent'">
+                <input type="radio" name="normalizer" (click)="currentNormalizer='percent'" [checked]="currentNormalizer=='percent'">
                 Percentage
             </label>
             <ng-container *ngIf="frequencyMeasure=='tokens'">
                 <label class="radio"
                     iaBalloon="Divide by the total documents in each bin">
-                    <input type="radio" name="normalizer" (click)="normalizer='documents'" [checked]="normalizer=='documents'">
+                    <input type="radio" name="normalizer" (click)="currentNormalizer='documents'" [checked]="currentNormalizer=='documents'">
                     Documents
                 </label>
                 <label class="radio" *ngIf="showTokenCountOption"
                     iaBalloon="Divide by the total word count in each bin">
-                    <input type="radio" name="normalizer" (click)="normalizer='terms'" [checked]="normalizer=='terms'">
+                    <input type="radio" name="normalizer" (click)="currentNormalizer='terms'" [checked]="currentNormalizer=='terms'">
                     Terms
                 </label>
             </ng-container>

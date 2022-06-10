@@ -27,7 +27,4 @@ export type freqTableHeader = {
 
 export type freqTableHeaders = freqTableHeader[];
 
-export type barchartOptions = {
-    frequencyMeasure: 'documents'|'tokens',
-    normalizer: 'raw'|'percent'|'documents'|'terms',
-};
+export type Normalizer = 'raw'|'percent'|'documents'|'terms';

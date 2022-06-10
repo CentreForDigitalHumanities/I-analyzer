@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, barchartOptions, QueryModel } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -145,9 +145,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
     }
 
-    /** update graph after changes to the option menu (i.e. frequency measure / normalizer) */
-    onOptionChange(options: barchartOptions) {
-        this.normalizer = options.normalizer;
+    /** update graph after changes to the normalisation menu (i.e. normalizer) */
+    onOptionChange(normalizer: 'raw'|'percent'|'documents'|'terms') {
+        this.normalizer = normalizer;
 
         if (this.rawData && this.chart) {
             this.prepareChart();

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
-import { barchartOptions } from '../../models';
+import { Normalizer } from '../../models';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -12,10 +11,11 @@ export class barchartOptionsComponent implements OnChanges {
     @Input() queries: string[];
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
-    @Output() options = new EventEmitter<barchartOptions>();
 
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
-    public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
+
+    currentNormalizer: Normalizer;
+    @Output() normalizer = new EventEmitter<Normalizer>();
 
     showAddQuery = false;
     newQueryText: string;
@@ -28,24 +28,21 @@ export class barchartOptionsComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.frequencyMeasure) {
             if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.normalizer = 'raw';
+                this.currentNormalizer = 'raw';
             } else {
-                this.normalizer = 'terms';
+                this.currentNormalizer = 'terms';
             }
         }
 
         this.disableAddQueries = this.isLoading || this.queries && this.queries.length >= 10;
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
-            this.normalizer = 'terms';
+            this.currentNormalizer = 'terms';
         }
     }
 
-    onChange(parameter: 'frequencyMeasure'|'normalizer'): void {
-        this.options.emit({
-            frequencyMeasure: this.frequencyMeasure,
-            normalizer: this.normalizer,
-        });
+    onNormalizerChange(): void {
+        this.normalizer.emit(this.currentNormalizer);
     }
 
     addQuery() {
