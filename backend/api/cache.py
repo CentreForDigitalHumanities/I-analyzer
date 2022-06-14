@@ -1,4 +1,8 @@
+from tabnanny import check
 from ianalyzer.models import Visualisation, db, User
+from datetime import datetime
+import json
+from sqlalchemy import inspect
 
 def make_visualization(visualization_type, corpus, parameters, visualize_function):
     """
@@ -13,10 +17,10 @@ def make_visualization(visualization_type, corpus, parameters, visualize_functio
     type, corpus, and parameters.
     - `visualize_function` - a unary function that can be run to compute the result of the visualisation.
     """
-    cache_id = check_visualization_cache(visualization_type, corpus, parameters)
-    
-    if cache_id:
-        return get_visualization_result(cache_id)
+    cached = check_visualization_cache(visualization_type, corpus, parameters)
+ 
+    if cached and cached.is_done:
+        return get_visualization_result(cached.id)
     else:
         cache_id = store_new_visualisation(visualization_type, corpus, parameters)
         result = visualize_function()
@@ -32,11 +36,10 @@ def check_visualization_cache(visualization_type, corpus, parameters):
         parameters=parameter_key
     ).first()
 
-    if result:
-        return result.id
+    return result
 
 def stringify_parameters(parameters, visualization_type):
-    return str(parameters)
+    return json.dumps(parameters)
 
 def store_new_visualisation(visualization_type, corpus, parameters):
     parameter_key = stringify_parameters(parameters, visualization_type)
@@ -47,7 +50,12 @@ def store_new_visualisation(visualization_type, corpus, parameters):
     return vis.id
 
 def store_visualization_result(id, result):
-    return None
+    vis = Visualisation.query.get(id)
+    vis.completed = datetime.now()
+    vis.result = json.dumps(result)
+    db.session.commit()
 
 def get_visualization_result(id):
-    return None
+    vis = Visualisation.query.get(id)
+    if vis.is_done:
+        return json.loads(vis.result)

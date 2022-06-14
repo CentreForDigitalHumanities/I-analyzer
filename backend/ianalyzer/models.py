@@ -4,6 +4,7 @@ Module contains the models for user management and query logging in SQL.
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import json
 
 
 MAX_LENGTH_NAME = 126
@@ -250,7 +251,7 @@ class Visualisation(db.Model):
     parameters = db.Column(db.Text())
     started = db.Column(db.DateTime)
     completed = db.Column(db.DateTime)
-    result = db.PickleType()
+    result = db.Text()
 
     def __init__(self, visualization_type, corpus_name, parameters):
         self.visualization_type = visualization_type
