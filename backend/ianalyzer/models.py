@@ -251,7 +251,7 @@ class Visualisation(db.Model):
     parameters = db.Column(db.Text())
     started = db.Column(db.DateTime)
     completed = db.Column(db.DateTime)
-    result = db.Text()
+    result = db.Column(db.JSON())
 
     def __init__(self, visualization_type, corpus_name, parameters):
         self.visualization_type = visualization_type

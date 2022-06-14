@@ -2,7 +2,7 @@ from tabnanny import check
 from ianalyzer.models import Visualisation, db, User
 from datetime import datetime
 import json
-from sqlalchemy import inspect
+from sqlalchemy.orm.attributes import flag_modified
 
 def make_visualization(visualization_type, corpus, parameters, visualize_function):
     """
@@ -52,10 +52,12 @@ def store_new_visualisation(visualization_type, corpus, parameters):
 def store_visualization_result(id, result):
     vis = Visualisation.query.get(id)
     vis.completed = datetime.now()
-    vis.result = json.dumps(result)
+    vis.result = result
+    db.session.merge(vis)
+    db.session.flush()
     db.session.commit()
 
 def get_visualization_result(id):
     vis = Visualisation.query.get(id)
     if vis.is_done:
-        return json.loads(vis.result)
+        return vis.result

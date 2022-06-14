@@ -46,5 +46,3 @@ def test_make_visualisation(session):
     def wrongfunction(): return { }
     cached_result = cache.make_visualization(visualization_type, corpus, parameters, wrongfunction)
     assert cached_result == result
-
-
