@@ -1,5 +1,5 @@
 from tabnanny import check
-from ianalyzer.models import Visualisation, db, User
+from ianalyzer.models import Visualization, db, User
 from datetime import datetime
 import json
 from sqlalchemy.orm.attributes import flag_modified
@@ -22,7 +22,7 @@ def make_visualization(visualization_type, corpus, parameters, visualize_functio
     if cached and cached.is_done:
         return get_visualization_result(cached.id)
     else:
-        cache_id = store_new_visualisation(visualization_type, corpus, parameters)
+        cache_id = store_new_visualization(visualization_type, corpus, parameters)
         result = visualize_function()
         store_visualization_result(cache_id, result)
         return result
@@ -30,7 +30,7 @@ def make_visualization(visualization_type, corpus, parameters, visualize_functio
 
 def check_visualization_cache(visualization_type, corpus, parameters):
     parameter_key = stringify_parameters(parameters, visualization_type)
-    result = Visualisation.query.filter_by(
+    result = Visualization.query.filter_by(
         visualization_type=visualization_type,
         corpus_name=corpus,
         parameters=parameter_key
@@ -41,16 +41,16 @@ def check_visualization_cache(visualization_type, corpus, parameters):
 def stringify_parameters(parameters, visualization_type):
     return json.dumps(parameters)
 
-def store_new_visualisation(visualization_type, corpus, parameters):
+def store_new_visualization(visualization_type, corpus, parameters):
     parameter_key = stringify_parameters(parameters, visualization_type)
-    vis = Visualisation(visualization_type, corpus, parameter_key)
+    vis = Visualization(visualization_type, corpus, parameter_key)
     db.session.add(vis)
     db.session.commit()
 
     return vis.id
 
 def store_visualization_result(id, result):
-    vis = Visualisation.query.get(id)
+    vis = Visualization.query.get(id)
     vis.completed = datetime.now()
     vis.result = result
     db.session.merge(vis)
@@ -58,6 +58,6 @@ def store_visualization_result(id, result):
     db.session.commit()
 
 def get_visualization_result(id):
-    vis = Visualisation.query.get(id)
+    vis = Visualization.query.get(id)
     if vis.is_done:
         return vis.result

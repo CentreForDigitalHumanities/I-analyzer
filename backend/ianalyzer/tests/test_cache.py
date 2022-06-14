@@ -17,7 +17,7 @@ def test_cache(session):
     cached = cache.check_visualization_cache(visualization_type, corpus, parameters)
     assert cached == None
 
-    cached_id = cache.store_new_visualisation(visualization_type, corpus, parameters)
+    cached_id = cache.store_new_visualization(visualization_type, corpus, parameters)
     found = cache.check_visualization_cache(visualization_type, corpus, parameters)
     assert found.id == cached_id
     assert found.id != None

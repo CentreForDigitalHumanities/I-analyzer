@@ -240,7 +240,7 @@ class Corpus(db.Model):
         return self.name
 
 
-class Visualisation(db.Model):
+class Visualization(db.Model):
     '''
     Cached results for a visualisation
     '''
