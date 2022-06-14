@@ -2,7 +2,7 @@ from tabnanny import check
 from ianalyzer.models import Visualization, db, User
 from datetime import datetime
 import json
-from sqlalchemy.orm.attributes import flag_modified
+from flask import current_app
 
 def make_visualization(visualization_type, corpus, parameters, visualize_function):
     """
@@ -17,6 +17,9 @@ def make_visualization(visualization_type, corpus, parameters, visualize_functio
     type, corpus, and parameters.
     - `visualize_function` - a unary function that can be run to compute the result of the visualisation.
     """
+    if not current_app.config.get('USE_VISUALIZATION_CACHE'):
+        return visualize_function()
+
     cached = check_visualization_cache(visualization_type, corpus, parameters)
  
     if cached and cached.is_done:
