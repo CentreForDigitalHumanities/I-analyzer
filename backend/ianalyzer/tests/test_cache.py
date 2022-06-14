@@ -8,7 +8,6 @@ result = {
     'data': [1,2,3,4]
 }
 
-@pytest.mark.usefixtures("db", "session")
 def test_cache(db, session):
     parameters = {
         'blabla': 'blablabla',

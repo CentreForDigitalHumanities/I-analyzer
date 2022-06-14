@@ -43,12 +43,9 @@ def test_app(request, tmpdir_factory):
     app = flask_app(UnittestConfig)
     app.testing = True
     app.config['CSV_FILES_PATH'] = str(tmpdir_factory.mktemp('test_files'))
-    ctx = app.app_context()
-    ctx.push()
-    yield app
 
-    # performed after running tests
-    ctx.pop()
+    with app.app_context():
+        yield app
 
 @pytest.fixture(scope='session')
 def test_es_client(test_app):
