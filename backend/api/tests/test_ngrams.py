@@ -1,3 +1,4 @@
+from random import sample
 from typing import Counter
 import api.analyze as analyze
 import api.query as query
@@ -77,13 +78,13 @@ def test_top_10_ngrams():
         'c': 150,
     }
 
-    output_absolute = analyze.get_top_10_ngrams(counts)
+    output_absolute = analyze.get_top_n_ngrams(counts)
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
     
 
-    output_relative = analyze.get_top_10_ngrams(counts, ttf)
+    output_relative = analyze.get_top_n_ngrams(counts, ttf)
 
     for word in target_data:
         dataset_relative = next(series for series in output_relative if series['label'] == word)
@@ -150,3 +151,99 @@ def test_absolute_bigrams(test_app, test_es_client, basic_query):
                 assert freq == ngram['frequencies_per_bin'][bin]
             else:
                 assert freq == 0
+
+def test_bigrams_with_quote(test_app, test_es_client, basic_query):
+    if not test_es_client:
+        pytest.skip('No elastic search client')
+
+    cases = [
+        {
+            'query': '"to hear"',
+            'ngrams': [
+                'rejoice to hear',
+                'to hear that'
+            ]
+        }, {
+            'query': '"to hear", "to do"',
+            'ngrams': {
+                'rejoice to hear',
+                'to hear that',
+                'nothing to do',
+            }
+        }, {
+            'query': '"single man" fortune',
+            'ngrams': {
+                'a single man',
+                'single man in',
+                'good fortune',
+                'fortune must',
+            }
+        }
+    ]
+    
+    for case in cases:
+        # search for a word that occurs a few times
+        query = basic_query
+        query['query']['bool']['must']['simple_query_string']['query'] = case['query']
+
+        result = analyze.get_ngrams(query, 'mock-corpus', 'content', freq_compensation=False)
+
+        ngrams = case['ngrams']
+
+        assert len(result['words']) == len(ngrams)
+
+        for ngram in ngrams:
+            data = next((item for item in result['words'] if item['label'] == ngram), None)
+            assert data
+
+TOKENS_EXAMPLE = [
+    {
+        'position': 0,
+        'term': 'You',
+    },
+    {
+        'position': 2,
+        'term': 'rejoice',
+    },
+    {
+        'position': 4,
+        'term': 'hear',
+    },
+    {
+        'position': 7,
+        'term': 'disaster'
+    },
+    {
+        'position': 9,
+        'term': 'accompanied'
+    },
+    {
+        'position': 14,
+        'term': 'enterprise'
+    },
+    {
+        'position': 18,
+        'term': 'regarded'
+    },
+    {
+        'position': 21,
+        'term': 'evil'
+    },
+    {
+        'position': 22,
+        'term': 'forebodings'
+    }
+]
+
+def test_number_of_ngrams(test_app, test_es_client, basic_query):
+    # search for a word that occurs a few times
+    query = basic_query
+    query['query']['bool']['must']['simple_query_string']['query'] = 'to'
+
+    max_frequency = 6
+
+    for size in range(1, max_frequency + 2):
+        result = analyze.get_ngrams(query, 'mock-corpus', 'content', number_of_ngrams= size)
+        series = result['words']
+
+        assert len(series) == min(max_frequency, size)
