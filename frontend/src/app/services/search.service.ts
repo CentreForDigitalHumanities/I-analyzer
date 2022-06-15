@@ -58,7 +58,7 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel): any {
+    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false): any {
         const route = {
             query: queryModel.queryText || ''
         };
@@ -76,7 +76,7 @@ export class SearchService {
             route[filter.param] = filter.value;
         }
 
-        if (queryModel.sortBy) {
+        if (!usingDefaultSortField && queryModel.sortBy) {
             route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
         } else {
             delete route['sort'];

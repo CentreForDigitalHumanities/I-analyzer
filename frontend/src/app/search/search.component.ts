@@ -55,7 +55,8 @@ export class SearchComponent implements OnInit {
     public searchQueryText: string;
 
     public sortAscending: boolean;
-    public sortField: CorpusField | undefined;
+    public sortField: CorpusField | 'default' | undefined;
+    public defaultSortField: CorpusField | undefined;
 
     public resultsCount = 0;
     public tabIndex: number;
@@ -110,7 +111,8 @@ export class SearchComponent implements OnInit {
 
     public search() {
         this.queryModel = this.createQueryModel();
-        const route = this.searchService.queryModelToRoute(this.queryModel);
+        const usingDefaultSortField = this.sortField === 'default';
+        const route = this.searchService.queryModelToRoute(this.queryModel, usingDefaultSortField);
         const url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
             { relativeTo: this.activatedRoute },
@@ -171,8 +173,10 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
+            const sortField = this.sortField === 'default' ? this.defaultSortField : this.sortField;
+
         return this.searchService.createQueryModel(
-            this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending, this.highlight);
+            this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
     }
 
     /**
@@ -187,6 +191,7 @@ export class SearchComponent implements OnInit {
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
+            this.defaultSortField = this.corpus.fields.find(field => field.primarySort);
         }
     }
 
@@ -228,7 +233,11 @@ export class SearchComponent implements OnInit {
             this.sortField = corpusFields.find(field => field.name === sortField);
             this.sortAscending = sortAscending === 'asc';
         } else {
-            this.sortField = undefined;
+            if (params.get('query')) {
+                this.sortField = undefined;
+            } else {
+                this.sortField = 'default';
+            }
         }
     }
 
