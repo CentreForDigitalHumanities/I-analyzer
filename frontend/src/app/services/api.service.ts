@@ -63,7 +63,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { success: false, message: string } | { success: true, results: AggregateResult[] }
+    { success: false, message: string } | { success: true, results: AggregateResult[]|NgramResults }
     >
 
     @ResourceAction({
@@ -96,7 +96,7 @@ export class ApiService extends Resource {
     })
     public ngramTasks: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
-            subfield?: string, max_size_per_interval?: number },
+            subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, },
         { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 

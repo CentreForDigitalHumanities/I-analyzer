@@ -9,7 +9,7 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
-import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.field_defaults_old as field_defaults
 
 
 def standardize_bool(date_is_estimate):
@@ -83,8 +83,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         transform=lambda x : ' '.join(x)
     )
     
-    source_url = field_defaults.source_url()
-    source_url.extractor = CSV(
+    url = field_defaults.source_url()
+    url.extractor = CSV(
         field='img_url'
     )
 
@@ -99,6 +99,6 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
             self.book_id, self.book_label,
             self.parliament, 
             self.date, self.date_is_estimate,
-            self.page, self.source_url,
+            self.page, self.url,
             self.speech, self.speech_id,
         ]

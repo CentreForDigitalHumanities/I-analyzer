@@ -456,7 +456,7 @@ def api_wordcloud():
     else:
         result = search.search(
             corpus = request.json['corpus'],
-            query_model = request.json['query'],
+            query_model = request.json['es_query'],
             size = request.json['size']
         )
         list_of_texts = search.hits(result)
@@ -622,7 +622,7 @@ def api_get_related_words_time_interval():
         })
     return response
 
-@api.route('get_aggregate_term_frequency', methods=['POST'])
+@api.route('aggregate_term_frequency', methods=['POST'])
 @login_required
 def api_aggregate_term_frequency():
     if not request.json:

@@ -1,25 +1,19 @@
-
-import enum
-from itertools import count
 import os
 from os.path import join
-import math
 import pickle
 # as per Python 3, pickle uses cPickle under the hood
 
 from collections import Counter
-from pydoc import doc
-from re import match
-from unittest import skip
 from sklearn.feature_extraction.text import CountVectorizer
 from sqlalchemy.orm import query
 from addcorpus.load_corpus import corpus_dir, load_corpus
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime
 from es.search import get_index, total_hits, search, hits
 from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
+import api.termvectors as termvectors
 
 from flask import current_app
 
@@ -187,7 +181,9 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50):
+def get_ngrams(es_query, corpus, field,
+    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
+    number_of_ngrams=10):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
@@ -196,12 +192,12 @@ def get_ngrams(es_query, corpus, field, ngram_size=2, term_positions=[0,1], freq
     # find ngrams
 
     docs, total_frequencies = tokens_by_time_interval(
-        corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval
+        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval
     )
     if freq_compensation:
-        ngrams = get_top_10_ngrams(docs, total_frequencies)
+        ngrams = get_top_n_ngrams(docs, total_frequencies, number_of_ngrams)
     else:
-        ngrams = get_top_10_ngrams(docs)
+        ngrams = get_top_n_ngrams(docs, dict(), number_of_ngrams)
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
@@ -251,7 +247,7 @@ def get_time_bins(es_query, corpus):
     return bins
  
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
     index = get_index(corpus)
     client = elasticsearch(index)
     ngrams_per_bin = []
@@ -259,14 +255,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
     query_text = query.get_query_text(es_query)
     field = field if subfield == 'none' else '.'.join([field, subfield])
-    analyzed_query_text = client.indices.analyze(
-        index = index,
-        body={
-            'text': query_text,
-            'field': field,
-        },
-    )
-    query_tokens = [token['token'] for token in analyzed_query_text['tokens']]
 
     for (start_year, end_year) in bins:
         start_date = datetime(start_year, 1, 1)
@@ -290,42 +278,50 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
             id = hit['_id']
 
             # get the term vectors for the hit
-            termvectors = client.termvectors(
+            result = client.termvectors(
                 index=index,
-                doc_type='_doc',
                 id=id,
-                term_statistics=True,
+                term_statistics=freq_compensation,
                 fields = [field]
             )
 
-            if field in termvectors['term_vectors']:
-                terms = termvectors['term_vectors'][field]['terms']
-                
-                all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
-                    for term in terms for token in terms[term]['tokens']]
-                sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
+            terms = termvectors.get_terms(result, field)
 
-                for i, token in enumerate(sorted_tokens):
-                    if token['term'] in query_tokens:
-                        for j in term_positions:
-                            start = i - j
-                            stop = i - j + ngram_size
-                            if start >= 0 and stop <= len(sorted_tokens):
-                                ngram = sorted_tokens[start:stop]
-                                words = ' '.join([token['term'] for token in ngram])
-                                ttf = sum(token['ttf'] for token in ngram) / len(ngram)
-                                ngram_ttfs[words] = ttf
-                                bin_ngrams.update({ words: 1})
+            if terms:
+                sorted_tokens = termvectors.get_tokens(terms, sort=True)
+
+                for match_start, match_stop, match_content in termvectors.token_matches(sorted_tokens, query_text, index, field, client):
+                    for j in term_positions:
+                        start = match_start - j
+                        stop = match_stop - 1 - j + ngram_size
+                        if start >= 0 and stop <= len(sorted_tokens):
+                            ngram = sorted_tokens[start:stop]
+                            words = ' '.join([token['term'] for token in ngram])
+                            ttf = sum(token['ttf'] for token in ngram) / len(ngram)
+                            ngram_ttfs[words] = ttf
+                            bin_ngrams.update({ words: 1})
 
         # output per bin: all tokens from this time interval
         ngrams_per_bin.append(bin_ngrams)
 
     return ngrams_per_bin, ngram_ttfs
 
-def get_top_10_ngrams(counters, total_frequencies = None):
+def make_ngram(token, prev_tokens, next_tokens, ngram_size, position):
+    prev_size = position
+    next_size = ngram_size - (position + 1)
+
+    if prev_size <= len(prev_tokens) and next_size <= len(next_tokens):
+        return prev_tokens[len(prev_tokens) - prev_size:] + [token] + next_tokens[:next_size]
+
+def find_neighbouring_tokens(token, tokens, window_size=1, direction='next'):
+    """Find the n tokens preceding or following a token. The token """
+
+
+
+def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
     """
-    Converts a list of documents with tokens into 10 dataseries, listing the
-    frequency of the top 10 tokens and their frequency in each document.
+    Converts a list of documents with tokens into n dataseries, listing the
+    frequency of the top n tokens and their frequency in each document.
 
     Input:
     - `docs`: a list of Counter objects with ngram frequencies. The division into counters reflects how the data is grouped,
@@ -345,14 +341,16 @@ def get_top_10_ngrams(counters, total_frequencies = None):
     total_counter = Counter()
     for c in counters:
         total_counter.update(c)
+
+    number_of_results = min(number_of_ngrams, len(total_counter))
         
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
-        top_10_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:10]
+        top_ngrams = sorted(total_counter.keys(), key=overall_frequency, reverse=True)[:number_of_results]
     else:
         def frequency(ngram, counter): return counter[ngram]
-        top_10_ngrams = [word for word, freq in total_counter.most_common(10)]
+        top_ngrams = [word for word, freq in total_counter.most_common(number_of_results)]
 
 
     output = [{
@@ -360,7 +358,7 @@ def get_top_10_ngrams(counters, total_frequencies = None):
             'data': [frequency(ngram, c)
                 for c in counters]
         }
-        for ngram in top_10_ngrams]
+        for ngram in top_ngrams]
 
     return output
 

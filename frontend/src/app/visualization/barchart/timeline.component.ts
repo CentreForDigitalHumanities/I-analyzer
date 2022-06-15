@@ -75,16 +75,20 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         );
     }
 
-    requestCategoryTermFrequencyData(cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
-        const queryModelCopy = this.setQueryText(queryModel, series.queryText);
-        const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
-        const binDocumentLimit = this.documentLimitForCategory(cat, series);
+    requestCategoryTermFrequencyData(
+        cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
+        if (cat.doc_count) {
+            const queryModelCopy = this.setQueryText(queryModel, series.queryText);
+            const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
+            const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
-        return this.searchService.dateTermFrequencySearch(
-            this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
-            ...timeDomain)
-            .then(result => this.addTermFrequencyToCategory(result, cat));
-
+            return this.searchService.dateTermFrequencySearch(
+                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
+                ...timeDomain)
+                .then(result => this.addTermFrequencyToCategory(result, cat));
+        } else {
+            return new Promise<void>(resolve => resolve());
+        }
     }
 
     /** time domain for a bin */
@@ -290,14 +294,14 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'queryText', label: 'Query' },
+                { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
+                { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
+                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
             ];
         }
     }

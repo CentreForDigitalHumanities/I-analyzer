@@ -59,26 +59,23 @@ def test_es_client(test_app):
     try:
         # initiate an elasticsearch client
         # sniff_on_start to check whether we can connect to the ES server
-        # allows skipping tests that require ES server if none is running
+        # skip tests that require ES server if none is running
         client = elasticsearch('mock-corpus', UnittestConfig, sniff_on_start=True)
     except:
-        client = None
+        pytest.skip('Cannot connect to elasticsearch server')
 
-    if client:
-        # add data from mock corpus
-        corpus = load_corpus('mock-corpus')
-        index.create(client, corpus, False, True, False)
-        index.populate(client, 'mock-corpus', corpus)
+    # add data from mock corpus
+    corpus = load_corpus('mock-corpus')
+    index.create(client, corpus, False, True, False)
+    index.populate(client, 'mock-corpus', corpus)
 
-        # ES is "near real time", so give it a second before we start searching the index
-        sleep(2)
+    # ES is "near real time", so give it a second before we start searching the index
+    sleep(2)
 
-        yield client
+    yield client
 
-        # delete index when done
-        client.indices.delete(index = 'mock-corpus')
-    else:
-        yield None
+    # delete index when done
+    client.indices.delete(index = 'mock-corpus')
 
 
 @pytest.fixture

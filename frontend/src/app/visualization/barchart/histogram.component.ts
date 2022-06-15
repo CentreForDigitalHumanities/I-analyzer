@@ -36,6 +36,10 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     */
     getAggregator() {
         let size = 0;
+        if (!this.visualizedField.searchFilter) {
+            return {name: this.visualizedField.name, size: 100};
+        }
+
         if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
             size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
         } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
@@ -54,11 +58,15 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-        const binDocumentLimit = this.documentLimitForCategory(cat, series);
-        return this.searchService.aggregateTermFrequencySearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                .then(result => this.addTermFrequencyToCategory(result, cat));
+        if (cat.doc_count) {
+            const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+            const binDocumentLimit = this.documentLimitForCategory(cat, series);
+            return this.searchService.aggregateTermFrequencySearch(
+                    this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
+                    .then(result => this.addTermFrequencyToCategory(result, cat));
+        } else {
+            return new Promise<void>(resolve => resolve());
+        }
     }
 
 
@@ -119,11 +127,21 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     setTableHeaders() {
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
-        const header = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
-        this.tableHeaders = [
-            { key: 'key', label: label },
-            { key: this.currentValueKey, label: header, format: this.formatValue, formatDownload: this.formatDownloadValue }
-        ];
+        const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
+        const valueKey = this.currentValueKey;
+
+        if (this.rawData.length > 1) {
+            this.tableHeaders = [
+                { key: 'key', label: label, isSecondaryFactor: true, },
+                { key: 'queryText', label: 'Query', isMainFactor: true, },
+                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+            ];
+        } else {
+            this.tableHeaders = [
+                { key: 'key', label: label },
+                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
+            ];
+        }
     }
 
 
