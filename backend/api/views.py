@@ -30,6 +30,7 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
+from . import cache
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -454,13 +455,7 @@ def api_wordcloud():
     if request.json['size']>1000:
         abort(400)
     else:
-        result = search.search(
-            corpus = request.json['corpus'],
-            query_model = request.json['es_query'],
-            size = request.json['size']
-        )
-        list_of_texts = search.hits(result)
-        word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
+        word_counts = tasks.get_wordcloud_data.delay(request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
         else:
@@ -474,8 +469,7 @@ def api_wordcloud_tasks():
     if not request.json:
         abort(400)
     else:
-        word_counts_task = chain(tasks.get_wordcloud_data.s(request.json), tasks.make_wordcloud_data.s(request.json))
-        word_counts = word_counts_task.apply_async()
+        word_counts = tasks.get_wordcloud_data.delay(request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
         else:
@@ -628,17 +622,24 @@ def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    try:
-        results = analyze.get_aggregate_term_frequency(
-            request.json['es_query'],
-            request.json['corpus_name'],
-            request.json['field_name'],
-            request.json['field_value'],
-            request.json['size'],
-        )
-    except KeyError:
-        abort(400)
+    def calculate():
+        try:
+            return analyze.get_aggregate_term_frequency(
+                request.json['es_query'],
+                request.json['corpus_name'],
+                request.json['field_name'],
+                request.json['field_value'],
+                request.json['size'],
+            )
+        except KeyError:
+            return 'missing parameters'
 
+    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
+    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+
+    if results == 'missing parameters':
+        abort(400)
+    
     if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
@@ -657,16 +658,23 @@ def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    try:
-        results = analyze.get_date_term_frequency(
-            request.json['es_query'],
-            request.json['corpus_name'],
-            request.json['field_name'],
-            request.json['start_date'],
-            request.json['end_date'],
-            request.json['size'],
-        )
-    except KeyError:
+    def calculate():
+        try:
+            return analyze.get_date_term_frequency(
+                request.json['es_query'],
+                request.json['corpus_name'],
+                request.json['field_name'],
+                request.json['start_date'],
+                request.json['end_date'],
+                request.json['size'],
+            )
+        except KeyError:
+            return 'missing parameters'
+    
+    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
+    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+
+    if results == 'missing parameters':
         abort(400)
 
     if isinstance(results, str):

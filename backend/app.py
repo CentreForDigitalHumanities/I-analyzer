@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 
 from ianalyzer import config_fallback as config
-from ianalyzer.models import User, Role, db, Corpus
+from ianalyzer.models import User, Role, db, Corpus, Visualization
 from ianalyzer.factories.app import flask_app
 from ianalyzer.factories.elasticsearch import elasticsearch
 from addcorpus.load_corpus import load_corpus
@@ -180,6 +180,26 @@ def append_corpus_role(user, corpus):
         db.session.add(role_corpus)
     if role_corpus not in user.role.corpora:
         user.role.corpora.append(role_corpus)
+
+@app.cli.command()
+@click.option(
+    '--corpus', '-c', help='Optional. If not specified, cache is cleared for a specific corpus rather than all.'
+)
+@click.option(
+    '--type', '-t', help='Optional. If specified, cache is cleared for a specific visualisation type rather than all. Possible values are `termfrequency`, `wordcloud`, `ngram`'
+)
+def clearcache(corpus, type):
+    if corpus and type:
+        visualizations = Visualization.query.filter_by(corpus_name = corpus, visualization_type = type)
+    elif corpus:
+        visualizations = Visualization.query.filter_by(corpus_name = corpus)
+    elif type:
+        visualizations = Visualization.query.filter_by(visualization_type = type)
+    else:
+        visualizations = Visualization.query.all()
+    
+    visualizations.delete()
+    db.session.commit()
 
 
 if __name__ == '__main__':

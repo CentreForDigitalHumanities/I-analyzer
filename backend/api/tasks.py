@@ -13,6 +13,7 @@ from api import analyze
 from api.user_mail import send_user_mail
 from es import es_forward, download
 from ianalyzer import celery_app
+import api.cache as cache
 
 logger = logging.getLogger(__name__)
 
@@ -32,29 +33,33 @@ def make_csv(results, request_json):
 
 @celery_app.task()
 def get_wordcloud_data(request_json):
-    list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
-    return list_of_texts
+    def calculate():
+        list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
+        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+        return word_counts
 
+    return cache.make_visualization('wordcloud', request_json['corpus'], request_json, calculate)
 
-@celery_app.task()
-def make_wordcloud_data(list_of_texts, request_json):
-    word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
-    return word_counts
 
 @celery_app.task()
 def get_ngram_data(request_json):
-    results = analyze.get_ngrams(
-        request_json['es_query'],
-        request_json['corpus_name'],
-        request_json['field'],
-        ngram_size=request_json['ngram_size'],
-        term_positions=request_json['term_position'],
-        freq_compensation=request_json['freq_compensation'],
-        subfield=request_json['subfield'],
-        max_size_per_interval=request_json['max_size_per_interval'],
-        number_of_ngrams=request_json['number_of_ngrams']
-    )
-    return results
+    def calculate():
+        return analyze.get_ngrams(
+            request_json['es_query'],
+            request_json['corpus_name'],
+            request_json['field'],
+            ngram_size=request_json['ngram_size'],
+            term_positions=request_json['term_position'],
+            freq_compensation=request_json['freq_compensation'],
+            subfield=request_json['subfield'],
+            max_size_per_interval=request_json['max_size_per_interval'],
+            number_of_ngrams=request_json['number_of_ngrams']
+        )
+
+    corpus = request_json['corpus_name']
+    result = cache.make_visualization('ngram', corpus, request_json, calculate)
+
+    return result
 
 def create_query(request_json):
     """
