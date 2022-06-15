@@ -115,7 +115,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         if (this.queryModel.queryText == null) {
             options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
-            options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+            options.plugins.title.text = `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         }
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;

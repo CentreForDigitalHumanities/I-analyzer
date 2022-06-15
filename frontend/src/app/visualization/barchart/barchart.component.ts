@@ -157,10 +157,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         if (this.queryModel.queryText == null) {
             this.chart.options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else if (this.normalizer == 'documents') {
-            this.chart.options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, normalized by ${this.normalizer})`;
+            this.chart.options.plugins.title.text = `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, normalized by ${this.normalizer})`;
         }
         else {
-            this.chart.options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+            this.chart.options.plugins.title.text = `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         }
         if (this.rawData && this.chart) {
             this.prepareChart();

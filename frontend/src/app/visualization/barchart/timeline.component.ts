@@ -147,7 +147,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         if (this.queryModel.queryText == null) {
             options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
-            options.plugins.title.text = `Frequency of '${this.queryModel.queryText}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+            options.plugins.title.text = `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         }
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
