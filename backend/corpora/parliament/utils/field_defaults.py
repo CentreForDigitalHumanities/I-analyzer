@@ -62,7 +62,8 @@ def date():
             MAX_DATE,
             description='Search only within this time range.'
         ),
-        visualizations=['timeline']
+        visualizations=['timeline'],
+        primary_sort=True,
     )
 
 def date_is_estimate():
