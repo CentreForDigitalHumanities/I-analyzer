@@ -645,6 +645,7 @@ class Field(object):
                  search_filter=None,
                  extractor=extract.Constant(None),
                  sortable=None,
+                 primary_sort=False,
                  searchable=None,
                  downloadable=True,
                  **kwargs
@@ -668,6 +669,8 @@ class Field(object):
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
             es_mapping['type'] in ['integer', 'float', 'date']
+        
+        self.primary_sort = primary_sort
 
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
         # Keyword fields without a filter are also searchable.

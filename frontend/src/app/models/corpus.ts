@@ -53,6 +53,7 @@ export type CorpusField = {
     multiFields?: string[],
     hidden: boolean,
     sortable: boolean,
+    primarySort: boolean,
     searchable: boolean,
     downloadable: boolean,
     name: string,
