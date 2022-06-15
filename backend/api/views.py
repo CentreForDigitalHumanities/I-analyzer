@@ -469,8 +469,7 @@ def api_wordcloud_tasks():
     if not request.json:
         abort(400)
     else:
-        word_counts_task = chain(tasks.get_wordcloud_data.s(request.json))
-        word_counts = word_counts_task.apply_async()
+        word_counts = tasks.get_wordcloud_data.delay(request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
         else:
