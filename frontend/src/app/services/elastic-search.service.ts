@@ -1,30 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { FoundDocument, Corpus, CorpusField, ElasticSearchIndex, QueryModel, SearchResults,
+import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
     AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
-import { ApiRetryService } from './api-retry.service';
 
 import * as _ from 'lodash';
 
 
-type Connections = { [serverName: string]: Connection };
-
 @Injectable()
 export class ElasticSearchService {
-    private connections: Promise<Connections>;
+    private client: Client;
+    private resultsPerPage = 20;
 
-    constructor(apiRetryService: ApiRetryService, private http: HttpClient) {
-        this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
-            configs.reduce((connections: Connections, config) => {
-                const client = new Client(this.http, config.host);
-                connections[config.name] = {
-                    config,
-                    client: client
-                };
-                return connections;
-            }, {}));
+    constructor(private http: HttpClient) {
+        this.client = new Client(this.http);
     }
 
     public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
@@ -101,19 +91,18 @@ export class ElasticSearchService {
     }
 
     private executeAggregate(index: Corpus, aggregationModel) {
-        return this.connections.then((connections) => connections[index.serverName].client.search({
+        return this.client.search({
             index: index.name,
             size: 0,
             body: aggregationModel
-        }));
+        });
     }
 
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
     private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
-        const connection = (await this.connections)[index.serverName];
-        return connection.client.search<T>({
+        return this.client.search<T>({
             index: index.name,
             from: from,
             size: size,
@@ -175,10 +164,9 @@ export class ElasticSearchService {
         queryModel: QueryModel,
         size?: number,
     ): Promise<SearchResults> {
-        const connection = (await this.connections)[corpusDefinition.serverName];
         const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage);
         return this.parseResponse(response);
     }
 
@@ -190,10 +178,9 @@ export class ElasticSearchService {
         corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
-        const connection = (await this.connections)[corpusDefinition.serverName];
         const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
+        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage, from);
         return this.parseResponse(response);
     }
 
@@ -300,10 +287,10 @@ interface Aggregator {
 }
 
 export class Client {
-    constructor(private http: HttpClient, private host: string) {
+    constructor(private http: HttpClient) {
     }
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `${this.host}/${searchParams.index}/_search`;
+        const url = `es/${searchParams.index}/_search`;
         const optionDict = {
             'size': searchParams.size.toString()
         };

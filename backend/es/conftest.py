@@ -1,5 +1,7 @@
 import pytest
 import responses
+from time import sleep
+import sys
 
 from werkzeug.security import generate_password_hash
 
@@ -8,10 +10,13 @@ from flask.testing import FlaskClient
 from flask_login import login_user
 
 from ianalyzer.factories.app import flask_app
+from ianalyzer.factories.elasticsearch import elasticsearch
 from ianalyzer.models import db as _db, Corpus, User, Role
 import ianalyzer.config_fallback as config
 
 import es.es_index as index
+
+from addcorpus.load_corpus import load_corpus
 
 TIMES_USER_PASSWORD = '12345'
 
@@ -29,7 +34,7 @@ class UnittestConfig:
         'default': config.SERVERS['default']
     }
     CORPUS_SERVER_NAMES = {
-        'times': 'default',
+        'times': 'default'
     }
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
@@ -62,29 +67,24 @@ def test_es_client(test_app):
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
+    client = elasticsearch('times')
+    # check if client is available, else skip test
     try:
-        # initiate an elasticsearch client
-        # sniff_on_start to check whether we can connect to the ES server
-        # allows skipping tests that require ES server if none is running
-        client = elasticsearch('times', UnittestConfig, sniff_on_start=True)
+        client.info()
     except:
-        client = None
+        pytest.skip('Cannot connect to elasticsearch server')
 
-    if client:
-        # add data from mock corpus
-        corpus = load_corpus('times')
-        index.create(client, corpus, False, True, False)
-        index.populate(client, 'times', corpus)
+    # add data from mock corpus
+    corpus = load_corpus('times')
+    index.create(client, corpus, False, True, False)
+    index.populate(client, 'times', corpus)
+    client.index(index='ianalyzer-times', document={'content': 'banana'})
 
-        # ES is "near real time", so give it a second before we start searching the index
-        sleep(2)
-
-        yield client
-
-        # delete index when done
-        client.indices.delete(index = 'times')
-    else:
-        yield None
+    # ES is "near real time", so give it a second before we start searching the index
+    sleep(2)
+    yield client
+    # delete index when done
+    client.indices.delete(index='ianalyzer-times')
 
 
 class CustomTestClient(FlaskClient):

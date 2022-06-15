@@ -193,14 +193,14 @@ def get_time_bins(es_query, corpus):
     10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
 
     min_date, max_date = get_total_time_interval(es_query, corpus)
-    min_year, max_year = min_date.year, max_date.year        
+    min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
     if time_range <= 20:
         year_step = 1
     elif time_range <= 100:
         year_step = 5
-    else: 
+    else:
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
@@ -208,20 +208,20 @@ def get_time_bins(es_query, corpus):
     bins_max = bins[-1][1]
     if bins_max < max_year:
         bins.append((bins_max + 1, max_year))
-    
+
     return bins
- 
+
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, subfield, max_size_per_interval):
     index = get_index(corpus)
-    client = elasticsearch(index)
+    client = elasticsearch(corpus)
     ngrams_per_bin = []
     ngram_ttfs = dict()
 
     query_text = query.get_query_text(es_query)
     field = field if subfield == 'none' else '.'.join([field, subfield])
     analyzed_query_text = client.indices.analyze(
-        index = index,
+        index=index,
         body={
             'text': query_text,
             'field': field,
@@ -260,7 +260,7 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
             if field in termvectors['term_vectors']:
                 terms = termvectors['term_vectors'][field]['terms']
-                
+
                 all_tokens = [{'position': token['position'], 'term': term, 'ttf': terms[term]['ttf'] }
                     for term in terms for token in terms[term]['tokens']]
                 sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
@@ -305,7 +305,7 @@ def get_top_10_ngrams(counters, total_frequencies = None):
     total_counter = Counter()
     for c in counters:
         total_counter.update(c)
-        
+
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
@@ -359,7 +359,7 @@ def extract_data_for_term_frequency(corpus, search_fields = None):
             'type': highlight_type,
             'fragment_size': 1,
         }
-    
+
     highlight_specs = {
         'number_of_fragments': 100,
         'fields':  highlight_fields,
@@ -411,7 +411,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     )
 
     doc_count = total_hits(results)
-    
+
     if token_count_aggregators:
         token_count = int(sum(
             results['aggregations'][counter]['value']

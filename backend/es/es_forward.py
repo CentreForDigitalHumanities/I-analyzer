@@ -2,7 +2,7 @@ import logging
 import json
 
 import requests
-from requests.exceptions import Timeout, ConnectionError
+from elastic_transport import ConnectionError, ConnectionTimeout
 
 from flask import current_app, request, json, abort, Response
 from flask_login import login_required, current_user
@@ -12,32 +12,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from . import es
 from .search import get_index
 
-PASSTHROUGH_HEADERS = ('Content-Encoding', 'Content-Length')
-TIMEOUT_SECONDS = 30
-
 logger = logging.getLogger(__name__)
-
-
-def ensure_http(hostname):
-    """ If hostname does not include the http or https scheme, prepend https. """
-    if hostname.startswith('http'):
-        return hostname
-    else:
-        prefix = 'https:'
-        if not hostname.startswith('/'):
-            prefix += '//'
-    return prefix + hostname
-
-
-def get_es_host_or_404(server_name):
-    """ Get the hostname of an ES server by name; abort if nonexistent. """
-    if not server_name in config.SERVERS:
-        abort(404)
-    server = config.SERVERS[server_name]
-    host = ensure_http(server['host'])
-    if server['port']:
-        host += ':{}'.format(server['port'])
-    return host
 
 
 def require_access(corpus_name):
@@ -46,61 +21,24 @@ def require_access(corpus_name):
         abort(401)  # Unauthorized
 
 
-def proxy_es(address):
-    """ Forward the current request to ES, forward the response to wsgi. """
-    kwargs = {}
-    if request.mimetype.count('json'):
-        kwargs['json'] = request.get_json(cache=False)
-    try:
-        headers = {'Authorization': 'ApiKey VHd1TnQ0QUJFNW05a1FiQXp3bGQ6OXNuVlZmbjBSVXFvdW5yS2R3V0NGQQ=='}
-
-        es_response = requests.request(
-            request.method,
-            address,
-            headers=headers,
-            params=request.args,
-            stream=True,
-            timeout=TIMEOUT_SECONDS,
-            verify='/Applications/elasticsearch-8.0.0/config/certs/http_ca.crt',
-            **kwargs
-        )
-    except ConnectionError:
-        abort(503)  # Service unavailable
-    except Timeout:
-        abort(504)  # Gateway Timeout
-    return Response(
-        es_response.raw.stream(),
-    )
-
-
-@ es.route('/<server_name>', methods=['HEAD'])
+@ es.route('/<corpus_name>/_search', methods=['POST'])
 @ login_required
-def forward_head(server_name):
-    """ Forward requests that check whether the ES server is still up. """
-    host = get_es_host_or_404(server_name)
-    return proxy_es(host)
-
-
-@ es.route('/<server_name>/_search/scroll', methods=['POST'])
-@ login_required
-def forward_scroll(server_name):
-    """ Forward scroll requests (needed for large downloads). """
-    host = get_es_host_or_404(server_name)
-    address = '{}/_search/scroll'.format(host)
-    return proxy_es(address)
-
-
-@ es.route('/<server_name>/<corpus_name>/_search', methods=['POST'])
-@ login_required
-def forward_search(server_name, corpus_name):
+def forward_search(corpus_name):
     """ Forward search requests to ES, if permitted. """
     require_access(corpus_name)
     client = elasticsearch(corpus_name)
     index = get_index(corpus_name)
-    results = client.search(
-        index=index,
-        body=json.loads(request.get_data()),
-        track_total_hits=True,
-        **request.args.to_dict()
-    )
+    try:
+        results = client.search(
+            index=index,
+            body=json.loads(request.get_data()),
+            track_total_hits=True,
+            **request.args.to_dict()
+        )
+    except ConnectionError as e:
+        logger.error(e)
+        abort(503)  # Service unavailable
+    except ConnectionTimeout as e:
+        logger.error(e)
+        abort(504)  # Gateway Timeout
     return Response(json.dumps(results.raw))

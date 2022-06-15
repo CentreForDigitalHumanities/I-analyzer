@@ -21,8 +21,8 @@ def search(corpus, query_model: Dict = {}, client = None, **kwargs):
     index = get_index(corpus)
 
     if not client:
-        client = elasticsearch(index)
-    
+        client = elasticsearch(corpus)
+
     search_result = client.search(
         index=index,
         **query_model,
