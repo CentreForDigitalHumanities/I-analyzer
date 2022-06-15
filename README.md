@@ -24,7 +24,7 @@ See the documentation for [a more extensive overview](./documentation/Overview.m
 Prerequisites
 -------------------------------------------------------------------------------
 
-* Python >=3.6, <=3.7
+* Python == 3.7
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
