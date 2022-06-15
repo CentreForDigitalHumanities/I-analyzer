@@ -345,23 +345,9 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         return false;
     }
 
-    onImageRequested() {
-        const filenamestring: string = `timeline_${this.corpus.name}_${this.visualizedField.name}.png`;
+    public onImageRequested() {
+        var filenamestring: string = `timeline_${this.corpus.name}_${this.visualizedField.name}.png`;
         var node:any = document.getElementById('barchart');
-        htmlToImage.toPng(node)
-          .then(function (dataUrl) {
-            var img = new Image();
-            img.src = dataUrl;
-            //document.body.appendChild(img); // for testing purposes
-            var anchor = document.createElement("a");
-            anchor.href = dataUrl;
-            anchor.download = filenamestring;
-            anchor.click();
-          })
-          .catch(function (error) {
-            console.log('oops, something went wrong!', error);
-          });        
-
-        }
-
+        return [node, filenamestring];
+    }
 }

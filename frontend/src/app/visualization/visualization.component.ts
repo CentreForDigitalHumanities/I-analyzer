@@ -6,6 +6,8 @@ import { Corpus, QueryModel, visualizationField } from '../models/index';
 import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
+import * as htmlToImage from 'html-to-image';
+
 
 import { HistogramComponent } from './barchart/histogram.component';
 import { TimelineComponent } from './barchart/timeline.component';
@@ -164,18 +166,31 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     onRequestImage() {
         if(this.visualizedField.visualization == 'histogram') {
-            this.histogram.onImageRequested();
+            var [node, filenamestring] = this.histogram.onImageRequested();
         }
         if(this.visualizedField.visualization == 'timeline') {
-            this.timeline.onImageRequested();
+            var [node, filenamestring] = this.timeline.onImageRequested();
+        }
+        if(this.visualizedField.visualization == 'wordcloud') {
+            var [node, filenamestring] = this.wordcloud.onImageRequested();
         }
         // TODO: Leaving this until new ngram visualisation is merged
         // if(this.visualizedField.visualization == 'ngram') {
         //     this.ngram.onImageRequested();
         // }
-        if(this.visualizedField.visualization == 'wordcloud') {
-            this.wordcloud.onImageRequested();
-        }
-        console.log(this.visualizedField.visualization)
+        
+        htmlToImage.toPng(node)
+          .then(function (dataUrl) {
+            var img = new Image();
+            img.src = dataUrl;
+            var anchor = document.createElement("a");
+            anchor.href = dataUrl;   
+            anchor.download = filenamestring;
+            anchor.click();
+          })
+          .catch(function (error) {
+            console.log('oops, something went wrong!', error);
+          });   
+        
     }
 }

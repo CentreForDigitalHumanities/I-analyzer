@@ -149,20 +149,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     
     onImageRequested() {
         const filenamestring: string = `wordcloud_${this.corpus.name}_${this.visualizedField.name}.png`;
-        var node:any = document.getElementById('wordcloud_div');
-        htmlToImage.toPng(node)
-          .then(function (dataUrl) {
-            var img = new Image();
-            img.src = dataUrl;
-            //document.body.appendChild(img);
-            var anchor = document.createElement("a");
-            anchor.href = dataUrl;
-            anchor.download = filenamestring;
-            anchor.click();
-          })
-          .catch(function (error) {
-            console.log('oops, something went wrong!', error);
-          });        
-
+        var node:any = document.getElementById('wordcloud_div');     
+        return [node, filenamestring];
         }
 }
