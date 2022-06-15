@@ -111,8 +111,7 @@ export class SearchComponent implements OnInit {
 
     public search() {
         this.queryModel = this.createQueryModel();
-        const usingDefaultSortField = this.sortField === 'default';
-        const route = this.searchService.queryModelToRoute(this.queryModel, usingDefaultSortField);
+        const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
         const url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
             { relativeTo: this.activatedRoute },
@@ -173,7 +172,7 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
-            const sortField = this.sortField === 'default' ? this.defaultSortField : this.sortField;
+            const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
 
         return this.searchService.createQueryModel(
             this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
@@ -255,5 +254,9 @@ export class SearchComponent implements OnInit {
     private selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
+    }
+
+    get useDefaultSort(): boolean {
+        return this.sortField === 'default';
     }
 }
