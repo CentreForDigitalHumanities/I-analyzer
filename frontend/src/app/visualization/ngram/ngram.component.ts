@@ -465,4 +465,10 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
         return `${value}`;
     }
+
+    onImageRequested() {
+        var filenamestring: string = `ngrams_${this.corpus.name}_${this.visualizedField.name}.png`;
+        var node:any = document.getElementById('chart');
+        return [node, filenamestring];
+        }
 }

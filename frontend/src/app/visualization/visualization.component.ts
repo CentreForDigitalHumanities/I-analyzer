@@ -174,10 +174,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         if(this.visualizedField.visualization == 'wordcloud') {
             var [node, filenamestring] = this.wordcloud.onImageRequested();
         }
-        // TODO: Leaving this until new ngram visualisation is merged
-        // if(this.visualizedField.visualization == 'ngram') {
-        //     this.ngram.onImageRequested();
-        // }
+        if(this.visualizedField.visualization == 'ngram') {
+            var [node, filenamestring] = this.ngram.onImageRequested();
+        }
         
         htmlToImage.toPng(node)
           .then(function (dataUrl) {
