@@ -11,6 +11,7 @@ from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.parliament.utils.constants import DOCUMENT_CONTEXT
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -52,11 +53,7 @@ class ParliamentUK(Parliament, CSVCorpus):
 
     field_entry = 'speech_id'
 
-    document_context = {
-        'context_field': 'debate_id',
-        'sort_field': 'sequence',
-        'context_display_name': 'debate'
-    }
+    document_context = DOCUMENT_CONTEXT
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

@@ -22,3 +22,9 @@ BASIC_TEXT_MAPPING = {
         }
     }
 }
+
+DOCUMENT_CONTEXT = {
+    'context_field': 'debate_id',
+    'sort_field': 'sequence',
+    'context_display_name': 'debate'
+}
