@@ -48,3 +48,5 @@ If a field includes the `'resultcount' and/or `'termfrequency'` visualisations a
 `search_field_core` determines if a field is listed by default when selecting specific fields to search in. If it is not set to `True`, the user would have to click on "show all fields" to see it.
 
 `csv_core` determines if a field is included in the CSV download of search results by default.
+
+`sortable` determines whether a field should appear as a sort option. Optionally, you can specify a sortable field that should be used as the default sorting if there is no query (with a query, results are sorted by relevance by default). Set `primary_sort = True` for that field. (Setting primary_sort for more than one field will only affect the first in the list.)

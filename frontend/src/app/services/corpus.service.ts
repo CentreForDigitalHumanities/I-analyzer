@@ -79,6 +79,7 @@ export class CorpusService {
             multiFields: data['es_mapping'].fields ? Object.keys(data['es_mapping'].fields) : undefined,
             hidden: data.hidden,
             sortable: data.sortable,
+            primarySort: data.primary_sort,
             searchable: data.searchable,
             downloadable: data.downloadable,
             name: data.name,

@@ -23,8 +23,19 @@ export type freqTableHeader = {
     label: string,
     format?: (value) => string,
     formatDownload?: (value) => string,
-}
+    isMainFactor?: boolean,
+    isSecondaryFactor?: boolean,
+};
 
 export type freqTableHeaders = freqTableHeader[];
 
 export type Normalizer = 'raw'|'percent'|'documents'|'terms';
+
+export type NgramParameters = {
+    size: number,
+    positions: number[],
+    freqCompensation: boolean,
+    analysis: string,
+    maxDocuments: number,
+    numberOfNgrams: number,
+};

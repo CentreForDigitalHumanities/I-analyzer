@@ -26,6 +26,7 @@ describe('DocumentViewComponent', () => {
             description: 'Description',
             hidden: false,
             sortable: false,
+            primarySort: false,
             searchable: false,
             searchFilter: null,
             downloadable: true

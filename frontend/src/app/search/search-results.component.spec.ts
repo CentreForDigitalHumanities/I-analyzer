@@ -55,6 +55,7 @@ describe('Search Results Component', () => {
             searchFilter: null,
             hidden: false,
             sortable: true,
+            primarySort: false,
             searchable: false,
             downloadable: true,
         };
