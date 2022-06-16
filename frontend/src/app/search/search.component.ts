@@ -111,7 +111,6 @@ export class SearchComponent implements OnInit {
 
     public search() {
         this.queryModel = this.createQueryModel();
-        console.log(this.queryModel);
         const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
         const url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
@@ -313,6 +312,29 @@ export class SearchComponent implements OnInit {
             return {
                 filterType: 'MultipleChoiceFilter',
                 selected: [contextValue]
+            };
+        }
+
+        if (contextField.mappingType === 'boolean') {
+            return {
+                filterType: 'BooleanFilter',
+                checked: contextValue,
+            };
+        }
+
+        if (contextField.mappingType === 'integer') {
+            return {
+                filterType: 'RangeFilter',
+                min: contextValue,
+                max: contextValue,
+            };
+        }
+
+        if (contextField.mappingType === 'date') {
+            return {
+                filterType: 'DateFilter',
+                min: contextValue,
+                max: contextValue,
             };
         }
     }
