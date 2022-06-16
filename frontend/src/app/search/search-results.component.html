@@ -75,7 +75,12 @@
     *ngIf="viewDocument">
     <ng-template pTemplate="header">
         <strong>Document {{viewDocument.position}} of {{totalResults}}</strong>
-        <a class="button" *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)">View context</a>
+        <a *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)">
+            <span class="icon">
+                <fa-icon [icon]="contextIcon"></fa-icon>
+            </span>
+            <span>View {{contextDisplayName}}</span>
+        </a>
     </ng-template>
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
 </p-dialog>

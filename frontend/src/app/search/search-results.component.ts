@@ -3,6 +3,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Ou
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search-results',
@@ -66,6 +67,8 @@ export class SearchResultsComponent implements OnChanges {
      */
     public viewDocument: FoundDocument;
     public documentTabIndex: number;
+
+    contextIcon = faBookOpen;
 
     constructor(private searchService: SearchService) { }
 
@@ -141,5 +144,11 @@ export class SearchResultsComponent implements OnChanges {
         const contextField = this.corpus.documentContext.contextField;
         const contextValue = document.fieldValues[contextField.name];
         this.contextEvent.emit(contextValue);
+    }
+
+    get contextDisplayName(): string {
+        if (this.corpus && this.corpus.documentContext) {
+            return this.corpus.documentContext.displayName;
+        }
     }
 }
