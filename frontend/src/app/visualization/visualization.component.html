@@ -11,6 +11,7 @@
     <div class="level-right">
         <div class="level-item">
             <div class="field has-addons">
+                
                 <!-- Buttons for switching between table and graphical representation -->
                 <div class="control">
                     <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
@@ -49,6 +50,8 @@
     </div>
 </ng-container>
 
+
+
 <div class="level">
     <div class="level-left">
         <div class="level-item">
@@ -65,6 +68,15 @@
         </div>
     </div>
 </div>
+
+<button class="button download-button" *ngIf="!freqtable" [class.button]="true" (click)="onRequestImage()">
+    <span class="icon is-small">
+        <i class="fa fa-download"></i>
+    </span>
+    <span>Download visualization</span>
+</button>
+
+
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>

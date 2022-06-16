@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
 
+
 @Component({
     selector: 'ia-timeline',
     templateUrl: './timeline.component.html',
@@ -141,6 +142,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
+        options.plugins.title.text = this.chartTitle()
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';
@@ -341,5 +343,4 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         }
         return false;
     }
-
 }
