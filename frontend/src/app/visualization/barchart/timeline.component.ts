@@ -144,11 +144,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
-        if (this.queryModel.queryText == null) {
-            options.plugins.title.text = `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
-        } else {
-            options.plugins.title.text = `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
-        }
+        options.plugins.title.text = this.chartTitle()
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';

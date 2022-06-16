@@ -529,4 +529,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         return false;
     }
 
+    chartTitle() {
+        if (this.queryModel.queryText == null) {
+            return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        } else {
+            return `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        }
+    }
+
 }
