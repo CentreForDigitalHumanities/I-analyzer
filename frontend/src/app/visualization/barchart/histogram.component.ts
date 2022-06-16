@@ -5,7 +5,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
-import * as htmlToImage from 'html-to-image';
+
 
 @Component({
     selector: 'ia-histogram',
@@ -154,11 +154,4 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
         return this.currentValueKey;
     }
-
-    onImageRequested() {
-        var filenamestring: string = `histogram_${this.corpus.name}_${this.visualizedField.name}.png`;
-        var node:any = document.getElementById('barchart');
-        return [node, filenamestring];
-        }
-
 }

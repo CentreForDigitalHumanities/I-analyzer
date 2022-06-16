@@ -9,8 +9,6 @@ import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
 
-import * as htmlToImage from 'html-to-image';
-
 
 @Component({
     selector: 'ia-timeline',
@@ -344,11 +342,5 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 (initialBounds.max && initialBounds.max > currentBounds.max);
         }
         return false;
-    }
-
-    public onImageRequested() {
-        var filenamestring: string = `timeline_${this.corpus.name}_${this.visualizedField.name}.png`;
-        var node:any = document.getElementById('barchart');
-        return [node, filenamestring];
     }
 }

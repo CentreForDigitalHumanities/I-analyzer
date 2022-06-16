@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { SelectItem, SelectItemGroup } from 'primeng/api';
 import * as _ from 'lodash';
 
@@ -7,12 +7,6 @@ import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
-
-
-import { HistogramComponent } from './barchart/histogram.component';
-import { TimelineComponent } from './barchart/timeline.component';
-import { NgramComponent } from './ngram/ngram.component';
-import { WordcloudComponent } from './wordcloud/wordcloud.component';
 
 @Component({
     selector: 'ia-visualization',
@@ -23,15 +17,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
-
-    @ViewChild(HistogramComponent)
-    histogram: HistogramComponent;
-    @ViewChild(TimelineComponent)
-    timeline: TimelineComponent;
-    @ViewChild(NgramComponent)
-    ngram: NgramComponent;
-    @ViewChild(WordcloudComponent)
-    wordcloud: WordcloudComponent;
 
     public visualizedFields: visualizationField[];
 
@@ -165,18 +150,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     
 
     onRequestImage() {
-        if(this.visualizedField.visualization == 'histogram') {
-            var [node, filenamestring] = this.histogram.onImageRequested();
-        }
-        if(this.visualizedField.visualization == 'timeline') {
-            var [node, filenamestring] = this.timeline.onImageRequested();
-        }
-        if(this.visualizedField.visualization == 'wordcloud') {
-            var [node, filenamestring] = this.wordcloud.onImageRequested();
-        }
-        if(this.visualizedField.visualization == 'ngram') {
-            var [node, filenamestring] = this.ngram.onImageRequested();
-        }
+        const filenamestring = `${this.visualizedField.visualization}_${this.corpus.name}_${this.visualizedField.name}.png`;
+        const node = document.getElementById(this.chartElementId(this.visualizedField.visualization));
         
         htmlToImage.toPng(node)
           .then(function (dataUrl) {
@@ -191,5 +166,16 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             this.notificationService.showMessage('oops, something went wrong!', error);
           });   
         
+    }
+    chartElementId(visualizationType): string {
+        if (visualizationType === 'timeline' || visualizationType === 'histogram') {
+            return 'barchart';
+        }
+        if (visualizationType === 'ngram') {
+            return 'chart';
+        }
+        if (visualizationType === 'wordcloud') {
+            return 'wordcloud_div';
+        }
     }
 }

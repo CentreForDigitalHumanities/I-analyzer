@@ -6,8 +6,6 @@ import * as d3 from 'd3';
 import { AggregateResult, visualizationField, QueryModel, Corpus, freqTableHeaders } from '../../models/index';
 import { DialogService, SearchService, ApiService } from '../../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
-import * as htmlToImage from 'html-to-image';
-
 
 @Component({
     selector: 'ia-wordcloud',
@@ -146,10 +144,4 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
         layout.start();
     }
-    
-    onImageRequested() {
-        const filenamestring: string = `wordcloud_${this.corpus.name}_${this.visualizedField.name}.png`;
-        var node:any = document.getElementById('wordcloud_div');     
-        return [node, filenamestring];
-        }
 }
