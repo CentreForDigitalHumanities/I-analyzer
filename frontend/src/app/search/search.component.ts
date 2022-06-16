@@ -287,6 +287,7 @@ export class SearchComponent implements OnInit {
 
         this.queryText = undefined;
         this.sortField = contextSpec.sortField || 'default';
+        this.sortAscending = contextSpec.sortDirection === 'asc';
 
         const filterData = this.contextFilterData(contextSpec.contextField, contextValue);
 

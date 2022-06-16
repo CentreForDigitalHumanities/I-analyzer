@@ -104,6 +104,7 @@ class Corpus(object):
         - `'sort_field'`: the `name` of the field by which documents can be sorted
         within their respective group. The field should be marked as `sortable`. If `None`, 
         no sorting will be applied.
+        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
         - `'context_display_name'`: The display name for the context used in the interface. If
         `None`, use the displayName of the context field.
         '''

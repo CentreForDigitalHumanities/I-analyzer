@@ -42,6 +42,7 @@ export type DocumentType = 'article';
 export type DocumentContext = {
     contextField: CorpusField,
     sortField?: CorpusField,
+    sortDirection?: 'asc'|'desc',
     displayName: string,
 };
 

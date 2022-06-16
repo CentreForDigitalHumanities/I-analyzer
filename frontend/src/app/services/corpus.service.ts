@@ -143,7 +143,7 @@ export class CorpusService {
     }
 
     private parseDocumentContext (
-        data: {context_field: string|null, sort_field: string|null, context_display_name: string|null},
+        data: {context_field: string|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
         allFields: CorpusField[]
     ): DocumentContext {
         if (!data) {
@@ -158,11 +158,13 @@ export class CorpusService {
 
         const sortField = allFields.find(field => field.name === data.sort_field);
         const displayName = data.context_display_name || contextField.name;
+        const sortDirection = (data.sort_direction as 'asc'|'desc') || 'asc';
 
         return {
             contextField,
             sortField,
             displayName,
+            sortDirection,
         };
     }
 }
