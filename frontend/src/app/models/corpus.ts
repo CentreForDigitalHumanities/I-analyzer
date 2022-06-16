@@ -25,7 +25,9 @@ export class Corpus implements ElasticSearchIndex {
         public scan_image_type: string,
         public allow_image_download: boolean,
         public word_models_present: boolean,
-        public descriptionpage?: string) { }
+        public descriptionpage?: string,
+        public documentContext?: DocumentContext,
+    ) { }
 
 }
 
@@ -36,6 +38,12 @@ export type ElasticSearchIndex = {
 };
 
 export type DocumentType = 'article';
+
+export type DocumentContext = {
+    contextField: CorpusField,
+    sortField?: CorpusField,
+    displayName: string,
+};
 
 export type CorpusField = {
     description: string,
@@ -58,4 +66,5 @@ export type CorpusField = {
     downloadable: boolean,
     name: string,
     searchFilter: SearchFilter<SearchFilterData> | null,
+    mappingType: 'text' | 'keyword' | 'boolean' | 'date' | 'integer' | null;
 };

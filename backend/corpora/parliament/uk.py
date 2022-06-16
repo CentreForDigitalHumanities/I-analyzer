@@ -52,6 +52,12 @@ class ParliamentUK(Parliament, CSVCorpus):
 
     field_entry = 'speech_id'
 
+    document_context = {
+        'context_field': 'debate_id',
+        'sort_field': 'sequence',
+        'context_display_name': 'debate'
+    }
+
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):

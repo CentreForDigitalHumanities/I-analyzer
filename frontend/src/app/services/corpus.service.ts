@@ -6,7 +6,7 @@ import * as moment from 'moment';
 
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { Corpus, CorpusField, DocumentContext, SearchFilter, SearchFilterData } from '../models/index';
 
 @Injectable()
 export class CorpusService {
@@ -63,7 +63,9 @@ export class CorpusService {
             data.scan_image_type,
             data.allow_image_download,
             data.word_models_present,
-            data.description_page);
+            data.description_page,
+            this.parseDocumentContext(data.document_context, allFields)
+        );
     }
 
     private parseField(data: any): CorpusField {
@@ -84,6 +86,7 @@ export class CorpusService {
             downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null,
+            mappingType: data.es_mapping.type,
         };
     }
 
@@ -137,5 +140,29 @@ export class CorpusService {
      */
     private formatDate(date: Date): string {
         return moment(date).format().slice(0, 10);
+    }
+
+    private parseDocumentContext (
+        data: {context_field: string|null, sort_field: string|null, context_display_name: string|null},
+        allFields: CorpusField[]
+    ): DocumentContext {
+        if (!data) {
+            return undefined;
+        }
+
+        const contextField = allFields.find(field => field.name === data.context_field);
+
+        if (!contextField) {
+            return undefined;
+        }
+
+        const sortField = allFields.find(field => field.name === data.sort_field);
+        const displayName = data.context_display_name || contextField.name;
+
+        return {
+            contextField,
+            sortField,
+            displayName,
+        };
     }
 }

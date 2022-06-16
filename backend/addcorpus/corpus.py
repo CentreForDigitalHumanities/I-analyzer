@@ -93,6 +93,26 @@ class Corpus(object):
         MUST include a field with `name='id'`.
         '''
         raise NotImplementedError()
+    
+    @property
+    def document_context(self):
+        '''
+        A dictionary that specifies how documents can be grouped into a "context". For example, 
+        parliamentary speeches may be grouped into debates. The dictionary has two keys:
+        - `'context_field'`: the `name` of the field that can be used to
+        group documents. This field should have a `search_filter` defined.
+        - `'sort_field'`: the `name` of the field by which documents can be sorted
+        within their respective group. The field should be marked as `sortable`. If `None`, 
+        no sorting will be applied.
+        - `'context_display_name'`: The display name for the context used in the interface. If
+        `None`, use the displayName of the context field.
+        '''
+
+        return {
+            'context_field': None,
+            'sort_field': None,
+            'context_display_name': None
+        }
 
     @property
     def image(self):

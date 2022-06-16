@@ -33,6 +33,9 @@ export class SearchResultsComponent implements OnChanges {
 
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
+    
+    @Output('viewContext')
+    public contextEvent = new EventEmitter<any>();
 
     public isLoading = false;
     public isScrolledDown: boolean;
@@ -131,5 +134,12 @@ export class SearchResultsComponent implements OnChanges {
         this.showDocument = true;
         this.viewDocument = document;
         this.documentTabIndex = 0;
+    }
+
+    public goToContext(document: FoundDocument) {
+        this.showDocument = false;
+        const contextField = this.corpus.documentContext.contextField;
+        const contextValue = document.fieldValues[contextField.name];
+        this.contextEvent.emit(contextValue);
     }
 }

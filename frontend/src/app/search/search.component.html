@@ -85,7 +85,7 @@
                 </div>
                 <div class="column">
                     <ia-search-results *ngIf="tabIndex==0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                        (searched)="onSearched($event)">
+                        (searched)="onSearched($event)" (viewContext)="goToContext($event)">
                         <ia-search-sorting [sortField]="useDefaultSort ? defaultSortField : sortField" [ascending]="sortAscending" [fields]="corpus.fields"
                             (onChange)="changeSorting($event)"></ia-search-sorting>
                     </ia-search-results>
