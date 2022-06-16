@@ -9,7 +9,7 @@ def get_query_text(query):
         text = query['query']['bool']['must']['simple_query_string']['query']
     except KeyError:
         text = None
-    
+
     return text
 
 def get_search_fields(query):
@@ -18,8 +18,30 @@ def get_search_fields(query):
         fields = query['query']['bool']['must']['simple_query_string']['fields']
     except KeyError:
         fields = None
-    
+
     return fields
+
+def set_search_fields(query, fields):
+    """Set the search fields of a query"""
+    new_query = deepcopy(query)
+    new_query['query']['bool']['must']['simple_query_string']['fields'] = fields
+    return new_query
+
+def restrict_to_text_fields(query, corpus):
+    search_fields = get_search_fields(query)
+
+    if search_fields == None:
+        search_fields = [field.name for field in corpus.fields]
+
+    text_fields = list(filter(lambda fieldname : is_text_field(fieldname, corpus), search_fields))
+
+    return set_search_fields(query, text_fields)
+
+def is_text_field(fieldname, corpus):
+    return any(
+        field.name == fieldname and field.es_mapping['type'] == 'text'
+        for field in corpus.fields
+    )
 
 def get_filters(query):
     """Get the list of filters in a query, or `None` if there are none."""
@@ -45,15 +67,15 @@ def get_date_range(query: Dict):
 
         if len(datefilters):
             parameters = [f['range']['date'] for f in datefilters]
-            min_dates = [parse_date(p['gte']) for p in parameters if 'gte' in p] 
+            min_dates = [parse_date(p['gte']) for p in parameters if 'gte' in p]
             max_dates = [parse_date(p['lte']) for p in parameters if 'lte' in p]
 
             min_date = max(min_dates) if len(min_dates) else None
             max_date = min(max_dates) if len(max_dates) else None
 
             return min_date, max_date
-    
-    return None, None    
+
+    return None, None
 
 def add_filter(query, filter):
     """Add a filter to a query"""
@@ -64,7 +86,7 @@ def add_filter(query, filter):
         filters = existing_filters + [filter]
     else:
         filters = [filter]
-    
+
     new_query = deepcopy(query)
     new_query['query']['bool']['filter'] = filters
     return new_query
@@ -73,10 +95,10 @@ def make_date_filter(min_date = None, max_date = None):
     params = { 'format': 'yyyy-MM-dd' }
     if min_date:
         params['gte'] = date.strftime(min_date, '%Y-%m-%d')
-    
+
     if max_date:
         params['lte'] = date.strftime(max_date, '%Y-%m-%d')
-    
+
     return {
         'range': {
             'date': params
