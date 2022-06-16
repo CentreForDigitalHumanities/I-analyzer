@@ -188,7 +188,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             anchor.click();
           })
           .catch(function (error) {
-            console.log('oops, something went wrong!', error);
+            this.notificationService.showMessage('oops, something went wrong!', error);
           });   
         
     }
