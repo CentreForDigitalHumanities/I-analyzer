@@ -75,7 +75,8 @@
     *ngIf="viewDocument">
     <ng-template pTemplate="header">
         <strong>Document {{viewDocument.position}} of {{totalResults}}</strong>
-        <a *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)">
+        <a *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)"
+            iaBalloon="view all documents from this {{contextDisplayName}}">
             <span class="icon">
                 <fa-icon [icon]="contextIcon"></fa-icon>
             </span>
