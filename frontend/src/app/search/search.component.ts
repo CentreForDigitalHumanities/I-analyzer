@@ -9,6 +9,10 @@ import { CorpusService, DialogService, SearchService, UserService } from '../ser
 
 const HIGHLIGHT = 200;
 
+type searchFilterSettings = {
+    [fieldName: string]: SearchFilterData;
+};
+
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
@@ -198,13 +202,13 @@ export class SearchComponent implements OnInit {
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
     private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        const filterSettings = this.parseFilterSettingsFromParams(searchFilters, params);
+        const filterSettings = this.filterSettingsFromParams(searchFilters, params);
         this.applyFilterSettings(searchFilters, filterSettings);
     }
 
-    private parseFilterSettingsFromParams(
+    private filterSettingsFromParams(
         searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap
-    ): {[fieldName: string]: SearchFilterData} {
+    ): searchFilterSettings {
 
         const spec = {};
         searchFilters.forEach(f => {
@@ -212,14 +216,14 @@ export class SearchComponent implements OnInit {
             if (params.has(param)) {
                 let filterSettings = params.get(param).split(',');
                 if (filterSettings[0] === '') { filterSettings = []; }
-                const data = searchFilterDataFromParam(f.currentData.filterType, filterSettings)
+                const data = searchFilterDataFromParam(f.currentData.filterType, filterSettings);
                 spec[f.fieldName] = data;
             }
         });
         return spec;
     }
 
-    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: {[fieldName: string]: SearchFilterData}) {
+    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
         searchFilters.forEach(f => {
             if (_.has(filterSettings, f.fieldName)) {
                 if (this.showFilters === undefined) {
