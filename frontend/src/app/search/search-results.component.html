@@ -4,7 +4,7 @@
     </h2>
 </ng-container>
 <ng-template #resultsBlock>
-    
+
     <div class="level">
         <h2 class="subtitle" *ngIf="results.total <= 5">
             {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
@@ -15,16 +15,16 @@
         </h2>
         <ng-content select="ia-highlight-selector"></ng-content>
     </div>
-    
+
     <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
-   
+
     <div class="level">
-    
+
     <div class="level-left has-text-centered">
         <div>
             <p class="heading">Sort By</p>
             <ng-content select="ia-search-sorting"></ng-content>
-            
+
         </div>
     </div>
     <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
