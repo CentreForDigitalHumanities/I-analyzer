@@ -207,8 +207,7 @@ export class SearchComponent implements OnInit {
     }
 
     private filterSettingsFromParams(params: ParamMap): searchFilterSettings {
-
-        const spec = {};
+        const settings = {};
         this.corpus.fields.forEach(field => {
             const param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
@@ -216,10 +215,10 @@ export class SearchComponent implements OnInit {
                 if (filterSettings[0] === '') { filterSettings = []; }
                 const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
                 const data = searchFilterDataFromParam(filterType, filterSettings, field);
-                spec[field.name] = data;
+                settings[field.name] = data;
             }
         });
-        return spec;
+        return settings;
     }
 
     private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
@@ -242,7 +241,7 @@ export class SearchComponent implements OnInit {
 
     private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
         this.corpus.fields.forEach(field => {
-            if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName == field.name)) {
+            if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
                 const adHocFilter = adHocFilterFromField(field);
                 searchFilters.push(adHocFilter);
             }
