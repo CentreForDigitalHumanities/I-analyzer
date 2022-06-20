@@ -174,7 +174,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     }
     chartElementId(visualizationType): string {
-        if (visualizationType === 'timeline' || visualizationType === 'histogram') {
+        if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
             return 'barchart';
         }
         if (visualizationType === 'ngram') {
