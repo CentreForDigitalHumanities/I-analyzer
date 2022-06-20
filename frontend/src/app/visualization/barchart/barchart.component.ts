@@ -124,7 +124,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                     },
                     onZoom: ({chart}) => this.onZoomIn(chart),
                 }
-            }
+            },
+            title: {
+                display: true,
+                text: `placeholder`,
+                align: 'center',
+            },
         }
     };
 
@@ -383,6 +388,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         const labels = this.getLabels();
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
+
         this.chart = new Chart('barchart',
             {
                 type: 'bar',
@@ -394,6 +400,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 options: options
             }
         );
+
 
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
@@ -407,6 +414,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
+        this.chart.options = this.chartOptions(datasets)
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
@@ -511,6 +519,14 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     get isZoomedIn(): boolean {
         // If no zooming-related scripts are implemented, just return false
         return false;
+    }
+
+    chartTitle() {
+        if (this.queryModel.queryText == null) {
+            return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        } else {
+            return `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        }
     }
 
 }

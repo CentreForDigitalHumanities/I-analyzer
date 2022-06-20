@@ -6,6 +6,7 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
 
+
 @Component({
     selector: 'ia-histogram',
     templateUrl: './histogram.component.html',
@@ -111,6 +112,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
+        options.plugins.title.text = this.chartTitle()
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;
         options.plugins.tooltip = {
@@ -152,5 +154,4 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
         return this.currentValueKey;
     }
-
 }
