@@ -100,7 +100,7 @@ function parseMinMax(value: string[]): [string, string] {
 export function adHocFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
     return {
         fieldName: field.name,
-        description: '',
+        description: `Search only within this ${field.displayName}`,
         useAsFilter: true,
         adHoc: true,
         currentData: undefined,

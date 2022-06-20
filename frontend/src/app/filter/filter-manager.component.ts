@@ -132,7 +132,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     public filtersChanged() {
         this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
         this.setAdHocFilters();
-        console.log(this.searchFilters);
         this.filtersChangedEmitter.emit(this.activeFilters);
     }
 
