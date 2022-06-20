@@ -3,7 +3,7 @@ from glob import glob
 import logging
 import re
 from flask import current_app
-from corpora.parliament.utils.constants import DOCUMENT_CONTEXT
+from corpora.parliament.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
@@ -34,7 +34,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     field_entry = 'speech_id'
     required_field = 'content'
 
-    document_context = DOCUMENT_CONTEXT
+    document_context = document_context()
     document_context['sort_field'] = None
 
     def sources(self, start, end):

@@ -9,7 +9,7 @@ from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
-from corpora.parliament.utils.constants import DOCUMENT_CONTEXT
+from corpora.parliament.utils.constants import document_context
 
 class ParliamentFrance(Parliament, CSVCorpus):
     title = "People & Parliament (France 1881-2002)"
@@ -33,7 +33,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
 
     field_entry = 'speech_id'
 
-    document_context = DOCUMENT_CONTEXT
+    document_context = document_context()
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
