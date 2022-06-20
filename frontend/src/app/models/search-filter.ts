@@ -1,9 +1,12 @@
+import { CorpusField } from "./corpus";
+
 export type SearchFilter<T extends SearchFilterData> = {
     fieldName: string,
     description: string,
     useAsFilter: boolean,
     reset?: boolean,
     grayedOut?: boolean,
+    adHoc?: boolean,
     defaultData?: T,
     currentData: T
 }
@@ -47,19 +50,59 @@ export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>):
     }
 }
 
-export function searchFilterDataFromParam(filterType: SearchFilterType, value: string[]): SearchFilterData {
+export function searchFilterDataFromParam(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
     switch (filterType) {
         case "BooleanFilter":
             return { filterType, checked: value[0] === 'true' };
         case "MultipleChoiceFilter":
             return { filterType, selected: value };
         case "RangeFilter": {
-            let [min, max] = value[0].split(':');
+            let [min, max] = parseMinMax(value);
             return { filterType, min: parseFloat(min), max: parseFloat(max) };
         }
         case "DateFilter": {
-            let [min, max] = value[0].split(':');
+            let [min, max] = parseMinMax(value);
             return { filterType, min: min, max: max };
         }
+        case undefined: {
+            return searchFilterDataFromField(field, value);
+        }
     }
+}
+
+export function searchFilterDataFromField(field: CorpusField, value: string[]): SearchFilterData {
+    switch (field.mappingType) {
+        case 'boolean':
+            return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
+        case 'date': {
+            let [min, max] = parseMinMax(value);
+            return { filterType: 'DateFilter', min: min, max: max };
+        }
+        case 'integer': {
+            let [min, max] = parseMinMax(value);
+            return { filterType: 'RangeFilter', min: parseFloat(min), max: parseFloat(max) };
+        }
+        case 'keyword': {
+            return { filterType: 'MultipleChoiceFilter', selected: value };
+        }
+    }
+}
+
+function parseMinMax(value: string[]): [string, string] {
+    const term = value[0];
+    if (term.split(':').length === 2) {
+        return term.split(':') as [string, string];
+    } else {
+        return [term, term];
+    }
+}
+
+export function adHocFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
+    return {
+        fieldName: field.name,
+        description: '',
+        useAsFilter: true,
+        adHoc: true,
+        currentData: undefined,
+    };
 }
