@@ -8,10 +8,12 @@ import { BaseFilterComponent } from './base-filter.component';
   styleUrls: ['./ad-hoc-filter.component.scss']
 })
 export class AdHocFilterComponent extends BaseFilterComponent<SearchFilterData> implements OnInit {
-    data: { value: any};
+    data: { value: any} = { value: undefined };
 
     ngOnInit() {
-        this.data = this.getDisplayData(this.filter);
+        if (this.filter) {
+            this.data = this.getDisplayData(this.filter);
+        }
     }
 
     getValue(data: SearchFilterData) {
