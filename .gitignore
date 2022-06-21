@@ -3,6 +3,7 @@
 /.idea
 env/
 .env/
+.env-*/
 elasticsearch-*/
 .python-version
 backend/.python-version
