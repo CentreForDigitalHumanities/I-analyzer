@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import current_app
 
 from corpora.parliament.parliament import Parliament
-from addcorpus.extract import Constant, Combined, CSV
+from addcorpus.extract import Constant, Combined, CSV, Backup
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
@@ -125,20 +125,11 @@ class ParliamentFrance(Parliament, CSVCorpus):
         field='speech_id'
     )
 
-    url_pdf = field_defaults.url()
-    url_pdf.extractor = CSV(
-        field='pdf_url'
+    url = field_defaults.url()
+    url.extractor = Backup(
+        CSV(field = 'pdf_url'),
+        CSV(field = 'html_url')
     )
-    url_pdf.display_name = 'Source url (PDF)'
-    url_pdf.description = 'URL to PDF source file of this speech'
-
-    url_html = field_defaults.url()
-    url_html.extractor = CSV(
-        field='html_url'
-    )
-    url_html.name = 'url_html'
-    url_html.display_name = 'Source url (HTML)'
-    url_html.description = 'URL to HTML source file of this speech'
 
     def __init__(self):
         self.fields = [
@@ -152,7 +143,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
             self.page, self.page_source,
             self.sequence,
             self.speech, self.speech_id,
-            self.url_pdf, self.url_html
+            self.url
         ]
 
 
