@@ -99,25 +99,31 @@ describe('BarchartComponent', () => {
 
     it('should filter text fields', () => {
         component.corpus = MOCK_CORPUS;
+        component.frequencyMeasure = 'documents';
 
-        const cases: {query: QueryModel, textFields: string[]}[] = [
+        const cases = [
             {
                 query: {
                     queryText: 'test'
-                },
-                textFields: [ 'content', 'text' ]
+                }
             }, {
                 query: {
-                    queryText: 'text',
-                    fields: ['content'],
-                },
-                textFields: ['content']
+                    queryText: 'test',
+                    fields: ['content', 'text'],
+                }
             }
         ];
 
-        cases.map(testCase => {
-            const newQuery = component.restrictToTextFields(testCase.query);
-            expect(newQuery.fields).toEqual(testCase.textFields);
+        cases.forEach(testCase => {
+            const newQuery = component.selectSearchFields(testCase.query);
+            expect(newQuery.fields).toEqual(testCase.query.fields);
+        });
+
+        component.frequencyMeasure = 'tokens';
+
+        cases.forEach(testCase => {
+            const newQuery = component.selectSearchFields(testCase.query);
+            expect(newQuery.fields).toEqual(['content']);
         });
     });
 });

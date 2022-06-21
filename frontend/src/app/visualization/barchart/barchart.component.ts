@@ -244,22 +244,17 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.checkDocumentLimitExceeded();
     }
 
-    restrictToTextFields(queryModel: QueryModel) {
-        let fields: CorpusField[];
-        if (queryModel.fields) {
-            fields = queryModel.fields.map(
-                fieldName => this.corpus.fields.find(field => field.name === fieldName)
-            );
+    selectSearchFields(queryModel: QueryModel) {
+        if (this.frequencyMeasure === 'documents') {
+            return queryModel;
         } else {
-            fields = this.corpus.fields;
+            const mainContentFields = this.corpus.fields.filter(field =>
+                field.searchable && (field.displayType === 'text_content'));
+            const queryModelCopy = _.cloneDeep(queryModel);
+            queryModelCopy.fields = mainContentFields.map(field => field.name);
+
+            return queryModelCopy;
         }
-
-        const textFields = fields.filter(field =>
-            field.searchable && (field.displayType === 'text_content' || field.displayType === 'text'));
-        const queryModelCopy = _.cloneDeep(queryModel);
-        queryModelCopy.fields = textFields.map(field => field.name);
-
-        return queryModelCopy;
     }
 
     /**
@@ -529,6 +524,22 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     get isZoomedIn(): boolean {
         // If no zooming-related scripts are implemented, just return false
         return false;
+    }
+
+
+    get searchFields(): string {
+        if (this.corpus && this.queryModel) {
+            const searchFields = this.selectSearchFields(this.queryModel).fields;
+
+            const displayNames = searchFields.map(fieldName => {
+                const field = this.corpus.fields.find(f => f.name === fieldName);
+                return field.displayName;
+            });
+
+            return displayNames.join(', ');
+        }
+
+        return 'all fields';
     }
 
 }

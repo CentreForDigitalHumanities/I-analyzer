@@ -50,10 +50,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
         const aggregator = this.getAggregator();
-        let queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
-        if (this.frequencyMeasure === 'tokens') {
-            queryModelCopy = this.restrictToTextFields(queryModelCopy);
-        }
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
+
         return this.searchService.aggregateSearch(
             this.corpus, queryModelCopy, [aggregator]).then(result =>
                     this.docCountResultIntoSeries(result, series)
@@ -62,7 +60,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
         if (cat.doc_count) {
-            const queryModelCopy = this.restrictToTextFields(this.setQueryText(this.queryModel, series.queryText));
+            const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
             const binDocumentLimit = this.documentLimitForCategory(cat, series);
             return this.searchService.aggregateTermFrequencySearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
