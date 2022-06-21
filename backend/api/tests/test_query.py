@@ -1,8 +1,6 @@
 from datetime import datetime
 import api.query as query
 from es.search import search, hits
-import pytest
-from addcorpus.load_corpus import load_corpus
 
 def test_date_manipulation(basic_query):
     assert query.get_filters(basic_query) == []
