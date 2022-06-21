@@ -22,7 +22,7 @@ from flask_login import LoginManager, login_required, login_user, \
 from flask_mail import Message
 
 from ianalyzer import models, celery_app
-from es import download
+from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 
 from api.user_mail import send_user_mail
@@ -30,6 +30,7 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
+from . import cache
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -226,8 +227,7 @@ def api_download():
         return error_response
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filename = tasks.create_filename(request.json['route'])
-        filepath = tasks.make_csv.delay(search_results, filename, request.json)
+        filepath = tasks.make_csv.delay(search_results, request.json)
         csv_file = filepath.get()
         if not csv_file:
             return jsonify({'success': False, 'message': 'Could not create csv file.'})
@@ -255,11 +255,11 @@ def api_download_task():
         error_response.headers['message'] += 'user email not known.'
         return error_response
     # Celery task
-    filename = tasks.create_filename(request.json['route'])
     csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(filename, request.json))
+        tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
+        filename = split(csvs.get())[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
         send_user_mail(
@@ -275,7 +275,7 @@ def api_download_task():
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
-        
+
 
 
 
@@ -455,8 +455,7 @@ def api_wordcloud():
     if request.json['size']>1000:
         abort(400)
     else:
-        list_of_texts = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        word_counts = tasks.make_wordcloud_data.delay(list_of_texts, request.json)
+        word_counts = tasks.get_wordcloud_data.delay(request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
         else:
@@ -470,12 +469,26 @@ def api_wordcloud_tasks():
     if not request.json:
         abort(400)
     else:
-        word_counts_task = chain(tasks.get_wordcloud_data.s(request.json), tasks.make_wordcloud_data.s(request.json))
-        word_counts = word_counts_task.apply_async()
+        word_counts = tasks.get_wordcloud_data.delay(request.json)
         if not word_counts:
             return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
         else:
             return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
+
+@api.route('/ngram_tasks', methods=['POST'])
+@login_required
+def api_ngram_tasks():
+    ''' schedule a celery task and return the task id '''
+    if not request.json:
+        abort(400)
+    else:
+        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
+        ngram_counts = ngram_counts_task.apply_async()
+        if not ngram_counts_task:
+            return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
+        else:
+            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+
 
 
 @api.route('/task_outcome/<task_id>', methods=['GET'])
@@ -483,7 +496,7 @@ def api_wordcloud_tasks():
 def api_task_outcome(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
-        return jsonify({'success': False, 'message': 'Could not get word cloud data.'})
+        return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
         try:
             outcome = results.get()
@@ -600,5 +613,78 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
+        })
+    return response
+
+@api.route('aggregate_term_frequency', methods=['POST'])
+@login_required
+def api_aggregate_term_frequency():
+    if not request.json:
+        abort(400)
+
+    def calculate():
+        try:
+            return analyze.get_aggregate_term_frequency(
+                request.json['es_query'],
+                request.json['corpus_name'],
+                request.json['field_name'],
+                request.json['field_value'],
+                request.json['size'],
+            )
+        except KeyError:
+            return 'missing parameters'
+
+    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
+    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+
+    if results == 'missing parameters':
+        abort(400)
+    
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
+        })
+    return response
+
+@api.route('date_term_frequency', methods=['POST'])
+@login_required
+def api_date_term_frequency():
+    if not request.json:
+        abort(400)
+
+    def calculate():
+        try:
+            return analyze.get_date_term_frequency(
+                request.json['es_query'],
+                request.json['corpus_name'],
+                request.json['field_name'],
+                request.json['start_date'],
+                request.json['end_date'],
+                request.json['size'],
+            )
+        except KeyError:
+            return 'missing parameters'
+    
+    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
+    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+
+    if results == 'missing parameters':
+        abort(400)
+
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
         })
     return response

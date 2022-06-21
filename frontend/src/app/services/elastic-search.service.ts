@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
 
-import { FoundDocument, ElasticSearchIndex, QueryModel, SearchResults, AggregateResult, AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
+import { FoundDocument, Corpus, CorpusField, ElasticSearchIndex, QueryModel, SearchResults,
+    AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
 import { ApiRetryService } from './api-retry.service';
 
@@ -26,9 +27,8 @@ export class ElasticSearchService {
             }, {}));
     }
 
-    public makeEsQuery(queryModel: QueryModel): EsQuery | EsQuerySorted {
+    public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
         let clause: EsSearchClause;
-
         if (queryModel.queryText) {
             clause = {
                 simple_query_string: {
@@ -66,6 +66,20 @@ export class ElasticSearchService {
             (query as EsQuerySorted).sort = [{
                 [queryModel.sortBy]: queryModel.sortAscending ? 'asc' : 'desc'
             }];
+        }
+
+        if (fields && queryModel.queryText && queryModel.highlight) {
+            const highlightFields = fields.filter(field => field.searchable);
+            query.highlight = {
+                fragment_size: queryModel.highlight,
+                pre_tags: ['<span class="highlight">'],
+                post_tags: ['</span>'],
+                order: 'score',
+                fields: highlightFields.map( field => {
+                    return { [field.name]: { }
+                };
+            })
+            };
         }
 
         return query;
@@ -120,7 +134,7 @@ export class ElasticSearchService {
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
         Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets
+            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
         });
         return {
             completed: true,
@@ -145,20 +159,24 @@ export class ElasticSearchService {
         const aggregationModel = Object.assign({ aggs: agg }, esQuery);
         const result = await this.executeAggregate(corpusDefinition, aggregationModel);
         const aggregateData = {};
-        Object.keys(result.aggregations).forEach(fieldName => {
-            aggregateData[fieldName] = result.aggregations[fieldName].buckets;
+        Object.keys(result.aggregations).forEach(field => {
+            aggregateData[field] = result.aggregations[field].buckets;
         });
         return {
             completed: true,
             aggregations: aggregateData
-        }
+        };
     }
 
 
 
-    public async search(corpusDefinition: ElasticSearchIndex, queryModel: QueryModel, size?: number): Promise<SearchResults> {
-        let connection = (await this.connections)[corpusDefinition.serverName];
-        let esQuery = this.makeEsQuery(queryModel);
+    public async search(
+        corpusDefinition: Corpus,
+        queryModel: QueryModel,
+        size?: number,
+    ): Promise<SearchResults> {
+        const connection = (await this.connections)[corpusDefinition.serverName];
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
         const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
         return this.parseResponse(response);
@@ -169,11 +187,11 @@ export class ElasticSearchService {
      * Load results for requested page
      */
     public async loadResults(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
         const connection = (await this.connections)[corpusDefinition.serverName];
-        const esQuery = this.makeEsQuery(queryModel);
+        const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
         const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
         return this.parseResponse(response);
@@ -187,11 +205,11 @@ export class ElasticSearchService {
      * @param completed
      */
     private parseResponse(response: SearchResponse): SearchResults {
-        let hits = response.hits.hits;
+        const hits = response.hits.hits;
         return {
             documents: hits.map(hit => this.hitToDocument(hit, response.hits.max_score)),
             total: response.hits.total
-        }
+        };
     }
 
     /**
@@ -201,7 +219,8 @@ export class ElasticSearchService {
         return <FoundDocument>{
             id: hit._id,
             relevance: hit._score / maxScore,
-            fieldValues: Object.assign({ id: hit._id }, hit._source)
+            fieldValues: Object.assign({ id: hit._id }, hit._source),
+            highlight: hit.highlight,
         };
     }
 
@@ -238,28 +257,31 @@ export class ElasticSearchService {
     }
 }
 
-type Connection = {
-    client: Client,
+interface Connection {
+    client: Client;
     config: {
         overviewQuerySize: number,
         scrollPagesize: number,
         scrollTimeout: string
-    }
-};
+    };
+}
+
 export type EsQuerySorted = EsQuery & {
     sort: { [fieldName: string]: 'desc' | 'asc' }[]
 };
-export type EsQuery = {
-    aborted?: boolean,
-    completed?: Date,
+
+export interface EsQuery {
+    aborted?: boolean;
+    completed?: Date;
     query: EsSearchClause | {
         'bool': {
             must: EsSearchClause,
             filter: any[],
         }
-    },
-    transferred?: Number
-};
+    };
+    highlight?: {};
+    transferred?: Number;
+}
 
 type EsSearchClause = {
     simple_query_string: {
@@ -272,10 +294,10 @@ type EsSearchClause = {
     match_all: {}
 };
 
-type Aggregator = {
-    name: string,
-    size: number
-};
+interface Aggregator {
+    name: string;
+    size: number;
+}
 
 export class Client {
     constructor(private http: HttpClient, private host: string) {
@@ -321,4 +343,5 @@ export interface SearchHit {
     _id: string;
     _score: number;
     _source: {};
+    highlight: {};
 }

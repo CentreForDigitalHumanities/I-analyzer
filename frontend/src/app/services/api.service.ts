@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, UserRole, Query, Corpus, FoundDocument } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -63,7 +63,7 @@ export class ApiService extends Resource {
     })
     public getTaskOutcome: ResourceMethod<
     { task_id: string},
-    { sucess: false, message: string } | { success: true, results: AggregateResult[] }
+    { success: false, message: string } | { success: true, results: AggregateResult[]|NgramResults }
     >
 
     @ResourceAction({
@@ -89,6 +89,32 @@ export class ApiService extends Resource {
     public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/ngram_tasks'
+    })
+    public ngramTasks: ResourceMethod<
+        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
+            subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, },
+        { success: false, message: string } | { success: true, task_ids: string[] }>;
+
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/aggregate_term_frequency'
+    })
+    public getAggregateTermFrequency: ResourceMethod<
+        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, field_value: string|number, size: number },
+        { success: boolean, message?: string, data?: AggregateResult }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/date_term_frequency'
+    })
+    public getDateTermFrequency: ResourceMethod<
+        { es_query: EsQuery, corpus_name: string, field_name: string, start_date: string, end_date: string, size: number },
+        { success: boolean, message?: string, data?: AggregateResult }>;
 
     @ResourceAction({
         path: '/corpus'

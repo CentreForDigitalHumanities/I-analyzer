@@ -68,7 +68,7 @@ class GuardianObserver(XMLCorpus):
             description='Publication date, parsed to yyyy-MM-dd format',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             hidden=True,
-            visualization_type='timeline',
+            visualizations=['timeline'],
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -113,7 +113,7 @@ class GuardianObserver(XMLCorpus):
             name='title',
             display_name='Title',
             search_field_core=True,
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
             description='Article title.',
             extractor=extract.XML(tag='RecordTitle', toplevel=True)
         ),
@@ -142,7 +142,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='category',
-            visualization_type='term_frequency',
+            visualizations=['histogram'],
             display_name='Category',
             description='Article subject categories.',
             es_mapping={'type': 'keyword'},
@@ -157,7 +157,7 @@ class GuardianObserver(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            visualization_type='wordcloud',
+            visualizations=['wordcloud'],
             description='Raw OCR\'ed text (content).',
             results_overview=True,
             search_field_core=True,

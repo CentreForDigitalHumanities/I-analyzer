@@ -18,7 +18,17 @@
         "id": "relatedwords",
         "title": "Related Words Query"
     },
+    {   "id": "histogram",
+        "title": "Histogram visualization"
+    },
     {   "id": "wordcloud",
         "title": "Word cloud visualization"
+    },
+    {   "id": "ngrams",
+        "title": "Common n-grams visualization"
+    },
+    {
+        "id": "download",
+        "title": "Downloading data"
     }
 ]

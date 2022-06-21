@@ -7,6 +7,8 @@ import * as _ from 'lodash';
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
+const HIGHLIGHT = 200;
+
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
@@ -53,13 +55,16 @@ export class SearchComponent implements OnInit {
     public searchQueryText: string;
 
     public sortAscending: boolean;
-    public sortField: CorpusField | undefined;
+    public sortField: CorpusField | 'default' | undefined;
+    public defaultSortField: CorpusField | undefined;
 
     public resultsCount = 0;
     public tabIndex: number;
 
     private searchFilters: SearchFilter<SearchFilterData> [] = [];
     private activeFilters: SearchFilter<SearchFilterData> [] = [];
+
+    private highlight: number = HIGHLIGHT;
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
@@ -84,6 +89,7 @@ export class SearchComponent implements OnInit {
                 this.setFiltersFromParams(this.searchFilters, params);
                 this.setSearchFieldsFromParams(params);
                 this.setSortFromParams(this.corpus.fields, params);
+                this.setHighlightFromParams(params);
                 const queryModel = this.createQueryModel();
                 if (this.queryModel !== queryModel) {
                     this.queryModel = queryModel;
@@ -94,7 +100,7 @@ export class SearchComponent implements OnInit {
     @HostListener('window:scroll', [])
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
-        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y == 0;
+        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
     public changeSorting(event: SortEvent) {
@@ -105,7 +111,7 @@ export class SearchComponent implements OnInit {
 
     public search() {
         this.queryModel = this.createQueryModel();
-        const route = this.searchService.queryModelToRoute(this.queryModel);
+        const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
         const url = this.router.serializeUrl(this.router.createUrlTree(
             ['.', route],
             { relativeTo: this.activatedRoute },
@@ -136,14 +142,40 @@ export class SearchComponent implements OnInit {
     }
 
     private getQueryFields(): string[] | null {
-        const fields = this.selectedSearchFields.map(field => field.name);
+        if (this.selectedSearchFields) { return null; }
+
+        const fields = _.flatMap(this.selectedSearchFields, field => {
+            const multifields = this.searchableMultifields(field);
+            return [field.name].concat(multifields);
+        });
+
         if (!fields.length) { return null; }
         return fields;
     }
 
+    /**
+     * returns array of all searchable subfields for a field.
+     * empty array if there are none.
+    */
+    private searchableMultifields(field: CorpusField): string[] {
+        if (field && field.multiFields) {
+            // list known searchable subfields (a numeric field like `length` should not be included)
+            const searchables = ['clean', 'stemmed'];
+            const subfields = field.multiFields.filter(subfield =>
+                searchables.includes(subfield)
+            );
+            const fullNames = subfields.map(subfield => `${field.name}.${subfield}`);
+            return fullNames;
+        } else {
+            return [];
+        }
+    }
+
     private createQueryModel() {
+            const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
+
         return this.searchService.createQueryModel(
-            this.queryText, this.getQueryFields(), this.activeFilters, this.sortField, this.sortAscending);
+            this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
     }
 
     /**
@@ -151,13 +183,14 @@ export class SearchComponent implements OnInit {
      */
 
     private setCorpus(corpus: Corpus) {
-        if (!this.corpus || this.corpus.name !==corpus.name) {
+        if (!this.corpus || this.corpus.name !== corpus.name) {
             this.corpus = corpus;
             this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
+            this.defaultSortField = this.corpus.fields.find(field => field.primarySort);
         }
     }
 
@@ -168,7 +201,7 @@ export class SearchComponent implements OnInit {
         searchFilters.forEach( f => {
             const param = this.searchService.getParamForFieldName(f.fieldName);
             if (params.has(param)) {
-                if (this.showFilters == undefined) {
+                if (this.showFilters === undefined) {
                     this.showFilters = true;
                 }
                 let filterSettings = params.get(param).split(',');
@@ -199,8 +232,18 @@ export class SearchComponent implements OnInit {
             this.sortField = corpusFields.find(field => field.name === sortField);
             this.sortAscending = sortAscending === 'asc';
         } else {
-            this.sortField = undefined;
+            if (params.get('query')) {
+                this.sortField = undefined;
+            } else {
+                this.sortField = 'default';
+            }
         }
+    }
+
+    private setHighlightFromParams(params: ParamMap) {
+        if (params.has('highlight')) {
+            this.highlight = Number(params.get('highlight'));
+        } else { this.highlight = undefined; }
     }
 
     public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
@@ -211,5 +254,9 @@ export class SearchComponent implements OnInit {
     private selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
+    }
+
+    get useDefaultSort(): boolean {
+        return this.sortField === 'default';
     }
 }

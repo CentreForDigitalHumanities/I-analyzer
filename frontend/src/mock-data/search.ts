@@ -18,7 +18,5 @@ export class SearchServiceMock {
             }
         };
     }
-    public async getRelatedWords(){
-        
-    }
+    public async getRelatedWords() {}
 }

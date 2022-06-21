@@ -1,13 +1,7 @@
-import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { Subscription }   from 'rxjs';
-
-import * as _ from "lodash";
-import * as moment from 'moment';
-import {saveAs} from 'file-saver';
-
-import { DataService } from '../services/index';
-import { AggregateResult, WordSimilarity } from '../models/index';
-
+import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import * as _ from 'lodash';
+import { saveAs } from 'file-saver';
+import { freqTableHeader, freqTableHeaders } from '../models';
 
 @Component({
     selector: 'ia-freqtable',
@@ -15,95 +9,169 @@ import { AggregateResult, WordSimilarity } from '../models/index';
     styleUrls: ['./freqtable.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class FreqtableComponent implements OnChanges, OnDestroy {
-    @Input('searchData')
-    public searchData: {
-        key?: string,
-        date?: Date,
-        doc_count?: number,
-        similarity?: number,
-        doc_count_fraction?: number
-    }[];
-    @Input() public visualizedField;
-    @Input() public asPercent: boolean;
+export class FreqtableComponent implements OnChanges {
+    @Input() headers: freqTableHeaders;
+    @Input() data: any[];
+    @Input() name: string; // name for CSV file
+    @Input() defaultSort: string; // default field for sorting
+    @Input() requiredColumn: string; // field required to include row in web view
 
-    public defaultSort: string = "doc_count";
-    public defaultSortOrder: string = "-1"
-    public rightColumnName: string;
+    public defaultSortOrder = '-1';
 
-    public tableData: FreqtableComponent['searchData'];
+    formattedHeaders: freqTableHeaders;
+    formattedData: any[];
 
-    public subscription: Subscription;
+    wideFormatColumn: number;
+    format: 'long'|'wide' = 'long';
 
-    constructor(private dataService: DataService) {
-        this.subscription = this.dataService.timelineData$.subscribe(results => {
-            if (results !== undefined) {
-                let format: string;
-                switch(results.timeInterval) {
-                    case 'year':
-                        format = "YYYY";
-                        break;
-                    case 'month':
-                        format = "MMMM YYYY";
-                        break;
-                    default:
-                        format = "YYYY-MM-DD";
-                        break;
-                }
-                this.searchData = results.data;
-                this.searchData.map(d => d.key = moment(d.date).format(format));
-                this.createTable();
+    constructor() { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        this.checkWideFormat();
+
+        this.formatData();
+    }
+
+    checkWideFormat(): void {
+        if (this.headers && this.headers.find(header => header.isMainFactor)) {
+            this.wideFormatColumn = _.range(this.headers.length)
+                .find(index => this.headers[index].isMainFactor);
+        } else {
+            this.wideFormatColumn = undefined;
+        }
+    }
+
+    setFormat(format: 'long'|'wide'): void {
+        this.format = format;
+        this.formatData();
+    }
+
+    formatData() {
+        let filteredData: any[];
+        if (this.requiredColumn && this.data) {
+            filteredData = this.data.filter(row => row[this.requiredColumn]);
+        } else {
+            filteredData = this.data;
+        }
+
+        if (this.format === 'wide') {
+            const [headers, data] = this.transformWideFormat(filteredData);
+            this.formattedHeaders = headers;
+            this.formattedData = data;
+        } else {
+            this.formattedHeaders = this.headers;
+            this.formattedData = filteredData;
+        }
+    }
+
+    transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
+        const mainFactor = this.headers[this.wideFormatColumn];
+
+        const mainFactorValues = _.uniqBy(
+            data.map(row => row[mainFactor.key]),
+            value => this.formatValue(value, mainFactor)
+        );
+
+        const newHeaders = this.wideFormatHeaders(mainFactor, mainFactorValues);
+
+        // other factors
+        const factorColumns = this.filterFactors(newHeaders);
+
+        const newData = _.uniqBy(
+            data,
+            row => {
+                const factorValues = factorColumns.map(column => this.getValue(row, column));
+                return _.join(factorValues, '/');
+            }
+        );
+
+        mainFactorValues.forEach(factorValue => {
+            const filteredData = data.filter(row => this.getValue(row, mainFactor) === this.formatValue(factorValue, mainFactor));
+
+            newData.forEach(newRow => {
+                this.headers.forEach(header => {
+                    if (! header.isSecondaryFactor) {
+                        const key = this.wideFormatColumnKey(header, mainFactor, factorValue);
+
+                        const rowData = filteredData.find(row =>
+                            _.every(
+                                factorColumns,
+                                factor => this.getValue(row, factor) === this.getValue(newRow, factor)
+                            )
+                        );
+
+                        if (rowData !== undefined) {
+                            const value = rowData[header.key];
+                            newRow[key] = value;
+                        }
+                    }
+                });
+            });
+        });
+
+        return [newHeaders, newData];
+    }
+
+    wideFormatHeaders(mainFactor: freqTableHeader, factorValues: any[]) {
+        const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
+            `${header.label} (${this.formatValue(factorValue, factor)})`;
+
+        const otherHeaders = this.headers.filter((header, index) => header.key !== mainFactor.key);
+        const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
+            if (header.isSecondaryFactor) {
+                // other factors are kept as-is
+                return [header];
+            } else {
+                // for non-factor headers, make one column for each value of `mainFactor`
+                return _.map(factorValues, value => (
+                    {
+                        label: newLabel(header, mainFactor, value),
+                        key: this.wideFormatColumnKey(header, mainFactor, value),
+                        format: header.format,
+                        formatDownload: header.formatDownload,
+                    } as freqTableHeader
+                ));
             }
         });
+
+        return newHeaders;
     }
 
-    ngOnDestroy() {
-        this.subscription.unsubscribe();
+    wideFormatColumnKey(header: freqTableHeader, mainFactor: freqTableHeader, mainFactorValue): string {
+        return `${header.key}###${this.formatValue(mainFactorValue, mainFactor)}`;
     }
 
-    ngOnChanges() {
-        // set the name of the right column
-        if (this.asPercent === true ) {
-            this.rightColumnName = "Percent";
-        }
-        else if (this.visualizedField.name === "relatedwords") {
-            this.rightColumnName = "Similarity";
-        }
-        else {
-            this.rightColumnName = "Frequency";
-        }
-        
-        if (this.searchData && this.visualizedField) {
-            // date fields are returned with keys containing identifiers by elasticsearch
-            // replace with string representation, contained in 'key_as_string' field
-            if ("visualizationSort" in this.visualizedField) {
-                this.defaultSort = this.visualizedField.visualizationSort;
-            }
-            else {
-                this.defaultSort = "doc_count";
-            }
-            this.createTable();
-        }
+    filterFactors(headers: freqTableHeaders): freqTableHeaders {
+        return headers.filter(header => header.isSecondaryFactor);
     }
 
-    createTable() {
-        // set default sort to key for date-type fields, frequency for all others
-        // calculate percentage data
-        const total_doc_count = this.searchData.reduce((s, f) => s + f.doc_count, 0);
-        this.tableData = this.searchData.map(item => ({ ...item, doc_count_fraction: item.doc_count / total_doc_count }));
-    }
-
-    parseTableData() {
-        const data = this.tableData.map(row => `${row.key},${row.doc_count},${row.doc_count_fraction}\n`);
-        data.unshift('key,frequency,percentage\n');
+    parseTableData(): string[] {
+        const data = this.formattedData.map(row => {
+            const values = this.formattedHeaders.map(col => this.getValue(row, col, true));
+            return  `${_.join(values, ',')}\n`;
+        });
+        data.unshift(`${_.join(this.formattedHeaders.map(col => col.label), ',')}\n`);
         return data;
+    }
+
+    getValue(row, column: freqTableHeader, download = false) {
+        return this.formatValue(row[column.key], column, download);
+    }
+
+    formatValue(value, column: freqTableHeader, download = false) {
+        if (download && column.formatDownload) {
+            return column.formatDownload(value);
+        }
+        if (column.format) {
+            return column.format(value);
+        }
+        return value;
     }
 
     downloadTable() {
         const data = this.parseTableData();
         const blob = new Blob(data, { type: `text/csv;charset=utf-8`, endings: 'native' });
-        const filename = this.visualizedField.name + '.csv';
+        const filename = this.name + '.csv';
         saveAs(blob, filename);
     }
-
 }

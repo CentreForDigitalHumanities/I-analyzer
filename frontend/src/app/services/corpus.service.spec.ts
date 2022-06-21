@@ -19,7 +19,8 @@ describe('CorpusService', () => {
     userServiceMock.currentUser.role.corpora.push(...[
         { name: 'test1', description: '' },
         { name: 'test2', description: '' },
-        { name: 'times', description: '' },]);
+        { name: 'times', description: '' },
+    ]);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -33,8 +34,8 @@ describe('CorpusService', () => {
         service = TestBed.inject(CorpusService);
     });
 
-    it('should be created', inject([CorpusService], (service: CorpusService) => {
-        expect(service).toBeTruthy();
+    it('should be created', inject([CorpusService], (corpusService: CorpusService) => {
+        expect(corpusService).toBeTruthy();
     }));
 
     it('should parse the list of corpora', () => {
@@ -86,6 +87,7 @@ describe('CorpusService', () => {
                     'es_mapping': { 'type': 'keyword' },
                     'hidden': true,
                     'sortable': false,
+                    'primary_sort': false,
                     'searchable': true,
                     'downloadable': false,
                     'name': 'bank',
@@ -93,7 +95,7 @@ describe('CorpusService', () => {
                     'results_overview': false,
                     'csv_core': false,
                     'search_field_core': false,
-                    'visualization_type': 'term_frequency',
+                    'visualizations': ['histogram'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'MultipleChoiceFilter',
@@ -108,14 +110,15 @@ describe('CorpusService', () => {
                     'es_mapping': { 'type': 'integer' },
                     'hidden': false,
                     'sortable': true,
+                    'primary_sort': true,
                     'searchable': false,
                     'downloadable': true,
                     'name': 'year',
                     'results_overview': true,
                     'csv_core': true,
                     'search_field_core': false,
-                    'term_frequency': false,
-                    'visualization_type': 'term_frequency',
+                    'histogram': false,
+                    'visualizations': ['histogram'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'RangeFilter',
@@ -125,6 +128,45 @@ describe('CorpusService', () => {
                         'lower': 1785,
                         'upper': 2010
                     }
+                },
+                {   // example from people & parliament
+                    'description': 'The transcribed speech',
+                    'display_name': 'Speech',
+                    'display_type': 'text_content',
+                    'es_mapping': {
+                        'type': 'text',
+                        'term_vector': 'with_positions_offsets',
+                        'analyzer': 'standard',
+                        'fields': {
+                            'clean': {
+                                'type': 'text',
+                                'analyzer': 'clean',
+                                'term_vector': 'with_positions_offsets'
+                            },
+                            'stemmed': {
+                                'type': 'text',
+                                'analyzer': 'stemmed',
+                                'term_vector': 'with_positions_offsets'
+                            },
+                            'length': {
+                                'type': 'token_count',
+                                'analyzer': 'standard'
+                            }
+                        }
+                    },
+                    'hidden': false,
+                    'indexed': true,
+                    'sortable': false,
+                    'primary_sort': false,
+                    'searchable': true,
+                    'downloadable': true,
+                    'name': 'speech',
+                    'results_overview': true,
+                    'csv_core': false,
+                    'search_field_core': true,
+                    'term_frequency': false,
+                    'visualizations': ['wordcloud', 'ngram'],
+                    'visualization_sort': null,
                 }],
                 'min_date': { 'day': 1, 'hour': 0, 'minute': 0, 'month': 1, 'year': 1785 },
                 'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
@@ -136,27 +178,29 @@ describe('CorpusService', () => {
         };
 
         return service.get().then((items) => {
-            let mockMultipleChoiceData: SearchFilterData = {
+            const mockMultipleChoiceData: SearchFilterData = {
                 filterType: 'MultipleChoiceFilter',
                 optionCount: 42,
                 selected: []
             };
-            let mockRangeData: SearchFilterData = {
+            const mockRangeData: SearchFilterData = {
                 filterType: 'RangeFilter',
                 min: 1785,
                 max: 2010
             };
-            let allFields: CorpusField[] = [{
+            const allFields: CorpusField[] = [{
                 description: 'Banking concern to which the report belongs.',
                 displayName: 'Bank',
                 displayType: 'keyword',
                 resultsOverview: false,
                 csvCore: false,
                 searchFieldCore: false,
-                visualizationType: 'term_frequency',
+                visualizations: ['histogram'],
                 visualizationSort: 'key',
+                multiFields: undefined,
                 hidden: true,
                 sortable: false,
+                primarySort: false,
                 searchable: true,
                 downloadable: false,
                 name: 'bank',
@@ -171,6 +215,7 @@ describe('CorpusService', () => {
                 description: 'Year of the financial report.',
                 hidden: false,
                 sortable: true,
+                primarySort: true,
                 searchable: false,
                 downloadable: true,
                 name: 'year',
@@ -179,8 +224,9 @@ describe('CorpusService', () => {
                 resultsOverview: true,
                 csvCore: true,
                 searchFieldCore: false,
-                visualizationType: 'term_frequency',
+                visualizations: ['histogram'],
                 visualizationSort: 'key',
+                multiFields: undefined,
                 searchFilter: {
                     description: 'Restrict the years from which search results will be returned.',
                     fieldName: 'year',
@@ -188,6 +234,23 @@ describe('CorpusService', () => {
                     defaultData: mockRangeData,
                     currentData: mockRangeData
                 }
+            }, {
+                description: 'The transcribed speech',
+                hidden: false,
+                sortable: false,
+                primarySort: false,
+                searchable: true,
+                downloadable: true,
+                name: 'speech',
+                displayName: 'Speech',
+                displayType: 'text_content',
+                resultsOverview: true,
+                csvCore: false,
+                visualizations: ['wordcloud', 'ngram'],
+                visualizationSort: null,
+                multiFields: ['clean', 'stemmed', 'length'],
+                searchFilter: null,
+                searchFieldCore: true,
             }];
             expect(items).toEqual([new Corpus(
                 'default',
