@@ -9,10 +9,4 @@ BASIC_KEYWORD_MAPPING = {
 
 BASIC_TEXT_MAPPING = {
     'type': 'text',
-    'fields': {
-        'length': {
-            'type': 'token_count',
-            'analyzer': 'standard'
-        }
-    }
 }
