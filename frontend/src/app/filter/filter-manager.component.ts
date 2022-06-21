@@ -56,7 +56,9 @@ export class FilterManagerComponent implements OnInit, OnChanges {
             const fieldsWithFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.name);
             const adHoc = this.queryModel.filters.filter(f => !fieldsWithFilters.includes(f.fieldName));
             adHoc.forEach(filter => {
-                this.searchFilters.push(filter);
+                if (!this.searchFilters.find(f => f.fieldName == filter.fieldName)) {
+                    this.searchFilters.push(filter);
+                }
             });
 
             this.adHocFilterFields = adHoc.map(filter => {

@@ -83,7 +83,7 @@ export function searchFilterDataFromField(field: CorpusField, value: string[]): 
             return { filterType: 'RangeFilter', min: parseFloat(min), max: parseFloat(max) };
         }
         case 'keyword': {
-            return { filterType: 'MultipleChoiceFilter', selected: value };
+            return { filterType: 'MultipleChoiceFilter', selected: value.map(encodeURIComponent) };
         }
     }
 }
