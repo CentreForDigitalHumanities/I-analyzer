@@ -21,12 +21,6 @@ def get_search_fields(query):
 
     return fields
 
-def is_text_field(fieldname, corpus):
-    return any(
-        field.name == fieldname and field.es_mapping['type'] == 'text'
-        for field in corpus.fields
-    )
-
 def get_filters(query):
     """Get the list of filters in a query, or `None` if there are none."""
     try:
