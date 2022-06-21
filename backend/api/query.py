@@ -27,16 +27,6 @@ def set_search_fields(query, fields):
     new_query['query']['bool']['must']['simple_query_string']['fields'] = fields
     return new_query
 
-def restrict_to_text_fields(query, corpus):
-    search_fields = get_search_fields(query)
-
-    if search_fields == None:
-        search_fields = [field.name for field in corpus.fields]
-
-    text_fields = list(filter(lambda fieldname : is_text_field(fieldname, corpus), search_fields))
-
-    return set_search_fields(query, text_fields)
-
 def is_text_field(fieldname, corpus):
     return any(
         field.name == fieldname and field.es_mapping['type'] == 'text'

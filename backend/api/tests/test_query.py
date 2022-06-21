@@ -62,16 +62,3 @@ def test_search(test_app, test_es_client, basic_query):
     )
 
     assert len(hits(result)) == 1
-
-def test_restrict_to_text_fields(test_app, basic_query):
-    corpus = load_corpus('mock-corpus')
-
-    adapted_query = query.restrict_to_text_fields(basic_query, corpus)
-    text_fields = {'content', 'title'}
-    assert set(query.get_search_fields(adapted_query)) == text_fields
-
-    query_content_genre = query.set_search_fields(basic_query, ['content', 'genre'])
-
-    # genre is keyword, so should be filtered out
-    adapted_query = query.restrict_to_text_fields(query_content_genre, corpus)
-    assert query.get_search_fields(adapted_query) == ['content']

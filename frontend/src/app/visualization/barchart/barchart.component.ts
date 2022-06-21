@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, CorpusField, freqTableHeaders, QueryModel } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -242,6 +242,24 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
         await Promise.all(dataPromises);
         this.checkDocumentLimitExceeded();
+    }
+
+    restrictToTextFields(queryModel: QueryModel) {
+        let fields: CorpusField[];
+        if (queryModel.fields) {
+            fields = queryModel.fields.map(
+                fieldName => this.corpus.fields.find(field => field.name === fieldName)
+            );
+        } else {
+            fields = this.corpus.fields;
+        }
+
+        const textFields = fields.filter(field =>
+            field.searchable && (field.displayType === 'text_content' || field.displayType === 'text'));
+        const queryModelCopy = _.cloneDeep(queryModel);
+        queryModelCopy.fields = textFields.map(field => field.name);
+
+        return queryModelCopy;
     }
 
     /**

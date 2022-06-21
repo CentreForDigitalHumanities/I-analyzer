@@ -423,10 +423,6 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
 
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
-
-    corpus_class = load_corpus(corpus)
-    es_query = query.restrict_to_text_fields(es_query, corpus_class)
-
     fields = query.get_search_fields(es_query)
 
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
