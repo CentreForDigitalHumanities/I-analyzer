@@ -21,12 +21,6 @@ def get_search_fields(query):
 
     return fields
 
-def set_search_fields(query, fields):
-    """Set the search fields of a query"""
-    new_query = deepcopy(query)
-    new_query['query']['bool']['must']['simple_query_string']['fields'] = fields
-    return new_query
-
 def is_text_field(fieldname, corpus):
     return any(
         field.name == fieldname and field.es_mapping['type'] == 'text'
