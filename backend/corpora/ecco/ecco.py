@@ -238,6 +238,13 @@ class Ecco(XMLCorpus):
             )
         ]
 
+    document_context = {
+        'context_fields': ['title', 'volume',],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'volume'
+    }
+
 
     def request_media(self, document):
         image_path = document['fieldValues']['image_path']

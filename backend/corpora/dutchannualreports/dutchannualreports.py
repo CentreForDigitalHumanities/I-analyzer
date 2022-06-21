@@ -212,6 +212,13 @@ class DutchAnnualReports(XMLCorpus):
         )
     ]
 
+    document_context = {
+        'context_fields': ['company', 'year'],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'report'
+    }
+
     def request_media(self, document):
         image_path = document['fieldValues']['image_path']
         pdf_info = get_pdf_info(op.join(self.data_directory, image_path))

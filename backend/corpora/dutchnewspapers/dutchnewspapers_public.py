@@ -110,6 +110,14 @@ class DutchNewspapersPublic(XMLCorpus):
         'onbekend': 'unknown',
     }
 
+    document_context = {
+        'context_fields': ['newspaper_title', 'issue_number'],
+        'sort_field': None,
+        'sort_direction': None,
+        'context_display_name': 'issue'
+    }
+
+
     @property
     def fields(self):
         return [Field(

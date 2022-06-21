@@ -278,6 +278,13 @@ class Periodicals(XMLCorpus):
         ),
     ]
 
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': 'page_no',
+        'sort_direction': 'asc',
+        'context_display_name': 'issue'
+    }
+
     def request_media(self, document):
         field_vals = document['fieldValues']
         image_directory = field_vals['image_path']
@@ -289,7 +296,7 @@ class Periodicals(XMLCorpus):
             page_no = str(start_index + page).zfill(4)
             image_name = '{}-{}.JPG'.format(starting_page[:-5], page_no)
             if isfile(join(self.data_directory, image_directory, image_name)):
-                image_list.append(url_for('api.api_get_media', 
+                image_list.append(url_for('api.api_get_media',
                     corpus=self.es_index,
                     image_path=join(image_directory, image_name),
                     _external=True

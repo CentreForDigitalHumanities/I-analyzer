@@ -137,3 +137,10 @@ class Spectators(XMLCorpus):
             search_field_core=True
         ),
     ]
+
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': None,
+        'sort_direction':  None,
+        'context_display_name': 'issue'
+    }

@@ -1,5 +1,5 @@
 '''
-Collect information from the Guardian-Observer corpus: the articles are contained in 
+Collect information from the Guardian-Observer corpus: the articles are contained in
 separate xml-files, zipped.
 '''
 
@@ -77,7 +77,7 @@ class GuardianObserver(XMLCorpus):
                 )
             ),
             extractor=extract.XML(
-                tag='NumericPubDate', toplevel=True, 
+                tag='NumericPubDate', toplevel=True,
                 transform=lambda x: '{y}-{m}-{d}'.format(y=x[:4],m=x[4:6],d=x[6:])
                 )
         ),
@@ -165,12 +165,19 @@ class GuardianObserver(XMLCorpus):
         )
     ]
 
+    document_context = {
+        'context_fields': ['pub_id'],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'publication'
+    }
+
     def request_media(self, document):
         field_vals = document['fieldValues']
         target_filename = "{}_{}_{}.pdf".format(
             field_vals['pub_id'],
             re.sub('-', '', field_vals['date']),
-            field_vals['id']             
+            field_vals['id']
         )
         image_path = None
         if 'image_path' in field_vals.keys():
@@ -210,7 +217,7 @@ class GuardianObserver(XMLCorpus):
         if not image_path:
             return []
         image_urls = [url_for(
-            'api.api_get_media', 
+            'api.api_get_media',
             corpus=self.es_index,
             image_path=image_path,
             filename=filename,
@@ -223,7 +230,7 @@ class GuardianObserver(XMLCorpus):
             "fileSize": sizeof_fmt(getsize(join(self.data_directory, image_path)))
         }
         return {'media': image_urls, 'info': pdf_info}
-    
+
 
     def get_media(self, request_args):
         '''
@@ -233,9 +240,9 @@ class GuardianObserver(XMLCorpus):
         '''
         image_path = request_args['image_path']
         filename = request_args['filename']
-        
+
         pdf_data = None
-        with ZipFile(join(self.data_directory, image_path), mode='r') as zipped: 
+        with ZipFile(join(self.data_directory, image_path), mode='r') as zipped:
             zip_info = zipped.getinfo(filename)
             pdf_data = zipped.read(zip_info)
         if pdf_data:
