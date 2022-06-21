@@ -118,25 +118,6 @@ class ParliamentFrance(Parliament, CSVCorpus):
     speech.extractor = CSV(
         field='page_text'
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "french"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
@@ -145,7 +126,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
 
     url = field_defaults.url()
     url.extractor = CSV(
-        field='text_url'
+        field='pdf_url'
     )
 
     def __init__(self):
