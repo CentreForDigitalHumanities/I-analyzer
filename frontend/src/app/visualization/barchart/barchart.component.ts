@@ -142,7 +142,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
-        return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
+        return (changes.corpus || changes.queryModel || changes.visualizedField || changes.frequencyMeasure) !== undefined;
     }
 
     /** update graph after changes to the normalisation menu (i.e. normalizer) */
