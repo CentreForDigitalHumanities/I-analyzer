@@ -4,6 +4,7 @@ import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryMode
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
 import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-search-results',
@@ -34,7 +35,7 @@ export class SearchResultsComponent implements OnChanges {
 
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
-    
+
     @Output('viewContext')
     public contextEvent = new EventEmitter<any>();
 
@@ -141,9 +142,7 @@ export class SearchResultsComponent implements OnChanges {
 
     public goToContext(document: FoundDocument) {
         this.showDocument = false;
-        const contextField = this.corpus.documentContext.contextField;
-        const contextValue = document.fieldValues[contextField.name];
-        this.contextEvent.emit(contextValue);
+        this.contextEvent.emit(document.fieldValues);
     }
 
     get contextDisplayName(): string {

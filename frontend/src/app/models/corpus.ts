@@ -40,7 +40,7 @@ export type ElasticSearchIndex = {
 export type DocumentType = 'article';
 
 export type DocumentContext = {
-    contextField: CorpusField,
+    contextFields: CorpusField[],
     sortField?: CorpusField,
     sortDirection?: 'asc'|'desc',
     displayName: string,

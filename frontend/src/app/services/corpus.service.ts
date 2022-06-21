@@ -143,25 +143,25 @@ export class CorpusService {
     }
 
     private parseDocumentContext (
-        data: {context_field: string|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
+        data: {context_fields: string[]|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
         allFields: CorpusField[]
     ): DocumentContext {
-        if (!data) {
+        if (!data || !data.context_fields) {
             return undefined;
         }
 
-        const contextField = allFields.find(field => field.name === data.context_field);
+        const contextFields = allFields.filter(field => data.context_fields.includes(field.name));
 
-        if (!contextField) {
+        if (!contextFields) {
             return undefined;
         }
 
         const sortField = allFields.find(field => field.name === data.sort_field);
-        const displayName = data.context_display_name || contextField.name;
+        const displayName = data.context_display_name || contextFields[0].name;
         const sortDirection = (data.sort_direction as 'asc'|'desc') || 'asc';
 
         return {
-            contextField,
+            contextFields,
             sortField,
             displayName,
             sortDirection,

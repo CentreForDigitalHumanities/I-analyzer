@@ -289,22 +289,22 @@ export class SearchComponent implements OnInit {
         this.search();
     }
 
-    public goToContext(contextValue: any) {
+    public goToContext(contextValues: any[]) {
         const contextSpec = this.corpus.documentContext;
-        const contextFieldName = contextSpec.contextField.name;
 
         this.queryText = undefined;
         this.sortField = contextSpec.sortField || 'default';
         this.sortAscending = contextSpec.sortDirection === 'asc';
 
-        const filterData = searchFilterDataFromField(contextSpec.contextField, [contextValue]);
+        contextSpec.contextFields
+            .filter(field => ! this.searchFilters.find(f => f.fieldName === field.name))
+            .forEach(field => this.makeContextFilter(field));
 
-        if (! this.searchFilters.find(f => f.fieldName === contextFieldName)) {
-            this.makeContextFilter(contextSpec.contextField);
-        }
+        const filterSettings = _.mapValues(
+            _.keyBy(contextSpec.contextFields, 'name'),
+            field => searchFilterDataFromField(field, [contextValues[field.name]])
+        );
 
-        const filterSettings = {};
-        filterSettings[contextFieldName] = filterData;
         this.applyFilterSettings(this.searchFilters, filterSettings);
 
         this.search();

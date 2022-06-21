@@ -23,9 +23,9 @@ BASIC_TEXT_MAPPING = {
     }
 }
 
-def document_context(sort = True):
+def document_context():
     return {
-        'context_field': 'debate_id',
+        'context_fields': ['debate_id', 'date'],
         'sort_field': 'sequence',
         'sort_direction': 'asc',
         'context_display_name': 'debate'
