@@ -50,4 +50,8 @@ export class DocumentViewComponent implements OnChanges {
     changeTabIndex(index: number) {
         this.tabIndex = index;
     }
+
+    isUrlField(field: CorpusField) {
+        return field.name === 'url' || field.name.startsWith('url_');
+    }
 }

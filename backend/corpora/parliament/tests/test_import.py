@@ -129,7 +129,8 @@ Perin.
 
 M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et en mon nom personnel, demander à la Chambre de repousser la proposition d'ajournement qui vient d'être faLe pac noire honorable président. (Très bien ! très bien ! à droite et à l'extrême gauche.) Autant qu'il m'a été permis de l'entendre au milieu du bruit, je crois que la seule raison que notre honorable président ait fait valoir 7our justifier sa proposition, c'est que nous n enous pas en nombre.""",
             "id" : "3rd_republic_0",
-            "url" : "http://gallica.bnf.fr/ark:/12148/bpt6k64418203"
+            "url" : "http://gallica.bnf.fr/ark:/12148/bpt6k64418203",
+            "url_html": ""
         }],
         'n_documents': 5
     },
