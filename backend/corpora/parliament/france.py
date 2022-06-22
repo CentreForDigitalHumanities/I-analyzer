@@ -35,7 +35,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
 
-        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory)):
             yield csv_file, {}
 
     book_id = field_defaults.book_id()
