@@ -135,6 +135,7 @@ PP_NL_IMAGE = 'netherlands.jpg'
 PP_GERMANY_NEW_IMAGE = 'germany-new.jpeg'
 PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
+PP_FRANCE_IMAGE = 'france.jpeg'
 
 # Elasticsearch settings for People & Parliament corpora
 PP_ES_SETTINGS = {
