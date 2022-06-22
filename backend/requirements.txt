@@ -105,7 +105,6 @@ numpy==1.22.0
     # via
     #   -r requirements.in
     #   scikit-learn
-    #   scipy
 openpyxl==2.5.14
     # via -r requirements.in
 pkgconfig==1.5.1
