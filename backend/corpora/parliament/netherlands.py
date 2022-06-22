@@ -457,8 +457,9 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     )
 
     source_archive = field_defaults.source_archive()
-    source_archive.extractor = Constant(
-        value='PoliticalMashup' if is_old else 'ParlaMINT'
+    source_archive.extractor = Choice(
+        Constant(value='PoliticalMashup', applicable=is_old),
+        Constant(value='ParlaMINT')
     )
 
     def __init__(self):
