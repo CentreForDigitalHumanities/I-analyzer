@@ -1,12 +1,12 @@
-Flask<2.0
-Flask-SQLAlchemy
-Flask-Admin
-Flask-Login
+Flask==2.0
+Flask-SQLAlchemy>=2.5
+Flask-Admin>=1.6
+Flask-Login>=0.6
 Flask-Migrate
-Flask-SeaSurf
+Flask-SeaSurf>=1.1
 Flask-Mail
-Werkzeug>=0.15,<2.0
-WTForms<3.0
+Werkzeug==2.0
+WTForms
 celery
 elasticsearch>=7.0, <8py.0
 beautifulsoup4
