@@ -98,6 +98,7 @@ numpy==1.22.0
     # via
     #   -r requirements.in
     #   scikit-learn
+    #   scipy
 openpyxl==2.5.14
     # via -r requirements.in
 pkgconfig==1.5.1
@@ -126,9 +127,9 @@ requests==2.21.0
     #   responses
 responses==0.10.6
     # via -r requirements.in
-scikit-learn==0.20.3
+scikit-learn==1.1.1
     # via -r requirements.in
-scipy==1.2.1
+scipy==1.8.1
     # via scikit-learn
 six==1.12.0
     # via
