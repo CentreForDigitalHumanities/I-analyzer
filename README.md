@@ -11,7 +11,7 @@ I-analyzer
 
 - An 'addcorpus' module which describes how to link together the source files of a corpus, corresponding entries in an ElasticSearch index, and the forms that enable users to query that index. Source files can be XML or HTML format (which are parsed with `beautifulsoup4` + `lxml`) or CSV. The data is passed through to the index using the `elasticsearch` package for Python (note that `elasticsearch-dsl` is not used, since its [documentation](https://elasticsearch-dsl.readthedocs.io/en/latest) at the time seemed less immediately accessible than the [low-level](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) version).
 
-- A 'corpora' module containing corpus definitions and metadata of the currently implemented coprora 
+- A 'corpora' module containing corpus definitions and metadata of the currently implemented coprora
 
 - An 'admin' module which describes the views for the admin interface (served through Flask)
 
@@ -47,9 +47,9 @@ http.cors.allow-origin: "*"
 ```
 yarn postinstall
 ```
-4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them). 
+4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them).
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.
-6. Set up your configuration file. `default_config.py` contains some reasonable defaults. Set the location of the source files of your corpora (which are now available in a separate repository, ianalyzer-corpora).
+6. Set up your configuration file. `default_config.py` contains some reasonable defaults. Set the location of the source files of your corpora (which are now available in a separate repository, ianalyzer-corpora). If you are working with the csv download functionality, be sure to update the csv path to the absolute path to backend/api/csv_files.
 7. Make sure that the source files for your corpora are available, and then create an ElasticSearch index from them by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise. (Note that new indices are created with `number_of_replicas` set to 0 (this is to make index creation easier/lighter). In production, you can automatically update this setting after index creation by adding the `--prod` flag (e.g. `flask es -c goodreads --prod`). Note though, that the `--prod` flag creates a _versioned_ index name, which needs an alias to actually work as `name_of_index_without_version` (see below for more details).
 8. If not already installed, install MySQL. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
 9. Set up the database and migrations by running `flask db upgrade`.
