@@ -7,6 +7,7 @@ import json
 import base64
 import math
 import functools
+import os
 
 from os.path import split, join, isfile, getsize
 import sys
@@ -231,6 +232,9 @@ def api_download():
         csv_file = filepath.get()
         if not csv_file:
             return jsonify({'success': False, 'message': 'Could not create csv file.'})
+        elif not os.path.isabs(csv_file):
+            error_response.headers['message'] += 'csv filepath is not absolute.'
+            return error_response
         response = make_response(send_file(csv_file, mimetype='text/csv'))
         response.headers['filename'] = split(csv_file)[1]
         return response
@@ -639,7 +643,7 @@ def api_aggregate_term_frequency():
 
     if results == 'missing parameters':
         abort(400)
-    
+
     if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
@@ -670,7 +674,7 @@ def api_date_term_frequency():
             )
         except KeyError:
             return 'missing parameters'
-    
+
     corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
     results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
 
