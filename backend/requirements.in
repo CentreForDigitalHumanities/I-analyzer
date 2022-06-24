@@ -7,7 +7,7 @@ Flask-SeaSurf>=1.1
 Flask-Mail
 Werkzeug==2.0
 WTForms
-celery
+celery>=5.2.2
 elasticsearch>=7.0, <8py.0
 beautifulsoup4
 lxml<4.7.1
