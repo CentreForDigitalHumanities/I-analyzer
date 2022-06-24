@@ -11,13 +11,13 @@ import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
 
 class ParliamentFrance(Parliament, CSVCorpus):
-    title = "People & Parliament (France 1881-2002)"
+    title = "People & Parliament (France 1881-2022)"
     description = "Speeches from the 3rd, 4th and 5th republic of France"
     min_date = datetime(year=1881, month=1, day=1)
-    max_data = datetime(year=2002, month=12, day=31)
+    max_data = datetime(year=2022, month=12, day=31)
     data_directory = current_app.config['PP_FR_DATA']
     es_index = current_app.config['PP_FR_INDEX']
-    # image = current_app.config['PP_FR_IMAGE']
+    image = current_app.config['PP_FR_IMAGE']
     es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
