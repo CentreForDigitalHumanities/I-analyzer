@@ -84,6 +84,22 @@ class Combined(Extractor):
         )
 
 
+class Backup(Extractor):
+    '''
+    Try all given extractors in order and return the first result that evaluates as true
+    '''
+    def __init__(self, *nargs, **kwargs):
+        self.extractors = list(nargs)
+        super().__init__(**kwargs)
+
+    def _apply(self, *nargs, **kwargs):
+        for extractor in self.extractors:
+            result = extractor.apply(*nargs, **kwargs)
+            if result:
+                return result
+        return None
+
+
 class Constant(Extractor):
     '''
     This extractor 'extracts' the same value every time, regardless of input.

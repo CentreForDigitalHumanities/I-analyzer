@@ -21,6 +21,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 // import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ChipsModule } from 'primeng/chips';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
@@ -181,6 +182,7 @@ export const imports: any[] = [
     CalendarModule,
     ChartModule,
     CheckboxModule,
+    ChipsModule,
     CommonModule,
     ConfirmDialogModule,
     DialogModule,

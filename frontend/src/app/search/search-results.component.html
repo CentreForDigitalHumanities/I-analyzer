@@ -30,7 +30,7 @@
     <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
         <div>
             <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
+            <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
         </div>
         </div>
     </div>
@@ -92,6 +92,24 @@
         </a>
     </ng-template>
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ng-template pTemplate="footer">
+        <div class="columns" style="text-align:left">
+            <div class="column">
+                <a *ngIf="viewDocument && viewDocument.position > 1"
+                    iaBalloon="view previous document" iaBalloonPosition="right"
+                    (click)="prevDocument(viewDocument)" >
+                    <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                </a>
+            </div>
+            <div class="column" style="text-align:right">
+                <a *ngIf="viewDocument && viewDocument.position < totalResults"
+                    iaBalloon="view next document" iaBalloonPosition="left"
+                    (click)="nextDocument(viewDocument)">
+                    <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
+                </a>
+            </div>
+        </div>
+    </ng-template>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>
