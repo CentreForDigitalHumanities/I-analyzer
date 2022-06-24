@@ -6,30 +6,13 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
 
+
 @Component({
     selector: 'ia-histogram',
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
 export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
-
-    async ngOnChanges(changes: SimpleChanges) {
-        // new doc counts should be requested if query has changed
-        if (this.changesRequireRefresh(changes)) {
-            this.rawData = [
-                this.newSeries(this.queryModel.queryText)
-            ];
-            if (this.chart) {
-                // clear canvas an reset chart object
-                this.chart.destroy();
-                this.chart = undefined;
-            }
-            this.setQueries();
-            this.prepareChart();
-        } else if (changes.palette) {
-            this.prepareChart();
-        }
-    }
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -112,6 +95,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
+        options.plugins.title.text = this.chartTitle()
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;
         options.plugins.tooltip = {
@@ -153,5 +137,4 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         }
         return this.currentValueKey;
     }
-
 }

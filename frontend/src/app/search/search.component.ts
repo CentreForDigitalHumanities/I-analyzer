@@ -64,7 +64,7 @@ export class SearchComponent implements OnInit {
     private searchFilters: SearchFilter<SearchFilterData> [] = [];
     private activeFilters: SearchFilter<SearchFilterData> [] = [];
 
-    private highlight: number = HIGHLIGHT;
+    public highlight: number = HIGHLIGHT;
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
@@ -106,6 +106,11 @@ export class SearchComponent implements OnInit {
     public changeSorting(event: SortEvent) {
         this.sortField = event.field;
         this.sortAscending = event.ascending;
+        this.search();
+    }
+
+    public changeHighlightSize(event: number) {
+        this.highlight = event;
         this.search();
     }
 

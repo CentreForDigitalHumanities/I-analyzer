@@ -24,32 +24,32 @@
                     Terms
                 </label>
             </ng-container>
-        </div>    
+        </div>
     </div>
 
     <div class="field is-grouped">
-        <div class="control">
-            <div class="field" *ngIf="!showAddQuery">
+        <div class="control is-expanded">
+            <div class="field" *ngIf="!showEdit">
                 <div class="control">
-                    <button class="button" (click)="showAddQuery = true">Compare with another query...</button>
+                    <button class="button" (click)="showEdit = true">Compare with another query...</button>
                 </div>
             </div>
-        
-            <div class="field has-addons" *ngIf="showAddQuery">
-                <div class="control">
-                    <input class="input" type="text" name="query" [(ngModel)]="newQueryText" [disabled]="disableAddQueries">
+
+            <div class="field has-addons" *ngIf="showEdit">
+                <div class="control is-expanded">
+                    <p-chips name="queries" [(ngModel)]="queries" separator="," addOnBlur="true"></p-chips>
                 </div>
                 <div class="control">
-                    <button class="button is-primary" (click)="addQuery()" [disabled]="disableAddQueries">
+                    <button class="button is-primary" (click)="confirmQueries()" [disabled]="disableConfirm">
                         <span class="icon">
-                            <i class="fa fa-plus"></i>
+                            <fa-icon [icon]="faCheck"></fa-icon>
                         </span>
-                        <span>Add</span>
+                        <span>Confirm</span>
                     </button>
                 </div>
             </div>
         </div>
-        <div class="control" *ngIf="showAddQuery && queries.length > 1" >
+        <div class="control" *ngIf="showEdit && queries.length > 1" >
             <button class="button" (click)="signalClearQueries()">
                 <span class="icon">
                     <i class="fa fa-times"></i>

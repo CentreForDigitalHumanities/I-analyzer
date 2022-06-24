@@ -10,9 +10,9 @@
 
 <div class="block">
     <ia-barchart-options
-        [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
+        [queryText]="queryText" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
         [frequencyMeasure]="frequencyMeasure"
-        (normalizer)="onOptionChange($event)" (newQuery)="addSeries($event)" (clearQueries)="clearAddedQueries()">
+        (normalizer)="onOptionChange($event)" (queriesChanged)="updateQueries($event)" (clearQueries)="clearAddedQueries()">
     </ia-barchart-options>
 </div>
 

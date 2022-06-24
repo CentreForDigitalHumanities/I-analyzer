@@ -19,13 +19,13 @@
         <label class="field" *ngIf="fieldDropdown">
             <label class="label">
                 <span *ngIf="visualizationType == 'resultscount' || visualizationType == 'termfrequency'">
-                    Compare frequency by...
+                    Compare frequency by:
                 </span>
                 <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
-                    Count frequencies in...
+                    Count frequencies in:
                 </span>
                 <span *ngIf="visualizationType == 'relatedwords'">
-                    Use word models trained on...
+                    Use word models trained on:
                 </span>
             </label>
             <div class="control">
@@ -42,7 +42,7 @@
             <div class="control">
                 <button class="button" [class.is-primary]="!freqtable" (click)="freqtable = false">
                     <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                </button>    
+                </button>
             </div>
             <div class="control">
                 <button class="button" [class.is-primary]="freqtable" (click)="freqtable = true">
@@ -58,7 +58,7 @@
         <ng-container [ngSwitch]="visualizationType">
             <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'" 
+                [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
@@ -90,6 +90,8 @@
     </div>
 </ng-container>
 
+
+
 <div class="level">
     <div class="level-left">
         <div class="level-item">
@@ -106,6 +108,15 @@
         </div>
     </div>
 </div>
+
+<button class="button download-button" *ngIf="!freqtable" [class.button]="true" (click)="onRequestImage()">
+    <span class="icon is-small">
+        <i class="fa fa-download"></i>
+    </span>
+    <span>Download visualization</span>
+</button>
+
+
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>
