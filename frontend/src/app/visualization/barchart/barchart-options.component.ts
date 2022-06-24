@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { Normalizer } from '../../models';
 
@@ -8,7 +9,7 @@ import { Normalizer } from '../../models';
     styleUrls: ['./barchart-options.component.scss']
 })
 export class barchartOptionsComponent implements OnChanges {
-    @Input() queries: string[];
+    @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
 
@@ -17,11 +18,13 @@ export class barchartOptionsComponent implements OnChanges {
     currentNormalizer: Normalizer;
     @Output() normalizer = new EventEmitter<Normalizer>();
 
-    showAddQuery = false;
-    newQueryText: string;
-    disableAddQueries = false;
-    @Output() newQuery = new EventEmitter<string>();
+    public queries: string[] = [];
+
+    showEdit = false;
+    @Output() queriesChanged = new EventEmitter<string[]>();
     @Output() clearQueries = new EventEmitter<void>();
+
+    faCheck = faCheck;
 
     constructor() { }
 
@@ -34,7 +37,13 @@ export class barchartOptionsComponent implements OnChanges {
             }
         }
 
-        this.disableAddQueries = this.isLoading || this.queries && this.queries.length >= 10;
+        if (changes.queryText) {
+            if (this.queryText) {
+                this.queries = [this.queryText];
+            } else {
+                this.queries = [];
+            }
+        }
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
             this.currentNormalizer = 'terms';
@@ -45,19 +54,26 @@ export class barchartOptionsComponent implements OnChanges {
         this.normalizer.emit(this.currentNormalizer);
     }
 
-    addQuery() {
-        this.newQuery.emit(this.newQueryText);
-        this.newQueryText = undefined;
-
+    confirmQueries() {
+        if (this.queries.length === 1 && this.queries[0] === this.queryText) {
+            this.showEdit = false;
+        }
+        this.queriesChanged.emit(this.queries);
     }
 
     signalClearQueries() {
-        this.showAddQuery = false;
+        this.queries = [this.queryText];
+        this.showEdit = false;
         this.clearQueries.emit();
     }
 
-    get showTemFrequency(): boolean {
+    get showTermFrequency(): boolean {
         return _.some(this.queries);
+    }
+
+    get disableConfirm(): boolean {
+        if (this.isLoading || !this.queries || !this.queries.length) { return false; }
+        return this.queries.length >= 10;
     }
 
 }

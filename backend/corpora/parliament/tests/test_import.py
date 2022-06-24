@@ -1,4 +1,5 @@
 import os
+import warnings
 import pytest
 
 from addcorpus.load_corpus import load_corpus
@@ -28,23 +29,110 @@ CORPUS_TEST_DATA = [
         'name': 'parliament-france',
         'docs': [
         {
-            "book_id" : "2_cri_1965-1966-ordinaire1_027",
+            "book_id" : "37531030876685 37531030876685/1/58 37531030876685_1_58_7",
             "chamber" : "Assemblee Nationale",
             "country" : "France",
-            "debate_id" : "1965-10-20_2",
-            "debate_type" : "Ordinaire",
-            "date" : "1965-10-20",
-            "date_is_estimate": False,
-            "era" : "5Th Republic",
-            "legislature" : "2",
-            "page" : "0",
-            "page_source" : "2_cri_1965-1966-ordinaire1_027.pdf",
-            "sequence" : "2",
-            "speech" : "Trois questions orales sans débat de MM  . Davoust, Fanton et Ansquer à M . le ministre des finances et des affaires économiques.",
-            "id" : "fr_5th_republic_assemblee_nationale_1965_2_0",
-            "url" : "https://archives.assemblee-nationale.fr/2/cri/1965-1966-ordinaire1/027.pdf"
+            "date" : "1881-01-11",
+            "date_is_estimate" : False,
+            "debate_id" : "1881-01-11",
+            "debate_type" : "",
+            "era" : "3Rd Republic",
+            "legislature" : "",
+            "page" : "7",
+            "page_source" : "X0000007.xml",
+            "sequence" : "0",
+            "speech" : """SOMMAIRE
+
+Constitution du bureau provisoire.
+
+Excuses. — Demande de congé.
+
+Communication par M. le président de deux lettres par lesquelles MM. Lou;s Legrand et Drumel déclinent toute candidature aux fonctions de secrétaire.
+
+Tirage au sort des bureaux.
+
+Fixation de l'ordre du jour : MM. Georges Perin, de Colbert-Laplace, Guichard, Janvier de La Motte (Eure). — Demande de renvoi au 20 janvier de la prochaine séance : M. Laroche-Joubert. Adoption.
+
+PRÉSIDBNCE DE M. DESSEAUX, DOYEN D'AGE La séance est ouverte à deux heures un quart.
+
+M. le président. Aux termes de l'article 1er de la loi constitutionnelle du 16 juillet 1875, je déclare ouverte la session ordinaire de la Chambre des députés pour 1881.
+
+J'invite lts six membres les plus jeunes de ''Assemblée à vouloir bien répondre à 'l'appel de leur nom pour prendre place au bureau en qualité de secrétaires provisoires.
+
+(L'appel des noms des députés les plus jeunes est fait par un huissier.)
+
+Sont successivement appelés : MM. Georges de Cassagnac, né le 17 févrièr 1855; Adrien Bastii, né Je 1er octobre 1853; Jules André, né le 23 août 1852 ; René Gautier, né le '25 avril 1852 ; Emile Réaux, né le 20 juin 1851 ; Le Provost de Launay fils, né le 8 juin 1850; René Eschasseriaux, né le 1. 1 mai 1850; Louis Janvier de La Motte, né le 23 août 1849; Lanauve, né le 24 mai 1849; Dreyfus, né le 5 mai 1849 ; Marcellin Pellet, né le 4 mars 1849 ; De Loqueyssip, né le 1er octobre 1848; Le comte de Breteuil, né le 17 septembre 1848; Roy de Loulay, né le 8 août 1848; D3 La Porte, né le 20 juin 1848 ; Thomson, né le 21 janvier 1848.
+
+MM Georges de Cassagnac, Adrien Bstid, limile Réaux, Dreyfus, de Loqueyssie et Thomson répondent à l'appel de leurs noms et prennent placn au bureau.
+
+M. le président. Le bureau probatoire est constitué.
+
+MM. Fourot, de Douville-Maillefeu et Laisant s'excusent de ne pouvoir assister à la séance de ce jour.
+
+M. Laumond demande un congé de vingt jours.
+
+La demande sera renvoyéa à la commission des congés.
+
+J'ai reçu de M. Louis Legrand la lettre suivante, dont je donne connaissance à la Chambré : « Valenciennes, 9 janvier 1881.
+
+c Monsieur le président, « Je vous prie de vouloir bien annoncer à mes collègues que je ne me représente pas à leurs suffrages pour les fonctions de secrétaile.
+
+« je saisis cette occasion pour remercier la Chambre de l'honneur qu'elle m'a fait en me choisissant comme l'un des membres de son bureau.
+
+« Agréez, monsieur je président, i assurance de ma haute considération.
+
+c Lotis LEGRAND, « Député du Nord. »
+
+J'ai reçu également de M. Drumel la lettre suivante:
+
+« Neuvizy (Ardennes', 10 janvier 1881.
+
+c Monsieur le président, « Depuis deux ans, 1* Chambre m'a fait l'honneur de m'appeler à siéger, comme secrétaire, dans son bureau. Je lui en suis profondément reconnaissant; et, en la priant de charger un autre de ses membres des fonctions que je tenais de sa confiance, je lui exprime ma vive gratitude pour les témoignages d'estime et de sympathie qu'à différentes reprises elle a bien voulu me donner.
+
+c Veuillez croire, monsieur le président, à mes sentiments respectueux et dévoués.
+
+« DRUMEL. »
+
+M. le président. L'ordre du jour appelle le tirage au sort des bureaux.
+
+Il va y être procédé.
+
+(Il est procédé au tirage au sort des bureaux dans les formes réglementaires.) M. le président. Messieurs, il y aurait lieu de procéder maintenant à la fixation de l'ordre du jour, mais je crois devoir faire remarquer à la Chambre qu'elle n'est pas en très-grand nombre. (81! si! à droite, — Non!
+
+non ! sur un grand nombre de bancs à gauche.) M. Clémenceau. Il n'est pas nécessaire que la Chambre soit en très-grand nombre, il suffit qu'elle soit en nombre.
+
+M. le président. Je n'ai pas dit que U Chambre n'était pas en nombre, j'ai dit qu'elld n'était pas en très-grand nombre.
+
+M. Haentjens. "Etm n'a jamais été aussi nombreuse à une première séance !
+
+M. le président. La date de l'ouverture dela session, qui est fixée par la loi constitutionnelle, se place cette année entre les deux scrutins relatifs aux élections municipales.
+
+A droite. Qu'est-ce que cela fait?
+
+M. le président beaucoup de nos collègues som encore retenus dans leurs d^oL^rtements.
+
+A droite. Mais non ! mais non !
+
+M. Laroche Joubert Il ne fallait pas nous convoquer alors ! (Interruptions diverses à droite et sur plusieurs bancs à gauche.) M. de Baudry-d'Asson. N.Jus sommes revenus exprès pour procéder à la nomination du bureau ; nous demandons que le bureau soit nommé aujourd'hui!M. le président. Il a paru à beaucoup d'entre vous que l'élection du bureau définitif doit se faire par le plus grand nombre possible de membres. (Interruptions à dro te et sur quelques bancs à gauche.) Je soumets donc à la Chambre la proposi.
+
+tion de s'ajourner. (Bruyantes exclamations à droite.) Sur divers bancs à droite el à l'extrême oauchu. Non 1 non l Sur un grand nombre d'autres bancs. Mais si 1 c'est nécessaire 1 M. Georges Perin. Je demande la parole.
+
+M. Laroche-Joubert. Je demande la pa.
+
+role.
+
+M le comte de Colbert-Laplace. Je demande la parole.
+
+M. le président. La parole est à M.
+
+Perin.
+
+M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et en mon nom personnel, demander à la Chambre de repousser la proposition d'ajournement qui vient d'être faLe pac noire honorable président. (Très bien ! très bien ! à droite et à l'extrême gauche.) Autant qu'il m'a été permis de l'entendre au milieu du bruit, je crois que la seule raison que notre honorable président ait fait valoir 7our justifier sa proposition, c'est que nous n enous pas en nombre.""",
+            "id" : "3rd_republic_0",
+            "url" : "http://gallica.bnf.fr/ark:/12148/bpt6k64418203",
+            "url_html": ""
         }],
-        'n_documents': 3
+        'n_documents': 5
     },
     {
         'name': 'parliament-germany-new',
@@ -165,6 +253,12 @@ def test_imports(test_app, corpus_object):
         for key in target:
             assert key in doc
             assert doc[key] == target[key]
+
+    for key in doc:
+        if not key in target:
+            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+            warnings.warn(message)
+
     docs = get_documents(corpus)
     assert len(list(docs)) == corpus_object.get('n_documents')
 

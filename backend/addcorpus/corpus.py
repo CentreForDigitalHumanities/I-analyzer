@@ -297,7 +297,8 @@ class XMLCorpus(Corpus):
                 extract.XML,
                 extract.Metadata,
                 extract.Constant,
-                extract.ExternalFile
+                extract.ExternalFile,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
@@ -475,7 +476,8 @@ class HTMLCorpus(XMLCorpus):
                 extract.Combined,
                 extract.HTML,
                 extract.Metadata,
-                extract.Constant
+                extract.Constant,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an HTML corpus")
@@ -550,6 +552,7 @@ class CSVCorpus(Corpus):
                 extract.Combined,
                 extract.CSV,
                 extract.Constant,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
@@ -669,7 +672,7 @@ class Field(object):
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
             es_mapping['type'] in ['integer', 'float', 'date']
-        
+
         self.primary_sort = primary_sort
 
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.
