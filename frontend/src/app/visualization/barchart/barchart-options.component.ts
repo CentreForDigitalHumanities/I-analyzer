@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { barchartOptions } from '../../models';
@@ -9,7 +10,7 @@ import { barchartOptions } from '../../models';
     styleUrls: ['./barchart-options.component.scss']
 })
 export class barchartOptionsComponent implements OnChanges {
-    @Input() queries: string[];
+    @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
     @Output() options = new EventEmitter<barchartOptions>();
@@ -17,23 +18,24 @@ export class barchartOptionsComponent implements OnChanges {
     public frequencyMeasure: 'documents'|'tokens' = 'documents';
     public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
 
-    showAddQuery = false;
-    newQueryText: string;
-    disableAddQueries = false;
-    @Output() newQuery = new EventEmitter<string>();
+    public queries: string[] = [];
+
+    showEdit = false;
+    @Output() queriesChanged = new EventEmitter<string[]>();
     @Output() clearQueries = new EventEmitter<void>();
+
+    faCheck = faCheck;
 
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queries && changes.queries.previousValue) {
-            if (_.every(this.queries, query => query == null) && this.frequencyMeasure === 'tokens') {
-                this.frequencyMeasure = 'documents';
-                this.onChange('frequencyMeasure');
+        if (changes.queryText) {
+            if (this.queryText) {
+                this.queries = [this.queryText];
+            } else {
+                this.queries = [];
             }
         }
-
-        this.disableAddQueries = this.isLoading || this.queries && this.queries.length >= 10;
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
             this.normalizer = 'terms';
@@ -55,19 +57,26 @@ export class barchartOptionsComponent implements OnChanges {
         });
     }
 
-    addQuery() {
-        this.newQuery.emit(this.newQueryText);
-        this.newQueryText = undefined;
-
+    confirmQueries() {
+        if (this.queries.length === 1 && this.queries[0] === this.queryText) {
+            this.showEdit = false;
+        }
+        this.queriesChanged.emit(this.queries);
     }
 
     signalClearQueries() {
-        this.showAddQuery = false;
+        this.queries = [this.queryText];
+        this.showEdit = false;
         this.clearQueries.emit();
     }
 
-    get showTemFrequency(): boolean {
+    get showTermFrequency(): boolean {
         return _.some(this.queries);
+    }
+
+    get disableConfirm(): boolean {
+        if (this.isLoading || !this.queries || !this.queries.length) { return false; }
+        return this.queries.length >= 10;
     }
 
 }

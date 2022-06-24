@@ -14,24 +14,6 @@ import { selectColor } from '../select-color';
 })
 export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
-    async ngOnChanges(changes: SimpleChanges) {
-        // new doc counts should be requested if query has changed
-        if (this.changesRequireRefresh(changes)) {
-            this.rawData = [
-                this.newSeries(this.queryModel.queryText)
-            ];
-            if (this.chart) {
-                // clear canvas an reset chart object
-                this.chart.destroy();
-                this.chart = undefined;
-            }
-            this.setQueries();
-            this.prepareChart();
-        } else if (changes.palette) {
-            this.prepareChart();
-        }
-    }
-
     /** specify aggregator object based on visualised field;
      * used in document requests.
     */
