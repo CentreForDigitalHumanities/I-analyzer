@@ -191,7 +191,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         logger = logging.getLogger(__name__)
 
         #old data
-        for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
+        for xml_file in glob('{}/*.xml'.format(self.data_directory)):
             period_match = re.search(r'[0-9]{8}', xml_file)
             if period_match:
                 period = period_match.group(0)
