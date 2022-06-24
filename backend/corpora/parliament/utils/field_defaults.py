@@ -429,6 +429,7 @@ def url():
         searchable=False,
     )
 
+
 def sequence():
     "integer index of the speech in a debate"
     return Field(

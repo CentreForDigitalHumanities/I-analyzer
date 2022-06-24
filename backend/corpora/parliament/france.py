@@ -34,7 +34,8 @@ class ParliamentFrance(Parliament, CSVCorpus):
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
-        for csv_file in glob('{}/*.csv'.format(self.data_directory)):
+
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
             yield csv_file, {}
 
     book_id = field_defaults.book_id()
@@ -118,35 +119,26 @@ class ParliamentFrance(Parliament, CSVCorpus):
     speech.extractor = CSV(
         field='page_text'
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "french"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
     )
 
-    url = field_defaults.url()
-    url.extractor = CSV(
-        field='text_url'
+    url_pdf = field_defaults.url()
+    url_pdf.extractor = CSV(
+        field='pdf_url'
     )
+    url_pdf.display_name = 'Source url (PDF)'
+    url_pdf.description = 'URL to PDF source file of this speech'
+
+    url_html = field_defaults.url()
+    url_html.extractor = CSV(
+        field='html_url'
+    )
+    url_html.name = 'url_html'
+    url_html.display_name = 'Source url (HTML)'
+    url_html.description = 'URL to HTML source file of this speech'
 
     def __init__(self):
         self.fields = [
@@ -161,7 +153,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
             self.page, self.page_source,
             self.sequence,
             self.speech, self.speech_id,
-            self.url,
+            self.url_pdf, self.url_html
         ]
 
 
