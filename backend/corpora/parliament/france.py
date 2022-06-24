@@ -150,10 +150,11 @@ class ParliamentFrance(Parliament, CSVCorpus):
 
     def __init__(self):
         self.fields = [
+            self.date,
             self.book_id,
             self.chamber,
             self.country,
-            self.date, self.date_is_estimate,
+            self.date_is_estimate,
             self.debate_id, self.debate_type,
             self.era,
             self.legislature,
