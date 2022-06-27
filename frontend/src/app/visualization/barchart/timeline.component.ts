@@ -3,7 +3,7 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../../models/index';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -25,28 +25,16 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     /** domain on the axis */
     public xDomain: [Date, Date];
 
-    ngOnChanges(changes: SimpleChanges) {
-        // new doc counts should be requested if query has changed
-        if (this.changesRequireRefresh(changes)) {
-            this.rawData = [
-                this.newSeries(this.queryModel.queryText)
-            ];
-            if (this.chart) {
-                // clear canvas an reset chart object
-                this.chart.destroy();
-                this.chart = undefined;
-            }
-            this.setQueries();
-            this.setTimeDomain();
-            this.prepareChart();
-        } else if (changes.palette) {
-            this.prepareChart();
-        }
+    refreshChart(): void {
+        this.initQueries();
+        this.clearCanvas();
+        this.setTimeDomain();
+        this.prepareChart();
     }
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const currentDomain = this.visualizedField.searchFilter.currentData;
+        const currentDomain = this.visualizedField.searchFilter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
         this.xDomain = [min, max];

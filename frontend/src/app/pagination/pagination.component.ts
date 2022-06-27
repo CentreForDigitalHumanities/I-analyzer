@@ -11,7 +11,7 @@ export class PaginationComponent implements OnChanges {
     @Input() public totalResults: number;
 
     public totalPages: number;
-    public fromIndex = 0;
+    @Input() public fromIndex = 0;
     public resultsPerPage = 20;
     public currentPages: number[];
     public currentPage: number;
@@ -24,8 +24,14 @@ export class PaginationComponent implements OnChanges {
 
     ngOnChanges() {
         this.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
-        this.currentPages = [1, 2, 3];
-        this.currentPage = 1;
+
+        if ((this.fromIndex + 1) <= this.resultsPerPage) {
+            this.currentPage = 1;
+        } else {
+            this.currentPage = 1 + Math.floor(this.fromIndex / this.resultsPerPage);
+        }
+
+        this.setCurrentPages(this.currentPage);
     }
 
     public async loadResults(page: number) {
@@ -36,7 +42,13 @@ export class PaginationComponent implements OnChanges {
         this.currentPage = page;
         this.fromIndex = (this.currentPage - 1) * this.resultsPerPage;
 
-        // setting variables for pagination view
+        this.setCurrentPages(page);
+
+        this.loadResultsEvent.emit({from: this.fromIndex, size: this.resultsPerPage});
+    }
+
+    /** setting variables for pagination view */
+    setCurrentPages(page: number) {
         if (page === 1) {
             this.currentPages = [1, 2, 3];
         } else if (page === this.totalPages && this.totalResults > this.resultsPerPage * 2) {
@@ -44,8 +56,6 @@ export class PaginationComponent implements OnChanges {
         } else {
             this.currentPages = [page - 1, page, page + 1];
         }
-
-        this.loadResultsEvent.emit({from: this.fromIndex, size: this.resultsPerPage});
     }
 
 }
