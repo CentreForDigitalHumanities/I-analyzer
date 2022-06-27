@@ -195,38 +195,24 @@ class Corpus(object):
         corpus_dict = {}
 
         # gather attribute names
-        # exclude hidden attributes and attributes which are not implemented in the Corpus class
-        # and anything listed in `exclude`
+        # exclude:
+        # - hidden attributes
+        # - attributes listed in `exclude`
+        # - bound methods
         exclude = ['data_directory', 'es_settings']
         corpus_attribute_names = [
             a for a in dir(self)
-            if not a.startswith('__') and a not in dir(Corpus) and a not in exclude
+            if not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
         ]
 
-        # collect values and surpress bound methods
-        corpus_attributes = [
-            (a, self.__getattribute__(a))
-            for a in corpus_attribute_names
-            if not inspect.ismethod(self.__getattribute__(a))
-        ]
+        # collect values
+        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
 
         for ca in corpus_attributes:
             if ca[0] == 'fields':
                 field_list = []
                 for field in self.fields:
-                    field_dict = {}
-                    for key, value in field.__dict__.items():
-                        if key == 'search_filter' and value != None:
-                            filter_name = str(type(value)).split(
-                                sep='.')[-1][:-2]
-                            search_dict = {'name': filter_name}
-                            for search_key, search_value in value.__dict__.items():
-                                if search_key == 'search_filter' or search_key != 'field':
-                                    search_dict[search_key] = search_value
-                            field_dict['search_filter'] = search_dict
-                        elif key != 'extractor':
-                            field_dict[key] = value
-                    field_list.append(field_dict)
+                    field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
             elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
@@ -235,6 +221,8 @@ class Corpus(object):
                             'hour': ca[1].hour,
                             'minute': ca[1].minute}
                 corpus_dict[ca[0]] = timedict
+            elif type(ca[1]) == Field:
+                continue
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
@@ -692,6 +680,22 @@ class Field(object):
 
         if self.search_filter:
             self.search_filter.field = self
+
+    def serialize(self):
+        field_dict = {}
+        for key, value in self.__dict__.items():
+            if key == 'search_filter' and value != None:
+                filter_name = str(type(value)).split(
+                    sep='.')[-1][:-2]
+                search_dict = {'name': filter_name}
+                for search_key, search_value in value.__dict__.items():
+                    if search_key == 'search_filter' or search_key != 'field':
+                        search_dict[search_key] = search_value
+                field_dict['search_filter'] = search_dict
+            elif key != 'extractor':
+                field_dict[key] = value
+
+        return field_dict
 
 
 # Helper functions ############################################################
