@@ -99,4 +99,4 @@ def clean_nltk_data_directory():
 
         # clear test data
         if os.path.isdir(data_path):
-            os.remove(data_path)
+            shutil.rmtree(data_path)
