@@ -196,13 +196,14 @@ class Corpus(object):
 
         # gather attribute names
         # exclude:
+        # - methods not implemented in Corpus class
         # - hidden attributes
         # - attributes listed in `exclude`
         # - bound methods
         exclude = ['data_directory', 'es_settings']
         corpus_attribute_names = [
             a for a in dir(self)
-            if not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
+            if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
         ]
 
         # collect values
@@ -221,8 +222,6 @@ class Corpus(object):
                             'hour': ca[1].hour,
                             'minute': ca[1].minute}
                 corpus_dict[ca[0]] = timedict
-            elif type(ca[1]) == Field:
-                continue
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
