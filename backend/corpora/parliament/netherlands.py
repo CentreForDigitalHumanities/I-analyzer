@@ -101,6 +101,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
+    language = 'dutch'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
