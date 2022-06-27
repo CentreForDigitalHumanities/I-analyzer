@@ -222,6 +222,8 @@ class Corpus(object):
                             'hour': ca[1].hour,
                             'minute': ca[1].minute}
                 corpus_dict[ca[0]] = timedict
+            elif type(ca[1]) == Field:
+                continue
             else:
                 corpus_dict[ca[0]] = ca[1]
         return corpus_dict
