@@ -11,6 +11,7 @@ from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 def format_debate_title(title):
     if title.endswith('.'):
@@ -38,17 +39,11 @@ class ParliamentUK(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_UK_DATA']
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_english_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "english"
-        }
-    }
+
+    @property
+    def es_settings(self):
+        return parliament_es_settings('english')
+
 
     field_entry = 'speech_id'
 

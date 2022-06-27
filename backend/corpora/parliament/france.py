@@ -9,6 +9,7 @@ from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class ParliamentFrance(Parliament, CSVCorpus):
     title = "People & Parliament (France 1881-2022)"
@@ -18,17 +19,10 @@ class ParliamentFrance(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_FR_DATA']
     es_index = current_app.config['PP_FR_INDEX']
     image = current_app.config['PP_FR_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_french_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "french"
-        }
-    }
+
+    @property
+    def es_settings(self):
+        return parliament_es_settings('french')
 
     field_entry = 'speech_id'
 
