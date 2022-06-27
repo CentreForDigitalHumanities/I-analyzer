@@ -46,7 +46,7 @@ def date():
             MAX_DATE,
             description='Search only within this time range.'
         ),
-        visualizations=['timeline']
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def date_is_estimate():
@@ -69,7 +69,7 @@ def house():
             description='Search only in debates from the selected houses',
             option_count=2
         ),
-        visualizations = ['histogram']
+        visualizations = ['resultscount', 'termfrequency']
     )
 
 def parliament():
@@ -295,7 +295,7 @@ def party():
             description='Search in speeches from the selected parties',
             option_count=50
         ),
-        visualizations=['histogram']
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def party_id():

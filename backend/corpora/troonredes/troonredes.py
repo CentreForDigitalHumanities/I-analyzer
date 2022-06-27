@@ -101,7 +101,7 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only speeches given by '
@@ -118,7 +118,7 @@ class Troonredes(XMLCorpus):
             es_mapping={'type': 'keyword'},
             results_overview=True,
             csv_core=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only speeches of '

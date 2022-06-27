@@ -89,7 +89,7 @@ class Times(XMLCorpus):
             description='Publication date, parsed to yyyy-MM-dd format',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             hidden=True,
-            visualizations=['timeline'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -396,7 +396,7 @@ class Times(XMLCorpus):
         ),
         Field(
             name='category',
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             display_name='Category',
             description='Article subject categories.',
             es_mapping={'type': 'keyword'},
@@ -414,7 +414,7 @@ class Times(XMLCorpus):
                 'Tables and other illustrations associated with the article.'
             ),
             es_mapping={'type': 'keyword'},
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.MultipleChoiceFilter(
                 description=(
                     'Accept only articles associated with these types '

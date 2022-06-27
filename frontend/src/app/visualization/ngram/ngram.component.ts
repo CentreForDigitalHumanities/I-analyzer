@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, visualizationField, NgramResults, NgramParameters } from '../../models';
+import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,7 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
-    @Input() visualizedField: visualizationField;
+    @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();

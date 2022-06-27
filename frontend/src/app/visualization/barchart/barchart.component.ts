@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, barchartOptions, QueryModel, CorpusField } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -51,7 +51,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
@@ -159,10 +159,18 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
         return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
     }
 
+    /** update graph after changes to the normalisation menu (i.e. normalizer) */
+    onOptionChange(normalizer: 'raw'|'percent'|'documents'|'terms') {
+        this.normalizer = normalizer;
+        if (this.rawData && this.chart) {
+            this.prepareChart();
+        }
+    }
+
     /**
      * clear data and update chart
      */
-    refreshChart(): void {
+     refreshChart(): void {
         this.initQueries();
         this.clearCanvas();
         this.prepareChart();
@@ -181,15 +189,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
             // clear canvas an reset chart object
             this.chart.destroy();
             this.chart = undefined;
-        }
-    }
-
-    /** update graph after changes to the option menu (i.e. frequency measure / normalizer) */
-    onOptionChange(options: barchartOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-        if (this.rawData && this.chart) {
-            this.prepareChart();
         }
     }
 

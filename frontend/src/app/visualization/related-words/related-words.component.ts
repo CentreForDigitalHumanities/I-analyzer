@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
-import { Corpus, freqTableHeaders, QueryModel, visualizationField, WordSimilarity } from '../../models';
+import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
 import { selectColor } from '../select-color';
 import { DialogService, SearchService } from '../../services/index';
 

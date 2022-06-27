@@ -37,7 +37,7 @@ def chamber():
             description='Search only in debates from the selected chamber(s)',
             option_count=2
         ),
-        visualizations = ['histogram']
+        visualizations = ['resultscount', 'termfrequency']
     )
 
 def country():
@@ -62,7 +62,7 @@ def date():
             MAX_DATE,
             description='Search only within this time range.'
         ),
-        visualizations=['timeline'],
+        visualizations=['resultscount', 'termfrequency'],
         primary_sort=True,
     )
 
@@ -95,7 +95,7 @@ def chamber():
             description='Search only in debates from the selected chamber(s)',
             option_count=2
         ),
-        visualizations = ['histogram']
+        visualizations = ['resultscount', 'termfrequency']
     )
 
 def debate_type():
@@ -230,7 +230,7 @@ def speaker():
         },
         results_overview=True,
         search_field_core=True,
-        visualizations=['histogram']
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def speech_type():
@@ -258,7 +258,7 @@ def speaker_constituency():
         display_name='Speaker constituency',
         description='Constituency represented by the speaker',
         es_mapping=BASIC_KEYWORD_MAPPING,
-        visualizations=['histogram']
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def speaker_birthplace():
@@ -304,7 +304,7 @@ def speaker_gender():
         display_name='Speaker gender',
         description='Gender of the speaker',
         es_mapping=BASIC_KEYWORD_MAPPING,
-        visualizations=['histogram'],
+        visualizations=['resultscount', 'termfrequency'],
     )
 
 def speaker_profession():
@@ -346,7 +346,7 @@ def role():
             description='Search for speeches by speakers with the selected roles',
             option_count=10
         ),
-        visualizations=['histogram'],
+        visualizations=['resultscount', 'termfrequency'],
     )
 
 def role_long():
@@ -369,7 +369,7 @@ def party():
             description='Search in speeches from the selected parties',
             option_count=50
         ),
-        visualizations=['histogram']
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def party_id():

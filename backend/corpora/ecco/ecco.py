@@ -111,7 +111,7 @@ class Ecco(XMLCorpus):
                 es_mapping={'type': 'integer'},
                 results_overview=True,
                 csv_core=True,
-                visualizations=['histogram'],
+                visualizations=['resultscount', 'termfrequency'],
                 visualization_sort='key',
                 search_filter=filters.RangeFilter(
                     1700,
@@ -205,7 +205,7 @@ class Ecco(XMLCorpus):
                     description='Accept only book pages in these categories.',
                     option_count=7
                 ),
-                visualizations=['histogram']
+                visualizations=['resultscount', 'termfrequency']
             ),
             Field(
                 name='imprint',

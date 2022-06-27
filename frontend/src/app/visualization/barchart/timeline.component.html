@@ -7,7 +7,8 @@
 <div class="block">
     <ia-barchart-options
         [queryText]="queryText" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
-        (options)="onOptionChange($event)" (queriesChanged)="updateQueries($event)" (clearQueries)="clearAddedQueries()">
+        [frequencyMeasure]="frequencyMeasure"
+        (normalizer)="onOptionChange($event)" (queriesChanged)="updateQueries($event)" (clearQueries)="clearAddedQueries()">
     </ia-barchart-options>
 </div>
 

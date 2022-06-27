@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
-import { barchartOptions } from '../../models';
+import { Normalizer } from '../../models';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -13,10 +12,11 @@ export class barchartOptionsComponent implements OnChanges {
     @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
-    @Output() options = new EventEmitter<barchartOptions>();
 
-    public frequencyMeasure: 'documents'|'tokens' = 'documents';
-    public normalizer: 'raw'|'percent'|'documents'|'terms' = 'raw';
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
+
+    currentNormalizer: Normalizer;
+    @Output() normalizer = new EventEmitter<Normalizer>();
 
     public queries: string[] = [];
 
@@ -29,6 +29,14 @@ export class barchartOptionsComponent implements OnChanges {
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes.frequencyMeasure) {
+            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+                this.currentNormalizer = 'raw';
+            } else {
+                this.currentNormalizer = 'terms';
+            }
+        }
+
         if (changes.queryText) {
             if (this.queryText) {
                 this.queries = [this.queryText];
@@ -38,23 +46,12 @@ export class barchartOptionsComponent implements OnChanges {
         }
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
-            this.normalizer = 'terms';
+            this.currentNormalizer = 'terms';
         }
     }
 
-    onChange(parameter: 'frequencyMeasure'|'normalizer'): void {
-        if (parameter === 'frequencyMeasure') {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.normalizer = 'raw';
-            } else {
-                this.normalizer = 'terms';
-            }
-        }
-
-        this.options.emit({
-            frequencyMeasure: this.frequencyMeasure,
-            normalizer: this.normalizer,
-        });
+    onNormalizerChange(): void {
+        this.normalizer.emit(this.currentNormalizer);
     }
 
     confirmQueries() {
