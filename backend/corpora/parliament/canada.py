@@ -19,10 +19,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
-
-    @property
-    def es_settings(self):
-        return parliament_es_settings('english')
+    language = 'english'
 
     field_entry = 'speech_id'
     required_field = 'content'
@@ -94,25 +91,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "english"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(

@@ -23,12 +23,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_OLD_DATA']
     es_index = current_app.config['PP_GERMANY_OLD_INDEX']
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-
-    @property
-    def es_settings(self):
-        return parliament_es_settings('german')
-
+    language = 'german'
 
     field_entry = 'item_order'
     required_field = 'text'

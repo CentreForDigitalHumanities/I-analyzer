@@ -137,31 +137,6 @@ PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
 PP_FR_IMAGE = 'france.jpeg'
 
-# Elasticsearch settings for People & Parliament corpora
-PP_ES_SETTINGS = {
-    "analysis": {
-        "analyzer": {
-            "clean": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords"]
-            },
-            "stemmed": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords", "stemmer"]
-            }
-        },
-        "char_filter":{
-            "number_filter":{
-                "type":"pattern_replace",
-                "pattern":"\\d+",
-                "replacement":""
-            }
-        }
-    }
-}
-
 #################
 
 # Celery configuration
