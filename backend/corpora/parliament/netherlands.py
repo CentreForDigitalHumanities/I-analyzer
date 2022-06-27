@@ -103,7 +103,10 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = 'root'
     tag_entry = 'speech'
-    es_settings = parliament_es_settings('dutch')
+
+    @property
+    def es_settings(self):
+        return parliament_es_settings('dutch')
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)

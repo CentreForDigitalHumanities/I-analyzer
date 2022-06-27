@@ -193,19 +193,25 @@ class Corpus(object):
 
     def serialize(self):
         corpus_dict = {}
-        # inspect.getmembers returns tuples for every Class attribute:
-        # tuple[0] attribute name; tuple[1] attribute content
-        # the following suppresses all private attributes and bound methods,
-        # and attributes which are not implemented in the Corpus class
-        corpus_attributes = [
-            a for a in inspect.getmembers(self)
-            if not a[0].startswith('__') and not inspect.ismethod(a[1])
-            and a[0] in dir(Corpus)
+
+        # gather attribute names
+        # exclude hidden attributes and attributes which are not implemented in the Corpus class
+        # and anything listed in `exclude`
+        exclude = ['data_directory', 'es_settings']
+        corpus_attribute_names = [
+            a for a in dir(self)
+            if not a.startswith('__') and a not in dir(Corpus) and a not in exclude
         ]
+
+        # collect values and surpress bound methods
+        corpus_attributes = [
+            (a, self.__getattribute__(a))
+            for a in corpus_attribute_names
+            if not inspect.ismethod(self.__getattribute__(a))
+        ]
+
         for ca in corpus_attributes:
-            if ca[0] == 'data_directory' or ca[0] == 'es_settings':
-                continue
-            elif ca[0] == 'fields':
+            if ca[0] == 'fields':
                 field_list = []
                 for field in self.fields:
                     field_dict = {}
