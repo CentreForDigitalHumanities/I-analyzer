@@ -11,6 +11,7 @@ from addcorpus.filters import MultipleChoiceFilter
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 def format_debate_title(title):
     if title.endswith('.'):
