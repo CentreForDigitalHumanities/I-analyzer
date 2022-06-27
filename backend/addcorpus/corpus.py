@@ -203,7 +203,7 @@ class Corpus(object):
             and a[0] in dir(Corpus)
         ]
         for ca in corpus_attributes:
-            if ca[0] == 'data_directory':
+            if ca[0] == 'data_directory' or ca[0] == 'es_settings':
                 continue
             elif ca[0] == 'fields':
                 field_list = []
