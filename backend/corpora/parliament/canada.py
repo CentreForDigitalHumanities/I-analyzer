@@ -10,6 +10,7 @@ from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
@@ -18,17 +19,10 @@ class ParliamentCanada(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_english_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "english"
-        }
-    }
+
+    @property
+    def es_settings(self):
+        return parliament_es_settings('english')
 
     field_entry = 'speech_id'
     required_field = 'content'
