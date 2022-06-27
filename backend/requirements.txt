@@ -81,7 +81,9 @@ jdcal==1.4.1
     # via openpyxl
     # via flask
 joblib==1.1.0
-    # via scikit-learn
+    # via
+    #   nltk
+    #   scikit-learn
 kombu==5.2.4
     # via celery
 lxml==4.6.5
