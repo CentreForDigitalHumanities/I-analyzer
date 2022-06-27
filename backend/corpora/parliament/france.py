@@ -19,10 +19,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_FR_DATA']
     es_index = current_app.config['PP_FR_INDEX']
     image = current_app.config['PP_FR_IMAGE']
-
-    @property
-    def es_settings(self):
-        return parliament_es_settings('french')
+    language = 'french'
 
     field_entry = 'speech_id'
 

@@ -22,10 +22,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
-
-    @property
-    def es_settings(self):
-        return parliament_es_settings('german')
+    language = 'german'
 
     field_entry = 'id'
     required_field = 'speech_content'
@@ -141,25 +138,6 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "german"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
