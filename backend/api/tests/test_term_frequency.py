@@ -8,21 +8,23 @@ TOTAL_DOCS_IN_MOCK_CORPUS = 3
 TOTAL_WORDS_IN_MOCK_CORPUS = 67
 
 def test_extract_data_for_term_frequency(test_app):
-    highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus')
+    es_query = make_query('test', ['content', 'title'])
+    search_fields, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', es_query)
 
-    # highlighter should look at text and keyword fields
-    target_fields = ['title', 'content', 'genre']
-    assert set(target_fields) == set(highlight_specs['fields'])
+    # highlighter should look at specified fields
+    target_fields = ['content', 'title']
+    assert set(target_fields) == set(search_fields)
 
     # no .length multifield for all fields, so no aggregator
     assert aggregators == None
 
     # restrict the search field to one with token counts
     fields_with_token_counts = ['content']
-    highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', fields_with_token_counts)
-    
+    es_query = make_query('test', fields_with_token_counts)
+    fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', es_query)
+
     # highlighter should be restricted as well
-    assert set(fields_with_token_counts) == set(highlight_specs['fields'])
+    assert set(fields_with_token_counts) == set(fieldnames)
 
     # token count aggregator should be included
     aggregators_target = {
@@ -41,21 +43,29 @@ def test_match_count(test_app, test_es_client):
         ('Alice', 2), # 1 in alice in wonderland title, 1 in its content
         ('rejoice', 1), # 1 in content of frankenstein
         ('evil forebodings', 2), # multiword, each occurs once
+        ('evil + forebodings', 2), # + does nothing
+        ('"evil forebodings"', 1), # 1 match for prhase
+        ('"Alice in Wonderland" Frankenstein', 2),
         ('of', 5), # matches in multiple documents
+        ('of Alice', 7),
+        ('of + Alice', 4), # only get hits for 'of' in documents that also contain 'Alice'
+        ('rejuice~1', 1), #fuzzy match
+        ('hav*', 2), # wildcard match
+        ('sit* hav*' , 3),
         ('nomatches', 0),
     ]
 
     for text, freq in frequencies:
         query = make_query(query_text=text)
-        highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus')
-        match_count = analyze.get_match_count(test_es_client, query, 'mock-corpus', 100, highlight_specs)
+        fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', query)
+        match_count = analyze.get_match_count(test_es_client, query, 'mock-corpus', 100, fieldnames)
         assert match_count == freq
 
 def test_total_docs_and_tokens(test_app, test_es_client):
     """Test total document counter"""
 
-    query = make_query()
-    highlight_specs, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', ['content'])
+    query = make_query(query_text='*', search_in_fields=['content'])
+    fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', query)
     doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, 'mock-corpus', aggregators)
     assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
@@ -151,7 +161,7 @@ def make_query(query_text=None, search_in_fields=None):
         }
 
         if search_in_fields:
-            query['query']['bool']['must']['simple_query_string']['fields'] = search_in_fields  
+            query['query']['bool']['must']['simple_query_string']['fields'] = search_in_fields
 
 
     return query

@@ -64,7 +64,6 @@ def terms_match(term, query_term: str):
     if fuzzy_match:
         max_distance = int(fuzzy_match.group(2))
         clean_query_term = fuzzy_match.group(1)
-        print(term, clean_query_term)
         distance = damerau_levenshtein(term, clean_query_term)
         return distance <= max_distance
 
