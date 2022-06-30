@@ -1,5 +1,6 @@
 from ianalyzer.factories.elasticsearch import elasticsearch
 import re
+from textdistance import damerau_levenshtein
 
 def get_terms(termvector_result, field):
     termvectors = termvector_result['term_vectors']
@@ -29,6 +30,11 @@ def list_tokens(term, details):
     ]
 
 def token_matches(tokens, query_text, index, field, es_client = None):
+    """
+    Iterates over the matches in list of tokens (i.e. the output of `list_tokens`) for a query.
+
+    Each iteration is a tuple wit the start index (in tokens), stop index of the match, and term
+    """
     analyzed_query = analyze_query(query_text, index, field, es_client)
 
     for i in range(len(tokens)):
@@ -42,12 +48,33 @@ def token_matches(tokens, query_text, index, field, es_client = None):
 
 
 def terms_match(term, query_term: str):
+    """
+    Whether a term in the content matches a term from the query.
+
+    Query terms can include `.*` wildcards, or do fuzzy search with `~{edit-distance}` at the end.
+    The edit distance is measured as damerau-levenshtein, since this is used by elasticsearch as well.
+    """
+
+    # handle wildcard
     if '.*' in query_term:
         return re.match(query_term, term) != None
-    else:
-        return term == query_term
+
+    # handle fuzzy match
+    fuzzy_match = re.search(r'(\S+)~(\d+)$', query_term)
+    if fuzzy_match:
+        max_distance = int(fuzzy_match.group(2))
+        clean_query_term = fuzzy_match.group(1)
+        print(term, clean_query_term)
+        distance = damerau_levenshtein(term, clean_query_term)
+        return distance <= max_distance
+
+    return term == query_term
 
 def analyze_query(query_text, index, field, es_client = None):
+    """
+    Tokenise a query and apply the language analyser from this field in the index.
+    """
+
     if not es_client:
         es_client = elasticsearch(index)
 
@@ -69,12 +96,21 @@ def analyze_query_component(component_text, index, field, es_client):
 
     tokens = [token['token'] for token in analyzed['tokens']]
 
-    # wildcard exception for single-word tokens
-    # (everything outside "" is already passed per word)
-    if len(tokens) == 1 and component_text.endswith('*'):
-        return [tokens[0] + '.*']
-    else:
-        return tokens
+
+    if len(component_text.split()) == 1:
+        # for single-word tokens, add exceptions for wildcard and fuzzy match
+        # everything outside quotes is passed per word
+
+        wildcard_match = re.search('\*$', component_text)
+        if wildcard_match:
+            return [tokens[0] + '.*'] # return re with wildcard
+
+        fuzzy_match = re.search(r'~(\d+)$', component_text)
+        if fuzzy_match:
+            digits = fuzzy_match.group(1)
+            return [tokens[0] + '~' + digits]
+
+    return tokens
 
 
 def get_query_components(query_text: str):
