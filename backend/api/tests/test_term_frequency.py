@@ -11,7 +11,7 @@ def test_extract_data_for_term_frequency(test_app):
     es_query = make_query('test', ['content', 'title'])
     search_fields, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', es_query)
 
-    # highlighter should look at specified fields
+    # fieldnames should look at specified fields
     target_fields = ['content', 'title']
     assert set(target_fields) == set(search_fields)
 
@@ -23,7 +23,7 @@ def test_extract_data_for_term_frequency(test_app):
     es_query = make_query('test', fields_with_token_counts)
     fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', es_query)
 
-    # highlighter should be restricted as well
+    # fieldnames should be restricted as well
     assert set(fields_with_token_counts) == set(fieldnames)
 
     # token count aggregator should be included
