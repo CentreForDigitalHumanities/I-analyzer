@@ -33,7 +33,12 @@ def test_find_matches(test_es_client, termvectors_result):
     cases = [
         ('modern', 1),
         ('modern prometheus', 2),
-        ('sdlkfjsdkgjd', 0)
+        ('sdlkfjsdkgjd', 0),
+        ('prometh*', 1),
+        ('modern prometh*', 2),
+        ('"modern prometheus"', 1),
+        ('frankenstein "modern prometheus"', 2),
+        ('frankenstein "mod* prometheus"', 1), # no wildcard support within exact match
     ]
 
     for query_text, expected_matches in cases:
@@ -61,6 +66,10 @@ QUERY_ANALYSIS_CASES = [
         'query_text': 'evil + forebodings',
         'components': ['evil', '+', 'forebodings'],
         'analyzed': [['evil'], ['forebodings']]
+    }, {
+        'query_text':  'evil forebod*',
+        'components': ['evil', 'forebod*'],
+        'analyzed': [['evil'], ['forebod.*']]
     }
 ]
 
@@ -83,7 +92,7 @@ def test_query_analysis(test_es_client):
 def termvectors_result(test_app, test_es_client):
     if not test_es_client:
         pytest.skip('No elastic search client')
-    
+
     frankenstein_query = {
         'query': {
             'match': {

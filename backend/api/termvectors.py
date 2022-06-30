@@ -1,4 +1,5 @@
 from ianalyzer.factories.elasticsearch import elasticsearch
+import re
 
 def get_terms(termvector_result, field):
     termvectors = termvector_result['term_vectors']
@@ -8,11 +9,11 @@ def get_terms(termvector_result, field):
 
 def get_tokens(terms, sort=True):
     all_tokens = [token for term in terms for token in list_tokens(term, terms[term])]
-    
+
     if sort:
         sorted_tokens = sorted(all_tokens, key=lambda token: token['position'])
         return sorted_tokens
-    
+
     return all_tokens
 
 def list_tokens(term, details):
@@ -33,17 +34,23 @@ def token_matches(tokens, query_text, index, field, es_client = None):
     for i in range(len(tokens)):
         for component in analyzed_query:
             if len(component) + i <= len(tokens):
-                if all(tokens[i + j]['term'] == component[j] for j in range(len(component))):
+                if all(terms_match(tokens[i + j]['term'], component[j]) for j in range(len(component))):
                     start = i
                     stop = i + len(component)
                     content = ' '.join([tokens[ind]['term'] for ind in range(start, stop)])
                     yield start, stop, content
 
 
+def terms_match(term, query_term: str):
+    if '.*' in query_term:
+        return re.match(query_term, term) != None
+    else:
+        return term == query_term
+
 def analyze_query(query_text, index, field, es_client = None):
     if not es_client:
         es_client = elasticsearch(index)
-    
+
     components = get_query_components(query_text)
     analyzed_components = [analyze_query_component(component, index, field, es_client) for component in components]
 
@@ -60,7 +67,14 @@ def analyze_query_component(component_text, index, field, es_client):
         },
     )
 
-    return [token['token'] for token in analyzed['tokens']]
+    tokens = [token['token'] for token in analyzed['tokens']]
+
+    # wildcard exception for single-word tokens
+    # (everything outside "" is already passed per word)
+    if len(tokens) == 1 and component_text.endswith('*'):
+        return [tokens[0] + '.*']
+    else:
+        return tokens
 
 
 def get_query_components(query_text: str):
@@ -87,5 +101,5 @@ def extract_quoted(query_text):
             in_quotes = query_text[starting_quote + 1 : ending_quote]
             outside_quotes = query_text[:starting_quote] + query_text[ending_quote + 1:]
             return in_quotes, outside_quotes
-    
+
     return (None, query_text)
