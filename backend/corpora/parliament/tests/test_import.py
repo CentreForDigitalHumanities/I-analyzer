@@ -240,6 +240,11 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'sequence': '0'
         }],
         'n_documents': 2
+    },
+    {
+        'name': 'parliament-sweden',
+        'docs': [],
+        'n_documents': 5,
     }
 ]
 
@@ -248,16 +253,17 @@ def test_imports(test_app, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
     docs = get_documents(corpus)
+
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
             assert key in doc
             assert doc[key] == target[key]
 
-    for key in doc:
-        if not key in target:
-            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
-            warnings.warn(message)
+        for key in doc:
+            if not key in target:
+                message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+                warnings.warn(message)
 
     docs = get_documents(corpus)
     assert len(list(docs)) == corpus_object.get('n_documents')
