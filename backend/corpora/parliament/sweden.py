@@ -1,6 +1,5 @@
 from datetime import datetime
 from glob import glob
-
 from addcorpus.corpus import CSVCorpus
 from addcorpus.extract import CSV
 from corpora.parliament.parliament import Parliament
@@ -31,6 +30,11 @@ def format_chamber(chamber):
 
     return chamber
 
+def extract_debate_id(speech_id):
+    if speech_id:
+        pattern_match = re.match(r'(\w+-\w+)-\d+', speech_id)
+        if pattern_match:
+            return pattern_match.group(1)
 
 class ParliamentSweden(Parliament, CSVCorpus):
     title = 'People and Parliament (Sweden)'
@@ -71,6 +75,12 @@ class ParliamentSweden(Parliament, CSVCorpus):
     chamber.extractor = CSV(
         field = 'chamber',
         transform = format_chamber
+    )
+
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = CSV(
+        field = 'speech_id',
+        transform = extract_debate_id
     )
 
     speech = field_defaults.speech()
@@ -119,6 +129,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
         self.fields = [
             self.date,
             self.chamber,
+            self.debate_id,
             self.speech,
             self.speech_id,
             self.speaker,
