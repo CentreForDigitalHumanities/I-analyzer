@@ -96,12 +96,6 @@ class ParliamentSweden(Parliament, CSVCorpus):
     )
     chamber.search_filter.option_count = 3
 
-    debate_id = field_defaults.debate_id()
-    debate_id.extractor = CSV(
-        field = 'speech_id',
-        transform = extract_debate_id
-    )
-
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'speech_text')
 
@@ -149,7 +143,6 @@ class ParliamentSweden(Parliament, CSVCorpus):
             self.date,
             self.date_is_estimate,
             self.chamber,
-            self.debate_id,
             self.speech,
             self.speech_id,
             self.speaker,
