@@ -89,8 +89,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
 
     speaker = field_defaults.speaker()
     speaker.extractor = Combined(
-        CSV(field='speaker_first_name'),
-        CSV(field='speaker_last_name'),
+        CSV(field='speaker_first_name', convert_empty_to_none=False),
+        CSV(field='speaker_last_name', convert_empty_to_none=False),
         transform=lambda x: ' '.join(x)
     )
 
