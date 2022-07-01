@@ -74,7 +74,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='speaker_party'
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = CSV(
         field='speech_type'
     )

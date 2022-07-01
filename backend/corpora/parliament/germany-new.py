@@ -61,13 +61,13 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     debate_id.extractor = CSV(
         field='session'
     )
-    
+
     # in Germany, abbreviations are the most common way to refer to parties
     party = field_defaults.party()
     party.extractor = CSV(
-        field='party_abbreviation'  
+        field='party_abbreviation'
     )
-    
+
     party_full = field_defaults.party_full()
     party_full.extractor = CSV(
         field='party_full_name'
@@ -130,7 +130,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='speaker_death_date',
         transform=date_to_year
     )
-    
+
     speaker_gender = field_defaults.speaker_gender()
     speaker_gender.extractor = CSV(
         field='speaker_gender'
@@ -150,7 +150,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     speech.es_mapping = {
         "type" : "text",
         "analyzer": "standard",
-        "term_vector": "with_positions_offsets", 
+        "term_vector": "with_positions_offsets",
         "fields": {
         "stemmed": {
             "type": "text",
@@ -176,7 +176,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     url.extractor = CSV(
         field='document_url'
     )
-    
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
@@ -184,7 +184,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
             self.speaker, self.speaker_id,
             self.speaker_aristocracy, self.speaker_academic_title,
             self.speaker_birth_country, self.speaker_birthplace,
-            self.speaker_birth_year, self.speaker_death_year, 
+            self.speaker_birth_year, self.speaker_death_year,
             self.speaker_gender, self.speaker_profession,
             self.role, self.role_long,
             self.party, self.party_full, self.party_id,

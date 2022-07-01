@@ -1,6 +1,8 @@
 from dataclasses import field
 from datetime import datetime
 from glob import glob
+
+from vine import transform
 from addcorpus.corpus import CSVCorpus
 from addcorpus.extract import CSV, Combined
 from corpora.parliament.parliament import Parliament
@@ -19,6 +21,17 @@ def complete_partial_dates(datestring):
         partial_match = re.match(r'\d{4}', datestring) # some rows provide only the year
         if partial_match:
             return '{}-01-01'.format(partial_match.group(0))
+
+def format_chamber(chamber):
+    patterns = {
+        'andra_kammaren': 'Other',
+        'unified': 'Riksdag'
+    }
+
+    if chamber in patterns:
+        return patterns[chamber]
+
+    return chamber
 
 
 class ParliamentSweden(Parliament, CSVCorpus):
@@ -49,8 +62,6 @@ class ParliamentSweden(Parliament, CSVCorpus):
     language = 'swedish'
     image = 'sweden.jpg'
 
-    field_entry = 'speech_order'
-
     date = field_defaults.date()
     date.extractor = CSV(
         field = 'date',
@@ -59,7 +70,10 @@ class ParliamentSweden(Parliament, CSVCorpus):
     date.search_filter.lower = min_date
 
     chamber = field_defaults.chamber()
-    chamber.extractor = CSV(field = 'chamber')
+    chamber.extractor = CSV(
+        field = 'chamber',
+        transform = format_chamber
+    )
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'speech_text')
@@ -94,12 +108,11 @@ class ParliamentSweden(Parliament, CSVCorpus):
     party = field_defaults.party()
     party.extractor = CSV(field = 'mp_party')
 
-    role = field_defaults.role()
-    role.extractor = Combined(
-        CSV(field = 'minister_role'),
-        CSV(field = 'speaker_role'),
-        transform = lambda roles : ' + '.join(roles)
-    )
+    parliamentary_role = field_defaults.parliamentary_role()
+    parliamentary_role.extractor = CSV(field = 'speaker_role')
+
+    ministerial_role = field_defaults.ministerial_role()
+    ministerial_role.extractor = CSV(field = 'minister_role')
 
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(field = 'speech_order')
@@ -117,6 +130,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
             self.speaker_constituency,
             self.speaker_gender,
             self.party,
-            self.role,
+            self.parliamentary_role,
+            self.ministerial_role,
             self.sequence,
         ]

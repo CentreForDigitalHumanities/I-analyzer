@@ -335,16 +335,28 @@ def speaker_academic_title():
     )
 
 
-def role():
-    "role of the speaker (speaker, chair, MP, etc...)"
+def parliamentary_role():
+    "parliamentary role of the speaker (speaker, chair, MP, etc...)"
     return Field(
         name='role',
-        display_name='Role',
-        description='Role of the speaker in the debate',
+        display_name='Parliamentary role',
+        description='Role of the speaker in parliament',
         es_mapping=BASIC_KEYWORD_MAPPING,
         search_filter=MultipleChoiceFilter(
             description='Search for speeches by speakers with the selected roles',
-            option_count=10
+        ),
+        visualizations=['resultscount', 'termfrequency'],
+    )
+
+def ministerial_role():
+    'Ministerial role of the speaker (minister of such-and-such, etc.)'
+    return Field(
+        name='ministerial_role',
+        display_name='Ministerial role',
+        description='Ministerial role of the speaker',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        search_filter=MultipleChoiceFilter(
+            description='Search for speeches by speakers with the selected ministerial roles',
         ),
         visualizations=['resultscount', 'termfrequency'],
     )
