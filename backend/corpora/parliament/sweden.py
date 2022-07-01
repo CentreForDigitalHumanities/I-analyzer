@@ -1,5 +1,7 @@
 from datetime import datetime
 from glob import glob
+
+from numpy import histogram
 from addcorpus.corpus import CSVCorpus
 from addcorpus.extract import CSV
 from corpora.parliament.parliament import Parliament
@@ -29,7 +31,8 @@ def date_is_partial(datestring):
 
 def format_chamber(chamber):
     patterns = {
-        'andra_kammaren': 'Other',
+        'forsta_kammaren': 'Första kammaren',
+        'andra_kammaren': 'Andra kammaren',
         'unified': 'Riksdag'
     }
 
@@ -91,6 +94,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
         field = 'chamber',
         transform = format_chamber
     )
+    chamber.search_filter.option_count = 3
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
