@@ -1,10 +1,8 @@
-from dataclasses import field
 from datetime import datetime
 from glob import glob
 
-from vine import transform
 from addcorpus.corpus import CSVCorpus
-from addcorpus.extract import CSV, Combined
+from addcorpus.extract import CSV
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
