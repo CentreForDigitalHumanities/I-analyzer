@@ -1,10 +1,24 @@
 from dataclasses import field
 from datetime import datetime
+from glob import glob
 from addcorpus.corpus import CSVCorpus
+from addcorpus.extract import CSV, Combined
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
+import re
 
 from flask import current_app
+
+def complete_partial_dates(datestring):
+    if datestring:
+        full_match = re.match(r'\d{4}-\d{2}-\d{2}', datestring)
+        if full_match:
+            return datestring
+
+        partial_match = re.match(r'\d{4}', datestring) # some rows provide only the year
+        if partial_match:
+            return '{}-01-01'.format(partial_match.group(0))
 
 
 class ParliamentSweden(Parliament, CSVCorpus):
@@ -14,7 +28,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_SWEDEN_DATA']
     es_index = current_app.config['PP_SWEDEN_INDEX']
 
-    # es settings (TODO: remove after #771)
+    # TODO: remove es_settings after #771)
     es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
@@ -27,34 +41,68 @@ class ParliamentSweden(Parliament, CSVCorpus):
         }
     }
 
+    def sources(self, start, end):
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
+            yield csv_file, {}
+
+
     language = 'swedish'
     image = 'sweden.jpg'
 
-    field_entry = 'speech_id'
+    field_entry = 'speech_order'
 
     date = field_defaults.date()
+    date.extractor = CSV(
+        field = 'date',
+        transform = complete_partial_dates
+    )
+    date.search_filter.lower = min_date
 
     chamber = field_defaults.chamber()
+    chamber.extractor = CSV(field = 'chamber')
 
     speech = field_defaults.speech()
+    speech.extractor = CSV(field = 'speech_text')
 
     speech_id = field_defaults.speech_id()
+    speech_id.extractor = CSV(field = 'speech_id')
 
     speaker = field_defaults.speaker()
+    speaker.extractor = CSV(field = 'person_name')
 
     speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = CSV(field = 'person_id')
 
     speaker_birth_year = field_defaults.speaker_birth_year()
+    speaker_birth_year.extractor = CSV(
+        field = 'person_born',
+        transform = formatting.extract_year
+    )
 
     speaker_death_year = field_defaults.speaker_death_year()
+    speaker_death_year.extractor = CSV(
+        field = 'person_dead',
+        transform = formatting.extract_year
+    )
 
     speaker_constituency = field_defaults.speaker_constituency()
+    speaker_constituency.extractor = CSV(field = 'mp_district')
+
+    speaker_gender = field_defaults.speaker_gender()
+    speaker_gender.extractor = CSV(field = 'person_gender')
 
     party = field_defaults.party()
+    party.extractor = CSV(field = 'mp_party')
 
     role = field_defaults.role()
+    role.extractor = Combined(
+        CSV(field = 'minister_role'),
+        CSV(field = 'speaker_role'),
+        transform = lambda roles : ' + '.join(roles)
+    )
 
     sequence = field_defaults.sequence()
+    sequence.extractor = CSV(field = 'speech_order')
 
     def __init__(self):
         self.fields = [
@@ -67,6 +115,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
             self.speaker_birth_year,
             self.speaker_death_year,
             self.speaker_constituency,
+            self.speaker_gender,
             self.party,
             self.role,
             self.sequence,
