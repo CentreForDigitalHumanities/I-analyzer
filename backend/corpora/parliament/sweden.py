@@ -9,6 +9,9 @@ import re
 
 from flask import current_app
 
+full_date_pattern = r'\d{4}-\d{2}-\d{2}'
+partial_date_pattern = r'\d{4}'
+
 def complete_partial_dates(datestring):
     if datestring:
         full_match = re.match(r'\d{4}-\d{2}-\d{2}', datestring)
@@ -18,6 +21,11 @@ def complete_partial_dates(datestring):
         partial_match = re.match(r'\d{4}', datestring) # some rows provide only the year
         if partial_match:
             return '{}-01-01'.format(partial_match.group(0))
+
+def date_is_partial(datestring):
+    if datestring:
+        if not re.match(full_date_pattern, datestring) and re.match(partial_date_pattern, datestring):
+            return True
 
 def format_chamber(chamber):
     patterns = {
@@ -70,6 +78,13 @@ class ParliamentSweden(Parliament, CSVCorpus):
         transform = complete_partial_dates
     )
     date.search_filter.lower = min_date
+
+    date_is_estimate = field_defaults.date_is_estimate()
+    date_is_estimate.description = 'Indicates if the recorded month and day are estimates'
+    date_is_estimate.extractor = CSV(
+        field = 'date',
+        transform = date_is_partial
+    )
 
     chamber = field_defaults.chamber()
     chamber.extractor = CSV(
@@ -128,6 +143,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
     def __init__(self):
         self.fields = [
             self.date,
+            self.date_is_estimate,
             self.chamber,
             self.debate_id,
             self.speech,
