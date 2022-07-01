@@ -257,6 +257,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
                 'party': None,
                 'speaker_birth_year': 1973,
                 'speaker_death_year': None,
+                'speaker_constituency': None,
                 'speaker_id': 'Q4755577'
             },
         ],
