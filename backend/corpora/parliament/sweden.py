@@ -1,7 +1,6 @@
 from datetime import datetime
 from glob import glob
 
-from numpy import histogram
 from addcorpus.corpus import CSVCorpus
 from addcorpus.extract import CSV
 from corpora.parliament.parliament import Parliament
