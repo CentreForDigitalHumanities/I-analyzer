@@ -29,8 +29,11 @@ def underscore_to_space(input_string, title_case=True):
 
 
 def extract_year(datestring):
+    """
+    Get the year from a yyyy-mm-dd datestring
+    """
     if datestring:
-        pattern = r'(\d{4})-(\d{2})-(\d{2})'
+        pattern = r'(\d{4})-\d{2}-\d{2}'
         match = re.match(pattern, datestring)
 
         if match:
