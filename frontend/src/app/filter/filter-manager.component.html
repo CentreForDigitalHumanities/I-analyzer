@@ -26,16 +26,16 @@
                         }}</label>
                 </div>
                 <p class="control">
-                    <span *ngIf="field.searchFilter.useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
+                    <button *ngIf="field.searchFilter.useAsFilter" class="button icon filter-icon is-primary is-inverted is-round"
                         (click)="resetFilter(field.searchFilter)" iaBalloon="Reset this filter to its default values"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-trash"></i>
-                    </span>
-                    <span class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': field.searchFilter.useAsFilter}"
+                    </button>
+                    <button class="button icon filter-icon is-primary is-inverted is-round" [ngClass]="{'is-primary': field.searchFilter.useAsFilter}"
                         (click)="toggleFilter(field.searchFilter)" iaBalloon="{{field.searchFilter.useAsFilter ? 'Disable this filter' : 'Enable this filter'}}"
                         iaBalloonPosition="down-left">
                         <i class="fa fa-filter"></i>
-                    </span>
+                    </button>
                 </p>
             </div>
             <ng-container [ngSwitch]="field.searchFilter.defaultData.filterType">
