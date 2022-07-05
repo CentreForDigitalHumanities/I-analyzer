@@ -41,12 +41,6 @@ def format_chamber(chamber):
 
     return chamber
 
-def extract_debate_id(speech_id):
-    if speech_id:
-        pattern_match = re.match(r'(\w+-\w+)-\d+', speech_id)
-        if pattern_match:
-            return pattern_match.group(1)
-
 class ParliamentSweden(Parliament, CSVCorpus):
     title = 'People and Parliament (Sweden)'
     description = 'Speeches from the Riksdag'
