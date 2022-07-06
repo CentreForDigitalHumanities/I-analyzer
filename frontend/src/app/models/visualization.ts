@@ -1,18 +1,7 @@
 import { AggregateResult, DateResult } from '.';
 import { SearchFilter, SearchFilterData } from './search-filter';
 
-// the corpusFields has an array of visualizations
-// the visualizationField represents one pairing of corpus field + visualization
-export type visualizationField = {
-    name: string,
-    visualization: string,
-    displayName?: string,
-    visualizationSort?: string,
-    searchFilter?: SearchFilter<SearchFilterData> | null,
-    multiFields?: string[];
-};
-
-// common type between histogram and timeline
+// common type for all histogram/timeline results
 export type BarchartResult = DateResult|AggregateResult;
 
 export type HistogramSeries = {
@@ -34,11 +23,19 @@ export type freqTableHeader = {
     label: string,
     format?: (value) => string,
     formatDownload?: (value) => string,
-}
+    isMainFactor?: boolean,
+    isSecondaryFactor?: boolean,
+};
 
 export type freqTableHeaders = freqTableHeader[];
 
-export type barchartOptions = {
-    frequencyMeasure: 'documents'|'tokens',
-    normalizer: 'raw'|'percent'|'documents'|'terms',
+export type Normalizer = 'raw'|'percent'|'documents'|'terms';
+
+export type NgramParameters = {
+    size: number,
+    positions: number[],
+    freqCompensation: boolean,
+    analysis: string,
+    maxDocuments: number,
+    numberOfNgrams: number,
 };

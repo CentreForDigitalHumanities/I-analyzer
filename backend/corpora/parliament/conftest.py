@@ -51,6 +51,7 @@ class UnittestConfig:
     PP_GERMANY_OLD_IMAGE= 'germany-old.jpeg'
     PP_FR_INDEX = 'parliament-france'
     PP_FR_DATA = os.path.join(here, 'tests', 'data', 'france')
+    PP_FR_IMAGE = 'france.jpeg'
 
     # Elasticsearch settings for People & Parliament corpora
     PP_ES_SETTINGS = {
@@ -87,9 +88,6 @@ def test_app(request):
     """ Provide an instance of the application with Flask's test_client. """
     app = flask_app(UnittestConfig)
     app.testing = True
-    ctx = app.app_context()
-    ctx.push()
-    yield app
 
-    # performed after running tests
-    ctx.pop()
+    with app.app_context():
+        yield app

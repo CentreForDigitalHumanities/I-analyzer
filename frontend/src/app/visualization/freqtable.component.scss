@@ -5,6 +5,7 @@
     color: $primary-invert !important;
 }
 
-div.horizontal-scroll {
-    overflow-x: auto;
+.p-datatable-wrapper {
+    width: 100%;
+    overflow-x: scroll;
 }

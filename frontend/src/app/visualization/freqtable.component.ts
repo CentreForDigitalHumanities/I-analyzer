@@ -17,35 +17,155 @@ export class FreqtableComponent implements OnChanges {
     @Input() requiredColumn: string; // field required to include row in web view
 
     public defaultSortOrder = '-1';
-    filteredData: any[];
+
+    formattedHeaders: freqTableHeaders;
+    formattedData: any[];
+
+    wideFormatColumn: number;
+    format: 'long'|'wide' = 'long';
 
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.requiredColumn && this.data) {
-            this.filteredData = this.data.filter(row => row[this.requiredColumn]);
+        this.checkWideFormat();
+
+        this.formatData();
+    }
+
+    checkWideFormat(): void {
+        if (this.headers && this.headers.find(header => header.isMainFactor)) {
+            this.wideFormatColumn = _.range(this.headers.length)
+                .find(index => this.headers[index].isMainFactor);
         } else {
-            this.filteredData = this.data;
+            this.wideFormatColumn = undefined;
         }
+    }
+
+    setFormat(format: 'long'|'wide'): void {
+        this.format = format;
+        this.formatData();
+    }
+
+    formatData() {
+        let filteredData: any[];
+        if (this.requiredColumn && this.data) {
+            filteredData = this.data.filter(row => row[this.requiredColumn]);
+        } else {
+            filteredData = this.data;
+        }
+
+        if (this.format === 'wide') {
+            const [headers, data] = this.transformWideFormat(filteredData);
+            this.formattedHeaders = headers;
+            this.formattedData = data;
+        } else {
+            this.formattedHeaders = this.headers;
+            this.formattedData = filteredData;
+        }
+    }
+
+    transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
+        const mainFactor = this.headers[this.wideFormatColumn];
+
+        const mainFactorValues = _.uniqBy(
+            data.map(row => row[mainFactor.key]),
+            value => this.formatValue(value, mainFactor)
+        );
+
+        const newHeaders = this.wideFormatHeaders(mainFactor, mainFactorValues);
+
+        // other factors
+        const factorColumns = this.filterFactors(newHeaders);
+
+        const newData = _.uniqBy(
+            data,
+            row => {
+                const factorValues = factorColumns.map(column => this.getValue(row, column));
+                return _.join(factorValues, '/');
+            }
+        );
+
+        mainFactorValues.forEach(factorValue => {
+            const filteredData = data.filter(row => this.getValue(row, mainFactor) === this.formatValue(factorValue, mainFactor));
+
+            newData.forEach(newRow => {
+                this.headers.forEach(header => {
+                    if (! header.isSecondaryFactor) {
+                        const key = this.wideFormatColumnKey(header, mainFactor, factorValue);
+
+                        const rowData = filteredData.find(row =>
+                            _.every(
+                                factorColumns,
+                                factor => this.getValue(row, factor) === this.getValue(newRow, factor)
+                            )
+                        );
+
+                        if (rowData !== undefined) {
+                            const value = rowData[header.key];
+                            newRow[key] = value;
+                        }
+                    }
+                });
+            });
+        });
+
+        return [newHeaders, newData];
+    }
+
+    wideFormatHeaders(mainFactor: freqTableHeader, factorValues: any[]) {
+        const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
+            `${header.label} (${this.formatValue(factorValue, factor)})`;
+
+        const otherHeaders = this.headers.filter((header, index) => header.key !== mainFactor.key);
+        const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
+            if (header.isSecondaryFactor) {
+                // other factors are kept as-is
+                return [header];
+            } else {
+                // for non-factor headers, make one column for each value of `mainFactor`
+                return _.map(factorValues, value => (
+                    {
+                        label: newLabel(header, mainFactor, value),
+                        key: this.wideFormatColumnKey(header, mainFactor, value),
+                        format: header.format,
+                        formatDownload: header.formatDownload,
+                    } as freqTableHeader
+                ));
+            }
+        });
+
+        return newHeaders;
+    }
+
+    wideFormatColumnKey(header: freqTableHeader, mainFactor: freqTableHeader, mainFactorValue): string {
+        return `${header.key}###${this.formatValue(mainFactorValue, mainFactor)}`;
+    }
+
+    filterFactors(headers: freqTableHeaders): freqTableHeaders {
+        return headers.filter(header => header.isSecondaryFactor);
     }
 
     parseTableData(): string[] {
-        const data = this.data.map(row => {
-            const values = this.headers.map(col => this.getValue(row, col));
+        const data = this.formattedData.map(row => {
+            const values = this.formattedHeaders.map(col => this.getValue(row, col, true));
             return  `${_.join(values, ',')}\n`;
         });
-        data.unshift(`${_.join(this.headers.map(col => col.label), ',')}\n`);
+        data.unshift(`${_.join(this.formattedHeaders.map(col => col.label), ',')}\n`);
         return data;
     }
 
-    getValue(row, column: freqTableHeader) {
-        if (column.formatDownload) {
-            return column.formatDownload(row[column.key]);
+    getValue(row, column: freqTableHeader, download = false) {
+        return this.formatValue(row[column.key], column, download);
+    }
+
+    formatValue(value, column: freqTableHeader, download = false) {
+        if (download && column.formatDownload) {
+            return column.formatDownload(value);
         }
         if (column.format) {
-            return column.format(row[column.key]);
+            return column.format(value);
         }
-        return row[column.key];
+        return value;
     }
 
     downloadTable() {

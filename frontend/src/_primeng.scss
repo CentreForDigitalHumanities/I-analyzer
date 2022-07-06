@@ -105,7 +105,37 @@ $inputGroupTextColor: $text;
     font-weight: bold;
 }
 
+.p-inputtext {
+    font-family: inherit !important;
+
+    &:hover {
+        border-color: rgb(184, 184, 184) !important;
+    }
+}
+
+.p-chips {
+    width: 100%;
+
+    .p-chips-token {
+        background-color: $stateHighlightBgColor !important;
+        color: $stateHighlightTextColor !important;
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+
+    input {
+        font-family: inherit !important;
+
+    }
+
+}
+
+
 body {
+    .p-multiselect {
+        max-width: 100%
+    }
+
     .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
         &.p-highlight {
             background-color: $stateHighlightBgColor;
@@ -154,10 +184,9 @@ body {
         border-color: rgb(218, 218, 218);
 
         &:hover {
-            border-color: rgb(184, 184, 184) !important; 
+            border-color: rgb(184, 184, 184) !important;
         }
     }
-
 }
 
 .is-round{

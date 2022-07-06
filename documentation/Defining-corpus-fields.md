@@ -41,10 +41,12 @@ The following properties determine how a field appears in the interface.
 
 `search_filter` can be set if the interface should include a search filter widget for the field. I-analyzer includes date filters, multiplechoice filters (used for keyword data), range filters, and boolean filters. See [filters.py](../backend/addcorpus/filters.py).
 
-`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. Date fields can use `['timeline']`. Use `['histogram']` for keyword fields, as well as boolean/numeric fields that may be considered categorical or ordinal. For text fields, you can use `['wordcloud', 'ngram']`. If the corpus has word embeddings and they are trained on a field, add `'relatedwords'` to that field's visualisations.
+`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. For date fields and categorical/ordinal fields (usually keyword type), you can use `['resultcount', 'termfrequency']`. For text fields, you can use `['wordcloud', 'ngram']`. If the corpus has word embeddings and they are trained on a field, add `'relatedwords'` to that field's visualisations.
 
-If the field includes the `'histogram'` visualisation, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
+If a field includes the `'resultcount' and/or `'termfrequency'` visualisations and it is not a date field, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
 
 `search_field_core` determines if a field is listed by default when selecting specific fields to search in. If it is not set to `True`, the user would have to click on "show all fields" to see it.
 
 `csv_core` determines if a field is included in the CSV download of search results by default.
+
+`sortable` determines whether a field should appear as a sort option. Optionally, you can specify a sortable field that should be used as the default sorting if there is no query (with a query, results are sorted by relevance by default). Set `primary_sort = True` for that field. (Setting primary_sort for more than one field will only affect the first in the list.)

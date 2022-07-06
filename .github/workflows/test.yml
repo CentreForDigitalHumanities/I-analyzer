@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6]
+        python-version: [3.8]
         node-version: [12.x]
 
     steps:

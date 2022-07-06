@@ -68,7 +68,7 @@ class GuardianObserver(XMLCorpus):
             description='Publication date, parsed to yyyy-MM-dd format',
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             hidden=True,
-            visualizations=['timeline'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
@@ -142,7 +142,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='category',
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             display_name='Category',
             description='Article subject categories.',
             es_mapping={'type': 'keyword'},

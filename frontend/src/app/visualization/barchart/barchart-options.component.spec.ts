@@ -15,7 +15,7 @@ describe('barchartOptionsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(barchartOptionsComponent);
     component = fixture.componentInstance;
-    component.queries = ['spam', 'spam', 'eggs', 'spam'];
+    component.queryText = 'spam';
     component.showTokenCountOption = true;
     component.isLoading = true;
     fixture.detectChanges();

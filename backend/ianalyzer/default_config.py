@@ -135,6 +135,7 @@ PP_NL_IMAGE = 'netherlands.jpg'
 PP_GERMANY_NEW_IMAGE = 'germany-new.jpeg'
 PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
+PP_FR_IMAGE = 'france.jpeg'
 
 # Elasticsearch settings for People & Parliament corpora
 PP_ES_SETTINGS = {
@@ -165,7 +166,7 @@ PP_ES_SETTINGS = {
 
 # Celery configuration
 CELERY_BROKER_URL = 'amqp://'
-CELERY_BACKEND = 'amqp'
+CELERY_BACKEND = 'rpc://'
 CSV_FILES_PATH = 'api/csv_files'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 

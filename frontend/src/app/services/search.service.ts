@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData } from '../models/index';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
 
 const highlightFragmentSize = 50;
 
@@ -58,7 +58,7 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel): any {
+    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false): any {
         const route = {
             query: queryModel.queryText || ''
         };
@@ -76,7 +76,7 @@ export class SearchService {
             route[filter.param] = filter.value;
         }
 
-        if (queryModel.sortBy) {
+        if (!usingDefaultSortField && queryModel.sortBy) {
             route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
         } else {
             delete route['sort'];
@@ -202,18 +202,18 @@ export class SearchService {
         });
     }
 
-    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, ngramSize?: number, termPosition?: number[],
-        freqCompensation?: boolean, subField?: string, maxSize?: number): Promise<any> {
+    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.ngramTasks({
             'es_query': esQuery,
             'corpus_name': corpusName,
             field: field,
-            ngram_size: ngramSize,
-            term_position: termPosition,
-            freq_compensation: freqCompensation,
-            subfield: subField,
-            max_size_per_interval: maxSize
+            ngram_size: params.size,
+            term_position: params.positions,
+            freq_compensation: params.freqCompensation,
+            subfield: params.analysis,
+            max_size_per_interval: params.maxDocuments,
+            number_of_ngrams: params.numberOfNgrams,
         });
     }
 

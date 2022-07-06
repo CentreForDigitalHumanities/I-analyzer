@@ -3,11 +3,12 @@ import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries } from '../../models/index';
+import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
+
 
 @Component({
     selector: 'ia-timeline',
@@ -24,28 +25,16 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     /** domain on the axis */
     public xDomain: [Date, Date];
 
-    ngOnChanges(changes: SimpleChanges) {
-        // new doc counts should be requested if query has changed
-        if (this.changesRequireRefresh(changes)) {
-            this.rawData = [
-                this.newSeries(this.queryModel.queryText)
-            ];
-            if (this.chart) {
-                // clear canvas an reset chart object
-                this.chart.destroy();
-                this.chart = undefined;
-            }
-            this.setQueries();
-            this.setTimeDomain();
-            this.prepareChart();
-        } else if (changes.palette) {
-            this.prepareChart();
-        }
+    refreshChart(): void {
+        this.initQueries();
+        this.clearCanvas();
+        this.setTimeDomain();
+        this.prepareChart();
     }
 
     /** get min/max date for the entire graph and set domain and time category */
     setTimeDomain() {
-        const currentDomain = this.visualizedField.searchFilter.currentData;
+        const currentDomain = this.visualizedField.searchFilter.currentData as DateFilterData;
         const min = new Date(currentDomain.min);
         const max = new Date(currentDomain.max);
         this.xDomain = [min, max];
@@ -141,6 +130,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
+        options.plugins.title.text = this.chartTitle()
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';
@@ -294,14 +284,14 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         if (this.rawData.length > 1) {
             this.tableHeaders = [
-                { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'queryText', label: 'Query' },
+                { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
+                { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue }
+                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
             ];
         }
     }
@@ -341,5 +331,4 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         }
         return false;
     }
-
 }
