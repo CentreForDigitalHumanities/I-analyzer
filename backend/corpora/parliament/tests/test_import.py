@@ -297,9 +297,9 @@ def test_imports(test_app, corpus_object):
     docs = get_documents(corpus)
     assert len(list(docs)) == corpus_object.get('n_documents')
 
-def get_documents(corpus, start, end):
+def get_documents(corpus):
     sources = corpus.sources(
-        start=start,
-        end=end,
+        start=corpus.min_date,
+        end=corpus.max_date
     )
     return corpus.documents(sources)
