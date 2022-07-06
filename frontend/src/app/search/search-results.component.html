@@ -4,25 +4,33 @@
     </h2>
 </ng-container>
 <ng-template #resultsBlock>
-    <h2 class="subtitle" *ngIf="results.total <= 5">
-        {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
-    </h2>
-    <h2 class="subtitle" *ngIf="results.total.value > 5">
-        {{results.total.value}} results.
-        Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
-    </h2>
-    <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
+
     <div class="level">
+        <h2 class="subtitle" *ngIf="results.total <= 5">
+            {results.total.value, plural, =1 {1 hit} other {{{results.total.value}} hits}}
+        </h2>
+        <h2 class="subtitle" *ngIf="results.total.value > 5">
+            {{results.total.value}} results.
+            Showing results {{fromIndex+1}} - {{fromIndex+resultsPerPage > totalResults? totalResults : fromIndex+resultsPerPage}}:
+        </h2>
+        <ng-content *ngIf="!(queryText==null || queryText=='')" select="ia-highlight-selector"></ng-content>
+    </div>
+
+    <section class="section results-navigation" #resultsNavigation [ngClass]="{'is-scrolled-down': isScrolledDown}">
+
+    <div class="level">
+
     <div class="level-left has-text-centered">
         <div>
             <p class="heading">Sort By</p>
-            <ng-content></ng-content>
+            <ng-content select="ia-search-sorting"></ng-content>
+
         </div>
     </div>
     <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
         <div>
             <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
+            <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
         </div>
         </div>
     </div>
@@ -74,6 +82,24 @@
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
     *ngIf="viewDocument">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ng-template pTemplate="footer">
+        <div class="columns" style="text-align:left">
+            <div class="column">
+                <a *ngIf="viewDocument && viewDocument.position > 1"
+                    iaBalloon="view previous document" iaBalloonPosition="right"
+                    (click)="prevDocument(viewDocument)" >
+                    <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                </a>
+            </div>
+            <div class="column" style="text-align:right">
+                <a *ngIf="viewDocument && viewDocument.position < totalResults"
+                    iaBalloon="view next document" iaBalloonPosition="left"
+                    (click)="nextDocument(viewDocument)">
+                    <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
+                </a>
+            </div>
+        </div>
+    </ng-template>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>

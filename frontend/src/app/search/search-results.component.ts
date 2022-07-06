@@ -3,6 +3,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Ou
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search-results',
@@ -63,6 +64,9 @@ export class SearchResultsComponent implements OnChanges {
      */
     public viewDocument: FoundDocument;
     public documentTabIndex: number;
+
+    faArrowLeft = faArrowLeft;
+    faArrowRight = faArrowRight;
 
     constructor(private searchService: SearchService) { }
 
@@ -131,5 +135,44 @@ export class SearchResultsComponent implements OnChanges {
         this.showDocument = true;
         this.viewDocument = document;
         this.documentTabIndex = 0;
+    }
+
+    public async nextDocument(document: FoundDocument) {
+        const newPosition = document.position + 1;
+        const maxPosition = this.fromIndex + this.results.documents.length;
+
+        if (newPosition > maxPosition) {
+            this.fromIndex = maxPosition + 1;
+            await this.loadResults({
+                from: maxPosition,
+                size: this.resultsPerPage,
+            });
+            this.viewDocumentAtPosition(newPosition);
+        } else {
+            this.viewDocumentAtPosition(newPosition);
+        }
+    }
+
+    public async prevDocument(document: FoundDocument) {
+        const newPosition = document.position - 1;
+        const minPosition = this.fromIndex + 1;
+
+        if (newPosition < minPosition) {
+            this.fromIndex = this.fromIndex - this.resultsPerPage;
+            await this.loadResults({
+                from: this.fromIndex,
+                size: this.resultsPerPage,
+            });
+            this.viewDocumentAtPosition(newPosition);
+        } else {
+            this.viewDocumentAtPosition(newPosition);
+        }
+    }
+
+    viewDocumentAtPosition(position: number) {
+        const document = this.results.documents.find(doc =>
+            doc.position === position
+        );
+        this.onViewDocument(document);
     }
 }

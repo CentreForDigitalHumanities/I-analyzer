@@ -141,7 +141,7 @@ class GoodReads(XMLCorpus):
             ),
             results_overview=True,
             csv_core=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
         ),
         Field(
             name='book_genre',
@@ -153,7 +153,7 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews of books in this genre',
                 option_count=8
             ),
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='age_category',
@@ -165,7 +165,7 @@ class GoodReads(XMLCorpus):
                 description='Accept only reviews of books written for this age category',
                 option_count=3
             ),
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='url',
@@ -207,7 +207,7 @@ class GoodReads(XMLCorpus):
             ),
             results_overview=True,
             csv_core=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
         ),
         Field(
             name='date',
@@ -246,7 +246,7 @@ class GoodReads(XMLCorpus):
                 option_count=6
             ),
             csv_core=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
         ),
         Field(
             name='rating_text',
@@ -272,7 +272,7 @@ class GoodReads(XMLCorpus):
                 option_count=6
             ),
             results_overview=True,
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             visualization_sort='key'
         ),
         Field(

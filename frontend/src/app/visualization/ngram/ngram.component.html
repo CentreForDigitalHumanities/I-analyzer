@@ -7,7 +7,8 @@
                     Length of n-gram
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="sizeOptions" [value]="sizeOptions[0]" optionLabel="label" (onChange)="onOptionChange('size', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="sizeOptions" [value]="currentSizeOption" optionLabel="label"
+                        (onChange)="onParameterChange('size', $event.value)"></ia-dropdown>
                 </div>
             </div>
         </div>
@@ -18,7 +19,8 @@
                     Position of search term
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="positionsOptions" [value]="positionsOptions[0]" optionLabel="label" (onChange)="onOptionChange('position', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="positionsOptions" [value]="currentPositionsOption" optionLabel="label"
+                        (onChange)="onParameterChange('positions', $event.value)"></ia-dropdown>
                 </div>
             </div>
         </div>
@@ -29,18 +31,20 @@
                     Compensate for frequency
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="freqCompensationOptions" [value]="freqCompensationOptions[0]" optionLabel="label" (onChange)="onOptionChange('freq_compensation', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="freqCompensationOptions" [value]="currentFreqCompensationOption" optionLabel="label"
+                        (onChange)="onParameterChange('freqCompensation', $event.value)"></ia-dropdown>
                 </div>
             </div>
         </div>
-        <div class="column is-half" *ngIf="analysisOptions">
+        <div class="column is-one-third" *ngIf="analysisOptions">
             <div class="field">
                 <label class="label" iaBalloon="pre-processing steps on the text, like removing stopwords or stemming"
                     iaBalloonPosition="up-left" iaBalloonLength="fit">
                     Language processing
                 </label>
                 <div class="control">
-                    <ia-dropdown [options]="analysisOptions" [value]="analysisOptions[0]" optionLabel="label" (onChange)="onOptionChange('analysis', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="analysisOptions" [value]="currentAnalysisOption" optionLabel="label"
+                        (onChange)="onParameterChange('analysis', $event.value)"></ia-dropdown>
                 </div>
             </div>
         </div>
@@ -49,8 +53,36 @@
                 <label class="label" iaBalloon="maximum number of documents analyzed per time interval"
                 iaBalloonPosition="up-left" iaBalloonLength="fit">Document limit</label>
                 <div class="control">
-                    <ia-dropdown [options]="maxDocumentsOptions" [value]="maxDocumentsOptions[0]" optionLabel="label" (onChange)="onOptionChange('max_size', $event)"></ia-dropdown>
+                    <ia-dropdown [options]="maxDocumentsOptions" [value]="currentMaxDocumentsOption" optionLabel="label"
+                    (onChange)="onParameterChange('maxDocuments', $event.value)"></ia-dropdown>
                 </div>
+            </div>
+        </div>
+        <div class="column is-one-third">
+            <div class="field">
+                <label class="label" iaBalloon="the number of n-grams displayed in the results"
+                iaBalloonPosition="up-left" iaBalloonLength="fit">Number of n-grams</label>
+                <div class="control">
+                    <ia-dropdown [options]="numberOfNgramsOptions" [value]="currentNumberOfNgramsOption" optionLabel="label"
+                    (onChange)="onParameterChange('numberOfNgrams', $event.value)"></ia-dropdown>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="level" *ngIf="parametersChanged">
+        <div class="level-left"></div>
+        <div class="level-right">
+            <div class="level-item">
+                <button class="button" type="reset" (click)="cancelChanges()">
+                    <span class="icon"><fa-icon [icon]="faTimes"></fa-icon></span>
+                    <span>Cancel changes</span>
+                </button>
+            </div>
+            <div class="level-item">
+                <button class="button is-primary" type="submit" (click)="confirmChanges()">
+                    <span class="icon"><fa-icon [icon]="faCheck"></fa-icon></span>
+                    <span>Calculate!</span>
+                </button>
             </div>
         </div>
     </div>
@@ -59,7 +91,7 @@
 
 <div [ngClass]="{ 'is-hidden': asTable }">
     <div class="block">
-        <canvas id="chart" width="400" height="200"></canvas>
+        <canvas id="chart" width="400"></canvas>
     </div>
 
     <div class="field">

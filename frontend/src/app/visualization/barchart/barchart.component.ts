@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
 import { SearchService, DialogService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, barchartOptions, QueryModel } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -22,7 +22,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export class BarChartComponent<Result extends BarchartResult> implements OnInit {
+export class BarChartComponent<Result extends BarchartResult> implements OnInit, OnChanges {
     public showHint: boolean;
 
     /**
@@ -47,11 +47,11 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
 
     @Input() corpus: Corpus;
     @Input() queryModel: QueryModel;
-    @Input() visualizedField;
+    @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    frequencyMeasure: 'documents'|'tokens' = 'documents';
+    @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
     @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
@@ -124,7 +124,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                     },
                     onZoom: ({chart}) => this.onZoomIn(chart),
                 }
-            }
+            },
+            title: {
+                display: true,
+                text: `placeholder`,
+                align: 'center',
+            },
         }
     };
 
@@ -140,25 +145,59 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         this.setupZoomHint();
     }
 
+    ngOnChanges(changes: SimpleChanges) {
+        // new doc counts should be requested if query has changed
+        if (this.changesRequireRefresh(changes)) {
+            this.refreshChart();
+        } else if (changes.palette) {
+            this.prepareChart();
+        }
+    }
+
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
         return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
     }
 
-    /** update graph after changes to the option menu (i.e. frequency measure / normalizer) */
-    onOptionChange(options: barchartOptions) {
-        this.frequencyMeasure = options.frequencyMeasure;
-        this.normalizer = options.normalizer;
-
+    /** update graph after changes to the normalisation menu (i.e. normalizer) */
+    onOptionChange(normalizer: 'raw'|'percent'|'documents'|'terms') {
+        this.normalizer = normalizer;
         if (this.rawData && this.chart) {
             this.prepareChart();
         }
     }
 
+    /**
+     * clear data and update chart
+     */
+     refreshChart(): void {
+        this.initQueries();
+        this.clearCanvas();
+        this.prepareChart();
+    }
+
+    initQueries(): void {
+        this.rawData = [
+            this.newSeries(this.queryText)
+        ];
+        this.queries = [this.queryText];
+    }
+
+    /** if a chart is active, clear canvas and reset chart object */
+    clearCanvas(): void {
+        if (this.chart) {
+            // clear canvas an reset chart object
+            this.chart.destroy();
+            this.chart = undefined;
+        }
+    }
+
     /** add a new series (i.e. a new query) to the graph. */
-    addSeries(queryText: string) {
-        this.rawData.push(this.newSeries(queryText));
-        this.setQueries();
+    updateQueries(queries: string[]) {
+        this.rawData = queries.map(queryText => {
+            const existingSeries = this.rawData.find(series => series.queryText === queryText);
+            return existingSeries || this.newSeries(queryText);
+        });
         this.prepareChart();
     }
 
@@ -176,19 +215,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
-        this.setQueries();
         this.prepareChart();
-    }
-
-    /** set the value of the `queries` property based on `rawData`.
-     * Queries is used by the barchartOptions component.
-     */
-    setQueries() {
-        if (this.rawData) {
-            this.queries = this.rawData.map(series => series.queryText);
-        } else {
-            this.queries = [];
-        }
     }
 
     /** Show a loading spinner and load data for the graph.
@@ -384,6 +411,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
         const labels = this.getLabels();
         const datasets = this.getDatasets();
         const options = this.chartOptions(datasets);
+
         this.chart = new Chart('barchart',
             {
                 type: 'bar',
@@ -395,6 +423,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
                 options: options
             }
         );
+
 
         this.chart.canvas.ondblclick = (event) => this.zoomOut();
     }
@@ -408,6 +437,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     updateChartData() {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
+        this.chart.options = this.chartOptions(datasets)
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
         this.chart.options.plugins.legend.display = datasets.length > 1;
@@ -512,6 +542,21 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit 
     get isZoomedIn(): boolean {
         // If no zooming-related scripts are implemented, just return false
         return false;
+    }
+
+    chartTitle() {
+        if (this.queryText == null) {
+            return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
+        } else {
+            const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
+            return `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
+        }
+    }
+
+    get queryText(): string {
+        if (this.queryModel) {
+            return this.queryModel.queryText;
+        }
     }
 
 }

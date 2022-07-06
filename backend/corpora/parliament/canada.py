@@ -43,6 +43,9 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='house',
         transform=format_house
     )
+    # remove search filter and visualisations since there is only value in the data
+    chamber.search_filter = None
+    chamber.visualizations = None
 
     country = field_defaults.country()
     country.extractor = Constant(

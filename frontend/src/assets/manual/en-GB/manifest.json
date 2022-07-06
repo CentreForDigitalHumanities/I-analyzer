@@ -14,18 +14,21 @@
         "id": "query",
         "title": "Search Query"
     },
-    {
-        "id": "relatedwords",
-        "title": "Related Words Query"
+    {   "id": "numberofresults",
+        "title": "Number of results visualization"
     },
-    {   "id": "histogram",
-        "title": "Histogram visualization"
+    {   "id": "termfrequency",
+        "title": "Search term frequency visualization"
     },
     {   "id": "wordcloud",
         "title": "Word cloud visualization"
     },
     {   "id": "ngrams",
         "title": "Common n-grams visualization"
+    },
+    {
+        "id": "relatedwords",
+        "title": "Related Words Query"
     },
     {
         "id": "download",

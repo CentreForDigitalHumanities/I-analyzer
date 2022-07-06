@@ -11,13 +11,13 @@ import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.formatting import underscore_to_space
 
 class ParliamentFrance(Parliament, CSVCorpus):
-    title = "People & Parliament (France 1881-2002)"
+    title = "People & Parliament (France 1881-2022)"
     description = "Speeches from the 3rd, 4th and 5th republic of France"
     min_date = datetime(year=1881, month=1, day=1)
-    max_data = datetime(year=2002, month=12, day=31)
+    max_data = datetime(year=2022, month=12, day=31)
     data_directory = current_app.config['PP_FR_DATA']
     es_index = current_app.config['PP_FR_INDEX']
-    # image = current_app.config['PP_FR_IMAGE']
+    image = current_app.config['PP_FR_IMAGE']
     es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
@@ -34,7 +34,8 @@ class ParliamentFrance(Parliament, CSVCorpus):
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
-        for csv_file in glob('{}/*.csv'.format(self.data_directory)):
+
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
             yield csv_file, {}
 
     book_id = field_defaults.book_id()
@@ -118,49 +119,41 @@ class ParliamentFrance(Parliament, CSVCorpus):
     speech.extractor = CSV(
         field='page_text'
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "french"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='speech_id'
     )
 
-    url = field_defaults.url()
-    url.extractor = CSV(
-        field='text_url'
+    url_pdf = field_defaults.url()
+    url_pdf.extractor = CSV(
+        field='pdf_url'
     )
+    url_pdf.display_name = 'Source url (PDF)'
+    url_pdf.description = 'URL to PDF source file of this speech'
+
+    url_html = field_defaults.url()
+    url_html.extractor = CSV(
+        field='html_url'
+    )
+    url_html.name = 'url_html'
+    url_html.display_name = 'Source url (HTML)'
+    url_html.description = 'URL to HTML source file of this speech'
 
     def __init__(self):
         self.fields = [
+            self.date,
             self.book_id,
             self.chamber,
             self.country,
-            self.date, self.date_is_estimate,
+            self.date_is_estimate,
             self.debate_id, self.debate_type,
             self.era,
             self.legislature,
             self.page, self.page_source,
             self.sequence,
             self.speech, self.speech_id,
-            self.url,
+            self.url_pdf, self.url_html
         ]
 
 

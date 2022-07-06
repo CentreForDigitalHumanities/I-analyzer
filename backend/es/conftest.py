@@ -54,12 +54,9 @@ def test_app(request):
     """ Provide an instance of the application with Flask's test_client. """
     app = flask_app(UnittestConfig)
     app.testing = True
-    ctx = app.app_context()
-    ctx.push()
-    yield app
 
-    # performed after running tests
-    ctx.pop()
+    with app.app_context():
+        yield app
 
 @pytest.fixture(scope='session')
 def test_es_client(test_app):

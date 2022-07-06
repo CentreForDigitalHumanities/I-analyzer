@@ -44,10 +44,11 @@
     "d3-cloud": "^1.2.4",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
+    "html-to-image": "^1.9.0",
     "iv-viewer": "^2.0.1",
     "lodash": "^4.17.21",
     "marked": "^4.0.10",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "ng2-pdf-viewer": "6.3.2",
     "ngx-cookie-service": "^2.4.0",
     "ngx-md": "^8.1.6",
@@ -88,5 +89,8 @@
   "peerDependencies": {
     "@types/pdfjs-dist": "^2.1.7",
     "pdfjs-dist": "2.5.207"
+  },
+  "overrides": {
+    "colors@>1.4.0": "1.4.0"
   }
 }
