@@ -282,7 +282,7 @@ def test_imports(test_app, corpus_object):
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
     end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date
 
-    docs = get_documents(corpus, start, end)
+    docs = get_documents(corpus)
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
