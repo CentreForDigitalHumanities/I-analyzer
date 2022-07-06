@@ -482,12 +482,11 @@ def api_ngram_tasks():
     if not request.json:
         abort(400)
     else:
-        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
-        ngram_counts = ngram_counts_task.apply_async()
+        ngram_counts_task = tasks.get_ngram_data.delay(request.json)
         if not ngram_counts_task:
             return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
         else:
-            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+            return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
 
 
@@ -639,7 +638,7 @@ def api_aggregate_term_frequency():
 
     if results == 'missing parameters':
         abort(400)
-    
+
     if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
@@ -670,7 +669,7 @@ def api_date_term_frequency():
             )
         except KeyError:
             return 'missing parameters'
-    
+
     corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
     results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
 

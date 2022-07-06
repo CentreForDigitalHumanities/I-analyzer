@@ -165,8 +165,8 @@ PP_ES_SETTINGS = {
 #################
 
 # Celery configuration
-CELERY_BROKER_URL = 'amqp://'
-CELERY_BACKEND = 'rpc://'
+CELERY_BROKER_URL = 'redis://'
+CELERY_BACKEND = 'redis://'
 CSV_FILES_PATH = 'api/csv_files'
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
