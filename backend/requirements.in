@@ -20,4 +20,4 @@ responses
 openpyxl
 python3-saml
 pypdf2
-mysqlclient>=1.3.12,<1.4.0
+mysqlclient
