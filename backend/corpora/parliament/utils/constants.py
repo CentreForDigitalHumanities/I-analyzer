@@ -7,6 +7,10 @@ BASIC_KEYWORD_MAPPING = {
     'type': 'keyword'
 }
 
+BASIC_TEXT_MAPPING = {
+    'type': 'text'
+}
+
 def document_context():
     return {
         'context_fields': ['debate_id'],
