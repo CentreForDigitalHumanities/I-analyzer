@@ -282,7 +282,7 @@ def test_imports(test_app, corpus_object):
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
     end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date
 
-    docs = get_documents(corpus)
+    docs = get_documents(corpus, start, end)
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
@@ -294,12 +294,12 @@ def test_imports(test_app, corpus_object):
             message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
             warnings.warn(message)
 
-    docs = get_documents(corpus)
+    docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
 
-def get_documents(corpus):
+def get_documents(corpus, start, end):
     sources = corpus.sources(
-        start=corpus.min_date,
-        end=corpus.max_date
+        start=start,
+        end=end
     )
     return corpus.documents(sources)

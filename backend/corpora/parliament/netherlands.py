@@ -201,7 +201,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
                     yield xml_file, { 'dataset': 'old' }
             else:
                 message = 'File {} is not indexed, because the filename has no recognisable date'.format(xml_file)
-                logger.log(msg=message)
+                logger.warning(msg=message)
 
         # new data
         if self.data_directory_recent:
@@ -278,7 +278,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     topic.extractor = Choice(
         XML(
             transform_soup_func = find_topic,
-            attribute=':title',
+            attribute='title',
             applicable=is_old,
         ),
         XML(
@@ -306,7 +306,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = Choice(
         XML(
-            attribute=':id',
+            attribute='id',
             applicable=is_old
         ),
         XML(
@@ -318,8 +318,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     speaker = field_defaults.speaker()
     speaker.extractor = Choice(
         Combined(
-            XML(attribute=':function'),
-            XML(attribute=':speaker'),
+            XML(attribute='function'),
+            XML(attribute='speaker'),
             transform=' '.join,
             applicable=is_old
         ),
@@ -333,7 +333,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = Choice(
         XML(
-            attribute=':member-ref',
+            attribute='member-ref',
             applicable=is_old
         ),
         XML(
@@ -358,7 +358,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     role = field_defaults.role()
     role.extractor = Choice(
         XML(
-            attribute=':role',
+            attribute='role',
             transform=format_role,
             applicable = is_old,
         ),
@@ -372,8 +372,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     party = field_defaults.party()
     party.extractor = Choice(
         Combined(
-            XML(attribute=':party'),
-            XML(attribute=':party-ref'),
+            XML(attribute='party'),
+            XML(attribute='party-ref'),
             transform=format_party,
             applicable = is_old
         ),
@@ -388,7 +388,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     party_id = field_defaults.party_id()
     party_id.extractor = Choice(
         XML(
-            attribute=':party-ref',
+            attribute='party-ref',
             applicable = is_old
         ),
         XML(
@@ -416,16 +416,16 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     page.extractor = Choice(
         Combined(
             XML(transform_soup_func=find_topic,
-                attribute=':source-start-page'
+                attribute='source-start-page'
             ),
             XML(transform_soup_func=find_topic,
-                attribute=':source-end-page'
+                attribute='source-end-page'
             ),
             XML(transform_soup_func=find_last_pagebreak,
-                attribute=':originalpagenr',
+                attribute='originalpagenr',
             ),
             XML(tag=['stage-direction', 'pagebreak'],
-                attribute=':originalpagenr',
+                attribute='originalpagenr',
                 multiple=True,
                 transform=lambda pages : pages[-1] if pages else pages
             ),
