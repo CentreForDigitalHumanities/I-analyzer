@@ -21,6 +21,7 @@ The following properties are optional:
 - `scan_image_type`: the filetype of scanned documents, if these are included.
 - `allow_image_download`
 - `desription_page`: URL to markdown document with a comprehensive description
+- `document_context`: specifies fields that define the natural grouping of documents.
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source flies (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
 

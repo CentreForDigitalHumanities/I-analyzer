@@ -391,7 +391,8 @@ def api_query():
         query_model = json.loads(query_json)
         for search_filter in query_model['filters']:
             # no need to save defaults in database
-            del search_filter['defaultData']
+            if 'defaultData' in search_filter:
+                del search_filter['defaultData']
             if 'options' in search_filter['currentData']:
                 # options can be lengthy, just save user settings
                 del search_filter['currentData']['options']
