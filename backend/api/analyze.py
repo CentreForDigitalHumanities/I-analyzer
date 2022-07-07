@@ -1,21 +1,13 @@
-import os
-from os.path import join
-import pickle
-# as per Python 3, pickle uses cPickle under the hood
-
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from sqlalchemy.orm import query
-from addcorpus.load_corpus import corpus_dir, load_corpus
-import numpy as np
+from addcorpus.load_corpus import load_corpus
 from datetime import datetime
 from es.search import get_index, total_hits, search, hits
 from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
-
-from flask import current_app
 
 NUMBER_SIMILAR = 8
 
@@ -32,115 +24,6 @@ def make_wordcloud_data(documents, field):
     output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
     return output
 
-
-def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
-    complete = load_word_models(corpus, current_app.config['WM_COMPLETE_FN'])
-    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
-    word_list = find_n_most_similar(
-        complete['svd_ppmi'],
-        complete['transformer'],
-        query_term,
-        number_similar)
-    if not word_list:
-        return "The query term is not in the word models' vocabulary. \
-        Is your query field empty, does it contain multiple words, or did you search for a stop word?"
-    times = []
-    words = [word['key'] for word in word_list]
-    word_data = [{'label': word, 'data': []} for word in words]
-    for time_bin in binned:
-        word_data = similarity_with_top_terms(
-            time_bin['svd_ppmi'],
-            time_bin['transformer'],
-            query_term,
-            word_data)
-        times.append(str(time_bin['start_year'])+"-"+str(time_bin['end_year']))
-    return word_list, word_data, times
-
-
-def get_context_time_interval(query_term, corpus, which_time_interval, number_similar=NUMBER_SIMILAR):
-    """ Given a query term and corpus, and a number indicating the mean of the requested time interval,
-    return a word list of number_similar most similar words.
-    """
-    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
-    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
-        time['end_year']==int(which_time_interval[-4:])), None)
-    word_list = find_n_most_similar(time_bin['svd_ppmi'],
-        time_bin['transformer'],
-        query_term,
-        number_similar)
-    if not word_list:
-        return "The query term is not in the word models' vocabulary."
-    word_data = [{'label': word['key'], 'data': [word['similarity']]} for word in word_list]
-    return word_data
-
-
-def load_word_models(corpus, path):
-    try:
-        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
-    except KeyError:
-        return "There are no word models for this corpus."
-    with open(os.path.join(wm_directory, path), "rb") as f:
-        wm = pickle.load(f)
-    return wm
-
-
-def find_n_most_similar(matrix, transformer, query_term, n):
-    """given a matrix of svd_ppmi values
-    and the transformer (i.e., sklearn CountVectorizer),
-    determine which n terms match the given query term best
-    """
-    index = next(
-        (i for i, a in enumerate(transformer.get_feature_names())
-         if a == query_term), None)
-    if not(index):
-        return None
-    vec = matrix[:, index]
-    similarities = cosine_similarity_matrix_vector(vec, matrix)
-    sorted_sim = np.sort(similarities)
-    most_similar_indices = np.where(similarities >= sorted_sim[-n])
-    output_terms = [{
-        'key': transformer.get_feature_names()[index],
-        'similarity': similarities[index]
-        } for index in most_similar_indices[0] if
-        transformer.get_feature_names()[index]!=query_term
-    ]
-    return output_terms
-
-
-def similarity_with_top_terms(matrix, transformer, query_term, word_data):
-    """given a matrix of svd_ppmi values,
-    the transformer (i.e., sklearn CountVectorizer), and a word list
-    of the terms matching the query term best over the whole corpus,
-    determine the similarity for each time interval
-    """
-    query_index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
-             if a == query_term), None)
-    query_vec = matrix[:, query_index]
-    for item in word_data:
-        index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
-             if a == item['label']), None)
-        if not index:
-            value = 0
-        else:
-            value = cosine_similarity_vectors(matrix[:, index], query_vec)
-        item['data'].append(value)
-    return word_data
-
-
-def cosine_similarity_vectors(array1, array2):
-    dot = np.inner(array1, array2)
-    vec1_norm = np.linalg.norm(array1)
-    vec2_norm = np.linalg.norm(array2)
-    return dot / (vec1_norm * vec2_norm)
-
-def cosine_similarity_matrix_vector(vector, matrix):
-    dot = vector.dot(matrix)
-    matrix_norms = np.linalg.norm(matrix, axis=0)
-    vector_norm = np.linalg.norm(vector)
-    matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
-    return dot / matrix_vector_norms
 
 def get_ngrams(es_query, corpus, field,
     ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
@@ -189,14 +72,14 @@ def get_time_bins(es_query, corpus):
     10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
 
     min_date, max_date = get_total_time_interval(es_query, corpus)
-    min_year, max_year = min_date.year, max_date.year        
+    min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
     if time_range <= 20:
         year_step = 1
     elif time_range <= 100:
         year_step = 5
-    else: 
+    else:
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
@@ -204,9 +87,9 @@ def get_time_bins(es_query, corpus):
     bins_max = bins[-1][1]
     if bins_max < max_year:
         bins.append((bins_max + 1, max_year))
-    
+
     return bins
- 
+
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
     index = get_index(corpus)
@@ -304,7 +187,7 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
         total_counter.update(c)
 
     number_of_results = min(number_of_ngrams, len(total_counter))
-        
+
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
@@ -358,7 +241,7 @@ def extract_data_for_term_frequency(corpus, search_fields = None):
             'type': highlight_type,
             'fragment_size': 1,
         }
-    
+
     highlight_specs = {
         'number_of_fragments': 100,
         'fields':  highlight_fields,
@@ -410,7 +293,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     )
 
     doc_count = total_hits(results)
-    
+
     if token_count_aggregators:
         token_count = int(sum(
             results['aggregations'][counter]['value']

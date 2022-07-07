@@ -17,7 +17,7 @@ def test_cosine_similarity_vectors():
 
     for case in cases:
         output = analyze.cosine_similarity_vectors(case['v1'], case['v2'])
-        
+
         # check output with small error margin
         assert round(output, 8) == case['similarity']
 
@@ -32,7 +32,7 @@ def test_cosine_similarity_matrix_vector():
 
     for case in cases:
         output = analyze.cosine_similarity_vectors(case['v'], case['M'])
-        
+
         # check output with small error margin
         assert np.all(np.round(output, 8) == case['similarity'])
 
