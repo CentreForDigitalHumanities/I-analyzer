@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 
 from addcorpus.load_corpus import corpus_dir, load_corpus
+from wordmodels.similarity import cosine_similarity_matrix_vector, cosine_similarity_vectors
 
 from flask import current_app
 
@@ -104,17 +105,3 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
             value = cosine_similarity_vectors(matrix[:, index], query_vec)
         item['data'].append(value)
     return word_data
-
-
-def cosine_similarity_vectors(array1, array2):
-    dot = np.inner(array1, array2)
-    vec1_norm = np.linalg.norm(array1)
-    vec2_norm = np.linalg.norm(array2)
-    return dot / (vec1_norm * vec2_norm)
-
-def cosine_similarity_matrix_vector(vector, matrix):
-    dot = vector.dot(matrix)
-    matrix_norms = np.linalg.norm(matrix, axis=0)
-    vector_norm = np.linalg.norm(vector)
-    matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
-    return dot / matrix_vector_norms

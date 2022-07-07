@@ -24,6 +24,7 @@ from flask_mail import Message
 from ianalyzer import models, celery_app
 from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
+import wordmodels.visualisations as wordmodel_visualisations
 
 from api.user_mail import send_user_mail
 from . import security
@@ -571,7 +572,7 @@ def api_request_media():
 def api_get_related_words():
     if not request.json:
         abort(400)
-    results = analyze.get_diachronic_contexts(
+    results = wordmodel_visualisations.get_diachronic_contexts(
         request.json['query_term'],
         request.json['corpus_name']
     )
@@ -597,7 +598,7 @@ def api_get_related_words():
 def api_get_related_words_time_interval():
     if not request.json:
         abort(400)
-    results = analyze.get_context_time_interval(
+    results = wordmodel_visualisations.get_context_time_interval(
         request.json['query_term'],
         request.json['corpus_name'],
         request.json['time']
@@ -640,7 +641,7 @@ def api_aggregate_term_frequency():
 
     if results == 'missing parameters':
         abort(400)
-    
+
     if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
@@ -671,7 +672,7 @@ def api_date_term_frequency():
             )
         except KeyError:
             return 'missing parameters'
-    
+
     corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
     results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
 
