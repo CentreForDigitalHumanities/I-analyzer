@@ -9,8 +9,9 @@ def elasticsearch(corpus_name):
     '''
     server_name = current_app.config.get('CORPUS_SERVER_NAMES')[corpus_name]
     server_config = current_app.config.get('SERVERS')[server_name]
+
     node = {'host': server_config['host'],
-            'port': server_config['port'],
+            'port': int(server_config['port']),
             'scheme': 'http'
     }
     kwargs = {
