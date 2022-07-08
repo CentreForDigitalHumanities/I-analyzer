@@ -231,18 +231,25 @@ def api_download():
     else:
         search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
         filepath = tasks.make_csv.delay(search_results, request.json)
-        if not os.path.isabs(filepath.get()):
-            error_response.headers['message'] += 'csv filepath is not absolute.'
-            return error_response
 
-        csv_file = filepath.get()
+        error_response = make_response("", 500)
+        try:
+            if not os.path.isabs(filepath.get()):
+                error_response.headers['message'] += 'csv filepath is not absolute.'
+                return error_response
 
-        if not csv_file:
-            error_response.headers.message += 'Could not create csv file.'
-            return error_response
-        response = make_response(send_file(csv_file, mimetype='text/csv'))
-        response.headers['filename'] = split(csv_file)[1]
-        return response
+            csv_file = filepath.get()
+
+            if not csv_file:
+                error_response.headers.message += 'Could not create csv file.'
+                return error_response
+
+
+            response = make_response(send_file(csv_file, mimetype='text/csv'))
+            response.headers['filename'] = split(csv_file)[1]
+            return response
+        except:
+            raise Exception(error_response)
 
 
 # endpoint for backend handling of large csv files
