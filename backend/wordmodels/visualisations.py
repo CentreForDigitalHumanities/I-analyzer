@@ -1,10 +1,9 @@
 import os
 from os.path import join
 import pickle
-import numpy as np
 
-from addcorpus.load_corpus import corpus_dir, load_corpus
-from wordmodels.similarity import cosine_similarity_matrix_vector, cosine_similarity_vectors
+from addcorpus.load_corpus import corpus_dir
+from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
 
 from flask import current_app
 
@@ -61,47 +60,3 @@ def load_word_models(corpus, path):
         wm = pickle.load(f)
     return wm
 
-
-def find_n_most_similar(matrix, transformer, query_term, n):
-    """given a matrix of svd_ppmi values
-    and the transformer (i.e., sklearn CountVectorizer),
-    determine which n terms match the given query term best
-    """
-    index = next(
-        (i for i, a in enumerate(transformer.get_feature_names())
-         if a == query_term), None)
-    if not(index):
-        return None
-    vec = matrix[:, index]
-    similarities = cosine_similarity_matrix_vector(vec, matrix)
-    sorted_sim = np.sort(similarities)
-    most_similar_indices = np.where(similarities >= sorted_sim[-n])
-    output_terms = [{
-        'key': transformer.get_feature_names()[index],
-        'similarity': similarities[index]
-        } for index in most_similar_indices[0] if
-        transformer.get_feature_names()[index]!=query_term
-    ]
-    return output_terms
-
-
-def similarity_with_top_terms(matrix, transformer, query_term, word_data):
-    """given a matrix of svd_ppmi values,
-    the transformer (i.e., sklearn CountVectorizer), and a word list
-    of the terms matching the query term best over the whole corpus,
-    determine the similarity for each time interval
-    """
-    query_index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
-             if a == query_term), None)
-    query_vec = matrix[:, query_index]
-    for item in word_data:
-        index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
-             if a == item['label']), None)
-        if not index:
-            value = 0
-        else:
-            value = cosine_similarity_vectors(matrix[:, index], query_vec)
-        item['data'].append(value)
-    return word_data
