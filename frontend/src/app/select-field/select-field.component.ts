@@ -56,13 +56,7 @@ export class SelectFieldComponent implements OnChanges {
 
     private filterCoreFields() {
         if (this.filterCriterion === 'csv') {
-            if (this.corpus.name.startsWith('parliament')) {
-                this.optionsFields = this.availableFields.filter(field => field.searchFieldCore);
-            } else {
-                this.optionsFields = this.availableFields.filter(field => field.csvCore);
-            }
-
-
+            this.optionsFields = this.availableFields.filter(field => field.csvCore);
         }
         else if (this.filterCriterion === 'searchField') {
             this.optionsFields = this.availableFields.filter(field => field.searchFieldCore);
