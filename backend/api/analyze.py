@@ -189,14 +189,14 @@ def get_time_bins(es_query, corpus):
     10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
 
     min_date, max_date = get_total_time_interval(es_query, corpus)
-    min_year, max_year = min_date.year, max_date.year        
+    min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
     if time_range <= 20:
         year_step = 1
     elif time_range <= 100:
         year_step = 5
-    else: 
+    else:
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
@@ -204,9 +204,9 @@ def get_time_bins(es_query, corpus):
     bins_max = bins[-1][1]
     if bins_max < max_year:
         bins.append((bins_max + 1, max_year))
-    
+
     return bins
- 
+
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
     index = get_index(corpus)
@@ -304,7 +304,7 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
         total_counter.update(c)
 
     number_of_results = min(number_of_ngrams, len(total_counter))
-        
+
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
@@ -358,7 +358,7 @@ def extract_data_for_term_frequency(corpus, search_fields = None):
             'type': highlight_type,
             'fragment_size': 1,
         }
-    
+
     highlight_specs = {
         'number_of_fragments': 100,
         'fields':  highlight_fields,
@@ -410,7 +410,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     )
 
     doc_count = total_hits(results)
-    
+
     if token_count_aggregators:
         token_count = int(sum(
             results['aggregations'][counter]['value']
@@ -423,7 +423,6 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
 
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
-
     fields = query.get_search_fields(es_query)
 
     # highlighting specifications (used for counting hits), and token count aggregators (for total word count)

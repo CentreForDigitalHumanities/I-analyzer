@@ -2,7 +2,7 @@
     <div class="container is-fluid">
         <div class="navbar-brand">
             <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/home']"> <img src="/assets/logo.png" width="50" height="50"> I-ANALYZER</a>
-            
+
             <a (click)="toggleMenu($event)" role="button" [ngClass]="{'navbar-burger': true, 'is-active': menuOpen}" aria-label="menu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
@@ -13,12 +13,12 @@
             <div class="navbar-start">
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
-                    <a class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
+                    <button class="navbar-link is-hoverable" (click)="corpora.toggle($event)">
                         <span class="icon">
                             <i class="fa fa-database"></i>
                         </span>
                         Corpora
-                    </a>
+                    </button>
                     <p-menu #corpora popup="popup" [model]="menuCorporaItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
                 </div>
                 <a class="navbar-item" [routerLinkActive]="'is-active'" [routerLink]="['/manual', 'main']">
@@ -31,13 +31,13 @@
             <div class="navbar-end">
                 <!-- navbar items -->
                 <div class="navbar-item has-dropdown">
-                    <a class="navbar-link is-hoverable" (click)="admin.toggle($event)">
+                    <button class="navbar-link is-hoverable" (click)="admin.toggle($event)">
                         <span class="icon">
                             <i class="fa fa-user-circle"></i>
                         </span>
                         {{currentUser.name}}
                         <!-- drop down menu to log out, or see previous queries-->
-                    </a>
+                    </button>
                     <p-menu #admin popup="popup" [model]="menuAdminItems" appendTo="body" styleClass="menu-dropdown"></p-menu>
                 </div>
             </div>
