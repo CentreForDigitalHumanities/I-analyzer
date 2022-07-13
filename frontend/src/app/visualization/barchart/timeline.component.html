@@ -1,3 +1,7 @@
+<div class="block" *ngIf="frequencyMeasure == 'tokens'">
+    <i>Searching in <strong>{{searchFields}}</strong></i>
+</div>
+
 <div class="block">
     <p class=notification *ngIf=showHint>
         <b>Drag to zoom, double click to unzoom</b>
@@ -6,8 +10,9 @@
 
 <div class="block">
     <ia-barchart-options
-        [queries]="queries" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
-        (options)="onOptionChange($event)" (newQuery)="addSeries($event)" (clearQueries)="clearAddedQueries()">
+        [queryText]="queryText" [showTokenCountOption]="totalTokenCountAvailable" [isLoading]="isLoading.value"
+        [frequencyMeasure]="frequencyMeasure"
+        (normalizer)="onOptionChange($event)" (queriesChanged)="updateQueries($event)" (clearQueries)="clearAddedQueries()">
     </ia-barchart-options>
 </div>
 

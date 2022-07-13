@@ -21,6 +21,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 // import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ChipsModule } from 'primeng/chips';
 import { TableModule } from 'primeng/table';
 import { ResourceHandler } from '@ngx-resource/core';
 import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler-ngx-http';
@@ -68,6 +69,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
 import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
+import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 
 
@@ -123,6 +125,7 @@ const appRoutes: Routes = [
 
 export const declarations: any[] = [
     AppComponent,
+    AdHocFilterComponent,
     BalloonDirective,
     BarChartComponent,
     BooleanFilterComponent,
@@ -179,6 +182,7 @@ export const imports: any[] = [
     CalendarModule,
     ChartModule,
     CheckboxModule,
+    ChipsModule,
     CommonModule,
     ConfirmDialogModule,
     DialogModule,

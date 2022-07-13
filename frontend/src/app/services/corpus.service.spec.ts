@@ -95,7 +95,7 @@ describe('CorpusService', () => {
                     'results_overview': false,
                     'csv_core': false,
                     'search_field_core': false,
-                    'visualizations': ['histogram'],
+                    'visualizations': ['resultscount', 'termfrequency'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'MultipleChoiceFilter',
@@ -118,7 +118,7 @@ describe('CorpusService', () => {
                     'csv_core': true,
                     'search_field_core': false,
                     'histogram': false,
-                    'visualizations': ['histogram'],
+                    'visualizations': ['resultscount', 'termfrequency'],
                     'visualization_sort': 'key',
                     'search_filter': {
                         'name': 'RangeFilter',
@@ -195,7 +195,7 @@ describe('CorpusService', () => {
                 resultsOverview: false,
                 csvCore: false,
                 searchFieldCore: false,
-                visualizations: ['histogram'],
+                visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
                 hidden: true,
@@ -210,7 +210,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockMultipleChoiceData,
                     currentData: mockMultipleChoiceData
-                }
+                },
+                mappingType: 'keyword',
             }, {
                 description: 'Year of the financial report.',
                 hidden: false,
@@ -224,7 +225,7 @@ describe('CorpusService', () => {
                 resultsOverview: true,
                 csvCore: true,
                 searchFieldCore: false,
-                visualizations: ['histogram'],
+                visualizations: ['resultscount', 'termfrequency'],
                 visualizationSort: 'key',
                 multiFields: undefined,
                 searchFilter: {
@@ -233,7 +234,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockRangeData,
                     currentData: mockRangeData
-                }
+                },
+                mappingType: 'integer',
             }, {
                 description: 'The transcribed speech',
                 hidden: false,
@@ -251,6 +253,7 @@ describe('CorpusService', () => {
                 multiFields: ['clean', 'stemmed', 'length'],
                 searchFilter: null,
                 searchFieldCore: true,
+                mappingType: 'text',
             }];
             expect(items).toEqual([new Corpus(
                 'default',

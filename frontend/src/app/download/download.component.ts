@@ -45,7 +45,8 @@ export class DownloadComponent implements OnChanges {
                 primarySort: false,
                 searchable: false,
                 downloadable: true,
-                searchFilter: null
+                searchFilter: null,
+                mappingType: null,
             });
         }
     }

@@ -30,7 +30,7 @@
     <div class="level-right has-text-centered" *ngIf="results.total.value > resultsPerPage" >
         <div>
             <p class="heading">Pages</p>
-            <ia-pagination [totalResults]="totalResults" (loadResults)=loadResults($event)></ia-pagination>
+            <ia-pagination [totalResults]="totalResults" [fromIndex]="fromIndex" (loadResults)=loadResults($event)></ia-pagination>
         </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" role="button">
             <div class="columns">
-                <div class="column is-flex" (click)=onViewDocument(document)>
+                <div class="column is-flex" tabindex="0" (click)="onViewDocument(document)" (keydown.enter)="onViewDocument(document)" role="button">
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">
@@ -78,10 +78,37 @@
 </ng-template>
 
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
+<p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument">
+    *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
+    <ng-template pTemplate="footer">
+        <div class="columns" style="text-align:left">
+            <div class="column">
+                <a *ngIf="viewDocument && viewDocument.position > 1"
+                    iaBalloon="view previous document" iaBalloonPosition="right"
+                    (click)="prevDocument(viewDocument)" >
+                    <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                </a>
+            </div>
+            <div class="column" style="text-align:center">
+                <a *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)"
+                iaBalloon="view all documents from this {{contextDisplayName}}">
+                <span class="icon">
+                    <fa-icon [icon]="contextIcon"></fa-icon>
+                </span>
+                <span>View {{contextDisplayName}}</span>
+            </a>
+            </div>
+            <div class="column" style="text-align:right">
+                <a *ngIf="viewDocument && viewDocument.position < totalResults"
+                    iaBalloon="view next document" iaBalloonPosition="left"
+                    (click)="nextDocument(viewDocument)">
+                    <span class="icon"><fa-icon [icon]="faArrowRight">next</fa-icon></span>
+                </a>
+            </div>
+        </div>
+    </ng-template>
 </p-dialog>
 
 <ia-error *ngIf="showError" [showError]="showError"></ia-error>

@@ -95,6 +95,28 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def document_context(self):
+        '''
+        A dictionary that specifies how documents can be grouped into a "context". For example,
+        parliamentary speeches may be grouped into debates. The dictionary has two keys:
+        - `'context_fields'`: a list of the `name`s of the fields that can be used to
+        group documents. The context of a document is the set of documents that match
+        its value for all the listed fields.
+        - `'sort_field'`: the `name` of the field by which documents can be sorted
+        within their respective group. The field should be marked as `sortable`. If `None`,
+        no sorting will be applied.
+        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
+        - `'context_display_name'`: The display name for the context used in the interface. If
+        `None`, use the displayName of the first context field.
+        '''
+
+        return {
+            'context_fields': None,
+            'sort_field': None,
+            'context_display_name': None
+        }
+
+    @property
     def image(self):
         '''
         Absolute url to static image.
@@ -297,7 +319,8 @@ class XMLCorpus(Corpus):
                 extract.XML,
                 extract.Metadata,
                 extract.Constant,
-                extract.ExternalFile
+                extract.ExternalFile,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an XML corpus")
@@ -475,7 +498,8 @@ class HTMLCorpus(XMLCorpus):
                 extract.Combined,
                 extract.HTML,
                 extract.Metadata,
-                extract.Constant
+                extract.Constant,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with an HTML corpus")
@@ -550,6 +574,7 @@ class CSVCorpus(Corpus):
                 extract.Combined,
                 extract.CSV,
                 extract.Constant,
+                extract.Backup,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
@@ -617,7 +642,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: histogram, timeline, wordcloud, relatedwords, ngram
+        options: resultscount, termfrequency, wordcloud, relatedwords, ngram
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)
@@ -669,7 +694,7 @@ class Field(object):
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
             es_mapping['type'] in ['integer', 'float', 'date']
-        
+
         self.primary_sort = primary_sort
 
         # Fields are searchable if they are not hidden and if they are mapped as 'text'.

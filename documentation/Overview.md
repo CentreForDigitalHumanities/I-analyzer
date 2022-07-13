@@ -29,7 +29,7 @@ Currently, the frontend constructs the request body as an Elasticsearch Simple Q
 ### Analysis
 `analyze.py` contains scripts to
 - construct a frequency table of words from the results' content (passed in from frontend)
-- conduct analysis for the wordcloud, histogram, timeline, ngrams and related words visualisations in the frontend
+- conduct analysis for the wordcloud, term frequency, ngrams and related words visualisations in the frontend
 
 # Frontend
 

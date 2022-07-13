@@ -14,24 +14,6 @@ import { selectColor } from '../select-color';
 })
 export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
-    async ngOnChanges(changes: SimpleChanges) {
-        // new doc counts should be requested if query has changed
-        if (this.changesRequireRefresh(changes)) {
-            this.rawData = [
-                this.newSeries(this.queryModel.queryText)
-            ];
-            if (this.chart) {
-                // clear canvas an reset chart object
-                this.chart.destroy();
-                this.chart = undefined;
-            }
-            this.setQueries();
-            this.prepareChart();
-        } else if (changes.palette) {
-            this.prepareChart();
-        }
-    }
-
     /** specify aggregator object based on visualised field;
      * used in document requests.
     */
@@ -51,7 +33,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
         const aggregator = this.getAggregator();
-        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
+
         return this.searchService.aggregateSearch(
             this.corpus, queryModelCopy, [aggregator]).then(result =>
                     this.docCountResultIntoSeries(result, series)
@@ -60,7 +43,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
 
     requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
         if (cat.doc_count) {
-            const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+            const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
             const binDocumentLimit = this.documentLimitForCategory(cat, series);
             return this.searchService.aggregateTermFrequencySearch(
                     this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)

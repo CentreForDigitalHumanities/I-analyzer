@@ -137,7 +137,7 @@ class DutchNewspapersPublic(XMLCorpus):
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
             csv_core=True,
-            visualizations=['timeline'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.DateFilter(
                 self.min_date,
                 self.max_date,
@@ -176,7 +176,7 @@ class DutchNewspapersPublic(XMLCorpus):
             results_overview=True,
             search_field_core=True,
             es_mapping={'type': 'keyword'},
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in these newspapers.',
                 option_count=len(self.papers)
@@ -283,7 +283,7 @@ class DutchNewspapersPublic(XMLCorpus):
             results_overview=True,
             csv_core=True,
             es_mapping={'type': 'keyword'},
-            visualizations=['histogram'],
+            visualizations=['resultscount', 'termfrequency'],
             search_filter=filters.MultipleChoiceFilter(
                 description='Accept only articles in newspapers which appeared as a given edition.',
                 option_count=3,

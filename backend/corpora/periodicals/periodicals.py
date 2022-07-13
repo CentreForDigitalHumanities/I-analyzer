@@ -92,7 +92,7 @@ class Periodicals(XMLCorpus):
             ),
             extractor=extract.Metadata('date'),
             csv_core=True,
-            visualizations=['timeline']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='date_pub',
@@ -130,7 +130,7 @@ class Periodicals(XMLCorpus):
             ),
             extractor=extract.Metadata('title'),
             csv_core=True,
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='content',
@@ -248,7 +248,7 @@ class Periodicals(XMLCorpus):
                 description='Accept only articles in these categories.',
                 option_count=26
             ),
-            visualizations=['histogram']
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='page_no',
