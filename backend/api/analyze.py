@@ -267,17 +267,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
     return ngrams_per_bin, ngram_ttfs
 
-def make_ngram(token, prev_tokens, next_tokens, ngram_size, position):
-    prev_size = position
-    next_size = ngram_size - (position + 1)
-
-    if prev_size <= len(prev_tokens) and next_size <= len(next_tokens):
-        return prev_tokens[len(prev_tokens) - prev_size:] + [token] + next_tokens[:next_size]
-
-def find_neighbouring_tokens(token, tokens, window_size=1, direction='next'):
-    """Find the n tokens preceding or following a token. The token """
-
-
 
 def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
     """
