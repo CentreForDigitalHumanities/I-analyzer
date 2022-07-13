@@ -8,7 +8,7 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.formatting as formatting
-import corpora.parliament.utils.field_defaults_old as field_defaults
+import corpora.parliament.utils.field_defaults as field_defaults
 
 
 class ParliamentGermanyNew(Parliament, CSVCorpus):
@@ -49,10 +49,12 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     )
     date.search_filter.lower = min_date
 
-    house = field_defaults.house()
-    house.extractor = Constant(
+    chamber = field_defaults.chamber()
+    chamber.extractor = Constant(
         value='Bundestag'
     )
+    chamber.search_filter = None
+    chamber.visualizations = []
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
@@ -144,39 +146,28 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "german"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='id'
     )
 
-    url = field_defaults.source_url()
+    url = field_defaults.url()
     url.extractor = CSV(
         field='document_url'
+    )
+
+    # order of speeches: value is identical to speech_id
+    # but saved as integer for sorting
+    sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field = 'id'
     )
 
     def __init__(self):
         self.fields = [
             self.country, self.date,
+            self.chamber,
             self.debate_id,
             self.speaker, self.speaker_id,
             self.speaker_aristocracy, self.speaker_academic_title,
@@ -187,6 +178,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
             self.party, self.party_full, self.party_id,
             self.speech, self.speech_id,
             self.url,
+            self.sequence,
         ]
 
 

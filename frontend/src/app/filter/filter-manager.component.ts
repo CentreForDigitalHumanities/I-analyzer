@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData } from '../models/index';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData, CorpusField } from '../models/index';
 import { SearchService } from '../services';
 
 @Component({
@@ -20,6 +20,8 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     public searchFilters: SearchFilter<SearchFilterData> [] = [];
     public activeFilters: SearchFilter<SearchFilterData> [] = [];
 
+    public adHocFilterFields: CorpusField[] = [];
+
     public showFilters: boolean;
     public grayOutFilters: boolean;
 
@@ -34,12 +36,37 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         if (changes['corpus']) {
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            this.setAdHocFilters();
             this.activeFilters = [];
             if (changes['corpus'].previousValue !== undefined ) {
                 this.searchFilters.forEach( filter => filter.currentData = filter.defaultData);
             }
+        } else if (changes.queryModel) {
+            this.setAdHocFilters();
         }
         this.aggregateSearchForMultipleChoiceFilters();
+    }
+
+    /**
+     * make ad hoc filters for any filters in the query model
+     * that are not normally listed in the interface
+     */
+    private setAdHocFilters() {
+        if (this.queryModel.filters) {
+            const fieldsWithFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.name);
+            const adHoc = this.queryModel.filters.filter(f => !fieldsWithFilters.includes(f.fieldName));
+            adHoc.forEach(filter => {
+                if (!this.searchFilters.find(f => f.fieldName == filter.fieldName)) {
+                    this.searchFilters.push(filter);
+                }
+            });
+
+            this.adHocFilterFields = adHoc.map(filter => {
+                const corpusField = _.cloneDeep(this.corpus.fields.find(field => field.name === filter.fieldName));
+                corpusField.searchFilter = filter;
+                return corpusField;
+            });
+        }
     }
 
     /**
@@ -50,7 +77,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      * fieldName2: [etc]
      */
     private aggregateSearchForMultipleChoiceFilters() {
-        const multipleChoiceFilters = this.searchFilters.filter(f => f.defaultData.filterType === 'MultipleChoiceFilter');
+        const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
         const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
         Promise.all(aggregateResultPromises).then(results => {
             results.forEach( r =>
@@ -106,6 +133,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public filtersChanged() {
         this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
+        this.setAdHocFilters();
         this.filtersChangedEmitter.emit(this.activeFilters);
     }
 

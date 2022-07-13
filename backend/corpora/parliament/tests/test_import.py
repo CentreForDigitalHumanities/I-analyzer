@@ -139,6 +139,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
         'docs': [
         {
             'country': 'Germany',
+            'chamber': 'Bundestag',
             'date': '1949-09-22',
             'debate_id': '7',
             'speaker': 'Gebhard Seelos',
@@ -158,6 +159,8 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'party_id': '2',
             'speech': 'Baracken sind etwas Vorübergehendes; sie halten aber immer länger, als eigentlich geplant.',
             'id': '94',
+            'url': 'https://dip21.bundestag.de/dip21/btp/01/01007.pdf',
+            'sequence': '94'
         }],
         'n_documents': 2
     },
@@ -168,11 +171,11 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'country': 'Germany',
             'book_id': 'bsb00000436',
             'book_label': '1867/70,1 ( Protokolle mit Sach- und Sprechregister )',
-            'parliament': 'Reichstag (Norddeutscher Bund/Zollparlamente) 1867 - 1895 Norddeutscher Bund',
+            'era': 'Reichstag (Norddeutscher Bund/Zollparlamente) 1867 - 1895 Norddeutscher Bund',
             'date': '1867-02-25',
             'date_is_estimate': 'true',
             'page': '27',
-            'source_url': 'https://api.digitale-sammlungen.de/iiif/image/v2/bsb00000436_00027/full/full/0/default.jpg',
+            'url': 'https://api.digitale-sammlungen.de/iiif/image/v2/bsb00000436_00027/full/full/0/default.jpg',
             'speech': "Nach vorangegangenem Gottesdienste in der Königlichen Schloßcapelle und der St. Hedwigskirche versammelten sich Heute- Nachmittags 11 Uhr die durch Allerhöchstes Patent vom 13. d. M. einberufenen Mitglieder des Reichstages des Norddeutschen Bundes im Weißen Saale des Königlichen Schlosses. Bald daraus traten die Reichstags-Commifsarien ein. Nachdem dieselben links vom Throne sich ausgestellt und die Versammlung sich -geordnet hatte, machte der Vorsitzende der Reichstags-Commissarien, Gras von Bismarck, Seiner Majestät dem Könige davon Meldung. Allerhöchst dieselben begaben Sich daraus in Begleitung Ihrer Königlichen Hoheiten des Kronprinzen und der Prinzen des Königlichen Hauses in dem nach dem Programm geordneten Zuge, unter 'Vortragung der Reichs-Insignien, nach dem Weißen Saale und nahmen, mit einem lebhaften dreimaligen Hoch, welches der Wirkliche Geheime Rath von Frankenberg ausbrachte, von der Versammlung empfangen, auf dem Throne Platz, während Seine Königliche Hoheit der Kronprinz guf der mittleren Stufe desselben, Ihre Königlichen Hoheiten die Prinzen des Königlichen Hauses zur Rechten des Thrones sich aufstellten. Seine Majestät der König verlasen hierauf, das Haupt mit dem Helme bedeckt, die nachfolgende Rede:",
             'id': '0',
         }],
