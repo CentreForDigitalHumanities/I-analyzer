@@ -210,7 +210,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockMultipleChoiceData,
                     currentData: mockMultipleChoiceData
-                }
+                },
+                mappingType: 'keyword',
             }, {
                 description: 'Year of the financial report.',
                 hidden: false,
@@ -233,7 +234,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockRangeData,
                     currentData: mockRangeData
-                }
+                },
+                mappingType: 'integer',
             }, {
                 description: 'The transcribed speech',
                 hidden: false,
@@ -251,6 +253,7 @@ describe('CorpusService', () => {
                 multiFields: ['clean', 'stemmed', 'length'],
                 searchFilter: null,
                 searchFieldCore: true,
+                mappingType: 'text',
             }];
             expect(items).toEqual([new Corpus(
                 'default',

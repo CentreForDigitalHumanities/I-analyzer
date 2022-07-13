@@ -78,9 +78,9 @@
 </ng-template>
 
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
+<p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument">
+    *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
     <ng-template pTemplate="footer">
         <div class="columns" style="text-align:left">
@@ -90,6 +90,15 @@
                     (click)="prevDocument(viewDocument)" >
                     <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
                 </a>
+            </div>
+            <div class="column" style="text-align:center">
+                <a *ngIf="corpus.documentContext" (click)="goToContext(viewDocument)"
+                iaBalloon="view all documents from this {{contextDisplayName}}">
+                <span class="icon">
+                    <fa-icon [icon]="contextIcon"></fa-icon>
+                </span>
+                <span>View {{contextDisplayName}}</span>
+            </a>
             </div>
             <div class="column" style="text-align:right">
                 <a *ngIf="viewDocument && viewDocument.position < totalResults"
