@@ -8,6 +8,8 @@ alembic==1.0.10
     # via flask-migrate
 amqp==5.1.1
     # via kombu
+async-timeout==4.0.2
+    # via redis
 atomicwrites==1.3.0
     # via pytest
 attrs==19.1.0
@@ -43,6 +45,8 @@ coverage==4.5.3
     # via -r requirements.in
 defusedxml==0.6.0
     # via python3-saml
+deprecated==1.2.13
+    # via redis
 elasticsearch==7.17.1
     # via -r requirements.in
 et-xmlfile==1.0.1
@@ -106,6 +110,8 @@ numpy==1.22.0
     #   scipy
 openpyxl==2.5.14
     # via -r requirements.in
+packaging==21.3
+    # via redis
 pkgconfig==1.5.1
     # via xmlsec
 pluggy==0.11.0
@@ -114,6 +120,8 @@ prompt-toolkit==3.0.29
     # via click-repl
 py==1.10.0
     # via pytest
+pyparsing==3.0.9
+    # via packaging
 pypdf2==1.27.5
     # via -r requirements.in
 pytest==4.5.0
@@ -126,6 +134,8 @@ python3-saml==1.10.1
     # via -r requirements.in
 pytz==2022.1
     # via celery
+redis==4.3.4
+    # via -r requirements.in
 requests==2.21.0
     # via
     #   -r requirements.in
@@ -169,6 +179,8 @@ werkzeug==2.0.0
     #   -r requirements.in
     #   flask
     #   flask-login
+wrapt==1.14.1
+    # via deprecated
 wtforms==2.2.1
     # via
     #   -r requirements.in
