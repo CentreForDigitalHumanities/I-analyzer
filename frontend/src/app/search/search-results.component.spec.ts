@@ -58,6 +58,7 @@ describe('Search Results Component', () => {
             primarySort: false,
             searchable: false,
             downloadable: true,
+            mappingType: 'keyword',
         };
     }
 
