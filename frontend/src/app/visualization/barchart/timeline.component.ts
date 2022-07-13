@@ -57,7 +57,8 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * True when retrieving results for the entire series, false when retrieving a window.
      */
     requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
-        const queryModelCopy = this.setQueryText(this.queryModel, series.queryText);
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
+
         return this.searchService.dateHistogramSearch(
             this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
                 this.docCountResultIntoSeries(result, series, setSearchRatio)
@@ -67,7 +68,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     requestCategoryTermFrequencyData(
         cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
         if (cat.doc_count) {
-            const queryModelCopy = this.setQueryText(queryModel, series.queryText);
+            const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
             const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
             const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
