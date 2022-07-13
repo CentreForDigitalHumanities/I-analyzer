@@ -77,7 +77,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='party_id'
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = CSV(
         field='position_short'
     )
