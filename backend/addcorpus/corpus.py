@@ -214,6 +214,9 @@ class Corpus(object):
         return json_dict
 
     def serialize(self):
+        """
+        Convert corpus object to a JSON-friendly dict format.
+        """
         corpus_dict = {}
 
         # gather attribute names
@@ -703,6 +706,9 @@ class Field(object):
             self.search_filter.field = self
 
     def serialize(self):
+        """
+        Convert Field object to a JSON-friendly dict format.
+        """
         field_dict = {}
         for key, value in self.__dict__.items():
             if key == 'search_filter' and value != None:
