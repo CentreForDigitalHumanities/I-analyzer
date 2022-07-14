@@ -21,8 +21,12 @@ NUMBER_SIMILAR = 8
 
 def make_wordcloud_data(documents, field):
     texts = []
+    cleanfield = str(field + '.clean')
     for document in documents:
-        content = document['_source'][field]
+        try:  # see if there is a stopword-free field, else use normal field
+            content = document['_source'][cleanfield]
+        except:
+            content = document['_source'][field]
         if content and content != '':
             texts.append(content)
     # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
