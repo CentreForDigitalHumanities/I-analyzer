@@ -4,6 +4,10 @@
     <div class="control" *ngIf="timeIntervals">
         <input class="time-slider" type="range" min="0" [max]="timeIntervals.length - 1" [value]="currentTimeIndex" step="1"
             (change)="setCurrentTime($event)">
+
+        <p style="text-align: center;">
+            {{timeIntervals[currentTimeIndex]}}
+        </p>
     </div>
 </div>
 
