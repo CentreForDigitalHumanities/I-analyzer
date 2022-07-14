@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { ConfigService } from './config.service';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, ContextFeedback, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -89,6 +89,14 @@ export class ApiService extends Resource {
     public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/get_2d_contexts_over_time'
+    })
+    public get2dContextOverTime: IResourceMethodFull<
+        { query_term: string, corpus: string, },
+        { ContextFeedback }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,

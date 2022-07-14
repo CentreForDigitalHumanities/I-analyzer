@@ -202,6 +202,15 @@ export class SearchService {
         });
     }
 
+    get2dContextOverTime(queryTerm: string, corpusName: string): any {
+        return this.apiService.get2dContextOverTime(
+            {
+                query_term: queryTerm,
+                corpus: corpusName,
+            },
+        );
+    }
+
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.ngramTasks({

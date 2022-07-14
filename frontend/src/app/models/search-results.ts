@@ -72,7 +72,20 @@ export type RelatedWordsResults = {
         [word: string]: number[]
     },
     time_points: string[]
-}
+};
+
+export type ContextResults = {
+    time: string,
+    data: { label: string, x: number, y: number }[],
+}[];
+
+export type ContextFeedback = {
+    succes: false,
+    message: string
+} | {
+    succes: true,
+    data: ContextResults,
+};
 
 export type NgramResults = {
     words: {

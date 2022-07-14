@@ -4,11 +4,18 @@ import pickle
 
 from addcorpus.load_corpus import corpus_dir
 from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
+import random
 
 from flask import current_app
 
 
 NUMBER_SIMILAR = 8
+
+def format_time_interval(start_year, end_year):
+    return '{}-{}'.format(start_year, end_year)
+
+def parse_time_interval(interval):
+    return int(interval[:4]), int(interval[-4:])
 
 def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
     complete = load_word_models(corpus, current_app.config['WM_COMPLETE_FN'])
@@ -30,7 +37,8 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
             time_bin['transformer'],
             query_term,
             word_data)
-        times.append(str(time_bin['start_year'])+"-"+str(time_bin['end_year']))
+        interval = format_time_interval(time_bin['start_year'], time_bin['end_year'])
+        times.append(interval)
     return word_list, word_data, times
 
 
@@ -39,8 +47,8 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     return a word list of number_similar most similar words.
     """
     binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
-    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
-        time['end_year']==int(which_time_interval[-4:])), None)
+    start_year, end_year = parse_time_interval(which_time_interval)
+    time_bin = next((time for time in binned if time['start_year']==start_year and time['end_year']==end_year), None)
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
         time_bin['transformer'],
         query_term,
@@ -60,3 +68,55 @@ def load_word_models(corpus, path):
         wm = pickle.load(f)
     return wm
 
+
+def get_2d_context(query_term, model, number_similar = NUMBER_SIMILAR):
+    """
+    Given a query term and set of word embeddings, return coordinates for a 2D scatter plot with the query term's
+    nearest neighbours.
+
+    Output: a list of dicts where each dict has the keys 'label' (string of the word), 'x' (float, x-coordinate),
+    and 'y'(float, y-coordinate). Coordinates are scaled within [-1, 1].
+    """
+
+    return [
+        {
+            'label': 'test',
+            'x': 0.0,
+            'y': 0.0
+        },
+        {
+            'label': 'test2',
+            'x': random.random(),
+            'y': random.random()
+        },
+        {
+            'label': 'test3',
+            'x': -0.8,
+            'y': 0.7
+        },
+        {
+            'label': 'test4',
+            'x': 0.2,
+            'y': -0.3
+        }
+    ]
+
+
+
+def get_2d_contexts_over_time(query_term, corpus, number_similar = NUMBER_SIMILAR):
+    """
+    Given a query term and corpus, creates a scatter plot of the term's nearest neigbours for each
+    time interval.
+    """
+
+    binned_models = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+
+    data = [
+        {
+            'time': format_time_interval(model['start_year'], model['end_year']),
+            'data': get_2d_context(query_term, model, number_similar)
+        }
+        for model in binned_models
+    ]
+
+    return data
