@@ -20,7 +20,7 @@ def make_wordcloud_data(documents, field):
     # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
     cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
     counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names()
+    words = cv.get_feature_names_out()
     output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
     return output
 

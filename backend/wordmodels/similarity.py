@@ -20,7 +20,7 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     determine which n terms match the given query term best
     """
     index = next(
-        (i for i, a in enumerate(transformer.get_feature_names())
+        (i for i, a in enumerate(transformer.get_feature_names_out())
          if a == query_term), None)
     if not(index):
         return None
@@ -29,16 +29,16 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
     output_terms = [{
-        'key': transformer.get_feature_names()[index],
+        'key': transformer.get_feature_names_out()[index],
         'similarity': similarities[index]
         } for index in most_similar_indices[0] if
-        transformer.get_feature_names()[index]!=query_term
+        transformer.get_feature_names_out()[index]!=query_term
     ]
     return output_terms
 
 def query_vector(query_term, transformer, matrix):
     query_index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
+            (i for i, a in enumerate(transformer.get_feature_names_out())
              if a == query_term), None)
     return matrix[:, query_index]
 
@@ -51,7 +51,7 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     query_vec = query_vector(query_term, transformer, matrix)
     for item in word_data:
         index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
+            (i for i, a in enumerate(transformer.get_feature_names_out())
              if a == item['label']), None)
         if not index:
             value = 0
