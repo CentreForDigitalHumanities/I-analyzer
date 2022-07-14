@@ -45,7 +45,7 @@ SERVERS = {
     'default': {
         'host': 'localhost',
         'port': 9200,
-        'certs_location': '{your_elasticsearch_directory/config//certs/http_ca.crt}'
+        'certs_location': '{your_elasticsearch_directory/config/certs/http_ca.crt}'
         'api_id': '{generated_api_id}'
         'api_key': '{generated_api_key}'
     }
