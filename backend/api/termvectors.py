@@ -9,6 +9,9 @@ def get_terms(termvector_result, field):
         return terms
 
 def get_tokens(terms, sort=True):
+    if not terms:
+        return []
+
     all_tokens = [token for term in terms for token in list_tokens(term, terms[term])]
 
     if sort:
