@@ -1,5 +1,10 @@
 <div class="block" [class.is-hidden]="asTable">
     <canvas id="context-chart" role="img"></canvas>
+
+    <div class="control" *ngIf="timeIntervals">
+        <input class="time-slider" type="range" min="0" [max]="timeIntervals.length - 1" [value]="currentTimeIndex" step="1"
+            (change)="setCurrentTime($event)">
+    </div>
 </div>
 
 <div class="block" *ngIf="asTable">

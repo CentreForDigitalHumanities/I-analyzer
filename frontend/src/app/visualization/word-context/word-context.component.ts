@@ -19,8 +19,11 @@ export class WordContextComponent implements OnChanges {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
-    chart: Chart;
+    data: ContextResults;
+    timeIntervals: string[];
+    currentTimeIndex: number;
 
+    chart: Chart;
     chartOptions: ChartOptions = {
         elements: {
             point: {
@@ -85,8 +88,11 @@ export class WordContextComponent implements OnChanges {
     getResults(): Promise<void> {
         return this.searchService.get2dContextOverTime(this.queryModel.queryText, this.corpus.name).then(result => {
             if (result.success) {
+                this.data = result.data;
+                this.timeIntervals = result.data.map(item => item.time);
+                this.currentTimeIndex = 0;
                 this.makeTableData(result.data);
-                this.makeGraph(result.data);
+                this.makeGraph(result.data, this.currentTimeIndex);
             } else {
                 this.error.emit(result);
             }
@@ -100,8 +106,9 @@ export class WordContextComponent implements OnChanges {
         this.isLoading.emit(false);
     }
 
-    makeGraph(data: ContextResults) {
-        const dataset = data[0];
+
+    makeGraph(data: ContextResults, timeIndex: number) {
+        const dataset = data[timeIndex];
         this.chart = new Chart('context-chart', {
             type: 'scatter',
             data: {
@@ -125,6 +132,17 @@ export class WordContextComponent implements OnChanges {
 
     formatValue(value: number) {
         return value.toPrecision(4);
+    }
+
+    setCurrentTime(event) {
+        const value = event.target.value;
+        this.currentTimeIndex = value;
+
+        if (this.chart) {
+            this.chart.data.datasets = [this.data[this.currentTimeIndex]];
+            this.chart.update();
+        }
+
     }
 
 }
