@@ -189,14 +189,14 @@ def get_time_bins(es_query, corpus):
     10 years (>100 yrs), 5 years (100-20 yrs) of 1 year (<20 yrs)."""
 
     min_date, max_date = get_total_time_interval(es_query, corpus)
-    min_year, max_year = min_date.year, max_date.year        
+    min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
     if time_range <= 20:
         year_step = 1
     elif time_range <= 100:
         year_step = 5
-    else: 
+    else:
         year_step = 10
 
     bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
@@ -204,9 +204,9 @@ def get_time_bins(es_query, corpus):
     bins_max = bins[-1][1]
     if bins_max < max_year:
         bins.append((bins_max + 1, max_year))
-    
+
     return bins
- 
+
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
     index = get_index(corpus)
@@ -267,17 +267,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
 
     return ngrams_per_bin, ngram_ttfs
 
-def make_ngram(token, prev_tokens, next_tokens, ngram_size, position):
-    prev_size = position
-    next_size = ngram_size - (position + 1)
-
-    if prev_size <= len(prev_tokens) and next_size <= len(next_tokens):
-        return prev_tokens[len(prev_tokens) - prev_size:] + [token] + next_tokens[:next_size]
-
-def find_neighbouring_tokens(token, tokens, window_size=1, direction='next'):
-    """Find the n tokens preceding or following a token. The token """
-
-
 
 def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
     """
@@ -304,7 +293,7 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
         total_counter.update(c)
 
     number_of_results = min(number_of_ngrams, len(total_counter))
-        
+
     if total_frequencies:
         def frequency(ngram, counter): return counter[ngram] / total_frequencies[ngram]
         def overall_frequency(ngram): return frequency(ngram, total_counter)
@@ -330,7 +319,6 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
 
     date_filter = query.make_date_filter(start_date, end_date)
     es_query = query.add_filter(es_query, date_filter)
-    es_query['track_total_hits'] = True
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 
@@ -344,25 +332,15 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
 
     return data
 
-def extract_data_for_term_frequency(corpus, search_fields = None):
+def extract_data_for_term_frequency(corpus, es_query):
     corpus_class = load_corpus(corpus)
+    search_fields = query.get_search_fields(es_query)
     if search_fields:
         fields = list(filter(lambda field: field.name in search_fields, corpus_class.fields))
     else:
-        fields =list(filter(lambda field: field.es_mapping['type'] in ['keyword', 'text'], corpus_class.fields))
+        fields =list(filter(lambda field: field.es_mapping['type'] == 'text', corpus_class.fields))
 
-    highlight_fields = dict()
-    for field in fields:
-        highlight_type = 'unified'
-        highlight_fields[field.name] = {
-            'type': highlight_type,
-            'fragment_size': 1,
-        }
-    
-    highlight_specs = {
-        'number_of_fragments': 100,
-        'fields':  highlight_fields,
-    }
+    fieldnames = [field.name for field in fields]
 
     has_length_count = lambda field: 'fields' in field.es_mapping and 'length' in field.es_mapping['fields']
     include_token_count = all(has_length_count(field) for field in fields)
@@ -379,25 +357,51 @@ def extract_data_for_term_frequency(corpus, search_fields = None):
     else:
         token_count_aggregators = None
 
-    return highlight_specs, token_count_aggregators
+    return fieldnames, token_count_aggregators
 
-def get_match_count(es_client, query, corpus, size, highlight_specs):
-    highlight_results = search(
+def get_match_count(es_client, es_query, corpus, size, fieldnames):
+    results = search(
         corpus = corpus,
-        query_model= query,
+        query_model = es_query,
         client = es_client,
         size = size,
-        highlight = highlight_specs
+        track_total_hits = True,
     )
 
-    highlight_hits = [hit for hit in hits(highlight_results) if 'highlight' in hit]
-    highlight_matches = (sum(len(hit['highlight'][key])
-        for hit in highlight_hits for key in hit['highlight'].keys()
-    ))
-    skipped_docs = total_hits(highlight_results) - len(list(highlight_hits))
-    match_count = highlight_matches + skipped_docs
+    found_hits = hits(results)
+    index = get_index(corpus)
+    query_text = query.get_query_text(es_query)
+
+    matches = sum(
+        count_matches_in_document(hit['_id'], index, fieldnames, query_text, es_client)
+        for hit in found_hits
+    )
+
+    skipped_docs = total_hits(results) - len(found_hits)
+    match_count = matches + skipped_docs
 
     return match_count
+
+def count_matches_in_document(id, index, fieldnames, query_text, es_client):
+    # get the term vectors for the hit
+    result = es_client.termvectors(
+        index=index,
+        id=id,
+        fields = fieldnames
+    )
+
+    # whether the query contains multi-word phrases
+    match_phrases = '"' in query_text
+
+    matches = 0
+
+    for field in fieldnames:
+        terms = termvectors.get_terms(result, field)
+        tokens = termvectors.get_tokens(terms, sort = match_phrases)
+        matches += sum(1 for match in termvectors.token_matches(tokens, query_text, index, field, es_client))
+
+    return matches
+
 
 def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators):
     if token_count_aggregators:
@@ -410,7 +414,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     )
 
     doc_count = total_hits(results)
-    
+
     if token_count_aggregators:
         token_count = int(sum(
             results['aggregations'][counter]['value']
@@ -424,13 +428,11 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
 
-    fields = query.get_search_fields(es_query)
-
-    # highlighting specifications (used for counting hits), and token count aggregators (for total word count)
-    highlight_specs, token_count_aggregators = extract_data_for_term_frequency(corpus, fields)
+    # field specifications (used for counting hits), and token count aggregators (for total word count)
+    fieldnames, token_count_aggregators = extract_data_for_term_frequency(corpus, es_query)
 
     # count number of matches
-    match_count = get_match_count(client, deepcopy(es_query), corpus, size, highlight_specs)
+    match_count = get_match_count(client, deepcopy(es_query), corpus, size, fieldnames)
 
     # get total document count and (if available) token count for bin
     agg_query = query.remove_query(es_query) #remove search term filter
@@ -442,7 +444,6 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
     # filter for relevant value
     term_filter = query.make_term_filter(field_name, field_value)
     es_query = query.add_filter(es_query, term_filter)
-    es_query['track_total_hits'] = True
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 

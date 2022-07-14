@@ -95,6 +95,28 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def document_context(self):
+        '''
+        A dictionary that specifies how documents can be grouped into a "context". For example,
+        parliamentary speeches may be grouped into debates. The dictionary has two keys:
+        - `'context_fields'`: a list of the `name`s of the fields that can be used to
+        group documents. The context of a document is the set of documents that match
+        its value for all the listed fields.
+        - `'sort_field'`: the `name` of the field by which documents can be sorted
+        within their respective group. The field should be marked as `sortable`. If `None`,
+        no sorting will be applied.
+        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
+        - `'context_display_name'`: The display name for the context used in the interface. If
+        `None`, use the displayName of the first context field.
+        '''
+
+        return {
+            'context_fields': None,
+            'sort_field': None,
+            'context_display_name': None
+        }
+
+    @property
     def image(self):
         '''
         Absolute url to static image.
