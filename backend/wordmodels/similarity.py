@@ -36,6 +36,11 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     ]
     return output_terms
 
+def query_vector(query_term, transformer, matrix):
+    query_index = next(
+            (i for i, a in enumerate(transformer.get_feature_names())
+             if a == query_term), None)
+    return matrix[:, query_index]
 
 def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     """given a matrix of svd_ppmi values,
@@ -43,10 +48,7 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     of the terms matching the query term best over the whole corpus,
     determine the similarity for each time interval
     """
-    query_index = next(
-            (i for i, a in enumerate(transformer.get_feature_names())
-             if a == query_term), None)
-    query_vec = matrix[:, query_index]
+    query_vec = query_vector(query_term, transformer, matrix)
     for item in word_data:
         index = next(
             (i for i, a in enumerate(transformer.get_feature_names())

@@ -622,7 +622,9 @@ def api_get_related_words_time_interval():
 @login_required
 def api_get_2d_contexts_over_time():
     corpus = request.args.get('corpus')
-    term = request.args.get('term')
+    term = request.args.get('query_term')
+
+    print(corpus, term)
 
     if not corpus and term:
         abort(400)

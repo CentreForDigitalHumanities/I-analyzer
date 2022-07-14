@@ -4,6 +4,7 @@ import pickle
 
 from addcorpus.load_corpus import corpus_dir
 from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
+from wordmodels.decompose import map_to_2d
 import random
 
 from flask import current_app
@@ -78,29 +79,21 @@ def get_2d_context(query_term, model, number_similar = NUMBER_SIMILAR):
     and 'y'(float, y-coordinate). Coordinates are scaled within [-1, 1].
     """
 
-    return [
-        {
-            'label': 'test',
-            'x': 0.0,
-            'y': 0.0
-        },
-        {
-            'label': 'test2',
-            'x': random.random(),
-            'y': random.random()
-        },
-        {
-            'label': 'test3',
-            'x': -0.8,
-            'y': 0.7
-        },
-        {
-            'label': 'test4',
-            'x': 0.2,
-            'y': -0.3
-        }
-    ]
+    neighbours = find_n_most_similar(model['svd_ppmi'], model['transformer'], query_term, number_similar + 1)
+    # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
+    # i.e. for 10 neighbours, we have to specify number_similar = 11
 
+    if not neighbours:
+        return [ {
+            'label': query_term,
+            'x': 0.0,
+            'y': 0.0,
+        }]
+
+    words = [query_term] + [item['key'] for item in neighbours]
+    result = map_to_2d(words, model)
+
+    return result
 
 
 def get_2d_contexts_over_time(query_term, corpus, number_similar = NUMBER_SIMILAR):
