@@ -1,4 +1,4 @@
-from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 from sklearn.preprocessing import minmax_scale
 import numpy as np
 import random
@@ -12,8 +12,8 @@ def map_to_2d(words, model):
     return [
         {
             'label': word,
-            'x': scaled[i, 0],
-            'y': scaled[i, 1],
+            'x': float(scaled[i, 0]),
+            'y': float(scaled[i, 1]),
         }
         for i, word in enumerate(words)
     ]
@@ -27,10 +27,8 @@ def make_2d(words, model):
         for term in words
     ])
 
-    pca = PCA(n_components=2)
-    pca.fit(data)
-
-    return pca.transform(data)
+    tsne = TSNE(n_components=2)
+    return tsne.fit_transform(data)
 
 def scale_values(values):
     """

@@ -19,8 +19,10 @@ def test_2d_context_format(test_app):
     for item in data:
         assert set(item.keys()) == {'label', 'x', 'y'}
         assert type(item['label']) == str
-        assert item['x'] >= -1 and item['x'] <= 1
-        assert item['y'] >= -1 and item['y'] <= 1
+        x = round(item['x'], 5)
+        y = round(item['y'], 5)
+        assert x >= -1 and x <= 1
+        assert y >= -1 and y <= 1
 
 def test_2d_context(test_app):
     data = get_context_in_timeframe(test_app, 'elizabeth')
