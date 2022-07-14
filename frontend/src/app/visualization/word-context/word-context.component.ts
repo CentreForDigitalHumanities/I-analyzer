@@ -33,11 +33,11 @@ export class WordContextComponent implements OnChanges {
         aspectRatio: 1,
         scales: {
             x: {
-                min: -1.1, max: 1.1,
+                min: -1.2, max: 1.2,
                 display: false,
             },
             y: {
-                min: -1.1, max: 1.1,
+                min: -1.2, max: 1.2,
                 display: false,
             }
         },

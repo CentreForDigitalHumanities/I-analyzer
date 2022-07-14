@@ -629,7 +629,7 @@ def api_get_2d_contexts_over_time():
     if not corpus and term:
         abort(400)
 
-    results = wordmodel_visualisations.get_2d_contexts_over_time(term, corpus)
+    results = wordmodel_visualisations.get_2d_contexts_over_time(term, corpus, 15)
 
     if isinstance(results, str):
         response = jsonify({
