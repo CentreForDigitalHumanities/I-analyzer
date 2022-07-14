@@ -30,6 +30,8 @@ export class FreqtableComponent implements OnChanges {
         this.checkWideFormat();
 
         this.formatData();
+
+        console.log(this.data);
     }
 
     checkWideFormat(): void {

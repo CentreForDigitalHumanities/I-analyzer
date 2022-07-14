@@ -44,6 +44,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         ngram: 'Neighbouring words',
         wordcloud: 'Most frequent words',
         relatedwords: 'Related words',
+        wordcontext: 'Word context',
     };
     public manualPages = {
         ngram: 'ngrams',
@@ -51,6 +52,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         wordcloud: 'wordcloud',
         resultscount: 'numberofresults',
         termfrequency: 'termfrequency',
+        wordcontext: 'wordcontext'
     };
 
 
@@ -81,7 +83,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
             const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
             const filteredTypes = visualisationTypes.filter(visType => {
-                const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
+                const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords', 'wordcontext']
                     .find(vis => vis === visType);
                 const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
                 const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;

@@ -1,0 +1,7 @@
+<div class="block" [class.is-hidden]="asTable">
+    <canvas id="context-chart" role="img"></canvas>
+</div>
+
+<div class="block" *ngIf="asTable">
+    <ia-freqtable [headers]="tableHeaders" [data]="tableData" name="context"></ia-freqtable>
+</div>

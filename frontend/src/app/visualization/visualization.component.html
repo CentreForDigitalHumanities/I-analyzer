@@ -24,7 +24,7 @@
                 <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
                     Count frequencies in:
                 </span>
-                <span *ngIf="visualizationType == 'relatedwords'">
+                <span *ngIf="visualizationType == 'relatedwords' || visualizationType == 'wordcontext'">
                     Use word models trained on:
                 </span>
             </label>
@@ -86,6 +86,8 @@
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
+            <ia-word-context  *ngSwitchCase=" 'wordcontext' " [corpus]="corpus" [queryModel]="queryModel"
+                [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-word-context>
         </ng-container>
     </div>
 </ng-container>

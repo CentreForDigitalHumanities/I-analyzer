@@ -134,7 +134,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
-            visualizations=['wordcloud', 'ngram', 'relatedwords'],
+            visualizations=['wordcloud', 'ngram', 'relatedwords', 'wordcontext'],
             extractor=extract.XML(tag='content')
         ),
     ]

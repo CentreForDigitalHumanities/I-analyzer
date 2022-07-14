@@ -28,7 +28,11 @@
     },
     {
         "id": "relatedwords",
-        "title": "Related Words Query"
+        "title": "Related Words visualization"
+    },
+    {
+        "id": "wordcontext",
+        "title": "Word context visualization"
     },
     {
         "id": "download",

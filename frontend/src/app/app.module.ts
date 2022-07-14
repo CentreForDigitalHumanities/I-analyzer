@@ -71,6 +71,7 @@ import { barchartOptionsComponent } from './visualization/barchart/barchart-opti
 import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
+import { WordContextComponent } from './visualization/word-context/word-context.component';
 
 
 const appRoutes: Routes = [
@@ -174,6 +175,7 @@ export const declarations: any[] = [
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
+    WordContextComponent,
 ];
 
 export const imports: any[] = [

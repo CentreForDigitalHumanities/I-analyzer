@@ -14,6 +14,6 @@ class MockCorpus(Corpus):
     fields = [
         Field(
             name = 'content',
-            visualizations=['relatedwords']
+            visualizations=['relatedwords', 'wordcontext']
         )
     ]
