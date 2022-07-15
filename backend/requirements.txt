@@ -20,7 +20,7 @@ celery==5.2.7
     # via -r requirements.in
 certifi==2022.6.15
     # via
-    #   elastic-transport
+    #   elasticsearch
     #   requests
 charset-normalizer==2.1.0
     # via requests
@@ -39,9 +39,7 @@ click-repl==0.2.0
     # via celery
 coverage==6.4.1
     # via -r requirements.in
-elastic-transport==8.1.2
-    # via elasticsearch
-elasticsearch==8.0.0
+elasticsearch==7.17.4
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
@@ -155,7 +153,7 @@ typing-extensions==4.3.0
     # via pypdf2
 urllib3==1.26.9
     # via
-    #   elastic-transport
+    #   elasticsearch
     #   requests
     #   responses
 vine==5.0.0
