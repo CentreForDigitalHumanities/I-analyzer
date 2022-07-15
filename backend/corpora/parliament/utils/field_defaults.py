@@ -64,6 +64,7 @@ def date():
         ),
         visualizations=['resultscount', 'termfrequency'],
         primary_sort=True,
+        csv_core=True,
     )
 
 def date_is_estimate():
@@ -200,7 +201,8 @@ def speech():
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
-        visualizations=['wordcloud', 'ngram']
+        visualizations=['wordcloud', 'ngram'],
+        csv_core=True,
     )
 
 def speech_id():
@@ -210,6 +212,7 @@ def speech_id():
         display_name='Speech ID',
         description='Unique identifier of the speech',
         es_mapping=BASIC_KEYWORD_MAPPING,
+        csv_core=True,
     )
 
 def speaker():
@@ -230,7 +233,8 @@ def speaker():
         },
         results_overview=True,
         search_field_core=True,
-        visualizations=['resultscount', 'termfrequency']
+        visualizations=['resultscount', 'termfrequency'],
+        csv_core=True,
     )
 
 def speech_type():
@@ -439,6 +443,7 @@ def sequence():
         es_mapping={'type': 'integer'},
         sortable=True,
         searchable=False,
+        csv_core=True,
     )
 
 def url():
