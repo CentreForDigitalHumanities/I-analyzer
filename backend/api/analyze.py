@@ -23,17 +23,22 @@ def make_wordcloud_data(documents, field):
     texts = []
     cleanfield = str(field + '.clean')
     for document in documents:
-        try:  # see if there is a stopword-free field, else use normal field
+        try:  # see if there is a stopword-free field, else use normal
             content = document['_source'][cleanfield]
         except:
             content = document['_source'][field]
         if content and content != '':
             texts.append(content)
-    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
-    counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names()
-    output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
+
+    from collections import Counter
+
+    # token_pattern allows 2 to 30 characters now (exluding numbers and whitespace)
+    cv = CountVectorizer(analyzer='word', max_df=1, token_pattern=r'(?u)\b[^0-9\s]{2,30}\b', max_features=50)
+    cvtexts = cv.fit_transform(texts)
+    counts = cvtexts.sum(axis=0).A1
+    words = list(cv.get_feature_names())
+    freq_distribution = Counter(dict(zip(words, counts)))
+    output = [{'key': word, 'doc_count': freq_distribution[word]} for word in words]
     return output
 
 
