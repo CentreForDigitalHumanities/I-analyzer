@@ -30,15 +30,13 @@ def make_wordcloud_data(documents, field):
         if content and content != '':
             texts.append(content)
 
-    from collections import Counter
-
     # token_pattern allows 2 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(analyzer='word', max_df=1, token_pattern=r'(?u)\b[^0-9\s]{2,30}\b', max_features=50)
+    cv = CountVectorizer(max_df=1.0, token_pattern=r'(?u)\b[^0-9\s]{2,30}\b', max_features=50)
     cvtexts = cv.fit_transform(texts)
     counts = cvtexts.sum(axis=0).A1
     words = list(cv.get_feature_names())
     freq_distribution = Counter(dict(zip(words, counts)))
-    output = [{'key': word, 'doc_count': freq_distribution[word]} for word in words]
+    output = [{'key': word, 'doc_count': int(freq_distribution[word])} for word in words]
     return output
 
 
