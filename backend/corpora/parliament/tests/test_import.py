@@ -35,9 +35,9 @@ CORPUS_TEST_DATA = [
             "date" : "1881-01-11",
             "date_is_estimate" : False,
             "debate_id" : "1881-01-11",
-            "debate_type" : "",
+            "debate_type" : None,
             "era" : "3Rd Republic",
-            "legislature" : "",
+            "legislature" : None,
             "page" : "7",
             "page_source" : "X0000007.xml",
             "sequence" : "0",
@@ -130,7 +130,7 @@ Perin.
 M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et en mon nom personnel, demander à la Chambre de repousser la proposition d'ajournement qui vient d'être faLe pac noire honorable président. (Très bien ! très bien ! à droite et à l'extrême gauche.) Autant qu'il m'a été permis de l'entendre au milieu du bruit, je crois que la seule raison que notre honorable président ait fait valoir 7our justifier sa proposition, c'est que nous n enous pas en nombre.""",
             "id" : "3rd_republic_0",
             "url" : "http://gallica.bnf.fr/ark:/12148/bpt6k64418203",
-            "url_html": ""
+            "url_html": None
         }],
         'n_documents': 5
     },
@@ -144,12 +144,12 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'debate_id': '7',
             'speaker': 'Gebhard Seelos',
             'speaker_id': '11002141',
-            'speaker_aristocracy': '',
+            'speaker_aristocracy': None,
             'speaker_academic_title': 'Dr.',
             'speaker_birth_country': 'Deutschland',
             'speaker_birthplace': 'München',
-            'speaker_birth_year': '1901',
-            'speaker_death_year': '1984',
+            'speaker_birth_year': 1901,
+            'speaker_death_year': 1984,
             'speaker_gender': 'male',
             'speaker_profession': 'Dipl.-Volkswirt, Jurist, Diplomat, Staatsrat a. D.',
             'role': 'Member of Parliament',
@@ -217,14 +217,14 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'date': '1872-02-06',
             'chamber': 'House of Commons',
             'debate_title': 'New Writs During The Recess',
-            'debate_id': '',
+            'debate_id': None,
             'speech': "acquainted the House, —that he had issued Warrants for New Writs, for Truro, v. Hon. John Cranch Walker Vivian, Under Secretary to the Eight hon. Edward Cardwell; for Plymouth, Sir Robert Porrett Collier, knight, one of the Justices of the Court of Common Pleas; Dover, George Jessel, esquire, Solicitor General; York County (West Riding, Northern Division), Sir Francis Crossley, baronet, deceased; Limerick City, Francis William Russell, esquire, deceased; Galway County, Eight hon. William Henry Gregory, Governor and Commander in Chief of the Island of Ceylon and its dependencies; Kerry, Eight hon. Valentine Augustus Browne, commonly called Viscount Castlerosse, now Earl of Kenmare.",
             'id': 'guldi_c19_365565',
             'speaker': 'Mr. Speaker',
-            'speaker_id': '',
-            'speech_type': '',
-            'topic': '',
-            'subtopic': '',
+            'speaker_id': None,
+            'speech_type': None,
+            'topic': None,
+            'subtopic': None,
             'sequence': '365565'
         },
         {
@@ -243,6 +243,29 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             'sequence': '0'
         }],
         'n_documents': 2
+    },
+    {
+        'name': 'parliament-sweden',
+        'docs': [
+            {
+                'date': '2021-09-14',
+                'date_is_estimate': None,
+                'chamber': 'Riksdag',
+                'speech': 'Ärade ledamöter! Varmt välkomna tillbaka till riksdagen! Det känns stort att få välkomna er här på tröskeln till det fjärde riksmötet den här mandatperioden. Vi har ännu ett mycket speciellt arbetsår bakom oss, till stor del präglat av pandemin. Även om vi visste att det inte var helt över för ett år sedan tror jag att vi var många som hoppades att en tydligare vändning var på väg. Så blev det inte. I stället fick vi ytterligare ett riksdagsår med ett reducerat antal ledamöter vid voteringar och utskottsarbete till stor del på distans. Men förhoppningsvis börjar vi nu gå tillbaka mot mer normala arbetsformer. Ett tydligt tecken på detta är att alla 349 ledamöter kommer att vara med vid riksmötets öppnande i eftermiddag. Jag tycker att det är angeläget att riksdagens och regeringens alla ledamöter kan vara på plats vid denna högtidliga och viktiga ceremoni, särskilt som detta är det sista öppnandet under den här mandatperioden. Däremot genomförs inget upprop nu på förmiddagen, och vi vidtar den försiktighetsåtgärden att drygt en tredjedel av ledamöterna och statsråden får sitta på läktaren under ceremonin. Formerna beslutades av mig efter diskussion med gruppledarna och de vice talmännen redan i början av augusti, alltså långt innan det blev bestämt att alla ledamöter får delta i voteringar efter riksmötets öppnande. Jag såg inget skäl att med kort varsel börja ändra i planeringen för riksmötets öppnande, så just denna speciella dag får inte alla ledamöter sitta nere på golvet här i kammaren . M en från och med riksmötets första votering sitter var och en på sin plats och röstar igen på vanligt sätt. Även om pandemin inte är över är situationen i Sverige ändå en helt annan nu än för ett år sedan. Därför har vi – talmanspresidiet och gruppledarna – gjort bedömningen att det är möjligt att samla fler personer än förra året men ändå långt färre än ett vanligt år. Vi har försökt finna en så god balans som möjligt mellan nödvändiga säkerhetsåtgärder, riksdagsordningens bestämmelser och respekt för traditionen. Den sedvanliga mottagningen i Sammanbindningsbanan är som bekant inställd, och det genomförs heller inte någon konsert i Konserthuset. Jag är glad över att vi också kommer att få hjälp att minnas dessa föregångare och förebilder genom att de får en permanent plats på Riksplan i form av en staty. Här tillkommer det att det i trapphallen i Östra riksdagshuset kommer att invigas en tavla som föreställer de här fem pionjärerna. Statyn dröjer ett tag – den kommer att invigas nästa år – men redan i kväll vill riksdagen på dagen för riksmötets öppnande, denna demokratins högtidsdag, uppmärksamma demokratijubileet med att lysa upp Stockholmsnatten med ett ljusspel. Jag kommer att tända en fasadbelysning på Östra riksdagshuset vid en webbsänd ceremoni klockan 20. Ljusspelet kan sedan ses varje kväll till och med den 20 september. Men demokratifirandet tar inte slut där. Vad passar väl bättre på FN:s demokratidag den 15 september än att fira med ett seminarium? I morgon anordnar riksdag och regering seminariet 100 år av demokrati – vilka lärdomar tar vi med oss? Se det gärna på riksdagen.se! Efter riksmötets öppnande tror jag att vi alla ser fram emot ett nytt arbetsår i riksdagen under något mer normala former. Jag har ju, som ni alla vet, tillsammans med gruppledarna slutit en ny överenskommelse om arbetsformerna under hösten, och gruppledarna har också beslutat att inte förlänga överenskommelsen om 55 närvarande ledamöter vid voteringar. Alla ledamöter kan alltså delta vid voteringarna, men vi behåller möjligheten att delta på distans vid utskottens sammanträden. Varje utskott avgör när det är motiverat att hålla fysiska sammanträden, och när man deltar fysiskt planerar vi för att det ska gå att hålla avstånd. Vi ska däremot fortsätta hjälpas åt att hålla antalet externa besök i riksdagens hus nere. Externa åhörare vid olika arrangemang bör undvikas liksom guidade visningar och mingelsituationer. Pandemin är inte över. Vi fortsätter att anpassa verksamheten när och om det behövs, men förhoppningsvis går vi mot ett mer normalt läge. Ärade ledamöter! Det här har varit en mandatperiod som ingen annan. Jag tror inte att någon hade kunnat förutse de många olika, oväntade och delvis dramatiska händelser som har inträffat. Jag tänker naturligtvis i första hand på pandemin och alla dess konsekvenser men även på de två regeringsbildningarna. Och då är det ändå ett helt år kvar av mandatperio ­ den. Jag tror att vi alla kan se fram emot ännu ett händelserikt och spännan ­ de riksdagsår fram till valet. Vi vet i alla fall att det i början av november blir den tredje regeringsbildningen under den här mandatperioden. Oavsett hur man ser på det politiska läget vill jag framhålla, apropå just demokratijubileet, att regeringsbildningarna inte har inneburit någon kris för demokratin. Svensk demokrati står stark, och den är värd att fira. Alla aktörer har i regeringsbildningsprocesserna använt de olika verktyg som finns i den demokratiska, parlamentariska verktygslådan. Misstroendeomröstning, beslut att inte utlysa extraval och talmansrundor – allt sådant följer av de lagar som vi har skapat för vår demokrati. Skeendet må vara turbulent i vissa stycken, men det följer demokratins spelregler. Ärade ledamöter! Jag vill avsluta med några rader ut dikten Sommaren i Sverige av Werner Aspenström. Den skildrar på ett fint sätt vemodet och skönheten när sommaren går mot sitt slut. Då landar på min hand den förgänglighetens tanke som vi kallar trollslända. Ett gult löv lösgör sig och faller klingande mot marken. Sommaren måste hastigt bärgas. … Ty hösten närmar sig med toppeld i asparna. Låt mig nu önska er en fin höst och ett produktivt arbetsår. På återseende här i kammaren klockan 14! Stockholms kommun Stockholms län Södermanlands län Jönköpings län Kronobergs län Blekinge län Hallands län Göteborgs kommun Värmlands län Jämtlands län Norrbottens län EU-dokument Åttaveckorsfristen för att avge ett motiverat yttrande skulle gå ut den 5 november . EU-dokument Följande frågor för skriftliga svar hade framställts: 2020/21:3636 Amorteringskravet och ojämställd bostadsmarknad 2020/21:3637 Den kinesiske ambassadörens agerande 2020/21:3638 Vaccin 2020/21:3639 Lukasjenkos tillgång till 1 miljard dollar från IMF 2020/21:3640 Markering mot Irans idrottsminister 2020/21:3642 Kriminalitet på bostadsmarknaden Skriftliga svar på följande frågor hade kommit in: 2020/21:3535 Barns rätt till säkerställda skyddade boenden 2020/21:3537 Elbrist som hotar investeringar i Sverige 2020/21:3538 Åtgärder för att trygga boende',
+                'sequence': '0',
+                'id': 'i-2a00eff84ce04676-0',
+                'speaker': 'Andreas Norlén',
+                'speaker_gender': 'man',
+                'role': 'Sveriges riksdags talman',
+                'ministerial_role': None,
+                'party': None,
+                'speaker_birth_year': 1973,
+                'speaker_death_year': None,
+                'speaker_constituency': None,
+                'speaker_id': 'Q4755577'
+            },
+        ],
+        'n_documents': 5,
     }
 ]
 
@@ -251,16 +274,17 @@ def test_imports(test_app, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
     docs = get_documents(corpus)
+
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
             assert key in doc
             assert doc[key] == target[key]
 
-    for key in doc:
-        if not key in target:
-            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
-            warnings.warn(message)
+        for key in doc:
+            if not key in target:
+                message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+                warnings.warn(message)
 
     docs = get_documents(corpus)
     assert len(list(docs)) == corpus_object.get('n_documents')
