@@ -56,7 +56,7 @@ class UnittestConfig:
     PP_SWEDEN_IMAGE = 'sweden.jpg'
     PP_SWEDEN_OLD_INDEX = 'parliament-sweden-old'
     PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
-    PP_SWEDEN_OLD_IMAGE = 'sweden.jpg'
+    PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
 
     # Elasticsearch settings for People & Parliament corpora
     PP_ES_SETTINGS = {
