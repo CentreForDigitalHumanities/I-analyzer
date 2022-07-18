@@ -132,7 +132,7 @@ If you have a page range for a larger section that contains the speech, but not 
 
 If provided, a url where the user can find the source document.
 
-If the dataset includes more than one type of url (e.g. both a PDF and HTML file) and they are not mutually exclusive, add multiple fields based on the `url()` base field. Adjust the names and descriptions to specify the file type. You will need to adjust the name of the fields in the index as well. For consistency with other corpora, let one field keep the `url` name, and name other fields `url_{subtype}`, e.g. `url` and `url_html`. See the France corpus for an example.
+If the dataset includes more than one type of url (e.g. both a PDF and HTML file) and they are not mutually exclusive, add multiple fields based on the `url()` base field. Adjust the display names and descriptions to specify the file type. You will need to adjust the name of the fields in the index as well. For consistency with other corpora, let one field keep the `url` name, and name other fields `url_{subtype}`, e.g. `url` and `url_html`. See the France corpus for an example.
 
 ### Sequence
 
@@ -140,4 +140,4 @@ This indicates the order of debates within a speech. To view a debate in order, 
 
 Since their primary purpose is sorting, it is fine if the sequence skips numbers.
 
-If the unit of your documents is pages in books rather than speeches, you may still use this field but adjust the name.
+If the unit of your documents is pages in books rather than speeches, you may still use this field but adjust the description.
