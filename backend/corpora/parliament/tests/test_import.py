@@ -269,7 +269,10 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
     }
 ]
 
-@pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA)
+def corpus_test_name(corpus_spec):
+    return corpus_spec['name']
+
+@pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
 def test_imports(test_app, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
