@@ -266,6 +266,41 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             },
         ],
         'n_documents': 5,
+    },
+    {
+        'name': 'parliament-sweden-old',
+        'docs': [
+            {
+                'book_id': 'bn_1828-30_1__01',
+                'book_label': 'Hederwärda bonde-ståndets protokoller wid lagtima riksdagen i Stockholm åren 1828 och 1829. Första bandet.',
+                'era': 'Ståndsriksdagen',
+                'chamber': 'Bönder',
+                'date_earliest': '1828-01-01',
+                'date_latest': '1828-12-31',
+                'speech': '''Hederwärdo
+
+Bonde-Ständcts
+
+Protokoller
+
+wid
+
+LagMa Riksdagen i Stockhol».
+
+Ä«tt 1828 och I82t,
+
+första Lander.
+
+STOCKHOLM,
+
+Kongl. Ordens-Böktryckeriet, I8Z9.''',
+                'page': '0',
+                'sequence': '01',
+                'url': 'https://weburn.kb.se/riks/ståndsriksdagen/pdf/bn_1828-30_1_/bn_1828-30_1__01.pdf',
+                'url_xml': 'https://weburn.kb.se/riks/ståndsriksdagen/xml/bn_1828-30_1_/bn_1828-30_1__01.xml',
+            }
+        ],
+        'n_documents': 10
     }
 ]
 

@@ -52,7 +52,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         field='book_label'
     )
 
-    era = field_defaults.era()
+    era = field_defaults.era(include_aggregations= False)
     era.extractor = CSV(
         field='parliament'
     )
