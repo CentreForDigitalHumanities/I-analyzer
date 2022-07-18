@@ -41,7 +41,7 @@ def format_chamber(chamber):
     return chamber
 
 class ParliamentSweden(Parliament, CSVCorpus):
-    title = 'People and Parliament (Sweden)'
+    title = 'People and Parliament (Sweden 1920-2022)'
     description = 'Speeches from the Riksdag'
     min_date = datetime(year=1920, month=1, day=1)
     data_directory = current_app.config['PP_SWEDEN_DATA']
