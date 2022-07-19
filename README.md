@@ -33,6 +33,8 @@ See the documentation for [a more extensive overview](./documentation/Overview.m
 * [ElasticSearch](https://www.elastic.co/)
 * [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
 
+If you wish to have email functionality, also make sure you have an email server set up, such as [maildev](https://maildev.github.io/maildev/).
+
 The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
 ## First-time setup
@@ -83,8 +85,9 @@ See the documentation for more information about [indexing on the server](./docu
 
 1. Start your local elasticsearch server. If you installed from .zip or .tar.gz, this can be done by running `{path your your elasticsearch folder}/bin/elasticsearch`
 2. Activate your python environment. From `/backend`, start flask by running `flask run`. This creates an instance of the Flask server at `127.0.0.1:5000`.
-3. If you want to use celery, activate your python environment. From the backend folder, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info`. Celery is used for long downloads and the word cloud and ngrams visualisations. If you do not intend to use these functions, you can leave it out.
-4. Start the frontend by going to `/frontend` and running `yarn start`
+3. (optional) If you want to use celery, activate your python environment. From the backend folder, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info`. Celery is used for long downloads and the word cloud and ngrams visualisations.
+4. (optional) If you want to use email functionality, start your local email server.
+5. Start the frontend by going to `/frontend` and running `yarn start`
 
 ## Notes for development
 
