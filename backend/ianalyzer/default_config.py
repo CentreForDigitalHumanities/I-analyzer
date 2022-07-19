@@ -141,8 +141,10 @@ PP_FR_IMAGE = 'france.jpeg'
 
 # Celery configuration
 CELERY_BROKER_URL = 'amqp://'
+
 CELERY_BACKEND = 'rpc://'
-CSV_FILES_PATH = 'api/csv_files'
+CSV_FILES_PATH = '<abs_path_to_backend>/api/csv_files' #replace this path with the absolute path to backend/api/csv_files
+
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization

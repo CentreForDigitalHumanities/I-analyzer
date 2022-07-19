@@ -19,6 +19,7 @@ class UnittestConfig:
         'parliament-germany-new': os.path.join(here, 'germany-new.py'),
         'parliament-germany-old': os.path.join(here, 'germany-old.py'),
         'parliament-france': os.path.join(here, 'france.py'),
+        'parliament-sweden': os.path.join(here, 'sweden.py'),
     }
 
     SERVERS = {
@@ -49,6 +50,9 @@ class UnittestConfig:
     PP_FR_INDEX = 'parliament-france'
     PP_FR_DATA = os.path.join(here, 'tests', 'data', 'france')
     PP_FR_IMAGE = 'france.jpeg'
+    PP_SWEDEN_INDEX = 'parliament-sweden'
+    PP_SWEDEN_DATA = os.path.join(here, 'tests', 'data', 'sweden')
+    PP_SWEDEN_IMAGE = 'sweden.jpg'
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
