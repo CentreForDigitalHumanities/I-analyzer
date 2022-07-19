@@ -88,7 +88,7 @@ joblib==1.1.0
     # via scikit-learn
 kombu==5.2.4
     # via celery
-lxml==4.6.5
+lxml==4.9.1
     # via
     #   -r requirements.in
     #   python3-saml

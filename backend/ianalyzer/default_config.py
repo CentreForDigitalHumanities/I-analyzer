@@ -167,7 +167,8 @@ PP_ES_SETTINGS = {
 # Celery configuration
 CELERY_BROKER_URL = 'redis://'
 CELERY_BACKEND = 'redis://'
-CSV_FILES_PATH = 'api/csv_files'
+CSV_FILES_PATH = '<abs_path_to_backend>/api/csv_files'
+
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 
 # Word model information for related words visualization

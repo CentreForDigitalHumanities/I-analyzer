@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
-import { CorpusField } from '../models/index';
+import { Corpus, CorpusField } from '../models/index';
 
 import * as _ from "lodash";
 
@@ -15,6 +15,7 @@ export class SelectFieldComponent implements OnChanges {
     @Input() public selectAll: boolean;
     @Input() public showSelectedFields: boolean;
     @Input() public fieldsFromParams: CorpusField[];
+    @Input() public corpus: Corpus;
     @Output() selectedFields = new EventEmitter<CorpusField[]>();
     public allVisible: boolean = false;
     public selectedQueryFields: CorpusField[];
@@ -31,10 +32,10 @@ export class SelectFieldComponent implements OnChanges {
             else if (this.fieldsFromParams === undefined) {
                 this.selectedQueryFields = [];
             }
-        } 
+        }
         if (this.fieldsFromParams !== undefined) {
             this.selectedQueryFields = this.fieldsFromParams;
-        }     
+        }
     }
 
     public toggleAllFields() {
@@ -62,6 +63,6 @@ export class SelectFieldComponent implements OnChanges {
         }
         else {
             this.optionsFields = this.availableFields;
-        } 
+        }
     }
 }
