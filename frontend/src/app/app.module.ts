@@ -54,7 +54,7 @@ import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
-import { RelatedWordsComponent } from './visualization/related-words/related-words.component';
+import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
@@ -71,12 +71,18 @@ import { barchartOptionsComponent } from './visualization/barchart/barchart-opti
 import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
+import { WordModelsComponent } from './word-models/word-models.component';
 
 
 const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
+    },
+    {
+        path: 'word-models/:corpus',
+        component: WordModelsComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
@@ -174,6 +180,7 @@ export const declarations: any[] = [
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
+    WordModelsComponent,
 ];
 
 export const imports: any[] = [

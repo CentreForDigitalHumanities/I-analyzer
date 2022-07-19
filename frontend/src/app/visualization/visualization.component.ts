@@ -81,10 +81,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
             const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
             const filteredTypes = visualisationTypes.filter(visType => {
-                const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
+                const requiresSearchTerm = ['termfrequency', 'ngram']
                     .find(vis => vis === visType);
                 const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
-                const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;
+                const wordModelsSatisfied = visType !== 'relatedwords';
                 return searchTermSatisfied && wordModelsSatisfied;
             });
             filteredTypes.forEach(visType =>

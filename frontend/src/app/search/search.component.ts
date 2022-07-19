@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
+import { faDiagramProject, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 const HIGHLIGHT = 200;
 
@@ -69,6 +70,10 @@ export class SearchComponent implements OnInit {
     private activeFilters: SearchFilter<SearchFilterData> [] = [];
 
     public highlight: number = HIGHLIGHT;
+
+    searchIcon = faMagnifyingGlass;
+    wordModelsIcon = faDiagramProject;
+
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
