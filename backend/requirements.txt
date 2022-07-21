@@ -98,7 +98,7 @@ markupsafe==2.1.1
     #   jinja2
     #   mako
     #   wtforms
-mysqlclient==2.1.1
+mysqlclient==1.3.14
     # via -r requirements.in
 numpy==1.23.0
     # via
@@ -145,6 +145,8 @@ sqlalchemy==1.4.39
     # via
     #   alembic
     #   flask-sqlalchemy
+textdistance==4.3.0
+    # via -r requirements.in
 threadpoolctl==3.1.0
     # via scikit-learn
 tomli==2.0.1

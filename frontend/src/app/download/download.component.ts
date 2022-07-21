@@ -31,9 +31,9 @@ export class DownloadComponent implements OnChanges {
 
     ngOnChanges() {
         this.availableCsvFields = Object.values(this.corpus.fields).filter(field => field.downloadable);
-        const highlight = Object.values(this.corpus.fields).filter(field => field.searchable);
+        const highlight = this.queryModel.highlight;
         // 'Query in context' becomes an extra option if any field in the corpus has been marked as highlightable
-        if (highlight) {
+        if (highlight !== undefined) {
             this.availableCsvFields.push({
                 name: 'context',
                 description: 'Query surrounded by 50 characters',
@@ -45,7 +45,8 @@ export class DownloadComponent implements OnChanges {
                 primarySort: false,
                 searchable: false,
                 downloadable: true,
-                searchFilter: null
+                searchFilter: null,
+                mappingType: null,
             });
         }
     }
