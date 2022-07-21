@@ -4,14 +4,14 @@ Module contains WTForms to be presented to the user.
 
 import logging
 logger = logging.getLogger(__name__)
-from wtforms import TextField
+from wtforms import StringField
 from wtforms.widgets import PasswordInput
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from ianalyzer import models
 from api import security
 
-class PasswordField(TextField):
+class PasswordField(StringField):
 
     widget = PasswordInput(hide_value=True)
 

@@ -4,17 +4,15 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-alembic==1.0.10
+alembic==1.8.0
     # via flask-migrate
 amqp==5.1.1
     # via kombu
 async-timeout==4.0.2
     # via redis
-atomicwrites==1.3.0
+attrs==21.4.0
     # via pytest
-attrs==19.1.0
-    # via pytest
-beautifulsoup4==4.7.1
+beautifulsoup4==4.11.1
     # via -r requirements.in
 billiard==3.6.4.0
     # via celery
@@ -22,11 +20,11 @@ blinker==1.4
     # via flask-mail
 celery==5.2.7
     # via -r requirements.in
-certifi==2019.3.9
+certifi==2022.6.15
     # via
     #   elasticsearch
     #   requests
-chardet==3.0.4
+charset-normalizer==2.1.0
     # via requests
 click==8.1.3
     # via
@@ -41,15 +39,13 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-coverage==4.5.3
+coverage==6.4.1
     # via -r requirements.in
-defusedxml==0.6.0
-    # via python3-saml
 deprecated==1.2.13
     # via redis
-elasticsearch==7.17.1
+elasticsearch==7.17.4
     # via -r requirements.in
-et-xmlfile==1.0.1
+et-xmlfile==1.1.0
     # via openpyxl
 flask==2.0.0
     # via
@@ -66,7 +62,7 @@ flask-login==0.6.1
     # via -r requirements.in
 flask-mail==0.9.1
     # via -r requirements.in
-flask-migrate==2.5.1
+flask-migrate==3.1.0
     # via -r requirements.in
 flask-seasurf==1.1.1
     # via -r requirements.in
@@ -74,88 +70,86 @@ flask-sqlalchemy==2.5.1
     # via
     #   -r requirements.in
     #   flask-migrate
-idna==2.8
+greenlet==1.1.2
+    # via sqlalchemy
+idna==3.3
     # via requests
-isodate==0.6.0
+importlib-metadata==4.12.0
+    # via alembic
+importlib-resources==5.8.0
+    # via alembic
+iniconfig==1.1.1
+    # via pytest
+isodate==0.6.1
     # via python3-saml
 itsdangerous==2.1.2
     # via flask
-jdcal==1.4.1
-    # via openpyxl
 jinja2==3.1.2
     # via flask
 joblib==1.1.0
     # via scikit-learn
 kombu==5.2.4
     # via celery
-lxml==4.9.1
+lxml==4.6.5
     # via
     #   -r requirements.in
     #   python3-saml
     #   xmlsec
-mako==1.0.10
+mako==1.2.1
     # via alembic
 markupsafe==2.1.1
     # via
     #   jinja2
     #   mako
-more-itertools==7.0.0
-    # via pytest
+    #   wtforms
 mysqlclient==1.3.14
     # via -r requirements.in
-numpy==1.22.0
+numpy==1.23.0
     # via
     #   -r requirements.in
     #   scikit-learn
     #   scipy
-openpyxl==2.5.14
+openpyxl==3.0.10
     # via -r requirements.in
 packaging==21.3
-    # via redis
-pkgconfig==1.5.1
-    # via xmlsec
-pluggy==0.11.0
+    # via
+    #   pytest
+    #   redis
+pluggy==1.0.0
     # via pytest
-prompt-toolkit==3.0.29
+prompt-toolkit==3.0.30
     # via click-repl
-py==1.10.0
+py==1.11.0
     # via pytest
 pyparsing==3.0.9
     # via packaging
-pypdf2==1.27.5
+pypdf2==2.4.2
     # via -r requirements.in
-pytest==4.5.0
+pytest==7.1.2
     # via -r requirements.in
-python-dateutil==2.8.0
-    # via alembic
-python-editor==1.0.4
-    # via alembic
-python3-saml==1.10.1
+python3-saml==1.14.0
     # via -r requirements.in
 pytz==2022.1
     # via celery
 redis==4.3.4
     # via -r requirements.in
-requests==2.21.0
+requests==2.28.1
     # via
     #   -r requirements.in
     #   responses
-responses==0.10.6
+responses==0.21.0
     # via -r requirements.in
 scikit-learn==1.1.1
     # via -r requirements.in
 scipy==1.8.1
     # via scikit-learn
-six==1.12.0
+six==1.16.0
     # via
     #   click-repl
     #   isodate
-    #   pytest
-    #   python-dateutil
-    #   responses
-soupsieve==1.9.1
+soupsieve==2.3.2.post1
     # via beautifulsoup4
-sqlalchemy==1.3.3
+sqlalchemy==1.4.39
     # via
     #   alembic
     #   flask-sqlalchemy
@@ -163,19 +157,22 @@ textdistance==4.3.0
     # via -r requirements.in
 threadpoolctl==3.1.0
     # via scikit-learn
-urllib3==1.24.3
+tomli==2.0.1
+    # via pytest
+typing-extensions==4.3.0
+    # via pypdf2
+urllib3==1.26.9
     # via
     #   elasticsearch
     #   requests
+    #   responses
 vine==5.0.0
     # via
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.1.7
-    # via
-    #   prompt-toolkit
-    #   pytest
+wcwidth==0.2.5
+    # via prompt-toolkit
 werkzeug==2.0.0
     # via
     #   -r requirements.in
@@ -183,12 +180,13 @@ werkzeug==2.0.0
     #   flask-login
 wrapt==1.14.1
     # via deprecated
-wtforms==2.2.1
+wtforms==3.0.1
     # via
     #   -r requirements.in
     #   flask-admin
-xmlsec==1.3.3
+xmlsec==1.3.12
     # via python3-saml
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
+zipp==3.8.0
+    # via
+    #   importlib-metadata
+    #   importlib-resources
