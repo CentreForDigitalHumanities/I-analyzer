@@ -76,14 +76,12 @@ def date_is_estimate():
         es_mapping={'type':'boolean'}
     )
 
-
 def era():
     return Field(
         name='era',
         display_name='Era',
         description='The parliamentary era in which the speech or debate was held'
     )
-
 
 def chamber():
     "human-readable name of house (commons, senate, etc)"
@@ -97,6 +95,16 @@ def chamber():
             option_count=2
         ),
         visualizations = ['resultscount', 'termfrequency']
+    )
+
+def column():
+    "column number or range (used in UK data) (string)"
+    return Field(
+        name='column',
+        display_name='Column(s)',
+        description='Column(s) of the speech in the original document',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        searchable=False,
     )
 
 def debate_type():
@@ -155,6 +163,17 @@ def subtopic():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def sequence():
+    "integer index of the speech in a debate"
+    return Field(
+        name='sequence',
+        display_name='Sequence',
+        description='Index of the sequence of speeches in a debate',
+        es_mapping={'type': 'integer'},
+        sortable=True,
+        searchable=False,
+    )
+
 def session():
     """
     in which session the debate or speech occurred
@@ -167,6 +186,16 @@ def session():
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
+def source_archive():
+    """
+    A field which can be used to (internally) keep track of the source
+    of the specific dataset
+    """
+    return Field(
+        name='source_archive',
+        es_mapping={'type': 'keyword'},
+        hidden=True
+    )
 
 
 def speech():
@@ -423,16 +452,6 @@ def page_source():
         display_name='Source page number',
         description='Page number in source document',
         es_mapping={'type': 'keyword'}
-    )
-
-def column():
-    "column number or range (used in UK data) (string)"
-    return Field(
-        name='column',
-        display_name='Column(s)',
-        description='Column(s) of the speech in the original document',
-        es_mapping=BASIC_KEYWORD_MAPPING,
-        searchable=False,
     )
 
 def url():

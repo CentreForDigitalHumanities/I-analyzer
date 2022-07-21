@@ -355,7 +355,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
         )
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = Choice(
         XML(
             attribute='role',
