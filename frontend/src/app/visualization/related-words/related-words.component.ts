@@ -20,7 +20,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
-    graphData: {
+    totalData: {
         labels: string[],
         datasets: {
             label: string,
@@ -31,6 +31,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
         }[]
     };
 
+
     graphStyle = new BehaviorSubject<'line'|'stream'|'bar'>('line');
 
     tableHeaders: freqTableHeaders = [
@@ -39,6 +40,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     ];
     tableData: [WordSimilarity];
 
+    currentTimeIndex = [0];
     public zoomedInData; // data requested when clicking on a time interval
     public chartOptions: ChartOptions = {};
 
@@ -58,8 +60,8 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     getData() {
         this.isLoading.emit(true);
         this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
-            this.graphData = results['graphData'];
-            this.graphData.datasets.map((d, index) => {
+            this.totalData = results['graphData'];
+            this.totalData.datasets.map((d, index) => {
                 d.fill = false;
                 d.borderColor = selectColor(this.palette, index);
                 d.backgroundColor = selectColor(this.palette, index);
@@ -70,7 +72,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
             this.isLoading.emit(false);
         })
             .catch(error => {
-                this.graphData = undefined;
+                this.totalData = undefined;
                 this.tableData = undefined;
                 this.isLoading.emit(false);
                 this.error.emit(error);
@@ -79,12 +81,11 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     }
 
     zoomTimeInterval(event: any) {
-        console.log(event);
         this.isLoading.emit(true);
         this.searchService.getRelatedWordsTimeInterval(
             this.queryModel.queryText,
             this.corpus.name,
-            this.graphData.labels[event.element.index])
+            this.totalData.labels[event.value])
             .then(results => {
                 this.zoomedInData = results['graphData'];
                 this.zoomedInData.datasets
@@ -93,24 +94,12 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
                         d.backgroundColor = selectColor(this.palette, index);
                         d.hoverBackgroundColor = selectColor(this.palette, index);
                     });
-                // hide grid lines as we only have one data point on x axis
-                this.chartOptions.scales.xAxis = {
-                    grid: {
-                        display: false
-                    }
-                };
-                this.chartOptions.plugins.legend.labels.boxHeight = undefined;
+                    this.updateChart('bar');
                 this.isLoading.emit(false);
             })
             .catch(error => {
                 this.error.emit(error['message']);
             });
-    }
-
-    zoomBack() {
-        this.zoomedInData = null;
-        this.chartOptions.scales.xAxis = {};
-        this.chartOptions.plugins.legend.labels.boxHeight = 0;
     }
 
     formatValue(value: number): string {
@@ -121,11 +110,11 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
         return `${value}`;
     }
 
-    dataIndices(data: typeof this.graphData): number[] {
+    dataIndices(data: ChartData): number[] {
         return _.range(data.labels.length);
     }
 
-    addZeroSeries(data: typeof this.graphData): typeof this.graphData {
+    addZeroSeries(data: ChartData): ChartData {
         const indices = this.dataIndices(data);
 
         data.datasets.unshift(
@@ -139,14 +128,14 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     }
 
 
-    stackData(data: typeof this.graphData): typeof this.graphData {
+    stackData(data: ChartData): ChartData {
         const indices = this.dataIndices(data);
 
         const stackedDatasets = data.datasets.map((dataset, datasetIndex) => {
             if (datasetIndex > 0) {
                 const newDataset = _.cloneDeep(dataset);
                 const values = indices.map(index =>
-                    _.sumBy(data.datasets.slice(0, datasetIndex + 1), d => d.data[index])
+                    _.sumBy(data.datasets.slice(0, datasetIndex + 1), d => (d.data[index] as number))
                 );
                 newDataset.data = values;
                 return newDataset;
@@ -161,7 +150,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
         };
     }
 
-    fixMean(data: typeof this.graphData): typeof this.graphData {
+    fixMean(data: ChartData): ChartData {
         const indices = this.dataIndices(data);
 
         const means = indices.map(index =>
@@ -170,7 +159,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
 
         const transformedDatasets = data.datasets.map(dataset => {
             const clone = _.clone(dataset);
-            clone.data = indices.map(index => dataset.data[index] - means[index]);
+            clone.data = indices.map(index => (dataset.data[index] as number) - means[index]);
             return clone;
         });
 
@@ -183,15 +172,28 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     /**
      * Applies each data transformation necessary for stream format
      */
-    transformStream(data: typeof this.graphData): ChartData {
+    transformStream(data: ChartData): ChartData {
         const transformations = [this.stackData, this.addZeroSeries, this.fixMean];
         const newData = _.reduce(transformations, (d, transformation) => transformation.bind(this)(d), data);
         return newData;
     }
 
     updateChart(style: 'line'|'stream'|'bar'): void {
-        let data = _.cloneDeep(style === 'bar' ? this.zoomedInData : this.graphData);
+        if (style !== 'bar') {
+            this.zoomedInData = undefined;
+            const data = _.cloneDeep(this.totalData);
+            this.makeChart(data, style);
+        } else {
+            if (this.zoomedInData === undefined) {
+                this.zoomTimeInterval({value: this.currentTimeIndex});
+            } else {
+                this.makeChart(this.zoomedInData, style);
+            }
+        }
 
+    }
+
+    makeChart(data: ChartData, style: 'line'|'stream'|'bar'): void {
         const options: ChartOptions = {
             elements: {
                 line: {
@@ -243,6 +245,16 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
             });
             options.elements.line.borderWidth = 0;
             options.plugins.legend.labels['filter'] = (legendItem, data) => legendItem.text !== '';
+        }
+
+        if (style === 'bar') {
+            // hide grid lines as we only have one data point on x axis
+            data.datasets.forEach(dataset => dataset.type = 'bar');
+            options.scales.x = {
+                grid: {
+                    display: false
+                }
+            };
         }
 
         if (this.chart) {

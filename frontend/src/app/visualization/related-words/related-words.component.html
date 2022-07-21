@@ -2,26 +2,25 @@
     <div class="block">
         <div class="field">
             <div class="control">
-                <label class="radio" *ngFor="let style of ['line', 'stream']">
+                <label class="radio" *ngFor="let style of ['line', 'stream', 'bar']">
                     <input type="radio" [checked]="graphStyle.value==style" (click)="graphStyle.next(style)" (keydown.enter)="graphStyle.next(style)">
                     {{style}}
                 </label>
+            </div>
+        </div>
+        <div class="field" *ngIf="graphStyle.value==='bar'">
+            <div class="control">
+                <label class="label">Time interval:</label>
+                <p-slider [max]="totalData.labels.length - 1" [(ngModel)]="currentTimeIndex" (onSlideEnd)="zoomTimeInterval($event)"></p-slider>
 
+                <p style="text-align:center;">
+                    {{totalData.labels[currentTimeIndex]}}
+                </p>
             </div>
         </div>
     </div>
 
     <canvas id="chart"></canvas>
-
-    <!-- <p-chart *ngIf="!zoomedInData" type="line" [data]="graphData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart> -->
-    <!-- <div *ngIf="zoomedInData">
-        <a class="button" [iaBalloon]="'go back'" (click)="zoomBack()">
-                <span class="icon">
-                    <i class="fa fa-undo"></i>
-                </span>
-        </a>
-        <p-chart type="bar" [data]="zoomedInData" [options]="chartOptions"></p-chart>
-    </div> -->
 </div>
 
 <div class="block" *ngIf="asTable">
