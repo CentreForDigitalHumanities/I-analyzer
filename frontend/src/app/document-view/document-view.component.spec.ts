@@ -29,7 +29,8 @@ describe('DocumentViewComponent', () => {
             primarySort: false,
             searchable: false,
             searchFilter: null,
-            downloadable: true
+            downloadable: true,
+            mappingType: 'text'
         }];
         component.document = {
             id: 'test',

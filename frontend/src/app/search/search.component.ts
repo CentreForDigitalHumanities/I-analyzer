@@ -4,10 +4,14 @@ import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
 const HIGHLIGHT = 200;
+
+type searchFilterSettings = {
+    [fieldName: string]: SearchFilterData;
+};
 
 @Component({
     selector: 'ia-search',
@@ -203,21 +207,50 @@ export class SearchComponent implements OnInit {
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
     private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        searchFilters.forEach( f => {
-            const param = this.searchService.getParamForFieldName(f.fieldName);
+        const filterSettings = this.filterSettingsFromParams(params);
+        this.applyFilterSettings(searchFilters, filterSettings);
+    }
+
+    private filterSettingsFromParams(params: ParamMap): searchFilterSettings {
+        const settings = {};
+        this.corpus.fields.forEach(field => {
+            const param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] === '') { filterSettings = []; }
+                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
+                const data = searchFilterDataFromParam(filterType, filterSettings, field);
+                settings[field.name] = data;
+            }
+        });
+        return settings;
+    }
+
+    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+        this.setAdHocFilters(searchFilters, filterSettings);
+
+        searchFilters.forEach(f => {
+            if (_.has(filterSettings, f.fieldName)) {
                 if (this.showFilters === undefined) {
                     this.showFilters = true;
                 }
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] === '') { filterSettings = []; }
-                f.currentData = searchFilterDataFromParam(f.currentData.filterType, filterSettings);
+                const data = filterSettings[f.fieldName];
+                f.currentData = data;
                 f.useAsFilter = true;
             } else {
                 f.useAsFilter = false;
             }
         });
         this.activeFilters = searchFilters.filter( f => f.useAsFilter );
+    }
+
+    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+        this.corpus.fields.forEach(field => {
+            if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
+                const adHocFilter = adHocFilterFromField(field);
+                searchFilters.push(adHocFilter);
+            }
+        });
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
@@ -259,6 +292,32 @@ export class SearchComponent implements OnInit {
     private selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
+    }
+
+    public goToContext(contextValues: any[]) {
+        const contextSpec = this.corpus.documentContext;
+
+        this.queryText = undefined;
+        this.sortField = contextSpec.sortField || 'default';
+        this.sortAscending = contextSpec.sortDirection === 'asc';
+
+        contextSpec.contextFields
+            .filter(field => ! this.searchFilters.find(f => f.fieldName === field.name))
+            .forEach(field => this.makeContextFilter(field));
+
+        const filterSettings = _.mapValues(
+            _.keyBy(contextSpec.contextFields, 'name'),
+            field => searchFilterDataFromField(field, [contextValues[field.name]])
+        );
+
+        this.applyFilterSettings(this.searchFilters, filterSettings);
+
+        this.search();
+    }
+
+    private makeContextFilter(field: CorpusField) {
+        const filter = adHocFilterFromField(field);
+        this.searchFilters.push(filter);
     }
 
     get useDefaultSort(): boolean {

@@ -29,6 +29,9 @@
 
 .navbar-link{
     color: $text-primary-color;
+    background: none;
+    font: inherit;
+    border: none;
     &::after {
         border: 1px solid $text-primary-color;
         border-right: 0;

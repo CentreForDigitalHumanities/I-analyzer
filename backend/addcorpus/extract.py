@@ -343,22 +343,34 @@ class HTML(XML):
 class CSV(Extractor):
     '''
     This extractor extracts values from a CSV row.
+
+    Parameters:
+    - multiple: Boolean. If a document spans multiple rows of the CSV, the extracted value for a field with
+    `multiple = True` is a list of the value in each row. If `multiple = False` (default), only the value
+    from the first row is extracted.
+    - convert_empty_to_none: Boolean. If true, `''` values are converted to `None`
     '''
     def __init__(self,
             field,
             multiple=False,
+            convert_empty_to_none = True,
             *nargs, **kwargs):
         self.field = field
         self.multiple = multiple
+        self.convert_empty_to_none = convert_empty_to_none
         super().__init__(*nargs, **kwargs)
 
     def _apply(self, rows, *nargs, **kwargs):
         if self.field in rows[0]:
             if self.multiple:
-                return [row[self.field] for row in rows]
+                return [self.format(row[self.field]) for row in rows]
             else:
                 row = rows[0]
-                return row[self.field]
+                return self.format(row[self.field])
+
+    def format(self, value):
+        if value or not self.convert_empty_to_none:
+            return value
 
 class ExternalFile(Extractor):
 
