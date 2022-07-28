@@ -504,12 +504,11 @@ def api_ngram_tasks():
     if not request.json:
         abort(400)
     else:
-        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
-        ngram_counts = ngram_counts_task.apply_async()
+        ngram_counts_task = tasks.get_ngram_data.delay(request.json)
         if not ngram_counts_task:
             return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
         else:
-            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+            return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
 
 

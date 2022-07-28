@@ -31,7 +31,7 @@ See the documentation for [a more extensive overview](./documentation/Overview.m
 * Python == 3.8
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
-* [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
+* [Redis](https://www.redis.io/) (used by [Celery](http://www.celeryproject.org/)). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
 
 If you wish to have email functionality, also make sure you have an email server set up, such as [maildev](https://maildev.github.io/maildev/).
 
@@ -60,7 +60,7 @@ yarn postinstall
 8. Set up the database and migrations by running `flask db upgrade`.
 9. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 10. Go to `/frontend` and follow the instructions in the README to install it.
-
+11. If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your config.py as CELERY_BROKER_URL=redis://host:port/db_number; do the same for CELERY_BACKEND.
 
 ## Adding corpora
 
@@ -85,9 +85,10 @@ See the documentation for more information about [indexing on the server](./docu
 
 1. Start your local elasticsearch server. If you installed from .zip or .tar.gz, this can be done by running `{path your your elasticsearch folder}/bin/elasticsearch`
 2. Activate your python environment. From `/backend`, start flask by running `flask run`. This creates an instance of the Flask server at `127.0.0.1:5000`.
-3. (optional) If you want to use celery, activate your python environment. From the backend folder, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info`. Celery is used for long downloads and the word cloud and ngrams visualisations.
-4. (optional) If you want to use email functionality, start your local email server.
-5. Start the frontend by going to `/frontend` and running `yarn start`
+3. (optional) If you want to use celery, start your local redis server by running `redis-server` in a separate terminal.
+4. (optional) If you want to use celery, activate your python environment. From the backend folder, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info`. Celery is used for long downloads and the word cloud and ngrams visualisations.
+5. (optional) If you want to use email functionality, start your local email server.
+6. Start the frontend by going to `/frontend` and running `yarn start`
 
 ## Notes for development
 
