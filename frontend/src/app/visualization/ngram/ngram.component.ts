@@ -5,13 +5,15 @@ import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramP
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ParamDirective } from '../../param/param-directive';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss']
 })
-export class NgramComponent implements OnInit, OnChanges, OnDestroy {
+export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: CorpusField;
@@ -57,13 +59,25 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     faCheck = faCheck;
     faTimes = faTimes;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    constructor(
+        private searchService: SearchService,
+        private apiService: ApiService,
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
     }
 
-    ngOnInit(): void { }
+    initialize(): void { }
 
-    ngOnDestroy(): void {
+    teardown(): void {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+        Object.keys(this.currentParameters).forEach(
+            (param) => this.currentParameters[param] = null);
+    }
+
+    setStateFromParams(params: ParamMap) {
+
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -94,6 +108,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             maxDocuments: 100,
             numberOfNgrams: 10,
         };
+        this.setParams(this.currentParameters);
     }
 
     loadGraph() {
@@ -397,6 +412,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     onParameterChange(parameter: string, value: any) {
         this.currentParameters[parameter] = value;
+        this.setParams(this.currentParameters);
 
         if (parameter === 'size' && value) { this.setPositionsOptions(value); }
 

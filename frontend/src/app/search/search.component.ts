@@ -1,11 +1,12 @@
 
-import {combineLatest as combineLatest } from 'rxjs';
+import {combineLatest as combineLatest, Subscription } from 'rxjs';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
+import { ParamDirective } from '../param/param-directive';
 
 const HIGHLIGHT = 200;
 
@@ -18,7 +19,7 @@ type searchFilterSettings = {
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent extends ParamDirective {
     @ViewChild('searchSection', {static: false})
     public searchSection: ElementRef;
 
@@ -41,6 +42,7 @@ export class SearchComponent implements OnInit {
      */
     public showFilters: boolean | undefined;
     public user: User;
+    protected corpusSubscription: Subscription;
 
     /**
      * The next two members facilitate a p-multiSelect in the template.
@@ -74,31 +76,38 @@ export class SearchComponent implements OnInit {
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
-        private activatedRoute: ActivatedRoute,
-        private router: Router) {
+        route: ActivatedRoute,
+        router: Router) {
+            super(route, router);
         }
 
-    async ngOnInit() {
+    async initialize(): Promise<void> {
+        this.tabIndex = 0;
         this.user = await this.userService.getCurrentUser();
-        combineLatest(
-            this.corpusService.currentCorpus,
-            this.activatedRoute.paramMap,
-            (corpus, params) => {
-                return { corpus, params };
-            }).filter(({ corpus, params }) => !!corpus)
-            .subscribe(({ corpus, params }) => {
-                this.queryText = params.get('query');
+        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus)
+            .subscribe((corpus) => {
                 this.setCorpus(corpus);
-                this.tabIndex = 0;
-                this.setFiltersFromParams(this.searchFilters, params);
-                this.setSearchFieldsFromParams(params);
-                this.setSortFromParams(this.corpus.fields, params);
-                this.setHighlightFromParams(params);
-                const queryModel = this.createQueryModel();
-                if (this.queryModel !== queryModel) {
-                    this.queryModel = queryModel;
-                }
             });
+    }
+
+    teardown() {
+        this.user = undefined;
+        this.corpusSubscription.unsubscribe();
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.queryText = params.get('query');
+        this.setSearchFieldsFromParams(params);
+        this.setFiltersFromParams(this.searchFilters, params);
+        this.setSortFromParams(this.corpus.fields, params);
+        this.setHighlightFromParams(params);
+        const queryModel = this.createQueryModel();
+        if (this.queryModel !== queryModel) {
+            this.queryModel = queryModel;
+        }
+        if (params.has('visualize')) {
+            this.tabIndex = 1;
+        }
     }
 
     @HostListener('window:scroll', [])
@@ -121,13 +130,7 @@ export class SearchComponent implements OnInit {
     public search() {
         this.queryModel = this.createQueryModel();
         const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
-        const url = this.router.serializeUrl(this.router.createUrlTree(
-            ['.', route],
-            { relativeTo: this.activatedRoute },
-        ));
-        if (this.router.url !== url) {
-            this.router.navigateByUrl(url);
-        }
+        this.setParams(route);
     }
 
     /**

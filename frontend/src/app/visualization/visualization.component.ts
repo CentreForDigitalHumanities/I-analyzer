@@ -1,5 +1,5 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { SelectItem, SelectItemGroup } from 'primeng/api';
+import { DoCheck, Input, Component, OnChanges, SimpleChanges } from '@angular/core';
+import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField } from '../models/index';
@@ -7,13 +7,15 @@ import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
+import { ParamDirective } from '../param/param-directive';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
+export class VisualizationComponent extends ParamDirective implements DoCheck, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
     @Input() public resultsCount: number;
@@ -62,7 +64,12 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     faQuestion = faCircleQuestion;
 
-    constructor(private dialogService: DialogService) {
+    constructor(
+        private dialogService: DialogService,
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
     }
 
     ngDoCheck() {
@@ -105,9 +112,27 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         }
     }
 
-    ngOnInit() {
-        this.checkResults();
+    initialize() {
+        if (this.visualizationType === null || this.visualizedField === null) {
+            this.checkResults();
+        }
         this.showTableButtons = true;
+    }
+
+    teardown() {
+        this.setParams({
+            'visualize': null,
+            'visualizedField': null
+        });
+    }
+
+    setStateFromParams(params: ParamMap) {
+        if (params.has('visualize')) {
+            this.visualizationType = params.get('visualize');
+        }
+        if (params.has('visualizedField')) {
+            this.visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+        }
     }
 
     checkResults() {
@@ -128,6 +153,10 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             value: field
         }));
         this.visualizedField = this.filteredVisualizationFields[0];
+        const route = {
+            visualize: this.visualizationType
+        };
+        this.setParams(route);
     }
 
     setVisualizedField(selectedField: CorpusField) {
@@ -136,6 +165,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
         this.visualizedField = selectedField;
         this.foundNoVisualsMessage = 'Retrieving data...';
+        this.setParams({
+            visualizedField: this.visualizedField.name
+        });
     }
 
     setErrorMessage(message: string) {
@@ -161,9 +193,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
         htmlToImage.toPng(node)
           .then(function (dataUrl) {
-            var img = new Image();
+            const img = new Image();
             img.src = dataUrl;
-            var anchor = document.createElement("a");
+            const anchor = document.createElement("a");
             anchor.href = dataUrl;
             anchor.download = filenamestring;
             anchor.click();

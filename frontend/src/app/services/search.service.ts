@@ -9,6 +9,7 @@ import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
     AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
+import { query } from '@angular/animations';
 
 const highlightFragmentSize = 50;
 
@@ -65,7 +66,7 @@ export class SearchService {
 
         if (queryModel.fields) {
             route['fields'] = queryModel.fields.join(',');
-        }
+        } else { route['fields'] = null; }
 
         for (const filter of queryModel.filters.map(data => {
             return {
@@ -79,11 +80,11 @@ export class SearchService {
         if (!usingDefaultSortField && queryModel.sortBy) {
             route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
         } else {
-            delete route['sort'];
+            route['sort'] = null;
         }
         if (queryModel.highlight) {
             route['highlight'] = `${queryModel.highlight}`;
-        } else { delete route['highlight']; }
+        } else { route['highlight'] = null; }
         return route;
     }
 
@@ -218,6 +219,6 @@ export class SearchService {
     }
 
     public getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
+        return `${fieldName}`;
     }
 }
