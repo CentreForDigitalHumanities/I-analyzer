@@ -1,6 +1,7 @@
 import os
 import warnings
 import pytest
+from datetime import datetime
 
 from addcorpus.load_corpus import load_corpus
 
@@ -184,30 +185,60 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
     {
         'name': 'parliament-netherlands',
         'docs': [
-        {
-            'country': 'Netherlands',
-            'date': '2000-01-18',
-            'house': 'Eerste Kamer',
-            'debate_title': 'Presentie en opening (dinsdag 18 januari 2000)',
-            'debate_id': 'nl.proc.ob.d.h-ek-19992000-493-493',
-            'topic': 'Presentie en opening',
-            'speech': '\n'.join([
-                'Ik deel aan de Kamer mede, dat zijn ingekomen berichten van verhindering van de leden:',
-                'Kohnstamm, wegens ziekte;',
-                'Boorsma, wegens verblijf buitenslands.',
-            ]),
-            'id': 'nl.proc.ob.d.h-ek-19992000-493-493.1.5.1',
-            'speaker': 'De voorzitter Jurgens',
-            'speaker_id': 'nl.m.01992',
-            'role': 'Chair',
-            'party': None,
-            'party_id': None,
-            'party_full': None,
-            'page': '493',
-            # 'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf',
-            # 'sequence': 1,
-        }],
-        'n_documents': 4
+            {
+                'country': 'Netherlands',
+                'date': '2000-01-18',
+                'chamber': 'Eerste Kamer',
+                'debate_title': 'Presentie en opening (dinsdag 18 januari 2000)',
+                'debate_id': 'nl.proc.ob.d.h-ek-19992000-493-493',
+                'topic': 'Presentie en opening',
+                'speech': '\n'.join([
+                    'Ik deel aan de Kamer mede, dat zijn ingekomen berichten van verhindering van de leden:',
+                    'Kohnstamm, wegens ziekte;',
+                    'Boorsma, wegens verblijf buitenslands.',
+                ]),
+                'id': 'nl.proc.ob.d.h-ek-19992000-493-493.1.5.1',
+                'speaker': 'De voorzitter Jurgens',
+                'speaker_id': 'nl.m.01992',
+                'speaker_gender': None,
+                'role': 'Chair',
+                'party': None,
+                'party_id': None,
+                'party_full': None,
+                'page': '493',
+                'url': 'https://zoek.officielebekendmakingen.nl/h-ek-19992000-493-493.pdf',
+                'sequence': 1,
+            }
+        ],
+        'n_documents': 4,
+        'end': datetime(2015, 1, 1),
+    },
+    {
+        'name': 'parliament-netherlands',
+        'docs': [
+            {
+                'country': 'Netherlands',
+                'date': '2017-01-31',
+                'chamber': 'Tweede Kamer',
+                'debate_title': 'Report of the meeting of the Dutch Lower House, Meeting 46, Session 23 (2017-01-31)',
+                'debate_id': 'ParlaMint-NL_2017-01-31-tweedekamer-23',
+                'topic': 'Rapport "Welvaart in kaart"',
+                'speech': 'Ik heet de minister van Economische Zaken van harte welkom.',
+                'id': 'ParlaMint-NL_2017-01-31-tweedekamer-23.u1',
+                'speaker': 'Khadija Arib',
+                'speaker_id': '#KhadijaArib',
+                'speaker_gender': 'vrouw',
+                'role': 'Chair',
+                'party': 'PvdA',
+                'party_id': '#party.PvdA',
+                'party_full': 'Partij van de Arbeid',
+                'page': None,
+                'url': None,
+                'sequence': 1,
+            }
+        ],
+        'n_documents': 98,
+        'start': datetime(2015, 1, 1),
     },
     {
         'name': 'parliament-uk',
@@ -311,8 +342,11 @@ def corpus_test_name(corpus_spec):
 def test_imports(test_app, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
-    docs = get_documents(corpus)
 
+    start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
+    end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date
+
+    docs = get_documents(corpus, start, end)
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
@@ -324,12 +358,12 @@ def test_imports(test_app, corpus_object):
                 message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
                 warnings.warn(message)
 
-    docs = get_documents(corpus)
+    docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
 
-def get_documents(corpus):
+def get_documents(corpus, start, end):
     sources = corpus.sources(
-        start=corpus.min_date,
-        end=corpus.max_date
+        start=start,
+        end=end
     )
     return corpus.documents(sources)

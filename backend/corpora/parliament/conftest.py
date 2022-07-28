@@ -36,9 +36,12 @@ class UnittestConfig:
     PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     PP_UK_INDEX = 'parliament-uk'
     PP_UK_IMAGE = 'uk.jpeg'
+
     PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
+    PP_NL_RECENT_DATA = os.path.join(here, 'tests', 'data', 'netherlands-recent')
     PP_NL_INDEX = 'parliament-netherlands'
     PP_NL_IMAGE = 'netherlands.jpg'
+
     PP_CANADA_DATA = os.path.join(here, 'tests', 'data', 'canada')
     PP_CANADA_INDEX = 'parliament-canada'
     PP_CANADA_IMAGE = 'canada.jpeg'

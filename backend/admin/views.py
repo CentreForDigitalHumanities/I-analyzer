@@ -10,7 +10,7 @@ import flask_admin.contrib.sqla as admin_sqla
 from flask_login import LoginManager, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from wtforms.widgets import PasswordInput
-from wtforms import ValidationError, TextField
+from wtforms import ValidationError
 from wtforms.validators import InputRequired, AnyOf
 
 from ianalyzer import models
@@ -41,7 +41,7 @@ class QueryView(admin_sqla.ModelView):
 class CorpusView(ModelView):
     can_create = False
     can_edit = True
-    
+
     form_widget_args = dict(
         name=dict(readonly=True),
         description=dict(readonly=True)
@@ -53,7 +53,7 @@ class RoleView(ModelView):
         'name', 'description', 'corpora', 'users')
     form_edit_rules = (
         'name', 'description', 'corpora', 'users')
-    
+
     def on_form_prefill(self, form, id):
         ''' Ensure the existence of roles with certain names '''
         if (form.data['name'] == 'basic' or form.data['name'] == 'admin' or form.data['name'] == 'uu'):

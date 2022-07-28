@@ -89,12 +89,15 @@ https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index.html
     curl http://127.0.0.1:9200 # Check the installation
 
 
-## RabbitMQ and newer version of Erlang
+## Redis
 
-    curl -fsSL https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc | sudo apt-key add -
-    echo "deb https://dl.bintray.com/rabbitmq-erlang/debian buster erlang-21.x" > /etc/apt/sources.list.d/bintray.erlang.list
-    echo "deb https://dl.bintray.com/rabbitmq/debian buster main" > /etc/apt/sources.list.d/bintray.rabbitmq.list
-    apt-get update && apt-get install rabbitmq-server --fix-missing
+https://redis.io/docs/getting-started/installation/install-redis-from-source/
+
+    wget https://download.redis.io/redis-stable.tar.gz
+    tar -xzvf redis-stable.tar.gz
+    cd redis-stable
+    make
+    make install
 
 
 ## Chrome

@@ -89,7 +89,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     debate_type = field_defaults.debate_type()
     debate_type.extractor = CSV(
         field='session_type',
-        transform=lambda x: x.title(),
+        transform=lambda x: x.title() if x else None,
     )
 
     era = field_defaults.era(include_aggregations=False)
