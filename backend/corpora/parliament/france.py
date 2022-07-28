@@ -92,7 +92,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
         transform=lambda x: x.title() if x else None,
     )
 
-    era = field_defaults.era()
+    era = field_defaults.era(include_aggregations=False)
     era.extractor = CSV(
         field='era',
         transform=underscore_to_space
