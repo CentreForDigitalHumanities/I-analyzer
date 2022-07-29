@@ -30,7 +30,7 @@ def format_chamber(chamber):
     return chambers.get(chamber, 'MISSING: ' + chamber)
 
 def format_sequence(value):
-    if value.isnumeric():
+    if value and value.isnumeric():
         return value
 
 class ParliamentSwedenOld(Parliament, CSVCorpus):
