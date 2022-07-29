@@ -29,6 +29,9 @@ def format_chamber(chamber):
 
     return chambers.get(chamber, 'MISSING: ' + chamber)
 
+def format_sequence(value):
+    if value.isnumeric():
+        return value
 
 class ParliamentSwedenOld(Parliament, CSVCorpus):
     title = 'People and Parliament (Sweden 1809-1919)'
@@ -99,7 +102,10 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     page.extractor = CSV(field='page_number')
 
     sequence = field_defaults.sequence()
-    sequence.extractor = CSV(field = 'date_order')
+    sequence.extractor = CSV(
+        field = 'date_order',
+        transform = format_sequence,
+    )
     sequence.description = 'Order of documents within the same date range and chamber'
 
     url_pdf = field_defaults.url()
