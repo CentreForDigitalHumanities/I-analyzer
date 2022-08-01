@@ -103,14 +103,15 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
 
     async initialize() {
         this.setupDropdowns();
-        this.checkResults();
         this.showTableButtons = true;
     }
 
     teardown() {
         this.setParams({
-            'visualize': null,
-            'visualizedField': null
+            visualize: null,
+            visualizedField: null,
+            normalize: null,
+            visualizeTerm: null
         });
     }
 
@@ -118,13 +119,14 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
         if (params.has('visualize')) {
             this.visualizationType = params.get('visualize');
             this.visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+            this.checkResults();
         } else {
             if (!this.allVisualizationFields.length) {
                 this.noVisualizations = true;
             } else {
                 this.noVisualizations = false;
                 this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-                this.setParams(this.params);
+                this.checkResults();
             }
         }
     }
@@ -149,6 +151,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
         this.visualizedField = this.filteredVisualizationFields[0];
         this.params['visualize'] = this.visualizationType;
         this.params['visualizedField'] = this.visualizedField.name;
+        this.setParams(this.params);
     }
 
     setVisualizedField(selectedField: CorpusField) {

@@ -36,14 +36,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.frequencyMeasure) {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.currentNormalizer = 'raw';
-            } else {
-                this.currentNormalizer = 'terms';
-            }
-        }
-
         if (changes.queryText) {
             if (this.queryText) {
                 this.queries = [this.queryText];
@@ -54,6 +46,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
             this.currentNormalizer = 'terms';
+            this.setParams({'normalize': 'terms'});
         }
     }
 
@@ -70,15 +63,22 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     initialize() {}
 
     teardown() {
-        this.setParams({
-            'normalize': null,
-            'visualizeTerm': null
-        });
     }
 
     setStateFromParams(params: ParamMap) {
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalizer') as Normalizer;
+        } else {
+            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+                this.currentNormalizer = 'raw';
+            } else {
+                this.currentNormalizer = 'terms';
+            }
+        }
+        if (params.has('visualizeTerm')) {
+            this.queries = params.getAll('visualizeTerm');
+            this.showEdit = true;
+            this.queriesChanged.emit(this.queries);
         }
     }
 

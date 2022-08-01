@@ -87,18 +87,18 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.corpus || changes.visualizedField) {
-            // if (this.visualizedField.multiFields) {
-            //     this.analysisOptions = [{label: 'None', value: 'none'}]
-            //         .concat(this.visualizedField.multiFields.map(subfield => {
-            //             const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
-            //             return { value: subfield, label: displayStrings[subfield]};
-            //         }));
-            // } else {
-            //     this.analysisOptions = undefined;
-            // }
+            if (this.visualizedField.multiFields) {
+                this.analysisOptions = [{label: 'None', value: 'none'}]
+                    .concat(this.visualizedField.multiFields.map(subfield => {
+                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
+                        return { value: subfield, label: displayStrings[subfield]};
+                    }));
+            } else {
+                this.analysisOptions = undefined;
+            }
 
-            // this.setDefaultParameters();
-            // this.loadGraph();
+            this.setDefaultParameters();
+            this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
