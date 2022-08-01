@@ -70,13 +70,13 @@
                 <div class="tabs is-boxed">
                     <ul>
                         <li [ngClass]="{'is-active': tabIndex==0}">
-                            <a (click)="tabIndex=0">
+                            <a (click)="switchTabs(0)">
                                 <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
                                 <span>Search Results</span>
                             </a>
                         </li>
                         <li [ngClass]="{'is-active': tabIndex==1}">
-                            <a (click)="tabIndex=1">
+                            <a (click)="switchTabs(1)">
                                 <span class="icon is-small"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
                                 <span>Visualizations</span>
                             </a>

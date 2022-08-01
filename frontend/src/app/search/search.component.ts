@@ -72,6 +72,8 @@ export class SearchComponent extends ParamDirective {
 
     public highlight: number = HIGHLIGHT;
 
+    public showVisualization: boolean;
+
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
         private userService: UserService,
@@ -105,9 +107,7 @@ export class SearchComponent extends ParamDirective {
         if (this.queryModel !== queryModel) {
             this.queryModel = queryModel;
         }
-        if (params.has('visualize')) {
-            this.tabIndex = 1;
-        }
+        this.showVisualization = params.has('visualize') ? true : false;
     }
 
     @HostListener('window:scroll', [])
@@ -127,10 +127,10 @@ export class SearchComponent extends ParamDirective {
         this.search();
     }
 
-    public search() {
+    public search(nullableParams: string[] = []) {
         this.queryModel = this.createQueryModel();
-        const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
-        this.setParams(route);
+        const params = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort, nullableParams);
+        this.setParams(params);
     }
 
     /**
@@ -143,6 +143,9 @@ export class SearchComponent extends ParamDirective {
         this.resultsCount = input.resultsCount;
         this.searchQueryText = input.queryText;
         this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
+        if (this.showVisualization) {
+            this.tabIndex = 1;
+        }
     }
 
     public showQueryDocumentation() {
@@ -151,6 +154,16 @@ export class SearchComponent extends ParamDirective {
 
     public showCorpusInfo(corpus: Corpus) {
         this.dialogService.showDescriptionPage(corpus);
+    }
+
+    public switchTabs(index: number) {
+        this.tabIndex = index;
+        if (index === 0) {
+            this.setParams({
+                visualize: null,
+                visualizedField: null
+            });
+        }
     }
 
     private getQueryFields(): string[] | null {
@@ -288,8 +301,11 @@ export class SearchComponent extends ParamDirective {
     }
 
     public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
+        const nullableParams = _.difference(
+            this.activeFilters.map(f => f.fieldName),
+            activeFilters.map( f => f.fieldName));
         this.activeFilters = activeFilters;
-        this.search();
+        this.search(nullableParams);
     }
 
     private selectSearchFields(selection: CorpusField[]) {

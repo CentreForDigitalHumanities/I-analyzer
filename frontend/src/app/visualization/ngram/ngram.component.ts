@@ -68,32 +68,37 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         super(route, router);
     }
 
-    initialize(): void { }
+    initialize(): void {
+        this.loadGraph();
+    }
 
     teardown(): void {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
         Object.keys(this.currentParameters).forEach(
             (param) => this.currentParameters[param] = null);
+        this.setParams(this.currentParameters);
     }
 
     setStateFromParams(params: ParamMap) {
-
+        Object.keys(this.currentParameters).forEach(
+            (param) => this.currentParameters[param] = params.get(param)
+        );
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.corpus || changes.visualizedField) {
-            if (this.visualizedField.multiFields) {
-                this.analysisOptions = [{label: 'None', value: 'none'}]
-                    .concat(this.visualizedField.multiFields.map(subfield => {
-                        const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
-                        return { value: subfield, label: displayStrings[subfield]};
-                    }));
-            } else {
-                this.analysisOptions = undefined;
-            }
+            // if (this.visualizedField.multiFields) {
+            //     this.analysisOptions = [{label: 'None', value: 'none'}]
+            //         .concat(this.visualizedField.multiFields.map(subfield => {
+            //             const displayStrings = { clean: 'Remove stopwords', stemmed: 'Stem and remove stopwords'};
+            //             return { value: subfield, label: displayStrings[subfield]};
+            //         }));
+            // } else {
+            //     this.analysisOptions = undefined;
+            // }
 
-            this.setDefaultParameters();
-            this.loadGraph();
+            // this.setDefaultParameters();
+            // this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
@@ -108,10 +113,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             maxDocuments: 100,
             numberOfNgrams: 10,
         };
-        this.setParams(this.currentParameters);
     }
 
     loadGraph() {
+        if (this.currentParameters === null) {
+            this.setDefaultParameters();
+        }
         this.isLoading.emit(true);
 
         const changeAspectRatio = this.chart && this.lastParameters.numberOfNgrams !== this.currentParameters.numberOfNgrams;
@@ -412,7 +419,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     onParameterChange(parameter: string, value: any) {
         this.currentParameters[parameter] = value;
-        this.setParams(this.currentParameters);
 
         if (parameter === 'size' && value) { this.setPositionsOptions(value); }
 
@@ -427,7 +433,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     confirmChanges() {
         this.parametersChanged = false;
-        this.loadGraph();
+        this.setParams(this.currentParameters);
+        // this.loadGraph();
     }
 
     get currentSizeOption() {

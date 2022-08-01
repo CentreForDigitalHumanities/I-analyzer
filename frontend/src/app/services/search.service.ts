@@ -59,7 +59,7 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false): any {
+    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false, nullableParams = []): any {
         const route = {
             query: queryModel.queryText || ''
         };
@@ -85,6 +85,9 @@ export class SearchService {
         if (queryModel.highlight) {
             route['highlight'] = `${queryModel.highlight}`;
         } else { route['highlight'] = null; }
+        if (nullableParams.length) {
+            nullableParams.forEach( param => route[param] = null);
+        }
         return route;
     }
 
