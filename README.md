@@ -30,7 +30,7 @@ See the documentation for [a more extensive overview](./documentation/Overview.m
 
 * Python == 3.8
 * MySQL daemon and libmysqlclient-dev
-* [ElasticSearch](https://www.elastic.co/)
+* [ElasticSearch](https://www.elastic.co/) 7. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
 * [Redis](https://www.redis.io/) (used by [Celery](http://www.celeryproject.org/)). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
 
 If you wish to have email functionality, also make sure you have an email server set up, such as [maildev](https://maildev.github.io/maildev/).
@@ -43,7 +43,7 @@ Warning: do not try this on a Windows machine. You will grind to a halt installi
 
 To get an instance running, do all of the following inside an activated `virtualenv`:
 
-1. Install the ElasticSearch v.7 (https://www.elastic.co/) and MySQL daemons on the server or your local machine. To avoid a lot of errors, choose the option: install elasticsearch with .zip or .tar.gz. ES wil install everything in one folder, and not all over your machine, which happens with other options.
+1. Install the requirements on your server or local machine.
 2. Start your ElasticSearch Server. Make sure cross-origin handling (the setting [http.cors.enabled](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-http.html)) is set up correctly, or a proxy has been configured, for the server to be accessible by the web user. For example, edit `elasticsearch.yml` to include the following:
 ```
 http.cors.enabled: true
