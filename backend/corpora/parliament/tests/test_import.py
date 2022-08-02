@@ -377,7 +377,7 @@ lovforslaget kan træde i kraft den 1. januar 2009.""",
                 'party': 'Venstre',
                 'topic': 'Punkt 0',
                 'subject': 'other',
-                'sequence': 100025,
+                'sequence': '100025',
             }
         ],
         'n_documents': 4,
