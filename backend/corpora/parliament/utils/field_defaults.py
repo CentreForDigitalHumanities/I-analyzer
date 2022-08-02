@@ -212,6 +212,21 @@ def subtopic():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def subject():
+    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
+    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
+    return Field(
+        name='subject',
+        display_name='Subject',
+        description='Subject that the speech is concerned with',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches about the selected subjects',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
+
 def sequence():
     "integer index of the speech in a debate"
     return Field(

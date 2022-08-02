@@ -366,7 +366,18 @@ lovforslaget kan træde i kraft den 1. januar 2009.""",
         'name': 'parliament-denmark-new',
         'docs': [
             {
-                'country': 'Denmark'
+                'country': 'Denmark',
+                'id': '20100128100025',
+                'date': '2010-01-28',
+                'speech': 'Mødet er åbnet. I dag er der følgende anmeldelser: Kirkeministeren (Birthe Rønn Hornbech): Lovforslag nr. L 115 (Forslag til lov om ændring af lov om udnævnelse af biskopper og om stiftsbåndsløsning og forskellige andre love.) og  L 116 (Forslag til lov om ændring af lov om begravelse og ligbrænding og lov om folkekirkens økonomi.) Beskæftigelsesministeren (Inger Støjberg): Lovforslag nr. L 117 (Forslag til lov om ændring af lov om sygedagpenge, lov om ret til orlov og dagpenge ved barsel, lov om aktiv socialpolitik og lov om arbejdsløshedsforsikring m.v. Transportministeren (Lars Barfoed): Lovforslag nr. L 118 (Forslag til lov om ændring af lov om taxikørsel m.v.) Videnskabsministeren (Helge Sander): Lovforslag nr. L 119 (Forslag til lov om ændring af universitetsloven.) Titler på de fremsatte forslag vil fremgå af www.folketingstidende.dk (jf. ovenfor). Mens vi får de sidste medlemmer ind i salen, kan jeg lige oplyse, at vi er vidende om, at der er problemer med, hvordan urene går på Christiansborg. Det er et lidt større problem end som så blot at justere urene, for det er hele styringssystemet – det styres af 23 V strøm – der gør, at der er problemer med overhovedet at styre urene. Nogle er slidt ned, så man skal ikke regne med tiden. Min opfordring er, at man bruger soluret og kun tæller de lyse timer. Munterhed Men det afgørende er altså, at vi er opmærksomme på det og gør, hvad vi overhovedet kan for at udskifte, hvor der skal udskiftes, og i øvrigt at få et system, så urene altid går korrekt. Jeg går nemlig ud fra, at de, der kommer for sent, her nu hvor vi skal stemme, udelukkende gør det, fordi urene går forkert.',
+                'speaker': 'Thor Pedersen',
+                'speaker_gender': 'Male',
+                'speaker_birth_year': 1945,
+                'role': 'formand',
+                'party': 'Venstre',
+                'topic': 'Punkt 0',
+                'subject': 'other',
+                'sequence': 100025,
             }
         ],
         'n_documents': 4,
