@@ -2,7 +2,7 @@ from datetime import datetime
 from glob import glob
 
 from addcorpus.corpus import CSVCorpus
-from addcorpus.extract import CSV
+from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -67,6 +67,9 @@ class ParliamentSweden(Parliament, CSVCorpus):
 
     language = 'swedish'
     image = 'sweden.jpg'
+
+    country = field_defaults.country()
+    country.extractor = Constant('Sweden')
 
     date = field_defaults.date()
     date.extractor = CSV(
@@ -133,6 +136,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
 
     def __init__(self):
         self.fields = [
+            self.country,
             self.date,
             self.date_is_estimate,
             self.chamber,
