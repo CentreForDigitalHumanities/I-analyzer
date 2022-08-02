@@ -1,15 +1,13 @@
 from datetime import datetime
 from glob import glob
 import logging
-import re
 from flask import current_app
-from corpora.parliament.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
-import os
+import corpora.parliament.utils.formatting as formatting
 
 def get_date_from_year(value, limit='earliest'):
     if value and value.isnumeric():
@@ -35,12 +33,12 @@ def format_chamber(chamber):
 
 class ParliamentDenmark(Parliament, CSVCorpus):
     title = 'People & Parliament (Denmark, 1848-2008)'
-    description = "Speeches from the Folketing and Landstinget"
+    description = "Speeches from the Folketing and Landsting"
     min_date = datetime(year = 1841, month = 1, day = 1)
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = current_app.config['PP_DENMARK_DATA']
     es_index = current_app.config['PP_DENMARK_INDEX']
-    image = current_app.config['PP_CANADA_IMAGE']
+    image = 'denmark.jpg'
     es_settings = current_app.config['PP_ES_SETTINGS']
     es_settings['analysis']['filter'] = {
         "stopwords": {
@@ -56,6 +54,13 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     language = 'danish'
 
     required_field = 'text'
+
+    document_context = {
+        'context_fields': 'book_id',
+        'sort_field': 'sequence',
+        'context_display_name': 'book',
+        'sort_direction': 'asc',
+    }
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
@@ -96,8 +101,9 @@ class ParliamentDenmark(Parliament, CSVCorpus):
         field='year',
         transform= lambda value: get_date_from_year(value, 'latest')
     )
-    date_earliest.search_filter.lower = min_date
-    date_earliest.search_filter.upper = max_date
+    date_latest.primary_sort = True
+    date_latest.search_filter.lower = min_date
+    date_latest.search_filter.upper = max_date
 
     page = field_defaults.page()
     page.extractor = CSV(field='page')
@@ -109,13 +115,20 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(field='id')
 
+    sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field='page',
+        transform = formatting.extract_integer_value,
+    )
+
     def __init__(self):
         self.fields = [
             self.book_label, self.book_id,
             self.country,
             self.chamber,
             self.date_earliest, self.date_latest,
+            self.page,
             self.speech,
             self.speech_id,
-            self.page,
+            self.sequence,
         ]

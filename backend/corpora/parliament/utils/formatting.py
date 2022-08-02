@@ -40,3 +40,6 @@ def extract_year(datestring):
             year = match.group(1)
             return int(year)
 
+def extract_integer_value(value):
+    if value and value.isnumeric():
+        return int(value)

@@ -6,6 +6,7 @@ from addcorpus.extract import CSV
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.constants as constants
+import corpora.parliament.utils.formatting as formatting
 
 from flask import current_app
 
@@ -28,10 +29,6 @@ def format_chamber(chamber):
     }
 
     return chambers.get(chamber, chamber)
-
-def format_sequence(value):
-    if value and value.isnumeric():
-        return value
 
 class ParliamentSwedenOld(Parliament, CSVCorpus):
     title = 'People and Parliament (Sweden 1809-1919)'
@@ -105,7 +102,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     sequence = field_defaults.sequence()
     sequence.extractor = CSV(
         field = 'date_order',
-        transform = format_sequence,
+        transform = formatting.extract_integer_value,
     )
     sequence.description = 'Order of documents within the same date range and chamber'
 

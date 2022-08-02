@@ -326,7 +326,7 @@ STOCKHOLM,
 
 Kongl. Ordens-Böktryckeriet, I8Z9.''',
                 'page': '0',
-                'sequence': '01',
+                'sequence': 1,
                 'url': 'https://weburn.kb.se/riks/ståndsriksdagen/pdf/bn_1828-30_1_/bn_1828-30_1__01.pdf',
                 'url_xml': 'https://weburn.kb.se/riks/ståndsriksdagen/xml/bn_1828-30_1_/bn_1828-30_1__01.xml',
             }
@@ -358,6 +358,7 @@ lovforslaget kan træde i kraft den 1. januar 2009.""",
                 'id': '20072A6546_546',
                 'chamber': 'Folketinget',
                 'country': 'Denmark',
+                'sequence': 546,
             }
         ],
         'n_documents': 5,
