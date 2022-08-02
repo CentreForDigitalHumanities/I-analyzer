@@ -362,6 +362,14 @@ lovforslaget kan træde i kraft den 1. januar 2009.""",
             }
         ],
         'n_documents': 5,
+    }, {
+        'name': 'parliament-denmark-new',
+        'docs': [
+            {
+                'country': 'Denmark'
+            }
+        ],
+        'n_documents': 4,
     }
 ]
 
