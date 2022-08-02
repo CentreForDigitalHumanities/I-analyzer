@@ -21,6 +21,7 @@ class UnittestConfig:
         'parliament-france': os.path.join(here, 'france.py'),
         'parliament-sweden': os.path.join(here, 'sweden.py'),
         'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
+        'parliament-denmark': os.path.join(here, 'denmark.py'),
     }
 
     SERVERS = {
@@ -60,6 +61,8 @@ class UnittestConfig:
     PP_SWEDEN_OLD_INDEX = 'parliament-sweden-old'
     PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
     PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
+    PP_DENMARK_DATA = os.path.join(here, 'tests', 'data', 'denmark')
+    PP_DENMARK_INDEX = 'parliament-denmark'
 
     # Elasticsearch settings for People & Parliament corpora
     PP_ES_SETTINGS = {

@@ -332,6 +332,35 @@ Kongl. Ordens-Böktryckeriet, I8Z9.''',
             }
         ],
         'n_documents': 10
+    },
+    {
+        'name': 'parliament-denmark',
+        'docs': [
+            {
+                'speech': """6546 F. t. beslutn. vedr. udbetaling af sygedagpenge
+
+Beslutningsforslag nr. B 142. Fremsat den 3. juni 2008 af Thomas Adelskov (S), Lennart Damsbo-Andersen (S),
+
+Egil Andersen (SF), Margrethe Vestager (RV), Morten Østergaard (RV) og Line Barfod (EL)
+
+Forslag til folketingsbeslutning
+
+om ophævelse af varighedsbegrænsningen for udbetaling af sygedagpenge
+
+Folketinget pålægger regeringen at fremsætte lovforslag, som ophæver varighedsbegrænsnin- gen for udbetaling af sygedagpenge, således at
+
+lovforslaget kan træde i kraft den 1. januar 2009.""",
+                'page': '546',
+                'date_earliest': '2007-01-01',
+                'date_latest': '2007-12-31',
+                'book_label': 'Folketingstidende 2007/8 (2. samling) Tillæg A side 6001 - 6565',
+                'book_id': '20072A6546',
+                'id': '20072A6546_546',
+                'chamber': 'Folketinget',
+                'country': 'Denmark',
+            }
+        ],
+        'n_documents': 5,
     }
 ]
 

@@ -27,7 +27,7 @@ def format_chamber(chamber):
         'bönder': 'Bönder'
     }
 
-    return chambers.get(chamber, 'MISSING: ' + chamber)
+    return chambers.get(chamber, chamber)
 
 def format_sequence(value):
     if value and value.isnumeric():
