@@ -577,6 +577,13 @@ class CSVCorpus(Corpus):
         an empty value for `required_field` will be skipped.
         '''
 
+    @property
+    def delimiter(self):
+        '''
+        Set the delimiter for the CSV reader.
+        '''
+        return ','
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -600,7 +607,7 @@ class CSVCorpus(Corpus):
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
             for row in reader:

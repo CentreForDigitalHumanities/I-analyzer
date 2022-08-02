@@ -30,6 +30,8 @@ class ParliamentDenmarkNew(Parliament, CSVCorpus):
 
     language = 'danish'
 
+    delimiter = '\t'
+
     def sources(self, start, end):
 
         for filename in glob('{}/[0-9]*/*.txt'.format(self.data_directory), recursive=True):
