@@ -97,6 +97,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field='text')
+    speech.visualizations = ['wordcloud'] # exclude ngram since there is no field named 'date'
 
     page = field_defaults.page()
     page.extractor = CSV(field='page_number')

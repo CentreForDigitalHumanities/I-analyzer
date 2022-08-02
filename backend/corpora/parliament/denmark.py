@@ -104,6 +104,7 @@ class ParliamentDenmark(Parliament, CSVCorpus):
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field='text')
+    speech.visualizations = ['wordcloud'] # exclude ngram since there is no field named 'date'
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(field='id')
