@@ -214,6 +214,7 @@ export class SearchService {
             subfield: params.analysis,
             max_size_per_interval: params.maxDocuments,
             number_of_ngrams: params.numberOfNgrams,
+            date_field: params.dateField,
         });
     }
 
