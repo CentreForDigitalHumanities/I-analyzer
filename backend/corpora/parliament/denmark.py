@@ -39,17 +39,6 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_DENMARK_DATA']
     es_index = current_app.config['PP_DENMARK_INDEX']
     image = 'denmark.jpg'
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_danish_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "danish"
-        }
-    }
 
     language = 'danish'
 
