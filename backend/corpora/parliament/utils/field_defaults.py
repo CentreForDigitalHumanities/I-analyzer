@@ -184,6 +184,19 @@ def debate_id():
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
+def language():
+    return Field(
+        name='language',
+        display_name='Language',
+        description='Langauge of the speech',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches in the selected languages',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
+
 def legislature():
     ""
     return Field(
@@ -511,6 +524,22 @@ def page_source():
         display_name='Source page number',
         description='Page number in source document',
         es_mapping={'type': 'keyword'}
+    )
+
+
+def subject():
+    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
+    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
+    return Field(
+        name='subject',
+        display_name='Subject',
+        description='Subject that the speech is concerned with',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches about the selected subjects',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
     )
 
 def url():

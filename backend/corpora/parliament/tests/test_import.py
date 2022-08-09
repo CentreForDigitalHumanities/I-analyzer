@@ -359,7 +359,9 @@ OSLO LOBO MEDIA AS 2005""",
     {
         'name': 'parliament-norway-new',
         'docs': [
-            {}, {}, {}, {}, # skip a few introductory speeches to one with more metadata
+            {}, {}, {}, {
+                'subject': 'Statsbudsjettet',
+            }, # skip a few introductory speeches to one with more metadata
             {
                 'country': 'Norway',
                 'chamber': 'Stortinget',
@@ -382,6 +384,9 @@ OSLO LOBO MEDIA AS 2005""",
                 'id': 'tale000004',
                 'ministerial_role': None,
                 'legislature': 'Bondevik I',
+                'subject': None,
+                'language': 'Norwegian (Bokmål)',
+                'debate_id': 'Saker-og-publikasjoner/Publikasjoner/Referater/Stortinget/1998-1999/981020/2/'
             },
             {}, {},
             {

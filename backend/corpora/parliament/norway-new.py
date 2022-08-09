@@ -10,6 +10,7 @@ from addcorpus.corpus import CSVCorpus
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
+from corpora.parliament.utils.constants import document_context
 
 def extract_ministerial_role(speaker, question_answered_by_minister_title):
     """
@@ -33,6 +34,14 @@ def format_sequence(sequence):
     if sequence:
         return sequence.strip()
 
+def format_language(language):
+    languages = {
+        'nno': 'Norwegian (Nynorsk)',
+        'nob': 'Norwegian (Bokmål)'
+    }
+
+    return languages.get(language, None)
+
 EMPTY_VALUES = ['', 'NA']
 
 class ParliamentNorwayNew(Parliament, CSVCorpus):
@@ -48,6 +57,8 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
     es_index = current_app.config['PP_NORWAY_NEW_INDEX']
     image = 'norway.JPG'
     language = 'norwegian'
+
+    document_context = document_context()
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
@@ -73,6 +84,9 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
         field = 'debate_title',
         convert_to_none = EMPTY_VALUES
     )
+
+    debate_id = field_defaults.debate_id()
+    debate_id.extractor = CSV(field = 'debate_reference')
 
     debate_type = field_defaults.debate_type()
     debate_type.extractor = CSV(
@@ -161,6 +175,12 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(field='id')
 
+    subject = field_defaults.subject()
+    subject.extractor = CSV(
+        field = 'keyword',
+        convert_to_none = EMPTY_VALUES
+    )
+
     topic = field_defaults.topic()
     topic.extractor = CSV(
         field='debate_subject',
@@ -174,12 +194,19 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
         convert_to_none = EMPTY_VALUES,
     )
 
+    language_field = field_defaults.language()
+    language_field.extractor = CSV(
+        field = 'language',
+        transform = format_language
+    )
+
     def __init__(self):
         self.fields = [
             self.chamber,
             self.country,
             self.date,
-            self.debate_title, self.debate_type,
+            self.debate_title, self.debate_id, self.debate_type,
+            self.language_field,
             self.legislature,
             self.party,
             self.party_id,self.party_role,
@@ -188,6 +215,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
             self.speaker_id, self.speaker_birth_year, self.speaker_death_year, self.speaker_constituency, self.speaker_gender,
             self.speech,
             self.speech_id,
+            self.subject,
             self.topic,
             self.sequence,
         ]
