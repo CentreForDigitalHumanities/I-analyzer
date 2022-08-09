@@ -1,3 +1,4 @@
+import csv
 from glob import glob
 from datetime import datetime
 import re
@@ -29,11 +30,11 @@ class ParliamentNorway(Parliament, CSVCorpus):
     language = 'norwegian'
 
     def sources(self, start, end):
-        for csv_file in glob('{}**/*.csv'.format(self.data_directory)):
+        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
             year = re.search(r'\d{4}', csv_file)
             if year:
                 date = datetime(year=int(year.group(0)), month=1, day=1)
-                if start < date < end:
+                if start <= date <= end:
                     yield csv_file, {}
 
     book_id = field_defaults.book_id()
