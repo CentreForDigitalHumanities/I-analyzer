@@ -191,6 +191,11 @@ def legislature():
         display_name='Legislature',
         description='Title of individuals elected to parliament',
         es_mapping={'type': 'keyword'},
+        visualizations=['resultscount', 'termfrequency'],
+        search_filter = MultipleChoiceFilter(
+            description='Search only in debates from the selected era(s)',
+            option_count=10
+        ),
     )
 
 def topic():
@@ -223,17 +228,6 @@ def sequence():
         searchable=False,
     )
 
-def session():
-    """
-    in which session the debate or speech occurred
-    there may be several sessions within a given date
-    """
-    return Field(
-        name='session',
-        display_name='Session',
-        description='Session in which the debate or speech occurred',
-        es_mapping=BASIC_KEYWORD_MAPPING,
-    )
 
 def source_archive():
     """
@@ -482,6 +476,22 @@ def party_full():
         display_name='Party (full name)',
         description='Full name of the political party that the speaker belongs to',
         es_mapping=BASIC_TEXT_MAPPING,
+    )
+
+def party_role():
+    """
+    Role of the speaker's party in parliament (opposition, coalition, cabinet, etc.)
+    """
+    return Field(
+        name='party_role',
+        display_name='Party role',
+        description='Role of the speaker\'s political party in parliament at the time of speaking',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        search_filter= MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=10
+        ),
+        visualizations=['resultscount', 'termfrequency']
     )
 
 def page():

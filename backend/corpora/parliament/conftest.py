@@ -22,6 +22,7 @@ class UnittestConfig:
         'parliament-sweden': os.path.join(here, 'sweden.py'),
         'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
         'parliament-norway': os.path.join(here, 'norway.py'),
+        'parliament-norway-new': os.path.join(here, 'norway-new.py'),
     }
 
     SERVERS = {

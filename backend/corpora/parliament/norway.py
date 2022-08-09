@@ -7,7 +7,7 @@ import os
 
 from addcorpus.extract import Combined, Constant, Metadata, CSV
 from addcorpus.corpus import CSVCorpus
-from backend.corpora.parliament.utils.constants import document_context
+from corpora.parliament.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
@@ -56,17 +56,33 @@ class ParliamentNorway(Parliament, CSVCorpus):
         transform = lambda parts: '; '.join(parts)
     )
 
+
+    chamber = field_defaults.chamber()
+    chamber.extractor = Constant('Stortinget')
+    chamber.visualizations = None
+    chamber.search_filter = None
+    chamber.searchable = False
+
+    country = field_defaults.country()
+    country.extractor = Constant('Norway')
+    country.searchable = False
+
     date_earliest = field_defaults.date_earliest()
     date_earliest.extractor = CSV(
         field = 'year',
         transform = lambda value : formatting.get_date_from_year(value, 'earliest')
     )
+    date_earliest.search_filter.lower = min_date
+    date_earliest.search_filter.upper = max_date
 
     date_latest = field_defaults.date_latest()
     date_latest.extractor = CSV(
         field = 'year',
         transform = lambda value : formatting.get_date_from_year(value, 'latest')
     )
+    date_latest.search_filter.lower = min_date
+    date_latest.search_filter.upper = max_date
+
 
     page = field_defaults.page()
     page.extractor = CSV(field = 'page')
@@ -80,6 +96,8 @@ class ParliamentNorway(Parliament, CSVCorpus):
     def __init__(self):
         self.fields = [
             self.book_id, self.book_label,
+            self.chamber,
+            self.country,
             self.date_earliest, self.date_latest,
             self.page,
             self.speech,

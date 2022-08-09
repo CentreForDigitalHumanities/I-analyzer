@@ -28,12 +28,12 @@ def underscore_to_space(input_string, title_case=True):
         return joined.title() if title_case else joined
 
 
-def extract_year(datestring):
+def extract_year(datestring, pattern = r'(\d{4})-\d{2}-\d{2}'):
     """
     Get the year from a yyyy-mm-dd datestring
+    Optionally, a different regular expression can be provided, where the first group captures the year.
     """
     if datestring:
-        pattern = r'(\d{4})-\d{2}-\d{2}'
         match = re.match(pattern, datestring)
 
         if match:

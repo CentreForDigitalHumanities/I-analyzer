@@ -350,10 +350,52 @@ OSLO LOBO MEDIA AS 2005""",
                 'date_earliest': '2004-01-01',
                 'date_latest': '2004-12-31',
                 'sequence': '2',
+                'chamber': 'Stortinget',
+                'country': 'Norway',
             }
         ],
         'n_documents': 5,
     },
+    {
+        'name': 'parliament-norway-new',
+        'docs': [
+            {}, {}, {}, {}, # skip a few introductory speeches to one with more metadata
+            {
+                'country': 'Norway',
+                'chamber': 'Stortinget',
+                'date': '1998-10-20',
+                'debate_title': 'Sak  nr. 2',
+                'debate_type': 'interpellasjon',
+                'party': 'Høyre',
+                'party_id': 'H',
+                'party_role': 'Opposition',
+                'role': 'Representant',
+                'speaker': 'Sonja Irene Sjøli',
+                'speaker_id': 'SONS',
+                'speaker_gender': 'kvinne',
+                'speaker_birth_year': 1949,
+                'speaker_death_year': None,
+                'speaker_constituency': 'Akershus',
+                'speech': 'Det er en bred forståelse blant fagfolk og politikere om at norsk sykehusvesen ikke bare lider under mangel på ressurser, men at det først og fremst er behov for organisatoriske og strukturelle forandringer. Offentlige utredninger om eierskap, organisering og ledelse i sykehus viser at det er behov for en rekke endringer for å nå målet om et bedre og mer tilgjengelig helsetilbud til befolkningen. Erkjennelsen av at vi har brukt gamle og lite hensiktsmessige virkemidler i helsepolitikken, har også nådd Regjeringen. Helseministeren uttalte til Dagens Næringsliv i sommer at det ville tjene pasientene hvis vi kunne være mer dristig i bruken av etterspørselsteknikker og private bidrag innenfor sykehussektoren. Denne uttalte dristighet ser jeg fram til med spenning. Stortinget har i de siste år, etter sterkt påtrykk fra Høyre, vedtatt innsatsbasert finansiering og fritt sykehusvalg. Den naturlige konsekvens av dette er at sykehusene organiserer seg annerledes enn før. Vi er langt fra alene om disse tankene. En rekke svenske fagforbund krever en ny modell for det svenske helsevesenet. Den svenske legeforening og det svenske sykepleierforbundet har gått sammen og krever at markedet i større grad må styre helsetilbudet. De mener at fylkeskommunen har utspilt sin rolle i styringen av helsesektoren og krever en total omlegging av helsevesenet. Det er mulig at Norge har sterkere økonomi og bedre skiløpere enn svenskene, men helsedebatten i Sverige har i den senere tid vært langt mer dynamisk og spennende enn hos oss. Tankene om at sykehus ikke nødvendigvis må være eid og drevet av det offentlige, vinner terreng i stadig flere land og er allerede utviklet i flere miljøer også her i Norge. Til og med Jan Grund, Norges fremste helseøkonom, professor på BI og en svoren sosialdemokrat, mener at flertallet av norske politikere befinner seg i skyttergravene i debatten om private helsetjenester. Problemet er ifølge Grund at det ikke er definert hvilke grunnleggende helsetjenester vi har krav på, og hvilke tjenester som kan tilbys oss som forbrukere og kunder. Derfor er det så vanskelig å håndtere diskusjonen om privat kontra offentlig helsetilbud. Han uttrykker sterk støtte til å få private aktører inn i det offentlige helsevesen. Stiftelsen SINTEF Unimed er utpekt av Næringsdepartementet og Helsedepartementet til å lede næringsutvikling i helsesektoren. Lederen Paul Hellandsvik mener det er på høy tid å tenke nytt og utradisjonelt om hvordan det offentlige kan dra nytte av private aktører, og at det gjelder å komme i gang med noen prøveprosjekter. Erfaringer fra Sverige og andre land viser at en modell for helsevesenet hvor det offentlige drar nytte av private aktører til utbygging og drift av sykehus, gir store økonomiske gevinster og høy kvalitet på tjenestene. Forutsetningen for modellen er at det offentlige finansierer tjenestene, og at de fordeles etter behov i befolkningen. Den svenske sosialdemokratiske helseminister velsigner dette arbeidet og mener at det frigjør ressurser til å behandle enda flere pasienter, og at det gir bedre kvalitet på tjenestene. Og det er iallfall fem gode grunner til at vi bør se nærmere på disse ideene. For det første: Avstanden mellom befolkningens etterspørsel etter helsetjenester og det helsevesenet har kapasitet til å tilby, er økende. Lange helsekøer taler sitt tydelige språk. For det andre: De ideologiske motforestillingene er gledelig nok i ferd med å avta både i Arbeiderpartiet og i det såkalte sentrum. Som helseminister Høybråten uttrykte det i Dagens Næringsliv tidligere i sommer: «Spørsmålet om å bruke etterspørselsteknikker er … ikke først og fremst en ideologisk problemstilling, men heller et spørsmål om hvor mye og på hvilken måte det er hensiktsmessig å bruke teknikken.» Stadig flere mennesker har fått erfaring med private legesentre og private klinikker. Folk har forstått at helsepersonell som jobber i det private, er like opptatt av pasientenes beste og kvaliteten på behandlingen som helsepersonell i de offentlige sykehus. Det som måtte være igjen av ideologiske begrunnelser her i Norge, har mistet sin kraft, ikke minst fordi folk ser med egne øyne at det ikke er grunn til å frykte private tilbud som et supplement – tvert imot. I tillegg har betalingsviljen for mindre omfattende behandlingstilbud økt. For det tredje: Det offentlige har gjennom mange år brukt gamle og lite hensiktsmessige virkemidler i helsepolitikken. Offentlig monopol, hierarkiske styringssystemer, spillet mellom forvaltningsnivåene og manglende fokusering på service og kvalitet i behandlingen har skapt tillitskrise i helsevesenet, og – det må jeg si – med berettigelse. Ikke minst er inntrykket av uklare roller og uklar ansvarsfordeling mellom aktørene i helsevesenet frustrerende for pasientene. For det fjerde: Den demografiske utviklingen i den vestlige verden. Vi lever lenger, og presset på helsevesenet vil øke betraktelig i årene fremover. Teknologiutviklingen er en femte faktor. Sykehusene har nå, med den rette teknologi og de moderne medisiner, mulighet til å behandle sykdommer bedre og derigjennom gi pasienter lengre levetid og bedre livskvalitet. Jeg har registrert gjennom media i sommer at helseministeren er skeptisk til å skille mellom tilbyder- og etterspørselsrollen i helsevesenet. Han frykter at for mange private sykehus vil kanalisere tjenester og arbeidskraft bort fra de offentlige sykehusene, og at det vil bli ulik tilgang til helsetjenester. Men dersom ansvaret for funksjonsfordelingen mellom sykehusene ligger hos staten gjennom godkjenning av de regionale helseplaner, vil det bestemme hva som tilbys hvor. En nasjonal helseplan, slik Høyre ønsker, ville vært et enda bedre redskap. Dersom det offentlige har ansvar for finansieringen av tjenestene til den enkelte pasient, vil det sikre lik tilgang til tjenestene. Hvis pengene kunne følge pasienten direkte til sykehusene, slik Høyre vil, og slik Kristelig Folkeparti ville i opposisjon, ville vi unngå at fylkeskommunen tar deler av bevilgningen på veien. Sykehusene får klare insentiver til å behandle flere pasienter, og vi sikrer at pasientene settes først. En modell hvor man lar det offentlige og private konkurrere om å utføre tjenestene, er også den modell som best vil sikre pasientene en sterkere posisjon i forhold til sykehusvesenet. Når de politiske prioriteringer i helsesektoren, funksjonsfordelingen mellom sykehusene, kontrollsystemer og den offentlige finansieringen er på plass, blir det etter Høyres syn mindre viktig hvem som eier og driver sykehusene. Unntaket er universitets- og regionsykehusene, som etter Høyres oppfatning er i en spesiell situasjon. Private kan godt eie og ha driftsansvar for bygningene. Men selve sykehusdriften må være i offentlig regi, slik at man har en tilfredsstillende og god kontroll med universitetsfunksjonene. Vi er inne i en tid med stadig større ubalanse mellom tilbud og etterspørsel. Derfor må vi forholde oss til virkeligheten. Det er snart ingen grenser for hvilke tjenester helsevesenet skal utføre. I denne situasjonen må vi styre slik at vi får mest mulig ut av ressursene. Det offentlige må konsentrere seg om å sikre de grunnleggende helsetjenestene og lage spilleregler for de private aktørene. De bør også få en mulighet til å utføre oppgaver det offentlige definerer som «grunnleggende helsetjenester», slik man gjør i Sverige. Men det må, som jeg har sagt tidligere, være en forutsetning at det offentlige skal betale tjenestene, og at kontrollmekanismene er gode, slik at tjenestene holder kvalitetsmessige mål. Det viktigste er likevel at vi gir sykehusene frihet i forhold til det tungrodde politiske system, slik at det blir mulig å lede sykehusene mer profesjonelt og prøve ut ulike selskapsformer, slik en nå ser ut til å få politisk flertall for her i Oslo. Som politikere bør vi heller være opptatt av å fristille de offentlige sykehusene enn å begrense de private. Et samarbeid mellom det offentlige og det private helsevesen har vi tro på. Etter Høyres mening gjelder det å få i gang noen prøveprosjekter, for uten det tror jeg ikke vi kommer videre. Hvordan ser helseministeren på dette, og vil han ta initiativ og stimulere til et slikt samarbeid?',
+                'topic': 'om en modell for helsevesenet hvor det offentlige drar nytte av _private aktører til utbygging og drift av sykehus_',
+                'sequence': '4',
+                'id': 'tale000004',
+                'ministerial_role': None,
+                'legislature': 'Bondevik I',
+            },
+            {}, {},
+            {
+                # test special case of ministers answering questions
+                'ministerial_role': 'helseministeren',
+                'speaker': 'Presidenten',
+                'speaker_id': 'DH',
+                'party': None,
+                'party_role': None,
+                'speech': "Representanten Sjøli nevnte et forslag. Betyr det at hun tar opp dette forslaget?"
+            }
+        ],
+        'n_documents': 10,
+    }
 ]
 
 def corpus_test_name(corpus_spec):
@@ -367,17 +409,24 @@ def test_imports(test_app, corpus_object):
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
     end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date
 
+    tested_fields = set()
+    resulted_fields = set()
+
     docs = get_documents(corpus, start, end)
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
+            tested_fields.add(key)
             assert key in doc
             assert doc[key] == target[key]
 
         for key in doc:
-            if not key in target:
-                message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
-                warnings.warn(message)
+            resulted_fields.add(key)
+
+    for key in resulted_fields:
+        if not key in tested_fields:
+            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+            warnings.warn(message)
 
     docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
