@@ -22,7 +22,7 @@ The `images` directory contains the images used in the corpus overview.
 - Set the corpus date range if needed. See below.
 - Define the index name and data directory from config.
 - Add an (open license) image of the parliament in `./images/`.
-- Define `es_settings` property. Import `PP_ES_SETTINGS` from config, and add language-specific analyzers. Include an analyzer `stopwords` and `stemmer`.
+- Define `language` property. This must be a lowercase string with the language. It will be used to set up language analyzers in elasticsearch.
 - Check which of the fields in `field_defaults.py` contain information that is present in your source files. For each, make a new instance using the default function. Define the extractor. If needed, you can override other properties. Do not override `name` or `display_name`. See below for more documentation on specific fields.
 - If your source files contain relevant information that is not an existing field, add it in `field_defaults.py`, leaving out the extractor. Then define it in your class as desired. Make sure to add proper documentation for your field.
 - Define the `fields` property in `__init__(self)`.
