@@ -214,35 +214,31 @@ class Corpus(object):
         return json_dict
 
     def serialize(self):
+        """
+        Convert corpus object to a JSON-friendly dict format.
+        """
         corpus_dict = {}
-        # inspect.getmembers returns tuples for every Class attribute:
-        # tuple[0] attribute name; tuple[1] attribute content
-        # the following suppresses all private attributes and bound methods,
-        # and attributes which are not implemented in the Corpus class
-        corpus_attributes = [
-            a for a in inspect.getmembers(self)
-            if not a[0].startswith('__') and not inspect.ismethod(a[1])
-            and a[0] in dir(Corpus)
+
+        # gather attribute names
+        # exclude:
+        # - methods not implemented in Corpus class
+        # - hidden attributes
+        # - attributes listed in `exclude`
+        # - bound methods
+        exclude = ['data_directory', 'es_settings']
+        corpus_attribute_names = [
+            a for a in dir(self)
+            if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
         ]
+
+        # collect values
+        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
+
         for ca in corpus_attributes:
-            if ca[0] == 'data_directory':
-                continue
-            elif ca[0] == 'fields':
+            if ca[0] == 'fields':
                 field_list = []
                 for field in self.fields:
-                    field_dict = {}
-                    for key, value in field.__dict__.items():
-                        if key == 'search_filter' and value != None:
-                            filter_name = str(type(value)).split(
-                                sep='.')[-1][:-2]
-                            search_dict = {'name': filter_name}
-                            for search_key, search_value in value.__dict__.items():
-                                if search_key == 'search_filter' or search_key != 'field':
-                                    search_dict[search_key] = search_value
-                            field_dict['search_filter'] = search_dict
-                        elif key != 'extractor':
-                            field_dict[key] = value
-                    field_list.append(field_dict)
+                    field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
             elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
@@ -720,6 +716,25 @@ class Field(object):
 
         if self.search_filter:
             self.search_filter.field = self
+
+    def serialize(self):
+        """
+        Convert Field object to a JSON-friendly dict format.
+        """
+        field_dict = {}
+        for key, value in self.__dict__.items():
+            if key == 'search_filter' and value != None:
+                filter_name = str(type(value)).split(
+                    sep='.')[-1][:-2]
+                search_dict = {'name': filter_name}
+                for search_key, search_value in value.__dict__.items():
+                    if search_key == 'search_filter' or search_key != 'field':
+                        search_dict[search_key] = search_value
+                field_dict['search_filter'] = search_dict
+            elif key != 'extractor':
+                field_dict[key] = value
+
+        return field_dict
 
 
 # Helper functions ############################################################
