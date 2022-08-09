@@ -67,31 +67,6 @@ class UnittestConfig:
     PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
     PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
 
-    # Elasticsearch settings for People & Parliament corpora
-    PP_ES_SETTINGS = {
-        "analysis": {
-            "analyzer": {
-                "clean": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords"]
-                },
-                "stemmed": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords", "stemmer"]
-                }
-            },
-            "char_filter":{
-                "number_filter":{
-                    "type":"pattern_replace",
-                    "pattern":"\\d+",
-                    "replacement":""
-                }
-            }
-        }
-    }
-
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
