@@ -2,7 +2,7 @@ from glob import glob
 from datetime import datetime
 
 from addcorpus.corpus import CSVCorpus
-from addcorpus.extract import CSV
+from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.constants as constants
@@ -68,6 +68,9 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     book_label = field_defaults.book_label()
     book_label.extractor = CSV(field = 'book_label')
 
+    country = field_defaults.country()
+    country.extractor = Constant('Sweden')
+
     era = field_defaults.era()
     era.extractor = CSV(
         field = 'era',
@@ -124,6 +127,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     def __init__(self):
         self.fields = [
             self.book_id, self.book_label,
+            self.country,
             self.era,
             self.chamber,
             self.date_earliest, self.date_latest,

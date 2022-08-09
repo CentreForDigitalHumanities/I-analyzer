@@ -151,7 +151,7 @@ export class SearchComponent implements OnInit {
     }
 
     private getQueryFields(): string[] | null {
-        if (this.selectedSearchFields) { return null; }
+        if (!this.selectedSearchFields) { return null; }
 
         const fields = _.flatMap(this.selectedSearchFields, field => {
             const multifields = this.searchableMultifields(field);
@@ -169,7 +169,7 @@ export class SearchComponent implements OnInit {
     private searchableMultifields(field: CorpusField): string[] {
         if (field && field.multiFields) {
             // list known searchable subfields (a numeric field like `length` should not be included)
-            const searchables = ['clean', 'stemmed'];
+            const searchables = ['clean', 'stemmed', 'text'];
             const subfields = field.multiFields.filter(subfield =>
                 searchables.includes(subfield)
             );
@@ -181,7 +181,7 @@ export class SearchComponent implements OnInit {
     }
 
     private createQueryModel() {
-            const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
+        const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
 
         return this.searchService.createQueryModel(
             this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
@@ -289,7 +289,7 @@ export class SearchComponent implements OnInit {
         this.search();
     }
 
-    private selectSearchFields(selection: CorpusField[]) {
+    public selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
     }
