@@ -1,5 +1,5 @@
 ## Various helper functions for formatting
-
+from datetime import datetime
 import re
 
 def format_page_numbers(pages):
@@ -40,3 +40,16 @@ def extract_year(datestring):
             year = match.group(1)
             return int(year)
 
+def get_date_from_year(value, limit='earliest'):
+    """
+    Get a yyyy-mm-dd string from the year. Parameters:
+    - `value`: a string of digits indicating the year
+    - `limit` (optional): set to 'earliest' to return January 1st, 'latest' to return December 31st.
+    """
+    if value and value.isnumeric():
+        year = int(value)
+        if limit == 'earliest':
+            date = datetime(year=year, month=1, day=1)
+        else:
+            date = datetime(year=year, month=12, day=31)
+        return date.strftime('%Y-%m-%d')

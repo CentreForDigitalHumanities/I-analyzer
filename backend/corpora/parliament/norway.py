@@ -1,14 +1,18 @@
 from glob import glob
-from os.path import basename
 from datetime import datetime
 import re
 from flask import current_app
+import os
 
 from addcorpus.extract import Combined, Constant, Metadata, CSV
 from addcorpus.corpus import CSVCorpus
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
+import corpora.parliament.utils.formatting as formatting
 
+def remove_file_extension(filename):
+    name, ext = os.path.splitext(filename)
+    return name
 
 class ParliamentNorway(Parliament, CSVCorpus):
     '''
@@ -30,7 +34,13 @@ class ParliamentNorway(Parliament, CSVCorpus):
             if year:
                 date = datetime(year=int(year.group(0)), month=1, day=1)
                 if start < date < end:
-                    yield csv_file, {'year': year}
+                    yield csv_file, {}
+
+    book_id = field_defaults.book_id()
+    book_id.extractor = CSV(
+        field = 'source_file',
+        transform = remove_file_extension,
+    )
 
     book_label = field_defaults.book_label()
     book_label.extractor = Combined(
@@ -39,15 +49,32 @@ class ParliamentNorway(Parliament, CSVCorpus):
         transform = lambda parts: '; '.join(parts)
     )
 
+    date_earliest = field_defaults.date_earliest()
+    date_earliest.extractor = CSV(
+        field = 'year',
+        transform = lambda value : formatting.get_date_from_year(value, 'earliest')
+    )
+
+    date_latest = field_defaults.date_latest()
+    date_latest.extractor = CSV(
+        field = 'year',
+        transform = lambda value : formatting.get_date_from_year(value, 'latest')
+    )
+
     page = field_defaults.page()
     page.extractor = CSV(field = 'page')
 
     speech = field_defaults.speech()
     speech.extractor = CSV(field = 'text')
 
+    sequence = field_defaults.sequence()
+    sequence.extractor = CSV(field = 'page')
+
     def __init__(self):
         self.fields = [
-            self.book_label,
+            self.book_id, self.book_label,
+            self.date_earliest, self.date_latest,
             self.page,
             self.speech,
+            self.sequence,
         ]

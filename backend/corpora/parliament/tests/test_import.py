@@ -345,7 +345,11 @@ INNEHOLDENDE REGISTER TIL FORHANDLINGER I STORTINGET OG DETS AVDELINGER
 
 OSLO LOBO MEDIA AS 2005""",
                 'page': '2',
-                'book_label': 'Stortingsforhandlinger; 2004/2005 Vol. 149 Nr. 9'
+                'book_id': 'digistorting_2004_part9_vol-a',
+                'book_label': 'Stortingsforhandlinger; 2004/2005 Vol. 149 Nr. 9',
+                'date_earliest': '2004-01-01',
+                'date_latest': '2004-12-31',
+                'sequence': '2',
             }
         ],
         'n_documents': 5,
