@@ -1,48 +1,53 @@
 from glob import glob
 from os.path import basename
 from datetime import datetime
-
+import re
 from flask import current_app
 
-from addcorpus.extract import Constant, Metadata
+from addcorpus.extract import Combined, Constant, Metadata, CSV
+from addcorpus.corpus import CSVCorpus
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
 
 
-class ParliamentNorway(Parliament):
+class ParliamentNorway(Parliament, CSVCorpus):
     '''
     Class for indexing Norwegian parliamentary data
     '''
 
-    title = "People & Parliament (Norway)"
-    description = "Minutes from European parliaments"
-    data_directory = current_app.config['PP_NO_DATA']
-    # store min_year as int, since datetime does not support BCE dates
-    visualize = []
-    es_index = current_app.config['PP_NO_INDEX']
-    es_alias = current_app.config['PP_ALIAS']
+    title = "People & Parliament (Norway, 1814-2004)"
+    description = "Speeches from the Storting"
+    min_date = datetime(year=1814, month=1, day=1)
+    max_date = datetime(year=2004, month=12, day=31)
+    data_directory = current_app.config['PP_NORWAY_DATA']
+    es_index = current_app.config['PP_NORWAY_INDEX']
+    image = 'norway.JPG'
+    language = 'norwegian'
 
     def sources(self, start, end):
-        for txt_file in glob('{}/*.txt'.format(self.data_directory)):
-            date = datetime(year=int(basename(
-                txt_file).split('_')[1]), month=1, day=1)
-            if start < date < end:
-                yield txt_file, {'date': date.strftime('%Y-%m-%d')}
+        for csv_file in glob('{}**/*.csv'.format(self.data_directory)):
+            year = re.search(r'\d{4}', csv_file)
+            if year:
+                date = datetime(year=int(year.group(0)), month=1, day=1)
+                if start < date < end:
+                    yield csv_file, {'year': year}
 
-    def source2dicts(self, source):
-        txt_file = source[0]
-        out_dict = source[1]
-        with open(txt_file, 'r') as f:
-            text = f.read()
-        out_dict.update({'debate': text})
-        yield(out_dict)
+    book_label = field_defaults.book_label()
+    book_label.extractor = Combined(
+        CSV(field = 'title'),
+        CSV(field = 'subtitle'),
+        transform = lambda parts: '; '.join(parts)
+    )
+
+    page = field_defaults.page()
+    page.extractor = CSV(field = 'page')
+
+    speech = field_defaults.speech()
+    speech.extractor = CSV(field = 'text')
 
     def __init__(self):
-        self.country.extractor = Constant(
-            value='Norway'
-        )
-
-        self.country.search_filter = None
-
-        self.date.extractor = Metadata('date')
-
-        self.debate.extractor = Metadata('debate')
+        self.fields = [
+            self.book_label,
+            self.page,
+            self.speech,
+        ]

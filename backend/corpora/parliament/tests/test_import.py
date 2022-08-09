@@ -332,7 +332,24 @@ Kongl. Ordens-Böktryckeriet, I8Z9.''',
             }
         ],
         'n_documents': 10
-    }
+    },
+    {
+        'name': 'parliament-norway',
+        'docs': [
+            {
+                'speech': """KONGERIKET NORGES 149. STORTINGS FORHANDLINGER 2004 - 2005
+
+9. del
+
+INNEHOLDENDE REGISTER TIL FORHANDLINGER I STORTINGET OG DETS AVDELINGER
+
+OSLO LOBO MEDIA AS 2005""",
+                'page': '2',
+                'book_label': 'Stortingsforhandlinger; 2004/2005 Vol. 149 Nr. 9'
+            }
+        ],
+        'n_documents': 5,
+    },
 ]
 
 def corpus_test_name(corpus_spec):
