@@ -63,6 +63,8 @@ class UnittestConfig:
     PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
     PP_NORWAY_INDEX = 'parliament-norway'
     PP_NORWAY_DATA = os.path.join(here, 'tests', 'data', 'norway')
+    PP_NORWAY_NEW_INDEX = 'parliament-norway-new'
+    PP_NORWAY_NEW_DATA = os.path.join(here, 'tests', 'data', 'norway-new')
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"

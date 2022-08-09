@@ -7,6 +7,7 @@ import os
 
 from addcorpus.extract import Combined, Constant, Metadata, CSV
 from addcorpus.corpus import CSVCorpus
+from backend.corpora.parliament.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
@@ -28,6 +29,11 @@ class ParliamentNorway(Parliament, CSVCorpus):
     es_index = current_app.config['PP_NORWAY_INDEX']
     image = 'norway.JPG'
     language = 'norwegian'
+
+    document_context = document_context(
+        context_fields=['book_id'],
+        context_display_name='book',
+    )
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
