@@ -41,18 +41,6 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_SWEDEN_OLD_DATA']
     es_index = current_app.config['PP_SWEDEN_OLD_INDEX']
 
-    # TODO: remove es_settings after #771)
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_swedish_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "swedish"
-        }
-    }
 
     document_context = constants.document_context()
     document_context['context_fields'] = ['chamber', 'date_earliest', 'date_latest']
