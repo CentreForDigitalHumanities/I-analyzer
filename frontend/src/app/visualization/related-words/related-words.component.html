@@ -11,11 +11,7 @@
         <div class="field" *ngIf="graphStyle.value==='bar'">
             <div class="control">
                 <label class="label">Time interval:</label>
-                <p-slider [max]="totalData.labels.length - 1" [(ngModel)]="currentTimeIndex" (onSlideEnd)="zoomTimeInterval($event)"></p-slider>
-
-                <p style="text-align:center;">
-                    {{totalData.labels[currentTimeIndex]}}
-                </p>
+                <ia-time-interval-slider [labels]="totalData.labels" (currentIndex)="zoomTimeInterval($event)"></ia-time-interval-slider>
             </div>
         </div>
     </div>

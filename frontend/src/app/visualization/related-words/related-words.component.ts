@@ -40,7 +40,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
     ];
     tableData: [WordSimilarity];
 
-    currentTimeIndex = [0];
+    currentTimeIndex = undefined;
     public zoomedInData; // data requested when clicking on a time interval
     public chartOptions: ChartOptions = {};
 
@@ -50,7 +50,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
 
     ngOnInit(): void {
         this.updateChart(this.graphStyle.value);
-        this.graphStyle.subscribe(style => this.updateChart(style));
+        this.graphStyle.subscribe(this.updateChart.bind(this));
     }
 
     ngOnChanges() {
@@ -80,26 +80,30 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
             });
     }
 
-    zoomTimeInterval(event: any) {
-        this.isLoading.emit(true);
-        this.searchService.getRelatedWordsTimeInterval(
-            this.queryModel.queryText,
-            this.corpus.name,
-            this.totalData.labels[event.value])
-            .then(results => {
-                this.zoomedInData = results['graphData'];
-                this.zoomedInData.datasets
-                    .sort((a, b) => { return b.data[0] - a.data[0] })
-                    .map((d, index) => {
-                        d.backgroundColor = selectColor(this.palette, index);
-                        d.hoverBackgroundColor = selectColor(this.palette, index);
-                    });
-                    this.updateChart('bar');
-                this.isLoading.emit(false);
-            })
-            .catch(error => {
-                this.error.emit(error['message']);
-            });
+    zoomTimeInterval(timeIndex: number) {
+        if (timeIndex !== this.currentTimeIndex) {
+            this.currentTimeIndex = timeIndex;
+            this.isLoading.emit(true);
+            this.searchService.getRelatedWordsTimeInterval(
+                this.queryModel.queryText,
+                this.corpus.name,
+                this.totalData.labels[timeIndex])
+                .then(results => {
+                    this.zoomedInData = results['graphData'];
+                    this.zoomedInData.datasets
+                        .sort((a, b) => { return b.data[0] - a.data[0] })
+                        .map((d, index) => {
+                            d.backgroundColor = selectColor(this.palette, index);
+                            d.hoverBackgroundColor = selectColor(this.palette, index);
+                        });
+                        this.updateChart('bar');
+                    this.isLoading.emit(false);
+                })
+                .catch(error => {
+                    this.error.emit(error['message']);
+                });
+        }
+
     }
 
     formatValue(value: number): string {
@@ -180,12 +184,13 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
 
     updateChart(style: 'line'|'stream'|'bar'): void {
         if (style !== 'bar') {
+            this.currentTimeIndex = undefined;
             this.zoomedInData = undefined;
             const data = _.cloneDeep(this.totalData);
             this.makeChart(data, style);
         } else {
             if (this.zoomedInData === undefined) {
-                this.zoomTimeInterval({value: this.currentTimeIndex});
+                this.zoomTimeInterval(this.currentTimeIndex);
             } else {
                 this.makeChart(this.zoomedInData, style);
             }

@@ -1,0 +1,7 @@
+<div class="block">
+    <p-slider [max]="sliderMax" (onChange)="sliderIndex.next($event.value)"></p-slider>
+
+    <p style="text-align:center;">
+        {{currentLabel.value}}
+    </p>
+</div>
