@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { Chart, ChartData, ChartOptions, Filler } from 'chart.js';
+import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
 import { selectColor } from '../select-color';
 import { DialogService, SearchService } from '../../services/index';
@@ -250,6 +250,17 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
             });
             options.elements.line.borderWidth = 0;
             options.plugins.legend.labels['filter'] = (legendItem, data) => legendItem.text !== '';
+
+            const labelText = (context: TooltipItem<any>) => {
+                if (context.datasetIndex > 0) {
+                    const originalData = this.totalData.datasets[context.datasetIndex - 1].data;
+                    const similarity = originalData[context.dataIndex];
+                    return similarity.toString();
+                }
+
+            };
+
+            options.plugins.tooltip.callbacks.label = labelText.bind(this);
         }
 
         if (style === 'bar') {
