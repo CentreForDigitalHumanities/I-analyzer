@@ -22,17 +22,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_OLD_DATA']
     es_index = current_app.config['PP_GERMANY_OLD_INDEX']
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_german_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "german"
-        }
-    }
+    language = 'german'
 
     field_entry = 'item_order'
     required_field = 'text'
