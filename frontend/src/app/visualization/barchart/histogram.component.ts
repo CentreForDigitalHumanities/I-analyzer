@@ -32,10 +32,11 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             return {name: this.visualizedField.name, size: 100};
         }
 
-        if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-            size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-        } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
-            size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
+        const defaultData = this.visualizedField.searchFilter.defaultData;
+        if (defaultData.filterType === 'MultipleChoiceFilter') {
+            size = (<MultipleChoiceFilterData>defaultData).optionCount;
+        } else if (defaultData.filterType === 'RangeFilter') {
+            size = (<RangeFilterData>defaultData).max - (<RangeFilterData>defaultData).min;
         }
         return {name: this.visualizedField.name, size: size};
     }
