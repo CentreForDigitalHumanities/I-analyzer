@@ -332,6 +332,25 @@ Kongl. Ordens-Böktryckeriet, I8Z9.''',
             }
         ],
         'n_documents': 10
+    },
+    {
+        'name': 'parliament-finland',
+        'docs': [
+            {
+                'country': 'Finland',
+                'speech': 'Täysistunto alkaa. Toivotan kaikki tervetulleiksi tänne Sibelius-taloon Sibeliuksen juhlavuotena aloittamaan vastuullista työtämme isänmaan hyväksi. Iältäni vanhimpana eduskunnan jäsenenä johdan puhetta tässä valtiopäivien ensimmäisessä täysistunnossa, kunnes eduskunta on työjärjestyksen 4 §:n mukaan valinnut puhemiehen ja kaksi varapuhemiestä ja nämä ovat antaneet eduskunnalle juhlallisen vakuutuksen. Plenum börjar. Som den riksdagsledamot som är äldst till åren är det min uppgift att föra ordet vid första plenum under riksmötet till dess att riksdagen enligt 4 § i riksdagens arbets-ordning inom sig valt talman och två vice talmän och dessa har avgett högtidlig försäkran inför riksdagen.',
+                'speaker_id': 'Pertti_Salolainen',
+                'speaker': 'Pertti Salolainen',
+                'role': 'Ikäpuhemies',
+                'party_id': '#party.KOK',
+                'party': 'KOK',
+                'speaker_gender': 'Male',
+                'speaker_birth_year': 1940,
+                'speech_type': 'PuhemiesPuheenvuoro',
+                'url': 'https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+1.aspx',
+            },
+        ],
+        'n_documents': 22,
     }
 ]
 
