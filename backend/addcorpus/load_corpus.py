@@ -45,7 +45,13 @@ def load_corpus(corpus_name):
 
 def load_all_corpora():
     for corpus_name in current_app.config['CORPORA'].keys():
-        corpus = load_corpus(corpus_name)
+        try:
+            corpus = load_corpus(corpus_name)
+        except Exception as e:
+            message = 'Could not load corpus {}: {}'.format(corpus_name, e)
+            logger.log(level = 40, msg = message)
+            corpus = None
+
         if corpus:
             current_app.config['CORPUS_DEFINITIONS'][corpus_name] = corpus
             corpus_db = models.Corpus.query.filter_by(name=corpus_name).first()
