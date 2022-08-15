@@ -3,6 +3,7 @@ from glob import glob
 import logging
 from flask import current_app
 import os
+import re
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV, Metadata, Combined
@@ -28,7 +29,8 @@ def get_party_name(data):
         return parties[abbreviation]
 
 def get_timestamp_from_id(id):
-    return id[8:]
+    match = re.match(r'\d{8}(\d{6})', id)
+    return match.group(1) if match else None
 
 
 class ParliamentDenmarkNew(Parliament, CSVCorpus):
