@@ -6,8 +6,10 @@ from addcorpus.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
+from corpora.parliament.utils.constants import document_context
 import re
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 
 from flask import current_app
 
@@ -68,7 +70,11 @@ def extract_role_data(soup):
     }
 
 def metadata_attribute_transform_func(attribute):
-    get_attribute = lambda which, collection : collection[which][attribute]
+    def get_attribute(which, collection):
+        if which and collection and which in collection:
+            value = collection[which][attribute]
+            return clean_value(value)
+
     return lambda values: get_attribute(*values)
 
 def person_attribute_extractor(attribute):
@@ -94,7 +100,7 @@ def format_role(values):
     id, roles = values
     if id:
         clean_id = id.replace('#', '')
-        return roles[clean_id]
+        return roles.get(clean_id, clean_id)
 
 def speech_metadata(speech_node):
     """Gets the `note` sibling to the speech."""
@@ -113,6 +119,15 @@ def find_debate_title(speech_node):
 def find_date(speech_node):
     debate_node = find_debate_node(speech_node)
     return debate_node.teiHeader.find('date')
+
+def clean_value(value):
+    if type(value) == str or type(value) == NavigableString:
+        stripped = value.strip()
+        if len(stripped):
+            return stripped
+    if type(value) == int or type(value) == float:
+        return value
+
 
 class ParliamentFinland(Parliament, XMLCorpus):
     title = 'People and Parliament (Finland)'
@@ -141,6 +156,8 @@ class ParliamentFinland(Parliament, XMLCorpus):
     language = 'finnish'
     image = 'finland.jpg'
 
+    document_context = document_context()
+
     tag_toplevel = 'teiCorpus'
     tag_entry = 'u'
 
@@ -162,14 +179,14 @@ class ParliamentFinland(Parliament, XMLCorpus):
     debate_title = field_defaults.debate_title()
     debate_title.extractor = XML(
         transform_soup_func = find_debate_title,
-        transform = str.strip,
+        transform = clean_value,
     )
 
     party = field_defaults.party()
     party.extractor = party_attribute_extractor('name')
 
     party_id = field_defaults.party_id()
-    party_id.extractor = party_attribute_extractor('id')
+    party_id.extractor = person_attribute_extractor('party_id')
 
     party_role = field_defaults.party_role()
     party_role.extractor = party_attribute_extractor('role')
@@ -194,7 +211,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
     speaker_birth_year.extractor = person_attribute_extractor('birth_year')
 
     speech = field_defaults.speech()
-    speech.extractor = XML(transform = str.strip)
+    speech.extractor = XML(transform = clean_value)
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = XML(
@@ -210,7 +227,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
     topic = field_defaults.topic()
     topic.extractor = XML(
         transform_soup_func = find_topic,
-        transform = str.strip,
+        transform = clean_value,
     )
 
     url = field_defaults.url()
