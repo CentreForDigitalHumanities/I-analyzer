@@ -77,12 +77,59 @@ def date_is_estimate():
     )
 
 
-def era():
+def date_earliest():
+    "The earliest date on which the debate may have taken place"
     return Field(
-        name='era',
-        display_name='Era',
-        description='The parliamentary era in which the speech or debate was held'
+        name='date_earliest',
+        display_name='Earliest date',
+        description='The date on which the debate took place.',
+        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        results_overview=True,
+        search_filter=DateFilter(
+            MIN_DATE,
+            MAX_DATE,
+            description='Search only debates with the earliest possible date in this time range'
+        ),
+        visualizations=['resultscount', 'termfrequency'],
+        csv_core=True,
     )
+
+def date_latest():
+    "The latest date on which the debate may have taken place"
+    return Field(
+        name='date_latest',
+        display_name='Latest date',
+        description='The date on which the debate took place.',
+        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        results_overview=True,
+        search_filter=DateFilter(
+            MIN_DATE,
+            MAX_DATE,
+            description='Search only debates with the latest possible date in this time range'
+        ),
+        visualizations=['resultscount', 'termfrequency'],
+        csv_core=True,
+    )
+
+def era(include_aggregations = True):
+    if include_aggregations:
+        return Field(
+            name='era',
+            es_mapping=BASIC_KEYWORD_MAPPING,
+            display_name='Era',
+            description='The parliamentary era in which the speech or debate was held',
+            visualizations=['resultscount', 'termfrequency'],
+            search_filter = MultipleChoiceFilter(
+                description='Search only in debates from the selected era(s)',
+                option_count=10
+            ),
+        )
+    else:
+        return Field(
+            name = 'era',
+            display_name='Era',
+            description='The parliamentary era in which the speech or debate was held',
+        )
 
 
 def chamber():
@@ -97,6 +144,16 @@ def chamber():
             option_count=2
         ),
         visualizations = ['resultscount', 'termfrequency']
+    )
+
+def column():
+    "column number or range (used in UK data) (string)"
+    return Field(
+        name='column',
+        display_name='Column(s)',
+        description='Column(s) of the speech in the original document',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        searchable=False,
     )
 
 def debate_type():
@@ -155,6 +212,17 @@ def subtopic():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def sequence():
+    "integer index of the speech in a debate"
+    return Field(
+        name='sequence',
+        display_name='Sequence',
+        description='Index of the sequence of speeches in a debate',
+        es_mapping={'type': 'integer'},
+        sortable=True,
+        searchable=False,
+    )
+
 def session():
     """
     in which session the debate or speech occurred
@@ -167,6 +235,16 @@ def session():
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
+def source_archive():
+    """
+    A field which can be used to (internally) keep track of the source
+    of the specific dataset
+    """
+    return Field(
+        name='source_archive',
+        es_mapping={'type': 'keyword'},
+        hidden=True
+    )
 
 
 def speech():
@@ -423,16 +501,6 @@ def page_source():
         display_name='Source page number',
         description='Page number in source document',
         es_mapping={'type': 'keyword'}
-    )
-
-def column():
-    "column number or range (used in UK data) (string)"
-    return Field(
-        name='column',
-        display_name='Column(s)',
-        description='Column(s) of the speech in the original document',
-        es_mapping=BASIC_KEYWORD_MAPPING,
-        searchable=False,
     )
 
 def url():
