@@ -49,7 +49,7 @@
     "iv-viewer": "^2.0.1",
     "lodash": "^4.17.21",
     "marked": "^4.0.10",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "ng2-pdf-viewer": "6.3.2",
     "ngx-cookie-service": "^2.4.0",
     "ngx-md": "^8.1.6",

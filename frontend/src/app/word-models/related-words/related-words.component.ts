@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ChartOptions } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../visualization/select-color';
 import { DialogService, SearchService } from '../../services/index';
 
 @Component({
@@ -10,7 +10,7 @@ import { DialogService, SearchService } from '../../services/index';
     styleUrls: ['./related-words.component.scss']
 })
 export class RelatedWordsComponent implements OnChanges {
-    @Input() queryModel: QueryModel;
+    @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
@@ -80,7 +80,7 @@ export class RelatedWordsComponent implements OnChanges {
 
     getData() {
         this.isLoading.emit(true);
-        this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
+        this.searchService.getRelatedWords(this.queryText, this.corpus.name).then(results => {
             this.graphData = results['graphData'];
             this.graphData.datasets.map((d, index) => {
                 d.fill = false;
@@ -103,7 +103,7 @@ export class RelatedWordsComponent implements OnChanges {
         console.log(event);
         this.isLoading.emit(true);
         this.searchService.getRelatedWordsTimeInterval(
-            this.queryModel.queryText,
+            this.queryText,
             this.corpus.name,
             this.graphData.labels[event.element.index])
             .then(results => {

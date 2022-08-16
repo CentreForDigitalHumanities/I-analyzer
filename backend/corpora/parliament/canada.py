@@ -11,6 +11,7 @@ from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
@@ -19,17 +20,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_english_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "english"
-        }
-    }
+    language = 'english'
 
     field_entry = 'speech_id'
     required_field = 'content'
@@ -78,7 +69,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
         field='speaker_party'
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = CSV(
         field='speech_type'
     )
@@ -104,25 +95,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets",
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "english"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(

@@ -19,6 +19,8 @@ class UnittestConfig:
         'parliament-germany-new': os.path.join(here, 'germany-new.py'),
         'parliament-germany-old': os.path.join(here, 'germany-old.py'),
         'parliament-france': os.path.join(here, 'france.py'),
+        'parliament-sweden': os.path.join(here, 'sweden.py'),
+        'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
     }
 
     SERVERS = {
@@ -34,9 +36,12 @@ class UnittestConfig:
     PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     PP_UK_INDEX = 'parliament-uk'
     PP_UK_IMAGE = 'uk.jpeg'
+
     PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
+    PP_NL_RECENT_DATA = os.path.join(here, 'tests', 'data', 'netherlands-recent')
     PP_NL_INDEX = 'parliament-netherlands'
     PP_NL_IMAGE = 'netherlands.jpg'
+
     PP_CANADA_DATA = os.path.join(here, 'tests', 'data', 'canada')
     PP_CANADA_INDEX = 'parliament-canada'
     PP_CANADA_IMAGE = 'canada.jpeg'
@@ -49,31 +54,12 @@ class UnittestConfig:
     PP_FR_INDEX = 'parliament-france'
     PP_FR_DATA = os.path.join(here, 'tests', 'data', 'france')
     PP_FR_IMAGE = 'france.jpeg'
-
-    # Elasticsearch settings for People & Parliament corpora
-    PP_ES_SETTINGS = {
-        "analysis": {
-            "analyzer": {
-                "clean": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords"]
-                },
-                "stemmed": {
-                    "tokenizer": "standard",
-                    "char_filter": ["number_filter"],
-                    "filter": ["lowercase", "stopwords", "stemmer"]
-                }
-            },
-            "char_filter":{
-                "number_filter":{
-                    "type":"pattern_replace",
-                    "pattern":"\\d+",
-                    "replacement":""
-                }
-            }
-        }
-    }
+    PP_SWEDEN_INDEX = 'parliament-sweden'
+    PP_SWEDEN_DATA = os.path.join(here, 'tests', 'data', 'sweden')
+    PP_SWEDEN_IMAGE = 'sweden.jpg'
+    PP_SWEDEN_OLD_INDEX = 'parliament-sweden-old'
+    PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
+    PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
