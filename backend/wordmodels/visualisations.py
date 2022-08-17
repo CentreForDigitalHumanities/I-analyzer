@@ -4,7 +4,7 @@ import pickle
 
 from addcorpus.load_corpus import corpus_dir
 from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
-from wordmodels.decompose import map_to_2d
+from wordmodels.decompose import find_optimal_2d_maps
 import random
 
 from flask import current_app
@@ -69,33 +69,6 @@ def load_word_models(corpus, path):
         wm = pickle.load(f)
     return wm
 
-
-def get_2d_context(query_term, model, number_similar = NUMBER_SIMILAR):
-    """
-    Given a query term and set of word embeddings, return coordinates for a 2D scatter plot with the query term's
-    nearest neighbours.
-
-    Output: a list of dicts where each dict has the keys 'label' (string of the word), 'x' (float, x-coordinate),
-    and 'y'(float, y-coordinate). Coordinates are scaled within [-1, 1].
-    """
-
-    neighbours = find_n_most_similar(model['svd_ppmi'], model['transformer'], query_term, number_similar + 1)
-    # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
-    # i.e. for 10 neighbours, we have to specify number_similar = 11
-
-    if not neighbours:
-        return [ {
-            'label': query_term,
-            'x': 0.0,
-            'y': 0.0,
-        }]
-
-    words = [query_term] + [item['key'] for item in neighbours]
-    result = map_to_2d(words, model)
-
-    return result
-
-
 def get_2d_contexts_over_time(query_term, corpus, number_similar = NUMBER_SIMILAR):
     """
     Given a query term and corpus, creates a scatter plot of the term's nearest neigbours for each
@@ -103,13 +76,26 @@ def get_2d_contexts_over_time(query_term, corpus, number_similar = NUMBER_SIMILA
     """
 
     binned_models = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+    neighbours_per_model = [
+        find_n_most_similar(model['svd_ppmi'], model['transformer'], query_term, number_similar + 1)
+        for model in binned_models
+    ]
+    # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
+    # i.e. for 10 neighbours, we have to specify number_similar = 11
+
+    terms_per_model = [
+        [query_term] + [item['key'] for item in neighbours] if neighbours else [query_term]
+        for neighbours in neighbours_per_model
+    ]
+
+    data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model)
 
     data = [
         {
             'time': format_time_interval(model['start_year'], model['end_year']),
-            'data': get_2d_context(query_term, model, number_similar)
+            'data': data
         }
-        for model in binned_models
+        for data, model in zip (data_per_timeframe, binned_models)
     ]
 
     return data

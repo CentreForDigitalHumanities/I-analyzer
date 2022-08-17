@@ -5,7 +5,7 @@
                 <div class="level-item">
                     <h1 class="title">
                         Word models of
-                        <a class="corpus-name" [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
+                        <a class="corpus-name" [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus?.title}}&rdquo;</a>
                         <sup>
                             <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
                                 <i class="moreInfoLink fa fa-info-circle info-icon"></i>
@@ -17,7 +17,7 @@
             <div class="level-left">
                 <div class="field has-addons">
                     <div class="control">
-                        <a class="button is-medium" [routerLink]="['/search', corpus.name]">
+                        <a class="button is-medium" [routerLink]="['/search', corpus?.name]">
                             <span class="icon">
                                 <fa-icon [icon]="searchIcon">search</fa-icon>
                             </span>
@@ -72,6 +72,9 @@
                 <ia-related-words [corpus]="corpus" [queryText]="activeQuery"
                     [asTable]="false">
                 </ia-related-words>
+            </ng-container>
+            <ng-container *ngIf="tabIndex==1">
+                <ia-word-context [corpus]="corpus" [queryText]="activeQuery"></ia-word-context>
             </ng-container>
         </ng-container>
 

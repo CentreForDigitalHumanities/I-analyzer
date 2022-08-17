@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 })
 export class WordContextComponent implements OnChanges {
     @Input() corpus: Corpus;
-    @Input() queryModel: QueryModel;
+    @Input() queryText: string;
     @Input() asTable: boolean;
     @Input() palette: string[];
 
@@ -78,15 +78,15 @@ export class WordContextComponent implements OnChanges {
     constructor(private searchService: SearchService) { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.queryModel || changes.coropus) {
-            if (this.queryModel && this.corpus) {
+        if (changes.queryText || changes.coropus) {
+            if (this.queryText && this.corpus) {
                 this.showLoading(this.getResults());
             }
         }
     }
 
     getResults(): Promise<void> {
-        return this.searchService.get2dContextOverTime(this.queryModel.queryText, this.corpus.name).then(result => {
+        return this.searchService.get2dContextOverTime(this.queryText, this.corpus.name).then(result => {
             if (result.success) {
                 this.data = result.data;
                 this.timeIntervals = result.data.map(item => item.time);

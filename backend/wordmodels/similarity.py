@@ -42,6 +42,7 @@ def query_vector(query_term, transformer, matrix):
              if a == query_term), None)
     return matrix[:, query_index]
 
+
 def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     """given a matrix of svd_ppmi values,
     the transformer (i.e., sklearn CountVectorizer), and a word list

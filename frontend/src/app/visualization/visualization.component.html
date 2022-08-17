@@ -82,12 +82,12 @@
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
+            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryText]="queryModel.queryText"
                 [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
-            <ia-word-context  *ngSwitchCase=" 'wordcontext' " [corpus]="corpus" [queryModel]="queryModel"
+            <ia-word-context  *ngSwitchCase=" 'wordcontext' " [corpus]="corpus" [queryText]="queryModel.queryText"
                 [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-word-context>
         </ng-container>
     </div>
