@@ -5,6 +5,8 @@ import { SearchService } from '../../services';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as _ from 'lodash';
 
+type DataPoint = {label: string, x: number, y: number};
+
 @Component({
     selector: 'ia-word-context',
     templateUrl: './word-context.component.html',
@@ -139,10 +141,34 @@ export class WordContextComponent implements OnChanges {
         this.currentTimeIndex = value;
 
         if (this.chart) {
-            this.chart.data.datasets = [this.data[this.currentTimeIndex]];
+            this.updateDataset(this.chart.data.datasets[0], this.data[this.currentTimeIndex]);
             this.chart.update();
         }
+    }
 
+    updateDataset(dataset, newDataset) {
+        // remove points no longer included
+        const indexToDelete = () => dataset.data.findIndex((point: DataPoint) =>
+            newDataset.data.find(p => p.label === point.label) === undefined
+        );
+
+        while (indexToDelete() !== -1) {
+            const spliceIndex = indexToDelete();
+            dataset.data.splice(spliceIndex, 1);
+        }
+
+        // update coordinates of common points
+        dataset.data.forEach((point: DataPoint) => {
+            const newPoint = newDataset.data.find(p => p.label === point.label);
+            if (newPoint) {
+                point.x = newPoint.x;
+                point.y = newPoint.y;
+            }
+        });
+
+        // push new points
+        const newPoints = newDataset.data.filter(point => dataset.data.find((p: DataPoint) => p.label === point.label) === undefined);
+        newPoints.forEach(point => dataset.data.push(point));
     }
 
 }
