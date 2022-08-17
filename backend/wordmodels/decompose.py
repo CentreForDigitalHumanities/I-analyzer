@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import mean_squared_error
 from sklearn.decomposition import PCA
 import numpy as np
+from scipy.optimize import minimize
 
 from wordmodels.similarity import query_vector
 
@@ -46,10 +47,38 @@ def decompose_to_2d(vectors):
 
     return decomposed
 
-def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
-    coordinates = initial_coordinates(vectors_per_timeframe, terms_per_timeframe)
+def parameters_from_coordinates(coordinates_per_timeframe):
+    return [
+        coordinate
+        for coordinates in coordinates_per_timeframe
+        for coordinate in np.nditer(coordinates)
+    ]
 
-    return coordinates
+def coordinates_from_parameters(parameters, terms_per_timeframe):
+    start_slice = lambda index : sum(len(terms) for terms in terms_per_timeframe[:index])
+    slice_per_timeframe = [
+        (start_slice(index) * 2, (start_slice(index) + len(terms)) * 2)
+        for index, terms in enumerate(terms_per_timeframe)
+    ]
+    parameters_per_timeframe = [
+        np.array(parameters[start:stop])
+        for start, stop in slice_per_timeframe
+    ]
+    coordinates_per_timeframe = [
+        p.reshape(int(p.size / 2), 2)
+        for p in parameters_per_timeframe
+    ]
+    return coordinates_per_timeframe
+
+def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
+    initial = initial_coordinates(vectors_per_timeframe, terms_per_timeframe)
+    parameters = parameters_from_coordinates(initial)
+
+    evaluation = lambda params: evaluate_coordinates(coordinates_from_parameters(params, terms_per_timeframe), vectors_per_timeframe, terms_per_timeframe)
+
+    res = minimize(evaluation, parameters, method = 'nelder-mead')
+    final = coordinates_from_parameters(res.x, terms_per_timeframe)
+    return final
 
 def evaluate_coordinates(coordinates_per_timeframe, vectors_per_timeframe, terms_per_timeframe):
     similarity_loss = total_similarity_loss(coordinates_per_timeframe, vectors_per_timeframe)

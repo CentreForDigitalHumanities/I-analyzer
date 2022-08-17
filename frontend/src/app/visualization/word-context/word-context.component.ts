@@ -140,7 +140,9 @@ export class WordContextComponent implements OnChanges {
         const value = event.target.value;
         this.currentTimeIndex = value;
 
+
         if (this.chart) {
+            console.log(this.data[this.currentTimeIndex]);
             this.updateDataset(this.chart.data.datasets[0], this.data[this.currentTimeIndex]);
             this.chart.update();
         }
@@ -160,10 +162,8 @@ export class WordContextComponent implements OnChanges {
         // update coordinates of common points
         dataset.data.forEach((point: DataPoint) => {
             const newPoint = newDataset.data.find(p => p.label === point.label);
-            if (newPoint) {
-                point.x = newPoint.x;
-                point.y = newPoint.y;
-            }
+            point.x = newPoint.x;
+            point.y = newPoint.y;
         });
 
         // push new points

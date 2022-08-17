@@ -1,10 +1,33 @@
 import re
 import numpy as np
-from wordmodels.decompose import total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates,  pairwise_similarities, similarity_loss
+from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates,  pairwise_similarities, similarity_loss
 from wordmodels.visualisations import load_word_models, get_2d_contexts_over_time
 import pytest
 
 NUMBER_SIMILAR = 5
+
+def test_coordinates_parameters_conversion():
+    coordinates = [
+        np.array([
+            [1.0, 0.0],
+            [0.25, 0.75],
+            [0.5, 0.5],
+        ]),
+        np.array([
+            [0.0, 0.0],
+            [0.2, 0.3],
+        ]),
+    ]
+    terms = [['a', 'b', 'c'], ['a', 'b']]
+    parameters = [1.0, 0.0, 0.25, 0.75, 0.5, 0.5, 0.0, 0.0, 0.2, 0.3]
+
+    assert parameters_from_coordinates(parameters) == parameters
+
+    for timeframe, converted in enumerate(coordinates_from_parameters(parameters, terms)):
+        original = coordinates[timeframe]
+
+        assert converted.shape == original.shape
+        assert np.all(np.equal(converted, original))
 
 def find_term(term, interval_result):
     data = interval_result['data']
