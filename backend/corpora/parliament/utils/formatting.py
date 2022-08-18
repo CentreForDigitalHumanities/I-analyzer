@@ -53,3 +53,8 @@ def get_date_from_year(value, limit='earliest'):
         else:
             date = datetime(year=year, month=12, day=31)
         return date.strftime('%Y-%m-%d')
+
+
+def extract_integer_value(value):
+    if value and value.isnumeric():
+        return int(value)

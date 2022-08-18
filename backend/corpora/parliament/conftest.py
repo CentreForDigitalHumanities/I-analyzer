@@ -21,6 +21,8 @@ class UnittestConfig:
         'parliament-france': os.path.join(here, 'france.py'),
         'parliament-sweden': os.path.join(here, 'sweden.py'),
         'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
+        'parliament-denmark': os.path.join(here, 'denmark.py'),
+        'parliament-denmark-new': os.path.join(here, 'denmark-new.py'),
         'parliament-finland': os.path.join(here, 'finland.py'),
         'parliament-norway': os.path.join(here, 'norway.py'),
         'parliament-norway-new': os.path.join(here, 'norway-new.py'),
@@ -69,6 +71,10 @@ class UnittestConfig:
     PP_NORWAY_DATA = os.path.join(here, 'tests', 'data', 'norway')
     PP_NORWAY_NEW_INDEX = 'parliament-norway-new'
     PP_NORWAY_NEW_DATA = os.path.join(here, 'tests', 'data', 'norway-new')
+    PP_DENMARK_DATA = os.path.join(here, 'tests', 'data', 'denmark')
+    PP_DENMARK_INDEX = 'parliament-denmark'
+    PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
+    PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
