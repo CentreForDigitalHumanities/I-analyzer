@@ -18,5 +18,9 @@
     "/saml": {
         "target": "http://localhost:5000",
         "secure": false
+    },
+    "/wordmodels": {
+        "target": "http://localhost:5000",
+        "secure": false
     }
 }
