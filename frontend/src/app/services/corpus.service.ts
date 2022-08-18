@@ -14,6 +14,8 @@ export class CorpusService {
 
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
+    public corporaPromise: Promise<Corpus[]>;
+
     constructor(private apiRetryService: ApiRetryService, private userService: UserService) {
     }
 
@@ -38,7 +40,12 @@ export class CorpusService {
     }
 
     public get(): Promise<Corpus[]> {
-        return this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+        if (this.corporaPromise) {
+            return this.corporaPromise;
+        } else {
+            this.corporaPromise = this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+            return this.corporaPromise;
+        }
     }
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
