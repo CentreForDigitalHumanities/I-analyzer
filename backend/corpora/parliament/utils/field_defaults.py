@@ -188,7 +188,7 @@ def language():
     return Field(
         name='language',
         display_name='Language',
-        description='Langauge of the speech',
+        description='Language of the speech',
         es_mapping={'type': 'keyword'},
         search_filter = MultipleChoiceFilter(
             description='Search only in speeches in the selected languages',
