@@ -23,7 +23,8 @@ export function commonTestBed() {
     filteredProviders.push(
         {
             provide: ActivatedRoute, useValue: {
-                paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).subscribe(convertToParamMap)
+                paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).subscribe(convertToParamMap),
+                queryParamMap: of({query: 'banana'}).subscribe(convertToParamMap)
             }
         },
         {
