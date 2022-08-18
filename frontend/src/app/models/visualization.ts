@@ -38,4 +38,5 @@ export type NgramParameters = {
     analysis: string,
     maxDocuments: number,
     numberOfNgrams: number,
+    dateField: string,
 };

@@ -39,8 +39,9 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     es_index = current_app.config['PP_SWEDEN_OLD_INDEX']
 
 
-    document_context = constants.document_context()
-    document_context['context_fields'] = ['chamber', 'date_earliest', 'date_latest']
+    document_context = constants.document_context(
+        context_fields=['chamber', 'date_earliest', 'date_latest']
+    )
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):

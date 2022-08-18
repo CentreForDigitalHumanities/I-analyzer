@@ -184,6 +184,19 @@ def debate_id():
         es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
+def language():
+    return Field(
+        name='language',
+        display_name='Language',
+        description='Language of the speech',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches in the selected languages',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
+
 def legislature():
     ""
     return Field(
@@ -191,6 +204,11 @@ def legislature():
         display_name='Legislature',
         description='Title of individuals elected to parliament',
         es_mapping={'type': 'keyword'},
+        visualizations=['resultscount', 'termfrequency'],
+        search_filter = MultipleChoiceFilter(
+            description='Search only in debates from the selected era(s)',
+            option_count=10
+        ),
     )
 
 def topic():
@@ -238,17 +256,6 @@ def sequence():
         searchable=False,
     )
 
-def session():
-    """
-    in which session the debate or speech occurred
-    there may be several sessions within a given date
-    """
-    return Field(
-        name='session',
-        display_name='Session',
-        description='Session in which the debate or speech occurred',
-        es_mapping=BASIC_KEYWORD_MAPPING,
-    )
 
 def source_archive():
     """
@@ -499,6 +506,22 @@ def party_full():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def party_role():
+    """
+    Role of the speaker's party in parliament (opposition, coalition, cabinet, etc.)
+    """
+    return Field(
+        name='party_role',
+        display_name='Party role',
+        description='Role of the speaker\'s political party in parliament at the time of speaking',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        search_filter= MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=10
+        ),
+        visualizations=['resultscount', 'termfrequency']
+    )
+
 def page():
     "page number or range (string)"
     return Field(
@@ -516,6 +539,22 @@ def page_source():
         display_name='Source page number',
         description='Page number in source document',
         es_mapping={'type': 'keyword'}
+    )
+
+
+def subject():
+    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
+    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
+    return Field(
+        name='subject',
+        display_name='Subject',
+        description='Subject that the speech is concerned with',
+        es_mapping={'type': 'keyword'},
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches about the selected subjects',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
     )
 
 def url():

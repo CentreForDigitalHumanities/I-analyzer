@@ -1,13 +1,23 @@
-<div *ngIf="!asTable">
-    <p-chart *ngIf="!zoomedInData" type="line" [data]="graphData" [options]="chartOptions" (onDataSelect)="zoomTimeInterval($event)"></p-chart>
-    <div *ngIf="zoomedInData">
-        <a class="button" [iaBalloon]="'go back'" (click)="zoomBack()">
-                <span class="icon">
-                    <i class="fa fa-undo"></i>
-                </span>
-        </a>
-        <p-chart type="bar" [data]="zoomedInData" [options]="chartOptions"></p-chart>
+<div [class.is-hidden]="asTable">
+    <div class="block">
+        <div class="field">
+            <div class="control">
+                <label class="label">Show as:</label>
+                <label class="radio" *ngFor="let style of ['line', 'stream', 'bar']">
+                    <input type="radio" [checked]="graphStyle.value==style" (click)="graphStyle.next(style)" (keydown.enter)="graphStyle.next(style)">
+                    {{style}}
+                </label>
+            </div>
+        </div>
+        <div class="field" *ngIf="graphStyle.value==='bar'">
+            <div class="control">
+                <label class="label">Time interval:</label>
+                <ia-time-interval-slider [labels]="totalData.labels" (currentIndex)="zoomTimeInterval($event)"></ia-time-interval-slider>
+            </div>
+        </div>
     </div>
+
+    <canvas id="chart"></canvas>
 </div>
 
 <div class="block" *ngIf="asTable">
