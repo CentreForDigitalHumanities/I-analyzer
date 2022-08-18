@@ -107,7 +107,8 @@ export class SearchComponent extends ParamDirective {
         if (this.queryModel !== queryModel) {
             this.queryModel = queryModel;
         }
-        this.showVisualization = params.has('visualize') ? true : false;
+        this.tabIndex = params.has('visualize') ? 1 : 0;
+        this.showVisualization = params.has('visaulize') ? true : false;
     }
 
     @HostListener('window:scroll', [])
@@ -158,12 +159,6 @@ export class SearchComponent extends ParamDirective {
 
     public switchTabs(index: number) {
         this.tabIndex = index;
-        if (index === 0) {
-            this.setParams({
-                visualize: null,
-                visualizedField: null
-            });
-        }
     }
 
     private getQueryFields(): string[] | null {
