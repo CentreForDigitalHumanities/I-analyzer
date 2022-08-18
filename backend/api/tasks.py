@@ -53,7 +53,8 @@ def get_ngram_data(request_json):
             freq_compensation=request_json['freq_compensation'],
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],
-            number_of_ngrams=request_json['number_of_ngrams']
+            number_of_ngrams=request_json['number_of_ngrams'],
+            date_field = request_json['date_field']
         )
 
     corpus = request_json['corpus_name']
