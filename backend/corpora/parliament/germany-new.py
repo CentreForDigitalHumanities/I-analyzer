@@ -7,12 +7,9 @@ from flask import current_app
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import DateFilter, MultipleChoiceFilter
+import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 
-
-def date_to_year(date):
-    return date.split('-')[0]
 
 class ParliamentGermanyNew(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany 1949-2021)'
@@ -21,17 +18,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_german_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "german"
-        }
-    }
+    language = 'german'
 
     field_entry = 'id'
     required_field = 'speech_content'
@@ -80,7 +67,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='party_id'
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = CSV(
         field='position_short'
     )
@@ -91,8 +78,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
 
     speaker = field_defaults.speaker()
     speaker.extractor = Combined(
-        CSV(field='speaker_first_name'),
-        CSV(field='speaker_last_name'),
+        CSV(field='speaker_first_name', convert_to_none=False),
+        CSV(field='speaker_last_name', convert_to_none=False),
         transform=lambda x: ' '.join(x)
     )
 
@@ -124,13 +111,13 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
         field='speaker_birth_date',
-        transform=date_to_year
+        transform=formatting.extract_year
     )
 
     speaker_death_year = field_defaults.speaker_death_year()
     speaker_death_year.extractor = CSV(
         field='speaker_death_date',
-        transform=date_to_year
+        transform=formatting.extract_year
     )
 
     speaker_gender = field_defaults.speaker_gender()

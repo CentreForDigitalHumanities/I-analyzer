@@ -1,0 +1,4280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<teiCorpus xml:id="Speeches_2015" xml:lang="eng">
+ <teiheader>
+  <fileDesc>
+   <titleStmt>
+    <title>
+     Finnish Parliament plenary session speeches during Diet 2015
+    </title>
+    <title>
+     Suomen eduskunnan täysistuntojen puheet Valtiopäivillä 2015
+    </title>
+   </titleStmt>
+   <extent>
+    <measure quantity="11072" unit="speeches">
+     11072 speeches
+    </measure>
+   </extent>
+  </fileDesc>
+  <encodingDesc>
+   <classDecl>
+    <taxonomy>
+     <desc>
+      Types of chairmen
+     </desc>
+     <category xml:id="elderMember">
+      <catDesc>
+       <term>
+        Ikäpuhemies
+       </term>
+      </catDesc>
+     </category>
+     <category xml:id="chairman">
+      <catDesc>
+       <term>
+        Puhemies
+       </term>
+      </catDesc>
+     </category>
+     <category xml:id="viceChair">
+      <catDesc>
+       <term>
+        Ensimmäinen varapuhemies
+       </term>
+      </catDesc>
+     </category>
+     <category xml:id="secondViceChair">
+      <catDesc>
+       <term>
+        Toinen varapuhemies
+       </term>
+      </catDesc>
+     </category>
+     <category xml:id="viceChair">
+      <catDesc>
+       <term>
+        Ensimmäinen varapuhemies Mauri
+       </term>
+      </catDesc>
+     </category>
+    </taxonomy>
+   </classDecl>
+  </encodingDesc>
+  <profileDesc>
+   <settingDesc>
+    <setting>
+     <name key="FIN" type="country">
+      Finland
+     </name>
+    </setting>
+   </settingDesc>
+   <particDesc>
+    <listPerson>
+     <person xml:id="Pertti_Salolainen">
+      <persName>
+       <surname>
+        Salolainen
+       </surname>
+       <forename>
+        Pertti
+       </forename>
+       <roleName>
+        Ikäpuhemies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1940-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Juha_Sipilä">
+      <persName>
+       <surname>
+        Sipilä
+       </surname>
+       <forename>
+        Juha
+       </forename>
+       <roleName>
+        Puhemies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Timo_Soini">
+      <persName>
+       <surname>
+        Soini
+       </surname>
+       <forename>
+        Timo
+       </forename>
+       <roleName>
+        Ensimmäinen varapuhemies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Ben_Zyskowicz">
+      <persName>
+       <surname>
+        Zyskowicz
+       </surname>
+       <forename>
+        Ben
+       </forename>
+       <roleName>
+        Toinen varapuhemies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1954-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Sirkka-Liisa_Anttila">
+      <persName>
+       <surname>
+        Anttila
+       </surname>
+       <forename>
+        Sirkka-Liisa
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1943-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Seppo_Kääriäinen">
+      <persName>
+       <surname>
+        Kääriäinen
+       </surname>
+       <forename>
+        Seppo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1948-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Timo_Kalli">
+      <persName>
+       <surname>
+        Kalli
+       </surname>
+       <forename>
+        Timo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1947-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Niilo_Keränen">
+      <persName>
+       <surname>
+        Keränen
+       </surname>
+       <forename>
+        Niilo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1950-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Esko_Kiviranta">
+      <persName>
+       <surname>
+        Kiviranta
+       </surname>
+       <forename>
+        Esko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1950-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ritva_Elomaa">
+      <persName>
+       <surname>
+        Elomaa
+       </surname>
+       <forename>
+        Ritva
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1955-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Pentti_Oinonen">
+      <persName>
+       <surname>
+        Oinonen
+       </surname>
+       <forename>
+        Pentti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1952-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Kauko_Juhantalo">
+      <persName>
+       <surname>
+        Juhantalo
+       </surname>
+       <forename>
+        Kauko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1942-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Toimi_Kankaanniemi">
+      <persName>
+       <surname>
+        Kankaanniemi
+       </surname>
+       <forename>
+        Toimi
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1950-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Ilkka_Kanerva">
+      <persName>
+       <surname>
+        Kanerva
+       </surname>
+       <forename>
+        Ilkka
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1948-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Aila_Paloniemi">
+      <persName>
+       <surname>
+        Paloniemi
+       </surname>
+       <forename>
+        Aila
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Lea_Mäkipää">
+      <persName>
+       <surname>
+        Mäkipää
+       </surname>
+       <forename>
+        Lea
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1947-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Maria_Guzenina">
+      <persName>
+       <surname>
+        Guzenina
+       </surname>
+       <forename>
+        Maria
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1969-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Pirkko_Mattila">
+      <persName>
+       <surname>
+        Mattila
+       </surname>
+       <forename>
+        Pirkko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Jaana_Pelkonen">
+      <persName>
+       <surname>
+        Pelkonen
+       </surname>
+       <forename>
+        Jaana
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Antti_Kaikkonen">
+      <persName>
+       <surname>
+        Kaikkonen
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Eero_Heinäluoma">
+      <persName>
+       <surname>
+        Heinäluoma
+       </surname>
+       <forename>
+        Eero
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1955-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Mika_Niikko">
+      <persName>
+       <surname>
+        Niikko
+       </surname>
+       <forename>
+        Mika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Sari_Essayah">
+      <persName>
+       <surname>
+        Essayah
+       </surname>
+       <forename>
+        Sari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.KD"/>
+     </person>
+     <person xml:id="Anne-Mari_Virolainen">
+      <persName>
+       <surname>
+        Virolainen
+       </surname>
+       <forename>
+        Anne-Mari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Simon_Elo">
+      <persName>
+       <surname>
+        Elo
+       </surname>
+       <forename>
+        Simon
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1986-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Eva_Biaudet">
+      <persName>
+       <surname>
+        Biaudet
+       </surname>
+       <forename>
+        Eva
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Mika_Raatikainen">
+      <persName>
+       <surname>
+        Raatikainen
+       </surname>
+       <forename>
+        Mika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Antero_Laukkanen">
+      <persName>
+       <surname>
+        Laukkanen
+       </surname>
+       <forename>
+        Antero
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1958-01-01"/>
+      <affliation ref="#party.KD"/>
+     </person>
+     <person xml:id="Touko_Aalto">
+      <persName>
+       <surname>
+        Aalto
+       </surname>
+       <forename>
+        Touko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1984-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Li_Andersson">
+      <persName>
+       <surname>
+        Andersson
+       </surname>
+       <forename>
+        Li
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1987-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Kari_Kulmala">
+      <persName>
+       <surname>
+        Kulmala
+       </surname>
+       <forename>
+        Kari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Antti_Lindtman">
+      <persName>
+       <surname>
+        Lindtman
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1982-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Maria_Tolppanen">
+      <persName>
+       <surname>
+        Tolppanen
+       </surname>
+       <forename>
+        Maria
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1952-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Ville_Vähämäki">
+      <persName>
+       <surname>
+        Vähämäki
+       </surname>
+       <forename>
+        Ville
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1979-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Jukka_Gustafsson">
+      <persName>
+       <surname>
+        Gustafsson
+       </surname>
+       <forename>
+        Jukka
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1947-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Hannu_Hoskonen">
+      <persName>
+       <surname>
+        Hoskonen
+       </surname>
+       <forename>
+        Hannu
+       </forename>
+      </persName>
+      <birth when="1957-01-01"/>
+      <sex value="M">
+       Male
+      </sex>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Nasima_Razmyar">
+      <persName>
+       <surname>
+        Razmyar
+       </surname>
+       <forename>
+        Nasima
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1984-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Olavi_Ala-Nissilä">
+      <persName>
+       <surname>
+        Ala-Nissilä
+       </surname>
+       <forename>
+        Olavi
+       </forename>
+      </persName>
+      <birth when="1949-01-01"/>
+      <sex value="M">
+       Male
+      </sex>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ozan_Yanar">
+      <persName>
+       <surname>
+        Yanar
+       </surname>
+       <forename>
+        Ozan
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1987-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Anders_Adlercreutz">
+      <persName>
+       <surname>
+        Adlercreutz
+       </surname>
+       <forename>
+        Anders
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1970-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Laura_Huhtasaari">
+      <persName>
+       <surname>
+        Huhtasaari
+       </surname>
+       <forename>
+        Laura
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1979-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Antti_Kurvinen">
+      <persName>
+       <surname>
+        Kurvinen
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1986-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Joona_Räsänen">
+      <persName>
+       <surname>
+        Räsänen
+       </surname>
+       <forename>
+        Joona
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1987-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Veera_Ruoho">
+      <persName>
+       <surname>
+        Ruoho
+       </surname>
+       <forename>
+        Veera
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1969-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Ville_Tavio">
+      <persName>
+       <surname>
+        Tavio
+       </surname>
+       <forename>
+        Ville
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1984-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Leena_Meri">
+      <persName>
+       <surname>
+        Meri
+       </surname>
+       <forename>
+        Leena
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1968-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Kari_Uotila">
+      <persName>
+       <surname>
+        Uotila
+       </surname>
+       <forename>
+        Kari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1955-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Juho_Eerola">
+      <persName>
+       <surname>
+        Eerola
+       </surname>
+       <forename>
+        Juho
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1975-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Markku_Rossi">
+      <persName>
+       <surname>
+        Rossi
+       </surname>
+       <forename>
+        Markku
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Pauli_Kiuru">
+      <persName>
+       <surname>
+        Kiuru
+       </surname>
+       <forename>
+        Pauli
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Arja_Juvonen">
+      <persName>
+       <surname>
+        Juvonen
+       </surname>
+       <forename>
+        Arja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Hanna_Sarkkinen">
+      <persName>
+       <surname>
+        Sarkkinen
+       </surname>
+       <forename>
+        Hanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1988-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Hanna_Kosonen">
+      <persName>
+       <surname>
+        Kosonen
+       </surname>
+       <forename>
+        Hanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Vesa-Matti_Saarakkala">
+      <persName>
+       <surname>
+        Saarakkala
+       </surname>
+       <forename>
+        Vesa-Matti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1984-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Timo_Heinonen">
+      <persName>
+       <surname>
+        Heinonen
+       </surname>
+       <forename>
+        Timo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1975-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Ilkka_Kantola">
+      <persName>
+       <surname>
+        Kantola
+       </surname>
+       <forename>
+        Ilkka
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1957-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Katja_Hänninen">
+      <persName>
+       <surname>
+        Hänninen
+       </surname>
+       <forename>
+        Katja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1980-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Maria_Lohela">
+      <persName>
+       <surname>
+        Lohela
+       </surname>
+       <forename>
+        Maria
+       </forename>
+       <roleName>
+        Puhemies
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1978-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Mauri_Pekkarinen">
+      <persName>
+       <surname>
+        Pekkarinen
+       </surname>
+       <forename>
+        Mauri
+       </forename>
+       <roleName>
+        Ensimmäinen varapuhemies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1947-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Paula_Risikko">
+      <persName>
+       <surname>
+        Risikko
+       </surname>
+       <forename>
+        Paula
+       </forename>
+       <roleName>
+        Toinen varapuhemies
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1960-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Outi_Alanko-Kahiluoto">
+      <persName>
+       <surname>
+        Alanko-Kahiluoto
+       </surname>
+       <forename>
+        Outi
+       </forename>
+      </persName>
+      <birth when="1966-01-01"/>
+      <sex value="F">
+       Female
+      </sex>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Matti_Vanhanen">
+      <persName>
+       <surname>
+        Vanhanen
+       </surname>
+       <forename>
+        Matti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1955-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Jari_Myllykoski">
+      <persName>
+       <surname>
+        Myllykoski
+       </surname>
+       <forename>
+        Jari
+       </forename>
+      </persName>
+      <birth when="1959-01-01"/>
+      <sex value="M">
+       Male
+      </sex>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Sampo_Terho">
+      <persName>
+       <surname>
+        Terho
+       </surname>
+       <forename>
+        Sampo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Silvia_Modig">
+      <persName>
+       <surname>
+        Modig
+       </surname>
+       <forename>
+        Silvia
+       </forename>
+      </persName>
+      <birth when="1976-01-01"/>
+      <sex value="F">
+       Female
+      </sex>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Arto_Satonen">
+      <persName>
+       <surname>
+        Satonen
+       </surname>
+       <forename>
+        Arto
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Ville_Niinistö">
+      <persName>
+       <surname>
+        Niinistö
+       </surname>
+       <forename>
+        Ville
+       </forename>
+      </persName>
+      <birth when="1976-01-01"/>
+      <sex value="M">
+       Male
+      </sex>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Antti_Rinne">
+      <persName>
+       <surname>
+        Rinne
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Paavo_Arhinmäki">
+      <persName>
+       <surname>
+        Arhinmäki
+       </surname>
+       <forename>
+        Paavo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Carl_Haglund">
+      <persName>
+       <surname>
+        Haglund
+       </surname>
+       <forename>
+        Carl
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1979-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Päivi_Räsänen">
+      <persName>
+       <surname>
+        Räsänen
+       </surname>
+       <forename>
+        Päivi
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1959-01-01"/>
+      <affliation ref="#party.KD"/>
+     </person>
+     <person xml:id="Pia_Viitanen">
+      <persName>
+       <surname>
+        Viitanen
+       </surname>
+       <forename>
+        Pia
+       </forename>
+      </persName>
+      <birth when="1967-01-01"/>
+      <sex value="F">
+       Female
+      </sex>
+      <affliation ref="#party.SDP"/>
+     </person>
+     <person xml:id="Alexander_Stubb">
+      <persName>
+       <surname>
+        Stubb
+       </surname>
+       <forename>
+        Alexander
+       </forename>
+       <roleName>
+        Valtiovarainministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1968-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Aino-Kaisa_Pekonen">
+      <persName>
+       <surname>
+        Pekonen
+       </surname>
+       <forename>
+        Aino-Kaisa
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1979-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Anna-Maja_Henriksson">
+      <persName>
+       <surname>
+        Henriksson
+       </surname>
+       <forename>
+        Anna-Maja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Anne_Kalmari">
+      <persName>
+       <surname>
+        Kalmari
+       </surname>
+       <forename>
+        Anne
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1968-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Eero_Suutari">
+      <persName>
+       <surname>
+        Suutari
+       </surname>
+       <forename>
+        Eero
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Jutta_Urpilainen">
+      <persName>
+       <surname>
+        Urpilainen
+       </surname>
+       <forename>
+        Jutta
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1975-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Johanna_Karimäki">
+      <persName>
+       <surname>
+        Karimäki
+       </surname>
+       <forename>
+        Johanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1973-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Annika_Lapintie">
+      <persName>
+       <surname>
+        Lapintie
+       </surname>
+       <forename>
+        Annika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1955-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Mikaela_Nylander">
+      <persName>
+       <surname>
+        Nylander
+       </surname>
+       <forename>
+        Mikaela
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1970-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Tarja_Filatov">
+      <persName>
+       <surname>
+        Filatov
+       </surname>
+       <forename>
+        Tarja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Lauri_Ihalainen">
+      <persName>
+       <surname>
+        Ihalainen
+       </surname>
+       <forename>
+        Lauri
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1947-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Harri_Jaskari">
+      <persName>
+       <surname>
+        Jaskari
+       </surname>
+       <forename>
+        Harri
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Tapani_Tölli">
+      <persName>
+       <surname>
+        Tölli
+       </surname>
+       <forename>
+        Tapani
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1951-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Susanna_Huovinen">
+      <persName>
+       <surname>
+        Huovinen
+       </surname>
+       <forename>
+        Susanna
+       </forename>
+      </persName>
+      <birth when="1972-01-01"/>
+      <sex value="F">
+       Female
+      </sex>
+      <affliation ref="#party.SDP"/>
+     </person>
+     <person xml:id="Satu_Hassi">
+      <persName>
+       <surname>
+        Hassi
+       </surname>
+       <forename>
+        Satu
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1951-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Harry_Wallin">
+      <persName>
+       <surname>
+        Wallin
+       </surname>
+       <forename>
+        Harry
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1953-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Tuula_Haatainen">
+      <persName>
+       <surname>
+        Haatainen
+       </surname>
+       <forename>
+        Tuula
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1960-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Stefan_Wallin">
+      <persName>
+       <surname>
+        Wallin
+       </surname>
+       <forename>
+        Stefan
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Anna_Kontula">
+      <persName>
+       <surname>
+        Kontula
+       </surname>
+       <forename>
+        Anna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Jari_Lindström">
+      <persName>
+       <surname>
+        Lindström
+       </surname>
+       <forename>
+        Jari
+       </forename>
+       <roleName>
+        Oikeus- ja työministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Jussi_Niinistö">
+      <persName>
+       <surname>
+        Niinistö
+       </surname>
+       <forename>
+        Jussi
+       </forename>
+       <roleName>
+        Puolustusministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1970-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Sanni_Grahn-Laasonen">
+      <persName>
+       <surname>
+        Grahn-Laasonen
+       </surname>
+       <forename>
+        Sanni
+       </forename>
+       <roleName>
+        Opetus- ja kulttuuriministeri
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1983-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Olli_Rehn">
+      <persName>
+       <surname>
+        Rehn
+       </surname>
+       <forename>
+        Olli
+       </forename>
+       <roleName>
+        Elinkeinoministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Petteri_Orpo">
+      <persName>
+       <surname>
+        Orpo
+       </surname>
+       <forename>
+        Petteri
+       </forename>
+       <roleName>
+        Sisäministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1969-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Hanna_Mäntylä">
+      <persName>
+       <surname>
+        Mäntylä
+       </surname>
+       <forename>
+        Hanna
+       </forename>
+       <roleName>
+        Sosiaali- ja terveysministeri
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Juha_Rehula">
+      <persName>
+       <surname>
+        Rehula
+       </surname>
+       <forename>
+        Juha
+       </forename>
+       <roleName>
+        Perhe- ja peruspalveluministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Lenita_Toivakka">
+      <persName>
+       <surname>
+        Toivakka
+       </surname>
+       <forename>
+        Lenita
+       </forename>
+       <roleName>
+        Ulkomaankauppa- ja kehitysministeri
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Maarit_Feldt-Ranta">
+      <persName>
+       <surname>
+        Feldt-Ranta
+       </surname>
+       <forename>
+        Maarit
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1968-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Kaj_Turunen">
+      <persName>
+       <surname>
+        Turunen
+       </surname>
+       <forename>
+        Kaj
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1960-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Tytti_Tuppurainen">
+      <persName>
+       <surname>
+        Tuppurainen
+       </surname>
+       <forename>
+        Tytti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Peter_Östman">
+      <persName>
+       <surname>
+        Östman
+       </surname>
+       <forename>
+        Peter
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.KD"/>
+     </person>
+     <person xml:id="Kimmo_Kivelä">
+      <persName>
+       <surname>
+        Kivelä
+       </surname>
+       <forename>
+        Kimmo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Krista_Kiuru">
+      <persName>
+       <surname>
+        Kiuru
+       </surname>
+       <forename>
+        Krista
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Tuomo_Puumala">
+      <persName>
+       <surname>
+        Puumala
+       </surname>
+       <forename>
+        Tuomo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1982-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Joakim_Strand">
+      <persName>
+       <surname>
+        Strand
+       </surname>
+       <forename>
+        Joakim
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1982-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Mikko_Alatalo">
+      <persName>
+       <surname>
+        Alatalo
+       </surname>
+       <forename>
+        Mikko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1951-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ari_Jalonen">
+      <persName>
+       <surname>
+        Jalonen
+       </surname>
+       <forename>
+        Ari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Sinuhe_Wallinheimo">
+      <persName>
+       <surname>
+        Wallinheimo
+       </surname>
+       <forename>
+        Sinuhe
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1972-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Antti_Rantakangas">
+      <persName>
+       <surname>
+        Rantakangas
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Sari_Sarkomaa">
+      <persName>
+       <surname>
+        Sarkomaa
+       </surname>
+       <forename>
+        Sari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Pekka_Haavisto">
+      <persName>
+       <surname>
+        Haavisto
+       </surname>
+       <forename>
+        Pekka
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1958-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Annika_Saarikko">
+      <persName>
+       <surname>
+        Saarikko
+       </surname>
+       <forename>
+        Annika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1983-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Anne_Berner">
+      <persName>
+       <surname>
+        Berner
+       </surname>
+       <forename>
+        Anne
+       </forename>
+       <roleName>
+        Liikenne- ja viestintäministeri
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Anu_Vehviläinen">
+      <persName>
+       <surname>
+        Vehviläinen
+       </surname>
+       <forename>
+        Anu
+       </forename>
+       <roleName>
+        Kunta-  ja  uudistusministeri
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Timo_V._Korhonen">
+      <persName>
+       <surname>
+        Korhonen
+       </surname>
+       <forename>
+        Timo V.
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1959-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Pekkarinen_koputtaa">
+      <persName>
+       <surname>
+        (koputtaa)
+       </surname>
+       <forename>
+        Pekkarinen
+       </forename>
+       <roleName>
+        Ensimmäinen varapuhemies Mauri
+       </roleName>
+      </persName>
+      <birth when=""/>
+     </person>
+     <person xml:id="Outi_Mäkelä">
+      <persName>
+       <surname>
+        Mäkelä
+       </surname>
+       <forename>
+        Outi
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Juhana_Vartiainen">
+      <persName>
+       <surname>
+        Vartiainen
+       </surname>
+       <forename>
+        Juhana
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1958-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Sanna_Lauslahti">
+      <persName>
+       <surname>
+        Lauslahti
+       </surname>
+       <forename>
+        Sanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Timo_Harakka">
+      <persName>
+       <surname>
+        Harakka
+       </surname>
+       <forename>
+        Timo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Jari_Leppä">
+      <persName>
+       <surname>
+        Leppä
+       </surname>
+       <forename>
+        Jari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1959-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Sanna_Marin">
+      <persName>
+       <surname>
+        Marin
+       </surname>
+       <forename>
+        Sanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1985-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Merja_Mäkisalo-Ropponen">
+      <persName>
+       <surname>
+        Mäkisalo-Ropponen
+       </surname>
+       <forename>
+        Merja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1958-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Arto_Pirttilahti">
+      <persName>
+       <surname>
+        Pirttilahti
+       </surname>
+       <forename>
+        Arto
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Wille_Rydman">
+      <persName>
+       <surname>
+        Rydman
+       </surname>
+       <forename>
+        Wille
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1986-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Sirpa_Paatero">
+      <persName>
+       <surname>
+        Paatero
+       </surname>
+       <forename>
+        Sirpa
+       </forename>
+      </persName>
+      <birth when="1964-01-01"/>
+      <sex value="F">
+       Female
+      </sex>
+      <affliation ref="#party.SDP"/>
+     </person>
+     <person xml:id="Sari_Multala">
+      <persName>
+       <surname>
+        Multala
+       </surname>
+       <forename>
+        Sari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1978-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Kristiina_Salonen">
+      <persName>
+       <surname>
+        Salonen
+       </surname>
+       <forename>
+        Kristiina
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Tiina_Elovaara">
+      <persName>
+       <surname>
+        Elovaara
+       </surname>
+       <forename>
+        Tiina
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1986-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Mats_Nylund">
+      <persName>
+       <surname>
+        Nylund
+       </surname>
+       <forename>
+        Mats
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Mari-Leena_Talvitie">
+      <persName>
+       <surname>
+        Talvitie
+       </surname>
+       <forename>
+        Mari-Leena
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1980-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Antero_Vartia">
+      <persName>
+       <surname>
+        Vartia
+       </surname>
+       <forename>
+        Antero
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1980-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Thomas_Blomqvist">
+      <persName>
+       <surname>
+        Blomqvist
+       </surname>
+       <forename>
+        Thomas
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Sari_Tanus">
+      <persName>
+       <surname>
+        Tanus
+       </surname>
+       <forename>
+        Sari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.KD"/>
+     </person>
+     <person xml:id="Jani_Mäkelä">
+      <persName>
+       <surname>
+        Mäkelä
+       </surname>
+       <forename>
+        Jani
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Olli-Poika_Parviainen">
+      <persName>
+       <surname>
+        Parviainen
+       </surname>
+       <forename>
+        Olli-Poika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1980-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Lasse_Hautala">
+      <persName>
+       <surname>
+        Hautala
+       </surname>
+       <forename>
+        Lasse
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Emma_Kari">
+      <persName>
+       <surname>
+        Kari
+       </surname>
+       <forename>
+        Emma
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1983-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Mats_Löfström">
+      <persName>
+       <surname>
+        Löfström
+       </surname>
+       <forename>
+        Mats
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1983-01-01"/>
+      <affliation ref="#party.R"/>
+     </person>
+     <person xml:id="Katja_Taimela">
+      <persName>
+       <surname>
+        Taimela
+       </surname>
+       <forename>
+        Katja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Anne_Louhelainen">
+      <persName>
+       <surname>
+        Louhelainen
+       </surname>
+       <forename>
+        Anne
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1965-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Eeva-Johanna_Eloranta">
+      <persName>
+       <surname>
+        Eloranta
+       </surname>
+       <forename>
+        Eeva-Johanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Krista_Mikkonen">
+      <persName>
+       <surname>
+        Mikkonen
+       </surname>
+       <forename>
+        Krista
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1972-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Elsi_Katainen">
+      <persName>
+       <surname>
+        Katainen
+       </surname>
+       <forename>
+        Elsi
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Mirja_Vehkaperä">
+      <persName>
+       <surname>
+        Vehkaperä
+       </surname>
+       <forename>
+        Mirja
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Jaana_Laitinen-Pesola">
+      <persName>
+       <surname>
+        Laitinen-Pesola
+       </surname>
+       <forename>
+        Jaana
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1958-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Hanna_Halmeenpää">
+      <persName>
+       <surname>
+        Halmeenpää
+       </surname>
+       <forename>
+        Hanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Hannakaisa_Heikkinen">
+      <persName>
+       <surname>
+        Heikkinen
+       </surname>
+       <forename>
+        Hannakaisa
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ari_Torniainen">
+      <persName>
+       <surname>
+        Torniainen
+       </surname>
+       <forename>
+        Ari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Markus_Mustajärvi">
+      <persName>
+       <surname>
+        Mustajärvi
+       </surname>
+       <forename>
+        Markus
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Riitta_Myller">
+      <persName>
+       <surname>
+        Myller
+       </surname>
+       <forename>
+        Riitta
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Johanna_Ojala-Niemelä">
+      <persName>
+       <surname>
+        Ojala-Niemelä
+       </surname>
+       <forename>
+        Johanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Markus_Lohi">
+      <persName>
+       <surname>
+        Lohi
+       </surname>
+       <forename>
+        Markus
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1972-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Martti_Talja">
+      <persName>
+       <surname>
+        Talja
+       </surname>
+       <forename>
+        Martti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1951-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ville_Skinnari">
+      <persName>
+       <surname>
+        Skinnari
+       </surname>
+       <forename>
+        Ville
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1974-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Pertti_Hakanen">
+      <persName>
+       <surname>
+        Hakanen
+       </surname>
+       <forename>
+        Pertti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1969-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Petri_Honkonen">
+      <persName>
+       <surname>
+        Honkonen
+       </surname>
+       <forename>
+        Petri
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1987-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Katri_Kulmuni">
+      <persName>
+       <surname>
+        Kulmuni
+       </surname>
+       <forename>
+        Katri
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1987-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Mikko_Kärnä">
+      <persName>
+       <surname>
+        Kärnä
+       </surname>
+       <forename>
+        Mikko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1980-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Ulla_Parviainen">
+      <persName>
+       <surname>
+        Parviainen
+       </surname>
+       <forename>
+        Ulla
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Eero_Lehti">
+      <persName>
+       <surname>
+        Lehti
+       </surname>
+       <forename>
+        Eero
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1944-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Kari_Tolvanen">
+      <persName>
+       <surname>
+        Tolvanen
+       </surname>
+       <forename>
+        Kari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Martti_Mölsä">
+      <persName>
+       <surname>
+        Mölsä
+       </surname>
+       <forename>
+        Martti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1952-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Teuvo_Hakkarainen">
+      <persName>
+       <surname>
+        Hakkarainen
+       </surname>
+       <forename>
+        Teuvo
+       </forename>
+      </persName>
+      <birth when="1960-01-01"/>
+      <sex value="M">
+       Male
+      </sex>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Matti_Semi">
+      <persName>
+       <surname>
+        Semi
+       </surname>
+       <forename>
+        Matti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1957-01-01"/>
+      <affliation ref="#party.VAS"/>
+     </person>
+     <person xml:id="Marisanna_Jarva">
+      <persName>
+       <surname>
+        Jarva
+       </surname>
+       <forename>
+        Marisanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1981-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Sami_Savio">
+      <persName>
+       <surname>
+        Savio
+       </surname>
+       <forename>
+        Sami
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1975-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Sofia_Vikman">
+      <persName>
+       <surname>
+        Vikman
+       </surname>
+       <forename>
+        Sofia
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1983-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Ilmari_Nurminen">
+      <persName>
+       <surname>
+        Nurminen
+       </surname>
+       <forename>
+        Ilmari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1991-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Jyrki_Kasvi">
+      <persName>
+       <surname>
+        Kasvi
+       </surname>
+       <forename>
+        Jyrki
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1964-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Mikko_Savola">
+      <persName>
+       <surname>
+        Savola
+       </surname>
+       <forename>
+        Mikko
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1981-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Eerikki_Viljanen">
+      <persName>
+       <surname>
+        Viljanen
+       </surname>
+       <forename>
+        Eerikki
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1975-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Satu_Taavitsainen">
+      <persName>
+       <surname>
+        Taavitsainen
+       </surname>
+       <forename>
+        Satu
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Erkki_Tuomioja">
+      <persName>
+       <surname>
+        Tuomioja
+       </surname>
+       <forename>
+        Erkki
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1946-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Kalle_Jokinen">
+      <persName>
+       <surname>
+        Jokinen
+       </surname>
+       <forename>
+        Kalle
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1961-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Eeva-Maria_Maijala">
+      <persName>
+       <surname>
+        Maijala
+       </surname>
+       <forename>
+        Eeva-Maria
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Petri_Jääskeläinen">
+      <persName>
+       <surname>
+        Jääskeläinen
+       </surname>
+       <forename>
+        Petri
+       </forename>
+       <roleName>
+        Eduskunnan oikeusasiamies
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1960-01-01"/>
+     </person>
+     <person xml:id="Markku_Eestilä">
+      <persName>
+       <surname>
+        Eestilä
+       </surname>
+       <forename>
+        Markku
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1956-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Kimmo_Tiilikainen">
+      <persName>
+       <surname>
+        Tiilikainen
+       </surname>
+       <forename>
+        Kimmo
+       </forename>
+       <roleName>
+        Maatalous-  ja ympäristöministeri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Markku_Pakkanen">
+      <persName>
+       <surname>
+        Pakkanen
+       </surname>
+       <forename>
+        Markku
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1960-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Jaakko_Jonkka">
+      <persName>
+       <surname>
+        Jonkka
+       </surname>
+       <forename>
+        Jaakko
+       </forename>
+       <roleName>
+        Valtioneuvoston oikeuskansleri
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1953-02-12"/>
+     </person>
+     <person xml:id="Suna_Kymäläinen">
+      <persName>
+       <surname>
+        Kymäläinen
+       </surname>
+       <forename>
+        Suna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1976-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Anneli_Kiljunen">
+      <persName>
+       <surname>
+        Kiljunen
+       </surname>
+       <forename>
+        Anneli
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1957-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Heli_Järvinen">
+      <persName>
+       <surname>
+        Järvinen
+       </surname>
+       <forename>
+        Heli
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Jukka_Kopra">
+      <persName>
+       <surname>
+        Kopra
+       </surname>
+       <forename>
+        Jukka
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Jari_Ronkainen">
+      <persName>
+       <surname>
+        Ronkainen
+       </surname>
+       <forename>
+        Jari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1972-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Reijo_Hongisto">
+      <persName>
+       <surname>
+        Hongisto
+       </surname>
+       <forename>
+        Reijo
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1962-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Jani_Toivola">
+      <persName>
+       <surname>
+        Toivola
+       </surname>
+       <forename>
+        Jani
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1977-01-01"/>
+      <affliation ref="#party.VIHR"/>
+     </person>
+     <person xml:id="Saara-Sofia_Sirén">
+      <persName>
+       <surname>
+        Sirén
+       </surname>
+       <forename>
+        Saara-Sofia
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1986-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Rami_Lehto">
+      <persName>
+       <surname>
+        Lehto
+       </surname>
+       <forename>
+        Rami
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1973-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Elina_Lepomäki">
+      <persName>
+       <surname>
+        Lepomäki
+       </surname>
+       <forename>
+        Elina
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1981-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Kai_Mykkänen">
+      <persName>
+       <surname>
+        Mykkänen
+       </surname>
+       <forename>
+        Kai
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1979-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Mika_Kari">
+      <persName>
+       <surname>
+        Kari
+       </surname>
+       <forename>
+        Mika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1967-01-01"/>
+      <affliation ref="#party.SD"/>
+     </person>
+     <person xml:id="Antti_Häkkänen">
+      <persName>
+       <surname>
+        Häkkänen
+       </surname>
+       <forename>
+        Antti
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1985-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Sari_Raassina">
+      <persName>
+       <surname>
+        Raassina
+       </surname>
+       <forename>
+        Sari
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1963-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Tom_Packalén">
+      <persName>
+       <surname>
+        Packalén
+       </surname>
+       <forename>
+        Tom
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1969-01-01"/>
+      <affliation ref="#party.PS"/>
+     </person>
+     <person xml:id="Mika_Lintilä">
+      <persName>
+       <surname>
+        Lintilä
+       </surname>
+       <forename>
+        Mika
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1966-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Susanna_Koski">
+      <persName>
+       <surname>
+        Koski
+       </surname>
+       <forename>
+        Susanna
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="F">
+       Female
+      </sex>
+      <birth when="1985-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Harry_Harkimo">
+      <persName>
+       <surname>
+        Harkimo
+       </surname>
+       <forename>
+        Harry
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1953-01-01"/>
+      <affliation ref="#party.KOK"/>
+     </person>
+     <person xml:id="Juha_Pylväs">
+      <persName>
+       <surname>
+        Pylväs
+       </surname>
+       <forename>
+        Juha
+       </forename>
+       <roleName>
+        Kansanedustaja
+       </roleName>
+      </persName>
+      <sex value="M">
+       Male
+      </sex>
+      <birth when="1971-01-01"/>
+      <affliation ref="#party.KESK"/>
+     </person>
+     <person xml:id="Marja_Lohela">
+      <persName>
+       <surname>
+        Lohela
+       </surname>
+       <forename>
+        Marja
+       </forename>
+       <roleName>
+        Puhemies
+       </roleName>
+      </persName>
+      <birth when=""/>
+     </person>
+    </listPerson>
+    <listOrg>
+     <org role="Hallituspuolue" xml:id="KOK"/>
+     <org role="Oppositiopuolue" xml:id="KESK"/>
+     <org role="Oppositiopuolue" xml:id="PS"/>
+     <org role="Hallituspuolue" xml:id="SD"/>
+     <org role="Hallituspuolue" xml:id="KD"/>
+     <org role="Hallituspuolue" xml:id="R"/>
+     <org role="Hallituspuolue" xml:id="VIHR"/>
+     <org role="Oppositiopuolue" xml:id="VAS"/>
+    </listOrg>
+   </particDesc>
+  </profileDesc>
+ </teiheader>
+ <TEI xml:id="ptk_1_2015">
+  <teiHeader>
+   <fileDesc>
+    <titleStmt>
+     <title>
+      PTK 1/2015
+     </title>
+    </titleStmt>
+    <sourceDesc>
+     <bibl>
+      <edition n="5.3">
+       Valmis
+      </edition>
+     </bibl>
+    </sourceDesc>
+   </fileDesc>
+   <profileDesc>
+    <settingDesc>
+     <setting>
+      <date when="2015-04-28">
+       2015-04-28
+      </date>
+      <time from="12.01" to="13.31"/>
+     </setting>
+    </settingDesc>
+   </profileDesc>
+  </teiHeader>
+  <text>
+   <body>
+    <div>
+     <head>
+      Nimenhuuto
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+1.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_1_1"/>
+      <u ana="#elderMember" who="#Pertti_Salolainen" xml:id="2015_1_1">
+       Täysistunto alkaa. Toivotan kaikki tervetulleiksi tänne Sibelius-taloon Sibeliuksen juhlavuotena aloittamaan vastuullista työtämme isänmaan hyväksi. Iältäni vanhimpana eduskunnan jäsenenä johdan puhetta tässä valtiopäivien ensimmäisessä täysistunnossa, kunnes eduskunta on työjärjestyksen 4 §:n mukaan valinnut puhemiehen ja kaksi varapuhemiestä ja nämä ovat antaneet eduskunnalle juhlallisen vakuutuksen. Plenum börjar. Som den riksdagsledamot som är äldst till åren är det min uppgift att föra ordet vid första plenum under riksmötet till dess att riksdagen enligt 4 § i riksdagens arbets-ordning inom sig valt talman och två vice talmän och dessa har avgett högtidlig försäkran inför riksdagen.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Puhemiehen vaali
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vaali  VAA 1/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+2.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_1_2"/>
+      <u ana="#elderMember" who="#Pertti_Salolainen" xml:id="2015_1_2">
+       Nyt seuraa puhemiehen vaali, joka, kuten varapuhemiestenkin vaalit, toimitetaan noudattamalla Suomen perustuslain 34 §:n 2 momentin ja eduskunnan vaalisäännön 5 ja 6 §:n säännöksiä. Vaali toimitetaan siis umpilipuin. Edustajat tuovat äänestyslippunsa uurnaan nimenhuudon mukaan, joka toimitetaan aakkosjärjestyksessä. Pyydän huomauttaa, että ehdokkaan nimi on yksilöitävä riittävällä tarkkuudella tarvittaessa myös etunimeä käyttäen. Nu följer val av talman, vilket liksom även valet av vice talmän förrättas enligt 34 § 2 momentet i Finlands grundlag och 5 och 6 § i valstadgan för riksdagen. Valet förrättas således med slutna röstsedlar. Riksdagsledamöterna ska enligt namnupprop i alfabetisk ordning lägga röstsedeln i urnan. Jag vill påminna om att kandidatens namn ska anges tillräckligt tydligt. Vid behov kan också förnamnet anges. Avustajiksi äänestyslippujen tarkastamiseen ja äänten laskemiseen vaalissa pyydän seuraavat edustajat: Kimmo Tiilikainen, Jari Lindström, Arto Satonen ja Antti Lindtman. Jag ber följande riksdagsledamöter granska röstsedlarna och räkna rösterna vid valet: Kimmo Tiilikainen, Jari Lindström, Arto Satonen och Antti Lindtman. Totean, että annettuja ääniä ei julkilueta.
+      </u>
+     </div>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+2.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_1_3"/>
+      <u ana="#elderMember" who="#Pertti_Salolainen" xml:id="2015_1_3">
+       Arvoisat edustajat, joudun toteamaan, että äskeistä äänestystä häiritsi täällä salissa metelöinti, ja eräät edustajat eivät edes kuulleet nimeään tuonne takaosaan. Pyydän, että kunnioitatte eduskunnan työskentelyä sillä tavalla, että täällä ei pidetä meteliä eikä epäjärjestystä. — Kiitos. Äänestyksen tulos luetaan.
+      </u>
+     </div>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+2.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_1_4"/>
+      <u ana="#elderMember" who="#Pertti_Salolainen" xml:id="2015_1_4">
+       Kun edustaja Juha Sipilä on saanut vaalissa enemmän kuin puolet annetuista hyväksytyistä äänistä, on hänet valittu eduskunnan puhemieheksi vuoden 2015 valtiopäivien ajaksi. Eftersom ledamot Juha Sipilä vid valet erhållit mer än hälften av de avgivna godkända rösterna, har han valts till talman vid riksmötet 2015.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Ensimmäisen varapuhemiehen vaali
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vaali  VAA 2/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+3.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_1_5"/>
+      <u ana="#elderMember" who="#Pertti_Salolainen" xml:id="2015_1_5">
+       Nyt seuraa ensimmäisen varapuhemiehen vaali. Vaali toimitetaan umpilipuin. Edustajat tuovat äänestyslippunsa uurnaan aakkosjärjestyksessä. Avustajiksi vaalissa pyydän seuraavat edustajat: Anne Kalmari, Maria Lohela, Outi Mäkelä ja Johanna Ojala-Niemelä. Nu följer val av förste vice talman. Valet förrättas med slutna röstsedlar. Riksdagsledamöterna ska i alfabetisk ordning lägga röstsedeln i urnan. Jag ber följande riksdagsledamöter biträda vid valet: Anne Kalmari, Maria Lohela, Outi Mäkelä och Johanna Ojala-Niemelä.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Toisen varapuhemiehen vaali
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vaali  VAA 3/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+    <div>
+     <head>
+      Muut ilmoitukset
+     </head>
+    </div>
+    <div>
+     <head>
+      Vaalien toimittaminen
+     </head>
+    </div>
+    <div>
+     <head>
+      Muut ilmoitukset
+     </head>
+    </div>
+    <div>
+     <head>
+      Muut ilmoitukset
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Pöytäkirjan liite
+       </bibl>
+       <bibl>
+        Pöytäkirjan liite
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+   </body>
+  </text>
+ </TEI>
+ <TEI xml:id="ptk_2_2015">
+  <teiHeader>
+   <fileDesc>
+    <titleStmt>
+     <title>
+      PTK 2/2015
+     </title>
+    </titleStmt>
+    <sourceDesc>
+     <bibl>
+      <edition n="5.1">
+       Valmis
+      </edition>
+     </bibl>
+    </sourceDesc>
+   </fileDesc>
+   <profileDesc>
+    <settingDesc>
+     <setting>
+      <date when="2015-05-05">
+       2015-05-05
+      </date>
+      <time from="14.01" to="14.15"/>
+     </setting>
+    </settingDesc>
+   </profileDesc>
+  </teiHeader>
+  <text>
+   <body>
+    <div>
+     <head>
+      Ilmoituksia - Kertomukset
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_2+2015+2.1.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_2_1"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_2_1">
+       Euroopan neuvoston Suomen valtuuskunta on antanut eduskunnalle kertomuksen Euroopan neuvoston parlamentaarisen yleiskokouksen toiminnasta vuonna 2014 (K 6/2015 vp).
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Ilmoituksia - Uusi edustaja
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_2+2015+2.2.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_2_2"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_2_2">
+       Eero Lehti on 5.5.2015 esittänyt edustajanvaltakirjansa ja ryhtynyt hoitamaan edustajantointaan. Kunnanjohtaja, kapteeni evp. Mikko Kärnä, joka varamiehenä Lapin vaalipiiristä on tullut edustajantoimensa hoitamisen keskeytymisestä 27.4.2015 ilmoittaneen Paavo Väyrysen sijaan, on 30.4.2015 esittänyt edustajan valtakirjansa ja ryhtynyt hoitamaan edustajantointaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Valiokuntien vaalit
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vaali  VAA 4/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_2+2015+3.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_2_3"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_2_3">
+       Päiväjärjestyksen 3. asiana on valiokuntien vaalit. Totean, että vaalit ovat yksimieliset ja että eduskunta valitsee valiokuntien jäseniksi ja varajäseniksi seuraavat edustajat:
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Kansliatoimikunnan vaali
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vaali  VAA 5/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_2+2015+4.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_2_4"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_2_4">
+       Päiväjärjestyksen 4. asiana on kansliatoimikunnan vaali. Totean, että vaali on yksimielinen ja että eduskunta valitsee kansliatoimikunnan jäseniksi ja varajäseniksi seuraavat edustajat:
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Muut ilmoitukset
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_2+2015+5.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_2_5"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_2_5">
+       Valiokuntien järjestäytymistä varten annan puheenvuoron valiokuntien vanhimmille jäsenille.
+      </u>
+     </div>
+    </div>
+   </body>
+  </text>
+ </TEI>
+ <TEI xml:id="ptk_3_2015">
+  <teiHeader>
+   <fileDesc>
+    <titleStmt>
+     <title>
+      PTK 3/2015
+     </title>
+    </titleStmt>
+    <sourceDesc>
+     <bibl>
+      <edition n="5.1">
+       Valmis
+      </edition>
+     </bibl>
+    </sourceDesc>
+   </fileDesc>
+   <profileDesc>
+    <settingDesc>
+     <setting>
+      <date when="2015-05-06">
+       2015-05-06
+      </date>
+      <time from="14.00" to="14.06"/>
+     </setting>
+    </settingDesc>
+   </profileDesc>
+  </teiHeader>
+  <text>
+   <body>
+    <div>
+     <head>
+      Ilmoituksia - Valiokuntien puheenjohtajat ja varapuheenjohtajat
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_3+2015+2.1.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_3_1"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_3_1">
+       Valiokunnat ovat 5.5.2015 valinneet puheenjohtajansa ja varapuheenjohtajansa seuraavasti:
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Ilmoituksia - Kertomukset
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_3+2015+2.2.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_3_2"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_3_2">
+       Suomen itsenäisyyden juhlarahaston hallintoneuvosto on antanut eduskunnalle kertomuksen rahaston toiminnasta vuodelta 2014. Eduskunnan tilintarkastajat ovat antaneet eduskunnalle tilintarkastuskertomuksen eduskunnan tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014, tilintarkastuskertomuksen valtiontalouden tarkastusviraston tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014 sekä tilintarkastuskertomuksen Ulkopoliittisen instituutin tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014 (K 1, 10—12/2015 vp).
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Puhemiesneuvoston ehdotus edustajien istumajärjestyksestä
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Eduskuntatyön järjestäminen  ETJ 1/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_3+2015+3.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_3_3"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_3_3">
+       Ainoaan käsittelyyn esitellään päiväjärjestyksen 3. asia. Puhemiesneuvosto, jonka tehtävänä on eduskunnan työjärjestyksen mukaan tehdä ehdotuksia eduskuntaryhmien keskinäisestä istumajärjestyksestä täysistuntosalissa, ehdottaa eduskunnan päätettäväksi, että edustajat istuvat täysistuntosalissa eduskuntaryhmittäin siten, että puhemiehen paikalta katsottuna äärimmäisenä oikealla on ruotsalainen eduskuntaryhmä ja siitä lähtien muut eduskuntaryhmät seuraavassa järjestyksessä: kokoomuksen eduskuntaryhmä, kristillisdemokraattinen eduskuntaryhmä, keskustan eduskuntaryhmä, perussuomalaisten eduskuntaryhmä, vihreä eduskuntaryhmä, sosialidemokraattinen eduskuntaryhmä ja äärimmäisenä vasemmalla vasemmistoliiton eduskuntaryhmä, kukin ryhmä puhemiesneuvoston määräämien rajojen puitteissa.
+      </u>
+     </div>
+    </div>
+   </body>
+  </text>
+ </TEI>
+ <TEI xml:id="ptk_4_2015">
+  <teiHeader>
+   <fileDesc>
+    <titleStmt>
+     <title>
+      PTK 4/2015
+     </title>
+    </titleStmt>
+    <sourceDesc>
+     <bibl>
+      <edition n="5.1">
+       Valmis
+      </edition>
+     </bibl>
+    </sourceDesc>
+   </fileDesc>
+   <profileDesc>
+    <settingDesc>
+     <setting>
+      <date when="2015-05-12">
+       2015-05-12
+      </date>
+      <time from="14.00" to="15.07"/>
+     </setting>
+    </settingDesc>
+   </profileDesc>
+  </teiHeader>
+  <text>
+   <body>
+    <div>
+     <head>
+      Ilmoituksia - Uusi edustaja
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_4+2015+2.1.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_4_1"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_4_1">
+       Hyvinkäältä oleva varatuomari, henkikirjoittaja Leena Meri, joka varamiehenä Uudenmaan vaalipiiristä on tullut edustajantoimensa hoitamisen keskeytymisestä 5.5.2015 ilmoittaneen Pirkko Ruohonen-Lernerin sijaan, on 7.5.2015 esittänyt minulle edustajanvaltakirjansa ja on ryhtynyt hoitamaan edustajantointaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Lasse Männistön vapautuspyyntö Kansaneläkelaitoksen valtuutetuista
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Vapautuspyyntö  VAP 1/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_4+2015+3.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_4_2"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_4_2">
+       Ainoaan käsittelyyn esitellään päiväjärjestyksen 3. asia. Lasse Männistö pyytää vapautusta Kansaneläkelaitoksen valtuutetuista. Puhemiesneuvosto puoltaa pyyntöä.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Hallituksen esitys eduskunnalle laeiksi luottolaitosten ja sijoituspalveluyritysten kriisinratkaisusta  annetun lain 8 luvun muuttamisesta, sijoituspalvelulain 6 luvun 2 §:n muuttamisesta sekä rahoitusvakausviranomaisesta annetun lain 5 luvun muuttamisesta
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Hallituksen esitys  HE 1/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_4+2015+4.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_4_3"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_4_3">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 4. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään talousvaliokuntaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Euroopan neuvoston  Suomen valtuuskunnan kertomus Euroopan neuvoston parlamentaarisen yleiskokouksen toiminnasta vuonna 2014
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Kertomus  K 6/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_4+2015+5.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_4_4"/>
+      <u ana="#chairman" who="#Juha_Sipilä" xml:id="2015_4_4">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 5. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään ulkoasiainvaliokuntaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Eduskunnan tilintarkastajien  tilintarkastuskertomus  eduskunnan tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Kertomus  K 10/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+    <div>
+     <head>
+      Eduskunnan tilintarkastajien tilintarkastuskertomus valtiontalouden tarkastusviraston tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Kertomus  K 11/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+    <div>
+     <head>
+      Eduskunnan tilintarkastajien tilintarkastuskertomus Ulkopoliittisen instituutin tilinpäätöksestä, toimintakertomuksesta ja kirjanpidosta sekä hallinnosta vuodelta 2014
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Kertomus  K 12/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+    <div>
+     <head>
+      Suomen itsenäisyyden juhlarahasto Sitran toimintakertomus vuodelta 2014
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Kertomus  K 1/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+    </div>
+   </body>
+  </text>
+ </TEI>
+ <TEI xml:id="ptk_5_2015">
+  <teiHeader>
+   <fileDesc>
+    <titleStmt>
+     <title>
+      PTK 5/2015
+     </title>
+    </titleStmt>
+    <sourceDesc>
+     <bibl>
+      <edition n="5.2">
+       Valmis
+      </edition>
+     </bibl>
+    </sourceDesc>
+   </fileDesc>
+   <profileDesc>
+    <settingDesc>
+     <setting>
+      <date when="2015-05-19">
+       2015-05-19
+      </date>
+      <time from="14.00" to="14.07"/>
+     </setting>
+    </settingDesc>
+   </profileDesc>
+  </teiHeader>
+  <text>
+   <body>
+    <div>
+     <head>
+      Hallituksen esitys eduskunnalle laiksi ulkomaalaislain 36 §:n muuttamisesta
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Hallituksen esitys  HE 2/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_5+2015+3.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_5_1"/>
+      <u ana="#viceChair" who="#Timo_Soini" xml:id="2015_5_1">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 3. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään hallintovaliokuntaan.
+      </u>
+     </div>
+     <div>
+      <note end="2015-05-19T14:05:16" link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_5+2015+3.aspx" speechType="Puheenvuoro" start="2015-05-19T14:02:52" type="speaker" xml:id="2015_5_2"/>
+      <u who="#Mika_Niikko" xml:id="2015_5_2">
+       Arvoisa puhemies! Hallituksen esityksessä ehdotetaan muutettavaksi ulkomaalaislain pykälää, jossa säädettäisiin oleskeluluvan myöntämisen edellytyksistä, kuten siitä, että kansanterveyden vaarantaminen ei estä jatkoluvan myöntämistä.Viime viikolla me keskustelimme täällä Euroopan neuvoston Suomen valtuuskunnan kertomuksesta 2014, ja valtuuskunnan kertomuksessa mainittiin tästä asiasta seuraavasti: "Hiv-positiiviset siirtolaiset kokevat moninkertaista syrjintää verrattuna muihin, ja osalta evätään jopa maahan pääsy. Päätöslauselma 1997 (2014) kehottaa puuttumaan tilanteeseen varmistamalla edullisia hoito- ja ehkäisypalveluja myös paperittomille." Lisäksi tässä mainitaan näin, että "päätöslauselma kehottaa poistamaan hiv-positiivisten siirtolaisten maahantulo- ja oleskelurajoitukset."Arvoisa puhemies! Ymmärtääkseni tämä hallituksen esitys on nyt tavallaan tätä näkökulmaa tässä korjaamassa, koska nyt ei puhuta tästä oleskeluluvan myöntämisen asiasta, vaan näistä jatkoluvan myöntämisessä olevista esteistä.Arvoisa puhemies! Mielestäni aikaisemman hallituksen tekemä esitys tästä asiasta ei ole hyvä, koska tällähän me avaamme kuitenkin mahdollisuuden, myös paperittomien osalta, tulla Suomeen saamaan tulevaisuudessa terveyspalveluja, jotka tulevat meidän yhteiskunnallemme hyvin kalliiksi. Itse en ymmärrä sellaista politiikkaa, että meidän tulee tietoisesti ottaa sellaisia riskejä, että me myönnämme jatkoluvan henkilöille, joilla on vakavia kansanterveydellisiä sairauksia. Meillä ei ole tällaiseen kokeiluun varaa.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Hallituksen esitys eduskunnalle laiksi lukiolain 19 ja 28 §:n muuttamisesta
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Hallituksen esitys  HE 3/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_5+2015+4.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_5_3"/>
+      <u ana="#viceChair" who="#Timo_Soini" xml:id="2015_5_3">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 4. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään sivistysvaliokuntaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Hallituksen esitys eduskunnalle laiksi tietoyhteiskuntakaaren muuttamisesta
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Hallituksen esitys  HE 4/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_5+2015+5.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_5_4"/>
+      <u ana="#viceChair" who="#Timo_Soini" xml:id="2015_5_4">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 5. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään liikenne- ja viestintävaliokuntaan.
+      </u>
+     </div>
+    </div>
+    <div>
+     <head>
+      Hallituksen esitys eduskunnalle laiksi työttömyysturvalain muuttamisesta
+      <listBibl>
+       <head>
+        Related documents:
+       </head>
+       <bibl>
+        Hallituksen esitys  HE 5/2015 vp
+       </bibl>
+      </listBibl>
+     </head>
+     <div>
+      <note link="https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_5+2015+6.aspx" speechType="PuhemiesPuheenvuoro" type="speaker" xml:id="2015_5_5"/>
+      <u ana="#viceChair" who="#Timo_Soini" xml:id="2015_5_5">
+       Lähetekeskustelua varten esitellään päiväjärjestyksen 6. asia. Puhemiesneuvosto ehdottaa, että asia lähetetään sosiaali- ja terveysvaliokuntaan, jolle perustuslakivaliokunnan on annettava lausunto.
+      </u>
+     </div>
+    </div>
+   </body>
+  </text>
+ </TEI>
+</teiCorpus>

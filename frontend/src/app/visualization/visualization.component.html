@@ -74,7 +74,8 @@
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
                 <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
+                    [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
             </ng-container>

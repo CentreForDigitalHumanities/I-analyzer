@@ -9,6 +9,7 @@ from addcorpus.corpus import Corpus, Field
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
+from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class Parliament(Corpus):
     '''
@@ -34,6 +35,13 @@ class Parliament(Corpus):
     max_date = MAX_DATE
     image = 'parliament.jpeg'
     data_directory = 'bogus'
+
+    language = 'english'
+
+    @property
+    def es_settings(self):
+        return parliament_es_settings(self.language)
+
 
     # overwrite below in child class if you need to extract the (converted) transcription
     # from external files. See README.
@@ -62,7 +70,7 @@ class Parliament(Corpus):
     @property
     def fields(self):
         return self._fields
-    
+
     @fields.setter
     def fields(self, value):
         self._fields = value

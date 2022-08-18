@@ -27,7 +27,7 @@ def make_wordcloud_data(documents, field):
 
 def get_ngrams(es_query, corpus, field,
     ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
-    number_of_ngrams=10):
+    number_of_ngrams=10, date_field = 'date'):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
@@ -36,7 +36,8 @@ def get_ngrams(es_query, corpus, field,
     # find ngrams
 
     docs, total_frequencies = tokens_by_time_interval(
-        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval
+        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval,
+        date_field
     )
     if freq_compensation:
         ngrams = get_top_n_ngrams(docs, total_frequencies, number_of_ngrams)
@@ -91,7 +92,7 @@ def get_time_bins(es_query, corpus):
     return bins
 
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval, date_field):
     index = get_index(corpus)
     client = elasticsearch(index)
     ngrams_per_bin = []
@@ -105,7 +106,7 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         end_date = datetime(end_year, 12, 31)
 
         # filter query on this time bin
-        date_filter = query.make_date_filter(start_date, end_date)
+        date_filter = query.make_date_filter(start_date, end_date, date_field)
         narrow_query = query.add_filter(es_query, date_filter)
 
         #search for the query text
@@ -149,17 +150,6 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         ngrams_per_bin.append(bin_ngrams)
 
     return ngrams_per_bin, ngram_ttfs
-
-def make_ngram(token, prev_tokens, next_tokens, ngram_size, position):
-    prev_size = position
-    next_size = ngram_size - (position + 1)
-
-    if prev_size <= len(prev_tokens) and next_size <= len(next_tokens):
-        return prev_tokens[len(prev_tokens) - prev_size:] + [token] + next_tokens[:next_size]
-
-def find_neighbouring_tokens(token, tokens, window_size=1, direction='next'):
-    """Find the n tokens preceding or following a token. The token """
-
 
 
 def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):

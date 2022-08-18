@@ -1,12 +1,16 @@
 '''
 Present the data to the user through a web interface.
 '''
+from distutils.log import error
 import logging
+
+from amqp import error_for_code
 logger = logging.getLogger(__name__)
 import json
 import base64
 import math
 import functools
+import os
 
 from os.path import split, join, isfile, getsize
 import sys
@@ -227,14 +231,31 @@ def api_download():
         error_response.headers['message'] += 'too many documents requested.'
         return error_response
     else:
-        search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-        filepath = tasks.make_csv.delay(search_results, request.json)
+        error_response = make_response("", 500)
+        try:
+            search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
+            filepath = tasks.make_csv.delay(search_results, request.json)
+        except:
+            error_response.headers['message'] += 'Could not generate csv file'
+            return error_response
+
+        if not os.path.isabs(filepath.get()):
+            error_response.headers['message'] += 'csv filepath is not absolute.'
+            return error_response
+
         csv_file = filepath.get()
+
         if not csv_file:
-            return jsonify({'success': False, 'message': 'Could not create csv file.'})
-        response = make_response(send_file(csv_file, mimetype='text/csv'))
-        response.headers['filename'] = split(csv_file)[1]
-        return response
+            error_response.headers.message += 'Could not create csv file.'
+            return error_response
+
+        try:
+            response = make_response(send_file(csv_file, mimetype='text/csv'))
+            response.headers['filename'] = split(csv_file)[1]
+            return response
+        except:
+            error_response.headers['message'] += 'Could not send file to client'
+            return error_response
 
 
 # endpoint for backend handling of large csv files
@@ -484,12 +505,11 @@ def api_ngram_tasks():
     if not request.json:
         abort(400)
     else:
-        ngram_counts_task = chain(tasks.get_ngram_data.s(request.json))
-        ngram_counts = ngram_counts_task.apply_async()
+        ngram_counts_task = tasks.get_ngram_data.delay(request.json)
         if not ngram_counts_task:
             return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
         else:
-            return jsonify({'success': True, 'task_ids': [ngram_counts.id ]})
+            return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
 
 
