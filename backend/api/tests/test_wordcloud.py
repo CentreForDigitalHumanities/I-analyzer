@@ -130,6 +130,3 @@ def test_wordcloud_filtered(test_app, test_es_client):
         for hit in output:
             if term == hit['key']:
                 assert doc_count == hit['doc_count']
-
-
-
