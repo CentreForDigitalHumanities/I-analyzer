@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { ParamDirective } from '../../param/param-directive';
-import { Normalizer } from '../../models';
+import { Normalizer, barChartSetNull } from '../../models';
 
 @Component({
     selector: 'ia-barchart-options',
@@ -63,9 +63,10 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     initialize() {}
 
     teardown() {
+        this.setParams(barChartSetNull);
     }
 
-    setStateFromParams(params: ParamMap) {
+    setStateFromParams(params: Params) {
         if (params.has('normalize')) {
             this.currentNormalizer = params.get('normalizer') as Normalizer;
         } else {

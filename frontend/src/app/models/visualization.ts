@@ -39,3 +39,17 @@ export type NgramParameters = {
     maxDocuments: number,
     numberOfNgrams: number,
 };
+
+export const ngramSetNull: NgramParameters = {
+    size: null,
+    positions: null,
+    freqCompensation: null,
+    analysis: null,
+    maxDocuments: null,
+    numberOfNgrams: null
+};
+
+export const barChartSetNull: Object = {
+    normalize: null,
+    visualizeTerm: null
+};

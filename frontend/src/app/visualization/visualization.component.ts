@@ -2,13 +2,15 @@ import { DoCheck, Input, Component } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, CorpusField } from '../models/index';
+import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
 import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+
+
 
 @Component({
     selector: 'ia-visualization',
@@ -54,7 +56,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
         resultscount: 'numberofresults',
         termfrequency: 'termfrequency',
     };
-
 
     public visualExists = false;
     public isLoading = false;
@@ -107,15 +108,20 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
     }
 
     teardown() {
-        this.setParams({
-            visualize: null,
-            visualizedField: null,
-            normalize: null,
-            visualizeTerm: null
-        });
+        /* set all visualization params to null here -
+        so all params, also from children are guaranteed to be null */
+        this.setParams(
+            Object.assign(
+                {
+                    visualize: null,
+                    visualizedField: null
+                },
+                barChartSetNull,
+                ngramSetNull
+        ));
     }
 
-    setStateFromParams(params: ParamMap) {
+    setStateFromParams(params: Params) {
         if (params.has('visualize')) {
             this.visualizationType = params.get('visualize');
             this.visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
@@ -126,7 +132,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
             } else {
                 this.noVisualizations = false;
                 this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
-                this.checkResults();
+                this.updateParams();
             }
         }
     }
@@ -139,6 +145,12 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
         }
     }
 
+    updateParams() {
+        this.params['visualize'] = this.visualizationType;
+        this.params['visualizedField'] = this.visualizedField.name;
+        this.setParams(this.params);
+    }
+
     setVisualizationType(visType: string) {
         this.visualizationType = visType;
         this.filteredVisualizationFields = this.allVisualizationFields.filter(field =>
@@ -149,9 +161,11 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
             value: field
         }));
         this.visualizedField = this.filteredVisualizationFields[0];
-        this.params['visualize'] = this.visualizationType;
-        this.params['visualizedField'] = this.visualizedField.name;
-        this.setParams(this.params);
+    }
+
+    changeVisualizationType(visType: string) {
+        this.setVisualizationType(visType);
+        this.updateParams();
     }
 
     setVisualizedField(selectedField: CorpusField) {
@@ -160,8 +174,11 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
 
         this.visualizedField = selectedField;
         this.foundNoVisualsMessage = 'Retrieving data...';
-        this.params['visualizedField'] = this.visualizedField.name;
-        this.setParams(this.params);
+    }
+
+    changeVisualizedField(selectedField: CorpusField) {
+        this.setVisualizedField(selectedField);
+        this.updateParams();
     }
 
     setErrorMessage(message: string) {

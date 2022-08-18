@@ -10,7 +10,7 @@
             </label>
             <div class="control">
                 <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]"
-                    (onChange)="setVisualizationType($event.value)"></ia-dropdown>
+                    (onChange)="changeVisualizationType($event.value)"></ia-dropdown>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
             </label>
             <div class="control">
                 <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="fieldDropdown[0]"
-                    (onChange)="setVisualizedField($event.value)"></ia-dropdown>
+                    (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
                 <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="fieldDropdown[0].label">
             </div>
         </label>

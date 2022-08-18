@@ -434,7 +434,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     confirmChanges() {
         this.parametersChanged = false;
         this.setParams(this.currentParameters);
-        // this.loadGraph();
     }
 
     get currentSizeOption() {
