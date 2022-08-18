@@ -1,3 +1,4 @@
+
 <div class="box">
     <div class="columns is-multiline">
         <div class="column is-one-third">
@@ -68,6 +69,18 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="column is-one-third" *ngIf="allDateFields && allDateFields.length > 1">
+        <div class="field">
+            <div class="control">
+                <label class="label" iaBalloon="field to use on the x-axis">
+                    Compare frequencies by:
+                </label>
+                <ia-dropdown [options]="allDateFields" optionLabel="displayName" [value]="dateField"
+                (onChange)="onParameterChange('dateField', $event.name)"></ia-dropdown>
+            </div>
+        </div>
+
     </div>
     <div class="level" *ngIf="parametersChanged">
         <div class="level-left"></div>

@@ -1,0 +1,19 @@
+ALT	Alternativet
+DF	Dansk Folkeparti
+EL	Enhedslisten
+IA	Inuit Ataqatigiit
+JF	Javnaðarflokkurin
+KD	Kristendemokraterne
+KF	Det Konservative Folkeparti
+LA	Liberal Alliance
+NB	Nye Borgerlige
+NQ	Nunatta Qitornai
+RV	Radikale Venstre
+S	Socialdemokratiet
+SF	Socialistisk Folkeparti
+SIU	Siumut
+SP	Sambandsflokkurin
+T	Tjóðveldi
+TF	Tjóðveldisflokkurin
+UFG	Uden for folketingsgrupperne
+V	Venstre

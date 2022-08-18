@@ -137,38 +137,12 @@ PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
 PP_FR_IMAGE = 'france.jpeg'
 
-# Elasticsearch settings for People & Parliament corpora
-PP_ES_SETTINGS = {
-    "analysis": {
-        "analyzer": {
-            "clean": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords"]
-            },
-            "stemmed": {
-                "tokenizer": "standard",
-                "char_filter": ["number_filter"],
-                "filter": ["lowercase", "stopwords", "stemmer"]
-            }
-        },
-        "char_filter":{
-            "number_filter":{
-                "type":"pattern_replace",
-                "pattern":"\\d+",
-                "replacement":""
-            }
-        }
-    }
-}
-
 #################
 
 # Celery configuration
-CELERY_BROKER_URL = 'amqp://'
-
-CELERY_BACKEND = 'rpc://'
-CSV_FILES_PATH = '<abs_path_to_backend>/api/csv_files' #replace this path with the absolute path to backend/api/csv_files
+CELERY_BROKER_URL = 'redis://'
+CELERY_BACKEND = 'redis://'
+CSV_FILES_PATH = '<abs_path_to_backend>/api/csv_files'
 
 MAIL_CSV_SUBJECT_LINE = 'I-Analyzer download'
 

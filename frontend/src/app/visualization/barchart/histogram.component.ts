@@ -6,6 +6,15 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
 
+function formatXAxisLabel(value): string {
+    const label = this.getLabelForValue(value); // from chartJS api
+    const max_length = 30;
+    if (label.length > max_length) {
+        return `${label.slice(0, max_length)}...`;
+    }
+    return label;
+}
+
 
 @Component({
     selector: 'ia-histogram',
@@ -23,10 +32,11 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             return {name: this.visualizedField.name, size: 100};
         }
 
-        if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-            size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-        } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
-            size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
+        const defaultData = this.visualizedField.searchFilter.defaultData;
+        if (defaultData.filterType === 'MultipleChoiceFilter') {
+            size = (<MultipleChoiceFilterData>defaultData).optionCount;
+        } else if (defaultData.filterType === 'RangeFilter') {
+            size = (<RangeFilterData>defaultData).max - (<RangeFilterData>defaultData).min;
         }
         return {name: this.visualizedField.name, size: size};
     }
@@ -95,9 +105,10 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
-        options.plugins.title.text = this.chartTitle()
+        options.plugins.title.text = this.chartTitle();
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;
+        options.scales.xAxis.ticks = { callback: formatXAxisLabel };
         options.plugins.tooltip = {
             callbacks: {
                 label: (tooltipItem) => {
@@ -128,7 +139,6 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             ];
         }
     }
-
 
     /** On what property should the data be sorted? */
     get defaultSort(): string {
