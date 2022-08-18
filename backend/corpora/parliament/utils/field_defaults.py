@@ -484,6 +484,22 @@ def party_full():
         es_mapping=BASIC_TEXT_MAPPING,
     )
 
+def party_role():
+    """
+    Role of the speaker's party in parliament (opposition, coalition, cabinet, etc.)
+    """
+    return Field(
+        name='party_role',
+        display_name='Party role',
+        description='Role of the speaker\'s political party in parliament at the time of speaking',
+        es_mapping=BASIC_KEYWORD_MAPPING,
+        search_filter= MultipleChoiceFilter(
+            description='Search in speeches from the selected parties',
+            option_count=10
+        ),
+        visualizations=['resultscount', 'termfrequency']
+    )
+
 def page():
     "page number or range (string)"
     return Field(
