@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 @Directive()
 export abstract class ParamDirective implements OnDestroy, OnInit {
 
-    protected queryParamMap: Subscription;
+    public queryParamMap: Subscription;
 
     constructor(
         public route: ActivatedRoute,
@@ -28,7 +28,7 @@ export abstract class ParamDirective implements OnDestroy, OnInit {
 
     abstract teardown();
 
-    abstract setStateFromParams(params: ParamMap);
+    abstract setStateFromParams(params: Params);
 
     public setParams(params: Params) {
         this.router.navigate(
