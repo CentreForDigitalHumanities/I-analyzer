@@ -47,7 +47,7 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}) }
+            provide: Router, useValue: { events: of({}), createUrlTree: (commands, navExtras = {} ) => {}, serializeUrl: () => '' }
         },
         {
             provide: SearchService, useValue: new SearchServiceMock()
