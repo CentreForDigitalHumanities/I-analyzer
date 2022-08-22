@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faDiagramPredecessor, faDiagramProject, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import {combineLatest as combineLatest } from 'rxjs';
 import { Corpus, User } from '../models';
-import { CorpusService, DialogService, SearchService, UserService } from '../services';
+import { CorpusService, UserService } from '../services';
 
 @Component({
     selector: 'ia-word-models',
@@ -13,20 +12,14 @@ import { CorpusService, DialogService, SearchService, UserService } from '../ser
 export class WordModelsComponent implements OnInit {
     user: User;
     corpus: Corpus;
-    wordModelsPresent: boolean;
     queryText: string;
 
     activeQuery: string;
 
     tabIndex = 0;
 
-    searchIcon = faMagnifyingGlass;
-    wordModelsIcon = faDiagramProject;
-
     constructor(private corpusService: CorpusService,
-        private searchService: SearchService,
         private userService: UserService,
-        private dialogService: DialogService,
         private activatedRoute: ActivatedRoute,
         private router: Router) { }
 
@@ -47,7 +40,9 @@ export class WordModelsComponent implements OnInit {
     setCorpus(corpus: Corpus): void {
         if (!this.corpus || this.corpus.name !== corpus.name) {
             this.corpus = corpus;
-            this.wordModelsPresent = this.corpus.word_models_present;
+            if (!this.corpus.word_models_present) {
+                this.router.navigate(['search', this.corpus.name]);
+            }
         }
     }
 

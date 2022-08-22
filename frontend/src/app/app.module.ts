@@ -73,6 +73,7 @@ import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
+import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 
 
 const appRoutes: Routes = [
@@ -136,6 +137,7 @@ export const declarations: any[] = [
     BalloonDirective,
     BarChartComponent,
     BooleanFilterComponent,
+    CorpusHeaderComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,

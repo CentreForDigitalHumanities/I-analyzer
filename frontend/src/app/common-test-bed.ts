@@ -1,7 +1,7 @@
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router, UrlSegment } from '@angular/router';
 
 import { of } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
@@ -47,7 +47,11 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}), createUrlTree: (commands, navExtras = {} ) => {}, serializeUrl: () => '' }
+            provide: Router, useValue: {
+                events: of({}),
+                createUrlTree: (commands, navExtras = {} ) => {},
+                serializeUrl: () => ''
+            }
         },
         {
             provide: SearchService, useValue: new SearchServiceMock()
