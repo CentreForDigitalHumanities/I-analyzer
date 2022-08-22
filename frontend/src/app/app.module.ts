@@ -68,7 +68,7 @@ import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanP
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
-import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
+import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
