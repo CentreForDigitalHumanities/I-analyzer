@@ -573,6 +573,13 @@ class CSVCorpus(Corpus):
         an empty value for `required_field` will be skipped.
         '''
 
+    @property
+    def delimiter(self):
+        '''
+        Set the delimiter for the CSV reader.
+        '''
+        return ','
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -583,20 +590,22 @@ class CSVCorpus(Corpus):
                 extract.CSV,
                 extract.Constant,
                 extract.Backup,
+                extract.Metadata,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
 
         if isinstance(source, str):
             filename = source
+            metadata = {}
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
-            filename = source[0]
+            filename, metadata = source
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
             for row in reader:
@@ -614,19 +623,19 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows)
+                    yield self.document_from_rows(rows, metadata)
                     rows = [row]
                 else:
                     rows.append(row)
 
-            yield self.document_from_rows(rows)
+            yield self.document_from_rows(rows, metadata)
 
-    def document_from_rows(self, rows):
+    def document_from_rows(self, rows, metadata):
         doc = {
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows,
+                rows=rows, metadata = metadata
             )
             for field in self.fields if field.indexed
         }

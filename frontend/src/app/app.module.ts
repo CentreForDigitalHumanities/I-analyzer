@@ -71,6 +71,7 @@ import { barchartOptionsComponent } from './visualization/barchart/barchart-opti
 import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
+import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 
 
@@ -177,6 +178,7 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,
     WordcloudComponent,
@@ -248,6 +250,7 @@ export const providers: any[] = [
     imports,
     providers,
     bootstrap: [AppComponent],
+
 })
 export class AppModule { }
 
