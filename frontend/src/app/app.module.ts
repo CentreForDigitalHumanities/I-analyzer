@@ -74,6 +74,7 @@ import { HighlightSelectorComponent } from './search/highlight-selector.componen
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
+import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 
 
 const appRoutes: Routes = [
@@ -183,6 +184,7 @@ export const declarations: any[] = [
     TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,
+    VisualizationFooterComponent,
     WordcloudComponent,
     WordModelsComponent,
 ];

@@ -1,12 +1,10 @@
 import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { SelectItem, SelectItemGroup } from 'primeng/api';
+import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
 import { Corpus, QueryModel, CorpusField } from '../models/index';
-import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
-import * as htmlToImage from 'html-to-image';
 
 @Component({
     selector: 'ia-visualization',
@@ -58,7 +56,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     public isLoading = false;
     private childComponentLoading = false;
 
-    public palette = PALETTES[0];
+    public palette: string[];
 
     faQuestion = faCircleQuestion;
 
@@ -148,40 +146,27 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.childComponentLoading = event;
     }
 
-    showHelp() {
-        const manualPage = this.manualPages[this.visualizationType];
-        this.dialogService.showManualPage(manualPage);
+    get manualPage(): string {
+        if (this.visualizationType) {
+            return this.manualPages[this.visualizationType];
+        }
     }
 
-
-
-    onRequestImage() {
-        const filenamestring = `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
-        const node = document.getElementById(this.chartElementId(this.visualizationType));
-
-        htmlToImage.toPng(node)
-          .then(function (dataUrl) {
-            var img = new Image();
-            img.src = dataUrl;
-            var anchor = document.createElement("a");
-            anchor.href = dataUrl;
-            anchor.download = filenamestring;
-            anchor.click();
-          })
-          .catch(function (error) {
-            this.notificationService.showMessage('oops, something went wrong!', error);
-          });
-
-    }
-    chartElementId(visualizationType): string {
-        if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
+    get chartElementId(): string {
+        if (this.visualizationType === 'resultscount' || this.visualizationType === 'termfrequency') {
             return 'barchart';
         }
-        if (visualizationType === 'ngram') {
+        if (this.visualizationType === 'ngram') {
             return 'chart';
         }
-        if (visualizationType === 'wordcloud') {
+        if (this.visualizationType === 'wordcloud') {
             return 'wordcloud_div';
+        }
+    }
+
+    get imageFileName(): string {
+        if (this.visualizationType && this.corpus && this.visualizedField) {
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`
         }
     }
 }

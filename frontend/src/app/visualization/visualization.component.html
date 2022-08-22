@@ -91,33 +91,10 @@
     </div>
 </ng-container>
 
-
-
-<div class="level">
-    <div class="level-left">
-        <div class="level-item">
-            <button class="button" (click)="showHelp()">
-                <span class="icon">
-                    <fa-icon [icon]="faQuestion"></fa-icon>
-                </span>
-            </button>
-        </div>
-    </div>
-    <div class="level-right">
-        <div class="level-item" *ngIf="!freqtable">
-            <ia-palette-select (paletteChanged)="palette = $event"></ia-palette-select>
-        </div>
-    </div>
-</div>
-
-<button class="button download-button" *ngIf="!freqtable" [class.button]="true" (click)="onRequestImage()">
-    <span class="icon is-small">
-        <i class="fa fa-download"></i>
-    </span>
-    <span>Download visualization</span>
-</button>
-
-
+<ia-visualization-footer [tableView]="asTable" [manualPage]="manualPage"
+    [chartElementID]="chartElementId" [imageFileName]="imageFileName"
+    (palette)="palette = $event">
+</ia-visualization-footer>
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>
