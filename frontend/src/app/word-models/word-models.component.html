@@ -2,10 +2,10 @@
 
 <section *ngIf="user">
     <div class="container is-readable">
-        <div class="block">
+        <form class="block">
             <div class="field has-addons">
                 <div class="control is-expanded">
-                    <input class="input" placeholder="Query" [(ngModel)]="queryText">
+                    <input class="input" name="query" placeholder="Query" [(ngModel)]="queryText">
                 </div>
                 <div class="control">
                     <button type="submit" class="button is-primary" (click)="submitQuery()">
@@ -13,7 +13,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
 
 
         <ng-container *ngIf="activeQuery">
