@@ -1,14 +1,5 @@
 @import "../../_utilities";
 
-a.corpus-name {
-    color: $primary;
-}
-
-.title-section {
-    // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
-    padding-bottom: $spacing;
-}
-
 .search-section {
     background: rgba(255, 255, 255, 1);
     position: sticky;
@@ -122,11 +113,11 @@ a.corpus-name {
 }
 
 .modal-card-head_success{
-    background-color: #8ffc98; 
+    background-color: #8ffc98;
 }
 
 .modal-card-head_error{
-   background-color: #ff8e9b; 
+   background-color: #ff8e9b;
 }
 
 .info-icon {

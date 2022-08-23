@@ -1,6 +1,6 @@
 <ia-corpus-header [corpus]="corpus" currentPage="word-models"></ia-corpus-header>
 
-<section *ngIf="user">
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
     <div class="container is-readable">
         <form class="block">
             <div class="field has-addons">
@@ -14,29 +14,39 @@
                 </div>
             </div>
         </form>
+    </div>
+</section>
 
+<section class="section" *ngIf="activeQuery">
+    <div class="container is-readable">
+        <div class="tabs is-boxed">
+            <ul>
+                <li *ngFor="let tab of ['relatedwords', 'wordcontext', 'plaintext']" [ngClass]="{'is-active': tabIndex==tab}">
+                    <a role="button" tabindex="0" (keydown.enter)="tabIndex=tab" (click)="tabIndex=tab">{{tabs[tab].title}}</a>
+                </li>
+            </ul>
+        </div>
 
-        <ng-container *ngIf="activeQuery">
-            <div class="tabs is-boxed">
-                <ul>
-                    <li [ngClass]="{'is-active': tabIndex==0}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=0" (click)="tabIndex=0">Related words</a>
-                    </li>
-                    <li [ngClass]="{'is-active': tabIndex==1}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=1" (click)="tabIndex=1">Word context</a>
-                    </li>
-                    <li [ngClass]="{'is-active': tabIndex==2}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=2" (click)="tabIndex=2">Plain text</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="block" *ngIf="tabIndex=='relatedwords'">
+            <ia-related-words [corpus]="corpus" [queryText]="activeQuery"
+                [asTable]="asTable" [palette]="palette">
+            </ia-related-words>
+        </div>
 
-            <ng-container *ngIf="tabIndex==0">
-                <ia-related-words [corpus]="corpus" [queryText]="activeQuery"
-                    [asTable]="false">
-                </ia-related-words>
-            </ng-container>
-        </ng-container>
+        <div class="block" *ngIf="tabIndex=='wordcontext'">
+            Word context coming soon!
+        </div>
+
+        <div class="block" *ngIf="tabIndex=='plaintext'">
+            Plain text coming soon!
+        </div>
+
+        <div class="block">
+            <ia-visualization-footer [tableView]="asTable" [manualPage]="currentTab.manual"
+                [chartElementID]="currentTab.chartID" [imageFileName]="imageFileName"
+                (palette)="palette = $event">
+            </ia-visualization-footer>
+        </div>
 
     </div>
 </section>

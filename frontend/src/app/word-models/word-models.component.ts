@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {combineLatest as combineLatest } from 'rxjs';
 import { Corpus, User } from '../models';
@@ -10,13 +10,38 @@ import { CorpusService, UserService } from '../services';
     styleUrls: ['./word-models.component.scss']
 })
 export class WordModelsComponent implements OnInit {
+    @ViewChild('searchSection', {static: false})
+    public searchSection: ElementRef;
+    public isScrolledDown: boolean;
+
     user: User;
     corpus: Corpus;
     queryText: string;
 
+    asTable = false;
+    palette: string[];
+
     activeQuery: string;
 
-    tabIndex = 0;
+    tabIndex = 'relatedwords';
+
+    tabs = {
+        relatedwords: {
+            title: 'Related words',
+            manual: 'relatedwords',
+            chartID: 'chart'
+        },
+        wordcontext: {
+            title: 'Word context',
+            manual: undefined,
+            chartID: undefined,
+        },
+        plaintext: {
+            title: 'Plain text',
+            manual: undefined,
+            chartID: undefined,
+        }
+    };
 
     constructor(private corpusService: CorpusService,
         private userService: UserService,
@@ -48,6 +73,22 @@ export class WordModelsComponent implements OnInit {
 
     submitQuery(): void {
         this.activeQuery = this.queryText;
+    }
+
+    get currentTab(): any {
+        return this.tabs[this.tabIndex];
+    }
+
+    get imageFileName(): string {
+        if (this.tabIndex && this.corpus) {
+            return `${this.currentTab.name}_${this.corpus.name}.png`;
+        }
+    }
+
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        // mark that the search results have been scrolled down and we should some border
+        this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y === 0;
     }
 
 }
