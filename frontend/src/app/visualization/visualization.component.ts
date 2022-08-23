@@ -41,11 +41,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         termfrequency: 'Frequency of the search term',
         ngram: 'Neighbouring words',
         wordcloud: 'Most frequent words',
-        relatedwords: 'Related words',
     };
     public manualPages = {
         ngram: 'ngrams',
-        relatedwords: 'relatedwords',
         wordcloud: 'wordcloud',
         resultscount: 'numberofresults',
         termfrequency: 'termfrequency',
@@ -81,9 +79,7 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             const filteredTypes = visualisationTypes.filter(visType => {
                 const requiresSearchTerm = ['termfrequency', 'ngram']
                     .find(vis => vis === visType);
-                const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
-                const wordModelsSatisfied = visType !== 'relatedwords';
-                return searchTermSatisfied && wordModelsSatisfied;
+                return !requiresSearchTerm || this.queryModel.queryText;
             });
             filteredTypes.forEach(visType =>
                 this.visDropdown.push({

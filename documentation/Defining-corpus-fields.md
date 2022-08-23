@@ -41,7 +41,7 @@ The following properties determine how a field appears in the interface.
 
 `search_filter` can be set if the interface should include a search filter widget for the field. I-analyzer includes date filters, multiplechoice filters (used for keyword data), range filters, and boolean filters. See [filters.py](../backend/addcorpus/filters.py).
 
-`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. For date fields and categorical/ordinal fields (usually keyword type), you can use `['resultcount', 'termfrequency']`. For text fields, you can use `['wordcloud', 'ngram']`. If the corpus has word embeddings and they are trained on a field, add `'relatedwords'` to that field's visualisations.
+`visualizations` optionally specifies a list of visualisations that apply for the field. Generally speaking, this is based on the type of data. For date fields and categorical/ordinal fields (usually keyword type), you can use `['resultcount', 'termfrequency']`. For text fields, you can use `['wordcloud', 'ngram']`.
 
 If a field includes the `'resultcount' and/or `'termfrequency'` visualisations and it is not a date field, you can also specify `visualisation_sort`, which determines how to sort the x-axis of the graph. Default is `'value'`, where categories are sorted based on the y-axis value (i.e., frequency). You may specify that they should be sorted on `'key'`, so that categories are sorted alphabetically (for keywords) or small-to-large (for numbers).
 
