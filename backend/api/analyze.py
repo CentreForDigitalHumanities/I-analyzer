@@ -22,12 +22,8 @@ NUMBER_SIMILAR = 8
 
 def make_wordcloud_data(documents, field, corpus):
     texts = []
-    cleanfield = str(field + '.clean')
     for document in documents:
-        try:  # see if there is a stopword-free field, else use normal
-            content = document['_source'][cleanfield]
-        except:
-            content = document['_source'][field]
+        content = document['_source'][field]
         if content and content != '':
             texts.append(content)
 
