@@ -21,32 +21,66 @@
     <div class="container is-readable">
         <div class="tabs is-boxed">
             <ul>
-                <li *ngFor="let tab of ['relatedwords', 'wordcontext', 'plaintext']" [ngClass]="{'is-active': tabIndex==tab}">
-                    <a role="button" tabindex="0" (keydown.enter)="tabIndex=tab" (click)="tabIndex=tab">{{tabs[tab].title}}</a>
+                <li *ngFor="let tab of ['relatedwords', 'wordcontext', 'plaintext']" [ngClass]="{'is-active': tabIndex.value==tab}">
+                    <a role="button" tabindex="0" (keydown.enter)="tabIndex.next(tab)" (click)="tabIndex.next(tab)">{{tabs[tab].title}}</a>
                 </li>
             </ul>
         </div>
 
-        <div class="block" *ngIf="tabIndex=='relatedwords'">
-            <ia-related-words [corpus]="corpus" [queryText]="activeQuery"
-                [asTable]="asTable" [palette]="palette">
-            </ia-related-words>
-        </div>
+        <ng-container *ngIf="!errorMessage; else noVisualsMessage">
+            <div class="columns">
+                <div class="column"></div>
+                <div class="column is-narrow">
+                    <div class="field has-addons">
+                        <!-- Buttons for switching between table and graphical representation -->
+                        <div class="control">
+                            <button class="button" [class.is-primary]="!asTable" (click)="asTable = false">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="control">
+                            <button class="button" [class.is-primary]="asTable" (click)="asTable = true">
+                                <i class="fa fa-table" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="block" *ngIf="tabIndex=='wordcontext'">
-            Word context coming soon!
-        </div>
+            <div class="block" [ngClass]="{'is-loading':isLoading}">
+                <ia-related-words *ngIf="tabIndex.value=='relatedwords'"
+                    [corpus]="corpus" [queryText]="activeQuery"
+                    [asTable]="asTable" [palette]="palette"
+                    (isLoading)="onIsLoading($event)"
+                    (error)="setErrorMessage($event)">
+                </ia-related-words>
 
-        <div class="block" *ngIf="tabIndex=='plaintext'">
-            Plain text coming soon!
-        </div>
+                <div class="block" *ngIf="tabIndex.value=='wordcontext'">
+                    Word context coming soon!
+                </div>
 
-        <div class="block">
-            <ia-visualization-footer [tableView]="asTable" [manualPage]="currentTab.manual"
-                [chartElementID]="currentTab.chartID" [imageFileName]="imageFileName"
-                (palette)="palette = $event">
-            </ia-visualization-footer>
-        </div>
+                <div class="block" *ngIf="tabIndex.value=='plaintext'">
+                    Plain text coming soon!
+                </div>
+            </div>
+
+            <div class="block">
+                <ia-visualization-footer [tableView]="asTable" [manualPage]="currentTab.manual"
+                    [chartElementID]="currentTab.chartID" [imageFileName]="imageFileName"
+                    (palette)="palette = $event">
+                </ia-visualization-footer>
+            </div>
+        </ng-container>
+
+
+        <ng-template #noVisualsMessage>
+            <b> Did not find data to visualize.</b>
+            <div class="container" *ngIf="errorMessage && errorMessage.length > 0">
+                <div class="notification is-warning">
+                    {{errorMessage}}
+                </div>
+            </div>
+        </ng-template>
 
     </div>
 </section>

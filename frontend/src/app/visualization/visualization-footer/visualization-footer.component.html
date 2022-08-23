@@ -1,6 +1,6 @@
 <div class="level">
     <div class="level-left">
-        <div class="level-item">
+        <div class="level-item" *ngIf="manualPage">
             <button class="button" (click)="showHelp()">
                 <span class="icon">
                     <fa-icon [icon]="faQuestion"></fa-icon>

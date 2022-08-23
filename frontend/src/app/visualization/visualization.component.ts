@@ -136,12 +136,6 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
 
-    setErrorMessage(message: string) {
-        this.visualExists = false;
-        this.foundNoVisualsMessage = this.noResults;
-        this.errorMessage = message;
-    }
-
     onIsLoading(event: boolean) {
         this.childComponentLoading = event;
     }

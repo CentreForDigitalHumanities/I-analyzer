@@ -40,3 +40,7 @@
 .tabs {
     white-space: normal;
 }
+
+.is-loading {
+    @extend %content-loader;
+}

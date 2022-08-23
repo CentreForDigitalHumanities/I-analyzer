@@ -1,6 +1,6 @@
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {combineLatest as combineLatest } from 'rxjs';
+import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
 import { Corpus, User } from '../models';
 import { CorpusService, UserService } from '../services';
 
@@ -9,7 +9,7 @@ import { CorpusService, UserService } from '../services';
     templateUrl: './word-models.component.html',
     styleUrls: ['./word-models.component.scss']
 })
-export class WordModelsComponent implements OnInit {
+export class WordModelsComponent implements DoCheck, OnInit {
     @ViewChild('searchSection', {static: false})
     public searchSection: ElementRef;
     public isScrolledDown: boolean;
@@ -23,7 +23,7 @@ export class WordModelsComponent implements OnInit {
 
     activeQuery: string;
 
-    tabIndex = 'relatedwords';
+    tabIndex = new BehaviorSubject<'relatedwords'|'wordcontext'|'plaintext'>('relatedwords');
 
     tabs = {
         relatedwords: {
@@ -43,10 +43,28 @@ export class WordModelsComponent implements OnInit {
         }
     };
 
+    childComponentLoading: boolean;
+    isLoading: boolean;
+    errorMessage: string;
+
     constructor(private corpusService: CorpusService,
-        private userService: UserService,
-        private activatedRoute: ActivatedRoute,
-        private router: Router) { }
+                private userService: UserService,
+                private activatedRoute: ActivatedRoute,
+                private router: Router) {
+        this.tabIndex.subscribe(tab => {
+            // reset error message when switching tabs
+            this.errorMessage = undefined;
+        });
+    }
+
+
+    ngDoCheck() {
+        console.log(this.isLoading, this.childComponentLoading);
+        if (this.isLoading !== this.childComponentLoading ) {
+            this.isLoading = this.childComponentLoading;
+        }
+    }
+
 
     async ngOnInit(): Promise<void> {
         this.user = await this.userService.getCurrentUser();
@@ -75,8 +93,16 @@ export class WordModelsComponent implements OnInit {
         this.activeQuery = this.queryText;
     }
 
+    onIsLoading(isLoading: boolean): void {
+        this.childComponentLoading = isLoading;
+    }
+
+    setErrorMessage(event: {message: string}): void {
+        this.errorMessage = event.message;
+    }
+
     get currentTab(): any {
-        return this.tabs[this.tabIndex];
+        return this.tabs[this.tabIndex.value];
     }
 
     get imageFileName(): string {
