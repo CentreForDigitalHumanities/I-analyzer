@@ -91,7 +91,7 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'accompanied', 'doc_count': 1 }
     ]
 
-    output = analyze.make_wordcloud_data(documents, 'content')
+    output = analyze.make_wordcloud_data(documents, 'content', 'parliament-uk')
     for item in target_unfiltered:
         term = item['key']
         doc_count = item['doc_count']
@@ -121,7 +121,7 @@ def test_wordcloud_filtered(test_app, test_es_client):
     )
 
     documents = search.hits(result)
-    output = analyze.make_wordcloud_data(documents, 'content')
+    output = analyze.make_wordcloud_data(documents, 'content', 'parliament-uk')
 
     for item in target_filtered:
         term = item['key']
