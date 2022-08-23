@@ -22,7 +22,7 @@
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/search', corpus.name]"
                             [class.is-primary]="currentPage == 'search'"
-                            iaBalloon="Search documents in this corpus">
+                            iaBalloon="Search documents in this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
                                 <fa-icon [icon]="searchIcon">search</fa-icon>
                             </span>
@@ -31,7 +31,7 @@
                     <div class="control">
                         <a class="button is-medium" [routerLink]="['/word-models', corpus.name]"
                             [class.is-primary]="currentPage == 'word-models'"
-                            iaBalloon="Explore word models of this corpus">
+                            iaBalloon="Explore word models of this corpus" iaBalloonPosition="up-right">
                             <span class="icon">
                                 <fa-icon [icon]="wordModelsIcon">word models</fa-icon>
                             </span>

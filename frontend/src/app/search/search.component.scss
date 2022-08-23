@@ -1,30 +1,5 @@
 @import "../../_utilities";
 
-.search-section {
-    background: rgba(255, 255, 255, 1);
-    position: sticky;
-    z-index: 1000;
-    top: 0;
-    transition: box-shadow 0.2s;
-
-    // slightly less padding because the search entry field needs a separate section to be allowed to be sticky
-    // (or at least meaningfully sticky)
-    padding-top: $spacing;
-    padding-bottom: $spacing;
-
-    &.is-scrolled-down {
-        box-shadow: $boxShadow;
-    }
-
-    + section {
-        padding-top: $spacing;
-    }
-
-    .search-controls {
-        align-items: flex-start;
-    }
-}
-
 .control[data-balloon] ia-select-field {
     position: relative;
     z-index: 20;
@@ -86,9 +61,6 @@
 //     border-radius: 2px;
 // }
 
-.tabs {
-    white-space: normal;
-}
 
 .field.has-addons {
     display: flex !important;
