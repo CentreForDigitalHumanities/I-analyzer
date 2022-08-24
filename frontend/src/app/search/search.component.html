@@ -90,7 +90,7 @@
                             (onChange)="changeSorting($event)"></ia-search-sorting>
                         <ia-highlight-selector [highlight]="highlight" (onChange)="changeHighlightSize($event)"></ia-highlight-selector>
                     </ia-search-results>
-                    <ia-visualization *ngSwitchCase="1" [corpus]="corpus" [queryModel]="queryModel" [resultsCount]="resultsCount"></ia-visualization>
+                    <ia-visualization *ngSwitchCase="1" [corpus]="corpus" [queryModel]="queryModel"></ia-visualization>
                 </div>
             </div>
         </div>

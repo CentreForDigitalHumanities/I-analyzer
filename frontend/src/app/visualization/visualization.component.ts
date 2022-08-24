@@ -20,7 +20,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 export class VisualizationComponent extends ParamDirective implements DoCheck {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
-    @Input() public resultsCount: number;
 
     public allVisualizationFields: CorpusField[];
 
@@ -124,8 +123,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
             this.visualizationType = params.get('visualize');
-            this.visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
-            this.checkResults();
+            const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+            this.setVisualizedField(visualizedField);
         } else {
             if (!this.allVisualizationFields.length) {
                 this.noVisualizations = true;
@@ -134,14 +133,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
                 this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
                 this.updateParams();
             }
-        }
-    }
-
-    checkResults() {
-        if (this.resultsCount > 0) {
-            this.setVisualizedField(this.visualizedField);
-        } else {
-            this.foundNoVisualsMessage = this.noResults;
         }
     }
 
