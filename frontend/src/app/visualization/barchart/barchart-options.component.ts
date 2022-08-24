@@ -68,7 +68,7 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
     setStateFromParams(params: Params) {
         if (params.has('normalize')) {
-            this.currentNormalizer = params.get('normalizer') as Normalizer;
+            this.currentNormalizer = params.get('normalize') as Normalizer;
         } else {
             if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
                 this.currentNormalizer = 'raw';
