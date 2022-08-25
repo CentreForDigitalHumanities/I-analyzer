@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { selectColor } from '../../visualization/select-color';
-import { Corpus, WordSimilarityResults } from '../../models';
+import { Corpus, freqTableHeaders, WordSimilarity, WordSimilarityResults } from '../../models';
 import { SearchService } from '../../services';
 
 @Component({
@@ -20,6 +20,8 @@ export class WordSimilarityComponent implements OnChanges {
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
+
+    results: WordSimilarityResults[];
 
     chartData: ChartData<'line'>;
     chartOptions =  {
@@ -61,14 +63,25 @@ export class WordSimilarityComponent implements OnChanges {
             }
         }
     };
-
     chart: Chart;
+
+    tableHeaders: freqTableHeaders = [
+        { key: 'key', label: 'Term', isMainFactor: true, },
+        { key: 'time', label: 'Time interval', isSecondaryFactor: true, },
+        { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
+    ];
+    tableData: WordSimilarity[];
+
 
     constructor(private searchService: SearchService) { }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ((changes.queryText || changes.corpus) && this.comparisonTerms.length) {
             this.getData();
+        } else {
+            if (this.results) {
+                this.onDataLoaded(this.results);
+            }
         }
     }
 
@@ -84,7 +97,7 @@ export class WordSimilarityComponent implements OnChanges {
     }
 
     onDataLoaded(data: WordSimilarityResults[]): void {
-        console.log(data);
+        this.results = data;
         const labels = data[0].time_points;
         const datasets = _.zip(this.comparisonTerms, data).map((series, index) => {
             const [term, result] = series;
@@ -99,6 +112,21 @@ export class WordSimilarityComponent implements OnChanges {
 
         this.chartData = {labels, datasets };
         this.updateChart();
+        this.makeTableData();
+    }
+
+    makeTableData(): void {
+        this.tableData = _.flatMap(_.zip(this.comparisonTerms, this.results), series => {
+            const [term, result] = series;
+            return _.zip(result.time_points, result.similarity_scores).map(point => {
+                const [time, similarity] = point;
+                return {
+                    key: term,
+                    similarity,
+                    time,
+                }
+            })
+        });
     }
 
     updateChart(): void {
@@ -112,6 +140,24 @@ export class WordSimilarityComponent implements OnChanges {
             this.chart.data = this.chartData;
             this.chart.update();
         }
+    }
+
+    formatValue(value: number): string {
+        if (value) {
+            return `${value.toPrecision(3)}`;
+        }
+
+    }
+
+    formatDownloadValue(value: number): string {
+        if (value) {
+            return `${value}`;
+        }
+
+    }
+
+    get tableFileName(): string {
+        return `word similarity - ${this.queryText} - ${this.corpus.title}`;
     }
 
 }

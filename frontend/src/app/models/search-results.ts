@@ -61,7 +61,8 @@ export type AggregateData = {
 
 export type WordSimilarity = {
     key: string,
-    similarity: number
+    similarity: number,
+    time?: string,
 }
 
 export type RelatedWordsResults = {
@@ -75,7 +76,7 @@ export type RelatedWordsResults = {
 }
 
 export type WordSimilarityResults = {
-    time_points: number[],
+    time_points: string[],
     similarity_scores: number[]
 }
 
