@@ -22,7 +22,7 @@ export class WordSimilarityComponent implements OnChanges {
     @Output() isLoading = new EventEmitter<boolean>();
 
     results: WordSimilarityResults[];
-
+    timeIntervals: string[];
     chartData: ChartData<'line'>;
     chartOptions =  {
         elements: {
@@ -65,11 +65,7 @@ export class WordSimilarityComponent implements OnChanges {
     };
     chart: Chart;
 
-    tableHeaders: freqTableHeaders = [
-        { key: 'key', label: 'Term', isMainFactor: true, },
-        { key: 'time', label: 'Time interval', isSecondaryFactor: true, },
-        { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
-    ];
+    tableHeaders: freqTableHeaders;
     tableData: WordSimilarity[];
 
 
@@ -87,18 +83,30 @@ export class WordSimilarityComponent implements OnChanges {
 
     updateComparisonTerms(terms: string[] = []) {
         this.comparisonTerms = terms;
+        this.setTableHeaders();
         this.getData();
     }
 
     getData(): void {
-        Promise.all(this.comparisonTerms.map(term =>
-            this.searchService.getWordSimilarity(this.queryText, term, this.corpus.name)
-        )).then(this.onDataLoaded.bind(this));
+        this.showLoading(
+            Promise.all(this.comparisonTerms.map(term =>
+                this.searchService.getWordSimilarity(this.queryText, term, this.corpus.name)
+            ))
+        ).then(this.onDataLoaded.bind(this));
     }
+
+    /** execute a process with loading spinner */
+    async showLoading(promise): Promise<any> {
+        this.isLoading.next(true);
+        const result = await promise;
+        this.isLoading.next(false);
+        return result;
+    }
+
 
     onDataLoaded(data: WordSimilarityResults[]): void {
         this.results = data;
-        const labels = data[0].time_points;
+        this.timeIntervals = data.length ? data[0].time_points : this.timeIntervals;
         const datasets = _.zip(this.comparisonTerms, data).map((series, index) => {
             const [term, result] = series;
             const scores = result.similarity_scores;
@@ -110,9 +118,24 @@ export class WordSimilarityComponent implements OnChanges {
             }
         });
 
-        this.chartData = {labels, datasets };
+        this.chartData = {labels: this.timeIntervals, datasets };
         this.updateChart();
         this.makeTableData();
+    }
+
+    setTableHeaders(): void {
+        if (this.comparisonTerms.length > 1) {
+            this.tableHeaders = [
+                { key: 'key', label: 'Term', isMainFactor: true, },
+                { key: 'time', label: 'Time interval', isSecondaryFactor: true, },
+                { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
+            ];
+        } else {
+            this.tableHeaders = [
+                { key: 'time', label: 'Time interval',},
+                { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
+            ];
+        }
     }
 
     makeTableData(): void {
