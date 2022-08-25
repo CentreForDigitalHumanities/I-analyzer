@@ -27,7 +27,7 @@ Prerequisites
 * Python == 3.8
 * MySQL daemon and libmysqlclient-dev
 * [ElasticSearch](https://www.elastic.co/)
-* [RabbitMQ](https://www.rabbitmq.com/) (used by [Celery](http://www.celeryproject.org/))
+* [Redis](https://www.redis.io/) (used by [Celery](http://www.celeryproject.org/)). Recommended installation is [installing from source](https://redis.io/docs/getting-started/installation/install-redis-from-source/)
 
 The documentation includes a [recipe for installing the prerequisites on Debian 10](./documentation/Local-Debian-I-Analyzer-setup.md)
 
@@ -68,7 +68,8 @@ yarn postinstall
 9. Set up the database and migrations by running `flask db upgrade`.
 10. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 11. Run `flask run` to create an instance of the Flask server at `127.0.0.1:5000`.
-12. Make sure you have rabbitmq installed for celery to work. Then, on a separte terminal window, from the `/backend` directory, run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and word cloud).
+12. Make sure you have redis installed for celery to work. Start your local redis server by running `redis-server` in a separate terminal. (If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your config.py as CELERY_BROKER_URL=redis://host:port/db_number; do the same for CELERY_BACKEND).
+13. In a separate terminal window, from the `/backend` directory, activate your local python environment and run `celery -A ianalyzer.runcelery.celery_app worker --loglevel=info` to start your celery worker (currently used by long downloads and various visualisations).
 13. Go to `/frontend` and follow the instructions in the README to start it.
 
 #### Production
