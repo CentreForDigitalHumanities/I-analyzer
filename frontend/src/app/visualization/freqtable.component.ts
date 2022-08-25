@@ -67,8 +67,8 @@ export class FreqtableComponent implements OnChanges {
     }
 
     transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
-        // changes the table to present different queries either alongside one another (wide)
-        // or one underneath the other (long)
+        /** changes the table to present different queries either alongside one another (wide)
+        or one underneath the other (long) */
 
         const mainFactor = this.headers[this.wideFormatColumn];
 
