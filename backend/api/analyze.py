@@ -27,7 +27,10 @@ def make_wordcloud_data(documents, field, corpus):
         if content and content != '':
             texts.append(content)
 
-    nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+    try:
+        nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+    except:
+        nltk_stopwords = []  # if language is not available, no stopwords are filtered
     cv = CountVectorizer(token_pattern=r'(?u)\b[^0-9\s]{2,30}\b', max_features=100, stop_words=nltk_stopwords)
     cvtexts = cv.fit_transform(texts)
     counts = cvtexts.sum(axis=0).A1
