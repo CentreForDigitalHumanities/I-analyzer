@@ -109,6 +109,14 @@ def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
         )
         raise
 
+
+    # clear visualisation cache for this corpus
+    try:
+        logging.info('Clearing cache for {}'.format(corpus))
+        clearcache([corpus, None])
+    except Exception as e:
+        logging.warn('Could not clear visualisation cache: {}'.format(e))
+
     if update:
         try:
             if this_corpus.update_body():
@@ -183,7 +191,7 @@ def append_corpus_role(user, corpus):
 
 @app.cli.command()
 @click.option(
-    '--corpus', '-c', help='Optional. If not specified, cache is cleared for a specific corpus rather than all.'
+    '--corpus', '-c', help='Optional. If specified, cache is cleared for a specific corpus rather than all.'
 )
 @click.option(
     '--type', '-t', help='Optional. If specified, cache is cleared for a specific visualisation type rather than all. Possible values are `termfrequency`, `wordcloud`, `ngram`'
@@ -197,7 +205,7 @@ def clearcache(corpus, type):
         visualizations = Visualization.query.filter_by(visualization_type = type)
     else:
         visualizations = Visualization.query.all()
-    
+
     visualizations.delete()
     db.session.commit()
 
