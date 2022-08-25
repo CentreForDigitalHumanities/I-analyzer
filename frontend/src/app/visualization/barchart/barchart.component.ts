@@ -28,7 +28,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     /**
      * Template for a series, used for typedefs: don't store data here.
      * Each dataseries defines its own query text
-     * and sores results for that query.
+     * and stores results for that query.
      * `data` contains the results per bin on the x-axis.
      * Elements of `data` are often called cat/category in the code.
      */
