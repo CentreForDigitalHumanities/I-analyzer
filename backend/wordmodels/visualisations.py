@@ -3,12 +3,32 @@ from os.path import join
 import pickle
 
 from addcorpus.load_corpus import corpus_dir
-from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
+from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms, term_similarity
 
 from flask import current_app
 
 
 NUMBER_SIMILAR = 8
+
+def get_similarity_over_time(term1, term2, corpus):
+    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+    data = [
+        term_similarity(
+            time_bin['svd_ppmi'],
+            time_bin['transformer'],
+            term1,
+            term2
+        )
+        for time_bin in binned
+    ]
+    time_labels = get_time_labels(binned)
+    return data, time_labels
+
+def get_time_labels(binned_model):
+    return [
+        '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
+        for time_bin in binned_model
+    ]
 
 def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
     complete = load_word_models(corpus, current_app.config['WM_COMPLETE_FN'])
@@ -21,7 +41,7 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
     if not word_list:
         return "The query term is not in the word models' vocabulary. \
         Is your query field empty, does it contain multiple words, or did you search for a stop word?"
-    times = []
+    times = get_time_labels(binned)
     words = [word['key'] for word in word_list]
     word_data = [{'label': word, 'data': []} for word in words]
     for time_bin in binned:
@@ -30,7 +50,6 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
             time_bin['transformer'],
             query_term,
             word_data)
-        times.append(str(time_bin['start_year'])+"-"+str(time_bin['end_year']))
     return word_list, word_data, times
 
 

@@ -56,3 +56,29 @@ def api_get_related_words_time_interval():
             }
         })
     return response
+
+@wordmodels.route('/get_similarity_over_time', methods=['GET'])
+@login_required
+def api_get_similarity():
+    if not request.json:
+        abort(400)
+    results = visualisations.get_similarity_over_time(
+        request.json['term_1'],
+        request.json['term_2'],
+        request.json['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        scores, labels = results
+        response = jsonify({
+            'success': True,
+            'data': {
+                'time_points': labels,
+                'similarity_scores': scores,
+            }
+        })
+    return response
