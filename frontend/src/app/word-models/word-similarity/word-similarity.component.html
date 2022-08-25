@@ -1,3 +1,11 @@
+<div class="field">
+    <div class="control">
+        <ia-term-comparison-editor
+            (queriesChanged)="updateComparisonTerms($event)" (clearQueries)="updateComparisonTerms()">
+        </ia-term-comparison-editor>
+    </div>
+</div>
+
 <div [class.is-hidden]="asTable">
     <canvas id="chart"></canvas>
 </div>

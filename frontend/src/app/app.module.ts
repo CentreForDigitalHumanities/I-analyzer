@@ -77,6 +77,7 @@ import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
+import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
 
 
 const appRoutes: Routes = [
@@ -183,6 +184,7 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,

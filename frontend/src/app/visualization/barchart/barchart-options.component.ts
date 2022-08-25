@@ -54,7 +54,8 @@ export class barchartOptionsComponent implements OnChanges {
         this.normalizer.emit(this.currentNormalizer);
     }
 
-    confirmQueries() {
+    updateQueries(queries: string[]) {
+        this.queries = queries;
         if (this.queries.length === 1 && this.queries[0] === this.queryText) {
             this.showEdit = false;
         }

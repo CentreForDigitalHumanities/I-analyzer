@@ -16,7 +16,7 @@ export class WordSimilarityComponent implements OnChanges {
     @Input() asTable: boolean;
     @Input() palette: string[];
 
-    comparisonTerms: string[] = ['duitsland'];
+    comparisonTerms: string[] = [];
 
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
@@ -72,7 +72,7 @@ export class WordSimilarityComponent implements OnChanges {
         }
     }
 
-    updateComparisonTerms(terms: string[]) {
+    updateComparisonTerms(terms: string[] = []) {
         this.comparisonTerms = terms;
         this.getData();
     }
