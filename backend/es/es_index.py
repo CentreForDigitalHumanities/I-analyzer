@@ -49,7 +49,7 @@ def create(client, corpus_definition, add, clear, prod):
         if not settings.get('index'):
             settings['index'] = {
                 'number_of_replicas' : 0,
-                'number_of_shards': 5
+                'number_of_shards': 6
             }
 
     logger.info('Attempting to create index `{}`...'.format(
