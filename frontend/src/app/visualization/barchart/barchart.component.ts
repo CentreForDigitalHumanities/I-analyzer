@@ -490,7 +490,6 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
 
     /** based on current parameters, get a formatting function for y-axis values */
     get formatValue(): (value?: number) => string|undefined {
-        console.log(this.normalizer)
         if (this.normalizer === 'percent') {
             return (value?: number) => {
                 if (value !== undefined && value !== null) {
