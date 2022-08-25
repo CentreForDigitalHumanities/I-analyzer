@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordSimilarityResults } from '../models/index';
 import { WordmodelsService } from './wordmodels.service';
 
 const highlightFragmentSize = 50;
@@ -177,6 +177,19 @@ export class SearchService {
                             },
                             'tableData': result['related_word_data'].similar_words_all
                     });
+                } else {
+                    reject({'message': result['message']});
+                }
+            });
+        });
+    }
+
+    public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarityResults> {
+        return this.wordModelsService.getWordSimilarity({'term_1': term1, 'term_2': term2, 'corpus_name': corpusName})
+            .then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve(result.data);
                 } else {
                     reject({'message': result['message']});
                 }

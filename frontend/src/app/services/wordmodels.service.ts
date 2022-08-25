@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
-import { RelatedWordsResults } from '../models';
+import { RelatedWordsResults, WordSimilarityResults } from '../models';
 import { ConfigService } from './config.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -31,6 +31,15 @@ export class WordmodelsService extends Resource {
         { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
 
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/get_word_similarity'
+    })
+    public getWordSimilarity: ResourceMethod<
+        { term_1: string, term_2: string, corpus_name: string},
+        { success: false, message: string } | { success: true, data: WordSimilarityResults }
+    >
+
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
         if (!this.wordModelsUrl) {
@@ -39,4 +48,5 @@ export class WordmodelsService extends Resource {
 
         return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
     }
+
 }

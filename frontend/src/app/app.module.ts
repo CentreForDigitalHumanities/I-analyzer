@@ -76,6 +76,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
+import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
 
 
 const appRoutes: Routes = [
@@ -188,6 +189,7 @@ export const declarations: any[] = [
     VisualizationFooterComponent,
     WordcloudComponent,
     WordModelsComponent,
+    WordSimilarityComponent,
 ];
 
 export const imports: any[] = [
@@ -256,7 +258,6 @@ export const providers: any[] = [
     imports,
     providers,
     bootstrap: [AppComponent],
-
 })
 export class AppModule { }
 
