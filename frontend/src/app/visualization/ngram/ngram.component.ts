@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
+import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -69,13 +69,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     initialize(): void {
+
     }
 
     teardown(): void {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
-        Object.keys(this.currentParameters).forEach(
-            (param) => this.currentParameters[param] = null);
-        this.setParams(this.currentParameters);
+        this.setParams(ngramSetNull);
     }
 
     setStateFromParams(params: ParamMap) {
