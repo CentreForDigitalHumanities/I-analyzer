@@ -27,3 +27,5 @@ flask clearcache --corpus times --type termfrequency
 ```
 
 The `corpus` and `type` flags are both optional, and can be used to delete the cache of a specific visualisation type and/or corpus.
+
+If you make updates to the data of a corpus, the cache should be cleared to avoid unexpected results. This is done automatically when you index a corpus using the `flask es` index command. If you update the data in another way (e.g. in Kibana), make sure to run the clearcache command as well.
