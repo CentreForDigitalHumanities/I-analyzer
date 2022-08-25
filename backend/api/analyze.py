@@ -27,14 +27,7 @@ def make_wordcloud_data(documents, field, corpus):
         if content and content != '':
             texts.append(content)
 
-    language_dict = {
-        'parliament-uk' : 'english',
-        'parliament-france' : 'french',
-        'parliament-canada' : 'english'
-    }
-
-    # token_pattern allows 2 to 30 characters now (exluding numbers and whitespace)
-    nltk_stopwords = get_nltk_stopwords(language_dict[corpus])
+    nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
     cv = CountVectorizer(token_pattern=r'(?u)\b[^0-9\s]{2,30}\b', max_features=100, stop_words=nltk_stopwords)
     cvtexts = cv.fit_transform(texts)
     counts = cvtexts.sum(axis=0).A1
