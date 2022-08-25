@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { faPalette, faSquare } from '@fortawesome/free-solid-svg-icons';
-import { PALETTES } from '../select-color';
+import { PALETTES } from '../../select-color';
 
 @Component({
     selector: 'ia-palette-select',

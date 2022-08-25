@@ -70,6 +70,7 @@ export class SearchComponent implements OnInit {
 
     public highlight: number = HIGHLIGHT;
 
+
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
         private userService: UserService,
@@ -144,10 +145,6 @@ export class SearchComponent implements OnInit {
 
     public showQueryDocumentation() {
         this.dialogService.showManualPage('query');
-    }
-
-    public showCorpusInfo(corpus: Corpus) {
-        this.dialogService.showDescriptionPage(corpus);
     }
 
     private getQueryFields(): string[] | null {
