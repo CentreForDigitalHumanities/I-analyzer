@@ -60,12 +60,12 @@ def api_get_related_words_time_interval():
 @wordmodels.route('/get_similarity_over_time', methods=['GET'])
 @login_required
 def api_get_similarity():
-    if not request.json:
+    if not request.args:
         abort(400)
     results = visualisations.get_similarity_over_time(
-        request.json['term_1'],
-        request.json['term_2'],
-        request.json['corpus_name']
+        request.args['term_1'],
+        request.args['term_2'],
+        request.args['corpus_name']
     )
     if isinstance(results, str):
         # the method returned an error string

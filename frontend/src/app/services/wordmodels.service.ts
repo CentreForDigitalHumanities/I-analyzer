@@ -33,7 +33,7 @@ export class WordmodelsService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/get_word_similarity'
+        path: '/get_similarity_over_time'
     })
     public getWordSimilarity: ResourceMethod<
         { term_1: string, term_2: string, corpus_name: string},
