@@ -33,6 +33,8 @@ export class FreqtableComponent implements OnChanges {
     }
 
     checkWideFormat(): void {
+
+
         if (this.headers && this.headers.find(header => header.isMainFactor)) {
             this.wideFormatColumn = _.range(this.headers.length)
                 .find(index => this.headers[index].isMainFactor);
@@ -65,6 +67,9 @@ export class FreqtableComponent implements OnChanges {
     }
 
     transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
+        // changes the table to present different queries either alongside one another (wide)
+        // or one underneath the other (long)
+
         const mainFactor = this.headers[this.wideFormatColumn];
 
         const mainFactorValues = _.uniqBy(
