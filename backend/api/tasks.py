@@ -49,7 +49,7 @@ def get_ngram_data(request_json):
             request_json['corpus_name'],
             request_json['field'],
             ngram_size=request_json['ngram_size'],
-            term_positions=request_json['term_position'],
+            positions=request_json['term_position'],
             freq_compensation=request_json['freq_compensation'],
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],

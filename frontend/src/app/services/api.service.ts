@@ -95,7 +95,7 @@ export class ApiService extends Resource {
         path: '/ngram_tasks'
     })
     public ngramTasks: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
+        { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: string, freq_compensation?: boolean,
             subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, },
         { success: false, message: string } | { success: true, task_ids: string[] }>;
 

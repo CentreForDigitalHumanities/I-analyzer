@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
@@ -43,7 +43,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
-    positionsOptions = [{label: 'any', value: [0, 1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
+    positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
     freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
     analysisOptions: {label: string, value: string}[];
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
@@ -69,7 +69,6 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     initialize(): void {
-        this.loadGraph();
     }
 
     teardown(): void {
@@ -80,13 +79,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     setStateFromParams(params: ParamMap) {
-        Object.keys(this.currentParameters).forEach(
-            (param) => this.currentParameters[param] = params.get(param)
-        );
+        this.setParameters(params);
+        this.loadGraph();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel || changes.corpus || changes.visualizedField) {
+        if (changes.queryModel || changes.visualizedField) {
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -96,29 +94,23 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             } else {
                 this.analysisOptions = undefined;
             }
-
-            this.setDefaultParameters();
-            this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
     }
 
-    setDefaultParameters() {
+    setParameters(params) {
         this.currentParameters = {
-            size: this.sizeOptions[0].value,
-            positions: this.positionsOptions[0].value,
-            freqCompensation: this.freqCompensationOptions[0].value,
-            analysis: 'none',
-            maxDocuments: 100,
-            numberOfNgrams: 10,
+            size: params.get('size') as number || this.sizeOptions[0].value,
+            positions: params.get('positions') || this.positionsOptions[0].value,
+            freqCompensation: params.get('freqCompensation') as boolean || this.freqCompensationOptions[0].value,
+            analysis: params.get('analysis') || 'none',
+            maxDocuments: params.get('maxDocuments') as number || 100,
+            numberOfNgrams: params.get('numberOfNgrams') as number || 10,
         };
     }
 
     loadGraph() {
-        if (this.currentParameters === null) {
-            this.setDefaultParameters();
-        }
         this.isLoading.emit(true);
 
         const changeAspectRatio = this.chart && this.lastParameters.numberOfNgrams !== this.currentParameters.numberOfNgrams;
@@ -408,11 +400,9 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setPositionsOptions(size) {
         // set positions dropdown options and reset its value
-        const positions = Array.from(Array(size).keys());
-        this.positionsOptions =  [ { value: positions, label: 'any' } ]
-        .concat(positions.map(position => {
-            return { value : [position], label: ['first', 'second', 'third'][position] };
-        }));
+        if (size > 2) {
+            this.positionsOptions = this.positionsOptions.concat({label: 'third', value: 'third'});
+        }
         this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
@@ -444,7 +434,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     get currentPositionsOption() {
         if (this.currentParameters) {
-            return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
+            return this.positionsOptions.find(item => item.value === this.currentParameters.positions);
         }
     }
 

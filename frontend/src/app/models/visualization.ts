@@ -31,14 +31,14 @@ export type freqTableHeaders = freqTableHeader[];
 
 export type Normalizer = 'raw'|'percent'|'documents'|'terms';
 
-export type NgramParameters = {
-    size: number,
-    positions: number[],
-    freqCompensation: boolean,
-    analysis: string,
-    maxDocuments: number,
-    numberOfNgrams: number,
-};
+export interface NgramParameters {
+    size: number;
+    positions: string;
+    freqCompensation: boolean;
+    analysis: string;
+    maxDocuments: number;
+    numberOfNgrams: number;
+}
 
 export const ngramSetNull: NgramParameters = {
     size: null,
