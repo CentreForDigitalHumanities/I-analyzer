@@ -17,7 +17,7 @@ import { freqTableHeaders, WordSimilarity } from '../../models';
 export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() timeIntervals: string[];
     @Input() totalData: WordSimilarity[];
-    @Input() zoomedInData: { [time: string]: WordSimilarity[]};
+    @Input() zoomedInData: WordSimilarity[][];
     @Input() asTable: boolean;
     @Input() palette: string[];
     @Input() tableFileName = 'similarty';
@@ -212,7 +212,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             if (this.zoomedInData === undefined) {
                 data = this.filterTimeInterval(this.totalData, time);
             } else {
-                data = this.zoomedInData[time];
+                data = this.zoomedInData[this.currentTimeIndex];
             }
         }
 

@@ -23,9 +23,7 @@ export class RelatedWordsComponent implements OnChanges {
     timeIntervals: string[] = [];
     totalSimilarities: WordSimilarity[]; // similarities over all time periods
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
-    zoomedinData: {
-        [interval: string]: WordSimilarity[]
-    } = {}; // data when focusing on a single time interval: shows nearest neighbours from that period
+    zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
     constructor(private dialogService: DialogService, private searchService: SearchService) { }
 
@@ -56,19 +54,20 @@ export class RelatedWordsComponent implements OnChanges {
             .catch(this.onError.bind(this));
     }
 
-    async getZoomedInData(): Promise<any> {
-        Promise.all(this.timeIntervals.map(this.getTimeData.bind(this)));
+    async getZoomedInData(): Promise<void> {
+        const resultsPerTime: Promise<WordSimilarity[]>[] = this.timeIntervals.map(this.getTimeData.bind(this));
+        Promise.all(resultsPerTime)
+            .then(results => this.zoomedInData = results)
+            .catch(error => this.onError(error));
     }
 
-    getTimeData(time: string): Promise<any> {
-        return this.searchService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time)
-            .then(result => this.zoomedinData[time] = result)
-            .catch(error => this.onError(error));
+    getTimeData(time: string): Promise<WordSimilarity[]> {
+        return this.searchService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
     }
 
     onError(error) {
         this.totalData = undefined;
-        this.zoomedinData = undefined;
+        this.zoomedInData = undefined;
         this.error.emit(error);
 
     }
