@@ -78,6 +78,7 @@ import { VisualizationFooterComponent } from './visualization/visualization-foot
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
 import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
+import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 
 
 const appRoutes: Routes = [
@@ -184,6 +185,7 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    SimilarityChartComponent,
     TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,

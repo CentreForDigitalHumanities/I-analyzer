@@ -73,12 +73,8 @@ def api_get_similarity():
             'success': False,
             'message': results})
     else:
-        scores, labels = results
         response = jsonify({
             'success': True,
-            'data': {
-                'time_points': labels,
-                'similarity_scores': scores,
-            }
+            'data': results
         })
     return response

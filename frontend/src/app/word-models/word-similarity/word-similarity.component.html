@@ -7,11 +7,5 @@
     </div>
 </div>
 
-<div [class.is-hidden]="asTable">
-    <canvas id="chart"></canvas>
-</div>
-
-<div class="block" *ngIf="asTable && comparisonTerms.length">
-    <ia-freqtable  [headers]="tableHeaders" [data]="tableData" [defaultSort]="'similarity'" [name]="tableFileName">
-    </ia-freqtable>
-</div>
+<ia-similarity-chart [timeIntervals]="timeIntervals" [totalData]="data"
+    [asTable]="asTable" [palette]="palette" [tableFileName]="tableFileName"></ia-similarity-chart>

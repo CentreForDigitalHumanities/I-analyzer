@@ -75,11 +75,6 @@ export type RelatedWordsResults = {
     time_points: string[]
 }
 
-export type WordSimilarityResults = {
-    time_points: string[],
-    similarity_scores: number[]
-}
-
 export type NgramResults = {
     words: {
         label: string,

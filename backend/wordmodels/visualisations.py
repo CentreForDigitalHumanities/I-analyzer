@@ -10,19 +10,30 @@ from flask import current_app
 
 NUMBER_SIMILAR = 8
 
-def get_similarity_over_time(term1, term2, corpus):
+def get_similarity_over_time(query_term, comparison_term, corpus):
     binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
     data = [
         term_similarity(
             time_bin['svd_ppmi'],
             time_bin['transformer'],
-            term1,
-            term2
+            query_term,
+            comparison_term
         )
         for time_bin in binned
     ]
     time_labels = get_time_labels(binned)
-    return data, time_labels
+
+    similarities = [
+        {
+            'key': comparison_term,
+            'similarity': similarity,
+            'time': time,
+        }
+        for (similarity, time) in zip(data, time_labels)
+    ]
+
+    return similarities
+
 
 def get_time_labels(binned_model):
     return [
