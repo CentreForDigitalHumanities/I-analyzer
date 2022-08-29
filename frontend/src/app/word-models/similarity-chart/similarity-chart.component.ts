@@ -50,6 +50,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.totalData || changes.zoomedInData || changes.palette) {
             this.updateChart(this.graphStyle.value);
+            this.updateTable();
         }
     }
 
@@ -58,6 +59,19 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             this.currentTimeIndex = timeIndex;
             this.updateChart(this.graphStyle.value);
         }
+    }
+
+    updateTable(): void {
+        this.setTerms();
+        this.setTableHeaders();
+        this.makeTableData();
+    }
+
+    setTerms(): void {
+        if (this.totalData) {
+            this.terms = _.uniq(this.totalData.map(item => item.key));
+        }
+
     }
 
     setTableHeaders(): void {
@@ -75,26 +89,20 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    // makeTableData(): void {
-    //     this.tableData = _.flatMap(_.zip(this.comparisonTerms, this.results), series => {
-    //         const [term, result] = series;
-    //         return _.zip(result.time_points, result.similarity_scores).map(point => {
-    //             const [time, similarity] = point;
-    //             return {
-    //                 key: term,
-    //                 similarity,
-    //                 time,
-    //             }
-    //         })
-    //     });
-    // }
+    makeTableData(): void {
+        this.tableData = this.totalData;
+    }
 
     formatValue(value: number): string {
-        return `${value.toPrecision(3)}`;
+        if (value) {
+            return `${value.toPrecision(3)}`;
+        }
     }
 
     formatDownloadValue(value: number): string {
-        return `${value}`;
+        if (value) {
+            return `${value}`;
+        }
     }
 
     dataIndices(data: ChartData): number[] {
@@ -168,7 +176,6 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
 
     /** convert array of word similarities to a chartData object */
     makeChartData(data: WordSimilarity[], style: 'line'|'stream'|'bar'): ChartData {
-        console.log(data);
         const allSeries = _.groupBy(data, point => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
@@ -205,7 +212,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             if (this.zoomedInData === undefined) {
                 data = this.filterTimeInterval(this.totalData, time);
             } else {
-                console.log('using zoomed in data');
+                data = this.zoomedInData[time];
             }
         }
 
@@ -290,8 +297,6 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 }
             };
         }
-
-        console.log(this.chart);
 
         if (this.chart) {
             this.chart.data = data;
