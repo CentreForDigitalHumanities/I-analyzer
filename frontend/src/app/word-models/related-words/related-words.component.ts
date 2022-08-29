@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { selectColor } from '../../visualization/select-color';
 import { DialogService, SearchService } from '../../services/index';
-import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 
 @Component({
@@ -25,10 +22,9 @@ export class RelatedWordsComponent implements OnChanges {
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-    constructor(private dialogService: DialogService, private searchService: SearchService) { }
+    constructor(private searchService: SearchService) { }
 
     ngOnChanges() {
-        this.error.emit({message: undefined});
         this.getData();
     }
 

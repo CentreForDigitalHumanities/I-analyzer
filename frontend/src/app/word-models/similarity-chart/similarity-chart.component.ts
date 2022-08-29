@@ -48,7 +48,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.totalData || changes.zoomedInData || changes.palette) {
+        if (changes.totalData || (changes.zoomedInData && this.graphStyle.value === 'bar') || changes.palette) {
             this.updateChart(this.graphStyle.value);
             this.updateTable();
         }

@@ -84,6 +84,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
     }
 
     submitQuery(): void {
+        this.errorMessage = undefined;
         this.activeQuery = this.queryText;
     }
 
