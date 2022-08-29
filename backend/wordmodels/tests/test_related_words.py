@@ -40,10 +40,15 @@ def test_diachronic_context(test_app):
 
     # test format
 
+    for item in word_list:
+        assert 'key' in item and type(item['key']) == str
+
     for item in word_data:
-        assert 'data' in item and 'label' in item
-        assert type(item['label']) == str
-        assert len(item['data']) == len(TEST_BINS)
+        assert 'key' in item and type(item['key']) == str
+        assert 'similarity' in item
+        assert type(item['similarity']) == float or type(item['similarity']) == type(None)
+        assert 'time' in item and type(item['time']) == str
+
 
     assert len(times) == len(TEST_BINS)
     for item, interval in zip(times, TEST_BINS):
@@ -55,18 +60,17 @@ def test_diachronic_context(test_app):
     cases = [
         {
             'term': 'elizabeth',
-            'most_similar_interval': 0 # best score in pride and prejudice => first bin
+            'most_similar_interval': '1810-1839' # best score in pride and prejudice => first bin
         },
         {
             'term': 'alice',
-            'most_similar_interval': 1, # best score in alice in wonderland => second bin
+            'most_similar_interval': '1840-1869', # best score in alice in wonderland => second bin
         }
     ]
 
     for case in cases:
-        data = next((item for item in word_data if item['label'] == case['term']), None)
+        data = [item for item in word_data if item['key'] == case['term'] and item['similarity']]
         assert data
 
-        similarities = data['data']
-        most_similar_interval = max(range(len(similarities)), key=lambda i : similarities[i])
-        assert most_similar_interval == case['most_similar_interval']
+        most_similar_interval = max(data, key = lambda point : point['similarity'])
+        assert most_similar_interval['time'] == case['most_similar_interval']

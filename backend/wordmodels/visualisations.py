@@ -54,13 +54,22 @@ def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
         Is your query field empty, does it contain multiple words, or did you search for a stop word?"
     times = get_time_labels(binned)
     words = [word['key'] for word in word_list]
-    word_data = [{'label': word, 'data': []} for word in words]
-    for time_bin in binned:
-        word_data = similarity_with_top_terms(
+
+    get_similarity = lambda word, time_bin: term_similarity(
             time_bin['svd_ppmi'],
             time_bin['transformer'],
             query_term,
-            word_data)
+            word
+    )
+
+    word_data = [
+        {
+            'key': word,
+            'similarity': get_similarity(word, time_bin),
+            'time': time_label
+        }
+        for (time_label, time_bin) in zip(times, binned) for word in words]
+
     return word_list, word_data, times
 
 
@@ -71,13 +80,21 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
     time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
         time['end_year']==int(which_time_interval[-4:])), None)
+    time_label = '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
     word_list = find_n_most_similar(time_bin['svd_ppmi'],
         time_bin['transformer'],
         query_term,
         number_similar)
     if not word_list:
         return "The query term is not in the word models' vocabulary."
-    word_data = [{'label': word['key'], 'data': [word['similarity']]} for word in word_list]
+    word_data = [
+        {
+            'key': word['key'],
+            'similarity': word['similarity'],
+            'time': time_label
+        }
+        for word in word_list
+    ]
     return word_data
 
 

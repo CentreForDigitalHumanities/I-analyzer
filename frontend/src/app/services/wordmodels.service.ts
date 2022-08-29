@@ -21,7 +21,7 @@ export class WordmodelsService extends Resource {
     })
     public getRelatedWords: ResourceMethod<
         { query_term: string, corpus_name: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+        { success: false, message: string } | { success: true, data: RelatedWordsResults }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -29,7 +29,7 @@ export class WordmodelsService extends Resource {
     })
     public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+        { success: false, message: string } | { success: true, data: WordSimilarity[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

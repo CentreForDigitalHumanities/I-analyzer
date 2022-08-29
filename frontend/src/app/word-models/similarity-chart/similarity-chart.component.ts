@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
@@ -162,6 +162,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges {
 
     /** convert array of word similarities to a chartData object */
     makeChartData(data: WordSimilarity[], style: 'line'|'stream'|'bar'): ChartData {
+        console.log(data);
         const allSeries = _.groupBy(data, point => point.key);
         const datasets = _.values(allSeries).map((series, datasetIndex) => {
             const label = series[0].key;
@@ -198,7 +199,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges {
             if (this.zoomedInData === undefined) {
                 data = this.filterTimeInterval(this.totalData, time);
             } else {
-                data = this.zoomedInData[time];
+                console.log('using zoomed in data');
             }
         }
 
@@ -250,6 +251,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges {
             options.plugins.legend.labels = {
                 boxHeight: 0, // flat boxes so the border is a line
             };
+            options.elements.point.radius = 4;
+            options.plugins.legend.labels.usePointStyle = true;
         }
 
         if (style === 'stream') {

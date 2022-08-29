@@ -66,12 +66,8 @@ export type WordSimilarity = {
 }
 
 export type RelatedWordsResults = {
-    similar_words_all: {
-        [word: string]: WordSimilarity[]
-    },
-    similar_words_subsets: {
-        [word: string]: number[]
-    },
+    total_similarities: WordSimilarity[],
+    similarities_over_time: WordSimilarity[],
     time_points: string[]
 }
 
