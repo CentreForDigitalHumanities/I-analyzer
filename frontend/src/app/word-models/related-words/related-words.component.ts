@@ -30,7 +30,7 @@ export class RelatedWordsComponent implements OnChanges {
     constructor(private dialogService: DialogService, private searchService: SearchService) { }
 
     ngOnChanges() {
-        this.error.emit(undefined);
+        this.error.emit({message: undefined});
         this.getData();
     }
 

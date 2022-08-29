@@ -14,7 +14,7 @@ import { freqTableHeaders, WordSimilarity } from '../../models';
     templateUrl: './similarity-chart.component.html',
     styleUrls: ['./similarity-chart.component.scss']
 })
-export class SimilarityChartComponent implements OnInit, OnChanges {
+export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     @Input() timeIntervals: string[];
     @Input() totalData: WordSimilarity[];
     @Input() zoomedInData: { [time: string]: WordSimilarity[]};
@@ -39,6 +39,12 @@ export class SimilarityChartComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.graphStyle.subscribe(this.updateChart.bind(this));
+    }
+
+    ngOnDestroy(): void {
+        if (this.chart) {
+            this.chart.destroy();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -284,6 +290,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges {
                 }
             };
         }
+
+        console.log(this.chart);
 
         if (this.chart) {
             this.chart.data = data;

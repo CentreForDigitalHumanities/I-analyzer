@@ -7,5 +7,7 @@
     </div>
 </div>
 
-<ia-similarity-chart [timeIntervals]="timeIntervals" [totalData]="data"
+<div class="block" *ngIf="timeIntervals">
+    <ia-similarity-chart [timeIntervals]="timeIntervals" [totalData]="data"
     [asTable]="asTable" [palette]="palette" [tableFileName]="tableFileName"></ia-similarity-chart>
+</div>
