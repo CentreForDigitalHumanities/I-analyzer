@@ -12,8 +12,12 @@
             If you meant to search for this term, it may be a stopword or have a very low frequency.
         </p>
 
-        <p *ngIf="suggestions">
-            The following words <i>are</i> in the model's vocabulary: <b>{{suggestions}}</b>
+        <p *ngIf="queryFeedback?.similarTerms && queryFeedback?.similarTerms.length">
+            The following words <i>are</i> in the model's vocabulary:
+            <span *ngFor="let term of queryFeedback.similarTerms">
+                <a role="button" tabindex="0" (click)="submitNewQuery(term)" (keyboard.enter)="submitNewQuery(term)"
+                    iaBalloon="search for {{term}}">{{term}}</a><span *ngIf="!isFinalTerm(term)">, </span>
+            </span>
         </p>
     </div>
 

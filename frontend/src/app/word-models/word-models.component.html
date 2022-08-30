@@ -19,7 +19,7 @@
 
 <section class="section" *ngIf="activeQuery">
     <div class="container is-readable">
-        <ia-query-feedback [query]="activeQuery" [queryFeedback]="queryFeedback"></ia-query-feedback>
+        <ia-query-feedback [query]="activeQuery" [queryFeedback]="queryFeedback" (selectedSuggestion)="queryText = $event; submitQuery()"></ia-query-feedback>
 
         <ng-container *ngIf="queryFeedback && queryFeedback.status == 'success'">
             <div class="tabs is-boxed">

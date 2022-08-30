@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
 import { QueryFeedback } from '../../models';
 
@@ -7,24 +7,27 @@ import { QueryFeedback } from '../../models';
   templateUrl: './query-feedback.component.html',
   styleUrls: ['./query-feedback.component.scss']
 })
-export class QueryFeedbackComponent implements OnInit {
+export class QueryFeedbackComponent {
     @Input() query: string;
     @Input() queryFeedback: QueryFeedback;
+
+    @Output() selectedSuggestion = new EventEmitter<string>();
 
     titles = {
         'not in model': 'Query term not found',
         'error': 'Error',
-    }
+    };
 
     constructor() { }
 
-    ngOnInit(): void {
+    isFinalTerm(term) {
+        if (this.queryFeedback.similarTerms && this.queryFeedback.similarTerms.length) {
+            return term === _.last(this.queryFeedback.similarTerms);
+        }
     }
 
-    get suggestions(): string {
-        if (this.queryFeedback?.similarTerms && this.queryFeedback?.similarTerms.length) {
-            return _.join(this.queryFeedback.similarTerms, ', ');
-        }
+    submitNewQuery(term) {
+        this.selectedSuggestion.emit(term);
     }
 
 }
