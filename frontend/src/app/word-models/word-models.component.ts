@@ -93,10 +93,22 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     submitQuery(): void {
         this.activeQuery = this.queryText;
-        this.queryFeedback = undefined;
-        this.searchService.wordInModel(this.queryText, this.corpus.name)
-            .then(this.handleWordInModel.bind(this))
-            .catch(() => this.queryFeedback = { status: 'error' });
+        this.validateQuery();
+        if (this.queryFeedback === undefined) {
+            this.searchService.wordInModel(this.queryText, this.corpus.name)
+                .then(this.handleWordInModel.bind(this))
+                .catch(() => this.queryFeedback = { status: 'error' });
+        }
+    }
+
+    validateQuery() {
+        if (!this.queryText || !this.queryText.length) {
+            this.queryFeedback = { status: 'empty' };
+        } else if (this.queryText.includes(' ')) {
+            this.queryFeedback = { status: 'multiple words' };
+        } else {
+            this.queryFeedback = undefined;
+        }
     }
 
     handleWordInModel(result: WordInModelResult) {

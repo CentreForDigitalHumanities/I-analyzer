@@ -16,6 +16,8 @@ export class QueryFeedbackComponent {
     titles = {
         'not in model': 'Query term not found',
         'error': 'Error',
+        'multiple words': 'Multiple words not allowed',
+        'empty': 'No query'
     };
 
     constructor() { }

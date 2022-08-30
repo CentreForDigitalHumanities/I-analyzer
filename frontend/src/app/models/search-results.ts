@@ -90,6 +90,6 @@ export type WordInModelResult = {
 };
 
 export type QueryFeedback = {
-    status: 'not in model'|'success'|'error',
+    status: 'not in model'|'success'|'error'|'multiple words'|'empty',
     similarTerms?: string[],
 };

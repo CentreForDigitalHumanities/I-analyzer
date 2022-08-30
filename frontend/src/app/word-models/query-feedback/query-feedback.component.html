@@ -3,6 +3,14 @@
         <h2>{{titles[queryFeedback.status]}}</h2>
     </div>
     <div class="message-body content">
+        <p *ngIf="queryFeedback.status == 'multiple words'">
+            Your query consists of multiple words or contains spaces. Queries for words models must consist of a single word.
+        </p>
+
+        <p *ngIf="queryFeedback.status == 'empty'">
+            Enter a query term to explore the word models.
+        </p>
+
         <p *ngIf="queryFeedback.status == 'error'">
             The server encountered an error and the word models could not be loaded.
         </p>

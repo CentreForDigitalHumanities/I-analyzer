@@ -17,11 +17,11 @@
     </div>
 </section>
 
-<section class="section" *ngIf="activeQuery">
+<section class="section">
     <div class="container is-readable">
-        <ia-query-feedback [query]="activeQuery" [queryFeedback]="queryFeedback" (selectedSuggestion)="queryText = $event; submitQuery()"></ia-query-feedback>
+        <ia-query-feedback *ngIf="activeQuery || queryFeedback" [query]="activeQuery" [queryFeedback]="queryFeedback" (selectedSuggestion)="queryText = $event; submitQuery()"></ia-query-feedback>
 
-        <ng-container *ngIf="queryFeedback && queryFeedback.status == 'success'">
+        <ng-container *ngIf="activeQuery && queryFeedback && queryFeedback.status == 'success'">
             <div class="tabs is-boxed">
                 <ul>
                     <li *ngFor="let tab of ['relatedwords', 'wordcontext', 'plaintext']" [ngClass]="{'is-active': tabIndex.value==tab}">
