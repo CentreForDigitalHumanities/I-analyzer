@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { selectColor } from '../select-color';
+import { selectColor } from '../../visualization/select-color';
 import { DialogService, SearchService } from '../../services/index';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
@@ -11,8 +11,8 @@ import * as _ from 'lodash';
     templateUrl: './related-words.component.html',
     styleUrls: ['./related-words.component.scss']
 })
-export class RelatedWordsComponent implements OnChanges, OnInit {
-    @Input() queryModel: QueryModel;
+export class RelatedWordsComponent implements OnChanges {
+    @Input() queryText: string;
     @Input() corpus: Corpus;
     @Input() asTable: boolean;
     @Input() palette: string[];
@@ -59,7 +59,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
 
     getData() {
         this.isLoading.emit(true);
-        this.searchService.getRelatedWords(this.queryModel.queryText, this.corpus.name).then(results => {
+        this.searchService.getRelatedWords(this.queryText, this.corpus.name).then(results => {
             this.totalData = results['graphData'];
             this.totalData.datasets.map((d, index) => {
                 d.fill = false;
@@ -85,7 +85,7 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
             this.currentTimeIndex = timeIndex;
             this.isLoading.emit(true);
             this.searchService.getRelatedWordsTimeInterval(
-                this.queryModel.queryText,
+                this.queryText,
                 this.corpus.name,
                 this.totalData.labels[timeIndex])
                 .then(results => {
@@ -103,7 +103,6 @@ export class RelatedWordsComponent implements OnChanges, OnInit {
                     this.error.emit(error['message']);
                 });
         }
-
     }
 
     formatValue(value: number): string {
