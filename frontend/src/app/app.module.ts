@@ -76,6 +76,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
+import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 
 
 const appRoutes: Routes = [
@@ -168,6 +169,7 @@ export const declarations: any[] = [
     PaginationComponent,
     PaletteSelectComponent,
     PrivacyComponent,
+    QueryFeedbackComponent,
     RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
@@ -256,7 +258,6 @@ export const providers: any[] = [
     imports,
     providers,
     bootstrap: [AppComponent],
-
 })
 export class AppModule { }
 

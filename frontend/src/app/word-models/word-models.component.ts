@@ -1,8 +1,8 @@
 import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
-import { Corpus, User } from '../models';
-import { CorpusService, UserService } from '../services';
+import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
+import { CorpusService, SearchService, UserService } from '../services';
 
 @Component({
     selector: 'ia-word-models',
@@ -47,7 +47,10 @@ export class WordModelsComponent implements DoCheck, OnInit {
     isLoading: boolean;
     errorMessage: string;
 
+    queryFeedback: QueryFeedback;
+
     constructor(private corpusService: CorpusService,
+                private searchService: SearchService,
                 private userService: UserService,
                 private activatedRoute: ActivatedRoute,
                 private router: Router) {
@@ -59,7 +62,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
 
     ngDoCheck() {
-        console.log(this.isLoading, this.childComponentLoading);
         if (this.isLoading !== this.childComponentLoading ) {
             this.isLoading = this.childComponentLoading;
         }
@@ -91,6 +93,21 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     submitQuery(): void {
         this.activeQuery = this.queryText;
+        this.queryFeedback = undefined;
+        this.searchService.wordInModel(this.queryText, this.corpus.name)
+            .then(this.handleWordInModel.bind(this))
+            .catch(() => this.queryFeedback = { status: 'error' });
+    }
+
+    handleWordInModel(result: WordInModelResult) {
+        if (result.exists === true) {
+            this.queryFeedback = { status: 'success' };
+        } else {
+            this.queryFeedback = {
+                status: 'not in model',
+                similarTerms: result.similar_keys
+            };
+        }
     }
 
     onIsLoading(isLoading: boolean): void {

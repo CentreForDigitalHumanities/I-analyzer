@@ -1,9 +1,11 @@
 import os
 from os.path import join
 import pickle
+from textdistance import damerau_levenshtein
 
 from addcorpus.load_corpus import corpus_dir
 from flask import current_app
+
 
 def load_word_models(corpus, binned = False):
 
@@ -20,3 +22,17 @@ def load_word_models(corpus, binned = False):
         wm = pickle.load(f)
     return wm
 
+def word_in_model(query_term, corpus, max_distance = 2):
+    model = load_word_models(corpus)
+    transformer = model['transformer']
+
+    if query_term in transformer.get_feature_names_out():
+        return { 'exists': True }
+    else:
+        is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
+        similar_keys = [term for term in transformer.get_feature_names_out() if is_similar(term)]
+
+        return {
+            'exists': False,
+            'similar_keys': similar_keys
+        }

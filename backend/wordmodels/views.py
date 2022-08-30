@@ -1,6 +1,7 @@
 from flask import request, abort, current_app, jsonify, Blueprint
 from flask_login import LoginManager, login_required
 import wordmodels.visualisations as visualisations
+import wordmodels.utils as utils
 # from . import wordmodels
 
 wordmodels = Blueprint('wordmodels', __name__)
@@ -54,5 +55,27 @@ def api_get_related_words_time_interval():
                 'similar_words_subsets': results,
                 'time_points': [request.json['time']]
             }
+        })
+    return response
+
+
+@wordmodels.route('/get_word_in_model', methods=['GET'])
+@login_required
+def api_get_word_in_model():
+    if not request.args:
+        abort(400)
+    results = utils.word_in_model(
+        request.args['query_term'],
+        request.args['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'result': results
         })
     return response
