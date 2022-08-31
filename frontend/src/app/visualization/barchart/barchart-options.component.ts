@@ -71,10 +71,4 @@ export class barchartOptionsComponent implements OnChanges {
     get showTermFrequency(): boolean {
         return _.some(this.queries);
     }
-
-    get disableConfirm(): boolean {
-        if (this.isLoading || !this.queries || !this.queries.length) { return false; }
-        return this.queries.length >= 10;
-    }
-
 }
