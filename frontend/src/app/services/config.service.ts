@@ -20,4 +20,5 @@ export class ConfigService {
 interface Config {
     apiUrl: string;
     adminUrl: string;
+    wordModelsUrl: string;
 }

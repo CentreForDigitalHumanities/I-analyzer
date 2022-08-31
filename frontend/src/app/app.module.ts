@@ -72,6 +72,7 @@ import { PaletteSelectComponent } from './visualization/palette-select/palette-s
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
+import { WordmodelsService } from './services/wordmodels.service';
 
 
 const appRoutes: Routes = [
@@ -230,6 +231,7 @@ export const providers: any[] = [
     LoggedOnGuard,
     TitleCasePipe,
     CookieService,
+    WordmodelsService,
     {
         provide: APP_INITIALIZER,
         useFactory: initApp,

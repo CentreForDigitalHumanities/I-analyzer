@@ -1,13 +1,15 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../../services/index';
+import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService, ConfigService } from '../../services/index';
 import { ApiServiceMock } from '../../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../../mock-data/elastic-search';
 import { UserServiceMock } from '../../../mock-data/user';
 import { DialogServiceMock } from '../../../mock-data/dialog';
 import { BarChartComponent } from './barchart.component';
 import { Corpus, QueryModel } from '../../models';
+import { WordmodelsService } from '../../services/wordmodels.service';
+import { WordmodelsServiceMock } from '../../../mock-data/wordmodels';
 
 const MOCK_CORPUS: Corpus = {
     name: 'mock-corpus',
@@ -85,6 +87,7 @@ describe('BarchartComponent', () => {
                     provide: UserService, useValue: new UserServiceMock()
                 },
                 { provide: DialogService, useClass: DialogServiceMock },
+                { provide: WordmodelsService, useValue: new WordmodelsServiceMock() },
             ],
             declarations: [BarChartComponent]
         }).compileComponents();
