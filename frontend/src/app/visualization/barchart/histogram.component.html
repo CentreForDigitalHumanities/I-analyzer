@@ -12,7 +12,7 @@
     </ia-barchart-options>
 </div>
 
-<div class="toggle-div" *ngIf="!hideToggleButton; else hiddenToggleDiv">
+<div class="toggle-div" *ngIf="!hideToggleButton && frequencyMeasure == 'tokens'; else hiddenToggleDiv">
     <div *ngIf="asTable" class="level-right">
         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" (click)="toggleFullTable()">
         <label class="form-check-label" for="flexCheckDefault">
