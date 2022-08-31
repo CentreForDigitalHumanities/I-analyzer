@@ -152,7 +152,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         } else {
             this.hideToggleButton = false;
             this.tableHeaders = [
-                { key: 'queryText', label: label, isMainFactor: true, },
+                { key: 'key', label: label},
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         }
