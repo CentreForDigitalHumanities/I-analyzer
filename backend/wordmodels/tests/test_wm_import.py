@@ -1,5 +1,6 @@
 from wordmodels.visualisations import load_word_models
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
+from wordmodels.utils import load_wm_documentation
 
 def test_complete_import(test_app):
     filename = test_app.config['WM_COMPLETE_FN']
@@ -28,3 +29,7 @@ def test_binned_import(test_app):
 
         transformer = model['transformer']
         assert transformer.max_features == TEST_VOCAB_SIZE
+
+def test_description_import(test_app):
+    description = load_wm_documentation('mock-corpus')
+    assert description == 'Description for testing.\n'
