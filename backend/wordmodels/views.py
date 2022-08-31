@@ -9,7 +9,7 @@ wordmodels = Blueprint('wordmodels', __name__)
 
 @wordmodels.route('/get_related_words', methods=['POST'])
 @login_required
-def api_get_related_words():
+def get_related_words():
     if not request.json:
         abort(400)
     results = visualisations.get_diachronic_contexts(
@@ -35,7 +35,7 @@ def api_get_related_words():
 
 @wordmodels.route('/get_related_words_time_interval', methods=['POST'])
 @login_required
-def api_get_related_words_time_interval():
+def get_related_words_time_interval():
     if not request.json:
         abort(400)
     results = visualisations.get_context_time_interval(
