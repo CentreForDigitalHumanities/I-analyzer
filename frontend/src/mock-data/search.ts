@@ -19,4 +19,5 @@ export class SearchServiceMock {
         };
     }
     public async getRelatedWords() {}
+    public async getNgramTasks() {}
 }
