@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
 import { Corpus, User } from '../models';
 import { CorpusService, UserService } from '../services';
+import { WordmodelsService } from '../services/wordmodels.service';
 
 @Component({
     selector: 'ia-word-models',
@@ -16,8 +17,9 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     user: User;
     corpus: Corpus;
-    queryText: string;
+    modelDocumentation: any;
 
+    queryText: string;
     asTable = false;
     palette: string[];
 
@@ -49,6 +51,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     constructor(private corpusService: CorpusService,
                 private userService: UserService,
+                private wordModelsService: WordmodelsService,
                 private router: Router) {
         this.tabIndex.subscribe(tab => {
             // reset error message when switching tabs
@@ -75,7 +78,14 @@ export class WordModelsComponent implements DoCheck, OnInit {
             if (!this.corpus.word_models_present) {
                 this.router.navigate(['search', this.corpus.name]);
             }
+            this.getDocumentation();
         }
+    }
+
+    getDocumentation() {
+        this.wordModelsService.getWordModelsDocumentation({corpus_name: this.corpus.name}).then(result => {
+            this.modelDocumentation = result.documentation;
+        });
     }
 
     submitQuery(): void {
