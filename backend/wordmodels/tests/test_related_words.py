@@ -2,6 +2,16 @@ from wordmodels.visualisations import get_diachronic_contexts, get_context_time_
 from wordmodels.conftest import TEST_BINS
 import numpy as np
 
+def assert_similarity_format(item, must_specify_time = True):
+    assert 'key' in item and type(item['key']) == str
+
+    assert 'similarity' in item
+    assert type(item['similarity']) in [float, np.float64, type(None)]
+
+    if must_specify_time:
+        assert 'time' in item and type(item['time']) == str
+
+
 def test_context_time_interval(test_app):
     term = 'alice'
 
@@ -18,19 +28,16 @@ def test_context_time_interval(test_app):
     # check format
 
     for item in context:
-        assert 'label' in item and 'data' in item
-        label = item['label']
-        assert type(label) == str
-        data = item['data']
-        assert len(data) == 1 and type(data[0]) == np.float64
+        assert_similarity_format(item)
+
 
     # check common-sense nearest neighbours
 
-    similar_terms = [item['label'] for item in context]
+    similar_terms = [item['key'] for item in context]
     assert 'she' in similar_terms and 'her' in similar_terms
 
-    sorted_by_similarity = sorted(context, key = lambda item : item['data'][0], reverse = True)
-    most_similar_term = sorted_by_similarity[0]['label']
+    sorted_by_similarity = sorted(context, key = lambda item : item['similarity'], reverse = True)
+    most_similar_term = sorted_by_similarity[0]['key']
     assert most_similar_term == 'she'
 
 def test_diachronic_context(test_app):
@@ -41,14 +48,10 @@ def test_diachronic_context(test_app):
     # test format
 
     for item in word_list:
-        assert 'key' in item and type(item['key']) == str
+        assert_similarity_format(item, must_specify_time=False)
 
     for item in word_data:
-        assert 'key' in item and type(item['key']) == str
-        assert 'similarity' in item
-        assert type(item['similarity']) == float or type(item['similarity']) == type(None)
-        assert 'time' in item and type(item['time']) == str
-
+        assert_similarity_format(item)
 
     assert len(times) == len(TEST_BINS)
     for item, interval in zip(times, TEST_BINS):
