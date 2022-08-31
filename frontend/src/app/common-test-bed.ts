@@ -1,12 +1,11 @@
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { of } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 
-import { declarations, imports, providers } from './app.module';
+import { appRoutes, declarations, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
 import * as corpus from '../mock-data/corpus-response';
@@ -16,21 +15,21 @@ import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
 import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
+import { HttpClientModule } from '@angular/common/http';
 
 export function commonTestBed() {
+    const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
+    filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService]));
     filteredProviders.push(
         {
-            provide: ActivatedRoute, useValue: {
-                paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).subscribe(convertToParamMap),
-                queryParamMap: of({query: 'banana'}).subscribe(convertToParamMap)
-            }
-        },
-        {
             provide: ApiService, useValue: new ApiServiceMock({
                 ['corpus']: MockCorpusResponse
             }),
+        },
+        {
+            provide: CorpusService
         },
         {
             provide: APP_INITIALIZER,
@@ -48,9 +47,6 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}) }
-        },
-        {
             provide: SearchService, useValue: new SearchServiceMock()
         },
         {
@@ -61,7 +57,7 @@ export function commonTestBed() {
     return {
         testingModule: TestBed.configureTestingModule({
             declarations,
-            imports,
+            imports: filteredImports,
             providers: filteredProviders
         })
     };

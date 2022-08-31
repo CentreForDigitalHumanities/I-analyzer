@@ -73,7 +73,7 @@ import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
