@@ -24,9 +24,6 @@
                 <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
                     Count frequencies in:
                 </span>
-                <span *ngIf="visualizationType == 'relatedwords'">
-                    Use word models trained on:
-                </span>
             </label>
             <div class="control">
                 <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="fieldDropdown[0]"
@@ -82,8 +79,6 @@
             <ia-wordcloud *ngSwitchCase=" 'wordcloud' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [resultsCount]="resultsCount" [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-wordcloud>
-            <ia-related-words  *ngSwitchCase=" 'relatedwords' " [corpus]="corpus" [queryModel]="queryModel"
-                [asTable]="freqtable" [palette]="palette" (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"></ia-related-words>
             <ia-ngram *ngSwitchCase=" 'ngram' " [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event['message'])"></ia-ngram>
@@ -91,33 +86,10 @@
     </div>
 </ng-container>
 
-
-
-<div class="level">
-    <div class="level-left">
-        <div class="level-item">
-            <button class="button" (click)="showHelp()">
-                <span class="icon">
-                    <fa-icon [icon]="faQuestion"></fa-icon>
-                </span>
-            </button>
-        </div>
-    </div>
-    <div class="level-right">
-        <div class="level-item" *ngIf="!freqtable">
-            <ia-palette-select (paletteChanged)="palette = $event"></ia-palette-select>
-        </div>
-    </div>
-</div>
-
-<button class="button download-button" *ngIf="!freqtable" [class.button]="true" (click)="onRequestImage()">
-    <span class="icon is-small">
-        <i class="fa fa-download"></i>
-    </span>
-    <span>Download visualization</span>
-</button>
-
-
+<ia-visualization-footer [tableView]="freqtable" [manualPage]="manualPage"
+    [chartElementID]="chartElementId" [imageFileName]="imageFileName"
+    (palette)="palette = $event">
+</ia-visualization-footer>
 
 <ng-template #noVisualsMessage>
     <b> {{foundNoVisualsMessage}} </b>
