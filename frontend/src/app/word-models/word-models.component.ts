@@ -59,7 +59,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
 
     ngDoCheck() {
-        console.log(this.isLoading, this.childComponentLoading);
         if (this.isLoading !== this.childComponentLoading ) {
             this.isLoading = this.childComponentLoading;
         }
