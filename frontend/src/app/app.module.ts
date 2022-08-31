@@ -72,6 +72,7 @@ import { PaletteSelectComponent } from './visualization/visualization-footer/pal
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
+import { WordmodelsService } from './services/wordmodels.service';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
@@ -241,6 +242,7 @@ export const providers: any[] = [
     LoggedOnGuard,
     TitleCasePipe,
     CookieService,
+    WordmodelsService,
     {
         provide: APP_INITIALIZER,
         useFactory: initApp,
