@@ -13,6 +13,7 @@ lib/
 instance/
 set
 corpora/*/wm/*
+!corpora/*/wm/description.md
 api/csv_files/*.csv
 corpora/guardianobserver/processed.txt
 dump.rdb
