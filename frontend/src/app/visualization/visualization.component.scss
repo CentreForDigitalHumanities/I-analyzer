@@ -14,11 +14,3 @@
     max-width: 600px;
 }
 
-.is-loading {
-    @extend %content-loader;
-}
-
-.download-button {
-	float: right;
-	margin-top: -.8rem;
-}
