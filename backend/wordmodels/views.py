@@ -56,7 +56,7 @@ def get_related_words_time_interval():
 
 @wordmodels.route('/get_similarity_over_time', methods=['GET'])
 @login_required
-def api_get_similarity():
+def get_similarity():
     if not request.args:
         abort(400)
     results = visualisations.get_similarity_over_time(
