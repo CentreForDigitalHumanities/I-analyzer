@@ -44,7 +44,6 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     constructor(private corpusService: CorpusService,
                 private userService: UserService,
-                private activatedRoute: ActivatedRoute,
                 private router: Router) {
         this.tabIndex.subscribe(tab => {
             // reset error message when switching tabs
@@ -62,20 +61,11 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     async ngOnInit(): Promise<void> {
         this.user = await this.userService.getCurrentUser();
-        combineLatest(
-            this.corpusService.currentCorpus,
-            this.activatedRoute.paramMap,
-            (corpus, params) => {
-                return { corpus, params };
-            }).filter(({ corpus, params }) => !!corpus)
-            .subscribe(({ corpus, params }) => {
-                this.queryText = params.get('query');
-                this.setCorpus(corpus);
-            });
+        this.corpusService.currentCorpus.subscribe(this.setCorpus.bind(this));
     }
 
     setCorpus(corpus: Corpus): void {
-        if (!this.corpus || this.corpus.name !== corpus.name) {
+        if (corpus && (!this.corpus || this.corpus.name !== corpus.name)) {
             this.corpus = corpus;
             if (!this.corpus.word_models_present) {
                 this.router.navigate(['search', this.corpus.name]);
