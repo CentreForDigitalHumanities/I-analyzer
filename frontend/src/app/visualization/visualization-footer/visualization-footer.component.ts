@@ -43,6 +43,7 @@ export class VisualizationFooterComponent implements OnInit {
           });
 
     }
+
     showHelp() {
         this.dialogService.showManualPage(this.manualPage);
     }
