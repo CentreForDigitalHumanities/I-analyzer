@@ -4,15 +4,15 @@ import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 
 const HIGHLIGHT = 200;
 
-type searchFilterSettings = {
+interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
-};
+}
 
 @Component({
     selector: 'ia-search',
@@ -222,7 +222,7 @@ export class SearchComponent extends ParamDirective {
         this.applyFilterSettings(searchFilters, filterSettings);
     }
 
-    private filterSettingsFromParams(params: ParamMap): searchFilterSettings {
+    private filterSettingsFromParams(params: ParamMap): SearchFilterSettings {
         const settings = {};
         this.corpus.fields.forEach(field => {
             const param = this.searchService.getParamForFieldName(field.name);
@@ -237,7 +237,7 @@ export class SearchComponent extends ParamDirective {
         return settings;
     }
 
-    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
         this.setAdHocFilters(searchFilters, filterSettings);
 
         searchFilters.forEach(f => {
@@ -255,7 +255,7 @@ export class SearchComponent extends ParamDirective {
         this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
-    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
         this.corpus.fields.forEach(field => {
             if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
                 const adHocFilter = adHocFilterFromField(field);
