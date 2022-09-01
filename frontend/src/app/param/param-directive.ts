@@ -1,5 +1,5 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Directive()

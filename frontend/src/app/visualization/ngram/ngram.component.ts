@@ -6,7 +6,7 @@ import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 
 @Component({
     selector: 'ia-ngram',
@@ -98,14 +98,14 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         }
     }
 
-    setParameters(params) {
+    setParameters(params: Params) {
         this.currentParameters = {
-            size: params.get('size') as number || this.sizeOptions[0].value,
+            size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
             positions: params.get('positions') || this.positionsOptions[0].value,
-            freqCompensation: params.get('freqCompensation') as boolean || this.freqCompensationOptions[0].value,
+            freqCompensation: params.get('freqCompensation') === 'true' || this.freqCompensationOptions[0].value,
             analysis: params.get('analysis') || 'none',
-            maxDocuments: params.get('maxDocuments') as number || 100,
-            numberOfNgrams: params.get('numberOfNgrams') as number || 10,
+            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
+            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
         };
     }
 
