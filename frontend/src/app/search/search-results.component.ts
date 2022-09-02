@@ -192,4 +192,14 @@ export class SearchResultsComponent implements OnChanges {
         );
         this.onViewDocument(document);
     }
+
+    hasContext(document: FoundDocument) {
+        if (this.corpus.documentContext) {
+            const contextFields = this.corpus.documentContext.contextFields;
+            const notBlank = value => value !== undefined && value !== null && value !== '';
+            console.log(document);
+            return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
+        }
+        return false;
+    }
 }

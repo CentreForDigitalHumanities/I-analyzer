@@ -16,6 +16,7 @@ from ianalyzer.views import entry, login_manager
 from es import es #blueprint
 from saml.views import saml_auth # DHLab wrapper around python3-saml
 from saml import saml # blueprint
+from wordmodels.views import wordmodels #blueprint
 
 from ianalyzer import config_fallback as config
 from ianalyzer import celery_app
@@ -33,11 +34,12 @@ def flask_app(cfg=config):
     csrf = SeaSurf()
     csrf.exempt_urls(('/es', '/saml'))
     init_celery(app, celery=celery_app)
-    
+
     app.register_blueprint(entry)
     app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(es, url_prefix='/es')
     app.register_blueprint(saml, url_prefix='/saml')
+    app.register_blueprint(wordmodels, url_prefix='/wordmodels')
 
     db.init_app(app)
     login_manager.init_app(app)

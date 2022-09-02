@@ -2,7 +2,7 @@ from datetime import datetime
 from glob import glob
 
 from addcorpus.corpus import CSVCorpus
-from addcorpus.extract import CSV
+from addcorpus.extract import CSV, Constant
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
@@ -41,24 +41,11 @@ def format_chamber(chamber):
     return chamber
 
 class ParliamentSweden(Parliament, CSVCorpus):
-    title = 'People and Parliament (Sweden)'
+    title = 'People and Parliament (Sweden 1920-2022)'
     description = 'Speeches from the Riksdag'
     min_date = datetime(year=1920, month=1, day=1)
     data_directory = current_app.config['PP_SWEDEN_DATA']
     es_index = current_app.config['PP_SWEDEN_INDEX']
-
-    # TODO: remove es_settings after #771)
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_swedish_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "swedish"
-        }
-    }
 
     def sources(self, start, end):
         for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
@@ -67,6 +54,9 @@ class ParliamentSweden(Parliament, CSVCorpus):
 
     language = 'swedish'
     image = 'sweden.jpg'
+
+    country = field_defaults.country()
+    country.extractor = Constant('Sweden')
 
     date = field_defaults.date()
     date.extractor = CSV(
@@ -133,6 +123,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
 
     def __init__(self):
         self.fields = [
+            self.country,
             self.date,
             self.date_is_estimate,
             self.chamber,

@@ -76,27 +76,11 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
-        path: '/get_related_words'
-    })
-    public getRelatedWords: ResourceMethod<
-        { query_term: string, corpus_name: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/get_related_words_time_interval'
-    })
-    public getRelatedWordsTimeInterval: ResourceMethod<
-        { query_term: string, corpus_name: string, time: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
-
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
         path: '/ngram_tasks'
     })
     public ngramTasks: ResourceMethod<
         { es_query: EsQuery, corpus_name: string, field: string, ngram_size?: number, term_position?: number[], freq_compensation?: boolean,
-            subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, },
+            subfield?: string, max_size_per_interval?: number, number_of_ngrams?: number, date_field: string, },
         { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 

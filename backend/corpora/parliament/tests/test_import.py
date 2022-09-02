@@ -297,10 +297,191 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
             },
         ],
         'n_documents': 5,
-    }
+    },
+    {
+        'name': 'parliament-sweden-old',
+        'docs': [
+            {
+                'book_id': 'bn_1828-30_1__01',
+                'book_label': 'Hederwärda bonde-ståndets protokoller wid lagtima riksdagen i Stockholm åren 1828 och 1829. Första bandet.',
+                'era': 'Ståndsriksdagen',
+                'chamber': 'Bönder',
+                'date_earliest': '1828-01-01',
+                'date_latest': '1828-12-31',
+                'speech': '''Hederwärdo
+
+Bonde-Ständcts
+
+Protokoller
+
+wid
+
+LagMa Riksdagen i Stockhol».
+
+Ä«tt 1828 och I82t,
+
+första Lander.
+
+STOCKHOLM,
+
+Kongl. Ordens-Böktryckeriet, I8Z9.''',
+                'page': '0',
+                'sequence': 1,
+                'url': 'https://weburn.kb.se/riks/ståndsriksdagen/pdf/bn_1828-30_1_/bn_1828-30_1__01.pdf',
+                'url_xml': 'https://weburn.kb.se/riks/ståndsriksdagen/xml/bn_1828-30_1_/bn_1828-30_1__01.xml',
+            }
+        ],
+        'n_documents': 10
+    },
+        {
+        'name': 'parliament-denmark',
+        'docs': [
+            {
+                'speech': """6546 F. t. beslutn. vedr. udbetaling af sygedagpenge
+
+Beslutningsforslag nr. B 142. Fremsat den 3. juni 2008 af Thomas Adelskov (S), Lennart Damsbo-Andersen (S),
+
+Egil Andersen (SF), Margrethe Vestager (RV), Morten Østergaard (RV) og Line Barfod (EL)
+
+Forslag til folketingsbeslutning
+
+om ophævelse af varighedsbegrænsningen for udbetaling af sygedagpenge
+
+Folketinget pålægger regeringen at fremsætte lovforslag, som ophæver varighedsbegrænsnin- gen for udbetaling af sygedagpenge, således at
+
+lovforslaget kan træde i kraft den 1. januar 2009.""",
+                'page': '546',
+                'date_earliest': '2007-01-01',
+                'date_latest': '2007-12-31',
+                'book_label': 'Folketingstidende 2007/8 (2. samling) Tillæg A side 6001 - 6565',
+                'book_id': '20072A6546',
+                'id': '20072A6546_546',
+                'chamber': 'Folketinget',
+                'country': 'Denmark',
+                'sequence': 546,
+            }
+        ],
+        'n_documents': 5,
+    }, {
+        'name': 'parliament-denmark-new',
+        'docs': [
+            {
+                'country': 'Denmark',
+                'id': '20100128100025',
+                'date': '2010-01-28',
+                'speech': 'Mødet er åbnet. I dag er der følgende anmeldelser: Kirkeministeren (Birthe Rønn Hornbech): Lovforslag nr. L 115 (Forslag til lov om ændring af lov om udnævnelse af biskopper og om stiftsbåndsløsning og forskellige andre love.) og  L 116 (Forslag til lov om ændring af lov om begravelse og ligbrænding og lov om folkekirkens økonomi.) Beskæftigelsesministeren (Inger Støjberg): Lovforslag nr. L 117 (Forslag til lov om ændring af lov om sygedagpenge, lov om ret til orlov og dagpenge ved barsel, lov om aktiv socialpolitik og lov om arbejdsløshedsforsikring m.v. Transportministeren (Lars Barfoed): Lovforslag nr. L 118 (Forslag til lov om ændring af lov om taxikørsel m.v.) Videnskabsministeren (Helge Sander): Lovforslag nr. L 119 (Forslag til lov om ændring af universitetsloven.) Titler på de fremsatte forslag vil fremgå af www.folketingstidende.dk (jf. ovenfor). Mens vi får de sidste medlemmer ind i salen, kan jeg lige oplyse, at vi er vidende om, at der er problemer med, hvordan urene går på Christiansborg. Det er et lidt større problem end som så blot at justere urene, for det er hele styringssystemet – det styres af 23 V strøm – der gør, at der er problemer med overhovedet at styre urene. Nogle er slidt ned, så man skal ikke regne med tiden. Min opfordring er, at man bruger soluret og kun tæller de lyse timer. Munterhed Men det afgørende er altså, at vi er opmærksomme på det og gør, hvad vi overhovedet kan for at udskifte, hvor der skal udskiftes, og i øvrigt at få et system, så urene altid går korrekt. Jeg går nemlig ud fra, at de, der kommer for sent, her nu hvor vi skal stemme, udelukkende gør det, fordi urene går forkert.',
+                'speaker': 'Thor Pedersen',
+                'speaker_gender': 'Male',
+                'speaker_birth_year': 1945,
+                'role': 'formand',
+                'party': 'Venstre',
+                'topic': 'Punkt 0',
+                'subject': 'other',
+                'sequence': '100025',
+            }
+        ],
+        'n_documents': 4,
+    },
+        {
+        'name': 'parliament-norway',
+        'docs': [
+            {
+                'speech': """KONGERIKET NORGES 149. STORTINGS FORHANDLINGER 2004 - 2005
+
+9. del
+
+INNEHOLDENDE REGISTER TIL FORHANDLINGER I STORTINGET OG DETS AVDELINGER
+
+OSLO LOBO MEDIA AS 2005""",
+                'page': '2',
+                'book_id': 'digistorting_2004_part9_vol-a',
+                'book_label': 'Stortingsforhandlinger; 2004/2005 Vol. 149 Nr. 9',
+                'date_earliest': '2004-01-01',
+                'date_latest': '2004-12-31',
+                'sequence': '2',
+                'chamber': 'Stortinget',
+                'country': 'Norway',
+            }
+        ],
+        'n_documents': 5,
+    },
+    {
+        'name': 'parliament-norway-new',
+        'docs': [
+            {}, {}, {}, {
+                'subject': 'Statsbudsjettet',
+            }, # skip a few introductory speeches to one with more metadata
+            {
+                'country': 'Norway',
+                'chamber': 'Stortinget',
+                'date': '1998-10-20',
+                'debate_title': 'Sak  nr. 2',
+                'debate_type': 'interpellasjon',
+                'party': 'Høyre',
+                'party_id': 'H',
+                'party_role': 'Opposition',
+                'role': 'Representant',
+                'speaker': 'Sonja Irene Sjøli',
+                'speaker_id': 'SONS',
+                'speaker_gender': 'kvinne',
+                'speaker_birth_year': 1949,
+                'speaker_death_year': None,
+                'speaker_constituency': 'Akershus',
+                'speech': 'Det er en bred forståelse blant fagfolk og politikere om at norsk sykehusvesen ikke bare lider under mangel på ressurser, men at det først og fremst er behov for organisatoriske og strukturelle forandringer. Offentlige utredninger om eierskap, organisering og ledelse i sykehus viser at det er behov for en rekke endringer for å nå målet om et bedre og mer tilgjengelig helsetilbud til befolkningen. Erkjennelsen av at vi har brukt gamle og lite hensiktsmessige virkemidler i helsepolitikken, har også nådd Regjeringen. Helseministeren uttalte til Dagens Næringsliv i sommer at det ville tjene pasientene hvis vi kunne være mer dristig i bruken av etterspørselsteknikker og private bidrag innenfor sykehussektoren. Denne uttalte dristighet ser jeg fram til med spenning. Stortinget har i de siste år, etter sterkt påtrykk fra Høyre, vedtatt innsatsbasert finansiering og fritt sykehusvalg. Den naturlige konsekvens av dette er at sykehusene organiserer seg annerledes enn før. Vi er langt fra alene om disse tankene. En rekke svenske fagforbund krever en ny modell for det svenske helsevesenet. Den svenske legeforening og det svenske sykepleierforbundet har gått sammen og krever at markedet i større grad må styre helsetilbudet. De mener at fylkeskommunen har utspilt sin rolle i styringen av helsesektoren og krever en total omlegging av helsevesenet. Det er mulig at Norge har sterkere økonomi og bedre skiløpere enn svenskene, men helsedebatten i Sverige har i den senere tid vært langt mer dynamisk og spennende enn hos oss. Tankene om at sykehus ikke nødvendigvis må være eid og drevet av det offentlige, vinner terreng i stadig flere land og er allerede utviklet i flere miljøer også her i Norge. Til og med Jan Grund, Norges fremste helseøkonom, professor på BI og en svoren sosialdemokrat, mener at flertallet av norske politikere befinner seg i skyttergravene i debatten om private helsetjenester. Problemet er ifølge Grund at det ikke er definert hvilke grunnleggende helsetjenester vi har krav på, og hvilke tjenester som kan tilbys oss som forbrukere og kunder. Derfor er det så vanskelig å håndtere diskusjonen om privat kontra offentlig helsetilbud. Han uttrykker sterk støtte til å få private aktører inn i det offentlige helsevesen. Stiftelsen SINTEF Unimed er utpekt av Næringsdepartementet og Helsedepartementet til å lede næringsutvikling i helsesektoren. Lederen Paul Hellandsvik mener det er på høy tid å tenke nytt og utradisjonelt om hvordan det offentlige kan dra nytte av private aktører, og at det gjelder å komme i gang med noen prøveprosjekter. Erfaringer fra Sverige og andre land viser at en modell for helsevesenet hvor det offentlige drar nytte av private aktører til utbygging og drift av sykehus, gir store økonomiske gevinster og høy kvalitet på tjenestene. Forutsetningen for modellen er at det offentlige finansierer tjenestene, og at de fordeles etter behov i befolkningen. Den svenske sosialdemokratiske helseminister velsigner dette arbeidet og mener at det frigjør ressurser til å behandle enda flere pasienter, og at det gir bedre kvalitet på tjenestene. Og det er iallfall fem gode grunner til at vi bør se nærmere på disse ideene. For det første: Avstanden mellom befolkningens etterspørsel etter helsetjenester og det helsevesenet har kapasitet til å tilby, er økende. Lange helsekøer taler sitt tydelige språk. For det andre: De ideologiske motforestillingene er gledelig nok i ferd med å avta både i Arbeiderpartiet og i det såkalte sentrum. Som helseminister Høybråten uttrykte det i Dagens Næringsliv tidligere i sommer: «Spørsmålet om å bruke etterspørselsteknikker er … ikke først og fremst en ideologisk problemstilling, men heller et spørsmål om hvor mye og på hvilken måte det er hensiktsmessig å bruke teknikken.» Stadig flere mennesker har fått erfaring med private legesentre og private klinikker. Folk har forstått at helsepersonell som jobber i det private, er like opptatt av pasientenes beste og kvaliteten på behandlingen som helsepersonell i de offentlige sykehus. Det som måtte være igjen av ideologiske begrunnelser her i Norge, har mistet sin kraft, ikke minst fordi folk ser med egne øyne at det ikke er grunn til å frykte private tilbud som et supplement – tvert imot. I tillegg har betalingsviljen for mindre omfattende behandlingstilbud økt. For det tredje: Det offentlige har gjennom mange år brukt gamle og lite hensiktsmessige virkemidler i helsepolitikken. Offentlig monopol, hierarkiske styringssystemer, spillet mellom forvaltningsnivåene og manglende fokusering på service og kvalitet i behandlingen har skapt tillitskrise i helsevesenet, og – det må jeg si – med berettigelse. Ikke minst er inntrykket av uklare roller og uklar ansvarsfordeling mellom aktørene i helsevesenet frustrerende for pasientene. For det fjerde: Den demografiske utviklingen i den vestlige verden. Vi lever lenger, og presset på helsevesenet vil øke betraktelig i årene fremover. Teknologiutviklingen er en femte faktor. Sykehusene har nå, med den rette teknologi og de moderne medisiner, mulighet til å behandle sykdommer bedre og derigjennom gi pasienter lengre levetid og bedre livskvalitet. Jeg har registrert gjennom media i sommer at helseministeren er skeptisk til å skille mellom tilbyder- og etterspørselsrollen i helsevesenet. Han frykter at for mange private sykehus vil kanalisere tjenester og arbeidskraft bort fra de offentlige sykehusene, og at det vil bli ulik tilgang til helsetjenester. Men dersom ansvaret for funksjonsfordelingen mellom sykehusene ligger hos staten gjennom godkjenning av de regionale helseplaner, vil det bestemme hva som tilbys hvor. En nasjonal helseplan, slik Høyre ønsker, ville vært et enda bedre redskap. Dersom det offentlige har ansvar for finansieringen av tjenestene til den enkelte pasient, vil det sikre lik tilgang til tjenestene. Hvis pengene kunne følge pasienten direkte til sykehusene, slik Høyre vil, og slik Kristelig Folkeparti ville i opposisjon, ville vi unngå at fylkeskommunen tar deler av bevilgningen på veien. Sykehusene får klare insentiver til å behandle flere pasienter, og vi sikrer at pasientene settes først. En modell hvor man lar det offentlige og private konkurrere om å utføre tjenestene, er også den modell som best vil sikre pasientene en sterkere posisjon i forhold til sykehusvesenet. Når de politiske prioriteringer i helsesektoren, funksjonsfordelingen mellom sykehusene, kontrollsystemer og den offentlige finansieringen er på plass, blir det etter Høyres syn mindre viktig hvem som eier og driver sykehusene. Unntaket er universitets- og regionsykehusene, som etter Høyres oppfatning er i en spesiell situasjon. Private kan godt eie og ha driftsansvar for bygningene. Men selve sykehusdriften må være i offentlig regi, slik at man har en tilfredsstillende og god kontroll med universitetsfunksjonene. Vi er inne i en tid med stadig større ubalanse mellom tilbud og etterspørsel. Derfor må vi forholde oss til virkeligheten. Det er snart ingen grenser for hvilke tjenester helsevesenet skal utføre. I denne situasjonen må vi styre slik at vi får mest mulig ut av ressursene. Det offentlige må konsentrere seg om å sikre de grunnleggende helsetjenestene og lage spilleregler for de private aktørene. De bør også få en mulighet til å utføre oppgaver det offentlige definerer som «grunnleggende helsetjenester», slik man gjør i Sverige. Men det må, som jeg har sagt tidligere, være en forutsetning at det offentlige skal betale tjenestene, og at kontrollmekanismene er gode, slik at tjenestene holder kvalitetsmessige mål. Det viktigste er likevel at vi gir sykehusene frihet i forhold til det tungrodde politiske system, slik at det blir mulig å lede sykehusene mer profesjonelt og prøve ut ulike selskapsformer, slik en nå ser ut til å få politisk flertall for her i Oslo. Som politikere bør vi heller være opptatt av å fristille de offentlige sykehusene enn å begrense de private. Et samarbeid mellom det offentlige og det private helsevesen har vi tro på. Etter Høyres mening gjelder det å få i gang noen prøveprosjekter, for uten det tror jeg ikke vi kommer videre. Hvordan ser helseministeren på dette, og vil han ta initiativ og stimulere til et slikt samarbeid?',
+                'topic': 'om en modell for helsevesenet hvor det offentlige drar nytte av _private aktører til utbygging og drift av sykehus_',
+                'sequence': '4',
+                'id': 'tale000004',
+                'ministerial_role': None,
+                'legislature': 'Bondevik I',
+                'subject': None,
+                'language': 'Norwegian (Bokmål)',
+                'debate_id': 'Saker-og-publikasjoner/Publikasjoner/Referater/Stortinget/1998-1999/981020/2/'
+            },
+            {}, {},
+            {
+                # test special case of ministers answering questions
+                'ministerial_role': 'helseministeren',
+                'speaker': 'Presidenten',
+                'speaker_id': 'DH',
+                'party': None,
+                'party_role': None,
+                'speech': "Representanten Sjøli nevnte et forslag. Betyr det at hun tar opp dette forslaget?"
+            }
+        ],
+        'n_documents': 10,
+    },
+    {
+        'name': 'parliament-finland',
+        'docs': [
+            {
+                'country': 'Finland',
+                'speech': 'Täysistunto alkaa. Toivotan kaikki tervetulleiksi tänne Sibelius-taloon Sibeliuksen juhlavuotena aloittamaan vastuullista työtämme isänmaan hyväksi. Iältäni vanhimpana eduskunnan jäsenenä johdan puhetta tässä valtiopäivien ensimmäisessä täysistunnossa, kunnes eduskunta on työjärjestyksen 4 §:n mukaan valinnut puhemiehen ja kaksi varapuhemiestä ja nämä ovat antaneet eduskunnalle juhlallisen vakuutuksen. Plenum börjar. Som den riksdagsledamot som är äldst till åren är det min uppgift att föra ordet vid första plenum under riksmötet till dess att riksdagen enligt 4 § i riksdagens arbets-ordning inom sig valt talman och två vice talmän och dessa har avgett högtidlig försäkran inför riksdagen.',
+                'speaker_id': 'Pertti_Salolainen',
+                'speaker': 'Pertti Salolainen',
+                'role': 'Ikäpuhemies',
+                'party_id': '#party.KOK',
+                'party': 'KOK',
+                'party_role': 'Hallituspuolue',
+                'speaker_gender': 'Male',
+                'speaker_birth_year': 1940,
+                'speech_type': 'PuhemiesPuheenvuoro',
+                'id': '2015_1_1',
+                'url': 'https://www.eduskunta.fi/FI/vaski/PoytakirjaAsiakohta/Sivut/PTK_1+2015+1.aspx',
+                'sequence': '1',
+                'topic': 'Nimenhuuto',
+                'debate_id': 'ptk_1_2015',
+                'debate_title': 'PTK 1/2015',
+                'date': '2015-04-28',
+            },
+        ],
+        'n_documents': 22,
+    },
 ]
 
-@pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA)
+def corpus_test_name(corpus_spec):
+    return corpus_spec['name']
+
+@pytest.mark.parametrize("corpus_object", CORPUS_TEST_DATA, ids=corpus_test_name)
 def test_imports(test_app, corpus_object):
     corpus = load_corpus(corpus_object.get('name'))
     assert len(os.listdir(os.path.abspath(corpus.data_directory))) != 0
@@ -308,17 +489,24 @@ def test_imports(test_app, corpus_object):
     start = corpus_object['start'] if 'start' in corpus_object else corpus.min_date
     end = corpus_object['end'] if 'end' in corpus_object else corpus.max_date
 
+    tested_fields = set()
+    resulted_fields = set()
+
     docs = get_documents(corpus, start, end)
     for target in corpus_object.get('docs'):
         doc = next(docs)
         for key in target:
+            tested_fields.add(key)
             assert key in doc
             assert doc[key] == target[key]
 
         for key in doc:
-            if not key in target:
-                message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
-                warnings.warn(message)
+            resulted_fields.add(key)
+
+    for key in resulted_fields:
+        if not key in tested_fields:
+            message = 'Key "{}" is included the result for {} but has no specification'.format(key, corpus_object.get('name'))
+            warnings.warn(message)
 
     docs = get_documents(corpus, start, end)
     assert len(list(docs)) == corpus_object.get('n_documents')
