@@ -46,7 +46,6 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
 
         if (changes.showTokenCountOption && changes.showTokenCountOption.currentValue && this.frequencyMeasure === 'tokens') {
             this.currentNormalizer = 'terms';
-            this.setParams({'normalize': 'terms'});
         }
     }
 
