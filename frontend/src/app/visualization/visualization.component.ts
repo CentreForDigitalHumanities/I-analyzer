@@ -38,6 +38,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
 
     public visDropdown: SelectItem[];
     public fieldDropdown: SelectItem[];
+    public visualizationTypeDropdownValue: SelectItem;
+    public visualizedFieldDropdownValue: SelectItem;
 
     public visualizations: string [];
     public freqtable = false;
@@ -134,6 +136,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
                 this.updateParams();
             }
         }
+        this.visualizationTypeDropdownValue = this.visDropdown.find(
+            item => item.value === this.visualizationType) || this.visDropdown[0];
     }
 
     updateParams() {
@@ -152,6 +156,8 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
             value: field
         }));
         this.visualizedField = this.filteredVisualizationFields[0];
+        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
+            item => item.value === this.visualizedField) || this.fieldDropdown[0];
     }
 
     changeVisualizationType(visType: string) {

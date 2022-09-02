@@ -9,7 +9,7 @@
                 What do you want to visualise?
             </label>
             <div class="control">
-                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]"
+                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visualizationTypeDropdownValue"
                     (onChange)="changeVisualizationType($event.value)"></ia-dropdown>
             </div>
         </div>
@@ -29,9 +29,9 @@
                 </span>
             </label>
             <div class="control">
-                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="fieldDropdown[0]"
+                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="visualizedFieldDropdownValue"
                     (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
-                <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="fieldDropdown[0].label">
+                <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
             </div>
         </label>
     </div>
