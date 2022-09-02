@@ -17,9 +17,6 @@ def make_filtered_query():
 
 
 def test_wordcloud(test_app, test_es_client):
-    if not test_es_client:
-            pytest.skip('No elastic search client')
-
     query = {
         "query": {
             "match_all": {}
@@ -36,7 +33,6 @@ def test_wordcloud(test_app, test_es_client):
 
     target_unfiltered = [
         { 'key': 'of', 'doc_count': 5 },
-        { 'key': 'a', 'doc_count': 4 },
         { 'key': 'to', 'doc_count': 3 },
         { 'key': 'the', 'doc_count': 2 },
         { 'key': 'you', 'doc_count': 2 },
@@ -87,29 +83,26 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'and', 'doc_count': 1 },
         { 'key': 'an', 'doc_count': 1 },
         { 'key': 'alice', 'doc_count': 1 },
-        { 'key': 'acknowledge', 'doc_count': 1 },
+        { 'key': 'acknowledged', 'doc_count': 1 },
         { 'key': 'accompanied', 'doc_count': 1 }
     ]
 
-    output = analyze.make_wordcloud_data(documents, 'content', 'parliament-uk')
+    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
     for item in target_unfiltered:
         term = item['key']
         doc_count = item['doc_count']
-        for hit in output:
-            if term == hit['key']:
-                assert doc_count == hit['doc_count']
+        match = next(hit for hit in output if hit['key'] == term)
+        assert match
+        assert doc_count == match['doc_count']
 
 def test_wordcloud_filtered(test_app, test_es_client):
     """Test the word cloud on a query with date filter"""
-    if not test_es_client:
-        pytest.skip('No elastic search client')
 
     filtered_query = make_filtered_query()
 
     target_filtered = [
         { 'key': 'it', 'doc_count': 1 },
         { 'key': 'is', 'doc_count': 1 },
-        { 'key': 'a', 'doc_count': 4 },
         { 'key': 'of', 'doc_count':  2 }
     ]
 
@@ -121,12 +114,11 @@ def test_wordcloud_filtered(test_app, test_es_client):
     )
 
     documents = search.hits(result)
-    output = analyze.make_wordcloud_data(documents, 'content', 'parliament-uk')
+    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
 
     for item in target_filtered:
         term = item['key']
         doc_count = item['doc_count']
-        print(term, doc_count)
-        for hit in output:
-            if term == hit['key']:
-                assert doc_count == hit['doc_count']
+        match = next(hit for hit in output if hit['key'] == term)
+        assert match
+        assert doc_count == match['doc_count']
