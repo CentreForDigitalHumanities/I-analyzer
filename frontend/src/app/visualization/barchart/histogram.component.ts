@@ -24,7 +24,7 @@ function formatXAxisLabel(value): string {
 export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
     fullTableToggle: boolean = false;
-    hideToggleButton: boolean = false;
+    disableToggleButton: boolean = false;
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -135,14 +135,14 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         const valueKey = this.currentValueKey;
 
         if (this.rawData.length > 1) {
-            this.hideToggleButton = true;
+            this.disableToggleButton = true;  // if there are several queries, disable the toggle button
             this.tableHeaders = [
                 { key: 'key', label: label, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
         } else if (this.fullTableToggle) {
-            this.hideToggleButton = false;
+            this.disableToggleButton = false;
             this.tableHeaders = [
                 { key: 'key', label: label },
                 { key: 'match_count', label: 'Raw Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue },
@@ -150,7 +150,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                 { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue, formatDownload: this.formatDownloadValue },
             ];
         } else {
-            this.hideToggleButton = false;
+            this.disableToggleButton = false;
             this.tableHeaders = [
                 { key: 'key', label: label},
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
