@@ -129,4 +129,6 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
         logger.info('Updating settings for index `{}`'.format(
             corpus_definition.es_index))
         client.indices.put_settings(
-            {'number_of_replicas': 1}, corpus_definition.es_index)
+            settings={'number_of_replicas': 1},
+            index=corpus_definition.es_index
+        )
