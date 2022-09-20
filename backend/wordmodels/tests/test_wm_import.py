@@ -1,5 +1,6 @@
 from wordmodels.utils import load_word_models, word_in_model
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
+from wordmodels.utils import load_wm_documentation
 
 def test_complete_import(test_app):
     model = load_word_models('mock-corpus')
@@ -46,3 +47,7 @@ def test_word_in_model(test_app):
     for case in cases:
         result = word_in_model(case['term'], 'mock-corpus', 1)
         assert result == case['expected']
+
+def test_description_import(test_app):
+    description = load_wm_documentation('mock-corpus')
+    assert description == 'Description for testing.\n'

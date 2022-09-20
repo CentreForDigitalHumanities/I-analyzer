@@ -39,6 +39,15 @@ export class WordmodelsService extends Resource {
         { query_term: string, corpus_name: string, },
         { success: boolean, message: string, result: WordInModelResult }>;
 
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/get_wm_documentation'
+    })
+    public getWordModelsDocumentation: ResourceMethod<
+        { corpus_name: string },
+        { documentation: string }
+    >;
+
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
         if (!this.wordModelsUrl) {

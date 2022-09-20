@@ -36,3 +36,18 @@ def word_in_model(query_term, corpus, max_distance = 2):
             'exists': False,
             'similar_keys': similar_keys
         }
+
+
+def load_wm_documentation(corpus):
+    try:
+        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
+    except KeyError:
+        return None
+
+    description_file = 'documentation.md'
+    if description_file in os.listdir(wm_directory):
+        with open(join(wm_directory, description_file)) as f:
+            contents = f.read()
+            return contents
+    else:
+        return None
