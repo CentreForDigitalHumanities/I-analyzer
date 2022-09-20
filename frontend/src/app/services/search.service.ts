@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordInModelResult } from '../models/index';
 import { WordmodelsService } from './wordmodels.service';
 
 const highlightFragmentSize = 50;
@@ -197,6 +197,21 @@ export class SearchService {
                                 'datasets': result['related_word_data'].similar_words_subsets
                             }
                     });
+                } else {
+                    reject({'message': result['message']});
+                }
+            });
+        });
+    }
+
+    wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
+        return this.wordModelsService.getWordInModel({
+            query_term: term,
+            corpus_name: corpusName,
+        }).then(result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve(result.result);
                 } else {
                     reject({'message': result['message']});
                 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
-import { RelatedWordsResults } from '../models';
+import { RelatedWordsResults, WordInModelResult } from '../models';
 import { ConfigService } from './config.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -30,6 +30,14 @@ export class WordmodelsService extends Resource {
     public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
         { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/get_word_in_model'
+    })
+    public getWordInModel: ResourceMethod<
+        { query_term: string, corpus_name: string, },
+        { success: boolean, message: string, result: WordInModelResult }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

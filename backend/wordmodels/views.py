@@ -69,3 +69,25 @@ def get_word_models_documentation():
     return {
         'documentation': documentation
     }
+
+
+@wordmodels.route('/get_word_in_model', methods=['GET'])
+@login_required
+def get_word_in_model():
+    if not request.args:
+        abort(400)
+    results = utils.word_in_model(
+        request.args['query_term'],
+        request.args['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'result': results
+        })
+    return response

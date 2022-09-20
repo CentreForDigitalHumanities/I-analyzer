@@ -81,3 +81,15 @@ export type NgramResults = {
     }[],
     time_points: string[],
 };
+
+export type WordInModelResult = {
+    exists: true
+} | {
+    exists: false,
+    similar_keys: string[],
+};
+
+export type QueryFeedback = {
+    status: 'not in model'|'success'|'error'|'multiple words'|'empty',
+    similarTerms?: string[],
+};
