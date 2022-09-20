@@ -1,8 +1,9 @@
 import { Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {BehaviorSubject, combineLatest as combineLatest } from 'rxjs';
-import { Corpus, User } from '../models';
-import { CorpusService, UserService } from '../services';
+import { Corpus, QueryFeedback, User, WordInModelResult } from '../models';
+import { CorpusService, SearchService, UserService } from '../services';
+import { WordmodelsService } from '../services/wordmodels.service';
 
 @Component({
     selector: 'ia-word-models',
@@ -16,8 +17,9 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     user: User;
     corpus: Corpus;
-    queryText: string;
+    modelDocumentation: any;
 
+    queryText: string;
     asTable = false;
     palette: string[];
 
@@ -42,8 +44,12 @@ export class WordModelsComponent implements DoCheck, OnInit {
     isLoading: boolean;
     errorMessage: string;
 
+    queryFeedback: QueryFeedback;
+
     constructor(private corpusService: CorpusService,
+                private searchService: SearchService,
                 private userService: UserService,
+                private wordModelsService: WordmodelsService,
                 private router: Router) {
         this.tabIndex.subscribe(tab => {
             // reset error message when switching tabs
@@ -70,12 +76,46 @@ export class WordModelsComponent implements DoCheck, OnInit {
             if (!this.corpus.word_models_present) {
                 this.router.navigate(['search', this.corpus.name]);
             }
+            this.getDocumentation();
         }
+    }
+
+    getDocumentation() {
+        this.wordModelsService.getWordModelsDocumentation({corpus_name: this.corpus.name}).then(result => {
+            this.modelDocumentation = result.documentation;
+        });
     }
 
     submitQuery(): void {
         this.errorMessage = undefined;
         this.activeQuery = this.queryText;
+        this.validateQuery();
+        if (this.queryFeedback === undefined) {
+            this.searchService.wordInModel(this.queryText, this.corpus.name)
+                .then(this.handleWordInModel.bind(this))
+                .catch(() => this.queryFeedback = { status: 'error' });
+        }
+    }
+
+    validateQuery() {
+        if (!this.queryText || !this.queryText.length) {
+            this.queryFeedback = { status: 'empty' };
+        } else if (this.queryText.includes(' ')) {
+            this.queryFeedback = { status: 'multiple words' };
+        } else {
+            this.queryFeedback = undefined;
+        }
+    }
+
+    handleWordInModel(result: WordInModelResult) {
+        if (result.exists === true) {
+            this.queryFeedback = { status: 'success' };
+        } else {
+            this.queryFeedback = {
+                status: 'not in model',
+                similarTerms: result.similar_keys
+            };
+        }
     }
 
     onIsLoading(isLoading: boolean): void {

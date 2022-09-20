@@ -1,7 +1,7 @@
 from flask import request, abort, current_app, jsonify, Blueprint
 from flask_login import LoginManager, login_required
 import wordmodels.visualisations as visualisations
-# from . import wordmodels
+import wordmodels.utils as utils
 
 wordmodels = Blueprint('wordmodels', __name__)
 
@@ -73,5 +73,40 @@ def get_similarity():
         response = jsonify({
             'success': True,
             'data': results
+        })
+    return response
+
+@wordmodels.route('/get_wm_documentation', methods=['GET'])
+@login_required
+def get_word_models_documentation():
+    if not request.args and 'corpus_name' in request.args:
+        abort(400)
+
+    corpus = request.args['corpus_name']
+    documentation = utils.load_wm_documentation(corpus)
+
+    return {
+        'documentation': documentation
+    }
+
+
+@wordmodels.route('/get_word_in_model', methods=['GET'])
+@login_required
+def get_word_in_model():
+    if not request.args:
+        abort(400)
+    results = utils.word_in_model(
+        request.args['query_term'],
+        request.args['corpus_name']
+    )
+    if isinstance(results, str):
+        # the method returned an error string
+        response = jsonify({
+            'success': False,
+            'message': results})
+    else:
+        response = jsonify({
+            'success': True,
+            'result': results
         })
     return response

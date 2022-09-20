@@ -1,9 +1,6 @@
-import os
-from os.path import join
-import pickle
 
-from addcorpus.load_corpus import corpus_dir
 from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms, term_similarity
+from wordmodels.utils import load_word_models
 
 from flask import current_app
 
@@ -42,8 +39,8 @@ def get_time_labels(binned_model):
     ]
 
 def get_diachronic_contexts(query_term, corpus, number_similar=NUMBER_SIMILAR):
-    complete = load_word_models(corpus, current_app.config['WM_COMPLETE_FN'])
-    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+    complete = load_word_models(corpus)
+    binned = load_word_models(corpus, binned=True)
     word_list = find_n_most_similar(
         complete['svd_ppmi'],
         complete['transformer'],
@@ -77,7 +74,7 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
     """ Given a query term and corpus, and a number indicating the mean of the requested time interval,
     return a word list of number_similar most similar words.
     """
-    binned = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+    binned = load_word_models(corpus, binned=True)
     time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
         time['end_year']==int(which_time_interval[-4:])), None)
     time_label = '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
@@ -96,14 +93,3 @@ def get_context_time_interval(query_term, corpus, which_time_interval, number_si
         for word in word_list
     ]
     return word_data
-
-
-def load_word_models(corpus, path):
-    try:
-        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
-    except KeyError:
-        return "There are no word models for this corpus."
-    with open(os.path.join(wm_directory, path), "rb") as f:
-        wm = pickle.load(f)
-    return wm
-

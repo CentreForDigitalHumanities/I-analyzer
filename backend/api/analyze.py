@@ -8,20 +8,27 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
+from corpora.parliament.utils.es_settings import get_nltk_stopwords
 
 NUMBER_SIMILAR = 8
 
-def make_wordcloud_data(documents, field):
+def make_wordcloud_data(documents, field, corpus):
     texts = []
     for document in documents:
         content = document['_source'][field]
         if content and content != '':
             texts.append(content)
-    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
-    counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names()
-    output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
+
+    try:
+        nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+    except:
+        nltk_stopwords = []  # if language is not available, no stopwords are filtered
+    cv = CountVectorizer(max_features=100, max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', stop_words=nltk_stopwords)
+    cvtexts = cv.fit_transform(texts)
+    counts = cvtexts.sum(axis=0).A1
+    words = list(cv.get_feature_names())
+    freq_distribution = Counter(dict(zip(words, counts)))
+    output = [{'key': word, 'doc_count': int(freq_distribution[word])} for word in words]
     return output
 
 

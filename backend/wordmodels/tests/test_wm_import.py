@@ -1,9 +1,9 @@
-from wordmodels.visualisations import load_word_models
+from wordmodels.utils import load_word_models, word_in_model
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
+from wordmodels.utils import load_wm_documentation
 
 def test_complete_import(test_app):
-    filename = test_app.config['WM_COMPLETE_FN']
-    model = load_word_models('mock-corpus', filename)
+    model = load_word_models('mock-corpus')
     assert model
 
     weights = model['svd_ppmi']
@@ -13,8 +13,7 @@ def test_complete_import(test_app):
     assert transformer.max_features == TEST_VOCAB_SIZE
 
 def test_binned_import(test_app):
-    filename = test_app.config['WM_BINNED_FN']
-    models = load_word_models('mock-corpus', filename)
+    models = load_word_models('mock-corpus', binned = True)
     assert len(models) == len(TEST_BINS)
 
     for model, bin in zip(models, TEST_BINS):
@@ -28,3 +27,27 @@ def test_binned_import(test_app):
 
         transformer = model['transformer']
         assert transformer.max_features == TEST_VOCAB_SIZE
+
+def test_word_in_model(test_app):
+    cases = [
+        {
+            'term': 'she',
+            'expected': {'exists': True}
+        },
+        {
+            'term':  'whale',
+            'expected': {'exists': True}
+        },
+                {
+            'term':  'hwale',
+            'expected': {'exists': False, 'similar_keys': ['whale']}
+        }
+    ]
+
+    for case in cases:
+        result = word_in_model(case['term'], 'mock-corpus', 1)
+        assert result == case['expected']
+
+def test_description_import(test_app):
+    description = load_wm_documentation('mock-corpus')
+    assert description == 'Description for testing.\n'

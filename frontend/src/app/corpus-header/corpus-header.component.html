@@ -7,14 +7,23 @@
                         <span *ngIf="currentPage == 'search'">Search</span>
                         <span *ngIf="currentPage == 'word-models'">Word models of</span>
                         <a class="corpus-name" [routerLink]="['/home']">&ldquo;{{corpus.title}}&rdquo;</a>
-                        <sup>
-                            <span *ngIf="corpus.descriptionpage" class="moreInfoLink icon is-small"
-                                iaBalloon="More information" iaBalloonPosition="up-left"
-                                (click)="showCorpusInfo(corpus)">
-                                <i class="moreInfoLink fa fa-info-circle info-icon"></i>
-                            </span>
-                        </sup>
                     </h1>
+                </div>
+                <div class="level-item buttons">
+                    <button class="button is-white" *ngIf="corpus.descriptionpage"
+                        iaBalloon="More information about this corpus" iaBalloonPosition="up-left"
+                        (click)="showCorpusInfo(corpus)">
+                        <span class="icon"><fa-icon [icon]="faInfo"></fa-icon></span>
+                        <span  *ngIf="modelDocumentation">corpus</span>
+                    </button>
+                    <button class="button is-white" *ngIf="modelDocumentation"
+                    iaBalloon="More information about the word models for this corpus" iaBalloonPosition="up-left"
+                        (click)="showModelInfo()">
+                        <span class="icon">
+                            <fa-icon [icon]="faInfo"></fa-icon>
+                        </span>
+                        <span>models</span>
+                    </button>
                 </div>
             </div>
             <div class="level-left" *ngIf="wordModelsPresent">

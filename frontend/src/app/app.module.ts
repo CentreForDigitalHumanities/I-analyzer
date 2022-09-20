@@ -76,6 +76,7 @@ import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
+import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
 import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
@@ -171,6 +172,7 @@ export const declarations: any[] = [
     PaginationComponent,
     PaletteSelectComponent,
     PrivacyComponent,
+    QueryFeedbackComponent,
     RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
