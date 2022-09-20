@@ -35,7 +35,7 @@ def make_csv(results, request_json):
 def get_wordcloud_data(request_json):
     def calculate():
         list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
-        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 
     return cache.make_visualization('wordcloud', request_json['corpus'], request_json, calculate)
