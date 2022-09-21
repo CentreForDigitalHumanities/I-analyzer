@@ -63,7 +63,7 @@ def transform_query(query, transformer):
 def term_to_index(query, transformer):
     transformed = transform_query(query, transformer)
     if transformed and transformed in transformer.vocabulary_:
-        return transformer.vocabulary_[query]
+        return transformer.vocabulary_[transformed]
 
 def index_to_term(index, transformer):
     return transformer.get_feature_names_out()[index]
