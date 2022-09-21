@@ -12,7 +12,7 @@ def make_filtered_query():
                 }
             }
         }
-        datefilter = query.make_date_filter(max_date = datetime(year = 1813, month=12, day=31))
+        datefilter = query.make_date_filter(max_date = datetime(year = 1820, month=12, day=31))
         return query.add_filter(empty_query, datefilter)
 
 
@@ -32,12 +32,9 @@ def test_wordcloud(test_app, test_es_client):
     documents = search.hits(result)
 
     target_unfiltered = [
-        { 'key': 'of', 'doc_count': 5 },
-        { 'key': 'to', 'doc_count': 3 },
         { 'key': 'the', 'doc_count': 2 },
         { 'key': 'you', 'doc_count': 2 },
         { 'key': 'that', 'doc_count': 2 },
-        { 'key': 'in', 'doc_count': 2 },
         { 'key': 'with', 'doc_count': 1 },
         { 'key': 'will', 'doc_count': 1 },
         { 'key': 'wife', 'doc_count': 1 },
@@ -55,13 +52,9 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'rejoice', 'doc_count': 1 },
         { 'key': 'regarded', 'doc_count': 1 },
         { 'key': 'possession', 'doc_count': 1 },
-        { 'key': 'on', 'doc_count': 1 },
         { 'key': 'nothing', 'doc_count': 1 },
-        { 'key': 'no', 'doc_count': 1 },
         { 'key': 'must', 'doc_count': 1 },
         { 'key': 'man', 'doc_count': 1 },
-        { 'key': 'it', 'doc_count': 1 },
-        { 'key': 'is', 'doc_count': 1 },
         { 'key': 'her', 'doc_count': 1 },
         { 'key': 'hear', 'doc_count': 1 },
         { 'key': 'having', 'doc_count': 1 },
@@ -73,15 +66,11 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'forebodings', 'doc_count': 1 },
         { 'key': 'evil', 'doc_count': 1 },
         { 'key': 'enterprise', 'doc_count': 1 },
-        { 'key': 'do', 'doc_count': 1 },
         { 'key': 'disaster', 'doc_count': 1 },
         { 'key': 'commencement', 'doc_count': 1 },
-        { 'key': 'by', 'doc_count': 1 },
         { 'key': 'beginning', 'doc_count': 1 },
-        { 'key': 'be', 'doc_count': 1 },
         { 'key': 'bank', 'doc_count': 1 },
         { 'key': 'and', 'doc_count': 1 },
-        { 'key': 'an', 'doc_count': 1 },
         { 'key': 'alice', 'doc_count': 1 },
         { 'key': 'acknowledged', 'doc_count': 1 },
         { 'key': 'accompanied', 'doc_count': 1 }
@@ -101,9 +90,34 @@ def test_wordcloud_filtered(test_app, test_es_client):
     filtered_query = make_filtered_query()
 
     target_filtered = [
-        { 'key': 'it', 'doc_count': 1 },
-        { 'key': 'is', 'doc_count': 1 },
-        { 'key': 'of', 'doc_count':  2 }
+        {'key': 'accompanied', 'doc_count': 1},
+        {'key': 'acknowledged', 'doc_count': 1},
+        {'key': 'commencement', 'doc_count': 1},
+        {'key': 'disaster', 'doc_count': 1},
+        {'key': 'enterprise', 'doc_count': 1},
+        {'key': 'evil', 'doc_count': 1},
+        {'key': 'forebodings', 'doc_count': 1},
+        {'key': 'fortune', 'doc_count': 1},
+        {'key': 'good', 'doc_count': 1},
+        {'key': 'has', 'doc_count': 1},
+        {'key': 'have', 'doc_count': 1},
+        {'key': 'hear', 'doc_count': 1},
+        {'key': 'man', 'doc_count': 1},
+        {'key': 'must', 'doc_count': 1},
+        {'key': 'possession', 'doc_count': 1},
+        {'key': 'regarded', 'doc_count': 1},
+        {'key': 'rejoice', 'doc_count': 1},
+        {'key': 'single', 'doc_count': 1},
+        {'key': 'such', 'doc_count': 1},
+        {'key': 'the', 'doc_count': 1},
+        {'key': 'truth', 'doc_count': 1},
+        {'key': 'universally', 'doc_count': 1},
+        {'key': 'want', 'doc_count': 1},
+        {'key': 'which', 'doc_count': 1},
+        {'key': 'wife', 'doc_count': 1},
+        {'key': 'will', 'doc_count': 1},
+        {'key': 'with', 'doc_count': 1},
+        {'key': 'you', 'doc_count': 2}
     ]
 
     result = search.search(
@@ -115,6 +129,7 @@ def test_wordcloud_filtered(test_app, test_es_client):
 
     documents = search.hits(result)
     output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
+    print(output)
 
     for item in target_filtered:
         term = item['key']
