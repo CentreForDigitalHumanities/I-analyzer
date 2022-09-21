@@ -33,13 +33,8 @@ def make_wordcloud_data(documents, field, corpus):
 
 
 def get_ngrams(es_query, corpus, field,
-<<<<<<< HEAD
     ngram_size=2, positions='any', freq_compensation=True, subfield='none', max_size_per_interval=50,
-    number_of_ngrams=10):
-=======
-    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
     number_of_ngrams=10, date_field = 'date'):
->>>>>>> develop
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
