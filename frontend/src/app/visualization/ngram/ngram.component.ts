@@ -84,6 +84,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.visualizedField) {
+            this.resultsCache = {};
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -96,13 +97,16 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
+        this.loadGraph();
     }
 
     setParameters(params: Params) {
         this.currentParameters = {
             size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
             positions: params.get('positions') || this.positionsOptions[0].value,
-            freqCompensation: params.get('freqCompensation') === 'true' || this.freqCompensationOptions[0].value,
+            freqCompensation: params.get('freqCompensation') !==  undefined ?
+                params.get('freqCompensation') === 'true' :
+                this.freqCompensationOptions[0].value,
             analysis: params.get('analysis') || 'none',
             maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
             numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,

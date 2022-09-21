@@ -1,4 +1,4 @@
-import { DoCheck, Input, Component } from '@angular/core';
+import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
@@ -17,7 +17,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent extends ParamDirective implements DoCheck {
+export class VisualizationComponent extends ParamDirective implements DoCheck, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
 
@@ -78,6 +78,12 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
     ngDoCheck() {
         if (this.isLoading !== this.childComponentLoading ) {
             this.isLoading = this.childComponentLoading;
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.queryModel || changes.corpus) {
+            this.initialize();
         }
     }
 
@@ -192,8 +198,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck {
         const manualPage = this.manualPages[this.visualizationType];
         this.dialogService.showManualPage(manualPage);
     }
-
-
 
     onRequestImage() {
         const filenamestring = `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
