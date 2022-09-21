@@ -24,17 +24,19 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     transformed_query = transform_query(query_term, transformer)
     vec = term_to_vector(query_term, transformer, matrix)
 
-    if type(vec) != type(None):
-        similarities = cosine_similarity_matrix_vector(vec, matrix)
-        sorted_sim = np.sort(similarities)
-        most_similar_indices = np.where(similarities >= sorted_sim[-n])
-        output_terms = [{
-            'key': index_to_term(index, transformer),
-            'similarity': similarities[index]
-            } for index in most_similar_indices[0] if
-            index_to_term(index, transformer)!=transformed_query
-        ]
-        return output_terms
+    if type(vec) == type(None):
+        return None
+
+    similarities = cosine_similarity_matrix_vector(vec, matrix)
+    sorted_sim = np.sort(similarities)
+    most_similar_indices = np.where(similarities >= sorted_sim[-n])
+    output_terms = [{
+        'key': index_to_term(index, transformer),
+        'similarity': similarities[index]
+        } for index in most_similar_indices[0] if
+        index_to_term(index, transformer)!=transformed_query
+    ]
+    return output_terms
 
 
 def similarity_with_top_terms(matrix, transformer, query_term, word_data):
