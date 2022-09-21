@@ -8,9 +8,9 @@ Flask-Mail
 Werkzeug==2.0
 WTForms
 celery>=5.2.2
-elasticsearch>=7.0, <8py.0
+elasticsearch>=7.0, <8.0
 beautifulsoup4
-lxml<4.7.1
+lxml<4.9.2
 pytest
 coverage
 requests
@@ -21,3 +21,6 @@ openpyxl
 python3-saml
 pypdf2
 mysqlclient>=1.3.12,<1.4.0
+nltk
+Redis
+textdistance

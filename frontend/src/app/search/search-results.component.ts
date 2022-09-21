@@ -3,7 +3,8 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Ou
 import { User, Corpus, SearchParameters, SearchResults, FoundDocument, QueryModel, ResultOverview } from '../models/index';
 import { SearchService } from '../services';
 import { ShowError } from '../error/error.component';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
+import { faBookOpen, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-search-results',
@@ -35,6 +36,9 @@ export class SearchResultsComponent implements OnChanges {
     @Output('searched')
     public searchedEvent = new EventEmitter<ResultOverview>();
 
+    @Output('viewContext')
+    public contextEvent = new EventEmitter<any>();
+
     public isLoading = false;
     public isScrolledDown: boolean;
 
@@ -64,6 +68,8 @@ export class SearchResultsComponent implements OnChanges {
      */
     public viewDocument: FoundDocument;
     public documentTabIndex: number;
+
+    contextIcon = faBookOpen;
 
     faArrowLeft = faArrowLeft;
     faArrowRight = faArrowRight;
@@ -137,6 +143,17 @@ export class SearchResultsComponent implements OnChanges {
         this.documentTabIndex = 0;
     }
 
+    public goToContext(document: FoundDocument) {
+        this.showDocument = false;
+        this.contextEvent.emit(document.fieldValues);
+    }
+
+    get contextDisplayName(): string {
+        if (this.corpus && this.corpus.documentContext) {
+            return this.corpus.documentContext.displayName;
+        }
+    }
+
     public async nextDocument(document: FoundDocument) {
         const newPosition = document.position + 1;
         const maxPosition = this.fromIndex + this.results.documents.length;
@@ -174,5 +191,15 @@ export class SearchResultsComponent implements OnChanges {
             doc.position === position
         );
         this.onViewDocument(document);
+    }
+
+    hasContext(document: FoundDocument) {
+        if (this.corpus.documentContext) {
+            const contextFields = this.corpus.documentContext.contextFields;
+            const notBlank = value => value !== undefined && value !== null && value !== '';
+            console.log(document);
+            return _.every(contextFields, field => notBlank(document.fieldValues[field.name]));
+        }
+        return false;
     }
 }

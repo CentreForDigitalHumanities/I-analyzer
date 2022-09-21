@@ -45,7 +45,6 @@ describe('CorpusService', () => {
                 'description': 'Test description 1.',
                 'es_doctype': 'article',
                 'es_index': 'test1',
-                'es_settings': null,
                 'overview_fields': [],
                 'fields': [],
                 'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
@@ -59,7 +58,6 @@ describe('CorpusService', () => {
                 'description': 'Test description 2.',
                 'es_doctype': 'article',
                 'es_index': 'test2',
-                'es_settings': null,
                 'overview_fields': [],
                 'fields': [],
                 'max_date': { 'day': 31, 'hour': 0, 'minute': 0, 'month': 12, 'year': 2010 },
@@ -210,7 +208,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockMultipleChoiceData,
                     currentData: mockMultipleChoiceData
-                }
+                },
+                mappingType: 'keyword',
             }, {
                 description: 'Year of the financial report.',
                 hidden: false,
@@ -233,7 +232,8 @@ describe('CorpusService', () => {
                     useAsFilter: false,
                     defaultData: mockRangeData,
                     currentData: mockRangeData
-                }
+                },
+                mappingType: 'integer',
             }, {
                 description: 'The transcribed speech',
                 hidden: false,
@@ -251,6 +251,7 @@ describe('CorpusService', () => {
                 multiFields: ['clean', 'stemmed', 'length'],
                 searchFilter: null,
                 searchFieldCore: true,
+                mappingType: 'text',
             }];
             expect(items).toEqual([new Corpus(
                 'default',

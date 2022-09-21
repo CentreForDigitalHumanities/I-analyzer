@@ -156,7 +156,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
 
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
-        return (changes.corpus || changes.queryModel || changes.visualizedField) !== undefined;
+        return (changes.corpus || changes.queryModel || changes.visualizedField || changes.frequencyMeasure) !== undefined;
     }
 
     /** update graph after changes to the normalisation menu (i.e. normalizer) */
@@ -270,6 +270,19 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
 
         await Promise.all(dataPromises);
         this.checkDocumentLimitExceeded();
+    }
+
+    selectSearchFields(queryModel: QueryModel) {
+        if (this.frequencyMeasure === 'documents') {
+            return queryModel;
+        } else {
+            const mainContentFields = this.corpus.fields.filter(field =>
+                field.searchable && (field.displayType === 'text_content'));
+            const queryModelCopy = _.cloneDeep(queryModel);
+            queryModelCopy.fields = mainContentFields.map(field => field.name);
+
+            return queryModelCopy;
+        }
     }
 
     /**
@@ -483,6 +496,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
                     return `${_.round(100 * value, 1)}%`;
                 }
             };
+        } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
+            return (value: number) => {
+                if (value !== undefined && value !== null) {
+                    return value.toPrecision(2);
+                }
+            }
         } else {
             return (value: number) => {
                 if (value !== undefined && value !== null) {
@@ -495,7 +514,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     get formatDownloadValue(): (value: number) => string {
         if (this.normalizer === 'percent') {
             return (value: number) => {
-                return `${_.round(100 * value, 1)}`;
+                if (value !== undefined && value !== null) {
+                    return `${_.round(100 * value, 1)}`;
+                }
             };
         } else {
             return (value: number) => value.toString();
@@ -542,6 +563,22 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     get isZoomedIn(): boolean {
         // If no zooming-related scripts are implemented, just return false
         return false;
+    }
+
+
+    get searchFields(): string {
+        if (this.corpus && this.queryModel) {
+            const searchFields = this.selectSearchFields(this.queryModel).fields;
+
+            const displayNames = searchFields.map(fieldName => {
+                const field = this.corpus.fields.find(f => f.name === fieldName);
+                return field.displayName;
+            });
+
+            return displayNames.join(', ');
+        }
+
+        return 'all fields';
     }
 
     chartTitle() {

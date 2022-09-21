@@ -1,7 +1,7 @@
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router, UrlSegment } from '@angular/router';
 
 import { of } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
@@ -16,6 +16,8 @@ import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
 import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
+import { WordmodelsService } from './services/wordmodels.service';
+import { WordmodelsServiceMock } from '../mock-data/wordmodels';
 
 export function commonTestBed() {
     const filteredProviders = providers.filter(provider => !(
@@ -47,13 +49,20 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}) }
+            provide: Router, useValue: {
+                events: of({}),
+                createUrlTree: (commands, navExtras = {} ) => {},
+                serializeUrl: () => ''
+            }
         },
         {
             provide: SearchService, useValue: new SearchServiceMock()
         },
         {
             provide: UserService, useValue: new UserServiceMock()
+        },
+        {
+            provide: WordmodelsService, useValue: new WordmodelsServiceMock()
         },
     );
 

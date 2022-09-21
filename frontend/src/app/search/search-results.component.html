@@ -38,7 +38,7 @@
     <div class="hits" [ngClass]="{'is-loading':isLoading}">
         <div *ngFor="let document of results.documents" class="document box" role="button">
             <div class="columns">
-                <div class="column is-flex" (click)=onViewDocument(document)>
+                <div class="column is-flex" tabindex="0" (click)="onViewDocument(document)" (keydown.enter)="onViewDocument(document)" role="button">
                     <table class="table is-fullwidth">
                         <ng-container *ngFor="let field of results.fields">
                             <tr *ngIf="document.fieldValues[field.name]">
@@ -78,9 +78,9 @@
 </ng-template>
 
 <!-- show the selected document -->
-<p-dialog header="Document {{viewDocument.position}} of {{totalResults}}" [(visible)]="showDocument" width="100%"
+<p-dialog [(visible)]="showDocument" width="100%"
     [modal]="true" [responsive]="true" [maximizable]="true" [dismissableMask]="true" [draggable]="true" [resizable]="false" [blockScroll]="true"
-    *ngIf="viewDocument">
+    *ngIf="viewDocument" header="Document {{viewDocument.position}} of {{totalResults}}">
     <ia-document-view [document]="viewDocument" [fields]="corpus.fields" [query]="queryText" [corpus]="corpus" [documentTabIndex]="documentTabIndex"></ia-document-view>
     <ng-template pTemplate="footer">
         <div class="columns" style="text-align:left">
@@ -89,6 +89,15 @@
                     iaBalloon="view previous document" iaBalloonPosition="right"
                     (click)="prevDocument(viewDocument)" >
                     <span class="icon"><fa-icon [icon]="faArrowLeft">previous</fa-icon></span>
+                </a>
+            </div>
+            <div class="column" style="text-align:center">
+                <a *ngIf="hasContext(viewDocument)" (click)="goToContext(viewDocument)"
+                iaBalloon="view all documents from this {{contextDisplayName}}">
+                    <span class="icon">
+                        <fa-icon [icon]="contextIcon"></fa-icon>
+                    </span>
+                    <span>View {{contextDisplayName}}</span>
                 </a>
             </div>
             <div class="column" style="text-align:right">

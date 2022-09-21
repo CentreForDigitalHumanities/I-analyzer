@@ -4,10 +4,14 @@ import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, QueryModel, User, SortEvent } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 
 const HIGHLIGHT = 200;
+
+type searchFilterSettings = {
+    [fieldName: string]: SearchFilterData;
+};
 
 @Component({
     selector: 'ia-search',
@@ -65,6 +69,7 @@ export class SearchComponent implements OnInit {
     private activeFilters: SearchFilter<SearchFilterData> [] = [];
 
     public highlight: number = HIGHLIGHT;
+
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
@@ -142,42 +147,17 @@ export class SearchComponent implements OnInit {
         this.dialogService.showManualPage('query');
     }
 
-    public showCorpusInfo(corpus: Corpus) {
-        this.dialogService.showDescriptionPage(corpus);
-    }
-
     private getQueryFields(): string[] | null {
-        if (this.selectedSearchFields) { return null; }
+        if (!this.selectedSearchFields) { return null; }
 
-        const fields = _.flatMap(this.selectedSearchFields, field => {
-            const multifields = this.searchableMultifields(field);
-            return [field.name].concat(multifields);
-        });
-
-        if (!fields.length) { return null; }
-        return fields;
+        if (!this.selectedSearchFields.length) { return null; }
+        const fieldNames = this.selectedSearchFields.map(field => field.name);
+        return fieldNames;
     }
 
-    /**
-     * returns array of all searchable subfields for a field.
-     * empty array if there are none.
-    */
-    private searchableMultifields(field: CorpusField): string[] {
-        if (field && field.multiFields) {
-            // list known searchable subfields (a numeric field like `length` should not be included)
-            const searchables = ['clean', 'stemmed'];
-            const subfields = field.multiFields.filter(subfield =>
-                searchables.includes(subfield)
-            );
-            const fullNames = subfields.map(subfield => `${field.name}.${subfield}`);
-            return fullNames;
-        } else {
-            return [];
-        }
-    }
 
     private createQueryModel() {
-            const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
+        const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
 
         return this.searchService.createQueryModel(
             this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
@@ -190,7 +170,7 @@ export class SearchComponent implements OnInit {
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
             this.corpus = corpus;
-            this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+            this.availableSearchFields = this.getAvailableSearchFields(corpus);
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
@@ -199,19 +179,74 @@ export class SearchComponent implements OnInit {
         }
     }
 
+    private getAvailableSearchFields(corpus: Corpus): CorpusField[] {
+        const searchableFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+        const allSearchFields = _.flatMap(searchableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
+        return allSearchFields;
+    }
+
+    private searchableMultiFields(field: CorpusField): CorpusField[] {
+        if (field.multiFields) {
+            if (field.multiFields.includes('text')) {
+                // replace keyword field with text multifield
+                return this.useTextMultifield(field);
+            }
+            if (field.multiFields.includes('stemmed')) {
+                return this.useStemmedMultifield(field);
+            }
+        }
+        return [field];
+    }
+
+    private useTextMultifield(field: CorpusField) {
+        const textField = _.clone(field);
+        textField.name = field.name + '.text';
+        textField.multiFields = null;
+        return [textField];
+    }
+
+    private useStemmedMultifield(field: CorpusField) {
+        const stemmedField = _.clone(field);
+        stemmedField.name = field.name + '.stemmed';
+        stemmedField.displayName = field.displayName + ' (stemmed)';
+        stemmedField.multiFields = null;
+
+        return [field, stemmedField];
+    }
+
     /**
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
     private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        searchFilters.forEach( f => {
-            const param = this.searchService.getParamForFieldName(f.fieldName);
+        const filterSettings = this.filterSettingsFromParams(params);
+        this.applyFilterSettings(searchFilters, filterSettings);
+    }
+
+    private filterSettingsFromParams(params: ParamMap): searchFilterSettings {
+        const settings = {};
+        this.corpus.fields.forEach(field => {
+            const param = this.searchService.getParamForFieldName(field.name);
             if (params.has(param)) {
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] === '') { filterSettings = []; }
+                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
+                const data = searchFilterDataFromParam(filterType, filterSettings, field);
+                settings[field.name] = data;
+            }
+        });
+        return settings;
+    }
+
+    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+        this.setAdHocFilters(searchFilters, filterSettings);
+
+        searchFilters.forEach(f => {
+            if (_.has(filterSettings, f.fieldName)) {
                 if (this.showFilters === undefined) {
                     this.showFilters = true;
                 }
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] === '') { filterSettings = []; }
-                f.currentData = searchFilterDataFromParam(f.currentData.filterType, filterSettings);
+                const data = filterSettings[f.fieldName];
+                f.currentData = data;
                 f.useAsFilter = true;
             } else {
                 f.useAsFilter = false;
@@ -220,11 +255,20 @@ export class SearchComponent implements OnInit {
         this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
+    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+        this.corpus.fields.forEach(field => {
+            if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
+                const adHocFilter = adHocFilterFromField(field);
+                searchFilters.push(adHocFilter);
+            }
+        });
+    }
+
     private setSearchFieldsFromParams(params: ParamMap) {
         if (params.has('fields')) {
             const queryRestriction = params.get('fields').split(',');
             this.selectedSearchFields = queryRestriction.map(
-                fieldName => this.corpus.fields.find(
+                fieldName => this.availableSearchFields.find(
                     field => field.name === fieldName
                 )
             );
@@ -256,9 +300,35 @@ export class SearchComponent implements OnInit {
         this.search();
     }
 
-    private selectSearchFields(selection: CorpusField[]) {
+    public selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
+    }
+
+    public goToContext(contextValues: any[]) {
+        const contextSpec = this.corpus.documentContext;
+
+        this.queryText = undefined;
+        this.sortField = contextSpec.sortField || 'default';
+        this.sortAscending = contextSpec.sortDirection === 'asc';
+
+        contextSpec.contextFields
+            .filter(field => ! this.searchFilters.find(f => f.fieldName === field.name))
+            .forEach(field => this.makeContextFilter(field));
+
+        const filterSettings = _.mapValues(
+            _.keyBy(contextSpec.contextFields, 'name'),
+            field => searchFilterDataFromField(field, [contextValues[field.name]])
+        );
+
+        this.applyFilterSettings(this.searchFilters, filterSettings);
+
+        this.search();
+    }
+
+    private makeContextFilter(field: CorpusField) {
+        const filter = adHocFilterFromField(field);
+        this.searchFilters.push(filter);
     }
 
     get useDefaultSort(): boolean {

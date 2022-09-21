@@ -1,17 +1,5 @@
-<!-- Toggle filter button, search bar, visualize and download buttons -->
-<section class="section title-section">
-    <div class="container is-readable">
-        <h1 class="title">
-            Search
-            <a class="corpus-name" [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus.title}}&rdquo;</a>
-            <sup>
-                <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
-                    <i class="moreInfoLink fa fa-info-circle info-icon"></i>
-                </span>
-            </sup>
-        </h1>
-    </div>
-</section>
+<ia-corpus-header [corpus]="corpus" currentPage="search"></ia-corpus-header>
+
 <section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
     <div class="container is-readable">
         <div class="columns">
@@ -85,7 +73,7 @@
                 </div>
                 <div class="column">
                     <ia-search-results *ngIf="tabIndex==0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
-                        (searched)="onSearched($event)">
+                        (searched)="onSearched($event)" (viewContext)="goToContext($event)">
                         <ia-search-sorting [sortField]="useDefaultSort ? defaultSortField : sortField" [ascending]="sortAscending" [fields]="corpus.fields"
                             (onChange)="changeSorting($event)"></ia-search-sorting>
                         <ia-highlight-selector [highlight]="highlight" (onChange)="changeHighlightSize($event)"></ia-highlight-selector>

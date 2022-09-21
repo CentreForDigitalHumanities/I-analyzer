@@ -6,13 +6,15 @@ import * as moment from 'moment';
 
 import { ApiRetryService } from './api-retry.service';
 import { UserService } from './user.service';
-import { Corpus, CorpusField, SearchFilter, SearchFilterData } from '../models/index';
+import { Corpus, CorpusField, DocumentContext, SearchFilter, SearchFilterData } from '../models/index';
 
 @Injectable()
 export class CorpusService {
     private currentCorpusSubject = new BehaviorSubject<Corpus | undefined>(undefined);
 
     public currentCorpus = this.currentCorpusSubject.asObservable();
+
+    public corporaPromise: Promise<Corpus[]>;
 
     constructor(private apiRetryService: ApiRetryService, private userService: UserService) {
     }
@@ -38,7 +40,12 @@ export class CorpusService {
     }
 
     public get(): Promise<Corpus[]> {
-        return this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+        if (this.corporaPromise) {
+            return this.corporaPromise;
+        } else {
+            this.corporaPromise = this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+            return this.corporaPromise;
+        }
     }
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
@@ -63,7 +70,9 @@ export class CorpusService {
             data.scan_image_type,
             data.allow_image_download,
             data.word_models_present,
-            data.description_page);
+            data.description_page,
+            this.parseDocumentContext(data.document_context, allFields)
+        );
     }
 
     private parseField(data: any): CorpusField {
@@ -84,6 +93,7 @@ export class CorpusService {
             downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null,
+            mappingType: data.es_mapping.type,
         };
     }
 
@@ -137,5 +147,31 @@ export class CorpusService {
      */
     private formatDate(date: Date): string {
         return moment(date).format().slice(0, 10);
+    }
+
+    private parseDocumentContext (
+        data: {context_fields: string[]|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
+        allFields: CorpusField[]
+    ): DocumentContext {
+        if (!data || !data.context_fields) {
+            return undefined;
+        }
+
+        const contextFields = allFields.filter(field => data.context_fields.includes(field.name));
+
+        if (!contextFields) {
+            return undefined;
+        }
+
+        const sortField = allFields.find(field => field.name === data.sort_field);
+        const displayName = data.context_display_name || contextFields[0].name;
+        const sortDirection = (data.sort_direction as 'asc'|'desc') || 'asc';
+
+        return {
+            contextFields,
+            sortField,
+            displayName,
+            sortDirection,
+        };
     }
 }

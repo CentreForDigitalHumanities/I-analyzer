@@ -20,6 +20,9 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
 
+    allDateFields: CorpusField[];
+    dateField: CorpusField;
+
     @ViewChild('chart-container') chartContainer: ElementRef;
 
     tableHeaders: freqTableHeaders = [
@@ -68,6 +71,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.corpus || changes.visualizedField) {
+            this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
+            this.dateField = this.allDateFields[0];
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -93,6 +98,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             analysis: 'none',
             maxDocuments: 100,
             numberOfNgrams: 10,
+            dateField: this.dateField.name,
         };
     }
 
@@ -228,7 +234,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     parametersKey(params: NgramParameters): string {
-        return `${params.size}/${params.positions}/${params.freqCompensation}/${params.analysis}/${params.maxDocuments}/${params.numberOfNgrams}`;
+        const values = _.values(params);
+        return _.join(values, '/');
     }
 
     updateChartColors() {
@@ -257,6 +264,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const maxTotal = _.max(totals);
 
         const numberOfRows = data.datasets.length - 1;
+        const xLabel = `frequency by ${this.dateField.displayName.toLowerCase()}`;
 
         return {
             aspectRatio: 24 / (4 + numberOfRows),
@@ -285,7 +293,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 x: {
                     type: 'category',
                     title: {
-                        text: 'Frequency over time',
+                        text: xLabel,
                         display: true,
                     },
                     position: 'top',

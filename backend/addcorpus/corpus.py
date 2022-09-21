@@ -95,6 +95,28 @@ class Corpus(object):
         raise NotImplementedError()
 
     @property
+    def document_context(self):
+        '''
+        A dictionary that specifies how documents can be grouped into a "context". For example,
+        parliamentary speeches may be grouped into debates. The dictionary has two keys:
+        - `'context_fields'`: a list of the `name`s of the fields that can be used to
+        group documents. The context of a document is the set of documents that match
+        its value for all the listed fields.
+        - `'sort_field'`: the `name` of the field by which documents can be sorted
+        within their respective group. The field should be marked as `sortable`. If `None`,
+        no sorting will be applied.
+        - `'sort_direction'`: direction of sorting to be applied, can be `'asc'` or `'desc'`
+        - `'context_display_name'`: The display name for the context used in the interface. If
+        `None`, use the displayName of the first context field.
+        '''
+
+        return {
+            'context_fields': None,
+            'sort_field': None,
+            'context_display_name': None
+        }
+
+    @property
     def image(self):
         '''
         Absolute url to static image.
@@ -192,35 +214,31 @@ class Corpus(object):
         return json_dict
 
     def serialize(self):
+        """
+        Convert corpus object to a JSON-friendly dict format.
+        """
         corpus_dict = {}
-        # inspect.getmembers returns tuples for every Class attribute:
-        # tuple[0] attribute name; tuple[1] attribute content
-        # the following suppresses all private attributes and bound methods,
-        # and attributes which are not implemented in the Corpus class
-        corpus_attributes = [
-            a for a in inspect.getmembers(self)
-            if not a[0].startswith('__') and not inspect.ismethod(a[1])
-            and a[0] in dir(Corpus)
+
+        # gather attribute names
+        # exclude:
+        # - methods not implemented in Corpus class
+        # - hidden attributes
+        # - attributes listed in `exclude`
+        # - bound methods
+        exclude = ['data_directory', 'es_settings']
+        corpus_attribute_names = [
+            a for a in dir(self)
+            if a in dir(Corpus) and not a.startswith('_') and a not in exclude and not inspect.ismethod(self.__getattribute__(a))
         ]
+
+        # collect values
+        corpus_attributes = [(a, getattr(self, a)) for a in corpus_attribute_names ]
+
         for ca in corpus_attributes:
-            if ca[0] == 'data_directory':
-                continue
-            elif ca[0] == 'fields':
+            if ca[0] == 'fields':
                 field_list = []
                 for field in self.fields:
-                    field_dict = {}
-                    for key, value in field.__dict__.items():
-                        if key == 'search_filter' and value != None:
-                            filter_name = str(type(value)).split(
-                                sep='.')[-1][:-2]
-                            search_dict = {'name': filter_name}
-                            for search_key, search_value in value.__dict__.items():
-                                if search_key == 'search_filter' or search_key != 'field':
-                                    search_dict[search_key] = search_value
-                            field_dict['search_filter'] = search_dict
-                        elif key != 'extractor':
-                            field_dict[key] = value
-                    field_list.append(field_dict)
+                    field_list.append(field.serialize())
                 corpus_dict[ca[0]] = field_list
             elif type(ca[1]) == datetime:
                 timedict = {'year': ca[1].year,
@@ -275,13 +293,13 @@ class XMLCorpus(Corpus):
     @property
     def tag_toplevel(self):
         '''
-        The top-level tag in the source documents.
+        The top-level tag in the source documents. Either a string or a function that maps metadata to a string.
         '''
 
     @property
     def tag_entry(self):
         '''
-        The tag that corresponds to a single document entry.
+        The tag that corresponds to a single document entry. Either a string or a function that maps metadata to a string.
         '''
 
     def source2dicts(self, source):
@@ -328,8 +346,8 @@ class XMLCorpus(Corpus):
             external_dict = {}
             external_fields = None
         # Extract fields from the soup
-        tag = self.tag_entry
-        bowl = self.bowl_from_soup(soup)
+        tag = self.get_entry_tag(metadata)
+        bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
             for spoon in bowl.find_all(tag):
                 regular_field_dict = {field.name: field.extractor.apply(
@@ -349,6 +367,18 @@ class XMLCorpus(Corpus):
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
+
+    def get_entry_tag(self, metadata):
+        if type(self.tag_entry) == str:
+            return self.tag_entry
+        else:
+            return self.tag_entry(metadata)
+
+    def get_toplevel_tag(self, metadata):
+        if type(self.tag_toplevel) == str:
+            return self.tag_toplevel
+        else:
+            return self.tag_toplevel(metadata)
 
     def external_source2dict(self, soup, external_fields, metadata):
         '''
@@ -396,15 +426,15 @@ class XMLCorpus(Corpus):
         '''
         return bs4.BeautifulSoup(data, 'lxml-xml')
 
-    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None):
+    def bowl_from_soup(self, soup, toplevel_tag=None, entry_tag=None, metadata = {}):
         '''
         Returns bowl (subset of soup) of soup object. Bowl contains everything within the toplevel tag.
         If no such tag is present, it contains the entire soup.
         '''
         if toplevel_tag == None:
-            toplevel_tag = self.tag_toplevel
+            toplevel_tag = self.get_toplevel_tag(metadata)
         if entry_tag == None:
-            entry_tag = self.tag_entry
+            entry_tag = self.get_entry_tag(metadata)
 
         return soup.find(toplevel_tag) if toplevel_tag else soup
 
@@ -543,6 +573,13 @@ class CSVCorpus(Corpus):
         an empty value for `required_field` will be skipped.
         '''
 
+    @property
+    def delimiter(self):
+        '''
+        Set the delimiter for the CSV reader.
+        '''
+        return ','
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -553,20 +590,22 @@ class CSVCorpus(Corpus):
                 extract.CSV,
                 extract.Constant,
                 extract.Backup,
+                extract.Metadata,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
 
         if isinstance(source, str):
             filename = source
+            metadata = {}
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
-            filename = source[0]
+            filename, metadata = source
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
             for row in reader:
@@ -584,19 +623,19 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows)
+                    yield self.document_from_rows(rows, metadata)
                     rows = [row]
                 else:
                     rows.append(row)
 
-            yield self.document_from_rows(rows)
+            yield self.document_from_rows(rows, metadata)
 
-    def document_from_rows(self, rows):
+    def document_from_rows(self, rows, metadata):
         doc = {
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows,
+                rows=rows, metadata = metadata
             )
             for field in self.fields if field.indexed
         }
@@ -620,7 +659,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: resultscount, termfrequency, wordcloud, relatedwords, ngram
+        options: resultscount, termfrequency, wordcloud, ngram
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)
@@ -686,6 +725,25 @@ class Field(object):
 
         if self.search_filter:
             self.search_filter.field = self
+
+    def serialize(self):
+        """
+        Convert Field object to a JSON-friendly dict format.
+        """
+        field_dict = {}
+        for key, value in self.__dict__.items():
+            if key == 'search_filter' and value != None:
+                filter_name = str(type(value)).split(
+                    sep='.')[-1][:-2]
+                search_dict = {'name': filter_name}
+                for search_key, search_value in value.__dict__.items():
+                    if search_key == 'search_filter' or search_key != 'field':
+                        search_dict[search_key] = search_value
+                field_dict['search_filter'] = search_dict
+            elif key != 'extractor':
+                field_dict[key] = value
+
+        return field_dict
 
 
 # Helper functions ############################################################

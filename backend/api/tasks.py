@@ -35,7 +35,7 @@ def make_csv(results, request_json):
 def get_wordcloud_data(request_json):
     def calculate():
         list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
-        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 
     return cache.make_visualization('wordcloud', request_json['corpus'], request_json, calculate)
@@ -53,7 +53,8 @@ def get_ngram_data(request_json):
             freq_compensation=request_json['freq_compensation'],
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],
-            number_of_ngrams=request_json['number_of_ngrams']
+            number_of_ngrams=request_json['number_of_ngrams'],
+            date_field = request_json['date_field']
         )
 
     corpus = request_json['corpus_name']

@@ -7,12 +7,9 @@ from flask import current_app
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import DateFilter, MultipleChoiceFilter
-import corpora.parliament.utils.field_defaults_old as field_defaults
+import corpora.parliament.utils.formatting as formatting
+import corpora.parliament.utils.field_defaults as field_defaults
 
-
-def date_to_year(date):
-    return date.split('-')[0]
 
 class ParliamentGermanyNew(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany 1949-2021)'
@@ -21,17 +18,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_german_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "german"
-        }
-    }
+    language = 'german'
 
     field_entry = 'id'
     required_field = 'speech_content'
@@ -52,22 +39,24 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     )
     date.search_filter.lower = min_date
 
-    house = field_defaults.house()
-    house.extractor = Constant(
+    chamber = field_defaults.chamber()
+    chamber.extractor = Constant(
         value='Bundestag'
     )
+    chamber.search_filter = None
+    chamber.visualizations = []
 
     debate_id = field_defaults.debate_id()
     debate_id.extractor = CSV(
         field='session'
     )
-    
+
     # in Germany, abbreviations are the most common way to refer to parties
     party = field_defaults.party()
     party.extractor = CSV(
-        field='party_abbreviation'  
+        field='party_abbreviation'
     )
-    
+
     party_full = field_defaults.party_full()
     party_full.extractor = CSV(
         field='party_full_name'
@@ -78,7 +67,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         field='party_id'
     )
 
-    role = field_defaults.role()
+    role = field_defaults.parliamentary_role()
     role.extractor = CSV(
         field='position_short'
     )
@@ -89,8 +78,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
 
     speaker = field_defaults.speaker()
     speaker.extractor = Combined(
-        CSV(field='speaker_first_name'),
-        CSV(field='speaker_last_name'),
+        CSV(field='speaker_first_name', convert_to_none=False),
+        CSV(field='speaker_last_name', convert_to_none=False),
         transform=lambda x: ' '.join(x)
     )
 
@@ -122,15 +111,15 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     speaker_birth_year = field_defaults.speaker_birth_year()
     speaker_birth_year.extractor = CSV(
         field='speaker_birth_date',
-        transform=date_to_year
+        transform=formatting.extract_year
     )
 
     speaker_death_year = field_defaults.speaker_death_year()
     speaker_death_year.extractor = CSV(
         field='speaker_death_date',
-        transform=date_to_year
+        transform=formatting.extract_year
     )
-    
+
     speaker_gender = field_defaults.speaker_gender()
     speaker_gender.extractor = CSV(
         field='speaker_gender'
@@ -147,49 +136,39 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    speech.es_mapping = {
-        "type" : "text",
-        "analyzer": "standard",
-        "term_vector": "with_positions_offsets", 
-        "fields": {
-        "stemmed": {
-            "type": "text",
-            "analyzer": "german"
-            },
-        "clean": {
-            "type": 'text',
-            "analyzer": "clean"
-            },
-        "length": {
-            "type": "token_count",
-            "analyzer": "standard",
-            }
-        }
-    }
 
     speech_id = field_defaults.speech_id()
     speech_id.extractor = CSV(
         field='id'
     )
 
-    url = field_defaults.source_url()
+    url = field_defaults.url()
     url.extractor = CSV(
         field='document_url'
     )
-    
+
+    # order of speeches: value is identical to speech_id
+    # but saved as integer for sorting
+    sequence = field_defaults.sequence()
+    sequence.extractor = CSV(
+        field = 'id'
+    )
+
     def __init__(self):
         self.fields = [
             self.country, self.date,
+            self.chamber,
             self.debate_id,
             self.speaker, self.speaker_id,
             self.speaker_aristocracy, self.speaker_academic_title,
             self.speaker_birth_country, self.speaker_birthplace,
-            self.speaker_birth_year, self.speaker_death_year, 
+            self.speaker_birth_year, self.speaker_death_year,
             self.speaker_gender, self.speaker_profession,
             self.role, self.role_long,
             self.party, self.party_full, self.party_id,
             self.speech, self.speech_id,
             self.url,
+            self.sequence,
         ]
 
 

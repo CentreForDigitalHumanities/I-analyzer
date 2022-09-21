@@ -8,8 +8,7 @@ from flask import current_app
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
-from addcorpus.filters import MultipleChoiceFilter
-import corpora.parliament.utils.field_defaults_old as field_defaults
+import corpora.parliament.utils.field_defaults as field_defaults
 
 
 def standardize_bool(date_is_estimate):
@@ -23,17 +22,7 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_GERMANY_OLD_DATA']
     es_index = current_app.config['PP_GERMANY_OLD_INDEX']
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-          "type": "stop",
-          "stopwords": "_german_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "german"
-        }
-    }
+    language = 'german'
 
     field_entry = 'item_order'
     required_field = 'text'
@@ -53,8 +42,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         field='book_label'
     )
 
-    parliament = field_defaults.parliament()
-    parliament.extractor = CSV(
+    era = field_defaults.era(include_aggregations= False)
+    era.extractor = CSV(
         field='parliament'
     )
 
@@ -82,8 +71,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         multiple=True,
         transform=lambda x : ' '.join(x)
     )
-    
-    url = field_defaults.source_url()
+
+    url = field_defaults.url()
     url.extractor = CSV(
         field='img_url'
     )
@@ -97,8 +86,9 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
         self.fields = [
             self.country,
             self.book_id, self.book_label,
-            self.parliament, 
+            self.era,
             self.date, self.date_is_estimate,
             self.page, self.url,
             self.speech, self.speech_id,
+            self.url,
         ]
