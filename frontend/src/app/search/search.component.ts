@@ -162,37 +162,16 @@ export class SearchComponent extends ParamDirective {
     }
 
     private getQueryFields(): string[] | null {
-        if (this.selectedSearchFields) { return null; }
+        if (!this.selectedSearchFields) { return null; }
 
-        const fields = _.flatMap(this.selectedSearchFields, field => {
-            const multifields = this.searchableMultifields(field);
-            return [field.name].concat(multifields);
-        });
-
-        if (!fields.length) { return null; }
-        return fields;
+        if (!this.selectedSearchFields.length) { return null; }
+        const fieldNames = this.selectedSearchFields.map(field => field.name);
+        return fieldNames;
     }
 
-    /**
-     * returns array of all searchable subfields for a field.
-     * empty array if there are none.
-    */
-    private searchableMultifields(field: CorpusField): string[] {
-        if (field && field.multiFields) {
-            // list known searchable subfields (a numeric field like `length` should not be included)
-            const searchables = ['clean', 'stemmed'];
-            const subfields = field.multiFields.filter(subfield =>
-                searchables.includes(subfield)
-            );
-            const fullNames = subfields.map(subfield => `${field.name}.${subfield}`);
-            return fullNames;
-        } else {
-            return [];
-        }
-    }
 
     private createQueryModel() {
-            const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
+        const sortField = this.useDefaultSort ? this.defaultSortField : this.sortField as CorpusField | undefined;
 
         return this.searchService.createQueryModel(
             this.queryText, this.getQueryFields(), this.activeFilters, sortField, this.sortAscending, this.highlight);
@@ -205,13 +184,48 @@ export class SearchComponent extends ParamDirective {
     private setCorpus(corpus: Corpus) {
         if (!this.corpus || this.corpus.name !== corpus.name) {
             this.corpus = corpus;
-            this.availableSearchFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+            this.availableSearchFields = this.getAvailableSearchFields(corpus);
             this.selectedSearchFields = [];
             this.queryModel = null;
             this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
             this.defaultSortField = this.corpus.fields.find(field => field.primarySort);
         }
+    }
+
+    private getAvailableSearchFields(corpus: Corpus): CorpusField[] {
+        const searchableFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+        const allSearchFields = _.flatMap(searchableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
+        return allSearchFields;
+    }
+
+    private searchableMultiFields(field: CorpusField): CorpusField[] {
+        if (field.multiFields) {
+            if (field.multiFields.includes('text')) {
+                // replace keyword field with text multifield
+                return this.useTextMultifield(field);
+            }
+            if (field.multiFields.includes('stemmed')) {
+                return this.useStemmedMultifield(field);
+            }
+        }
+        return [field];
+    }
+
+    private useTextMultifield(field: CorpusField) {
+        const textField = _.clone(field);
+        textField.name = field.name + '.text';
+        textField.multiFields = null;
+        return [textField];
+    }
+
+    private useStemmedMultifield(field: CorpusField) {
+        const stemmedField = _.clone(field);
+        stemmedField.name = field.name + '.stemmed';
+        stemmedField.displayName = field.displayName + ' (stemmed)';
+        stemmedField.multiFields = null;
+
+        return [field, stemmedField];
     }
 
     /**
@@ -268,7 +282,7 @@ export class SearchComponent extends ParamDirective {
         if (params.has('fields')) {
             const queryRestriction = params.get('fields').split(',');
             this.selectedSearchFields = queryRestriction.map(
-                fieldName => this.corpus.fields.find(
+                fieldName => this.availableSearchFields.find(
                     field => field.name === fieldName
                 )
             );
@@ -303,7 +317,7 @@ export class SearchComponent extends ParamDirective {
         this.search(nullableParams);
     }
 
-    private selectSearchFields(selection: CorpusField[]) {
+    public selectSearchFields(selection: CorpusField[]) {
         this.selectedSearchFields = selection;
         this.search();
     }

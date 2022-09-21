@@ -498,6 +498,12 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
                     return `${_.round(100 * value, 1)}%`;
                 }
             };
+        } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
+            return (value: number) => {
+                if (value !== undefined && value !== null) {
+                    return value.toPrecision(2);
+                }
+            }
         } else {
             return (value: number) => {
                 if (value !== undefined && value !== null) {
@@ -510,7 +516,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     get formatDownloadValue(): (value: number) => string {
         if (this.normalizer === 'percent') {
             return (value: number) => {
-                return `${_.round(100 * value, 1)}`;
+                if (value !== undefined && value !== null) {
+                    return `${_.round(100 * value, 1)}`;
+                }
             };
         } else {
             return (value: number) => value.toString();

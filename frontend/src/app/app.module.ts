@@ -54,7 +54,7 @@ import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
-import { RelatedWordsComponent } from './visualization/related-words/related-words.component';
+import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
@@ -68,15 +68,26 @@ import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanP
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
 import { BarchartOptionsComponent } from './visualization/barchart/barchart-options.component';
-import { PaletteSelectComponent } from './visualization/palette-select/palette-select.component';
+import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
+import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
+import { WordModelsComponent } from './word-models/word-models.component';
+import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
+import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
+import { WordmodelsService } from './services/wordmodels.service';
+import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 
 
 export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
+        canActivate: [CorpusGuard, LoggedOnGuard]
+    },
+    {
+        path: 'word-models/:corpus',
+        component: WordModelsComponent,
         canActivate: [CorpusGuard, LoggedOnGuard]
     },
     {
@@ -130,6 +141,7 @@ export const declarations: any[] = [
     BarChartComponent,
     BarchartOptionsComponent,
     BooleanFilterComponent,
+    CorpusHeaderComponent,
     CorpusSelectionComponent,
     DateFilterComponent,
     DialogComponent,
@@ -157,6 +169,7 @@ export const declarations: any[] = [
     PaginationComponent,
     PaletteSelectComponent,
     PrivacyComponent,
+    QueryFeedbackComponent,
     RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
@@ -171,9 +184,12 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,
+    VisualizationFooterComponent,
     WordcloudComponent,
+    WordModelsComponent,
 ];
 
 export const imports: any[] = [
@@ -228,6 +244,7 @@ export const providers: any[] = [
     LoggedOnGuard,
     TitleCasePipe,
     CookieService,
+    WordmodelsService,
     {
         provide: APP_INITIALIZER,
         useFactory: initApp,

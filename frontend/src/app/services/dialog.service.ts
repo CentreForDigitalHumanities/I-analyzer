@@ -11,11 +11,11 @@ import { Corpus } from '../models/index';
 export class DialogService {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
     private manifest: Promise<ManualPageMetaData[]> | undefined;
-    
+
     public pageEvent = this.behavior.asObservable();
 
     public constructor(
-        private domSanitizer: DomSanitizer, 
+        private domSanitizer: DomSanitizer,
         private markdownService: NgxMdService,
         private apiService: ApiService) {
     }
@@ -48,7 +48,7 @@ export class DialogService {
      * Requests that a manual page should be shown to the user.
      * @param identifier Name of the page
      */
-    public async showManualPage(identifier: string) {        
+    public async showManualPage(identifier: string) {
         this.behavior.next({
             status: 'loading'
         });
@@ -67,22 +67,32 @@ export class DialogService {
     }
 
     public async showDescriptionPage(corpus: Corpus) {
+        const description = this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name});
+        this.showDocumentation(
+            corpus.name,
+            corpus.title,
+            description,
+        );
+    }
+
+    /**
+     * show a string with markdown documentation
+     */
+    public async showDocumentation(identifier: string, title: string, documentation: string| Promise<string>) {
         this.behavior.next({
             status: 'loading'
         });
-        let pagePromise = this.apiService.corpusdescription({filename: corpus.descriptionpage, corpus: corpus.name}).then(response => {
-            return this.markdownService.compile(response);
-        });
-        let html = await Promise.resolve(pagePromise);
+
+        const doc = await documentation;
+        const html = await this.markdownService.compile(doc);
         this.behavior.next({
-            identifier: corpus.name,
+            identifier: identifier,
             html: html,
-            title: corpus.title,
+            title: title,
             status: 'show',
             footer: null
         });
     }
-    
 
     private getLocalizedPath(fileName: string) {
         // TODO: in a multilingual application this would need to be modified

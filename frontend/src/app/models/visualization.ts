@@ -38,6 +38,7 @@ export interface NgramParameters {
     analysis: string;
     maxDocuments: number;
     numberOfNgrams: number;
+    dateField: string;
 }
 
 export const ngramSetNull: NgramParameters = {
@@ -46,7 +47,8 @@ export const ngramSetNull: NgramParameters = {
     freqCompensation: null,
     analysis: null,
     maxDocuments: null,
-    numberOfNgrams: null
+    numberOfNgrams: null,
+    dateField: null
 };
 
 export const barChartSetNull: Object = {

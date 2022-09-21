@@ -48,11 +48,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         termfrequency: 'Frequency of the search term',
         ngram: 'Neighbouring words',
         wordcloud: 'Most frequent words',
-        relatedwords: 'Related words',
     };
     public manualPages = {
         ngram: 'ngrams',
-        relatedwords: 'relatedwords',
         wordcloud: 'wordcloud',
         resultscount: 'numberofresults',
         termfrequency: 'termfrequency',
@@ -62,7 +60,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
     public isLoading = false;
     private childComponentLoading = false;
 
-    public palette = PALETTES[0];
+    public palette: string[];
     public params: Params = {};
 
     faQuestion = faCircleQuestion;
@@ -194,9 +192,10 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.childComponentLoading = event;
     }
 
-    showHelp() {
-        const manualPage = this.manualPages[this.visualizationType];
-        this.dialogService.showManualPage(manualPage);
+    get manualPage(): string {
+        if (this.visualizationType) {
+            return this.manualPages[this.visualizationType];
+        }
     }
 
     onRequestImage() {
@@ -217,15 +216,22 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
           });
 
     }
+
     chartElementId(visualizationType): string {
         if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
             return 'barchart';
         }
-        if (visualizationType === 'ngram') {
+        if (this.visualizationType === 'ngram') {
             return 'chart';
         }
-        if (visualizationType === 'wordcloud') {
+        if (this.visualizationType === 'wordcloud') {
             return 'wordcloud_div';
+        }
+    }
+
+    get imageFileName(): string {
+        if (this.visualizationType && this.corpus && this.visualizedField) {
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`
         }
     }
 }

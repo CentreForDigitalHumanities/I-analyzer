@@ -69,7 +69,7 @@ def add_filter(query, filter):
     new_query['query']['bool']['filter'] = filters
     return new_query
 
-def make_date_filter(min_date = None, max_date = None):
+def make_date_filter(min_date = None, max_date = None, date_field = 'date'):
     params = { 'format': 'yyyy-MM-dd' }
     if min_date:
         params['gte'] = date.strftime(min_date, '%Y-%m-%d')
@@ -79,7 +79,7 @@ def make_date_filter(min_date = None, max_date = None):
 
     return {
         'range': {
-            'date': params
+            date_field: params
         }
     }
 

@@ -8,8 +8,8 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
-import { query } from '@angular/animations';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordInModelResult } from '../models/index';
+import { WordmodelsService } from './wordmodels.service';
 
 const highlightFragmentSize = 50;
 
@@ -20,7 +20,8 @@ export class SearchService {
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
-        private logService: LogService) {
+        private logService: LogService,
+        private wordModelsService: WordmodelsService) {
         window['apiService'] = this.apiService;
     }
 
@@ -170,7 +171,7 @@ export class SearchService {
     }
 
     public async getRelatedWords(queryTerm: string, corpusName: string): Promise<any> {
-        return this.apiService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+        return this.wordModelsService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({'graphData': {
@@ -189,7 +190,7 @@ export class SearchService {
     public async getRelatedWordsTimeInterval(
         queryTerm: string, corpusName: string, timeInterval: string
     ): Promise<any> {
-        return this.apiService.getRelatedWordsTimeInterval(
+        return this.wordModelsService.getRelatedWordsTimeInterval(
             {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}
         ).then( result => {
             return new Promise( (resolve, reject) => {
@@ -206,11 +207,26 @@ export class SearchService {
         });
     }
 
+    wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
+        return this.wordModelsService.getWordInModel({
+            query_term: term,
+            corpus_name: corpusName,
+        }).then(result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve(result.result);
+                } else {
+                    reject({'message': result['message']});
+                }
+            });
+        });
+    }
+
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.ngramTasks({
-            'es_query': esQuery,
-            'corpus_name': corpusName,
+            es_query: esQuery,
+            corpus_name: corpusName,
             field: field,
             ngram_size: params.size,
             term_position: params.positions,
@@ -218,6 +234,7 @@ export class SearchService {
             subfield: params.analysis,
             max_size_per_interval: params.maxDocuments,
             number_of_ngrams: params.numberOfNgrams,
+            date_field: params.dateField,
         });
     }
 

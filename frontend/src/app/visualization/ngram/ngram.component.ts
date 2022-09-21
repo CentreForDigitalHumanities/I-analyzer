@@ -22,6 +22,9 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     @Output() isLoading = new EventEmitter<boolean>();
     @Output() error = new EventEmitter<({ message: string })>();
 
+    allDateFields: CorpusField[];
+    dateField: CorpusField;
+
     @ViewChild('chart-container') chartContainer: ElementRef;
 
     tableHeaders: freqTableHeaders = [
@@ -85,6 +88,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.queryModel || changes.visualizedField) {
             this.resultsCache = {};
+            this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
+            this.dateField = this.allDateFields[0];
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -110,6 +115,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             analysis: params.get('analysis') || 'none',
             maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
             numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
+            dateField: params.get('dateField') || 'date',
         };
     }
 
@@ -245,7 +251,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     parametersKey(params: NgramParameters): string {
-        return `${params.size}/${params.positions}/${params.freqCompensation}/${params.analysis}/${params.maxDocuments}/${params.numberOfNgrams}`;
+        const values = _.values(params);
+        return _.join(values, '/');
     }
 
     updateChartColors() {
@@ -274,6 +281,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         const maxTotal = _.max(totals);
 
         const numberOfRows = data.datasets.length - 1;
+        const xLabel = `frequency by ${this.dateField.displayName.toLowerCase()}`;
 
         return {
             aspectRatio: 24 / (4 + numberOfRows),
@@ -302,7 +310,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 x: {
                     type: 'category',
                     title: {
-                        text: 'Frequency over time',
+                        text: xLabel,
                         display: true,
                     },
                     position: 'top',

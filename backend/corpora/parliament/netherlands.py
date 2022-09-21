@@ -13,7 +13,6 @@ from addcorpus.extract import XML, Constant, Combined, Choice
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults  as field_defaults
-
 import re
 
 logger = logging.getLogger('indexing')
@@ -175,17 +174,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     image = current_app.config['PP_NL_IMAGE']
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
-    es_settings = current_app.config['PP_ES_SETTINGS']
-    es_settings['analysis']['filter'] = {
-        "stopwords": {
-            "type": "stop",
-            "stopwords": "_dutch_"
-        },
-        "stemmer": {
-            "type": "stemmer",
-            "language": "dutch"
-        }
-    }
+    language = 'dutch'
 
     def sources(self, start, end):
         logger = logging.getLogger(__name__)
