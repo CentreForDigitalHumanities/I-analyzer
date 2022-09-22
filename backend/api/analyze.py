@@ -33,12 +33,20 @@ def make_wordcloud_data(documents, field, corpus):
 
 
 def get_ngrams(es_query, corpus, field,
-    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
+    ngram_size=2, positions='any', freq_compensation=True, subfield='none', max_size_per_interval=50,
     number_of_ngrams=10, date_field = 'date'):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
+
+    positions_dict = {
+        'any': [0, 1] if ngram_size <3 else [0, 1, 2],
+        'first': [0],
+        'second': [1],
+        'third': [2]
+    }
+    term_positions = positions_dict[positions]
 
     # find ngrams
 
@@ -127,12 +135,12 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         bin_ngrams = Counter()
 
         for hit in search_results['hits']['hits']:
-            id = hit['_id']
+            identifier = hit['_id']
 
             # get the term vectors for the hit
             result = client.termvectors(
                 index=index,
-                id=id,
+                id=identifier,
                 term_statistics=freq_compensation,
                 fields = [field]
             )

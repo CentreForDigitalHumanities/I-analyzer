@@ -19,4 +19,6 @@ export class SearchServiceMock {
         };
     }
     public async getRelatedWords() {}
+    public async getNgramTasks() {}
+    public getParamForFieldName(fieldName: string) { return `${fieldName}`; }
 }

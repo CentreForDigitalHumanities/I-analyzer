@@ -1,24 +1,25 @@
 
-import {combineLatest as combineLatest } from 'rxjs';
+import {combineLatest as combineLatest, Subscription } from 'rxjs';
 import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataToParam, searchFilterDataFromField } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
+import { ParamDirective } from '../param/param-directive';
 
 const HIGHLIGHT = 200;
 
-type searchFilterSettings = {
+interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
-};
+}
 
 @Component({
     selector: 'ia-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent extends ParamDirective {
     @ViewChild('searchSection', {static: false})
     public searchSection: ElementRef;
 
@@ -41,6 +42,7 @@ export class SearchComponent implements OnInit {
      */
     public showFilters: boolean | undefined;
     public user: User;
+    protected corpusSubscription: Subscription;
 
     /**
      * The next two members facilitate a p-multiSelect in the template.
@@ -70,36 +72,43 @@ export class SearchComponent implements OnInit {
 
     public highlight: number = HIGHLIGHT;
 
+    public showVisualization: boolean;
 
     constructor(private corpusService: CorpusService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
-        private activatedRoute: ActivatedRoute,
-        private router: Router) {
+        route: ActivatedRoute,
+        router: Router) {
+            super(route, router);
         }
 
-    async ngOnInit() {
+    async initialize(): Promise<void> {
+        this.tabIndex = 0;
         this.user = await this.userService.getCurrentUser();
-        combineLatest(
-            this.corpusService.currentCorpus,
-            this.activatedRoute.paramMap,
-            (corpus, params) => {
-                return { corpus, params };
-            }).filter(({ corpus, params }) => !!corpus)
-            .subscribe(({ corpus, params }) => {
-                this.queryText = params.get('query');
+        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus)
+            .subscribe((corpus) => {
                 this.setCorpus(corpus);
-                this.tabIndex = 0;
-                this.setFiltersFromParams(this.searchFilters, params);
-                this.setSearchFieldsFromParams(params);
-                this.setSortFromParams(this.corpus.fields, params);
-                this.setHighlightFromParams(params);
-                const queryModel = this.createQueryModel();
-                if (this.queryModel !== queryModel) {
-                    this.queryModel = queryModel;
-                }
             });
+    }
+
+    teardown() {
+        this.user = undefined;
+        this.corpusSubscription.unsubscribe();
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.queryText = params.get('query');
+        this.setSearchFieldsFromParams(params);
+        this.setFiltersFromParams(this.searchFilters, params);
+        this.setSortFromParams(this.corpus.fields, params);
+        this.setHighlightFromParams(params);
+        const queryModel = this.createQueryModel();
+        if (this.queryModel !== queryModel) {
+            this.queryModel = queryModel;
+        }
+        this.tabIndex = params.has('visualize') ? 1 : 0;
+        this.showVisualization = params.has('visualize') ? true : false;
     }
 
     @HostListener('window:scroll', [])
@@ -119,16 +128,10 @@ export class SearchComponent implements OnInit {
         this.search();
     }
 
-    public search() {
+    public search(nullableParams: string[] = []) {
         this.queryModel = this.createQueryModel();
-        const route = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort);
-        const url = this.router.serializeUrl(this.router.createUrlTree(
-            ['.', route],
-            { relativeTo: this.activatedRoute },
-        ));
-        if (this.router.url !== url) {
-            this.router.navigateByUrl(url);
-        }
+        const params = this.searchService.queryModelToRoute(this.queryModel, this.useDefaultSort, nullableParams);
+        this.setParams(params);
     }
 
     /**
@@ -141,10 +144,21 @@ export class SearchComponent implements OnInit {
         this.resultsCount = input.resultsCount;
         this.searchQueryText = input.queryText;
         this.hasLimitedResults = this.user.downloadLimit && input.resultsCount > this.user.downloadLimit;
+        if (this.showVisualization) {
+            this.tabIndex = 1;
+        }
     }
 
     public showQueryDocumentation() {
         this.dialogService.showManualPage('query');
+    }
+
+    public showCorpusInfo(corpus: Corpus) {
+        this.dialogService.showDescriptionPage(corpus);
+    }
+
+    public switchTabs(index: number) {
+        this.tabIndex = index;
     }
 
     private getQueryFields(): string[] | null {
@@ -222,7 +236,7 @@ export class SearchComponent implements OnInit {
         this.applyFilterSettings(searchFilters, filterSettings);
     }
 
-    private filterSettingsFromParams(params: ParamMap): searchFilterSettings {
+    private filterSettingsFromParams(params: ParamMap): SearchFilterSettings {
         const settings = {};
         this.corpus.fields.forEach(field => {
             const param = this.searchService.getParamForFieldName(field.name);
@@ -237,7 +251,7 @@ export class SearchComponent implements OnInit {
         return settings;
     }
 
-    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
         this.setAdHocFilters(searchFilters, filterSettings);
 
         searchFilters.forEach(f => {
@@ -255,7 +269,7 @@ export class SearchComponent implements OnInit {
         this.activeFilters = searchFilters.filter( f => f.useAsFilter );
     }
 
-    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: searchFilterSettings) {
+    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
         this.corpus.fields.forEach(field => {
             if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
                 const adHocFilter = adHocFilterFromField(field);
@@ -296,8 +310,11 @@ export class SearchComponent implements OnInit {
     }
 
     public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {
+        const nullableParams = _.difference(
+            this.activeFilters.map(f => f.fieldName),
+            activeFilters.map( f => f.fieldName));
         this.activeFilters = activeFilters;
-        this.search();
+        this.search(nullableParams);
     }
 
     public selectSearchFields(selection: CorpusField[]) {

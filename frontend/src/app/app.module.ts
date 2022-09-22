@@ -67,7 +67,7 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
-import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
+import { BarchartOptionsComponent } from './visualization/barchart/barchart-options.component';
 import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
@@ -79,7 +79,7 @@ import { WordmodelsService } from './services/wordmodels.service';
 import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
 
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
@@ -139,6 +139,7 @@ export const declarations: any[] = [
     AdHocFilterComponent,
     BalloonDirective,
     BarChartComponent,
+    BarchartOptionsComponent,
     BooleanFilterComponent,
     CorpusHeaderComponent,
     CorpusSelectionComponent,
@@ -154,7 +155,6 @@ export const declarations: any[] = [
     HighlightPipe,
     HistogramComponent,
     HighlightSelectorComponent,
-    barchartOptionsComponent,
     ImageViewComponent,
     ImageNavigationComponent,
     LoginComponent,

@@ -1,14 +1,16 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
-import { Normalizer } from '../../models';
+import { ParamDirective } from '../../param/param-directive';
+import { Normalizer, barChartSetNull } from '../../models';
 
 @Component({
     selector: 'ia-barchart-options',
     templateUrl: './barchart-options.component.html',
     styleUrls: ['./barchart-options.component.scss']
 })
-export class barchartOptionsComponent implements OnChanges {
+export class BarchartOptionsComponent extends ParamDirective implements OnChanges {
     @Input() queryText: string;
     @Input() showTokenCountOption: boolean;
     @Input() isLoading: boolean;
@@ -26,17 +28,14 @@ export class barchartOptionsComponent implements OnChanges {
 
     faCheck = faCheck;
 
-    constructor() { }
+    constructor(
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.frequencyMeasure) {
-            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
-                this.currentNormalizer = 'raw';
-            } else {
-                this.currentNormalizer = 'terms';
-            }
-        }
-
         if (changes.queryText) {
             if (this.queryText) {
                 this.queries = [this.queryText];
@@ -52,18 +51,49 @@ export class barchartOptionsComponent implements OnChanges {
 
     onNormalizerChange(): void {
         this.normalizer.emit(this.currentNormalizer);
+        const route = {};
+        if (this.currentNormalizer !== 'raw' || 'terms') {
+            route['normalize'] = this.currentNormalizer;
+        } else { route['normalize'] = null; }
+
+        this.setParams(route);
+    }
+
+    initialize() {}
+
+    teardown() {
+        this.setParams(barChartSetNull);
+    }
+
+    setStateFromParams(params: Params) {
+        if (params.has('normalize')) {
+            this.currentNormalizer = params.get('normalize') as Normalizer;
+        } else {
+            if (this.frequencyMeasure === 'documents' || !this.showTokenCountOption) {
+                this.currentNormalizer = 'raw';
+            } else {
+                this.currentNormalizer = 'terms';
+            }
+        }
+        if (params.has('visualizeTerm')) {
+            this.queries = params.getAll('visualizeTerm');
+            this.showEdit = true;
+            this.queriesChanged.emit(this.queries);
+        }
     }
 
     confirmQueries() {
         if (this.queries.length === 1 && this.queries[0] === this.queryText) {
             this.showEdit = false;
         }
+        this.setParams({'visualizeTerm': this.queries});
         this.queriesChanged.emit(this.queries);
     }
 
     signalClearQueries() {
         this.queries = [this.queryText];
         this.showEdit = false;
+        this.setParams({'visualizeTerm': null});
         this.clearQueries.emit();
     }
 

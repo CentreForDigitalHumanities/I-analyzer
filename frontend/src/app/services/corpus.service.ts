@@ -24,7 +24,7 @@ export class CorpusService {
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
-        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name == corpusName) {
+        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name === corpusName) {
             // no need to retrieve the corpus again if nothing changed
             return Promise.resolve(true);
         }
