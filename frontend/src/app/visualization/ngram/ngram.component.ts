@@ -411,9 +411,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setPositionsOptions(size) {
         // set positions dropdown options and reset its value
-        if (size > 2) {
-            this.positionsOptions = this.positionsOptions.concat({label: 'third', value: 'third'});
-        }
+        this.positionsOptions =  ['any'].concat(['first', 'second', 'third'].slice(0, size))
+        .map(item => { value: item, label: item });
         this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
