@@ -108,7 +108,7 @@ export class SearchComponent extends ParamDirective {
             this.queryModel = queryModel;
         }
         this.tabIndex = params.has('visualize') ? 1 : 0;
-        this.showVisualization = params.has('visaulize') ? true : false;
+        this.showVisualization = params.has('visualize') ? true : false;
     }
 
     @HostListener('window:scroll', [])
