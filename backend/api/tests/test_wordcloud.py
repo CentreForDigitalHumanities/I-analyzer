@@ -129,7 +129,6 @@ def test_wordcloud_filtered(test_app, test_es_client):
 
     documents = search.hits(result)
     output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
-    print(output)
 
     for item in target_filtered:
         term = item['key']
