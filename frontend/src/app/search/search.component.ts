@@ -101,7 +101,7 @@ export class SearchComponent extends ParamDirective {
         this.queryText = params.get('query');
         this.setSearchFieldsFromParams(params);
         this.setFiltersFromParams(this.searchFilters, params);
-        this.setSortFromParams(this.corpus.fields, params);
+        this.setSortFromParams(this.corpus?.fields, params);
         this.setHighlightFromParams(params);
         const queryModel = this.createQueryModel();
         if (this.queryModel !== queryModel) {
@@ -187,14 +187,14 @@ export class SearchComponent extends ParamDirective {
             this.availableSearchFields = this.getAvailableSearchFields(corpus);
             this.selectedSearchFields = [];
             this.queryModel = null;
-            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+            this.searchFilters = corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
-            this.defaultSortField = this.corpus.fields.find(field => field.primarySort);
+            this.defaultSortField = corpus.fields.find(field => field.primarySort);
         }
     }
 
     private getAvailableSearchFields(corpus: Corpus): CorpusField[] {
-        const searchableFields = Object.values(this.corpus.fields).filter(field => field.searchable);
+        const searchableFields = Object.values(corpus.fields).filter(field => field.searchable);
         const allSearchFields = _.flatMap(searchableFields, this.searchableMultiFields.bind(this)) as CorpusField[];
         return allSearchFields;
     }
@@ -238,16 +238,19 @@ export class SearchComponent extends ParamDirective {
 
     private filterSettingsFromParams(params: ParamMap): SearchFilterSettings {
         const settings = {};
-        this.corpus.fields.forEach(field => {
-            const param = this.searchService.getParamForFieldName(field.name);
-            if (params.has(param)) {
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] === '') { filterSettings = []; }
-                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
-                const data = searchFilterDataFromParam(filterType, filterSettings, field);
-                settings[field.name] = data;
-            }
-        });
+        if (this.corpus) {
+            this.corpus.fields.forEach(field => {
+                const param = this.searchService.getParamForFieldName(field.name);
+                if (params.has(param)) {
+                    let filterSettings = params.get(param).split(',');
+                    if (filterSettings[0] === '') { filterSettings = []; }
+                    const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
+                    const data = searchFilterDataFromParam(filterType, filterSettings, field);
+                    settings[field.name] = data;
+                }
+            });
+        }
+
         return settings;
     }
 
@@ -270,12 +273,14 @@ export class SearchComponent extends ParamDirective {
     }
 
     private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
-        this.corpus.fields.forEach(field => {
-            if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
-                const adHocFilter = adHocFilterFromField(field);
-                searchFilters.push(adHocFilter);
-            }
-        });
+        if (this.corpus) {
+            this.corpus.fields.forEach(field => {
+                if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
+                    const adHocFilter = adHocFilterFromField(field);
+                    searchFilters.push(adHocFilter);
+                }
+            });
+        }
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
