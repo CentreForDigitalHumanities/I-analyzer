@@ -68,5 +68,5 @@ def test_diachronic_context(test_app):
         assert data
 
         similarities = data['data']
-        most_similar_interval = max(range(len(similarities)), key=lambda i : similarities[i])
+        most_similar_interval = max(range(len(similarities)), key=lambda i : similarities[i] or -1)
         assert most_similar_interval == case['most_similar_interval']
