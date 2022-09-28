@@ -216,7 +216,7 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
 
-    date_filter = query.make_date_filter(start_date, end_date)
+    date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
