@@ -24,7 +24,7 @@ def upgrade():
         sa.Column('corpus_name', sa.String(length=255)),
         sa.Column('visualization_type', sa.String(length=255)),
         sa.Column('parameters', sa.Text()),
-        sa.Column('result', sa.JSON(), nullable = True),
+        sa.Column('result', sa.Text(), nullable = True),
         sa.PrimaryKeyConstraint('id')
     )
 
