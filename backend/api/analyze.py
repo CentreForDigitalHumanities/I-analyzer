@@ -44,7 +44,8 @@ def get_ngrams(es_query, corpus, field,
         'any': [0, 1] if ngram_size <3 else [0, 1, 2],
         'first': [0],
         'second': [1],
-        'third': [2]
+        'third': [2],
+        'fourth': [3],
     }
     term_positions = positions_dict[positions]
 
