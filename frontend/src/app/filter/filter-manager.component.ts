@@ -52,7 +52,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      * that are not normally listed in the interface
      */
     private setAdHocFilters() {
-        if (this.queryModel.filters) {
+        if (this.queryModel.filters && this.corpus) {
             const fieldsWithFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.name);
             const adHoc = this.queryModel.filters.filter(f => !fieldsWithFilters.includes(f.fieldName));
             adHoc.forEach(filter => {

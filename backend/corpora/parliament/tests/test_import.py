@@ -300,7 +300,7 @@ M. Georges Perin. Messieurs, je viens, au nom d'un certain nombre de mes amis et
     },
     {
         'name': 'parliament-sweden-old',
-        'docs': [
+        'docs': [{}] * 5 + [
             {
                 'book_id': 'bn_1828-30_1__01',
                 'book_label': 'Hederwärda bonde-ståndets protokoller wid lagtima riksdagen i Stockholm åren 1828 och 1829. Första bandet.',

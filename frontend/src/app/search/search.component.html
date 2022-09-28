@@ -74,7 +74,7 @@
                 <div [ngSwitch]="tabIndex" class="column">
                     <ia-search-results *ngSwitchCase="0" [corpus]="corpus" [queryModel]="queryModel" [user]="user"
                         (searched)="onSearched($event)" (viewContext)="goToContext($event)">
-                        <ia-search-sorting [sortField]="useDefaultSort ? defaultSortField : sortField" [ascending]="sortAscending" [fields]="corpus.fields"
+                        <ia-search-sorting [sortField]="useDefaultSort ? defaultSortField : sortField" [ascending]="sortAscending" [fields]="corpus?.fields"
                             (onChange)="changeSorting($event)"></ia-search-sorting>
                         <ia-highlight-selector [highlight]="highlight" (onChange)="changeHighlightSize($event)"></ia-highlight-selector>
                     </ia-search-results>
