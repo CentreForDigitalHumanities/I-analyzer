@@ -1,26 +1,2 @@
-<div [class.is-hidden]="asTable">
-    <div class="block">
-        <div class="field">
-            <div class="control">
-                <label class="label">Show as:</label>
-                <label class="radio" *ngFor="let style of ['line', 'stream', 'bar']">
-                    <input type="radio" [checked]="graphStyle.value==style" (click)="graphStyle.next(style)" (keydown.enter)="graphStyle.next(style)">
-                    {{style}}
-                </label>
-            </div>
-        </div>
-        <div class="field" *ngIf="graphStyle.value==='bar'">
-            <div class="control">
-                <label class="label">Time interval:</label>
-                <ia-time-interval-slider [labels]="totalData.labels" (currentIndex)="zoomTimeInterval($event)"></ia-time-interval-slider>
-            </div>
-        </div>
-    </div>
-
-    <canvas id="chart"></canvas>
-</div>
-
-<div class="block" *ngIf="asTable">
-    <ia-freqtable  [headers]="tableHeaders" [data]="tableData" [defaultSort]="'similarity'" [name]="'related words'">
-    </ia-freqtable>
-</div>
+<ia-similarity-chart [timeIntervals]="timeIntervals" [totalData]="totalData" [zoomedInData]="zoomedInData"
+    [palette]="palette" [asTable]="asTable"></ia-similarity-chart>

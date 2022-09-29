@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters } from '../models/index';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordSimilarity, RelatedWordsResults, WordInModelResult } from '../models/index';
 import { WordmodelsService } from './wordmodels.service';
 
 const highlightFragmentSize = 50;
@@ -60,14 +60,14 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false): any {
+    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false, nullableParams = []): any {
         const route = {
             query: queryModel.queryText || ''
         };
 
         if (queryModel.fields) {
             route['fields'] = queryModel.fields.join(',');
-        }
+        } else { route['fields'] = null; }
 
         for (const filter of queryModel.filters.map(data => {
             return {
@@ -81,11 +81,14 @@ export class SearchService {
         if (!usingDefaultSortField && queryModel.sortBy) {
             route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
         } else {
-            delete route['sort'];
+            route['sort'] = null;
         }
         if (queryModel.highlight) {
             route['highlight'] = `${queryModel.highlight}`;
-        } else { delete route['highlight']; }
+        } else { route['highlight'] = null; }
+        if (nullableParams.length) {
+            nullableParams.forEach( param => route[param] = null);
+        }
         return route;
     }
 
@@ -167,18 +170,26 @@ export class SearchService {
         });
     }
 
-    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<any> {
+    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<RelatedWordsResults> {
         return this.wordModelsService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
-                    resolve({'graphData': {
-                                'labels': result['related_word_data'].time_points,
-                                'datasets': result['related_word_data'].similar_words_subsets
-                            },
-                            'tableData': result['related_word_data'].similar_words_all
-                    });
+                    resolve(result.data);
                 } else {
-                    reject({'message': result['message']});
+                    reject({'message': result.message});
+                }
+            });
+        });
+    }
+
+    public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
+        return this.wordModelsService.getWordSimilarity({'term_1': term1, 'term_2': term2, 'corpus_name': corpusName})
+            .then( result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve(result.data);
+                } else {
+                    reject({'message': result.message});
                 }
             });
         });
@@ -186,17 +197,28 @@ export class SearchService {
 
     public async getRelatedWordsTimeInterval(
         queryTerm: string, corpusName: string, timeInterval: string
-    ): Promise<any> {
+    ): Promise<WordSimilarity[]> {
         return this.wordModelsService.getRelatedWordsTimeInterval(
             {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}
         ).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
-                    resolve({'graphData': {
-                                'labels': result['related_word_data'].time_points,
-                                'datasets': result['related_word_data'].similar_words_subsets
-                            }
-                    });
+                    resolve(result['data']);
+                } else {
+                    reject({'message': result.message});
+                }
+            });
+        });
+    }
+
+    wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
+        return this.wordModelsService.getWordInModel({
+            query_term: term,
+            corpus_name: corpusName,
+        }).then(result => {
+            return new Promise( (resolve, reject) => {
+                if (result['success'] === true) {
+                    resolve(result.result);
                 } else {
                     reject({'message': result['message']});
                 }
@@ -207,8 +229,8 @@ export class SearchService {
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.ngramTasks({
-            'es_query': esQuery,
-            'corpus_name': corpusName,
+            es_query: esQuery,
+            corpus_name: corpusName,
             field: field,
             ngram_size: params.size,
             term_position: params.positions,
@@ -221,6 +243,6 @@ export class SearchService {
     }
 
     public getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
+        return `${fieldName}`;
     }
 }

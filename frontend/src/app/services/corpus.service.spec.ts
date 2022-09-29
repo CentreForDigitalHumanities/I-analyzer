@@ -38,7 +38,7 @@ describe('CorpusService', () => {
         expect(corpusService).toBeTruthy();
     }));
 
-    it('should parse the list of corpora', () => {
+    it('should parse the list of corpora', async() => {
         apiServiceMock.fakeResult['corpus'] = {
             'test1': {
                 'title': 'Test 1',
@@ -67,9 +67,8 @@ describe('CorpusService', () => {
                 'word_models_present': true
             },
         };
-        service.get().then((items) => {
-            expect(items.map(item => item.name)).toEqual(['test1', 'test2']);
-        });
+        const items = await service.get();
+        expect(items.map(item => item.name)).toEqual(['test1', 'test2']);
     });
 
     it('should parse filters', () => {

@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';

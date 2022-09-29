@@ -8,7 +8,7 @@ export class QueryService {
     constructor(private apiRetryService: ApiRetryService) { }
 
     async save(query: Query, started = false, completed = false): Promise<Query> {
-        let queryCommand = {
+        const queryCommand = {
             id: query.id,
             query: query.query,
             corpus_name: query.corpusName,
@@ -21,7 +21,7 @@ export class QueryService {
             total_results: query.totalResults
         };
 
-        let response = await this.apiRetryService.requireLogin(api => api.query(queryCommand));
+        const response = await this.apiRetryService.requireLogin(api => api.query(queryCommand));
 
         return {
             id: response.id,
@@ -33,7 +33,7 @@ export class QueryService {
             userId: response.userID,
             transferred: response.transferred,
             totalResults: response.total_results
-        }
+        };
     }
 
     /**
@@ -52,7 +52,7 @@ export class QueryService {
     */
 
     async retrieveQueries(): Promise<Query[]> {
-        let response = await this.apiRetryService.requireLogin(api => api.search_history());
+        const response = await this.apiRetryService.requireLogin(api => api.search_history());
         return response.queries;
     }
 }

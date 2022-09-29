@@ -8,30 +8,46 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
+from corpora.parliament.utils.es_settings import get_nltk_stopwords
 
 NUMBER_SIMILAR = 8
 
-def make_wordcloud_data(documents, field):
+def make_wordcloud_data(documents, field, corpus):
     texts = []
     for document in documents:
         content = document['_source'][field]
         if content and content != '':
             texts.append(content)
-    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
-    counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names()
-    output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
+
+    try:
+        nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+    except:
+        nltk_stopwords = []  # if language is not available, no stopwords are filtered
+    cv = CountVectorizer(max_features=100, max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', stop_words=nltk_stopwords)
+    cvtexts = cv.fit_transform(texts)
+    counts = cvtexts.sum(axis=0).A1
+    words = list(cv.get_feature_names())
+    freq_distribution = Counter(dict(zip(words, counts)))
+    output = [{'key': word, 'doc_count': int(freq_distribution[word])} for word in words]
     return output
 
 
 def get_ngrams(es_query, corpus, field,
-    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
+    ngram_size=2, positions='any', freq_compensation=True, subfield='none', max_size_per_interval=50,
     number_of_ngrams=10, date_field = 'date'):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
+
+    positions_dict = {
+        'any': list(range(ngram_size)),
+        'first': [0],
+        'second': [1],
+        'third': [2],
+        'fourth': [3],
+    }
+    term_positions = positions_dict[positions]
 
     # find ngrams
 
@@ -120,12 +136,12 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         bin_ngrams = Counter()
 
         for hit in search_results['hits']['hits']:
-            id = hit['_id']
+            identifier = hit['_id']
 
             # get the term vectors for the hit
             result = client.termvectors(
                 index=index,
-                id=id,
+                id=identifier,
                 term_statistics=freq_compensation,
                 fields = [field]
             )
@@ -201,7 +217,7 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
 
-    date_filter = query.make_date_filter(start_date, end_date)
+    date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)

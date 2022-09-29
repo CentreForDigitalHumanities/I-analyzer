@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { SearchService, DialogService } from '../../services/index';
+import { SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
@@ -22,7 +22,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export class BarChartComponent<Result extends BarchartResult> implements OnInit, OnChanges {
+export class BarChartComponent<Result extends BarchartResult> implements OnChanges, OnInit {
     public showHint: boolean;
 
     /**
@@ -133,7 +133,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
         }
     };
 
-    constructor(public searchService: SearchService) {
+    constructor(
+        public searchService: SearchService
+    ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
         chartDefault.elements.bar.hoverBackgroundColor = selectColor();
@@ -141,8 +143,8 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
         chartDefault.plugins.tooltip.intersect = false;
     }
 
-    ngOnInit() {
-        this.setupZoomHint();
+    ngOnInit(): void {
+      this.setupZoomHint();
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -211,7 +213,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
         };
     }
 
-    /** Remove any additional queries from the barchartOptions component.
+    /** Remove any additional queries from the BarchartOptions component.
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
@@ -498,7 +500,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
             };
         } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
             return (value: number) => {
-                return value.toPrecision(2);
+                if (value !== undefined && value !== null) {
+                    return value.toPrecision(2);
+                }
             }
         } else {
             return (value: number) => {
@@ -512,7 +516,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     get formatDownloadValue(): (value: number) => string {
         if (this.normalizer === 'percent') {
             return (value: number) => {
-                return `${_.round(100 * value, 1)}`;
+                if (value !== undefined && value !== null) {
+                    return `${_.round(100 * value, 1)}`;
+                }
             };
         } else {
             return (value: number) => value.toString();

@@ -1,17 +1,19 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
+import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ParamDirective } from '../../param/param-directive';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 
 @Component({
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss']
 })
-export class NgramComponent implements OnInit, OnChanges, OnDestroy {
+export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: CorpusField;
@@ -43,8 +45,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     ngrams: string[] = [];
 
     // options
-    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
-    positionsOptions = [{label: 'any', value: [0, 1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
+    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
+    positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
     freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
     analysisOptions: {label: string, value: string}[];
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
@@ -60,17 +62,32 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     faCheck = faCheck;
     faTimes = faTimes;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    constructor(
+        private searchService: SearchService,
+        private apiService: ApiService,
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
     }
 
-    ngOnInit(): void { }
+    initialize(): void {
 
-    ngOnDestroy(): void {
+    }
+
+    teardown(): void {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+        this.setParams(ngramSetNull);
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.setParameters(params);
+        this.loadGraph();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel || changes.corpus || changes.visualizedField) {
+        if (changes.queryModel || changes.visualizedField) {
+            this.resultsCache = {};
             this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
             this.dateField = this.allDateFields[0];
             if (this.visualizedField.multiFields) {
@@ -82,23 +99,23 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             } else {
                 this.analysisOptions = undefined;
             }
-
-            this.setDefaultParameters();
-            this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
+        this.loadGraph();
     }
 
-    setDefaultParameters() {
+    setParameters(params: Params) {
         this.currentParameters = {
-            size: this.sizeOptions[0].value,
-            positions: this.positionsOptions[0].value,
-            freqCompensation: this.freqCompensationOptions[0].value,
-            analysis: 'none',
-            maxDocuments: 100,
-            numberOfNgrams: 10,
-            dateField: this.dateField.name,
+            size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
+            positions: params.get('positions') || this.positionsOptions[0].value,
+            freqCompensation: params.get('freqCompensation') !==  undefined ?
+                params.get('freqCompensation') === 'true' :
+                this.freqCompensationOptions[0].value,
+            analysis: params.get('analysis') || 'none',
+            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
+            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
+            dateField: params.get('dateField') || 'date',
         };
     }
 
@@ -394,11 +411,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     setPositionsOptions(size) {
         // set positions dropdown options and reset its value
-        const positions = Array.from(Array(size).keys());
-        this.positionsOptions =  [ { value: positions, label: 'any' } ]
-        .concat(positions.map(position => {
-            return { value : [position], label: ['first', 'second', 'third'][position] };
-        }));
+        this.positionsOptions =  ['any'].concat(['first', 'second', 'third', 'fourth'].slice(0, size)).map(
+            item => ({ value: item, label: item }));
         this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
@@ -419,7 +433,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     confirmChanges() {
         this.parametersChanged = false;
-        this.loadGraph();
+        this.setParams(this.currentParameters);
     }
 
     get currentSizeOption() {
@@ -430,7 +444,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     get currentPositionsOption() {
         if (this.currentParameters) {
-            return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
+            return this.positionsOptions.find(item => item.value === this.currentParameters.positions);
         }
     }
 

@@ -1,5 +1,6 @@
 import numpy as np
 import wordmodels.similarity as similarity
+from wordmodels.visualisations import load_word_models
 
 def test_cosine_similarity_vectors():
     cases = [
@@ -36,3 +37,15 @@ def test_cosine_similarity_matrix_vector():
         # check output with small error margin
         assert np.all(np.round(output, 8) == case['similarity'])
 
+def test_term_similarity(test_app):
+    filename = test_app.config['WM_BINNED_FN']
+    binned_models = load_word_models('mock-corpus', filename)
+    model = binned_models[0]
+    matrix, transformer = model['svd_ppmi'], model['transformer']
+
+    similarity1 = similarity.term_similarity(matrix, transformer, 'elizabeth', 'she')
+    assert type(similarity1) == float
+
+    similarity2 = similarity.term_similarity(matrix, transformer, 'elizabeth', 'he')
+
+    assert similarity1 > similarity2

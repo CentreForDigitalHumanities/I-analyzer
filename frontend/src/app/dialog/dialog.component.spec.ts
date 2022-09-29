@@ -20,7 +20,7 @@ describe('DialogComponent', () => {
         },
         {
             provide: Router, useValue: new RouterMock()
-        } 
+        }
       ]
     })
     .compileComponents();
