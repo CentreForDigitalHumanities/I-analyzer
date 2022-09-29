@@ -1,5 +1,7 @@
 import numpy as np
 
+from wordmodels.utils import transform_query, term_to_vector, index_to_term
+
 def cosine_similarity_vectors(array1, array2):
     dot = np.inner(array1, array2)
     vec1_norm = np.linalg.norm(array1)
@@ -34,7 +36,9 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     and the transformer (i.e., sklearn CountVectorizer),
     determine which n terms match the given query term best
     """
-    vec = term_vector(matrix, transformer, query_term)
+    transformed_query = transform_query(query_term, transformer)
+    vec = term_to_vector(query_term, transformer, matrix)
+
     if type(vec) == type(None):
         return None
 
@@ -42,10 +46,10 @@ def find_n_most_similar(matrix, transformer, query_term, n):
     sorted_sim = np.sort(similarities)
     most_similar_indices = np.where(similarities >= sorted_sim[-n])
     output_terms = [{
-        'key': transformer.get_feature_names()[index],
+        'key': index_to_term(index, transformer),
         'similarity': similarities[index]
         } for index in most_similar_indices[0] if
-        transformer.get_feature_names()[index]!=query_term
+        index_to_term(index, transformer)!=transformed_query
     ]
     return output_terms
 
@@ -56,9 +60,9 @@ def similarity_with_top_terms(matrix, transformer, query_term, word_data):
     of the terms matching the query term best over the whole corpus,
     determine the similarity for each time interval
     """
-    query_vec = term_vector(matrix, transformer, query_term)
+    query_vec = term_to_vector(query_term, transformer, matrix)
     for item in word_data:
-        item_vec = term_vector(matrix, transformer, item['label'])
+        item_vec = term_to_vector(item['label'], transformer, matrix)
         if type(item_vec) == type(None):
             value = 0
         else:

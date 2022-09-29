@@ -60,14 +60,14 @@ export class SearchService {
         return model;
     }
 
-    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false): any {
+    public queryModelToRoute(queryModel: QueryModel, usingDefaultSortField = false, nullableParams = []): any {
         const route = {
             query: queryModel.queryText || ''
         };
 
         if (queryModel.fields) {
             route['fields'] = queryModel.fields.join(',');
-        }
+        } else { route['fields'] = null; }
 
         for (const filter of queryModel.filters.map(data => {
             return {
@@ -81,11 +81,14 @@ export class SearchService {
         if (!usingDefaultSortField && queryModel.sortBy) {
             route['sort'] = `${queryModel.sortBy},${queryModel.sortAscending ? 'asc' : 'desc'}`;
         } else {
-            delete route['sort'];
+            route['sort'] = null;
         }
         if (queryModel.highlight) {
             route['highlight'] = `${queryModel.highlight}`;
-        } else { delete route['highlight']; }
+        } else { route['highlight'] = null; }
+        if (nullableParams.length) {
+            nullableParams.forEach( param => route[param] = null);
+        }
         return route;
     }
 
@@ -226,8 +229,8 @@ export class SearchService {
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.ngramTasks({
-            'es_query': esQuery,
-            'corpus_name': corpusName,
+            es_query: esQuery,
+            corpus_name: corpusName,
             field: field,
             ngram_size: params.size,
             term_position: params.positions,
@@ -240,6 +243,6 @@ export class SearchService {
     }
 
     public getParamForFieldName(fieldName: string) {
-        return `$${fieldName}`;
+        return `${fieldName}`;
     }
 }

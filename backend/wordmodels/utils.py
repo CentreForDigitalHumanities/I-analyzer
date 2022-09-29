@@ -25,8 +25,9 @@ def load_word_models(corpus, binned = False):
 def word_in_model(query_term, corpus, max_distance = 2):
     model = load_word_models(corpus)
     transformer = model['transformer']
+    transformed_query = transform_query(query_term, transformer)
 
-    if query_term in transformer.get_feature_names_out():
+    if transformed_query in transformer.get_feature_names_out():
         return { 'exists': True }
     else:
         is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
@@ -51,3 +52,24 @@ def load_wm_documentation(corpus):
             return contents
     else:
         return None
+
+def transform_query(query, transformer):
+    analyzer = transformer.build_analyzer()
+    transformed = analyzer(query)
+
+    if len(transformed) == 1:
+        return transformed[0]
+
+def term_to_index(query, transformer):
+    transformed = transform_query(query, transformer)
+    if transformed and transformed in transformer.vocabulary_:
+        return transformer.vocabulary_[transformed]
+
+def index_to_term(index, transformer):
+    return transformer.get_feature_names_out()[index]
+
+def term_to_vector(query, transformer, matrix):
+    index = term_to_index(query, transformer)
+
+    if index != None:
+        return matrix[:, index]

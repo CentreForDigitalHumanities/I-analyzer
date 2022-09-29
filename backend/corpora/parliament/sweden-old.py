@@ -44,7 +44,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     )
 
     def sources(self, start, end):
-        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
+        for csv_file in sorted(glob('{}/**/*.csv'.format(self.data_directory), recursive=True)):
             yield csv_file, {}
 
 

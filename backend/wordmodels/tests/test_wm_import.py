@@ -1,6 +1,7 @@
-from wordmodels.utils import load_word_models, word_in_model
+from wordmodels.utils import load_word_models, term_to_vector, word_in_model, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
 from wordmodels.utils import load_wm_documentation
+import numpy as np
 
 def test_complete_import(test_app):
     model = load_word_models('mock-corpus')
@@ -38,7 +39,11 @@ def test_word_in_model(test_app):
             'term':  'whale',
             'expected': {'exists': True}
         },
-                {
+        {
+            'term':  'Whale!',
+            'expected': {'exists': True}
+        },
+        {
             'term':  'hwale',
             'expected': {'exists': False, 'similar_keys': ['whale']}
         }
@@ -48,6 +53,38 @@ def test_word_in_model(test_app):
         result = word_in_model(case['term'], 'mock-corpus', 1)
         assert result == case['expected']
 
+def test_term_to_vector(test_app):
+    model = load_word_models('mock-corpus')
+    transformer = model['transformer']
+    matrix = model['svd_ppmi']
+
+    vec1 = term_to_vector('whale', transformer, matrix)
+    vec2 = term_to_vector('Whale!', transformer, matrix)
+
+    assert np.all(np.equal(vec1, vec2))
+    assert type(vec1) != type(None)
+
+    vec3 = term_to_vector('man', transformer, matrix)
+
+    assert not np.all(np.equal(vec1, vec3))
+
+    novec = term_to_vector('skdfjksdjfkdf', transformer, matrix)
+    assert novec == None
+
 def test_description_import(test_app):
     description = load_wm_documentation('mock-corpus')
     assert description == 'Description for testing.\n'
+
+def test_query_transform(test_app):
+    model = load_word_models('mock-corpus')
+
+    cases = [
+        ('whale', 'whale'),
+        ('Whale!', 'whale'),
+        ('!?%)#', None),
+        ('multiple words', None)
+    ]
+
+    for query, expected in cases:
+        transformed = transform_query(query, model['transformer'])
+        assert transformed == expected

@@ -190,15 +190,14 @@ def append_corpus_role(user, corpus):
 )
 def clearcache(corpus, type):
     if corpus and type:
-        visualizations = Visualization.query.filter_by(corpus_name = corpus, visualization_type = type)
+        db.session.query(Visualization).filter_by(corpus_name = corpus, visualization_type = type).delete()
     elif corpus:
-        visualizations = Visualization.query.filter_by(corpus_name = corpus)
+        db.session.query(Visualization).filter_by(corpus_name = corpus).delete()
     elif type:
-        visualizations = Visualization.query.filter_by(visualization_type = type)
+        db.session.query(Visualization).filter_by(visualization_type = type).delete()
     else:
-        visualizations = Visualization.query.all()
-    
-    visualizations.delete()
+        db.session.query(Visualization).delete()
+
     db.session.commit()
 
 

@@ -21,7 +21,7 @@ def make_visualization(visualization_type, corpus, parameters, visualize_functio
         return visualize_function()
 
     cached = check_visualization_cache(visualization_type, corpus, parameters)
- 
+
     if cached and cached.is_done:
         return get_visualization_result(cached.id)
     else:
@@ -55,7 +55,7 @@ def store_new_visualization(visualization_type, corpus, parameters):
 def store_visualization_result(id, result):
     vis = Visualization.query.get(id)
     vis.completed = datetime.now()
-    vis.result = result
+    vis.result = json.dumps(result)
     db.session.merge(vis)
     db.session.flush()
     db.session.commit()
@@ -63,4 +63,4 @@ def store_visualization_result(id, result):
 def get_visualization_result(id):
     vis = Visualization.query.get(id)
     if vis.is_done:
-        return vis.result
+        return json.loads(vis.result)
