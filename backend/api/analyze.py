@@ -41,10 +41,11 @@ def get_ngrams(es_query, corpus, field,
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
 
     positions_dict = {
-        'any': [0, 1] if ngram_size <3 else [0, 1, 2],
+        'any': list(range(ngram_size)),
         'first': [0],
         'second': [1],
-        'third': [2]
+        'third': [2],
+        'fourth': [3],
     }
     term_positions = positions_dict[positions]
 

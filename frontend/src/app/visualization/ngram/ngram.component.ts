@@ -45,7 +45,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     ngrams: string[] = [];
 
     // options
-    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
+    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
     positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
     freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
     analysisOptions: {label: string, value: string}[];
@@ -411,7 +411,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     setPositionsOptions(size) {
         // set positions dropdown options and reset its value
-        this.positionsOptions =  ['any'].concat(['first', 'second', 'third'].slice(0, size)).map(
+        this.positionsOptions =  ['any'].concat(['first', 'second', 'third', 'fourth'].slice(0, size)).map(
             item => ({ value: item, label: item }));
         this.currentParameters.positions = this.positionsOptions[0].value;
     }
