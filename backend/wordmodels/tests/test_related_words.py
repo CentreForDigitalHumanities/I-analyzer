@@ -75,5 +75,6 @@ def test_diachronic_context(test_app):
         data = [item for item in word_data if item['key'] == case['term'] and item['similarity']]
         assert data
 
+
         most_similar_interval = max(data, key = lambda point : point['similarity'])
         assert most_similar_interval['time'] == case['most_similar_interval']
