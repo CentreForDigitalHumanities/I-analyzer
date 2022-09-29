@@ -82,7 +82,8 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         }
     }
 
-    confirmQueries() {
+    updateQueries(queries: string[]) {
+        this.queries = queries;
         if (this.queries.length === 1 && this.queries[0] === this.queryText) {
             this.showEdit = false;
         }
@@ -100,10 +101,4 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
     get showTermFrequency(): boolean {
         return _.some(this.queries);
     }
-
-    get disableConfirm(): boolean {
-        if (this.isLoading || !this.queries || !this.queries.length) { return false; }
-        return this.queries.length >= 10;
-    }
-
 }

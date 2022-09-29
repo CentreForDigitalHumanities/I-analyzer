@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
-import { RelatedWordsResults, WordInModelResult } from '../models';
+import { RelatedWordsResults, WordInModelResult, WordSimilarity } from '../models';
 import { ConfigService } from './config.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
@@ -21,7 +21,7 @@ export class WordmodelsService extends Resource {
     })
     public getRelatedWords: ResourceMethod<
         { query_term: string, corpus_name: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+        { success: false, message: string } | { success: true, data: RelatedWordsResults }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -29,7 +29,16 @@ export class WordmodelsService extends Resource {
     })
     public getRelatedWordsTimeInterval: ResourceMethod<
         { query_term: string, corpus_name: string, time: string },
-        { success: boolean, message?: string, related_word_data?: RelatedWordsResults }>;
+        { success: false, message: string } | { success: true, data: WordSimilarity[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/get_similarity_over_time'
+    })
+    public getWordSimilarity: ResourceMethod<
+        { term_1: string, term_2: string, corpus_name: string},
+        { success: false, message: string } | { success: true, data: WordSimilarity[] }
+    >
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -56,4 +65,5 @@ export class WordmodelsService extends Resource {
 
         return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
     }
+
 }

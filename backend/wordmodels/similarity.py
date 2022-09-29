@@ -15,6 +15,21 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
+def term_similarity(matrix, transformer, term1, term2):
+    vec1 = term_vector(matrix, transformer, term1)
+    vec2 = term_vector(matrix, transformer, term2)
+
+    if type(vec1) != type(None) and type(vec2) != type(None):
+        return float(cosine_similarity_vectors(vec1, vec2))
+
+def term_vector(matrix, transformer, term):
+    index = next(
+        (i for i, a in enumerate(transformer.get_feature_names())
+         if a == term), None)
+    if not(index):
+        return None
+    vec = matrix[:, index]
+    return vec
 
 def find_n_most_similar(matrix, transformer, query_term, n):
     """given a matrix of svd_ppmi values
