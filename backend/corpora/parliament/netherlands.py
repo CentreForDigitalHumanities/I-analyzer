@@ -162,7 +162,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     title = "People & Parliament (Netherlands)"
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
-    min_date = datetime(year = 1815, month = 1, day = 1)
+    min_date = datetime(year=1814, month=1, day=1)
     data_directory = current_app.config['PP_NL_DATA']
 
     if 'PP_NL_RECENT_DATA' in current_app.config:
