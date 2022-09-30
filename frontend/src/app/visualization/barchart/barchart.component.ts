@@ -584,19 +584,14 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     chartTitle() {
-        console.log(this.rawData)
         let queryTexts: string[] = [];
         for (let i = 0; i < this.rawData.length; i++) {
-            console.log(this.rawData[i].queryText)
+            queryTexts.push(this.rawData[i].queryText);
         }
         if (this.queryText == null) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
             const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
-            for (let i = 0; i < this.rawData.length; i++) {
-                queryTexts.push(this.rawData[i].queryText);
-            }
-            console.log(queryTexts);
             return `Frequency of '${queryTexts.join(", ")}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
             }
     }
