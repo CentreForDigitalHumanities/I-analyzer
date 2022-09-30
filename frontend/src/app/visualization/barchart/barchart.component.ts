@@ -197,8 +197,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     /** add a new series (i.e. a new query) to the graph. */
     updateQueries(queries: string[]) {
         this.rawData = queries.map(queryText => {
-            const existingSeries = this.rawData.find(series => series.queryText === queryText);
-            return existingSeries || this.newSeries(queryText);
+            return this.newSeries(queryText);
         });
         this.prepareChart();
     }
