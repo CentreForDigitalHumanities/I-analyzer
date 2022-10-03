@@ -43,10 +43,10 @@ def get_related_words_time_interval():
         request.json['time']
     )
     if isinstance(results, str):
-        # the method returned an error string
         response = jsonify({
-            'success': False,
-            'message': results})
+            'success': True,
+            'data': []
+        })
     else:
         response = jsonify({
             'success': True,
