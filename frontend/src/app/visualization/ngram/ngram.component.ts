@@ -38,7 +38,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     chartOptions: any;
     chart: Chart;
 
-    fixLineGraphHeights = true;
+    fixLineGraphHeights = false;
     maxDataPoint: number;
 
     timeLabels: string[] = [];
@@ -47,7 +47,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     // options
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
     positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
-    freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
+    freqCompensationOptions = [{label: 'No', value: false}, {label: 'Yes', value: true}];
     analysisOptions: {label: string, value: string}[];
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     numberOfNgramsOptions = [10, 20, 50, 100].map(n => ({label: `${n}`, value: n}));
