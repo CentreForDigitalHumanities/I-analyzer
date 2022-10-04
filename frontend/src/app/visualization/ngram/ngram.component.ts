@@ -102,7 +102,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
-        this.loadGraph();
+
+        if (this.currentParameters) {
+            this.loadGraph();
+        }
     }
 
     setParameters(params: Params) {
@@ -135,12 +138,12 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 .then(result => {
                     this.tasksToCancel = result.task_ids;
                     const childTask = result.task_ids[0];
-                    this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
-                        if (outcome.success === true) {
+                    this.apiService.pollTask(childTask).then(outcome => {
+                        if (outcome.success === true && outcome.done === true) {
                             this.cacheResult(outcome.results, this.currentParameters);
                             this.onDataLoaded(outcome.results, changeAspectRatio);
                         } else {
-                            this.error.emit({message: outcome.message});
+                            this.error.emit({message: outcome['message']});
                         }
                     });
             }).catch(error => {

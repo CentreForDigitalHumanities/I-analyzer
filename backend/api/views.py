@@ -511,20 +511,20 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-
-
-@api.route('/task_outcome/<task_id>', methods=['GET'])
+@api.route('/task_status/<task_id>', methods=['GET'])
 @login_required
-def api_task_outcome(task_id):
+def api_task_status(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
-        try:
+        if results.state == 'SUCCESS':
             outcome = results.get()
-        except Exception as e:
-            return jsonify({'success': False, 'message': 'Task canceled.'})
-        return jsonify({'success': True, 'results': outcome})
+            return jsonify({'success': True, 'done': True, 'results': outcome})
+        elif results.state in ['PENDING', 'STARTED']:
+            return jsonify({'success': True, 'done': False})
+        else:
+            return jsonify({'success': False, 'message': 'Task failed.'})
 
 
 @api.route('/abort_tasks', methods=['POST'])
