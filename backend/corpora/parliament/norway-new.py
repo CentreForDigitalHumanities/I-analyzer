@@ -57,7 +57,7 @@ class ParliamentNorwayNew(Parliament, CSVCorpus):
     es_index = current_app.config['PP_NORWAY_NEW_INDEX']
     image = 'norway.JPG'
     language = 'norwegian'
-
+    description_page = 'norway-new.md'
     document_context = document_context()
 
     def sources(self, start, end):

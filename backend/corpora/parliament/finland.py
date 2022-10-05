@@ -154,6 +154,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
             yield xml_file, metadata
 
     language = 'finnish'
+    description_page = 'finland.md'
     image = 'finland.jpg'
 
     document_context = document_context()

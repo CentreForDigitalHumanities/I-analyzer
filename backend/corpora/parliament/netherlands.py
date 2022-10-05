@@ -172,6 +172,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
+    description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     language = 'dutch'

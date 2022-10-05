@@ -39,6 +39,7 @@ class ParliamentDenmark(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_DENMARK_DATA']
     es_index = current_app.config['PP_DENMARK_INDEX']
     image = 'denmark.jpg'
+    description_page = 'denmark.md'
 
     language = 'danish'
 

@@ -21,7 +21,7 @@ class ParliamentCanada(Parliament, CSVCorpus):
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
     language = 'english'
-
+    description_page = 'canada.md'
     field_entry = 'speech_id'
     required_field = 'content'
 

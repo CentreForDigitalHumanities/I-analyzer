@@ -21,6 +21,7 @@ class ParliamentFrance(Parliament, CSVCorpus):
     es_index = current_app.config['PP_FR_INDEX']
     image = current_app.config['PP_FR_IMAGE']
     language = 'french'
+    description_page = 'france.md'
 
     field_entry = 'speech_id'
 

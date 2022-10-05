@@ -40,10 +40,8 @@ class ParliamentUK(Parliament, CSVCorpus):
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
     language = 'english'
-
-
+    description_page = 'uk.md'
     field_entry = 'speech_id'
-
     document_context = document_context()
 
     def sources(self, start, end):
