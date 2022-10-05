@@ -8,9 +8,19 @@ def date_term_frequency_body(basic_query):
         'es_query': basic_query,
         'corpus_name': 'mock-corpus',
         'field_name': 'date',
-        'start_date': '1850-01-01',
-        'end_date': '1859-12-31',
-        'size': 10,
+        'bins': [
+            {
+                'start_date': '1850-01-01',
+                'end_date': '1850-12-31',
+                'size': 10,
+            }, {
+                'start_date': '1851-01-01',
+                'end_date': '1851-12-31',
+                'size': 10,
+
+            }
+        ]
+
     }
 
 @pytest.fixture
@@ -19,8 +29,11 @@ def aggregate_term_frequency_body(basic_query):
         'es_query': basic_query,
         'corpus_name': 'mock-corpus',
         'field_name': 'genre',
-        'field_value': 'Romance',
-        'size': 10,
+        'bins': [
+            { 'field_value': 'Romance', 'size': 10 },
+            { 'field_value': 'Science fiction', 'size': 10 },
+            { 'field_value': 'Children', 'size': 10 },
+        ]
     }
 
 @pytest.fixture

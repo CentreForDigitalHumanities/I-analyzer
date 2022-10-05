@@ -1,3 +1,4 @@
+from urllib import request
 import requests
 import csv
 import json
@@ -60,6 +61,49 @@ def get_ngram_data(request_json):
     corpus = request_json['corpus_name']
     result = cache.make_visualization('ngram', corpus, request_json, calculate)
 
+    return result
+
+@celery_app.task()
+def get_histogram_term_frequency(request_json):
+    corpus = request_json['corpus_name']
+    bins = request_json['bins']
+
+    def calculate():
+        data = [
+            analyze.get_aggregate_term_frequency(
+                request_json['es_query'],
+                corpus,
+                request_json['field_name'],
+                bin['field_value'],
+                bin['size'],
+            )
+            for bin in bins
+        ]
+        return data
+
+    result = cache.make_visualization('ngram', corpus, request_json, calculate)
+    return result
+
+@celery_app.task()
+def get_timeline_term_frequency(request_json):
+    corpus = request_json['corpus_name']
+    bins = request_json['bins']
+
+    def calculate():
+        data = [
+            analyze.get_date_term_frequency(
+                request_json['es_query'],
+                corpus,
+                request_json['field_name'],
+                bin['start_date'],
+                bin['end_date'],
+                bin['size'],
+            )
+            for bin in bins
+        ]
+        return data
+
+    result = cache.make_visualization('ngram', corpus, request_json, calculate)
     return result
 
 def create_query(request_json):
