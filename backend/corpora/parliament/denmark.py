@@ -34,7 +34,7 @@ def format_chamber(chamber):
 class ParliamentDenmark(Parliament, CSVCorpus):
     title = 'People & Parliament (Denmark, 1848-2008)'
     description = "Speeches from the Folketing and Landsting"
-    min_date = datetime(year = 1848, month = 1, day = 1)
+    min_date = datetime(year=1848, month=1, day=1)
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = current_app.config['PP_DENMARK_DATA']
     es_index = current_app.config['PP_DENMARK_INDEX']
