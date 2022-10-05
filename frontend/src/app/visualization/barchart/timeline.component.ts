@@ -65,20 +65,31 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         );
     }
 
-    requestCategoryTermFrequencyData(
-        cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-            const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
-            return this.searchService.dateTermFrequencySearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                ...timeDomain)
-                .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    requestSeriesTermFrequency(series: TimelineSeries, queryModel) {
+        const bins = series.data.map((bin, index) => {
+            const [minDate, maxDate] = this.categoryTimeDomain(bin, index, series);
+            return {
+                start_date: minDate,
+                end_date: maxDate,
+                size: this.documentLimitForCategory(bin, series)
+            };
+        });
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+
+        return this.searchService.dateTermFrequencySearch(
+            this.corpus,
+            queryModelCopy,
+            this.visualizedField.name,
+            bins
+        );
+    }
+
+    processSeriesTermFrequency(results: DateResult[], series: TimelineSeries) {
+        _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            this.addTermFrequencyToCategory(res, bin);
+        });
     }
 
     /** time domain for a bin */
@@ -221,14 +232,13 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
 
         const zoomedInResults = await Promise.all(docPromises);
 
+
         if (this.frequencyMeasure === 'tokens') {
-            const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
-                return series.data.map((cat, index) => {
-                    const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
-                    this.requestCategoryTermFrequencyData(cat, index, series, queryModelCopy);
-                });
+            const termFreqPromises = zoomedInResults.map(series => {
+                const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
+                return this.getTermFrequencies(series, queryModelCopy);
             });
-            await Promise.all(dataPromises);
+            await Promise.all(termFreqPromises);
         }
 
         zoomedInResults.forEach((data, seriesIndex) => {

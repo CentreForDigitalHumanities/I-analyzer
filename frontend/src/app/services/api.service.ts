@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -100,16 +100,16 @@ export class ApiService extends Resource {
         path: '/aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, field_value: string|number, size: number },
-        { success: boolean, message?: string, data?: AggregateResult }>;
+        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, bins: {field_value: string|number, size: number}[] },
+        TaskResult>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field_name: string, start_date: string, end_date: string, size: number },
-        { success: boolean, message?: string, data?: AggregateResult }>;
+        { es_query: EsQuery, corpus_name: string, field_name: string, bins: {start_date: string, end_date: string, size: number}[] },
+        TaskResult>;
 
     @ResourceAction({
         path: '/corpus'
@@ -283,7 +283,7 @@ export class ApiService extends Resource {
     }
 
     public pollTask(id): Promise<{ success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: AggregateResult[]|NgramResults }> {
+    { success: true, done: true, results: AggregateResult[]|DateResult[]|NgramResults }> {
         return timer(0, 5000).pipe(
             switchMap((_) => this.getTaskStatus({'task_id': id})),
             filter(this.taskDone),

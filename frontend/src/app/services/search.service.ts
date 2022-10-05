@@ -8,7 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordSimilarity, RelatedWordsResults, WordInModelResult } from '../models/index';
+    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordSimilarity, RelatedWordsResults, WordInModelResult, TaskResult } from '../models/index';
 import { WordmodelsService } from './wordmodels.service';
 
 const highlightFragmentSize = 50;
@@ -112,15 +112,14 @@ export class SearchService {
     }
 
     public async aggregateTermFrequencySearch(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number, size: number
-    ): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number, size: number}[]
+    ): Promise<TaskResult> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getAggregateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
             field_name: fieldName,
-            field_value: fieldValue,
-            size: size,
+            bins: bins.map(bin => ({field_value: bin.fieldValue, size: bin.size}))
         });
     }
 
@@ -131,16 +130,18 @@ export class SearchService {
     }
 
     public async dateTermFrequencySearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, size: number, start_date: Date, end_date?: Date
-    ): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+    ): Promise<TaskResult> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return this.apiService.getDateTermFrequency({
             corpus_name: corpus.name,
             es_query: esQuery,
             field_name: fieldName,
-            start_date: start_date.toISOString().slice(0, 10),
-            end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
-            size: size,
+            bins: bins.map(bin => ({
+                start_date: bin.start_date.toISOString().slice(0, 10),
+                end_date: bin.end_date ? bin.end_date.toISOString().slice(0, 10) : null,
+                size: bin.size,
+            }))
         });
     }
 

@@ -2,7 +2,8 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../../models/index';
+    HistogramSeries,
+    QueryModel} from '../../models/index';
 import { BarChartComponent } from './barchart.component';
 import { selectColor } from '../select-color';
 
@@ -51,18 +52,27 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
                 );
     }
 
-    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
-            return this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                    .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
+        const bins = series.data.map(bin => ({
+            fieldValue: bin.key,
+            size: this.documentLimitForCategory(bin, series)
+        }));
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+
+        return this.searchService.aggregateTermFrequencySearch(
+            this.corpus,
+            queryModelCopy,
+            this.visualizedField.name,
+            bins
+        );
     }
 
+    processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
+        _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            this.addTermFrequencyToCategory(res, bin);
+        });
+    }
 
     getLabels(): string[] {
         // make an array of all unique labels and sort

@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { SearchService } from '../../services/index';
+import { ApiService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField, TaskResult } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -22,7 +22,7 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export class BarChartComponent<Result extends BarchartResult> implements OnChanges, OnInit {
+export abstract class BarChartComponent<Result extends BarchartResult> implements OnChanges, OnInit {
     public showHint: boolean;
 
     /**
@@ -134,7 +134,8 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     };
 
     constructor(
-        public searchService: SearchService
+        public searchService: SearchService,
+        public apiService: ApiService
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
@@ -340,13 +341,13 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * Term frequencies are only loaded if they were not already there.
      */
      async requestTermFrequencyData() {
-        const dataPromises = _.flatMap(this.rawData, (series => {
+        const dataPromises = this.rawData.map(series => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map((cat, index) =>
-                    this.requestCategoryTermFrequencyData(cat, index, series)
-                );
+                return this.getTermFrequencies(series, this.queryModel);
+            } else {
+                return new Promise<void>((resolve) => resolve());
             }
-        }));
+        });
 
         await Promise.all(dataPromises);
 
@@ -357,6 +358,23 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         }
         this.totalTokenCountAvailable = totalTokenCountAvailable;
     }
+
+    getTermFrequencies(series: typeof this.seriesType, queryModel): Promise<void> {
+        return this.requestSeriesTermFrequency(series, queryModel).then(result => {
+            if (result.success === true) {
+                return this.apiService.pollTask(result.task_id);
+            }
+        }).then(res => {
+            if (res && res.success && res.done) {
+                this.processSeriesTermFrequency(res.results as Result[], series);
+            }
+        });
+    }
+
+    abstract requestSeriesTermFrequency(series: typeof this.seriesType, queryModel: QueryModel): Promise<TaskResult>;
+
+    abstract processSeriesTermFrequency(results: Result[], series: typeof this.seriesType): void;
+
 
     /** total document count for a data array */
     totalDocCount(data: Result[]) {
@@ -377,8 +395,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * @param result output from request for term frequencies
      * @param cat Result object where the data should be added
      */
-    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: Result): void {
-        const data = result.data;
+    addTermFrequencyToCategory(data: Result, cat: Result): void {
         cat.match_count = data.match_count;
         cat.total_doc_count = data.doc_count;
         cat.token_count = data.token_count;
