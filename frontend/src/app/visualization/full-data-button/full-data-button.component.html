@@ -1,0 +1,45 @@
+<div class="block" *ngIf="corpus && visType">
+    <button class="button" [class.is-loading]="isLoading" (click)="onInitialRequest()">Load full data</button>
+</div>
+
+
+<div class="modal" [class.is-active]="showModal">
+    <div class="modal-background" (click)="showModal = false"></div>
+    <div class=" modal-content modal-card">
+        <header class="modal-card-head">
+            <h2 class="modal-card-title">Request full data</h2>
+            <button class="delete" aria-label="close" (click)="showModal = false"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="content">
+                <p>
+                    This visualisation is based on a sample of the documents your search results.
+                    These approximations are usually sufficient for exploring the corpus.
+                </p>
+
+                <p>
+                    However, we also offer the option to request a version of the visualization that
+                    is based on <i>all</i> the documents in your search results.
+                </p>
+
+                <p>
+                    The full data may take a long time to compute.
+                    If you confirm that you want the visualization based on full data,
+                    our server will start to compute it for you,
+                    and you will receive an email when your visualization is complete.
+                    The email will include a link to open the visualization.
+                    You do not need to keep this window open.
+                </p>
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <div class="buttons is-right">
+                <button class="button is-primary">
+                    <span class="icon"><fa-icon [icon]="faEnvelope"></fa-icon></span>
+                    <span>Send me the full version</span>
+                </button>
+                <button class="button">Cancel</button>
+            </div>
+        </footer>
+    </div>
+</div>

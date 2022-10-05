@@ -590,7 +590,9 @@ export abstract class BarchartDirective
      * This differs per series, but user message only gives one value, currently the minimum.
      */
     get percentageDocumentsSearched() {
-        return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        if (this.rawData) {
+            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        }
     }
 
     /**

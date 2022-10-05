@@ -79,6 +79,7 @@ import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedb
 import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
 import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
+import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 
 
 export const appRoutes: Routes = [
@@ -157,6 +158,7 @@ export const declarations: any[] = [
     ErrorComponent,
     FilterManagerComponent,
     FreqtableComponent,
+    FullDataButtonComponent,
     HomeComponent,
     HighlightPipe,
     HistogramComponent,
