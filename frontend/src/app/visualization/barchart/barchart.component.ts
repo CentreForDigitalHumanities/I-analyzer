@@ -237,42 +237,45 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
         this.isLoading.next(false);
     }
 
+
     /** load data for the graph (if needed), update the graph and freqtable. */
-    async loadData() {
+    loadData(): Promise<void> {
         // load data if needed
-        await this.requestDocumentData();
-        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
+        return this.requestDocumentData().then(
+            this.frequencyMeasure === 'tokens' ? this.requestTermFrequencyData.bind(this) : _.identity
+        ).then(rawData => {
+            this.rawData = rawData;
 
-        if (!this.rawData.length) {
-            this.error.emit({message: 'No results'});
-        }
+            if (!this.rawData.length) {
+                this.error.emit({message: 'No results'});
+            }
 
-        // initialise or update chart
-        this.setChart();
+            // initialise or update chart
+            this.setChart();
 
-        // update freqtable
-        this.setTableHeaders();
-        this.setTableData();
+            // update freqtable
+            this.setTableHeaders();
+            this.setTableData();
 
-        // load zoomed-in data if needed
-        if (this.isZoomedIn) {
-            this.onZoomIn(this.chart, true);
-        }
+            // load zoomed-in data if needed
+            if (this.isZoomedIn) {
+                this.onZoomIn(this.chart, true);
+            }
+        });
     }
 
     /** Retrieve all document frequencies and store in `rawData`.
      * Document frequencies are only loaded if they are not already in the data. */
-    async requestDocumentData() {
-        const dataPromises = this.rawData.map((series, seriesIndex) => {
+    requestDocumentData(): Promise<typeof this.rawData> {
+        const dataPromises = this.rawData.map(series => {
             if (!series.data.length) { // retrieve data if it was not already loaded
-                return this.requestSeriesDocumentData(series).then(result =>
-                    this.rawData[seriesIndex] = result
-                );
+                return this.requestSeriesDocumentData(series);
+            } else {
+                return series;
             }
         });
 
-        await Promise.all(dataPromises);
-        this.checkDocumentLimitExceeded();
+        return Promise.all(dataPromises).then(this.checkDocumentLimitExceeded.bind(this));
     }
 
     selectSearchFields(queryModel: QueryModel) {
@@ -332,48 +335,53 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
      * Check whether any series found more documents than the document limit.
      * This means that not all documents will be read when counting term frequency.
     */
-     checkDocumentLimitExceeded(): void {
-        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+     checkDocumentLimitExceeded(rawData: typeof this.rawData): typeof this.rawData {
+        this.documentLimitExceeded = rawData.find(series => series.searchRatio < 1) !== undefined;
+        return rawData;
     }
 
 
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-     async requestTermFrequencyData() {
+    requestTermFrequencyData() {
         const dataPromises = this.rawData.map(series => {
             if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
-                return new Promise<void>((resolve) => resolve());
+                return series;
             }
         });
 
-        await Promise.all(dataPromises);
+        return Promise.all(dataPromises).then(this.checkTotalTokenCount.bind(this));
+    }
 
-        // signal if total token counts are available
-        const totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+    checkTotalTokenCount(rawData: typeof this.rawData): typeof this.rawData {
+        const totalTokenCountAvailable = rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
         if (this.frequencyMeasure === 'tokens' && totalTokenCountAvailable && !this.totalTokenCountAvailable) {
             this.normalizer = 'terms';
         }
         this.totalTokenCountAvailable = totalTokenCountAvailable;
+        return rawData;
     }
 
-    getTermFrequencies(series: typeof this.seriesType, queryModel): Promise<void> {
+    getTermFrequencies(series: typeof this.seriesType, queryModel): Promise<any> {
         return this.requestSeriesTermFrequency(series, queryModel).then(result => {
             if (result.success === true) {
                 return this.apiService.pollTask(result.task_id);
             }
         }).then(res => {
             if (res && res.success && res.done) {
-                this.processSeriesTermFrequency(res.results as Result[], series);
+                return this.processSeriesTermFrequency(res.results as Result[], series);
+            } else {
+                return series;
             }
         });
     }
 
     abstract requestSeriesTermFrequency(series: typeof this.seriesType, queryModel: QueryModel): Promise<TaskResult>;
 
-    abstract processSeriesTermFrequency(results: Result[], series: typeof this.seriesType): void;
+    abstract processSeriesTermFrequency(results: Result[], series: typeof this.seriesType): typeof this.seriesType;
 
 
     /** total document count for a data array */
@@ -395,12 +403,13 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
      * @param result output from request for term frequencies
      * @param cat Result object where the data should be added
      */
-    addTermFrequencyToCategory(data: Result, cat: Result): void {
+    addTermFrequencyToCategory(data: Result, cat: Result): Result {
         cat.match_count = data.match_count;
         cat.total_doc_count = data.doc_count;
         cat.token_count = data.token_count;
         cat.matches_by_doc_count = data.match_count / data.doc_count,
         cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
+        return cat;
     }
 
     // implemented on child components

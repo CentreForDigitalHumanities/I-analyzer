@@ -58,20 +58,15 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             size: this.documentLimitForCategory(bin, series)
         }));
         const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-
-        return this.searchService.aggregateTermFrequencySearch(
-            this.corpus,
-            queryModelCopy,
-            this.visualizedField.name,
-            bins
-        );
+        return this.searchService.makeAggregateTermFrequencyParams(this.corpus, queryModelCopy, this.visualizedField.name, bins);
     }
 
     processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
-        _.zip(series.data, results).map(pair => {
+        series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
-            this.addTermFrequencyToCategory(res, bin);
+            return this.addTermFrequencyToCategory(res, bin);
         });
+        return series;
     }
 
     getLabels(): string[] {

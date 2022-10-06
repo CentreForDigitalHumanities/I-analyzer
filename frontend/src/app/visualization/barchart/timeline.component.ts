@@ -86,10 +86,11 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
     }
 
     processSeriesTermFrequency(results: DateResult[], series: TimelineSeries) {
-        _.zip(series.data, results).map(pair => {
+        series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
-            this.addTermFrequencyToCategory(res, bin);
+            return this.addTermFrequencyToCategory(res, bin);
         });
+        return series;
     }
 
     /** time domain for a bin */
