@@ -18,7 +18,6 @@ import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
-// import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ChipsModule } from 'primeng/chips';
@@ -32,6 +31,7 @@ import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogServic
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
+import { AboutComponent } from './about/about.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
@@ -127,6 +127,10 @@ export const appRoutes: Routes = [
         component: ManualComponent
     },
     {
+        path: 'about',
+        component: AboutComponent
+    },
+    {
         path: 'search-history',
         component: SearchHistoryComponent
     },
@@ -139,6 +143,7 @@ export const appRoutes: Routes = [
 
 export const declarations: any[] = [
     AppComponent,
+    AboutComponent,
     AdHocFilterComponent,
     BalloonDirective,
     BarChartComponent,
