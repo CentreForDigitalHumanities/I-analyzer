@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService, ConfigService } from '../../services/index';
+import { ApiService, ApiRetryService, ElasticSearchService, LogService, QueryService, SearchService, UserService, DialogService } from '../../services/index';
 import { ApiServiceMock } from '../../../mock-data/api';
 import { ElasticSearchServiceMock } from '../../../mock-data/elastic-search';
 import { UserServiceMock } from '../../../mock-data/user';

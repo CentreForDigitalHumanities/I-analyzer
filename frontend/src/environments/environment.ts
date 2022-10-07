@@ -6,5 +6,8 @@
 export const environment = {
     production: false,
     appName: 'People & Parliament',
-    aboutPage: 'people-and-parliament'
+    aboutPage: 'people-and-parliament',
+    apiUrl: '/api',
+    adminUrl: '/admin',
+    wordModelsUrl: '/wordmodels/'
 };

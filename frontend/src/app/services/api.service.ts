@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Resource, ResourceAction, ResourceParams,
     ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
-import { ConfigService } from './config.service';
+import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
 import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
@@ -29,9 +29,9 @@ type QueryDb<TDateType> = {
 @Injectable()
 @ResourceParams()
 export class ApiService extends Resource {
-    private apiUrl: Promise<string> | null = null;
+    private apiUrl: string;
 
-    constructor(private config: ConfigService, restHandler: ResourceHandler) {
+    constructor(restHandler: ResourceHandler) {
         super(restHandler);
     }
 
@@ -260,7 +260,7 @@ export class ApiService extends Resource {
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
         if (!this.apiUrl) {
-            this.apiUrl = this.config.get().then(config => config.apiUrl);
+            this.apiUrl = environment.apiUrl;
         }
 
         return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
