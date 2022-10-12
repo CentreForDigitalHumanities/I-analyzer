@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @celery_app.task()
 def download_scroll(request_json, download_size=10000):
-    results = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    results, _ = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
     return results
 
 
@@ -43,7 +43,7 @@ def create_query(request_json):
 @celery_app.task()
 def get_wordcloud_data(request_json):
     def calculate():
-        list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
+        list_of_texts, _ = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
         word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 

@@ -9,6 +9,7 @@ from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
 from corpora.parliament.utils.es_settings import get_nltk_stopwords
+from es import download as download
 
 NUMBER_SIMILAR = 8
 
@@ -263,15 +264,11 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
-    results = search(
-        corpus = corpus,
-        query_model = es_query,
-        client = es_client,
-        size = size,
-        track_total_hits = True,
+    found_hits, total_results = download.scroll(corpus = corpus,
+        query_model=es_query,
+        download_size=size
     )
 
-    found_hits = hits(results)
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
 
@@ -280,7 +277,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         for hit in found_hits
     )
 
-    skipped_docs = total_hits(results) - len(found_hits)
+    skipped_docs = total_results - len(found_hits)
     match_count = matches + skipped_docs
 
     return match_count
