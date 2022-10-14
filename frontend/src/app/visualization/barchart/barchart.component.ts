@@ -584,10 +584,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     chartTitle() {
-        let queryTexts: string[] = [];
-        for (let i = 0; i < this.rawData.length; i++) {
-            queryTexts.push(this.rawData[i].queryText);
-        }
+        const queryTexts = this.rawData.map(series => series.queryText);
         if (this.queryText == null && this.rawData.length == 1) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
