@@ -588,7 +588,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         for (let i = 0; i < this.rawData.length; i++) {
             queryTexts.push(this.rawData[i].queryText);
         }
-        if (this.queryText == null) {
+        if (this.queryText == null && this.rawData.length == 1) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
             const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
