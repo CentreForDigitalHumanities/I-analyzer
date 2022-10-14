@@ -1,10 +1,13 @@
+import numpy as np
+
+from addcorpus.load_corpus import load_corpus
 from wordmodels.utils import load_word_models, term_to_vector, word_in_model, transform_query
 from wordmodels.conftest import TEST_VOCAB_SIZE, TEST_DIMENSIONS, TEST_BINS
 from wordmodels.utils import load_wm_documentation
-import numpy as np
 
 def test_complete_import(test_app):
-    model = load_word_models('mock-corpus')
+    corpus = load_corpus('mock-corpus')
+    model = load_word_models(corpus)
     assert model
 
     weights = model['svd_ppmi']
@@ -14,7 +17,8 @@ def test_complete_import(test_app):
     assert transformer.max_features == TEST_VOCAB_SIZE
 
 def test_binned_import(test_app):
-    models = load_word_models('mock-corpus', binned = True)
+    corpus = load_corpus('mock-corpus')
+    models = load_word_models(corpus, binned=True)
     assert len(models) == len(TEST_BINS)
 
     for model, bin in zip(models, TEST_BINS):
@@ -50,11 +54,13 @@ def test_word_in_model(test_app):
     ]
 
     for case in cases:
-        result = word_in_model(case['term'], 'mock-corpus', 1)
+        corpus = load_corpus('mock-corpus')
+        result = word_in_model(case['term'], corpus, 1)
         assert result == case['expected']
 
 def test_term_to_vector(test_app):
-    model = load_word_models('mock-corpus')
+    corpus = load_corpus('mock-corpus')
+    model = load_word_models(corpus)
     transformer = model['transformer']
     matrix = model['svd_ppmi']
 
@@ -72,11 +78,13 @@ def test_term_to_vector(test_app):
     assert novec == None
 
 def test_description_import(test_app):
-    description = load_wm_documentation('mock-corpus')
+    corpus = load_corpus('mock-corpus')
+    description = load_wm_documentation(corpus)
     assert description == 'Description for testing.\n'
 
 def test_query_transform(test_app):
-    model = load_word_models('mock-corpus')
+    corpus = load_corpus('mock-corpus')
+    model = load_word_models(corpus)
 
     cases = [
         ('whale', 'whale'),

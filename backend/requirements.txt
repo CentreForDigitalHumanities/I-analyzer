@@ -71,6 +71,8 @@ flask-sqlalchemy==2.5.1
     # via
     #   -r requirements.in
     #   flask-migrate
+gensim==4.2.0
+    # via -r requirements.in
 greenlet==1.1.2
     # via sqlalchemy
 idna==3.3
@@ -112,6 +114,7 @@ nltk==3.7
 numpy==1.22.0
     # via
     #   -r requirements.in
+    #   gensim
     #   scikit-learn
     #   scipy
 openpyxl==3.0.10
@@ -149,11 +152,15 @@ responses==0.21.0
 scikit-learn==1.1.1
     # via -r requirements.in
 scipy==1.8.1
-    # via scikit-learn
+    # via
+    #   gensim
+    #   scikit-learn
 six==1.16.0
     # via
     #   click-repl
     #   isodate
+smart-open==6.2.0
+    # via gensim
 soupsieve==2.3.2.post1
     # via beautifulsoup4
 sqlalchemy==1.4.39

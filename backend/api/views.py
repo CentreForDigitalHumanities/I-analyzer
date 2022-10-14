@@ -182,6 +182,7 @@ def api_corpus_list():
         )) for key in
         current_app.config['CORPUS_DEFINITIONS'].keys()
     ))
+    print(current_app.config['CORPUS_DEFINITIONS']['parliament-germany-new'].serialize())
     return response
 
 

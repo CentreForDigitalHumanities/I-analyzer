@@ -31,10 +31,6 @@ class UnittestConfig:
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
 
-    WM_PATH = 'wm'
-    WM_COMPLETE_FN = "complete.pkl"
-    WM_BINNED_FN = "binned.pkl"
-
 
 @pytest.fixture(scope='session')
 def test_app(request):

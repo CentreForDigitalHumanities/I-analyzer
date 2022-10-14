@@ -42,6 +42,8 @@ class ParliamentUK(Parliament, CSVCorpus):
     max_date = datetime(year=2021, month=12, day=31)
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
+    word_model_path = current_app.config['PP_UK_WM']
+    word_model_type = 'word2vec'
     language = 'english'
 
 

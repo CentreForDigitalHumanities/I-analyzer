@@ -16,13 +16,11 @@ def test_context_time_interval(test_app):
     term = 'alice'
 
     # context for bin that does not include the query term
-
     missing_context = get_context_time_interval(term, 'mock-corpus', '1810-1839', 5)
     assert missing_context == "The query term is not in the word models' vocabulary."
 
 
     # context for bin that includes the query term
-
     context = get_context_time_interval(term, 'mock-corpus', '1840-1869', 5)
 
     # check format
@@ -44,6 +42,7 @@ def test_diachronic_context(test_app):
     term = 'she'
 
     word_list, word_data, times = get_diachronic_contexts(term, 'mock-corpus')
+    print(word_list, word_data, times)
 
     # test format
 
@@ -74,7 +73,6 @@ def test_diachronic_context(test_app):
     for case in cases:
         data = [item for item in word_data if item['key'] == case['term'] and item['similarity']]
         assert data
-
 
         most_similar_interval = max(data, key = lambda point : point['similarity'])
         assert most_similar_interval['time'] == case['most_similar_interval']

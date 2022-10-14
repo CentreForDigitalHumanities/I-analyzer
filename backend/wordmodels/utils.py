@@ -2,25 +2,84 @@ import os
 from os.path import join
 import pickle
 from textdistance import damerau_levenshtein
+from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import corpus_dir
+from addcorpus.load_corpus import corpus_dir, load_corpus
 from flask import current_app
 
+from glob import glob
 
-def load_word_models(corpus, binned = False):
 
-    if binned:
-        path = current_app.config['WM_BINNED_FN']
-    else:
-        path = current_app.config['WM_COMPLETE_FN']
+def load_word_models(corpus, binned=False):
+    if type(corpus)==str:
+        corpus = load_corpus(corpus)
+    if corpus.word_model_type == 'svd_ppmi':
+        if binned:
+            path = join(corpus.word_model_path, 'binned.pkl')
+        else:
+            path = join(corpus.word_model_path, 'complete.pkl')
+        try:
+            with open(path, "rb") as f:
+                wm = pickle.load(f)
+        except FileNotFoundError:
+            return "No word models found for this corpus."
+    elif corpus.word_model_type == 'word2vec':
+        w2v_list = glob('{}/*.w2v'.format(corpus.word_model_path))
+        analyzer = get_analyzer(corpus)
+        if binned:
+            wm_files = [item for item in w2v_list if not item.endswith('full.w2v')]
+            wm = [
+                    {
+                        "start_year": wm_file.split('_')[2],
+                        "end_year": wm_file.split('_')[3],
+                        "word2vec": KeyedVectors.load_word2vec_format(wm_file),
+                        "transformer": get_transformer(corpus, analyzer, '{}-{}'.format(wm_file.split('_')[2:3]))
+                    }
+                for wm_file in wm_files
+                ]
+        else:
+            wm_file = next((item for item in w2v_list if item.endswith('full.w2v')), None)
+            model = KeyedVectors.load_word2vec_format(wm_file)
+            if not wm_file:
+                return "No full word model found for this corpus."
+            wm = {
+                "start_year": wm_file.split('_')[2],
+                "end_year": wm_file.split('_')[3],
+                "word2vec": model,
+                "transformer": get_transformer(corpus, analyzer)
+            }
 
-    try:
-        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
-    except KeyError:
-        return "There are no word models for this corpus."
-    with open(os.path.join(wm_directory, path), "rb") as f:
-        wm = pickle.load(f)
     return wm
+
+def get_transformer(corpus, analyzer, time_bin=None):
+    if time_bin:
+
+            transformer = FakeVectorizer(analyzer, vocab)
+        return transformer
+    except:
+        raise
+
+def get_analyzer(corpus):
+    analyzer_file = glob('{}/*-analyzer.pkl'.format(corpus.word_model_path))[0]
+    with open(transformer_file, 'rb') as f:
+        return pickle.load(f)
+
+class FakeVectorizer:
+    """ An object pretending to be a CountVectorizer """
+    def __init__(transformer, vocab):
+        self.analyzer = analyzer
+        self.vocab = vocab
+
+    def get_feature_names(self):
+        """ get_feature_names is deprecated sklearn>=1.0 """
+        return self.vocab
+
+    def get_feature_names_out(self):
+        """ therefore, we also implement get_feature_names_out """
+        return self.vocab
+
+    def build_analyzer(self):
+        return self.analyzer
 
 def word_in_model(query_term, corpus, max_distance = 2):
     model = load_word_models(corpus)
@@ -39,9 +98,10 @@ def word_in_model(query_term, corpus, max_distance = 2):
         }
 
 
-def load_wm_documentation(corpus):
+def load_wm_documentation(corpus_string):
+    corpus = load_corpus(corpus_string)
     try:
-        wm_directory = join(corpus_dir(corpus), current_app.config['WM_PATH'])
+        wm_directory = corpus.word_model_path
     except KeyError:
         return None
 
