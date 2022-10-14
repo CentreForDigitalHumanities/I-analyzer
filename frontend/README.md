@@ -5,7 +5,14 @@ This version of Angular uses Node 12.22.10.
 
 # Prerequisites
 
-Run `yarn` to install the dependencies.
+Run `yarn` to install the dependencies. In `src/environments`, create a file `environment.private.ts` with the following settings:
+```
+privateEnvironment = {
+    appName: I-Analyzer,
+    aboutPage: ianalyzer
+}
+```
+Alternatively, you can choose a different app name, or a different about page, if it exists in `/src/assets/about`.
 
 ## Development server
 

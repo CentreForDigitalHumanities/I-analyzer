@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
+
+import { environment } from '../../environments/environment';
 import { RelatedWordsResults, WordInModelResult, WordSimilarity } from '../models';
-import { ConfigService } from './config.service';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -9,9 +10,9 @@ type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
 @Injectable()
 @ResourceParams()
 export class WordmodelsService extends Resource {
-    private wordModelsUrl: Promise<string> | null = null;
+    private wordModelsUrl: string;
 
-    constructor(private config: ConfigService, restHandler: ResourceHandler) {
+    constructor(restHandler: ResourceHandler) {
         super(restHandler);
     }
 
@@ -59,10 +60,7 @@ export class WordmodelsService extends Resource {
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
-        if (!this.wordModelsUrl) {
-            this.wordModelsUrl = this.config.get().then(config => config.wordModelsUrl);
-        }
-
+        this.wordModelsUrl = environment.wordModelsUrl;
         return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
     }
 
