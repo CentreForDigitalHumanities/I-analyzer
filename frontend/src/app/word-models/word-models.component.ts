@@ -25,7 +25,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     activeQuery: string;
 
-    tabIndex = new BehaviorSubject<'relatedwords'|'wordcontext'|'plaintext'>('relatedwords');
+    tabIndex = new BehaviorSubject<'relatedwords'|'wordsimilarity'>('relatedwords');
 
     tabs = {
         relatedwords: {
@@ -33,13 +33,8 @@ export class WordModelsComponent implements DoCheck, OnInit {
             manual: 'relatedwords',
             chartID: 'chart'
         },
-        wordcontext: {
-            title: 'Word context',
-            manual: undefined,
-            chartID: undefined,
-        },
-        plaintext: {
-            title: 'Plain text',
+        wordsimilarity: {
+            title: 'Compare similarity',
             manual: undefined,
             chartID: undefined,
         }
@@ -92,6 +87,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
     }
 
     submitQuery(): void {
+        this.errorMessage = undefined;
         this.activeQuery = this.queryText;
         this.validateQuery();
         if (this.queryFeedback === undefined) {
@@ -144,6 +140,10 @@ export class WordModelsComponent implements DoCheck, OnInit {
     onWindowScroll() {
         // mark that the search results have been scrolled down and we should some border
         this.isScrolledDown = this.searchSection.nativeElement.getBoundingClientRect().y === 0;
+    }
+
+    get tabNames() {
+        return Object.keys(this.tabs);
     }
 
 }

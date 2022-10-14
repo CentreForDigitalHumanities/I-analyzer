@@ -23,9 +23,9 @@ def get_related_words():
     else:
         response = jsonify({
             'success': True,
-            'related_word_data': {
-                'similar_words_all': results[0],
-                'similar_words_subsets': results[1],
+            'data': {
+                'total_similarities': results[0],
+                'similarities_over_time': results[1],
                 'time_points': results[2]
             }
         })
@@ -43,6 +43,28 @@ def get_related_words_time_interval():
         request.json['time']
     )
     if isinstance(results, str):
+        response = jsonify({
+            'success': True,
+            'data': []
+        })
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
+        })
+    return response
+
+@wordmodels.route('/get_similarity_over_time', methods=['GET'])
+@login_required
+def get_similarity():
+    if not request.args:
+        abort(400)
+    results = visualisations.get_similarity_over_time(
+        request.args['term_1'],
+        request.args['term_2'],
+        request.args['corpus_name']
+    )
+    if isinstance(results, str):
         # the method returned an error string
         response = jsonify({
             'success': False,
@@ -50,10 +72,7 @@ def get_related_words_time_interval():
     else:
         response = jsonify({
             'success': True,
-            'related_word_data': {
-                'similar_words_subsets': results,
-                'time_points': [request.json['time']]
-            }
+            'data': results
         })
     return response
 

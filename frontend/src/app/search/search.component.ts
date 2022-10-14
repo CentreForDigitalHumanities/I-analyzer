@@ -1,6 +1,6 @@
 
-import {combineLatest as combineLatest, Subscription } from 'rxjs';
-import { Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
+import {Subscription } from 'rxjs';
+import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
@@ -104,7 +104,7 @@ export class SearchComponent extends ParamDirective {
         this.setSortFromParams(this.corpus?.fields, params);
         this.setHighlightFromParams(params);
         const queryModel = this.createQueryModel();
-        if (this.queryModel !== queryModel) {
+        if (!_.isEqual(this.queryModel, queryModel)) {
             this.queryModel = queryModel;
         }
         this.tabIndex = params.has('visualize') ? 1 : 0;

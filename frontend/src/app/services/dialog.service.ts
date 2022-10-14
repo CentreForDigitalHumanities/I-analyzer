@@ -24,13 +24,19 @@ export class DialogService {
         this.behavior.next({ status: 'hide' });
     }
 
-    public async getManualPage(identifier: string) {
-        let path = this.getLocalizedPath(`${identifier}.md`);
-        let pagePromise = fetch(path).then(response => this.parseResponse(response));
+    public async getAboutPage(identifier: string) {
+        const path = this.getLocalizedPath(`about`, `${identifier}.md`);
+        const html = await fetch(path).then(response => this.parseResponse(response));
+        return html;
+    }
 
-        let html = await pagePromise;
-        let manifest = await this.getManifest();
-        let title = manifest.find(page => page.id == identifier).title;
+    public async getManualPage(identifier: string) {
+        const path = this.getLocalizedPath(`manual`, `${identifier}.md`);
+        const pagePromise = fetch(path).then(response => this.parseResponse(response));
+
+        const html = await pagePromise;
+        const manifest = await this.getManifest();
+        const title = manifest.find(page => page.id === identifier).title;
 
         return { html, title };
     }
@@ -40,7 +46,7 @@ export class DialogService {
             return this.manifest;
         }
 
-        let path = this.getLocalizedPath(`/manifest.json`);
+        const path = this.getLocalizedPath(`manual`, `/manifest.json`);
         return this.manifest = fetch(path).then(response => response.json());
     }
 
@@ -52,7 +58,7 @@ export class DialogService {
         this.behavior.next({
             status: 'loading'
         });
-        let { html, title } = await this.getManualPage(identifier);
+        const { html, title } = await this.getManualPage(identifier);
 
         this.behavior.next({
             identifier,
@@ -94,14 +100,14 @@ export class DialogService {
         });
     }
 
-    private getLocalizedPath(fileName: string) {
+    private getLocalizedPath(directory: string, fileName: string) {
         // TODO: in a multilingual application this would need to be modified
-        return `assets/manual/en-GB/${fileName}`;
+        return `assets/${directory}/en-GB/${fileName}`;
     }
 
     private async parseResponse(response: Response) {
-        let text = await response.text();
-        let html = this.markdownService.compile(text);
+        const text = await response.text();
+        const html = this.markdownService.compile(text);
         // mark that the output of the markdown service is safe to accept: it can contain style and id attributes,
         // which normally aren't liked by Angular
         return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));

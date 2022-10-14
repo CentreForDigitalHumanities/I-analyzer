@@ -41,10 +41,11 @@ def get_ngrams(es_query, corpus, field,
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
 
     positions_dict = {
-        'any': [0, 1] if ngram_size <3 else [0, 1, 2],
+        'any': list(range(ngram_size)),
         'first': [0],
         'second': [1],
-        'third': [2]
+        'third': [2],
+        'fourth': [3],
     }
     term_positions = positions_dict[positions]
 
@@ -216,7 +217,7 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
 
-    date_filter = query.make_date_filter(start_date, end_date)
+    date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)

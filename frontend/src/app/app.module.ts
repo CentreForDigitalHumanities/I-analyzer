@@ -18,7 +18,6 @@ import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
-// import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ChipsModule } from 'primeng/chips';
@@ -28,10 +27,11 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService,
+import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
+import { AboutComponent } from './about/about.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
@@ -77,6 +77,9 @@ import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
 import { WordmodelsService } from './services/wordmodels.service';
 import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
+import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
+import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
+import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 
 
 export const appRoutes: Routes = [
@@ -124,6 +127,10 @@ export const appRoutes: Routes = [
         component: ManualComponent
     },
     {
+        path: 'about',
+        component: AboutComponent
+    },
+    {
         path: 'search-history',
         component: SearchHistoryComponent
     },
@@ -136,6 +143,7 @@ export const appRoutes: Routes = [
 
 export const declarations: any[] = [
     AppComponent,
+    AboutComponent,
     AdHocFilterComponent,
     BalloonDirective,
     BarChartComponent,
@@ -184,12 +192,15 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    SimilarityChartComponent,
+    TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,
     VisualizationFooterComponent,
     WordcloudComponent,
     WordModelsComponent,
+    WordSimilarityComponent,
 ];
 
 export const imports: any[] = [
@@ -229,7 +240,6 @@ export const providers: any[] = [
     ApiService,
     ApiRetryService,
     CorpusService,
-    ConfigService,
     DialogService,
     DownloadService,
     ElasticSearchService,

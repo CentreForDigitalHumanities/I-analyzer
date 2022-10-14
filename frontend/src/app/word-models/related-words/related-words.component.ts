@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { selectColor } from '../../visualization/select-color';
 import { DialogService, SearchService } from '../../services/index';
-import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 
 @Component({
@@ -20,270 +17,55 @@ export class RelatedWordsComponent implements OnChanges {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
-    totalData: {
-        labels: string[],
-        datasets: {
-            label: string,
-            data: number[],
-            fill?: boolean,
-            borderColor?: string,
-            backgroundColor?: string
-        }[]
-    };
+    timeIntervals: string[] = [];
+    totalSimilarities: WordSimilarity[]; // similarities over all time periods
+    totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
+    zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-
-    graphStyle = new BehaviorSubject<'line'|'stream'|'bar'>('line');
-
-    tableHeaders: freqTableHeaders = [
-        { key: 'key', label: 'Term' },
-        { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
-    ];
-    tableData: [WordSimilarity];
-
-    currentTimeIndex = undefined;
-    public zoomedInData; // data requested when clicking on a time interval
-    public chartOptions: ChartOptions = {};
-
-    chart: Chart;
-
-    constructor(private dialogService: DialogService, private searchService: SearchService) { }
-
-    ngOnInit(): void {
-        this.updateChart(this.graphStyle.value);
-        this.graphStyle.subscribe(this.updateChart.bind(this));
-    }
+    constructor(private searchService: SearchService) { }
 
     ngOnChanges() {
         this.getData();
     }
 
-    getData() {
-        this.isLoading.emit(true);
-        this.searchService.getRelatedWords(this.queryText, this.corpus.name).then(results => {
-            this.totalData = results['graphData'];
-            this.totalData.datasets.map((d, index) => {
-                d.fill = false;
-                d.borderColor = selectColor(this.palette, index);
-                d.backgroundColor = selectColor(this.palette, index);
-            });
-
-            this.tableData = results['tableData'];
-            this.updateChart(this.graphStyle.value);
-            this.isLoading.emit(false);
-        })
-            .catch(error => {
-                this.totalData = undefined;
-                this.tableData = undefined;
-                this.isLoading.emit(false);
-                this.error.emit(error);
-
-            });
+    getData(): void {
+        this.showLoading(this.getTotalData().then(this.getZoomedInData.bind(this)));
     }
 
-    zoomTimeInterval(timeIndex: number) {
-        if (timeIndex !== this.currentTimeIndex) {
-            this.currentTimeIndex = timeIndex;
-            this.isLoading.emit(true);
-            this.searchService.getRelatedWordsTimeInterval(
-                this.queryText,
-                this.corpus.name,
-                this.totalData.labels[timeIndex])
-                .then(results => {
-                    this.zoomedInData = results['graphData'];
-                    this.zoomedInData.datasets
-                        .sort((a, b) => { return b.data[0] - a.data[0] })
-                        .map((d, index) => {
-                            d.backgroundColor = selectColor(this.palette, index);
-                            d.hoverBackgroundColor = selectColor(this.palette, index);
-                        });
-                        this.updateChart('bar');
-                    this.isLoading.emit(false);
-                })
-                .catch(error => {
-                    this.error.emit(error['message']);
-                });
-        }
+    /** execute a process with loading spinner */
+    async showLoading(promise): Promise<any> {
+        this.isLoading.next(true);
+        const result = await promise;
+        this.isLoading.next(false);
+        return result;
     }
 
-    formatValue(value: number): string {
-        return `${value.toPrecision(3)}`;
+    getTotalData(): Promise<void> {
+        return this.searchService.getRelatedWords(this.queryText, this.corpus.name)
+            .then(results => {
+                this.totalSimilarities = results.total_similarities;
+                this.totalData = results.similarities_over_time;
+                this.timeIntervals = results.time_points;
+            })
+            .catch(this.onError.bind(this));
     }
 
-    formatDownloadValue(value: number): string {
-        return `${value}`;
+    async getZoomedInData(): Promise<void> {
+        const resultsPerTime: Promise<WordSimilarity[]>[] = this.timeIntervals.map(this.getTimeData.bind(this));
+        Promise.all(resultsPerTime)
+            .then(results => this.zoomedInData = results)
+            .catch(error => this.onError(error));
     }
 
-    dataIndices(data: ChartData): number[] {
-        return _.range(data.labels.length);
+    getTimeData(time: string): Promise<WordSimilarity[]> {
+        return this.searchService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
     }
 
-    addZeroSeries(data: ChartData): ChartData {
-        const indices = this.dataIndices(data);
+    onError(error) {
+        this.totalData = undefined;
+        this.zoomedInData = undefined;
+        this.error.emit(error);
 
-        data.datasets.unshift(
-            {
-                label: '',
-                data: indices.map(() => 0)
-            }
-        );
-
-        return data;
-    }
-
-
-    stackData(data: ChartData): ChartData {
-        const indices = this.dataIndices(data);
-
-        const stackedDatasets = data.datasets.map((dataset, datasetIndex) => {
-            if (datasetIndex > 0) {
-                const newDataset = _.cloneDeep(dataset);
-                const values = indices.map(index =>
-                    _.sumBy(data.datasets.slice(0, datasetIndex + 1), d => (d.data[index] as number))
-                );
-                newDataset.data = values;
-                return newDataset;
-            } else {
-                return dataset;
-            }
-        });
-
-        return {
-            labels: data.labels,
-            datasets: stackedDatasets
-        };
-    }
-
-    fixMean(data: ChartData): ChartData {
-        const indices = this.dataIndices(data);
-
-        const means = indices.map(index =>
-            _.meanBy(data.datasets, dataset => dataset.data[index])
-        );
-
-        const transformedDatasets = data.datasets.map(dataset => {
-            const clone = _.clone(dataset);
-            clone.data = indices.map(index => (dataset.data[index] as number) - means[index]);
-            return clone;
-        });
-
-        return {
-            labels: data.labels,
-            datasets: transformedDatasets,
-        };
-    }
-
-    /**
-     * Applies each data transformation necessary for stream format
-     */
-    transformStream(data: ChartData): ChartData {
-        const transformations = [this.stackData, this.addZeroSeries, this.fixMean];
-        const newData = _.reduce(transformations, (d, transformation) => transformation.bind(this)(d), data);
-        return newData;
-    }
-
-    updateChart(style: 'line'|'stream'|'bar'): void {
-        if (style !== 'bar') {
-            this.currentTimeIndex = undefined;
-            this.zoomedInData = undefined;
-            const data = _.cloneDeep(this.totalData);
-            this.makeChart(data, style);
-        } else {
-            if (this.zoomedInData === undefined) {
-                this.zoomTimeInterval(this.currentTimeIndex);
-            } else {
-                this.makeChart(this.zoomedInData, style);
-            }
-        }
-
-    }
-
-    makeChart(data: ChartData, style: 'line'|'stream'|'bar'): void {
-        const options: ChartOptions = {
-            elements: {
-                line: {
-                    tension: 0, // disables bezier curves
-                },
-                point: {
-                    radius: 0, // hide points
-                },
-            },
-            scales: {
-                x: {},
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Cosine similarity (SVD_PPMI)'
-                    }
-                },
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: {}
-                },
-                tooltip: {
-                    displayColors: true,
-                    callbacks: {
-                        labelColor(tooltipItem: any): any {
-                            const color = tooltipItem.dataset.borderColor;
-                            return {
-                                borderColor: color,
-                                backgroundColor: color,
-                            };
-                        },
-                    }
-                }
-            }
-        };
-
-        if (style === 'line') {
-            options.plugins.legend.labels = {
-                boxHeight: 0, // flat boxes so the border is a line
-            };
-        }
-
-        if (style === 'stream') {
-            data = this.transformStream(data);
-            data.datasets.forEach((dataset, index) => {
-                dataset['fill'] = '-1';
-            });
-            options.elements.line.borderWidth = 0;
-            options.plugins.legend.labels['filter'] = (legendItem, data) => legendItem.text !== '';
-
-            const labelText = (context: TooltipItem<any>) => {
-                if (context.datasetIndex > 0) {
-                    const originalData = this.totalData.datasets[context.datasetIndex - 1].data;
-                    const similarity = originalData[context.dataIndex];
-                    return similarity.toString();
-                }
-
-            };
-
-            options.plugins.tooltip.callbacks.label = labelText.bind(this);
-        }
-
-        if (style === 'bar') {
-            // hide grid lines as we only have one data point on x axis
-            data.datasets.forEach(dataset => dataset.type = 'bar');
-            options.scales.x = {
-                grid: {
-                    display: false
-                }
-            };
-        }
-
-        if (this.chart) {
-            this.chart.data = data;
-            this.chart.options = options;
-            this.chart.update();
-        } else {
-            this.chart = new Chart('chart', {
-                type: 'line',
-                data: data,
-                options: options,
-                plugins: [Filler]
-            });
-        }
     }
 
 }

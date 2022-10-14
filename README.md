@@ -20,6 +20,8 @@ The I-analyzer backend (`/backend`) is a python/Flask app that provides the foll
 
 - An 'api' module that that enables users to search through an ElasticSearch index of a text corpus and stream search results into a CSV file. The module also performs more complex analysis of search results for visualisations.
 
+- A 'wordmodels' module that handles functionality related to word embeddings.
+
 - An 'admin' module which describes the views for the admin interface (served through Flask)
 
 `ianalyzer/frontend` is an [Angular 13](https://angular.io/) web interface.

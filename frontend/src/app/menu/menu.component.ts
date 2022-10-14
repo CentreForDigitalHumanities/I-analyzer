@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MenuItem } from 'primeng/api';
 import { User } from '../models/index';
-import { CorpusService } from '../services/index';
-import { ConfigService, UserService } from '../services/index';
+import { CorpusService, UserService } from '../services/index';
+import { environment } from '../../environments/environment';
 
 @Component({
     selector: 'ia-menu',
@@ -22,7 +22,6 @@ export class MenuComponent implements OnDestroy, OnInit {
 
     constructor(
         private corpusService: CorpusService,
-        private configService: ConfigService,
         private userService: UserService,
         private router: Router
     ) {
@@ -38,9 +37,7 @@ export class MenuComponent implements OnDestroy, OnInit {
     }
 
     public gotoAdmin() {
-        this.configService.get().then(config => {
-            window.location.href = config.adminUrl;
-        });
+        window.location.href = environment.adminUrl;
     }
 
     public async logout() {
