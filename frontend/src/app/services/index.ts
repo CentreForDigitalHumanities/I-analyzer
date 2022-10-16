@@ -11,4 +11,5 @@ export * from './query.service';
 export * from './search.service';
 export * from './session.service';
 export * from './user.service';
-
+export * from './visualization.service';
+export * from './wordmodels.service';

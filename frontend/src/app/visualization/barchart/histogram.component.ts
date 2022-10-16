@@ -59,7 +59,7 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
             size: this.documentLimitForCategory(bin, series)
         }));
         const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-        return this.searchService.aggregateTermFrequencySearch(this.corpus, queryModelCopy, this.visualizedField.name, bins);
+        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModelCopy, this.visualizedField.name, bins);
     }
 
     processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {

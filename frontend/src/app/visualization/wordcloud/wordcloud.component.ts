@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
 import { DialogService, SearchService, ApiService } from '../../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { VisualizationService } from '../../services/visualization.service';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -45,7 +46,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     private chartElement: any;
     private svg: any;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) { }
+    constructor(private visualizationService: VisualizationService, private apiService: ApiService) { }
 
     ngOnInit() {
         if (this.resultsCount > 0) {
@@ -68,7 +69,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     loadData(size: number = null) {
         this.isLoading.next(true);
-        this.searchService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
+        this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
             this.significantText = result[this.visualizedField.name];
             this.onDataLoaded();
         })
@@ -81,7 +82,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         this.isLoading.next(true);
         const queryModel = this.queryModel;
         if (queryModel) {
-            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
+            this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
                 this.tasksToCancel = result['taskIds'];
                     const childTask = result['taskIds'][0];
                     this.apiService.pollTask({'task_id': childTask}).then( outcome => {

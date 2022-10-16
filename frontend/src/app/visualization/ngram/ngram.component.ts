@@ -3,7 +3,7 @@ import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
 import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
-import { ApiService, SearchService } from '../../services';
+import { ApiService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -63,8 +63,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     faTimes = faTimes;
 
     constructor(
-        private searchService: SearchService,
         private apiService: ApiService,
+        private visualizationService: VisualizationService,
         route: ActivatedRoute,
         router: Router
     ) {
@@ -133,7 +133,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         if (cachedResult) {
             this.onDataLoaded(cachedResult, changeAspectRatio);
         } else {
-            this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
+            this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
                 .then(result => {
                     this.tasksToCancel = result.task_ids;

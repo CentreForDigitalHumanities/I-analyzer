@@ -9,6 +9,7 @@ import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, 
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
+import { VisualizationService } from '../../services/visualization.service';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
@@ -122,6 +123,7 @@ export abstract class BarchartDirective
 
     constructor(
         public searchService: SearchService,
+        public visualizationService: VisualizationService,
         public apiService: ApiService
     ) {
         const chartDefault = Chart.defaults;

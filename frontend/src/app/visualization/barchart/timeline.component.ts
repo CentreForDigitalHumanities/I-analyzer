@@ -77,7 +77,7 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
         });
         const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
 
-        return this.searchService.dateTermFrequencySearch(
+        return this.visualizationService.dateTermFrequencySearch(
             this.corpus,
             queryModelCopy,
             this.visualizedField.name,
