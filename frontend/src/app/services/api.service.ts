@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -55,7 +55,7 @@ export class ApiService extends Resource {
         path: '/wordcloud'
     })
     public wordcloud: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
+    WordcloudParameters,
         { success: false, message: string } | { success: true, data: AggregateResult[] }>;
 
     @ResourceAction({
@@ -63,7 +63,7 @@ export class ApiService extends Resource {
         path: '/wordcloud_tasks'
     })
     public wordcloudTasks: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
+        WordcloudParameters,
         { success: false, message: string } | { success: true, task_ids: string[] }>;
 
 
@@ -100,7 +100,7 @@ export class ApiService extends Resource {
         path: '/aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, bins: {field_value: string|number, size: number}[] },
+        AggregateTermFrequencyParameters,
         TaskResult>;
 
     @ResourceAction({
@@ -108,7 +108,7 @@ export class ApiService extends Resource {
         path: '/date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field_name: string, bins: {start_date: string, end_date: string, size: number}[] },
+        DateTermFrequencyParameters,
         TaskResult>;
 
     @ResourceAction({

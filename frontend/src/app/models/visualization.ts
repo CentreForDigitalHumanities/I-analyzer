@@ -1,24 +1,53 @@
 import { AggregateResult, DateResult } from '.';
+import { EsQuery, EsQuerySorted } from '../services';
 import { SearchFilter, SearchFilterData } from './search-filter';
 
 // common type for all histogram/timeline results
 export type BarchartResult = DateResult|AggregateResult;
 
-export type HistogramSeries = {
-    data: AggregateResult[],
-    total_doc_count: number,
-    searchRatio: number,
-    queryText?: string,
-};
+/**
+ * Dataseries for barcharts.
+ * Each dataseries defines its own query text
+ * and stores results for that query.
+ * `data` contains the results per bin on the x-axis.
+ * Elements of `data` are often called cat/category in the code.
+ */
+ export interface BarchartSeries<Result> {
+    data: Result[];
+    total_doc_count: number; // total documents matching the query across the series
+    searchRatio: number; // ratio of total_doc_count that can be searched through without exceeding documentLimit
+    queryText?: string; // replaces the text in this.queryModel when searching
+}
 
-export type TimelineSeries = {
-    data: DateResult[],
-    total_doc_count: number,
-    searchRatio: number,
-    queryText?: string,
-};
+export type HistogramSeries = BarchartSeries<AggregateResult>;
+export type TimelineSeries = BarchartSeries<DateResult>;
 
-export type freqTableHeader = {
+
+export interface TimelineBin {start_date: string; end_date: string; size: number; }
+export interface HistogramBin {field_value: string|number; size: number; }
+
+export interface TermFrequencyParameters<Bin> {
+    es_query: EsQuery | EsQuerySorted;
+    corpus_name: string;
+    field_name: string;
+    bins: Bin[];
+    full_data?: boolean;
+}
+
+
+export type AggregateTermFrequencyParameters = TermFrequencyParameters<HistogramBin>;
+export type DateTermFrequencyParameters = TermFrequencyParameters<TimelineBin>;
+
+
+export interface WordcloudParameters {
+    es_query: EsQuery;
+    corpus: string;
+    field: string;
+    size?: number;
+}
+
+
+export type FreqTableHeader = {
     key: string,
     label: string,
     format?: (value) => string,
@@ -27,7 +56,7 @@ export type freqTableHeader = {
     isSecondaryFactor?: boolean,
 };
 
-export type freqTableHeaders = freqTableHeader[];
+export type FreqTableHeaders = FreqTableHeader[];
 
 export type Normalizer = 'raw'|'percent'|'documents'|'terms';
 

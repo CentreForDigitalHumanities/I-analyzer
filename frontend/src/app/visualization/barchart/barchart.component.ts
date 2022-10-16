@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 
 import { ApiService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField, TaskResult } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    DateTermFrequencyParameters, AggregateTermFrequencyParameters, BarchartSeries } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -22,25 +23,13 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export abstract class BarChartComponent<Result extends BarchartResult> implements OnChanges, OnInit {
+export abstract class BarChartComponent
+    <Result extends BarchartResult>
+    implements OnChanges, OnInit {
     public showHint: boolean;
 
-    /**
-     * Template for a series, used for typedefs: don't store data here.
-     * Each dataseries defines its own query text
-     * and sores results for that query.
-     * `data` contains the results per bin on the x-axis.
-     * Elements of `data` are often called cat/category in the code.
-     */
-    private seriesType: {
-        data: Result[],
-        total_doc_count: number, // total documents matching the query across the series
-        searchRatio: number, // ratio of total_doc_count that can be searched through without exceeding documentLimit
-        queryText?: string, // replaces the text in this.queryModel when searching
-    };
-
     // rawData: a list of series
-    rawData: (typeof this.seriesType)[];
+    rawData: (BarchartSeries<Result>)[];
 
     // chart object
     chart: Chart;
@@ -59,7 +48,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
     // table data
-    tableHeaders: freqTableHeaders;
+    tableHeaders: FreqTableHeaders;
     tableData: any[];
 
     /** list of query used by each series in te graph */
@@ -205,7 +194,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
     }
 
     /** make a blank series object */
-    newSeries(queryText: string): (typeof this.seriesType) {
+    newSeries(queryText: string): BarchartSeries<Result> {
         return {
             queryText: queryText,
             data: [],
@@ -302,7 +291,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
      * may be set to `false` when loading a portion of the series during zoom.
      * @returns a copy of the series with the document counts included.
      */
-    docCountResultIntoSeries(result, series: (typeof this.seriesType), setSearchRatio = true): (typeof this.seriesType) {
+    docCountResultIntoSeries(result, series: BarchartSeries<Result>, setSearchRatio = true): BarchartSeries<Result> {
         let data = result.aggregations[this.visualizedField.name]
             .map(this.aggregateResultToResult);
         const total_doc_count = this.totalDocCount(data);
@@ -365,7 +354,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
         return rawData;
     }
 
-    getTermFrequencies(series: typeof this.seriesType, queryModel): Promise<any> {
+    getTermFrequencies(series: BarchartSeries<Result>, queryModel): Promise<any> {
         return this.requestSeriesTermFrequency(series, queryModel).then(result => {
             if (result.success === true) {
                 return this.apiService.pollTask(result.task_id);
@@ -379,9 +368,9 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
         });
     }
 
-    abstract requestSeriesTermFrequency(series: typeof this.seriesType, queryModel: QueryModel): Promise<TaskResult>;
+    abstract requestSeriesTermFrequency(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<TaskResult>;
 
-    abstract processSeriesTermFrequency(results: Result[], series: typeof this.seriesType): typeof this.seriesType;
+    abstract processSeriesTermFrequency(results: Result[], series: BarchartSeries<Result>): BarchartSeries<Result>;
 
 
     /** total document count for a data array */
@@ -393,7 +382,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
      * calculate the maximum number of documents to read through in a bin
      * when determining term frequency.
      */
-     documentLimitForCategory(cat: Result, series: (typeof this.seriesType)): number {
+     documentLimitForCategory(cat: Result, series: BarchartSeries<Result>): number {
         return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
@@ -415,7 +404,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
     // implemented on child components
 
     /** Retrieve doc counts for a series */
-    requestSeriesDocumentData(series: typeof this.seriesType): Promise<typeof this.seriesType> {
+    requestSeriesDocumentData(series: BarchartSeries<Result>): Promise<BarchartSeries<Result>> {
         return undefined;
     }
     /**
@@ -425,7 +414,7 @@ export abstract class BarChartComponent<Result extends BarchartResult> implement
      * @param series the series object that the bin/category belongs to.
      * @returns a Promise object, finishes when the frequencies have been inserted into the result.
      */
-    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: typeof this.seriesType): Promise<void> {
+    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: BarchartSeries<Result>): Promise<void> {
         return undefined;
     }
     /** update or initialise chart (should be ran after updates to `rawData`) */

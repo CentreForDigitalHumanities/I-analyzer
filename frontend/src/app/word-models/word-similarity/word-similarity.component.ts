@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, WordSimilarity } from '../../models';
+import { Corpus, WordSimilarity } from '../../models';
 import { SearchService } from '../../services';
 
 @Component({

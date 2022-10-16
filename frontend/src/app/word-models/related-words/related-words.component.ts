@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
+import { Corpus, WordSimilarity } from '../../models';
 import { DialogService, SearchService } from '../../services/index';
 import * as _ from 'lodash';
 

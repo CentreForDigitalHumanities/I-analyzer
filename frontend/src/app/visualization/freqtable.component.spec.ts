@@ -2,8 +2,6 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import * as _ from 'lodash';
 import { TableModule } from 'primeng/table';
-import { freqTableHeaders } from '../models';
-
 import { FreqtableComponent } from './freqtable.component';
 
 describe('FreqtableComponent', () => {

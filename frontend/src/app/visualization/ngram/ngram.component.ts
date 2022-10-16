@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
+import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
 import { ApiService, SearchService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +27,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     @ViewChild('chart-container') chartContainer: ElementRef;
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true, },
         { key: 'ngram', label: 'N-gram', isSecondaryFactor: true, },
         { key: 'freq', label: 'Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue }

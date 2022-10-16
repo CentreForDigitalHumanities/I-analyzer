@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnIni
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
-import { AggregateResult, CorpusField, QueryModel, Corpus, freqTableHeaders } from '../../models/index';
+import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
 import { DialogService, SearchService, ApiService } from '../../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -26,7 +26,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Output() error = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         { key: 'key', label: 'Term' },
         { key: 'doc_count', label: 'Frequency' }
     ];
