@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -15,15 +15,13 @@ const hintHidingMinDelay = 500;       // milliseconds
 const hintHidingDebounceTime = 1000;  // milliseconds
 
 
-@Component({
+@Directive({
     selector: 'ia-barchart',
-    templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss']
 })
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export abstract class BarChartComponent
+export abstract class BarchartDirective
     <Result extends BarchartResult>
     implements OnChanges, OnInit {
     public showHint: boolean;

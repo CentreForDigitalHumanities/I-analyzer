@@ -3,8 +3,9 @@ import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries,
-    QueryModel} from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+    QueryModel,
+    Corpus} from '../../models/index';
+import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
 function formatXAxisLabel(value): string {
@@ -22,7 +23,7 @@ function formatXAxisLabel(value): string {
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
+export class HistogramComponent extends BarchartDirective<AggregateResult> implements OnInit, OnChanges {
 
     /** specify aggregator object based on visualised field;
      * used in document requests.

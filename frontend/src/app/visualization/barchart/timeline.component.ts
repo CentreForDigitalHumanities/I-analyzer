@@ -4,7 +4,7 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
 import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
@@ -15,7 +15,7 @@ import { selectColor } from '../select-color';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
+export class TimelineComponent extends BarchartDirective<DateResult> implements OnChanges, OnInit {
     /** time unit on the x-axis */
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     /** threshold for scaling down a unit on the time scale */
