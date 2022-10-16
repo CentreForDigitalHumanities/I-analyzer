@@ -1,19 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PrivacyComponent } from './privacy.component';
-import { DialogService } from '../services/dialog.service';
-import { DialogServiceMock } from '../../mock-data/dialog';
+import { commonTestBed } from '../common-test-bed';
 
 describe('PrivacyComponent', () => {
   let component: PrivacyComponent;
   let fixture: ComponentFixture<PrivacyComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ PrivacyComponent ],
-      providers: [ { provide: DialogService, useClass: DialogServiceMock } ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

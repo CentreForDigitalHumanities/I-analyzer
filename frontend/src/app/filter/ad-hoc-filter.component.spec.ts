@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { AdHocFilterComponent } from './ad-hoc-filter.component';
 
@@ -7,10 +8,7 @@ describe('AdHocFilterComponent', () => {
   let fixture: ComponentFixture<AdHocFilterComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ AdHocFilterComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   });
 
   beforeEach(() => {
