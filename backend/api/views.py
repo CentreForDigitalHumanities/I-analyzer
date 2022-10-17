@@ -627,3 +627,24 @@ def api_date_term_frequency():
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
         return jsonify({'success': True, 'task_id': task.id})
+
+@api.route('request_full_data', methods=['POST'])
+@login_required
+def api_request_full_data():
+    if not request.json:
+        abort(400)
+
+    for key in ['visualization', 'parameters']:
+        if not key in request.json:
+            abort(400)
+
+    if request.json['visualization'] == 'date_term_frequency':
+        task = tasks.timeline_term_frequency_full_data.delay(request.json['parameters'])
+        return jsonify({'success': True, 'task_id': task.id})
+
+    if request.json['visualization'] == 'aggregate_term_frequency':
+        task = tasks.histogram_term_frequency_full_data.delay(request.json['parameters'])
+        return jsonify({'success': True, 'task_id': task.id})
+
+    # unknown visualization value
+    abort(400)
