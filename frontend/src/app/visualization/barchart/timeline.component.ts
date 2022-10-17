@@ -64,7 +64,14 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
 
 
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
-        const bins = series.data.map((bin, index) => {
+        const bins = this.makeTermFrequencyBins(series);
+        return this.visualizationService.dateTermFrequencySearch(
+            this.corpus, queryModel, this.visualizedField.name, bins
+        );
+    }
+
+    makeTermFrequencyBins(series: TimelineSeries) {
+        return series.data.map((bin, index) => {
             const [minDate, maxDate] = this.categoryTimeDomain(bin, index, series);
             return {
                 start_date: minDate,
@@ -72,10 +79,6 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
                 size: this.documentLimitForCategory(bin, series)
             };
         });
-
-        return this.visualizationService.dateTermFrequencySearch(
-            this.corpus, queryModel, this.visualizedField.name, bins
-        );
     }
 
     processSeriesTermFrequency(results: DateResult[], series: TimelineSeries) {
@@ -91,6 +94,19 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
         const startDate = cat.date;
         const endDate = catIndex < (series.data.length - 1) ? series.data[catIndex + 1].date : undefined;
         return [startDate, endDate];
+    }
+
+    requestFullData() {
+        const paramsPerSeries = this.rawData.map(series => {
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
+            const bins = this.makeTermFrequencyBins(series);
+            return this.visualizationService.makeDateTermFrequencyParameters(
+                this.corpus, queryModel, this.visualizedField.name, bins);
+        });
+        return this.apiService.requestFullData({
+            visualization: 'date_term_frequency',
+            'parameters': paramsPerSeries
+        });
     }
 
     setChart() {

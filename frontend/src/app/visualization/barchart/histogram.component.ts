@@ -5,7 +5,8 @@ import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries,
     QueryModel,
     Corpus,
-    AggregateQueryFeedback} from '../../models/index';
+    AggregateQueryFeedback,
+    BarchartSeries} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
@@ -56,11 +57,15 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
     }
 
     requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
-        const bins = series.data.map(bin => ({
+        const bins = this.makeTermFrequencyBins(series);
+        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
+    }
+
+    makeTermFrequencyBins(series: BarchartSeries<AggregateResult>) {
+        return series.data.map(bin => ({
             fieldValue: bin.key,
             size: this.documentLimitForCategory(bin, series)
         }));
-        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
     }
 
     processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
@@ -69,6 +74,19 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
             return this.addTermFrequencyToCategory(res, bin);
         });
         return series;
+    }
+
+    requestFullData() {
+        const paramsPerSeries = this.rawData.map(series => {
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
+            const bins = this.makeTermFrequencyBins(series);
+            return this.visualizationService.makeAggregateTermFrequencyParameters(
+                this.corpus, queryModel, this.visualizedField.name, bins);
+        });
+        return this.apiService.requestFullData({
+            visualization: 'aggregate_term_frequency',
+            'parameters': paramsPerSeries
+        });
     }
 
     getLabels(): string[] {

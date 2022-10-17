@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Corpus, NgramParameters, QueryModel, TaskResult } from '../models';
+import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult, TimelineBin } from '../models';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
@@ -45,25 +45,30 @@ export class VisualizationService {
         });
     }
 
-
-    public async aggregateTermFrequencySearch(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number, size: number}[]
-    ): Promise<TaskResult> {
+    public makeAggregateTermFrequencyParameters(
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number, size: number}[],
+    ): AggregateTermFrequencyParameters {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getAggregateTermFrequency({
+        return {
             corpus_name: corpus.name,
             es_query: esQuery,
             field_name: fieldName,
-            bins: bins.map(bin => ({field_value: bin.fieldValue, size: bin.size}))
-        });
+            bins: bins.map(bin => ({field_value: bin.fieldValue, size: bin.size})),
+        };
     }
 
-
-    public async dateTermFrequencySearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+    public async aggregateTermFrequencySearch(
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {fieldValue: string|number, size: number}[],
     ): Promise<TaskResult> {
+        const params = this.makeAggregateTermFrequencyParameters(corpus, queryModel, fieldName, bins);
+        return this.apiService.getAggregateTermFrequency(params);
+    }
+
+    public makeDateTermFrequencyParameters(
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+    ): DateTermFrequencyParameters {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getDateTermFrequency({
+        return {
             corpus_name: corpus.name,
             es_query: esQuery,
             field_name: fieldName,
@@ -71,8 +76,15 @@ export class VisualizationService {
                 start_date: bin.start_date.toISOString().slice(0, 10),
                 end_date: bin.end_date ? bin.end_date.toISOString().slice(0, 10) : null,
                 size: bin.size,
-            }))
-        });
+            })),
+        };
+    }
+
+    public async dateTermFrequencySearch<TKey>(
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+    ): Promise<TaskResult> {
+        const params = this.makeDateTermFrequencyParameters(corpus, queryModel, fieldName, bins);
+        return this.apiService.getDateTermFrequency(params);
     }
 
     getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {

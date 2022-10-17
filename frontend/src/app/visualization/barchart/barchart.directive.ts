@@ -2,7 +2,7 @@ import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { ApiService, SearchService } from '../../services/index';
+import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
     BarchartSeries, AggregateQueryFeedback } from '../../models';
@@ -124,7 +124,8 @@ export abstract class BarchartDirective
     constructor(
         public searchService: SearchService,
         public visualizationService: VisualizationService,
-        public apiService: ApiService
+        public apiService: ApiService,
+        private notificationService: NotificationService,
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
@@ -358,7 +359,7 @@ export abstract class BarchartDirective
     }
 
     getTermFrequencies(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<any> {
-        const queryModelCopy =  this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
                 return this.apiService.pollTask(result.task_id);
@@ -373,6 +374,8 @@ export abstract class BarchartDirective
     }
 
     abstract requestSeriesTermFrequency(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<TaskResult>;
+
+    abstract makeTermFrequencyBins(series: BarchartSeries<Result>);
 
     abstract processSeriesTermFrequency(results: Result[], series: BarchartSeries<Result>): BarchartSeries<Result>;
 
@@ -409,14 +412,33 @@ export abstract class BarchartDirective
     getSeriesDocumentData(
         series: BarchartSeries<Result>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
     ): Promise<BarchartSeries<Result>> {
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
 
         return this.requestSeriesDocCounts(queryModelCopy).then(result =>
             this.docCountResultIntoSeries(result, series, setSearchRatio));
     }
 
+    /** adapt query model to fit series: use correct search fields and query text */
+    queryModelForSeries(series: BarchartSeries<Result>, queryModel: QueryModel) {
+        return this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+    }
+
     /** Request doc counts for a series */
     abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
+
+    getFullData() {
+        this.requestFullData().then(() =>
+            this.notificationService.showMessage(
+                'Full data requested! You will receive an email when your download is ready.',
+                'success'
+            )
+        ).catch(error => {
+            console.error(error);
+            this.notificationService.showMessage('Could not set up data generation.', 'danger');
+        });
+    }
+
+    abstract requestFullData(): Promise<TaskResult>;
 
     /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void {

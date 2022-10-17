@@ -74,7 +74,7 @@ export class ApiService extends Resource {
     public getTaskStatus: ResourceMethod<
     { task_id: string},
     { success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: AggregateResult[]|NgramResults }
+    { success: true, done: true, results: any }
     >;
 
     @ResourceAction({
@@ -109,6 +109,15 @@ export class ApiService extends Resource {
     })
     public getDateTermFrequency: ResourceMethod<
         DateTermFrequencyParameters,
+        TaskResult>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Post,
+        path: '/request_full_data'
+    })
+    public requestFullData: ResourceMethod<
+        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[] } |
+        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[] },
         TaskResult>;
 
     @ResourceAction({
