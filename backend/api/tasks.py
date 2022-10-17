@@ -94,10 +94,10 @@ def get_histogram_term_frequency(request_json):
 
 @celery_app.task()
 def histogram_term_frequency_full_data(parameters_per_series):
-    query_model_per_series = [params['es_query'] for params in parameters_per_series]
-    query_per_series = map(query.get_query_text, query_model_per_series)
+    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+    field_name = parameters_per_series[0]['field_name']
     results_per_series = map(get_histogram_term_frequency, parameters_per_series)
-    filepath = create_csv.histogram_term_frequency_csv(query_per_series, results_per_series)
+    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
     return filepath
 
 
