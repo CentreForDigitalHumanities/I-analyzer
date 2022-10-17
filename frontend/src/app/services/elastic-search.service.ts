@@ -227,7 +227,7 @@ export class ElasticSearchService {
     /**
     * Convert filters from query model into elasticsearch form
     */
-    private mapFilters(filters: SearchFilter<SearchFilterData>[]) {
+    private mapFilters(filters: SearchFilter<SearchFilterData>[]): EsFilter[] {
         return filters.map(filter => {
             switch (filter.currentData.filterType) {
                 case 'BooleanFilter':
@@ -273,26 +273,65 @@ export type EsQuerySorted = EsQuery & {
 export interface EsQuery {
     aborted?: boolean;
     completed?: Date;
-    query: EsSearchClause | {
-        'bool': {
-            must: EsSearchClause,
-            filter: any[],
-        }
-    };
+    query: EsSearchClause | BooleanQuery;
     highlight?: {};
     transferred?: Number;
 }
 
-type EsSearchClause = {
+interface BooleanQuery {
+    'bool': {
+        must: EsSearchClause,
+        filter: EsFilter[],
+    };
+}
+
+interface MatchAll {
+    match_all: {};
+}
+
+interface SimpleQueryString {
     simple_query_string: {
         query: string,
         fields?: string[],
         lenient: true,
         default_operator: 'or'
-    }
-} | {
-    match_all: {}
-};
+    };
+}
+
+type EsSearchClause = MatchAll | SimpleQueryString;
+
+interface EsDateFilter {
+    range: {
+        [field: string]: {
+            gte: string,
+            lte: string,
+            format: 'yyyy-MM-dd'
+        }
+    };
+}
+
+interface EsTermsFilter {
+    terms: {
+        [field: string]: string[]
+    };
+}
+
+interface EsBooleanFilter {
+    term: {
+        [field: string]: boolean
+    };
+}
+
+interface EsRangeFilter {
+    range: {
+        [field: string]: {
+            gte: number,
+            lte: number
+        }
+    };
+}
+
+type EsFilter = EsDateFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 interface Aggregator {
     name: string;
