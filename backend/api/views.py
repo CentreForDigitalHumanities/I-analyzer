@@ -281,19 +281,10 @@ def api_download_task():
         tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
-        filename = split(csvs.get())[1]
+        filepath = csvs.get()[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
-        send_user_mail(
-            email=current_user.email,
-            username=current_user.username,
-            subject_line="I-Analyzer CSV download",
-            email_title="Download CSV",
-            message="Your .csv file is ready for download.",
-            prompt="Click on the link below.",
-            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
-            link_text="Download .csv file"
-            )
+        tasks.csv_data_email(filepath, current_user.email, current_user.username)
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
@@ -638,13 +629,21 @@ def api_request_full_data():
         if not key in request.json:
             abort(400)
 
-    if request.json['visualization'] == 'date_term_frequency':
-        task = tasks.timeline_term_frequency_full_data.delay(request.json['parameters'])
-        return jsonify({'success': True, 'task_id': task.id})
+    task_per_type = {
+        'date_term_frequency': tasks.timeline_term_frequency_full_data,
+        'aggregate_term_frequency': tasks.histogram_term_frequency_full_data
+    }
 
-    if request.json['visualization'] == 'aggregate_term_frequency':
-        task = tasks.histogram_term_frequency_full_data.delay(request.json['parameters'])
-        return jsonify({'success': True, 'task_id': task.id})
+    visualization_type = request.json['visualization']
+    if visualization_type not in task_per_type:
+        abort(400, 'unknown visualization type "{}"'.format(visualization_type))
 
-    # unknown visualization value
-    abort(400)
+    task = task_per_type[visualization_type]
+
+
+    task_chain = chain(task.s(request.json['parameters']),
+        tasks.csv_data_email.s(current_user.email, current_user.username))
+
+    task_chain.apply_async()
+
+    return jsonify({'success': True, 'task_id': task_chain.id})

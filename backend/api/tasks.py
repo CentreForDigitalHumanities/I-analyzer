@@ -1,11 +1,12 @@
 from urllib import request
 import requests
 import json
-from flask import Flask, abort, current_app, render_template
+from flask import Flask, abort, current_app, render_template, jsonify
 from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 import re
+import os
 
 from api import analyze
 from api.user_mail import send_user_mail
@@ -125,8 +126,22 @@ def get_timeline_term_frequency(request_json):
 
 @celery_app.task()
 def timeline_term_frequency_full_data(parameters_per_series):
-    query_model_per_series = [params['es_query'] for params in parameters_per_series]
-    query_per_series = map(query.get_query_text, query_model_per_series)
+    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+    field_name = parameters_per_series[0]['field_name']
     results_per_series = map(get_timeline_term_frequency, parameters_per_series)
-    filepath = create_csv.timeline_term_frequency_csv(query_per_series, results_per_series)
+    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
     return filepath
+
+@celery_app.task()
+def csv_data_email(csv_filepath, user_email, username):
+    _, filename = os.path.split(csv_filepath)
+    send_user_mail(
+        email=user_email,
+        username=username,
+        subject_line="I-Analyzer CSV download",
+        email_title="Download CSV",
+        message="Your .csv file is ready for download.",
+        prompt="Click on the link below.",
+        link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
+        link_text="Download .csv file"
+    )

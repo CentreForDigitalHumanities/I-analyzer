@@ -3,7 +3,6 @@ import pytest
 import csv
 
 from api.tasks import create_csv
-from api.conftest import test_app
 
 @pytest.fixture
 def mock_es_result():
@@ -60,3 +59,65 @@ def test_create_csv(mock_es_result, mock_csv_fields, mock_es_query, test_app):
             counter += 1
             assert 'speech' in row
         assert counter == 1
+
+mock_queries = ['test', 'test2']
+
+mock_timeline_result = [
+    [
+        {
+            'key': '1800-01-01',
+            'key_as_string': '1800-01-01',
+            'match_count': 3,
+            'doc_count': 2,
+            'token_count': 46
+        }, {
+            'key': '1801-01-01',
+            'key_as_string': '1801-01-01',
+            'match_count': 5,
+            'doc_count': 6,
+            'token_count': 55
+        }
+    ], [
+        {
+            'key': '1800-01-01',
+            'key_as_string': '1800-01-01',
+            'match_count': 1,
+            'doc_count': 2,
+            'token_count': 46
+        }, {
+            'key': '1801-01-01',
+            'key_as_string': '1801-01-01',
+            'match_count': 3,
+            'doc_count': 6,
+            'token_count': 55
+        }
+    ]
+]
+
+mock_timeline_expected_data = [
+    {
+        'Query': 'test',
+        'date': '1800-01-01',
+        'Term frequency': '3'
+    }, {
+        'Query': 'test',
+        'date': '1801-01-01',
+        'Term frequency': '5'
+    }, {
+        'Query': 'test2',
+        'date': '1800-01-01',
+        'Term frequency': '1'
+    }, {
+        'Query': 'test2',
+        'date': '1801-01-01',
+        'Term frequency': '3'
+    }
+]
+
+def test_timeline_csv(test_app):
+    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date')
+    with open(filename) as f:
+        reader = csv.DictReader(f)
+        for expected_row in mock_timeline_expected_data:
+            row = next(reader)
+            assert row == expected_row

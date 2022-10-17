@@ -5,13 +5,11 @@ import os
 from flask import current_app
 
 
-def write_file(filename, fieldnames, rows):
-    csv.register_dialect('myDialect', delimiter=';', quotechar='"',
-        quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
+def write_file(filename, fieldnames, rows, dialect = 'excel'):
     filepath = os.path.join(current_app.config['CSV_FILES_PATH'], filename)
 
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, dialect='myDialect')
+        writer = csv.DictWriter(f, fieldnames=fieldnames, dialect = dialect)
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
@@ -56,15 +54,33 @@ def search_results_csv(results, fields, query):
 
     filename = create_filename(query)
     field_set.discard('context')
+    csv.register_dialect('resultsDialect', delimiter=';', quotechar='"',
+        quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
     fieldnames = sorted(field_set)
-    filepath = write_file(filename, fieldnames, entries)
+    filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
     return filepath
 
 
-def timeline_term_frequency_csv(queries, results_per_series):
-    return None
+def term_frequency_csv(queries, results_per_series, field_name, id = 0):
+    query_column = ['Query'] if len(queries) > 1 else []
+    fieldnames = query_column + [field_name, 'Term frequency']
 
+    rows = term_frequency_csv_rows(queries, results_per_series, field_name)
 
-def histogram_term_frequency_csv(queries, results_per_series):
-    return None
+    filename = 'term_frequency_{}.csv'.format(id)
+    filepath = write_file(filename, fieldnames, rows)
+    return filepath
+
+def term_frequency_csv_rows(queries, results_per_series, field_name):
+    for query, results in zip(queries, results_per_series):
+        for result in results:
+            field_value = result['key']
+            match_count = result['match_count']
+            row = {
+                field_name: field_value,
+                'Term frequency': match_count
+            }
+            if len(queries) > 1:
+                row['Query'] = query
+            yield row
 
