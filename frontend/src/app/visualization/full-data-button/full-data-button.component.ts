@@ -1,6 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ApiService } from '../../services';
-import { AggregateTermFrequencyParams, Corpus, DateTermFrequencyParams } from '../../models';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -9,9 +7,6 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./full-data-button.component.scss']
 })
 export class FullDataButtonComponent {
-    @Input() corpus: Corpus;
-    @Input() visType: 'aggregate_term_frequency' | 'date_term_frequency';
-    @Input() params: AggregateTermFrequencyParams | DateTermFrequencyParams;
     @Output() requestFullData = new EventEmitter<void>();
 
     isLoading = false; // show loading spinner in button
@@ -19,18 +14,10 @@ export class FullDataButtonComponent {
 
     faEnvelope = faEnvelope;
 
-    constructor(private apiService: ApiService) { }
+    constructor() { }
 
     onInitialRequest() {
-        this.showLoading(
-            this.checkFullDataAvailable().then(available => {
-                if (available) {
-                    this.onConfirm();
-                } else {
-                    this.showModal = true;
-                }
-            })
-        );
+        this.showModal = true;
     }
 
     async showLoading(promise: Promise<any>) {
@@ -39,15 +26,6 @@ export class FullDataButtonComponent {
         this.isLoading = false;
     }
 
-    checkFullDataAvailable(): Promise<boolean> {
-        return this.apiService.fullDataInCache({
-            corpus_name: this.corpus.name,
-            visualization: this.visType,
-            params: this.params
-        } as any)
-            .then(res => res.in_cache)
-            .catch(err => {console.error(err); return false;});
-    }
 
     onConfirm() {
         this.showModal = false;

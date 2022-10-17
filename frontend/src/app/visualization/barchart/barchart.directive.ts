@@ -426,8 +426,8 @@ export abstract class BarchartDirective
     /** Request doc counts for a series */
     abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
 
-    getFullData() {
-        this.requestFullData().then(() =>
+    requestFullData() {
+        this.fullDataRequest().then(() =>
             this.notificationService.showMessage(
                 'Full data requested! You will receive an email when your download is ready.',
                 'success'
@@ -438,7 +438,7 @@ export abstract class BarchartDirective
         });
     }
 
-    abstract requestFullData(): Promise<TaskResult>;
+    abstract fullDataRequest(): Promise<TaskResult>;
 
     /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void {

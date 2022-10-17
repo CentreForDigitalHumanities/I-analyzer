@@ -76,7 +76,7 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
         return series;
     }
 
-    requestFullData() {
+    fullDataRequest() {
         const paramsPerSeries = this.rawData.map(series => {
             const queryModel = this.queryModelForSeries(series, this.queryModel);
             const bins = this.makeTermFrequencyBins(series);

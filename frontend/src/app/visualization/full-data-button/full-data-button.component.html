@@ -1,4 +1,4 @@
-<div class="block" *ngIf="corpus && visType">
+<div class="block">
     <button class="button" [class.is-loading]="isLoading" (click)="onInitialRequest()">Load full data</button>
 </div>
 
@@ -13,28 +13,30 @@
         <section class="modal-card-body">
             <div class="content">
                 <p>
-                    This visualisation is based on a sample of the documents your search results.
+                    This visualisation is based on a sample of the documents in your search results.
                     These approximations are usually sufficient for exploring the corpus.
                 </p>
 
                 <p>
-                    However, we also offer the option to request a version of the visualization that
-                    is based on <i>all</i> the documents in your search results.
+                    However, we also offer the option to request the data
+                    based on <i>all</i> the documents in your search results.
+                    When your results are ready, you will be able to download
+                    the data as a csv file.
                 </p>
 
                 <p>
-                    The full data may take a long time to compute.
-                    If you confirm that you want the visualization based on full data,
+                    The results may take a long time to compute.
+                    If you confirm that you want the full data,
                     our server will start to compute it for you,
-                    and you will receive an email when your visualization is complete.
-                    The email will include a link to open the visualization.
+                    and you will receive an email when your file is complete.
+                    The email will include a link to download the data.
                     You do not need to keep this window open.
                 </p>
             </div>
         </section>
         <footer class="modal-card-foot">
             <div class="buttons is-right">
-                <button class="button is-primary">
+                <button class="button is-primary" (click)="onConfirm()">
                     <span class="icon"><fa-icon [icon]="faEnvelope"></fa-icon></span>
                     <span>Send me the full version</span>
                 </button>

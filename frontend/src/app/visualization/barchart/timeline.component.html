@@ -34,6 +34,6 @@
         the rest are assumed to have only one match for your query.
         </div>
 
-        <ia-full-data-button [corpus]="corpus" visType="date_term_frequency" [params]="{}"></ia-full-data-button>
+        <ia-full-data-button (requestFullData)="requestFullData()"></ia-full-data-button>
     </div>
 </div>
