@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries,
     QueryModel,
-    Corpus} from '../../models/index';
+    Corpus,
+    AggregateQueryFeedback} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
@@ -43,14 +44,15 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
         return {name: this.visualizedField.name, size: size};
     }
 
-    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+    requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregator = this.getAggregator();
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
 
         return this.searchService.aggregateSearch(
-            this.corpus, queryModelCopy, [aggregator]).then(result =>
-                    this.docCountResultIntoSeries(result, series)
-                );
+            this.corpus, queryModel, [aggregator]);
+    }
+
+    aggregateResultToResult(cat: AggregateResult) {
+        return cat;
     }
 
     requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
@@ -58,8 +60,7 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
             fieldValue: bin.key,
             size: this.documentLimitForCategory(bin, series)
         }));
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModelCopy, this.visualizedField.name, bins);
+        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
     }
 
     processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {

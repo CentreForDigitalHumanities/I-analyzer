@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { ApiService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    DateTermFrequencyParameters, AggregateTermFrequencyParameters, BarchartSeries } from '../../models';
+    BarchartSeries, AggregateQueryFeedback } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -42,7 +42,7 @@ export abstract class BarchartDirective
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
+    documentLimit = 1000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -187,7 +187,7 @@ export abstract class BarchartDirective
         }
     }
 
-    /** add a new series (i.e. a new query) to the graph. */
+    /** update the queries in the graph to the input array. Preserve results if possible, and kick off loading the rest. */
     updateQueries(queries: string[]) {
         this.rawData = queries.map(queryText => {
             const existingSeries = this.rawData.find(series => series.queryText === queryText);
@@ -210,6 +210,7 @@ export abstract class BarchartDirective
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
+        this.queries = [this.queryText];
         this.prepareChart();
     }
 
@@ -261,7 +262,7 @@ export abstract class BarchartDirective
     requestDocumentData(): Promise<typeof this.rawData> {
         const dataPromises = this.rawData.map(series => {
             if (!series.data.length) { // retrieve data if it was not already loaded
-                return this.requestSeriesDocumentData(series);
+                return this.getSeriesDocumentData(series);
             } else {
                 return series;
             }
@@ -309,9 +310,7 @@ export abstract class BarchartDirective
     }
 
     /** convert the output of an aggregation search to the relevant result type */
-    aggregateResultToResult(cat: AggregateResult): Result {
-        return cat as Result;
-    }
+    abstract aggregateResultToResult(cat: AggregateResult): Result;
 
     /** fill in the `relative_doc_count` property for an array of datapoints.
      */
@@ -336,9 +335,10 @@ export abstract class BarchartDirective
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData() {
-        const dataPromises = this.rawData.map(series => {
-            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
+    requestTermFrequencyData(rawData: typeof this.rawData) {
+        const dataPromises = rawData.map(series => {
+            if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
+                // retrieve data if it was not already loaded
                 return this.getTermFrequencies(series, this.queryModel);
             } else {
                 return series;
@@ -357,8 +357,9 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<Result>, queryModel): Promise<any> {
-        return this.requestSeriesTermFrequency(series, queryModel).then(result => {
+    getTermFrequencies(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<any> {
+        const queryModelCopy =  this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
                 return this.apiService.pollTask(result.task_id);
             }
@@ -404,22 +405,19 @@ export abstract class BarchartDirective
         return cat;
     }
 
-    // implemented on child components
+    /** Request and fill in doc counts for a series */
+    getSeriesDocumentData(
+        series: BarchartSeries<Result>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
+    ): Promise<BarchartSeries<Result>> {
+        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
 
-    /** Retrieve doc counts for a series */
-    requestSeriesDocumentData(series: BarchartSeries<Result>): Promise<BarchartSeries<Result>> {
-        return undefined;
+        return this.requestSeriesDocCounts(queryModelCopy).then(result =>
+            this.docCountResultIntoSeries(result, series, setSearchRatio));
     }
-    /**
-     * retrieve term frequencies for a bin and store in `rawData`
-     * @param cat the Result object of one bin/category in one series of the data.
-     * @param catIndex the index of the bin/category in the series.
-     * @param series the series object that the bin/category belongs to.
-     * @returns a Promise object, finishes when the frequencies have been inserted into the result.
-     */
-    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: BarchartSeries<Result>): Promise<void> {
-        return undefined;
-    }
+
+    /** Request doc counts for a series */
+    abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
+
     /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void {
         if (this.chart) {
@@ -429,15 +427,13 @@ export abstract class BarchartDirective
         }
     }
     /** select the columns/headers for the frequency table */
-    setTableHeaders(): void { }
+    abstract setTableHeaders(): void;
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
     onZoomIn(chart, triggeredByDataUpdate = false) { }
     /** options for the chart.
      * @param datasets array of dataset objects for the chart
      */
-    chartOptions(datasets): any {
-        return this.basicChartOptions;
-    }
+    abstract chartOptions(datasets);
 
     /** initalise a new chart */
     initChart() {
@@ -485,9 +481,7 @@ export abstract class BarchartDirective
     }
 
     /** return chartJS dataset objects based on rawData */
-    getDatasets(): any[] {
-        return undefined;
-    }
+    abstract getDatasets(): any[];
 
 
     /**

@@ -55,23 +55,23 @@
         <ng-container [ngSwitch]="visualizationType">
             <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'"
+                [visualizedField]="visualizedField" [frequencyMeasure]="'documents'"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
+                [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
             </ng-container>
             <ng-container *ngSwitchCase="'termfrequency'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                    [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [visualizedField]="visualizedField" [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
                 <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
