@@ -148,7 +148,10 @@ export abstract class BarchartDirective
 
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
-        return (changes.corpus || changes.queryModel || changes.visualizedField || changes.frequencyMeasure) !== undefined;
+        const relevantChanges = [changes.corpus, changes.queryModel, changes.visualizedField, changes.frequencyMeasure]
+            .filter(change => !_.isUndefined(change));
+
+        return _.some(relevantChanges, change => !_.isEqual(change.currentValue, change.previousValue));
     }
 
     /** update graph after changes to the normalisation menu (i.e. normalizer) */
