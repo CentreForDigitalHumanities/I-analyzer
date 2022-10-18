@@ -62,8 +62,11 @@ def search_results_csv(results, fields, query):
 
 
 def term_frequency_csv(queries, results_per_series, field_name, id = 0):
+    has_token_counts = results_per_series[0][0].get('token_count', None)
     query_column = ['Query'] if len(queries) > 1 else []
-    fieldnames = query_column + [field_name, 'Term frequency']
+    freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
+    token_columns = ['Relative term frequency (by # words)', 'Total word count'] if has_token_counts else []
+    fieldnames = query_column + [field_name] + freq_columns + token_columns
 
     rows = term_frequency_csv_rows(queries, results_per_series, field_name)
 
@@ -76,11 +79,18 @@ def term_frequency_csv_rows(queries, results_per_series, field_name):
         for result in results:
             field_value = result['key']
             match_count = result['match_count']
+            total_doc_count = result['total_doc_count']
             row = {
                 field_name: field_value,
-                'Term frequency': match_count
+                'Term frequency': match_count,
+                'Relative term frequency (by # documents)': match_count / total_doc_count,
+                'Total documents': total_doc_count,
             }
+            if result.get('token_count'):
+                total_token_count = result['token_count']
+                row['Total word count'] = total_token_count
+                row['Relative term frequency (by # words)'] = match_count / total_token_count
+
             if len(queries) > 1:
                 row['Query'] = query
             yield row
-

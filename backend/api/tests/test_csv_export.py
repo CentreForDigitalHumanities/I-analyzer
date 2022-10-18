@@ -69,13 +69,13 @@ mock_timeline_result = [
             'key_as_string': '1800-01-01',
             'match_count': 3,
             'total_doc_count': 2,
-            'token_count': 46
+            'token_count': 10
         }, {
             'key': '1801-01-01',
             'key_as_string': '1801-01-01',
             'match_count': 5,
-            'total_doc_count': 6,
-            'token_count': 55
+            'total_doc_count': 4,
+            'token_count': 20
         }
     ], [
         {
@@ -83,13 +83,13 @@ mock_timeline_result = [
             'key_as_string': '1800-01-01',
             'match_count': 1,
             'total_doc_count': 2,
-            'token_count': 46
+            'token_count': 10
         }, {
             'key': '1801-01-01',
             'key_as_string': '1801-01-01',
             'match_count': 3,
-            'total_doc_count': 6,
-            'token_count': 55
+            'total_doc_count': 4,
+            'token_count': 20
         }
     ]
 ]
@@ -98,19 +98,35 @@ mock_timeline_expected_data = [
     {
         'Query': 'test',
         'date': '1800-01-01',
-        'Term frequency': '3'
+        'Term frequency': '3',
+        'Relative term frequency (by # documents)': '1.5',
+        'Total documents': '2',
+        'Relative term frequency (by # words)': '0.3',
+        'Total word count': '10'
     }, {
         'Query': 'test',
         'date': '1801-01-01',
-        'Term frequency': '5'
+        'Term frequency': '5',
+        'Relative term frequency (by # documents)': '1.25',
+        'Total documents': '4',
+        'Relative term frequency (by # words)': '0.25',
+        'Total word count': '20'
     }, {
         'Query': 'test2',
         'date': '1800-01-01',
-        'Term frequency': '1'
+        'Term frequency': '1',
+        'Relative term frequency (by # documents)': '0.5',
+        'Total documents': '2',
+        'Relative term frequency (by # words)': '0.1',
+        'Total word count': '10'
     }, {
         'Query': 'test2',
         'date': '1801-01-01',
-        'Term frequency': '3'
+        'Term frequency': '3',
+        'Relative term frequency (by # documents)': '0.75',
+        'Total documents': '4',
+        'Relative term frequency (by # words)': '0.15',
+        'Total word count': '20'
     }
 ]
 
