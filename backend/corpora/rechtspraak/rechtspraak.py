@@ -100,3 +100,14 @@ class Rechtspraak(XMLCorpus):
                         else:
                             nestedz.extractall(target_dir)
 
+    def sources(self, min_year: Optional[int] = None, max_year: Optional[int] = None):
+        if not min_year:
+            min_year = self.min_date.year
+        if not max_year:
+            max_year = self.max_date.year
+
+        for year in range(min_year, max_year+1):
+            glob_pattern = f'{self.data_directory}/unpacked/{year}/*.xml'
+            files = glob.glob(glob_pattern)
+            for f in files:
+                yield f, {'year': year}
