@@ -134,14 +134,8 @@ class Rechtspraak(XMLCorpus):
             name='id',
             display_name='ID',
             description='',
-            extractor=rdf_description_extractor(
-                'dcterms:identifier', format='xml')
-        ),
-        Field(
-            name='issued',
-            display_name='Publicatiedatum',
-            extractor=rdf_description_extractor('dcterms:issued'),
-            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            extractor=rdf_description_extractor('dcterms:identifier'),
+            csv_core=True,
         ),
         Field(
             name='date',
@@ -149,11 +143,27 @@ class Rechtspraak(XMLCorpus):
             extractor=rdf_description_extractor('dcterms:date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
+            primary_sort=True,
+            csv_core=True,
             search_filter=filters.DateFilter(
                 min_date,
                 max_date,
                 description=(
-                    'Accept only articles with publication date in this range.'
+                    'Accept only rulings with date in this range.'
+                )
+            ),
+
+        ),
+        Field(
+            name='issued',
+            display_name='Publicatiedatum',
+            extractor=rdf_description_extractor('dcterms:issued'),
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            search_filter=filters.DateFilter(
+                min_date,
+                max_date,
+                description=(
+                    'Accept only rulings with publication date in this range.'
                 )
             ),
         ),
@@ -167,7 +177,14 @@ class Rechtspraak(XMLCorpus):
             name='creator',
             display_name='Instantie',
             extractor=rdf_description_extractor('dcterms:creator'),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'keyword'},
+            csv_core=True,
+            results_overview=True,
+            search_filter=filters.MultipleChoiceFilter(
+                description='Zoek alleen binnen uitspraken van geselecteerde instanties.',
+                option_count=9999
+            ),
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='zaaknr',
@@ -178,13 +195,26 @@ class Rechtspraak(XMLCorpus):
             name='type',
             display_name='Type',
             extractor=rdf_description_extractor('dcterms:type'),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'keyword'},
+            csv_core=True,
+            results_overview=True,
+            search_filter=filters.MultipleChoiceFilter(
+                description='Zoek alleen binnen geselecteerde type document.',
+                option_count=2
+            ),
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='procedure',
             display_name='Procedure',
             extractor=rdf_description_extractor('psi:procedure'),
-            es_mapping={'type': 'keyword'}
+            csv_core=True,
+            es_mapping={'type': 'keyword'},
+            search_filter=filters.MultipleChoiceFilter(
+                description='Zoek alleen binnen geselecteerde gevolgde procedures.',
+                option_count=44
+            ),
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='spatial',
@@ -195,7 +225,13 @@ class Rechtspraak(XMLCorpus):
             name='subject',
             display_name='Rechtsgebied',
             extractor=rdf_description_extractor('dcterms:subject'),
-            es_mapping={'type': 'keyword'}
+            csv_core=True,
+            es_mapping={'type': 'keyword'},
+            search_filter=filters.MultipleChoiceFilter(
+                description='Zoek alleen binnen geselecteerde rechtsgebieden.',
+                option_count=32
+            ),
+            visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='title',
@@ -214,6 +250,14 @@ class Rechtspraak(XMLCorpus):
             name='content',
             display_name='Uitspraak',
             display_type='text_content',
-            extractor=extract.XML(tag='uitspraak', toplevel=True, flatten=True)
+            extractor=extract.XML(
+                tag='uitspraak', toplevel=True, flatten=True),
+            csv_core=True,
+        ),
+        Field(
+            name='url',
+            display_name='url',
+            extractor=rdf_description_extractor(
+                'dcterms:identifier', format='html')
         )
     ]
