@@ -6,11 +6,12 @@ from typing import Optional
 from zipfile import ZipFile
 import glob
 
-from addcorpus.corpus import XMLCorpus
+from addcorpus import extract, filters
+from addcorpus.corpus import Field, XMLCorpus
+from bs4 import BeautifulSoup
 from flask import current_app
 from addcorpus import extract
 
-from backend.addcorpus.corpus import Field
 
 logger = logging.getLogger(__name__)
 
@@ -112,14 +113,103 @@ class Rechtspraak(XMLCorpus):
                         else:
                             nestedz.extractall(target_dir)
 
-    def sources(self, min_year: Optional[int] = None, max_year: Optional[int] = None):
-        if not min_year:
-            min_year = self.min_date.year
-        if not max_year:
-            max_year = self.max_date.year
+    def sources(self, min_date: Optional[int] = None, max_date: Optional[int] = None):
+        if not min_date:
+            min_date = self.min_date
+        if not max_date:
+            max_date = self.max_date
 
-        for year in range(min_year, max_year+1):
+        for year in range(min_date.year, max_date.year+1):
             glob_pattern = f'{self.data_directory}/unpacked/{year}/*.xml'
             files = glob.glob(glob_pattern)
             for f in files:
                 yield f, {'year': year}
+
+    fields = [
+        Field(
+            name='id',
+            display_name='ID',
+            description='',
+            extractor=rdf_description_extractor(
+                'dcterms:identifier', format='xml')
+        ),
+        Field(
+            name='issued',
+            display_name='Publicatiedatum',
+            extractor=rdf_description_extractor('dcterms:issued'),
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        ),
+        Field(
+            name='date',
+            display_name='Uitspraakdatum',
+            extractor=rdf_description_extractor('dcterms:date'),
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+            results_overview=True,
+            search_filter=filters.DateFilter(
+                min_date,
+                max_date,
+                description=(
+                    'Accept only articles with publication date in this range.'
+                )
+            ),
+        ),
+        Field(
+            name='publisher',
+            display_name='Uitgever',
+            extractor=rdf_description_extractor('dcterms:publisher'),
+            es_mapping={'type': 'keyword'},
+        ),
+        Field(
+            name='creator',
+            display_name='Instantie',
+            extractor=rdf_description_extractor('dcterms:creator'),
+            es_mapping={'type': 'keyword'}
+        ),
+        Field(
+            name='zaaknr',
+            display_name='Zaaknummer',
+            extractor=rdf_description_extractor('psi:zaaknummer')
+        ),
+        Field(
+            name='type',
+            display_name='Type',
+            extractor=rdf_description_extractor('dcterms:type'),
+            es_mapping={'type': 'keyword'}
+        ),
+        Field(
+            name='procedure',
+            display_name='Procedure',
+            extractor=rdf_description_extractor('psi:procedure'),
+            es_mapping={'type': 'keyword'}
+        ),
+        Field(
+            name='spatial',
+            display_name='Zittingsplaats',
+            extractor=rdf_description_extractor('dcterms:spatial')
+        ),
+        Field(
+            name='subject',
+            display_name='Rechtsgebied',
+            extractor=rdf_description_extractor('dcterms:subject'),
+            es_mapping={'type': 'keyword'}
+        ),
+        Field(
+            name='title',
+            display_name='Titel',
+            extractor=rdf_description_extractor(
+                'dcterms:title', format='html'),
+            results_overview=True,
+        ),
+        Field(
+            name='abstract',
+            display_name='Inhoudsindicatie',
+            extractor=extract.XML(tag='inhoudsindicatie', flatten=True),
+            results_overview=True,
+        ),
+        Field(
+            name='content',
+            display_name='Uitspraak',
+            display_type='text_content',
+            extractor=extract.XML(tag='uitspraak', toplevel=True, flatten=True)
+        )
+    ]

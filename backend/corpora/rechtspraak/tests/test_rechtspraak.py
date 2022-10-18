@@ -6,3 +6,8 @@ def test_rechtspraak_unpack(test_corpus):
 def test_rechtspraak_sources(test_corpus):
     s = test_corpus.sources()
     assert next(s)
+
+
+def test_rechtspraak_documents(test_corpus, corpus_test_data):
+    docs = test_corpus.documents()
+    assert next(docs) == corpus_test_data['docs'][0]
