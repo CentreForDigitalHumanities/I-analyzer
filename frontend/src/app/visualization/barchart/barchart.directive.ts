@@ -381,8 +381,8 @@ export abstract class BarchartDirective
 
 
     /** total document count for a data array */
-    totalDocCount(data: DataPoint[]) {
-        return _.sumBy(data, item => item.total_doc_count);
+    totalDocCount(data: AggregateResult[]) {
+        return _.sumBy(data, item => item.doc_count);
     }
 
     /**

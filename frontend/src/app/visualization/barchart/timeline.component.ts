@@ -3,7 +3,7 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult } from '../../models/index';
+import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult, TimeCategory } from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -17,7 +17,7 @@ import { selectColor } from '../select-color';
 })
 export class TimelineComponent extends BarchartDirective<TimelineDataPoint> implements OnChanges, OnInit {
     /** time unit on the x-axis */
-    private currentTimeCategory: 'year'|'week'|'month'|'day';
+    private currentTimeCategory: TimeCategory;
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
     /** formatting function for time in ES queries */
@@ -66,7 +66,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
         const bins = this.makeTermFrequencyBins(series);
         return this.visualizationService.dateTermFrequencySearch(
-            this.corpus, queryModel, this.visualizedField.name, bins
+            this.corpus, queryModel, this.visualizedField.name, bins, this.currentTimeCategory
         );
     }
 
@@ -100,8 +100,9 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         const paramsPerSeries = this.rawData.map(series => {
             const queryModel = this.queryModelForSeries(series, this.queryModel);
             const bins = this.makeTermFrequencyBins(series);
+            const unit = this.calculateTimeCategory(...this.xDomain); // use initial unit, not zoomed-in-status
             return this.visualizationService.makeDateTermFrequencyParameters(
-                this.corpus, queryModel, this.visualizedField.name, bins);
+                this.corpus, queryModel, this.visualizedField.name, bins, unit);
         });
         return this.apiService.requestFullData({
             visualization: 'date_term_frequency',
@@ -112,7 +113,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = (this.chart.options.scales.xAxis as any).time.unit as ('year'|'week'|'month'|'day');
+            const unit = (this.chart.options.scales.xAxis as any).time.unit as TimeCategory;
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -278,7 +279,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      * Get the time category (year/month/week/day) that should be used in the graph,
      * based on minimum and maximum dates on the x axis.
      */
-    public calculateTimeCategory(min: Date, max: Date): 'year'|'month'|'week'|'day' {
+    public calculateTimeCategory(min: Date, max: Date): TimeCategory {
         const diff = moment.duration(moment(max).diff(moment(min)));
         if (diff.asYears() >= this.scaleDownThreshold) {
             return 'year';

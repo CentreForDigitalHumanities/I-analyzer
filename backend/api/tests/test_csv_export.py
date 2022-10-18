@@ -97,7 +97,7 @@ mock_timeline_result = [
 mock_timeline_expected_data = [
     {
         'Query': 'test',
-        'date': '1800-01-01',
+        'date': '1800',
         'Term frequency': '3',
         'Relative term frequency (by # documents)': '1.5',
         'Total documents': '2',
@@ -105,7 +105,7 @@ mock_timeline_expected_data = [
         'Total word count': '10'
     }, {
         'Query': 'test',
-        'date': '1801-01-01',
+        'date': '1801',
         'Term frequency': '5',
         'Relative term frequency (by # documents)': '1.25',
         'Total documents': '4',
@@ -113,7 +113,7 @@ mock_timeline_expected_data = [
         'Total word count': '20'
     }, {
         'Query': 'test2',
-        'date': '1800-01-01',
+        'date': '1800',
         'Term frequency': '1',
         'Relative term frequency (by # documents)': '0.5',
         'Total documents': '2',
@@ -121,7 +121,7 @@ mock_timeline_expected_data = [
         'Total word count': '10'
     }, {
         'Query': 'test2',
-        'date': '1801-01-01',
+        'date': '1801',
         'Term frequency': '3',
         'Relative term frequency (by # documents)': '0.75',
         'Total documents': '4',
@@ -131,9 +131,21 @@ mock_timeline_expected_data = [
 ]
 
 def test_timeline_csv(test_app):
-    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date')
+    filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
     with open(filename) as f:
         reader = csv.DictReader(f)
         for expected_row in mock_timeline_expected_data:
             row = next(reader)
             assert row == expected_row
+
+def test_date_format():
+    cases = [
+        ('test', None, 'test'), # unchanged
+        ('1800-01-01', 'year', '1800'),
+        ('1800-01-01', 'month', 'January 1800'),
+        ('1800-01-01', 'week', '1800-01-01'),
+        ('1800-01-01', 'day', '1800-01-01'),
+    ]
+
+    for value, unit, expected in cases:
+        assert create_csv.format_field_value(value, unit) == expected

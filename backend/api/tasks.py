@@ -128,8 +128,9 @@ def get_timeline_term_frequency(request_json):
 def timeline_term_frequency_full_data(parameters_per_series):
     query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
     field_name = parameters_per_series[0]['field_name']
-    results_per_series = map(get_timeline_term_frequency, parameters_per_series)
-    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
+    unit = parameters_per_series[0]['unit']
+    results_per_series = list(map(get_timeline_term_frequency, parameters_per_series))
+    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
     return filepath
 
 @celery_app.task()

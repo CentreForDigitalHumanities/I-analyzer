@@ -212,10 +212,13 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
 
     return output
 
+def parse_datestring(datestring):
+    return datetime.strptime(datestring, '%Y-%m-%d')
+
 def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
 
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
+    start_date = parse_datestring(start_date_str)
+    end_date = parse_datestring(end_date_str) if end_date_str else None
 
     date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)

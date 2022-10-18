@@ -55,12 +55,15 @@ export type TimelineSeries = BarchartSeries<DateResult>;
 export interface TimelineBin {start_date: string; end_date: string; size: number; }
 export interface HistogramBin {field_value: string|number; size: number; }
 
+export type TimeCategory =  'year'|'week'|'month'|'day';
+
 export interface TermFrequencyParameters<Bin> {
     es_query: EsQuery | EsQuerySorted;
     corpus_name: string;
     field_name: string;
     bins: Bin[];
     full_data?: boolean;
+    unit?: TimeCategory;
 }
 
 

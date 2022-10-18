@@ -1,8 +1,11 @@
 import csv
+from datetime import datetime
 from bs4 import BeautifulSoup
 import os
 
 from flask import current_app
+
+from api.analyze import parse_datestring
 
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
@@ -61,23 +64,23 @@ def search_results_csv(results, fields, query):
     return filepath
 
 
-def term_frequency_csv(queries, results_per_series, field_name, id = 0):
+def term_frequency_csv(queries, results_per_series, field_name, id = 0, unit = None):
     has_token_counts = results_per_series[0][0].get('token_count', None)
     query_column = ['Query'] if len(queries) > 1 else []
     freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
     token_columns = ['Relative term frequency (by # words)', 'Total word count'] if has_token_counts else []
     fieldnames = query_column + [field_name] + freq_columns + token_columns
 
-    rows = term_frequency_csv_rows(queries, results_per_series, field_name)
+    rows = term_frequency_csv_rows(queries, results_per_series, field_name, unit)
 
     filename = 'term_frequency_{}.csv'.format(id)
     filepath = write_file(filename, fieldnames, rows)
     return filepath
 
-def term_frequency_csv_rows(queries, results_per_series, field_name):
+def term_frequency_csv_rows(queries, results_per_series, field_name, unit):
     for query, results in zip(queries, results_per_series):
         for result in results:
-            field_value = result['key']
+            field_value = format_field_value(result['key'], unit)
             match_count = result['match_count']
             total_doc_count = result['total_doc_count']
             row = {
@@ -94,3 +97,16 @@ def term_frequency_csv_rows(queries, results_per_series, field_name):
             if len(queries) > 1:
                 row['Query'] = query
             yield row
+
+def format_field_value(value, unit):
+    if not unit:
+        return value
+    else:
+        date = parse_datestring(value)
+        formats = {
+            'year': '%Y',
+            'month': '%B %Y',
+            'week': '%Y-%m-%d',
+            'day': '%Y-%m-%d'
+        }
+        return date.strftime(formats[unit])

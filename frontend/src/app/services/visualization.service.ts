@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult, TimelineBin } from '../models';
+import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult, TimeCategory, TimelineBin } from '../models';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
@@ -65,7 +65,8 @@ export class VisualizationService {
     }
 
     public makeDateTermFrequencyParameters(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[],
+        unit: TimeCategory,
     ): DateTermFrequencyParameters {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
         return {
@@ -77,13 +78,15 @@ export class VisualizationService {
                 end_date: bin.end_date ? bin.end_date.toISOString().slice(0, 10) : null,
                 size: bin.size,
             })),
+            unit,
         };
     }
 
     public async dateTermFrequencySearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[]
+        corpus: Corpus, queryModel: QueryModel, fieldName: string, bins: {size: number, start_date: Date, end_date?: Date}[],
+        unit: TimeCategory,
     ): Promise<TaskResult> {
-        const params = this.makeDateTermFrequencyParameters(corpus, queryModel, fieldName, bins);
+        const params = this.makeDateTermFrequencyParameters(corpus, queryModel, fieldName, bins, unit);
         return this.apiService.getDateTermFrequency(params);
     }
 
