@@ -48,15 +48,6 @@ class Rechtspraak(XMLCorpus):
     tag_toplevel = 'open-rechtspraak'
     tag_entry = ''
 
-    @staticmethod
-    def get_valuelist(term):
-        '''Gets a 'waardelijst' from data.rechtspraak.nl
-        Used to determine keyword values
-        '''
-        with urllib.request.urlopen(f'https://data.rechtspraak.nl/Waardelijst/{term}') as f:
-            data = f.read().decode('utf-8')
-        return BeautifulSoup(data, 'lxml')
-
     def unpack(self,
                min_year: Optional[int] = None,
                max_year: Optional[int] = None,
