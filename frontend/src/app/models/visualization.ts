@@ -1,6 +1,35 @@
 import { AggregateResult, DateResult } from '.';
 import { EsQuery, EsQuerySorted } from '../services';
-import { SearchFilter, SearchFilterData } from './search-filter';
+
+export interface TermFrequencyResult {
+    key: string;
+    match_count: number;
+    token_count?: number;
+    total_doc_count: number;
+}
+
+export interface HistogramDataPoint {
+    key: string;
+    doc_count: number;
+    relative_doc_count?: number;
+    match_count?: number;
+    token_count?: number;
+    total_doc_count?: number;
+    matches_by_token_count?: number;
+    matches_by_doc_count?: number;
+    key_as_string?: string;
+}
+
+export interface TimelineDataPoint {
+    date: Date;
+    doc_count: number;
+    relative_doc_count?: number;
+    match_count?: number;
+    token_count?: number;
+    total_doc_count?: number;
+    matches_by_token_count?: number;
+    matches_by_doc_count?: number;
+}
 
 // common type for all histogram/timeline results
 export type BarchartResult = DateResult|AggregateResult;

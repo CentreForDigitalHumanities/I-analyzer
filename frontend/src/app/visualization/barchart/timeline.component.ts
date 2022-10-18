@@ -3,7 +3,7 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
+import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult } from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -15,7 +15,7 @@ import { selectColor } from '../select-color';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarchartDirective<DateResult> implements OnChanges, OnInit {
+export class TimelineComponent extends BarchartDirective<TimelineDataPoint> implements OnChanges, OnInit {
     /** time unit on the x-axis */
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     /** threshold for scaling down a unit on the time scale */
@@ -41,7 +41,7 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    aggregateResultToResult(cat: AggregateResult): DateResult {
+    aggregateResultToDataPoint(cat: AggregateResult): TimelineDataPoint {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
@@ -81,7 +81,7 @@ export class TimelineComponent extends BarchartDirective<DateResult> implements 
         });
     }
 
-    processSeriesTermFrequency(results: DateResult[], series: TimelineSeries) {
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: TimelineSeries) {
         series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
             return this.addTermFrequencyToCategory(res, bin);

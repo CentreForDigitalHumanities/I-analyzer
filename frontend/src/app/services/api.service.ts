@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -292,7 +292,7 @@ export class ApiService extends Resource {
     }
 
     public pollTask(id): Promise<{ success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: AggregateResult[]|DateResult[]|NgramResults }> {
+    { success: true, done: true, results: TermFrequencyResult[]|NgramResults|AggregateResult[] }> {
         return timer(0, 5000).pipe(
             switchMap((_) => this.getTaskStatus({'task_id': id})),
             filter(this.taskDone),

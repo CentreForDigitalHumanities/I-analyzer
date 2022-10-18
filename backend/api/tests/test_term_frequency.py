@@ -66,26 +66,26 @@ def test_total_docs_and_tokens(test_app, test_es_client):
 
     query = make_query(query_text='*', search_in_fields=['content'])
     fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', query)
-    doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, 'mock-corpus', aggregators)
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, 'mock-corpus', aggregators)
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
 
 def test_term_frequency(test_app, test_es_client):
 
     ## search in all fields
     query = make_query(query_text='Alice')
-    match_count, doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
+    match_count, total_doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
 
     assert match_count == 2
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == None
 
     ## search in content (includes token count)
     query = make_query(query_text='Alice', search_in_fields=['content'])
-    match_count, doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
+    match_count, total_doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
 
     assert match_count == 1
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
 
 def test_histogram_term_frequency(test_app, test_es_client):
@@ -113,7 +113,7 @@ def test_histogram_term_frequency(test_app, test_es_client):
         assert result == {
             'key': case['genre'],
             'match_count': case['matches'],
-            'doc_count': 1,
+            'total_doc_count': 1,
             'token_count': case['tokens']
         }
 
@@ -137,7 +137,7 @@ def test_timeline_term_frequency(test_app, test_es_client):
             'key': case['min_date'],
             'key_as_string': case['min_date'],
             'match_count': case['matches'],
-            'doc_count': 2,
+            'total_doc_count': 2,
             'token_count': case['tokens']
         }
 

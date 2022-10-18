@@ -4,9 +4,8 @@ import * as _ from 'lodash';
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries,
     QueryModel,
-    Corpus,
-    AggregateQueryFeedback,
-    BarchartSeries} from '../../models/index';
+    HistogramDataPoint,
+    TermFrequencyResult} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
@@ -25,7 +24,7 @@ function formatXAxisLabel(value): string {
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarchartDirective<AggregateResult> implements OnInit, OnChanges {
+export class HistogramComponent extends BarchartDirective<HistogramDataPoint> implements OnInit, OnChanges {
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -52,7 +51,7 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
             this.corpus, queryModel, [aggregator]);
     }
 
-    aggregateResultToResult(cat: AggregateResult) {
+    aggregateResultToDataPoint(cat: AggregateResult) {
         return cat;
     }
 
@@ -61,14 +60,14 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
         return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
     }
 
-    makeTermFrequencyBins(series: BarchartSeries<AggregateResult>) {
+    makeTermFrequencyBins(series: HistogramSeries) {
         return series.data.map(bin => ({
             fieldValue: bin.key,
             size: this.documentLimitForCategory(bin, series)
         }));
     }
 
-    processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: HistogramSeries) {
         series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
             return this.addTermFrequencyToCategory(res, bin);

@@ -68,13 +68,13 @@ mock_timeline_result = [
             'key': '1800-01-01',
             'key_as_string': '1800-01-01',
             'match_count': 3,
-            'doc_count': 2,
+            'total_doc_count': 2,
             'token_count': 46
         }, {
             'key': '1801-01-01',
             'key_as_string': '1801-01-01',
             'match_count': 5,
-            'doc_count': 6,
+            'total_doc_count': 6,
             'token_count': 55
         }
     ], [
@@ -82,13 +82,13 @@ mock_timeline_result = [
             'key': '1800-01-01',
             'key_as_string': '1800-01-01',
             'match_count': 1,
-            'doc_count': 2,
+            'total_doc_count': 2,
             'token_count': 46
         }, {
             'key': '1801-01-01',
             'key_as_string': '1801-01-01',
             'match_count': 3,
-            'doc_count': 6,
+            'total_doc_count': 6,
             'token_count': 55
         }
     ]

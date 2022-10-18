@@ -225,7 +225,7 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     data = {
         'key': start_date_str,
         'key_as_string': start_date_str,
-        'doc_count': doc_count,
+        'total_doc_count': doc_count,
         'match_count': match_count,
         'token_count': token_count,
     }
@@ -313,7 +313,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
         size = 0 # don't include documents
     )
 
-    doc_count = total_hits(results)
+    total_doc_count = total_hits(results)
 
     if token_count_aggregators:
         token_count = int(sum(
@@ -323,7 +323,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     else:
         token_count = None
 
-    return doc_count, token_count
+    return total_doc_count, token_count
 
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
@@ -336,9 +336,9 @@ def get_term_frequency(es_query, corpus, size):
 
     # get total document count and (if available) token count for bin
     agg_query = query.remove_query(es_query) #remove search term filter
-    doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
+    total_doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
 
-    return match_count, doc_count, token_count
+    return match_count, total_doc_count, token_count
 
 def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
     # filter for relevant value
@@ -350,7 +350,7 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
     result = {
         'key': field_value,
         'match_count': match_count,
-        'doc_count': doc_count,
+        'total_doc_count': doc_count,
         'token_count': token_count,
     }
 
