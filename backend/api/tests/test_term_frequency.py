@@ -1,8 +1,8 @@
 import api.analyze as analyze
 import pytest
-
-from api.conftest import UnittestConfig
-from elasticsearch import Elasticsearch
+import csv
+import api.tasks as tasks
+from large_mock_corpus import MIN_YEAR as LARGE_CORPUS_MIN_YEAR, MAX_YEAR as LARGE_CORPUS_MAX_YEAR, TOTAL_DOCUMENTS as LARGE_CORPUS_DOCUMENTS
 
 TOTAL_DOCS_IN_MOCK_CORPUS = 3
 TOTAL_WORDS_IN_MOCK_CORPUS = 67
@@ -165,3 +165,36 @@ def make_query(query_text=None, search_in_fields=None):
 
 
     return query
+
+full_data_parameters = [{
+    'es_query': make_query(query_text = 'the', search_in_fields=['content']),
+    'corpus_name': 'large-mock-corpus',
+    'field_name': 'date',
+    'bins': [
+        {
+            'start_date': '{}-01-01'.format(year),
+            'end_date': '{}-12-31'.format(year),
+            'size': 10,
+        }
+        for year in range(LARGE_CORPUS_MIN_YEAR, LARGE_CORPUS_MAX_YEAR + 1)
+    ],
+    'unit': 'year'
+}]
+
+def test_timeline_full_data(large_mock_corpus):
+    filename = tasks.timeline_term_frequency_full_data(full_data_parameters)
+
+    with open(filename) as f:
+        reader = csv.DictReader(f)
+        rows = list(row for row in reader)
+
+        total_expectations = {
+            'Total documents': LARGE_CORPUS_DOCUMENTS,
+            'Term frequency': LARGE_CORPUS_DOCUMENTS * 2, # 2 hits per document
+            'Relative term frequency (by # documents)': 2 * len(full_data_parameters[0]['bins'])
+        }
+
+        for column, expected_total in total_expectations.items():
+            total = sum(float(row[column]) for row in rows)
+            assert total == expected_total
+

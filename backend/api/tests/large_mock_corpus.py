@@ -7,7 +7,7 @@ TOTAL_DOCUMENTS = 11000
 # some constants for generating data
 MIN_YEAR = 1800
 MAX_YEAR = 1900
-WORDS = [ 'the', 'quick', 'brown', 'fox', 'jumped', 'over', 'the', 'lazy', 'dog' ]
+WORDS = [ 'quick', 'brown', 'fox', 'jumped', 'over', 'lazy', 'dog' ]
 
 def generate_date():
     year = random.randint(MIN_YEAR, MAX_YEAR)
@@ -16,7 +16,8 @@ def generate_date():
     return date.strftime('%Y-%m-%d')
 
 def generate_text():
-    tokens = random.sample(WORDS, 5)
+    tokens = ['the', 'the'] + random.sample(WORDS, 3) # make sure 'the' will have 2 hits per document
+    random.shuffle(tokens)
     return ' '.join(tokens)
 
 class LargeMockCorpus(Corpus):

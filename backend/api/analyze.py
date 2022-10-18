@@ -310,7 +310,8 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     results = search(
         corpus = corpus,
         query_model = query,
-        size = 0 # don't include documents
+        size = 0, # don't include documents
+        track_total_hits = True
     )
 
     total_doc_count = total_hits(results)
