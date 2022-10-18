@@ -129,9 +129,15 @@ def timeline_term_frequency_full_data(parameters_per_series):
     query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
     field_name = parameters_per_series[0]['field_name']
     unit = parameters_per_series[0]['unit']
-    results_per_series = list(map(get_timeline_term_frequency, parameters_per_series))
+    parameters_unlimited = map(remove_size_limit, parameters_per_series)
+    results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
     filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
     return filepath
+
+def remove_size_limit(parameters):
+    for bin in parameters['bins']:
+        bin['size'] = None
+    return parameters
 
 @celery_app.task()
 def csv_data_email(csv_filepath, user_email, username):
