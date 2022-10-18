@@ -1,16 +1,20 @@
+import glob
 import logging
 import os.path as op
+import urllib.request
 from datetime import datetime
 from os import makedirs
 from typing import Optional
 from zipfile import ZipFile
-import glob
 
 from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
 from bs4 import BeautifulSoup
 from flask import current_app
 from addcorpus import extract
+from addcorpus.corpus import XMLCorpus
+from bs4 import BeautifulSoup
+from flask import current_app
 
 
 logger = logging.getLogger(__name__)
@@ -43,6 +47,15 @@ class Rechtspraak(XMLCorpus):
 
     tag_toplevel = 'open-rechtspraak'
     tag_entry = ''
+
+    @staticmethod
+    def get_valuelist(term):
+        '''Gets a 'waardelijst' from data.rechtspraak.nl
+        Used to determine keyword values
+        '''
+        with urllib.request.urlopen(f'https://data.rechtspraak.nl/Waardelijst/{term}') as f:
+            data = f.read().decode('utf-8')
+        return BeautifulSoup(data, 'lxml')
 
     def unpack(self,
                min_year: Optional[int] = None,
