@@ -19,17 +19,10 @@ def write_file(filename, fieldnames, rows, dialect = 'excel'):
 
     return filepath
 
-
-def create_filename(query):
-    """
-    name the file given the route of the search
-    cut the file name to max length of 255 (including route and extension)
-    """
-    max_filename_length = 251-len(current_app.config['CSV_FILES_PATH'])
-    filename = query[:min(max_filename_length, len(query))]
-    filename += '.csv'
-    return filename
-
+def create_filename(descriptive_part, essential_suffix = '.csv'):
+    max_length = 255 - (len(essential_suffix) + len(current_app.config['CSV_FILES_PATH']))
+    truncated = descriptive_part[:min(max_length, len(descriptive_part))]
+    return truncated + essential_suffix
 
 def search_results_csv(results, fields, query):
     entries = []
@@ -64,7 +57,7 @@ def search_results_csv(results, fields, query):
     return filepath
 
 
-def term_frequency_csv(queries, results_per_series, field_name, id = 0, unit = None):
+def term_frequency_csv(queries, results_per_series, field_name, unit = None):
     has_token_counts = results_per_series[0][0].get('token_count', None)
     query_column = ['Query'] if len(queries) > 1 else []
     freq_columns = ['Term frequency', 'Relative term frequency (by # documents)', 'Total documents']
@@ -73,9 +66,16 @@ def term_frequency_csv(queries, results_per_series, field_name, id = 0, unit = N
 
     rows = term_frequency_csv_rows(queries, results_per_series, field_name, unit)
 
-    filename = 'term_frequency_{}.csv'.format(id)
+    filename = term_frequency_filename(queries, field_name)
     filepath = write_file(filename, fieldnames, rows)
     return filepath
+
+def term_frequency_filename(queries, field_name):
+    querystring = '_'.join(queries)
+    timestamp = datetime.now().isoformat(sep='_', timespec='minutes') # ensure csv filenames are unique with timestamp
+    suffix = '_' + timestamp + '.csv'
+    description = 'term_frequency_{}_{}'.format(field_name, querystring)
+    return create_filename(description, suffix)
 
 def term_frequency_csv_rows(queries, results_per_series, field_name, unit):
     for query, results in zip(queries, results_per_series):
