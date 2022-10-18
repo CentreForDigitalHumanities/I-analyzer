@@ -86,13 +86,13 @@ def term_frequency_csv_rows(queries, results_per_series, field_name, unit):
             row = {
                 field_name: field_value,
                 'Term frequency': match_count,
-                'Relative term frequency (by # documents)': match_count / total_doc_count,
+                'Relative term frequency (by # documents)': match_count / total_doc_count if total_doc_count else None,
                 'Total documents': total_doc_count,
             }
             if result.get('token_count'):
                 total_token_count = result['token_count']
                 row['Total word count'] = total_token_count
-                row['Relative term frequency (by # words)'] = match_count / total_token_count
+                row['Relative term frequency (by # words)'] = match_count / total_token_count if total_token_count else None
 
             if len(queries) > 1:
                 row['Query'] = query
