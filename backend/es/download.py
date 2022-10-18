@@ -9,7 +9,9 @@ def scroll(corpus, query_model, download_size=None):
     client = elasticsearch(index)
     server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
     scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
-    size = current_app.config['SERVERS'][server]['scroll_page_size']
+    scroll_page_size = current_app.config['SERVERS'][server]['scroll_page_size']
+    size = min(download_size, scroll_page_size) if download_size else scroll_page_size
+
     output = []
     search_results = client.search(
         index=index,
@@ -21,6 +23,7 @@ def scroll(corpus, query_model, download_size=None):
     )
     output.extend(hits(search_results))
     total = total_hits(search_results)
+
     if not download_size or download_size > total:
         download_size = total
     num_results = len(hits(search_results))
