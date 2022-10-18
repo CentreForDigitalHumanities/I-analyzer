@@ -15,6 +15,18 @@ from backend.addcorpus.corpus import Field
 logger = logging.getLogger(__name__)
 
 
+def rdf_description_extractor(tag, format='xml', **kwargs):
+    '''rdf:Description extractor
+    There are two rdf:Description tags available in the data:
+        - description about the open data enrichment
+        - description about the source
+    There is only deterministic way to select the right one:
+        - check the dcterms:format sibling tag'''
+    return extract.XML(
+        tag=tag,
+        secondary_tag={'tag': 'dcterms:format', 'exact': f'text/{format}'},
+        **kwargs
+    )
 
 
 class Rechtspraak(XMLCorpus):
