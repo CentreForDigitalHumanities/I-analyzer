@@ -154,6 +154,12 @@ class Rechtspraak(XMLCorpus):
             csv_core=True,
         ),
         Field(
+            name='year',
+            display_name='Jaar',
+            extractor=extract.Metadata('year'),
+            search_filter=filters.RangeFilter(min_date.year, max_date.year)
+        ),
+        Field(
             name='date',
             display_name='Datum',
             extractor=rdf_description_extractor('dcterms:date'),
