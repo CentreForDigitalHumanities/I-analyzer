@@ -16,10 +16,14 @@ export class DialogServiceMock {
         this.behavior.next({ status: 'hide' });
     }
 
-    public async getManualPage(identifier: string) {
-        let title = 'Test title';
-        let html = '<p>This is a test.</p>';
+    public async getManualPage(directory: string, identifier: string) {
+        const title = 'Test title';
+        const html = '<p>This is a test.</p>';
         return { html, title };
+    }
+
+    public async getAboutPage(directory: string, identifier: string) {
+        return '<p> And now for something completely different. </p>';
     }
 
     /**

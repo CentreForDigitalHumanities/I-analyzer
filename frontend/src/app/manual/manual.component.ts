@@ -22,9 +22,9 @@ export class ManualComponent implements OnInit {
         this.dialogService.closePage();
 
         this.activatedRoute.paramMap.subscribe(async params => {
-            let identifier = params.get('identifier');
+            const identifier = params.get('identifier');
             this.isLoading = true;
-            let page = await this.dialogService.getManualPage(identifier);
+            const page = await this.dialogService.getManualPage(identifier);
             this.manualHtml = page.html;
             this.title = page.title;
 

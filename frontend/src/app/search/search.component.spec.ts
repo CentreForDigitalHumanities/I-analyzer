@@ -4,7 +4,6 @@ import { commonTestBed } from '../common-test-bed';
 
 import { SearchComponent } from './search.component';
 
-
 describe('SearchComponent', () => {
     let component: SearchComponent;
     let fixture: ComponentFixture<SearchComponent>;

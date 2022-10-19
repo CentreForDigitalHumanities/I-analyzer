@@ -132,7 +132,7 @@ def clean_value(value):
 class ParliamentFinland(Parliament, XMLCorpus):
     title = 'People and Parliament (Finland)'
     description = 'Speeches from the eduskunta'
-    min_date = datetime(year=1920, month=1, day=1)
+    min_date = datetime(year=1907, month=1, day=1)
     data_directory = current_app.config['PP_FINLAND_DATA']
     es_index = current_app.config['PP_FINLAND_INDEX']
 
@@ -154,6 +154,7 @@ class ParliamentFinland(Parliament, XMLCorpus):
             yield xml_file, metadata
 
     language = 'finnish'
+    description_page = 'finland.md'
     image = 'finland.jpg'
 
     document_context = document_context()

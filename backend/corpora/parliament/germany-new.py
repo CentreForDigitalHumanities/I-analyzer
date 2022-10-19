@@ -15,6 +15,7 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     title = 'People & Parliament (Germany 1949-2021)'
     description = "Speeches from the Bundestag"
     min_date = datetime(year=1949, month=1, day=1)
+    max_date = datetime(year=2021, month=12, day=31)
     data_directory = current_app.config['PP_GERMANY_NEW_DATA']
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
@@ -22,6 +23,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
 
     field_entry = 'id'
     required_field = 'speech_content'
+
+    description_page = 'germany-new.md'
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

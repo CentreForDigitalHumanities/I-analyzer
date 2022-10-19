@@ -2,8 +2,11 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+    HistogramSeries,
+    QueryModel,
+    Corpus,
+    AggregateQueryFeedback} from '../../models/index';
+import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
 function formatXAxisLabel(value): string {
@@ -21,7 +24,7 @@ function formatXAxisLabel(value): string {
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
+export class HistogramComponent extends BarchartDirective<AggregateResult> implements OnInit, OnChanges {
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -41,28 +44,32 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         return {name: this.visualizedField.name, size: size};
     }
 
-    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+    requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregator = this.getAggregator();
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
 
         return this.searchService.aggregateSearch(
-            this.corpus, queryModelCopy, [aggregator]).then(result =>
-                    this.docCountResultIntoSeries(result, series)
-                );
+            this.corpus, queryModel, [aggregator]);
     }
 
-    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
-            return this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                    .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    aggregateResultToResult(cat: AggregateResult) {
+        return cat;
     }
 
+    requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
+        const bins = series.data.map(bin => ({
+            fieldValue: bin.key,
+            size: this.documentLimitForCategory(bin, series)
+        }));
+        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
+    }
+
+    processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
+    }
 
     getLabels(): string[] {
         // make an array of all unique labels and sort

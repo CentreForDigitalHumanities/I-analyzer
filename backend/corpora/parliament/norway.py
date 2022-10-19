@@ -29,7 +29,7 @@ class ParliamentNorway(Parliament, CSVCorpus):
     es_index = current_app.config['PP_NORWAY_INDEX']
     image = 'norway.JPG'
     language = 'norwegian'
-
+    description_page = 'norway.md'
     document_context = document_context(
         context_fields=['book_id'],
         context_display_name='book',

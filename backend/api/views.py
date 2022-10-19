@@ -511,20 +511,20 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-
-
-@api.route('/task_outcome/<task_id>', methods=['GET'])
+@api.route('/task_status/<task_id>', methods=['GET'])
 @login_required
-def api_task_outcome(task_id):
+def api_task_status(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
-        try:
+        if results.state == 'SUCCESS':
             outcome = results.get()
-        except Exception as e:
-            return jsonify({'success': False, 'message': 'Task canceled.'})
-        return jsonify({'success': True, 'results': outcome})
+            return jsonify({'success': True, 'done': True, 'results': outcome})
+        elif results.state in ['PENDING', 'STARTED']:
+            return jsonify({'success': True, 'done': False})
+        else:
+            return jsonify({'success': False, 'message': 'Task failed.'})
 
 
 @api.route('/abort_tasks', methods=['POST'])
@@ -592,35 +592,20 @@ def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    def calculate():
-        try:
-            return analyze.get_aggregate_term_frequency(
-                request.json['es_query'],
-                request.json['corpus_name'],
-                request.json['field_name'],
-                request.json['field_value'],
-                request.json['size'],
-            )
-        except KeyError:
-            return 'missing parameters'
+    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+        if not key in request.json:
+            abort(400)
 
-    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
-    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+    for bin in request.json['bins']:
+        for key in ['field_value', 'size']:
+            if not key in bin:
+                abort(400)
 
-    if results == 'missing parameters':
-        abort(400)
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
+    task = tasks.get_histogram_term_frequency.delay(request.json)
+    if not task:
+        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        response = jsonify({
-            'success': True,
-            'data': results
-        })
-    return response
+        return jsonify({'success': True, 'task_id': task.id})
 
 @api.route('date_term_frequency', methods=['POST'])
 @login_required
@@ -628,33 +613,17 @@ def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    def calculate():
-        try:
-            return analyze.get_date_term_frequency(
-                request.json['es_query'],
-                request.json['corpus_name'],
-                request.json['field_name'],
-                request.json['start_date'],
-                request.json['end_date'],
-                request.json['size'],
-            )
-        except KeyError:
-            return 'missing parameters'
+    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+        if not key in request.json:
+            abort(400)
 
-    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
-    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+    for bin in request.json['bins']:
+        for key in ['start_date', 'end_date', 'size']:
+            if not key in bin:
+                abort(400)
 
-    if results == 'missing parameters':
-        abort(400)
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
+    task = tasks.get_timeline_term_frequency.delay(request.json)
+    if not task:
+        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        response = jsonify({
-            'success': True,
-            'data': results
-        })
-    return response
+        return jsonify({'success': True, 'task_id': task.id})

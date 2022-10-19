@@ -9,8 +9,8 @@
                 What do you want to visualise?
             </label>
             <div class="control">
-                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visDropdown[0]"
-                    (onChange)="setVisualizationType($event.value)"></ia-dropdown>
+                <ia-dropdown [options]="visDropdown" optionLabel="label" [value]="visualizationTypeDropdownValue"
+                    (onChange)="changeVisualizationType($event.value)"></ia-dropdown>
             </div>
         </div>
     </div>
@@ -26,9 +26,9 @@
                 </span>
             </label>
             <div class="control">
-                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="fieldDropdown[0]"
-                    (onChange)="setVisualizedField($event.value)"></ia-dropdown>
-                <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="fieldDropdown[0].label">
+                <ia-dropdown  *ngIf="fieldDropdown.length > 1"  [options]="fieldDropdown" optionLabel="label" [value]="visualizedFieldDropdownValue"
+                    (onChange)="changeVisualizedField($event.value)"></ia-dropdown>
+                <input *ngIf="fieldDropdown.length == 1" class="input is-static" type="text" [value]="visualizedFieldDropdownValue.label">
             </div>
         </label>
     </div>
@@ -55,23 +55,23 @@
         <ng-container [ngSwitch]="visualizationType">
             <ng-container *ngSwitchCase="'resultscount'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'documents'"
+                [visualizedField]="visualizedField" [frequencyMeasure]="'documents'"
                 [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
             <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                [documentLimit]="histogramDocumentLimit" [asTable]="freqtable" [palette]="palette"
+                [asTable]="freqtable" [palette]="palette"
                 (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                 (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>
             </ng-container>
             <ng-container *ngSwitchCase="'termfrequency'">
                 <ia-timeline *ngIf="visualizedField.displayType === 'date'" [corpus]="corpus" [queryModel]="queryModel"
-                    [visualizedField]="visualizedField" [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [visualizedField]="visualizedField" [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-timeline>
                 <ia-histogram *ngIf="visualizedField.displayType !== 'date'" [corpus]="corpus" [queryModel]="queryModel" [visualizedField]="visualizedField"
-                    [documentLimit]="histogramDocumentLimit" [frequencyMeasure]="'tokens'"
+                    [frequencyMeasure]="'tokens'"
                     [asTable]="freqtable" [palette]="palette"
                     (isLoading)="onIsLoading($event)" (error)="setErrorMessage($event)"
                     (totalTokenCountAvailable)="showTokenCountOption = $event"></ia-histogram>

@@ -1,3 +1,4 @@
+from urllib import request
 import requests
 import csv
 import json
@@ -35,7 +36,7 @@ def make_csv(results, request_json):
 def get_wordcloud_data(request_json):
     def calculate():
         list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
-        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'])
+        word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 
     return cache.make_visualization('wordcloud', request_json['corpus'], request_json, calculate)
@@ -49,7 +50,7 @@ def get_ngram_data(request_json):
             request_json['corpus_name'],
             request_json['field'],
             ngram_size=request_json['ngram_size'],
-            term_positions=request_json['term_position'],
+            positions=request_json['term_position'],
             freq_compensation=request_json['freq_compensation'],
             subfield=request_json['subfield'],
             max_size_per_interval=request_json['max_size_per_interval'],
@@ -60,6 +61,49 @@ def get_ngram_data(request_json):
     corpus = request_json['corpus_name']
     result = cache.make_visualization('ngram', corpus, request_json, calculate)
 
+    return result
+
+@celery_app.task()
+def get_histogram_term_frequency(request_json):
+    corpus = request_json['corpus_name']
+    bins = request_json['bins']
+
+    def calculate():
+        data = [
+            analyze.get_aggregate_term_frequency(
+                request_json['es_query'],
+                corpus,
+                request_json['field_name'],
+                bin['field_value'],
+                bin['size'],
+            )
+            for bin in bins
+        ]
+        return data
+
+    result = cache.make_visualization('ngram', corpus, request_json, calculate)
+    return result
+
+@celery_app.task()
+def get_timeline_term_frequency(request_json):
+    corpus = request_json['corpus_name']
+    bins = request_json['bins']
+
+    def calculate():
+        data = [
+            analyze.get_date_term_frequency(
+                request_json['es_query'],
+                corpus,
+                request_json['field_name'],
+                bin['start_date'],
+                bin['end_date'],
+                bin['size'],
+            )
+            for bin in bins
+        ]
+        return data
+
+    result = cache.make_visualization('ngram', corpus, request_json, calculate)
     return result
 
 def create_query(request_json):

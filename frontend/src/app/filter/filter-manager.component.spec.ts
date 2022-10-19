@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { MockCorpusResponse } from '../../mock-data/corpus-response';
+import { mockCorpus } from '../../mock-data/corpus';
 
 describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
@@ -16,7 +16,7 @@ describe('FilterManagerComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FilterManagerComponent);
     component = fixture.componentInstance;
-    component.corpus = <any>MockCorpusResponse['test1'];
+    component.corpus = mockCorpus;
     fixture.detectChanges();
   });
 

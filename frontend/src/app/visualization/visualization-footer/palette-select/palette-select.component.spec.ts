@@ -1,16 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestBed } from '../../../common-test-bed';
 
 import { PaletteSelectComponent } from './palette-select.component';
 
 describe('PaletteSelectComponent', () => {
-  let component: PaletteSelectComponent;
-  let fixture: ComponentFixture<PaletteSelectComponent>;
+    let component: PaletteSelectComponent;
+    let fixture: ComponentFixture<PaletteSelectComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ PaletteSelectComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   });
 
   beforeEach(() => {

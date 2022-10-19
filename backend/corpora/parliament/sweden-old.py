@@ -44,11 +44,12 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     )
 
     def sources(self, start, end):
-        for csv_file in glob('{}/**/*.csv'.format(self.data_directory), recursive=True):
+        for csv_file in sorted(glob('{}/**/*.csv'.format(self.data_directory), recursive=True)):
             yield csv_file, {}
 
 
     language = 'swedish'
+    description_page = 'sweden-old.md'
     image = current_app.config['PP_SWEDEN_OLD_IMAGE']
 
     book_id = field_defaults.book_id()

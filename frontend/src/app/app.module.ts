@@ -18,7 +18,6 @@ import { SliderModule } from 'primeng/slider';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
-// import { SharedModule } from 'primeng/shared';
 import { TabViewModule } from 'primeng/tabview';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ChipsModule } from 'primeng/chips';
@@ -28,10 +27,11 @@ import { ResourceHandlerHttpClient, ResourceModule } from '@ngx-resource/handler
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
 
-import { ApiService, ApiRetryService, ConfigService, CorpusService, DialogService, DownloadService,
+import { ApiService, ApiRetryService, CorpusService, DialogService, DownloadService,
     ElasticSearchService, HighlightService, NotificationService, SearchService, SessionService, UserService, LogService, QueryService } from './services/index';
 
 import { AppComponent } from './app.component';
+import { AboutComponent } from './about/about.component';
 import { CorpusSelectionComponent } from './corpus-selection/corpus-selection.component';
 import { DropdownComponent } from './dropdown/dropdown.component';
 import { HomeComponent } from './home/home.component';
@@ -45,7 +45,6 @@ import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
-import { BarChartComponent } from './visualization/barchart/barchart.component';
 import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
@@ -67,18 +66,22 @@ import { DocumentViewComponent } from './document-view/document-view.component';
 import { ImageNavigationComponent, ImageViewComponent, ScanImageComponent, ScanPdfComponent } from './image-view';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgramComponent } from './visualization/ngram/ngram.component';
-import { barchartOptionsComponent } from './visualization/barchart/barchart-options.component';
+import { BarchartOptionsComponent } from './visualization/barchart/barchart-options.component';
 import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
 import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
-import { WordmodelsService } from './services/wordmodels.service';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';
+import { WordmodelsService } from './services/wordmodels.service';
+import { QueryFeedbackComponent } from './word-models/query-feedback/query-feedback.component';
+import { WordSimilarityComponent } from './word-models/word-similarity/word-similarity.component';
+import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
+import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
     {
         path: 'search/:corpus',
         component: SearchComponent,
@@ -123,6 +126,10 @@ const appRoutes: Routes = [
         component: ManualComponent
     },
     {
+        path: 'about',
+        component: AboutComponent
+    },
+    {
         path: 'search-history',
         component: SearchHistoryComponent
     },
@@ -135,9 +142,10 @@ const appRoutes: Routes = [
 
 export const declarations: any[] = [
     AppComponent,
+    AboutComponent,
     AdHocFilterComponent,
     BalloonDirective,
-    BarChartComponent,
+    BarchartOptionsComponent,
     BooleanFilterComponent,
     CorpusHeaderComponent,
     CorpusSelectionComponent,
@@ -153,7 +161,6 @@ export const declarations: any[] = [
     HighlightPipe,
     HistogramComponent,
     HighlightSelectorComponent,
-    barchartOptionsComponent,
     ImageViewComponent,
     ImageNavigationComponent,
     LoginComponent,
@@ -168,6 +175,7 @@ export const declarations: any[] = [
     PaginationComponent,
     PaletteSelectComponent,
     PrivacyComponent,
+    QueryFeedbackComponent,
     RangeFilterComponent,
     RegistrationComponent,
     RelatedWordsComponent,
@@ -182,12 +190,15 @@ export const declarations: any[] = [
     SearchResultsComponent,
     SearchSortingComponent,
     SelectFieldComponent,
+    SimilarityChartComponent,
+    TermComparisonEditorComponent,
     TimeIntervalSliderComponent,
     TimelineComponent,
     VisualizationComponent,
     VisualizationFooterComponent,
     WordcloudComponent,
     WordModelsComponent,
+    WordSimilarityComponent,
 ];
 
 export const imports: any[] = [
@@ -227,7 +238,6 @@ export const providers: any[] = [
     ApiService,
     ApiRetryService,
     CorpusService,
-    ConfigService,
     DialogService,
     DownloadService,
     ElasticSearchService,
@@ -256,7 +266,6 @@ export const providers: any[] = [
     imports,
     providers,
     bootstrap: [AppComponent],
-
 })
 export class AppModule { }
 

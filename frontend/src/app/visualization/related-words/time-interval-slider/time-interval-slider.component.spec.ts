@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestBed } from '../../../common-test-bed';
 
 import { TimeIntervalSliderComponent } from './time-interval-slider.component';
 
@@ -7,10 +8,7 @@ describe('TimeIntervalSliderComponent', () => {
   let fixture: ComponentFixture<TimeIntervalSliderComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ TimeIntervalSliderComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   });
 
   beforeEach(() => {

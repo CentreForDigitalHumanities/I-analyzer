@@ -1,7 +1,13 @@
-@import "barchart.component";
 @import "../../../styles.scss";
+@import "../../../_utilities";
 
 ia-timeline {
     z-index: 1;
     position: absolute;
+}
+
+
+.notification {
+    @include unselectable;
+    opacity: 0.75;
 }

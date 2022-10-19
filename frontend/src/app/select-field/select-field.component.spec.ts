@@ -1,21 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-
-import { MultiSelectModule } from 'primeng/multiselect';
-
 import { SelectFieldComponent } from './select-field.component';
-import { BalloonDirective } from '../balloon.directive';
+import { commonTestBed } from '../common-test-bed';
 
 describe('SelectFieldComponent', () => {
   let component: SelectFieldComponent;
   let fixture: ComponentFixture<SelectFieldComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [ FormsModule, MultiSelectModule ],
-      declarations: [ BalloonDirective, SelectFieldComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

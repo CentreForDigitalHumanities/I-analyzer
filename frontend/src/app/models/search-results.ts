@@ -61,16 +61,13 @@ export type AggregateData = {
 
 export type WordSimilarity = {
     key: string,
-    similarity: number
+    similarity: number,
+    time?: string,
 }
 
 export type RelatedWordsResults = {
-    similar_words_all: {
-        [word: string]: WordSimilarity[]
-    },
-    similar_words_subsets: {
-        [word: string]: number[]
-    },
+    total_similarities: WordSimilarity[],
+    similarities_over_time: WordSimilarity[],
     time_points: string[]
 }
 
@@ -81,3 +78,17 @@ export type NgramResults = {
     }[],
     time_points: string[],
 };
+
+export type WordInModelResult = {
+    exists: true
+} | {
+    exists: false,
+    similar_keys: string[],
+};
+
+export type QueryFeedback = {
+    status: 'not in model'|'success'|'error'|'multiple words'|'empty',
+    similarTerms?: string[],
+};
+
+export type TaskResult = { success: false, message: string } | { success: true, task_id: string }

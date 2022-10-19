@@ -1,6 +1,5 @@
 export * from './api.service';
 export * from './api-retry.service';
-export * from './config.service';
 export * from './corpus.service';
 export * from './dialog.service';
 export * from './download.service';
@@ -12,4 +11,5 @@ export * from './query.service';
 export * from './search.service';
 export * from './session.service';
 export * from './user.service';
-
+export * from './visualization.service';
+export * from './wordmodels.service';
