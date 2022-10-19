@@ -1,41 +1,49 @@
 from urllib import request
 import requests
-import csv
 import json
-import os.path as op
-from flask import Flask, abort, current_app, render_template
+from flask import Flask, abort, current_app, render_template, jsonify
 from flask_mail import Mail, Message
 import logging
 from requests.exceptions import Timeout, ConnectionError, HTTPError
 import re
-from bs4 import BeautifulSoup
+import os
 
 from api import analyze
 from api.user_mail import send_user_mail
+from api import query
 from es import es_forward, download
 from ianalyzer import celery_app
 import api.cache as cache
+from api import create_csv
 
 logger = logging.getLogger(__name__)
 
 
 @celery_app.task()
 def download_scroll(request_json, download_size=10000):
-    results = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    results, _ = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
     return results
 
 
 @celery_app.task()
 def make_csv(results, request_json):
     query = create_query(request_json)
-    filepath = create_csv(results, request_json['fields'], query)
+    filepath = create_csv.search_results_csv(results, request_json['fields'], query)
     return filepath
+
+
+def create_query(request_json):
+    """
+    format the route of the search into a query string
+    """
+    route = request_json.get('route')
+    return re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
 
 
 @celery_app.task()
 def get_wordcloud_data(request_json):
     def calculate():
-        list_of_texts = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
+        list_of_texts, _ = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
         word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 
@@ -85,6 +93,15 @@ def get_histogram_term_frequency(request_json):
     return result
 
 @celery_app.task()
+def histogram_term_frequency_full_data(parameters_per_series):
+    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+    field_name = parameters_per_series[0]['field_name']
+    results_per_series = map(get_histogram_term_frequency, parameters_per_series)
+    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
+    return filepath
+
+
+@celery_app.task()
 def get_timeline_term_frequency(request_json):
     corpus = request_json['corpus_name']
     bins = request_json['bins']
@@ -106,57 +123,32 @@ def get_timeline_term_frequency(request_json):
     result = cache.make_visualization('ngram', corpus, request_json, calculate)
     return result
 
-def create_query(request_json):
-    """
-    format the route of the search into a query string
-    """
-    route = request_json.get('route')
-    return re.sub(r';|%\d+', '_', re.sub(r'\$', '', route.split('/')[2]))
 
-
-def create_filename(query):
-    """
-    name the file given the route of the search
-    cut the file name to max length of 255 (including route and extension)
-    """
-    max_filename_length = 251-len(current_app.config['CSV_FILES_PATH'])
-    filename = query[:min(max_filename_length, len(query))]
-    filename += '.csv'
-    return filename
-
-
-def create_csv(results, fields, query):
-    entries = []
-    field_set = set(fields)
-    field_set.update(['query'])
-    for result in results:
-        entry={'query': query}
-        for field in fields:
-            #this assures that old indices, which have their id on
-            #the top level '_id' field, will fill in id here
-            if field=="id" and "_id" in result:
-                entry.update( {field: result['_id']} )
-            if field in result['_source']:
-                entry.update( {field:result['_source'][field]} )
-        highlights = result.get('highlight')
-        if 'context' in fields and highlights:
-            hi_fields = highlights.keys()
-            for hf in hi_fields:
-                for index, hi in enumerate(highlights[hf]):
-                    highlight_field_name = '{}_qic_{}'.format(hf, index+1)
-                    field_set.update([highlight_field_name])
-                    soup = BeautifulSoup(hi, 'html.parser')
-                    entry.update({highlight_field_name: soup.get_text()})
-        entries.append(entry)
-    csv.register_dialect('myDialect', delimiter=';', quotechar='"',
-                         quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
-    filename = create_filename(query)
-    filepath = op.join(current_app.config['CSV_FILES_PATH'], filename)
-    field_set.discard('context')
-    # newline='' to prevent empty double lines
-    with open(filepath, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=sorted(field_set), dialect='myDialect')
-        writer.writeheader()
-        for row in entries:
-            writer.writerow(row)
+@celery_app.task()
+def timeline_term_frequency_full_data(parameters_per_series):
+    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+    field_name = parameters_per_series[0]['field_name']
+    unit = parameters_per_series[0]['unit']
+    parameters_unlimited = map(remove_size_limit, parameters_per_series)
+    results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
+    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
     return filepath
+
+def remove_size_limit(parameters):
+    for bin in parameters['bins']:
+        bin['size'] = None
+    return parameters
+
+@celery_app.task()
+def csv_data_email(csv_filepath, user_email, username):
+    _, filename = os.path.split(csv_filepath)
+    send_user_mail(
+        email=user_email,
+        username=username,
+        subject_line="I-Analyzer CSV download",
+        email_title="Download CSV",
+        message="Your .csv file is ready for download.",
+        prompt="Click on the link below.",
+        link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
+        link_text="Download .csv file"
+    )

@@ -4,8 +4,8 @@ import * as _ from 'lodash';
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
     HistogramSeries,
     QueryModel,
-    Corpus,
-    AggregateQueryFeedback} from '../../models/index';
+    HistogramDataPoint,
+    TermFrequencyResult} from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
 
@@ -24,7 +24,7 @@ function formatXAxisLabel(value): string {
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarchartDirective<AggregateResult> implements OnInit, OnChanges {
+export class HistogramComponent extends BarchartDirective<HistogramDataPoint> implements OnInit, OnChanges {
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -51,24 +51,41 @@ export class HistogramComponent extends BarchartDirective<AggregateResult> imple
             this.corpus, queryModel, [aggregator]);
     }
 
-    aggregateResultToResult(cat: AggregateResult) {
+    aggregateResultToDataPoint(cat: AggregateResult) {
         return cat;
     }
 
     requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
-        const bins = series.data.map(bin => ({
-            fieldValue: bin.key,
-            size: this.documentLimitForCategory(bin, series)
-        }));
+        const bins = this.makeTermFrequencyBins(series);
         return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
     }
 
-    processSeriesTermFrequency(results: AggregateResult[], series: HistogramSeries) {
+    makeTermFrequencyBins(series: HistogramSeries) {
+        return series.data.map(bin => ({
+            fieldValue: bin.key,
+            size: this.documentLimitForCategory(bin, series)
+        }));
+    }
+
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: HistogramSeries) {
         series.data = _.zip(series.data, results).map(pair => {
             const [bin, res] = pair;
             return this.addTermFrequencyToCategory(res, bin);
         });
         return series;
+    }
+
+    fullDataRequest() {
+        const paramsPerSeries = this.rawData.map(series => {
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
+            const bins = this.makeTermFrequencyBins(series);
+            return this.visualizationService.makeAggregateTermFrequencyParameters(
+                this.corpus, queryModel, this.visualizedField.name, bins);
+        });
+        return this.apiService.requestFullData({
+            visualization: 'aggregate_term_frequency',
+            'parameters': paramsPerSeries
+        });
     }
 
     getLabels(): string[] {

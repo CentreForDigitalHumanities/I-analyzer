@@ -28,8 +28,12 @@
 
 <div class="message is-warning" *ngIf="!isLoading.value && documentLimitExceeded && frequencyMeasure == 'tokens'">
     <div class="message-body">
+        <div class="block">
         The results for your search include too many documents to count all matches.
         Only the first {{percentageDocumentsSearched}}% of documents for each bin are analyzed;
         the rest are assumed to have only one match for your query.
+        </div>
+
+        <ia-full-data-button (requestFullData)="requestFullData()"></ia-full-data-button>
     </div>
 </div>
