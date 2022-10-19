@@ -1,19 +1,13 @@
 import glob
 import logging
 import os.path as op
-import urllib.request
 from datetime import datetime
 from os import makedirs
 from typing import Optional
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
-from bs4 import BeautifulSoup
-from flask import current_app
-from addcorpus import extract
-from addcorpus.corpus import XMLCorpus
-from bs4 import BeautifulSoup
 from flask import current_app
 
 
@@ -107,15 +101,20 @@ class Rechtspraak(XMLCorpus):
                     # finally, unpack the nested archive
                     # containing XML data files
                     # if unpacking a sample, limit to per_archive
-                    with ZipFile(op.join(unpack_dir, arch)) as nestedz:
-                        target_dir = op.join(unpack_dir, str(year))
-                        if how == 'sample':
-                            members = nestedz.namelist()
-                            to_extract = members[:min(
-                                per_archive, len(members))]
-                            nestedz.extractall(target_dir, members=to_extract)
-                        else:
-                            nestedz.extractall(target_dir)
+                    try:
+                        with ZipFile(op.join(unpack_dir, arch)) as nestedz:
+                            target_dir = op.join(unpack_dir, str(year))
+                            if how == 'sample':
+                                members = nestedz.namelist()
+                                to_extract = members[:min(
+                                    per_archive, len(members))]
+                                nestedz.extractall(
+                                    target_dir, members=to_extract)
+                            else:
+                                nestedz.extractall(target_dir)
+                    except BadZipFile:
+                        logger.warning(
+                            f'skipping bad file {op.join(unpack_dir, arch)}')
 
     def sources(self, min_date: Optional[int] = None, max_date: Optional[int] = None):
         if not min_date:
