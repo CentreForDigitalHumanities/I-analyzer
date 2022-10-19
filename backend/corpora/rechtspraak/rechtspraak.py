@@ -14,7 +14,7 @@ from flask import current_app
 logger = logging.getLogger(__name__)
 
 
-def rdf_description_extractor(tag, format='xml', **kwargs):
+def rdf_description_extractor(tag, section='xml', **kwargs):
     '''rdf:Description extractor
     There are two rdf:Description tags available in the data:
         - description about the open data enrichment
@@ -23,9 +23,26 @@ def rdf_description_extractor(tag, format='xml', **kwargs):
         - check the dcterms:format sibling tag'''
     return extract.XML(
         tag=tag,
-        secondary_tag={'tag': 'dcterms:format', 'exact': f'text/{format}'},
+        secondary_tag={'tag': 'dcterms:format', 'exact': f'text/{section}'},
         **kwargs
     )
+
+
+def extract_content(soup):
+    '''Extract the content.
+    This can be either in the '<uitspraak>' or '<conclusie>' tag,
+    depending on document type.
+    Argument soup contains the whole document.
+    '''
+    uitspraak = soup.find('uitspraak')
+    conclusie = soup.find('conclusie')
+    extractor = extract.XML()  # need an extractor here to access _flatten
+
+    if uitspraak:
+        return extractor._flatten(uitspraak)
+    elif conclusie:
+        return extractor._flatten(conclusie)
+    return None
 
 
 class Rechtspraak(XMLCorpus):
@@ -138,7 +155,7 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='date',
-            display_name='Uitspraakdatum',
+            display_name='Datum',
             extractor=rdf_description_extractor('dcterms:date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
@@ -236,7 +253,7 @@ class Rechtspraak(XMLCorpus):
             name='title',
             display_name='Titel',
             extractor=rdf_description_extractor(
-                'dcterms:title', format='html'),
+                'dcterms:title', section='html'),
             results_overview=True,
         ),
         Field(
@@ -250,7 +267,10 @@ class Rechtspraak(XMLCorpus):
             display_name='Uitspraak',
             display_type='text_content',
             extractor=extract.XML(
-                tag='uitspraak', toplevel=True, flatten=True),
+                toplevel=True,
+                flatten=True,
+                extract_soup_func=extract_content
+            ),
             csv_core=True,
             required=True
         ),
@@ -258,6 +278,6 @@ class Rechtspraak(XMLCorpus):
             name='url',
             display_name='url',
             extractor=rdf_description_extractor(
-                'dcterms:identifier', format='html')
+                'dcterms:identifier', section='html')
         )
     ]
