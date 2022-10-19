@@ -10,4 +10,9 @@ def test_rechtspraak_sources(test_corpus):
 
 def test_rechtspraak_documents(test_corpus, corpus_test_data):
     docs = test_corpus.documents()
-    assert next(docs) == corpus_test_data['docs'][0]
+    assert list(docs)[0] == corpus_test_data['docs'][1]
+
+
+def test_rechtspraak_required_fields(test_corpus):
+    docs = test_corpus.documents()
+    assert len(list(docs)) == 1

@@ -252,6 +252,7 @@ class Rechtspraak(XMLCorpus):
             extractor=extract.XML(
                 tag='uitspraak', toplevel=True, flatten=True),
             csv_core=True,
+            required=True
         ),
         Field(
             name='url',

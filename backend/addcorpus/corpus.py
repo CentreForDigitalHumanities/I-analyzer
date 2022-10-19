@@ -282,6 +282,7 @@ class Corpus(object):
                 for document in self.source2dicts(
                     source
                 )
+                if document is not None
                 )
 
 
@@ -345,6 +346,8 @@ class XMLCorpus(Corpus):
             regular_fields = self.fields
             external_dict = {}
             external_fields = None
+        required_fields = [
+            field.name for field in self.fields if field.required]
         # Extract fields from the soup
         tag = self.get_entry_tag(metadata)
         bowl = self.bowl_from_soup(soup, metadata=metadata)
@@ -362,8 +365,17 @@ class XMLCorpus(Corpus):
                     metadata.update(regular_field_dict)
                     external_dict = self.external_source2dict(
                         external_soup, external_fields, metadata)
+
                 # yield the union of external fields and document fields
-                yield dict(itertools.chain(external_dict.items(), regular_field_dict.items()))
+                full_dict = dict(itertools.chain(
+                    external_dict.items(), regular_field_dict.items()))
+
+                # check if required fields are filled
+                if any((not full_dict[field_name]
+                        for field_name in required_fields)):
+                    yield None
+                else:
+                    yield full_dict
         else:
             logger.warning(
                 'Top-level tag not found in `{}`'.format(filename))
@@ -666,6 +678,7 @@ class Field(object):
     - how to extract data from the source documents (extractor)
     - whether you can sort by this field (sortable)
     - whether you can search this field (searchable)
+    - whether this field is required
 
     In short, this is how all things related to the informational structure of
     each particular corpus is stored.
@@ -690,6 +703,7 @@ class Field(object):
                  primary_sort=False,
                  searchable=None,
                  downloadable=True,
+                 required=False,
                  **kwargs
                  ):
 
@@ -707,6 +721,7 @@ class Field(object):
         self.indexed = indexed
         self.hidden = not indexed or hidden
         self.extractor = extractor
+        self.required = required
 
         self.sortable = sortable if sortable != None else \
             not hidden and indexed and \
