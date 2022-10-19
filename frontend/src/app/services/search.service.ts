@@ -94,7 +94,7 @@ export class SearchService {
         this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
         const user = await this.userService.getCurrentUser();
         const query = new Query(queryModel, corpus.name, user.id);
-        const results = await this.elasticSearchService.search(corpus, queryModel, highlightFragmentSize);
+        const results = await this.elasticSearchService.search(corpus, queryModel);
         query.totalResults = results.total;
         await this.queryService.save(query, true);
 

@@ -13,7 +13,7 @@ def alias(corpus_name, corpus_definition, clean=False):
     client = elasticsearch(corpus_name)
 
     alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-    indices = client.indices.get('{}-*'.format(corpus_definition.es_index))
+    indices = client.indices.get(index='{}-*'.format(corpus_definition.es_index))
     highest_version = get_highest_version_number(indices)
 
     actions = []
@@ -60,10 +60,10 @@ def get_new_version_number(client, alias, current_index = None):
         current_index -- The `es_index` (i.e. unversioned name) currently being updated.
             This will be used to exclude indices starting with different names under the same alias.
     '''
-    if not client.indices.exists(alias):
+    if not client.indices.exists(index=alias):
         return 1
     # get the indices aliased with `alias`
-    indices = client.indices.get_alias(alias)
+    indices = client.indices.get_alias(name=alias)
     highest_version = get_highest_version_number(indices, current_index)
     return str(highest_version + 1)
 

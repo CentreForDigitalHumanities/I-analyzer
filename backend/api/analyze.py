@@ -111,7 +111,7 @@ def get_time_bins(es_query, corpus):
 
 def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval, date_field):
     index = get_index(corpus)
-    client = elasticsearch(index)
+    client = elasticsearch(corpus)
     ngrams_per_bin = []
     ngram_ttfs = dict()
 

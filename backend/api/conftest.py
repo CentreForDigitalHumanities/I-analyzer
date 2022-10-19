@@ -6,6 +6,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 import ianalyzer.config_fallback as config
 from ianalyzer.factories.app import flask_app
 import es.es_index as index
+from es.search import get_index
 from addcorpus.load_corpus import load_corpus
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -56,11 +57,10 @@ def test_es_client(test_app):
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
+    client = elasticsearch('mock-corpus')
+    # check if client is available, else skip test
     try:
-        # initiate an elasticsearch client
-        # sniff_on_start to check whether we can connect to the ES server
-        # skip tests that require ES server if none is running
-        client = elasticsearch('mock-corpus', UnittestConfig, sniff_on_start=True)
+        client.info()
     except:
         pytest.skip('Cannot connect to elasticsearch server')
 
