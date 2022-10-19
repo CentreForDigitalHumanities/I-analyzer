@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { ImageNavigationComponent } from './image-navigation.component';
 
@@ -7,10 +8,7 @@ describe('ImageNavigationComponent', () => {
   let fixture: ComponentFixture<ImageNavigationComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ImageNavigationComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

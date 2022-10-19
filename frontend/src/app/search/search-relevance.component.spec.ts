@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { SearchRelevanceComponent } from './search-relevance.component';
 
@@ -7,9 +8,7 @@ describe('SearchRelevanceComponent', () => {
     let fixture: ComponentFixture<SearchRelevanceComponent>;
 
     beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-            declarations: [SearchRelevanceComponent]
-        }).compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

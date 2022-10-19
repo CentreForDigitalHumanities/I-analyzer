@@ -4,7 +4,7 @@ import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
 import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
@@ -15,7 +15,7 @@ import { selectColor } from '../select-color';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
+export class TimelineComponent extends BarchartDirective<DateResult> implements OnChanges, OnInit {
     /** time unit on the x-axis */
     private currentTimeCategory: 'year'|'week'|'month'|'day';
     /** threshold for scaling down a unit on the time scale */
@@ -56,29 +56,34 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
      * True when retrieving results for the entire series, false when retrieving a window.
      */
-    requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
-
+    requestSeriesDocCounts(queryModel: QueryModel) {
         return this.searchService.dateHistogramSearch(
-            this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
-                this.docCountResultIntoSeries(result, series, setSearchRatio)
+            this.corpus, queryModel, this.visualizedField.name, this.currentTimeCategory
         );
     }
 
-    requestCategoryTermFrequencyData(
-        cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-            const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
-            return this.searchService.dateTermFrequencySearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                ...timeDomain)
-                .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
+        const bins = series.data.map((bin, index) => {
+            const [minDate, maxDate] = this.categoryTimeDomain(bin, index, series);
+            return {
+                start_date: minDate,
+                end_date: maxDate,
+                size: this.documentLimitForCategory(bin, series)
+            };
+        });
+
+        return this.visualizationService.dateTermFrequencySearch(
+            this.corpus, queryModel, this.visualizedField.name, bins
+        );
+    }
+
+    processSeriesTermFrequency(results: DateResult[], series: TimelineSeries) {
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
     }
 
     /** time domain for a bin */
@@ -207,29 +212,20 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         // when zooming, hide data for smooth transition
         chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-        const docPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+        const dataPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
             const series = this.rawData[seriesIndex];
-            const queryModelCopy = this.addQueryDateFilter(
-                this.setQueryText(this.queryModel, series.queryText),
-                min, max);
+            const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
+            return this.getSeriesDocumentData(series, queryModelCopy, false).then(result => {
+                if (this.frequencyMeasure === 'tokens') {
+                    return this.getTermFrequencies(result, queryModelCopy);
+                } else {
+                    return result;
+                }
 
-            return this.searchService.dateHistogramSearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    return this.docCountResultIntoSeries(result, series, false);
             });
         });
 
-        const zoomedInResults = await Promise.all(docPromises);
-
-        if (this.frequencyMeasure === 'tokens') {
-            const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
-                return series.data.map((cat, index) => {
-                    const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
-                    this.requestCategoryTermFrequencyData(cat, index, series, queryModelCopy);
-                });
-            });
-            await Promise.all(dataPromises);
-        }
+        const zoomedInResults = await Promise.all(dataPromises);
 
         zoomedInResults.forEach((data, seriesIndex) => {
             chart.data.datasets[seriesIndex].data = this.chartDataFromSeries(data);

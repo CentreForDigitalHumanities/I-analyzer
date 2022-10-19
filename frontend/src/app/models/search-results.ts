@@ -90,3 +90,5 @@ export type QueryFeedback = {
     status: 'not in model'|'success'|'error'|'multiple words'|'empty',
     similarTerms?: string[],
 };
+
+export type TaskResult = { success: false, message: string } | { success: true, task_id: string }

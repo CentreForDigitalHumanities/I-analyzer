@@ -45,7 +45,6 @@ import { LoggedOnGuard } from './logged-on.guard';
 import { LoginComponent } from './login/login.component';
 import { BalloonDirective } from './balloon.directive';
 import { ScrollToDirective } from './scroll-to.directive';
-import { BarChartComponent } from './visualization/barchart/barchart.component';
 import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
@@ -146,7 +145,6 @@ export const declarations: any[] = [
     AboutComponent,
     AdHocFilterComponent,
     BalloonDirective,
-    BarChartComponent,
     BarchartOptionsComponent,
     BooleanFilterComponent,
     CorpusHeaderComponent,

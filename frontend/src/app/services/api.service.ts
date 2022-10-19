@@ -5,7 +5,16 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters } from '../models/index';
+import { timer } from 'rxjs';
+import {
+    catchError,
+    concatMap,
+    filter,
+    switchMap,
+    take,
+    tap,
+} from 'rxjs/operators';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -46,7 +55,7 @@ export class ApiService extends Resource {
         path: '/wordcloud'
     })
     public wordcloud: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string, size: number },
+    WordcloudParameters,
         { success: false, message: string } | { success: true, data: AggregateResult[] }>;
 
     @ResourceAction({
@@ -54,17 +63,19 @@ export class ApiService extends Resource {
         path: '/wordcloud_tasks'
     })
     public wordcloudTasks: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus: string, field: string },
+        WordcloudParameters,
         { success: false, message: string } | { success: true, task_ids: string[] }>;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/task_outcome/{task_id}'
+        path: '/task_status/{task_id}'
     })
-    public getTaskOutcome: ResourceMethod<
+    public getTaskStatus: ResourceMethod<
     { task_id: string},
-    { success: false, message: string } | { success: true, results: AggregateResult[]|NgramResults }
-    >
+    { success: false, message: string } | { success: true, done: false } |
+    { success: true, done: true, results: AggregateResult[]|NgramResults }
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -89,16 +100,16 @@ export class ApiService extends Resource {
         path: '/aggregate_term_frequency'
     })
     public getAggregateTermFrequency: ResourceMethod<
-        { es_query: EsQuery | EsQuerySorted, corpus_name: string, field_name: string, field_value: string|number, size: number },
-        { success: boolean, message?: string, data?: AggregateResult }>;
+        AggregateTermFrequencyParameters,
+        TaskResult>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/date_term_frequency'
     })
     public getDateTermFrequency: ResourceMethod<
-        { es_query: EsQuery, corpus_name: string, field_name: string, start_date: string, end_date: string, size: number },
-        { success: boolean, message?: string, data?: AggregateResult }>;
+        DateTermFrequencyParameters,
+        TaskResult>;
 
     @ResourceAction({
         path: '/corpus'
@@ -264,5 +275,19 @@ export class ApiService extends Resource {
         }
 
         return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
+    }
+
+    private taskDone(response: { success: false, message: string } | { success: true, done: false } |
+        { success: true, done: true, results: AggregateResult[]|NgramResults }) {
+        return response.success === false || response.done === true;
+    }
+
+    public pollTask(id): Promise<{ success: false, message: string } | { success: true, done: false } |
+    { success: true, done: true, results: AggregateResult[]|DateResult[]|NgramResults }> {
+        return timer(0, 5000).pipe(
+            switchMap((_) => this.getTaskStatus({'task_id': id})),
+            filter(this.taskDone),
+            take(1)
+        ).toPromise();
     }
 }

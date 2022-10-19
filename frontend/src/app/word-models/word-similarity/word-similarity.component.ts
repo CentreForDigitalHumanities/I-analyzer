@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, WordSimilarity } from '../../models';
-import { SearchService } from '../../services';
+import { Corpus, WordSimilarity } from '../../models';
+import { WordmodelsService } from '../../services';
 
 @Component({
     selector: 'ia-word-similarity',
@@ -25,7 +25,7 @@ export class WordSimilarityComponent implements OnChanges {
 
     data: WordSimilarity[];
 
-    constructor(private searchService: SearchService) { }
+    constructor(private wordModelsService: WordmodelsService) { }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ((changes.queryText || changes.corpus) && this.comparisonTerms.length) {
@@ -45,7 +45,7 @@ export class WordSimilarityComponent implements OnChanges {
     getData(): void {
         this.showLoading(
             Promise.all(this.comparisonTerms.map(term =>
-                this.searchService.getWordSimilarity(this.queryText, term, this.corpus.name)
+                this.wordModelsService.getWordSimilarity(this.queryText, term, this.corpus.name)
             ))
         ).then(this.onDataLoaded.bind(this));
     }

@@ -8,8 +8,7 @@ import { LogService } from './log.service';
 import { QueryService } from './query.service';
 import { UserService } from './user.service';
 import { Corpus, CorpusField, Query, QueryModel, SearchFilter, searchFilterDataToParam, SearchResults,
-    AggregateResult, AggregateQueryFeedback, SearchFilterData, NgramParameters, WordSimilarity, RelatedWordsResults, WordInModelResult } from '../models/index';
-import { WordmodelsService } from './wordmodels.service';
+    AggregateQueryFeedback, SearchFilterData} from '../models/index';
 
 const highlightFragmentSize = 50;
 
@@ -20,8 +19,7 @@ export class SearchService {
         private elasticSearchService: ElasticSearchService,
         private queryService: QueryService,
         private userService: UserService,
-        private logService: LogService,
-        private wordModelsService: WordmodelsService) {
+        private logService: LogService) {
         window['apiService'] = this.apiService;
     }
 
@@ -111,135 +109,10 @@ export class SearchService {
         return this.elasticSearchService.aggregateSearch<TKey>(corpus, queryModel, aggregators);
     }
 
-    public async aggregateTermFrequencySearch(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, fieldValue: string|number, size: number
-    ): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getAggregateTermFrequency({
-            corpus_name: corpus.name,
-            es_query: esQuery,
-            field_name: fieldName,
-            field_value: fieldValue,
-            size: size,
-        });
-    }
-
     public async dateHistogramSearch<TKey>(
         corpus: Corpus, queryModel: QueryModel, fieldName: string, timeInterval: string
     ): Promise<AggregateQueryFeedback> {
         return this.elasticSearchService.dateHistogramSearch<TKey>(corpus, queryModel, fieldName, timeInterval);
-    }
-
-    public async dateTermFrequencySearch<TKey>(
-        corpus: Corpus, queryModel: QueryModel, fieldName: string, size: number, start_date: Date, end_date?: Date
-    ): Promise<{ success: boolean, message?: string, data?: AggregateResult }> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.getDateTermFrequency({
-            corpus_name: corpus.name,
-            es_query: esQuery,
-            field_name: fieldName,
-            start_date: start_date.toISOString().slice(0, 10),
-            end_date: end_date ? end_date.toISOString().slice(0, 10) : null,
-            size: size,
-        });
-    }
-
-    public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.wordcloud({'es_query': esQuery, 'corpus': corpus, 'field': fieldName, 'size': size}).then( result => {
-            return new Promise( (resolve, reject) => {
-                if (result['data']) {
-                    resolve({[fieldName]: result['data']});
-                } else {
-                    reject({error: result['message']});
-                }
-            });
-        });
-    }
-
-    public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<any> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.wordcloudTasks({'es_query': esQuery, 'corpus': corpus, 'field': fieldName}).then( result => {
-            return new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve({taskIds: result['task_ids']});
-                } else {
-                    reject({error: result['message']});
-                }
-            });
-        });
-    }
-
-    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<RelatedWordsResults> {
-        return this.wordModelsService.getRelatedWords({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
-            return new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.data);
-                } else {
-                    reject({'message': result.message});
-                }
-            });
-        });
-    }
-
-    public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
-        return this.wordModelsService.getWordSimilarity({'term_1': term1, 'term_2': term2, 'corpus_name': corpusName})
-            .then( result => {
-            return new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.data);
-                } else {
-                    reject({'message': result.message});
-                }
-            });
-        });
-    }
-
-    public async getRelatedWordsTimeInterval(
-        queryTerm: string, corpusName: string, timeInterval: string
-    ): Promise<WordSimilarity[]> {
-        return this.wordModelsService.getRelatedWordsTimeInterval(
-            {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}
-        ).then( result => {
-            return new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result['data']);
-                } else {
-                    reject({'message': result.message});
-                }
-            });
-        });
-    }
-
-    wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
-        return this.wordModelsService.getWordInModel({
-            query_term: term,
-            corpus_name: corpusName,
-        }).then(result => {
-            return new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.result);
-                } else {
-                    reject({'message': result['message']});
-                }
-            });
-        });
-    }
-
-    getNgramTasks(queryModel: QueryModel, corpusName: string, field: string, params: NgramParameters): Promise<any> {
-        const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.ngramTasks({
-            es_query: esQuery,
-            corpus_name: corpusName,
-            field: field,
-            ngram_size: params.size,
-            term_position: params.positions,
-            freq_compensation: params.freqCompensation,
-            subfield: params.analysis,
-            max_size_per_interval: params.maxDocuments,
-            number_of_ngrams: params.numberOfNgrams,
-            date_field: params.dateField,
-        });
     }
 
     public getParamForFieldName(fieldName: string) {

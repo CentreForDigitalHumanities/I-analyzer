@@ -15,9 +15,11 @@ import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
 import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
-import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
+import { ApiService, CorpusService, DialogService, ElasticSearchService, QueryService, SearchService, UserService } from './services';
 import { WordmodelsService } from './services/wordmodels.service';
 import { WordmodelsServiceMock } from '../mock-data/wordmodels';
+import { VisualizationService } from './services/visualization.service';
+import { visualizationServiceMock } from '../mock-data/visualization';
 
 export function commonTestBed() {
     const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
@@ -57,6 +59,9 @@ export function commonTestBed() {
         {
             provide: WordmodelsService, useValue: new WordmodelsServiceMock()
         },
+        {
+            provide: VisualizationService, useValue: new visualizationServiceMock(),
+        }
     );
 
     return {
