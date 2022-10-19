@@ -2,10 +2,10 @@ import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 
 import * as _ from 'lodash';
 
-import { ApiService, SearchService } from '../../services/index';
+import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
 import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
-    BarchartSeries, AggregateQueryFeedback } from '../../models';
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
@@ -23,12 +23,12 @@ const hintHidingDebounceTime = 1000;  // milliseconds
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
 export abstract class BarchartDirective
-    <Result extends BarchartResult>
+    <DataPoint extends TimelineDataPoint|HistogramDataPoint>
     implements OnChanges, OnInit {
     public showHint: boolean;
 
     // rawData: a list of series
-    rawData: (BarchartSeries<Result>)[];
+    rawData: (BarchartSeries<DataPoint>)[];
 
     // chart object
     chart: Chart;
@@ -42,7 +42,7 @@ export abstract class BarchartDirective
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    documentLimit = 1000; // maximum number of documents to search through for term frequency
+    documentLimit = 10000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
@@ -53,7 +53,7 @@ export abstract class BarchartDirective
     /** list of query used by each series in te graph */
     queries: string[] = [];
 
-    /** Stores the key that can be used in a Result object
+    /** Stores the key that can be used in a DataPoint object
      * to retrieve the y-axis value.
      * Key can be retrieved as
      * `valueKeys[frequencyMeasure][normalizer]`
@@ -124,7 +124,8 @@ export abstract class BarchartDirective
     constructor(
         public searchService: SearchService,
         public visualizationService: VisualizationService,
-        public apiService: ApiService
+        public apiService: ApiService,
+        private notificationService: NotificationService,
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
@@ -197,7 +198,7 @@ export abstract class BarchartDirective
     }
 
     /** make a blank series object */
-    newSeries(queryText: string): BarchartSeries<Result> {
+    newSeries(queryText: string): BarchartSeries<DataPoint> {
         return {
             queryText: queryText,
             data: [],
@@ -286,7 +287,7 @@ export abstract class BarchartDirective
 
     /**
      * Convert the result from an document search into a data series object.
-     * - Converts to the relevant Result type using `aggregateResultToResult`
+     * - Converts to the relevant DataPoint type using `aggregateResultToDataPoint`
      * - Adds the total document count and search ratio for retrieving term frequencies.
      * - Adds the relative document count.
      * @param result result from aggregation search
@@ -295,9 +296,9 @@ export abstract class BarchartDirective
      * may be set to `false` when loading a portion of the series during zoom.
      * @returns a copy of the series with the document counts included.
      */
-    docCountResultIntoSeries(result, series: BarchartSeries<Result>, setSearchRatio = true): BarchartSeries<Result> {
+    docCountResultIntoSeries(result, series: BarchartSeries<DataPoint>, setSearchRatio = true): BarchartSeries<DataPoint> {
         let data = result.aggregations[this.visualizedField.name]
-            .map(this.aggregateResultToResult);
+            .map(this.aggregateResultToDataPoint);
         const total_doc_count = this.totalDocCount(data);
         const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
         data = this.includeRelativeDocCount(data, total_doc_count);
@@ -310,14 +311,14 @@ export abstract class BarchartDirective
     }
 
     /** convert the output of an aggregation search to the relevant result type */
-    abstract aggregateResultToResult(cat: AggregateResult): Result;
+    abstract aggregateResultToDataPoint(cat: AggregateResult): DataPoint;
 
     /** fill in the `relative_doc_count` property for an array of datapoints.
      */
-    includeRelativeDocCount(data: Result[], total: number): Result[] {
+    includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
         return data.map(item => {
             const result = _.clone(item);
-            result.relative_doc_count = result.doc_count / total;
+            result.relative_doc_count = result.total_doc_count / total;
             return result;
         });
     }
@@ -357,28 +358,30 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<any> {
-        const queryModelCopy =  this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<any> {
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
                 return this.apiService.pollTask(result.task_id);
             }
         }).then(res => {
             if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results as Result[], series);
+                return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
             } else {
                 return series;
             }
         });
     }
 
-    abstract requestSeriesTermFrequency(series: BarchartSeries<Result>, queryModel: QueryModel): Promise<TaskResult>;
+    abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
 
-    abstract processSeriesTermFrequency(results: Result[], series: BarchartSeries<Result>): BarchartSeries<Result>;
+    abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
+
+    abstract processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint>;
 
 
     /** total document count for a data array */
-    totalDocCount(data: Result[]) {
+    totalDocCount(data: AggregateResult[]) {
         return _.sumBy(data, item => item.doc_count);
     }
 
@@ -386,37 +389,56 @@ export abstract class BarchartDirective
      * calculate the maximum number of documents to read through in a bin
      * when determining term frequency.
      */
-     documentLimitForCategory(cat: Result, series: BarchartSeries<Result>): number {
+     documentLimitForCategory(cat: DataPoint, series: BarchartSeries<DataPoint>): number {
         return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
 
     /**
-     * add term frequency data to a Result object
+     * add term frequency data to a DataPoint object
      * @param result output from request for term frequencies
-     * @param cat Result object where the data should be added
+     * @param cat DataPoint object where the data should be added
      */
-    addTermFrequencyToCategory(data: Result, cat: Result): Result {
+    addTermFrequencyToCategory(data: TermFrequencyResult, cat: DataPoint): DataPoint {
         cat.match_count = data.match_count;
-        cat.total_doc_count = data.doc_count;
+        cat.total_doc_count = data.total_doc_count;
         cat.token_count = data.token_count;
-        cat.matches_by_doc_count = data.match_count / data.doc_count,
+        cat.matches_by_doc_count = data.match_count / data.total_doc_count,
         cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
         return cat;
     }
 
     /** Request and fill in doc counts for a series */
     getSeriesDocumentData(
-        series: BarchartSeries<Result>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
-    ): Promise<BarchartSeries<Result>> {
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+        series: BarchartSeries<DataPoint>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
+    ): Promise<BarchartSeries<DataPoint>> {
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
 
         return this.requestSeriesDocCounts(queryModelCopy).then(result =>
             this.docCountResultIntoSeries(result, series, setSearchRatio));
     }
 
+    /** adapt query model to fit series: use correct search fields and query text */
+    queryModelForSeries(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
+        return this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
+    }
+
     /** Request doc counts for a series */
     abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
+
+    requestFullData() {
+        this.fullDataRequest().then(() =>
+            this.notificationService.showMessage(
+                'Full data requested! You will receive an email when your download is ready.',
+                'success'
+            )
+        ).catch(error => {
+            console.error(error);
+            this.notificationService.showMessage('Could not set up data generation.', 'danger');
+        });
+    }
+
+    abstract fullDataRequest(): Promise<TaskResult>;
 
     /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void {
@@ -558,7 +580,7 @@ export abstract class BarchartDirective
         }
     }
 
-    /** which key of a Result object should be used as the y-axis value */
+    /** which key of a DataPoint object should be used as the y-axis value */
     get currentValueKey(): string {
         return this.valueKeys[this.frequencyMeasure][this.normalizer];
     }
@@ -568,7 +590,9 @@ export abstract class BarchartDirective
      * This differs per series, but user message only gives one value, currently the minimum.
      */
     get percentageDocumentsSearched() {
-        return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        if (this.rawData) {
+            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        }
     }
 
     /**

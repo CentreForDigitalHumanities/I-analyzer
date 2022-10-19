@@ -41,6 +41,6 @@
     white-space: normal;
 }
 
-.is-loading {
+.is-loading:not(.button) {
     @extend %content-loader;
 }
