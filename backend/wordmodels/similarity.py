@@ -15,9 +15,11 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def term_similarity(matrix, wm_type, transformer, term1, term2):
+def term_similarity(wm, wm_type, term1, term2):
+    matrix = wm[wm_type]
 
     if wm_type == 'svd_ppmi':
+        transformer = wm['transformer']
         vec1 = term_vector(matrix, transformer, term1)
         vec2 = term_vector(matrix, transformer, term2)
 
@@ -25,25 +27,27 @@ def term_similarity(matrix, wm_type, transformer, term1, term2):
             return float(cosine_similarity_vectors(vec1, vec2))
 
     elif wm_type == 'word2vec':
-        return matrix.similarity(term1, term2)
+        similarity = matrix.similarity(term1, term2)
+        return str(similarity)
 
-def term_vector(matrix, transformer, term):
+def term_vector(matrix, vocab, term):
     index = next(
-        (i for i, a in enumerate(transformer.get_feature_names())
+        (i for i, a in enumerate(vocab)
          if a == term), None)
     if not(index):
         return None
     vec = matrix[:, index]
     return vec
 
-def find_n_most_similar(matrix, transformer, wm_type, query_term, n):
+def find_n_most_similar(wm, wm_type, query_term, n):
     """given a matrix of svd_ppmi or word2vec values
     and the transformer (i.e., sklearn CountVectorizer),
     determine which n terms match the given query term best
     """
-    transformed_query = transform_query(query_term, transformer)
+    analyzer = wm['analyzer']
+    transformed_query = transform_query(query_term, analyzer)
     if wm_type == 'svd_ppmi':
-        vec = term_to_vector(query_term, transformer, matrix)
+        vec = term_to_vector(query_term, wm['transformer'], matrix)
 
         if type(vec) == type(None):
             return None
@@ -59,7 +63,7 @@ def find_n_most_similar(matrix, transformer, wm_type, query_term, n):
         ]
     elif wm_type == 'word2vec':
         try:
-            results = matrix.most_similar(transformed_query, topn=n)
+            results = wm[wm_type].most_similar(transformed_query, topn=n)
         except:
             return None
         output_terms = [{

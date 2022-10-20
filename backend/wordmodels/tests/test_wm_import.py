@@ -94,5 +94,5 @@ def test_query_transform(test_app):
     ]
 
     for query, expected in cases:
-        transformed = transform_query(query, model['transformer'])
+        transformed = transform_query(query, model['analyzer'])
         assert transformed == expected

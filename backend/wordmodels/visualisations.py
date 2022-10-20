@@ -1,8 +1,8 @@
+from flask import current_app
+
 from addcorpus.load_corpus import load_corpus
 from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms, term_similarity
-from wordmodels.utils import get_transformer, load_word_models
-
-from flask import current_app
+from wordmodels.utils import load_word_models
 
 
 NUMBER_SIMILAR = 8
@@ -13,9 +13,8 @@ def get_similarity_over_time(query_term, comparison_term, corpus_string):
     wm_type == corpus.word_model_type
     data = [
         term_similarity(
-            time_bin[wm_type],
+            time_bin,
             wm_type,
-            time_bin['transformer'],
             query_term,
             comparison_term
         )
@@ -47,10 +46,8 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     complete = load_word_models(corpus)
     binned = load_word_models(corpus, binned=True)
     model = complete[corpus.word_model_type]
-    transformer = complete['transformer']
     word_list = find_n_most_similar(
-        model,
-        transformer,
+        complete,
         wm_type,
         query_term,
         number_similar)
@@ -60,9 +57,8 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     times = get_time_labels(binned)
     words = [word['key'] for word in word_list]
     get_similarity = lambda word, time_bin: term_similarity(
-        time_bin[wm_type],
+        time_bin,
         wm_type,
-        time_bin['transformer'],
         query_term,
         word
     )
@@ -85,19 +81,14 @@ def get_context_time_interval(query_term, corpus_string, which_time_interval, nu
     corpus = load_corpus(corpus_string)
     wm_type = corpus.word_model_type
     binned = load_word_models(corpus, binned=True)
-    time_bin = next((time for time in binned if time['start_year']==int(which_time_interval[:4]) and
-        time['end_year']==int(which_time_interval[-4:])), None)
+    start_year, end_year = which_time_interval.split('-')
+    time_bin = next((time for time in binned if time['start_year']==int(start_year) and
+        time['end_year']==int(end_year)), None)
+    if not time_bin:
+        print([(b['start_year'], b['end_year']) for b in binned], start_year, end_year)
     time_label = '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
-    if wm_type == 'svd_ppmi':
-        transformer = time_bin['transformer']
-        vocab = transformer.get_feature_names_out()
-        analyzer = transformer.build_analyzer()
-    elif wm_type == 'word2vec':
-        transformer = get_transformer(corpus)
-        vocab
     word_list = find_n_most_similar(
-        time_bin[wm_type],
-        transformer,
+        time_bin,
         wm_type,
         query_term,
         number_similar)

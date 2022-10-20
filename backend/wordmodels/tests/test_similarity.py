@@ -44,11 +44,10 @@ def test_term_similarity(test_app):
     binned_models = load_word_models(corpus, True)
     model = binned_models[0]
     wm_type = corpus.word_model_type
-    matrix, transformer = model[wm_type], model['transformer']
 
-    similarity1 = similarity.term_similarity(matrix, wm_type, transformer, 'elizabeth', 'she')
+    similarity1 = similarity.term_similarity(model, wm_type, 'elizabeth', 'she')
     assert type(similarity1) == float
 
-    similarity2 = similarity.term_similarity(matrix, wm_type, transformer, 'elizabeth', 'he')
+    similarity2 = similarity.term_similarity(model, wm_type, 'elizabeth', 'he')
 
     assert similarity1 > similarity2
