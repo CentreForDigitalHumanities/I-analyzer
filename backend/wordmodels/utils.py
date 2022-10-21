@@ -100,12 +100,8 @@ def word_in_model(query_term, corpus, max_distance = 2):
 
 def load_wm_documentation(corpus_string):
     corpus = load_corpus(corpus_string)
-    try:
-        wm_directory = corpus.word_model_path
-    except KeyError:
-        return None
 
-    description_file = 'documentation.md'
+    description_file = join('wm', 'documentation.md')
     if description_file in os.listdir(wm_directory):
         with open(join(wm_directory, description_file)) as f:
             contents = f.read()
