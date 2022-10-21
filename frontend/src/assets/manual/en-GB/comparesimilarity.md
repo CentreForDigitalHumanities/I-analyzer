@@ -1,4 +1,4 @@
-This graph shows the words which appear in the same contexts as the query term across the entire corpus.
+This graph allows you to compare the similarity of your query term to other terms you are interested in.
 
 ## Word models
 
@@ -8,10 +8,10 @@ For each corpus that includes word embeddings, we have trained a model of the co
 
 If words appear in the same context, their vectors are more alike, which is reflected in a higher cosine similarity. Words that appear in the same context are likely to have related meanings: you can think of synonyms like `big` and `large`, but also antonyms like `black` and `white`, or simply words that are associated with the same topic, like `bank` and `financial`.
 
-## The related words graph
+## The similarity graph
 
-The line graph includes the words with the highest similarity to your query term. This is the similarity across the entire corpus. The graph shows how these similarities develop over time, by showing the similarity per time frame. (This is based on the model from that timeframe, see above.)
+You can enter one or more terms to compare your query term.
 
-Because words are selected based on their overall similarity, the line graph may not include the words that are most similar within a _specific_ timeframe.
+For each term, the graph will show the cosine similarity of that term compared to your query term. For example, if you searched for _netherlands_ and enter _belgium_ and _germany_ as your comparison terms, you will see the similarity scores of _netherlands_-_belgium_ and _netherlands_-_germany_.
 
-You can select the `bar` view to view the most similar terms for each timeframe individually. In the bar view, the similar words are selected for that specific timeframe: they include the nearest neighbours in that time window, but not necessarily the nearest neighbours across the whole corpus.
+The graph will show how the similarity develops over time, using the model from each timeframe (see above).
