@@ -33,7 +33,7 @@
         </div>
 
         <div class="control" *ngIf="showEdit">
-            <ia-term-comparison-editor [initialValue]="[queryText]"
+            <ia-term-comparison-editor [initialValue]="queries"
                 (queriesChanged)="updateQueries($event)" (clearQueries)="signalClearQueries()"></ia-term-comparison-editor>
         </div>
     </div>
