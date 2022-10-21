@@ -67,7 +67,7 @@ def get_vocab(kv_filename):
         return pickle.load(f)
 
 def get_analyzer_and_vocab_ppmi(model):
-    transfomer = model.get('transformer')
+    transformer = model.get('transformer')
     model['analyzer'] = transformer.build_analyzer()
     model['vocab'] = transformer.get_feature_names_out()
     return model
@@ -124,8 +124,8 @@ def term_to_index(query, transformer):
     if transformed and transformed in transformer.vocabulary_:
         return transformer.vocabulary_[transformed]
 
-def index_to_term(index, transformer):
-    return transformer.get_feature_names_out()[index]
+def index_to_term(index, vocab):
+    return vocab[index]
 
 def term_to_vector(query, transformer, matrix):
     index = term_to_index(query, transformer)

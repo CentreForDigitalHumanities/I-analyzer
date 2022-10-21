@@ -84,8 +84,6 @@ def get_context_time_interval(query_term, corpus_string, which_time_interval, nu
     start_year, end_year = which_time_interval.split('-')
     time_bin = next((time for time in binned if time['start_year']==int(start_year) and
         time['end_year']==int(end_year)), None)
-    if not time_bin:
-        print([(b['start_year'], b['end_year']) for b in binned], start_year, end_year)
     time_label = '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
     word_list = find_n_most_similar(
         time_bin,

@@ -78,8 +78,7 @@ def test_term_to_vector(test_app):
     assert novec == None
 
 def test_description_import(test_app):
-    corpus = load_corpus('mock-corpus')
-    description = load_wm_documentation(corpus)
+    description = load_wm_documentation('mock-corpus')
     assert description == 'Description for testing.\n'
 
 def test_query_transform(test_app):

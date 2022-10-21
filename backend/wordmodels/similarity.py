@@ -20,8 +20,9 @@ def term_similarity(wm, wm_type, term1, term2):
 
     if wm_type == 'svd_ppmi':
         transformer = wm['transformer']
-        vec1 = term_vector(matrix, transformer, term1)
-        vec2 = term_vector(matrix, transformer, term2)
+        vocab = transformer.get_feature_names_out()
+        vec1 = term_vector(matrix, vocab, term1)
+        vec2 = term_vector(matrix, vocab, term2)
 
         if type(vec1) != type(None) and type(vec2) != type(None):
             return float(cosine_similarity_vectors(vec1, vec2))
@@ -45,7 +46,9 @@ def find_n_most_similar(wm, wm_type, query_term, n):
     determine which n terms match the given query term best
     """
     analyzer = wm['analyzer']
+    vocab = wm['vocab']
     transformed_query = transform_query(query_term, analyzer)
+    matrix = wm[wm_type]
     if wm_type == 'svd_ppmi':
         vec = term_to_vector(query_term, wm['transformer'], matrix)
 
@@ -56,14 +59,14 @@ def find_n_most_similar(wm, wm_type, query_term, n):
         sorted_sim = np.sort(similarities)
         most_similar_indices = np.where(similarities >= sorted_sim[-n])
         output_terms = [{
-            'key': index_to_term(index, transformer),
+            'key': index_to_term(index, vocab),
             'similarity': similarities[index]
             } for index in most_similar_indices[0] if
-            index_to_term(index, transformer)!=transformed_query
+            index_to_term(index, vocab)!=transformed_query
         ]
     elif wm_type == 'word2vec':
         try:
-            results = wm[wm_type].most_similar(transformed_query, topn=n)
+            results = matrix.most_similar(transformed_query, topn=n)
         except:
             return None
         output_terms = [{
