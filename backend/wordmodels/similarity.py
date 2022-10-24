@@ -29,7 +29,7 @@ def term_similarity(wm, wm_type, term1, term2):
 
     elif wm_type == 'word2vec':
         similarity = matrix.similarity(term1, term2)
-        return str(similarity)
+        return float(similarity)
 
 def term_vector(matrix, vocab, term):
     index = next(
@@ -42,7 +42,7 @@ def term_vector(matrix, vocab, term):
 
 def find_n_most_similar(wm, wm_type, query_term, n):
     """given a matrix of svd_ppmi or word2vec values
-    and the transformer (i.e., sklearn CountVectorizer),
+    with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
     analyzer = wm['analyzer']
@@ -58,7 +58,7 @@ def find_n_most_similar(wm, wm_type, query_term, n):
         similarities = cosine_similarity_matrix_vector(vec, matrix)
         sorted_sim = np.sort(similarities)
         most_similar_indices = np.where(similarities >= sorted_sim[-n])
-        output_terms = [{
+        return [{
             'key': index_to_term(index, vocab),
             'similarity': similarities[index]
             } for index in most_similar_indices[0] if
@@ -69,13 +69,10 @@ def find_n_most_similar(wm, wm_type, query_term, n):
             results = matrix.most_similar(transformed_query, topn=n)
         except:
             return None
-        output_terms = [{
+        return [{
             'key': result[0],
             'similarity': result[1]
         } for result in results]
-    else:
-        return None
-    return output_terms
 
 
 def similarity_with_top_terms(matrix, transformer, query_term, word_data, wm_type):

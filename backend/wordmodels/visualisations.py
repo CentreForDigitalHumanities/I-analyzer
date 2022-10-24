@@ -25,7 +25,7 @@ def get_similarity_over_time(query_term, comparison_term, corpus_string):
     similarities = [
         {
             'key': comparison_term,
-            'similarity': similarity,
+            'similarity': str(similarity),
             'time': time,
         }
         for (similarity, time) in zip(data, time_labels)

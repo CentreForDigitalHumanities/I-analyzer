@@ -1,5 +1,5 @@
 import os
-from os.path import join, splitext
+from os.path import dirname, exists, join, splitext
 import pickle
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
@@ -100,10 +100,10 @@ def word_in_model(query_term, corpus, max_distance = 2):
 
 def load_wm_documentation(corpus_string):
     corpus = load_corpus(corpus_string)
-
-    description_file = join('wm', 'documentation.md')
-    if description_file in os.listdir(wm_directory):
-        with open(join(wm_directory, description_file)) as f:
+    corpus_dir = dirname(current_app.config['CORPORA'][corpus_string])
+    description_file = join(corpus_dir, 'wm', 'documentation.md')
+    if exists(description_file):
+        with open(description_file) as f:
             contents = f.read()
             return contents
     else:
