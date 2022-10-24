@@ -5,7 +5,6 @@ from wordmodels.visualisations import get_diachronic_contexts, get_context_time_
 from wordmodels.conftest import TEST_BINS, WM_MOCK_CORPORA
 
 def assert_similarity_format(item, must_specify_time = True):
-    print(item)
     assert 'key' in item and type(item['key']) == str
 
     assert 'similarity' in item
@@ -20,26 +19,30 @@ def test_context_time_interval(test_app, mock_corpus):
     cases = {
         'mock-svd-ppmi-corpus': {
             'term': 'alice',
-            'time1':'1810-1839',
-            'time2': '1840-1869'
+            'bin_without_match':'1810-1839',
+            'bin': '1840-1869',
+            'similar1': 'she',
+            'similar2': 'her'
         },
         'mock-wordvec-corpus': {
-            'term': 'agression',
-            'time1': '1880-1900',
-            'time2': '1900-1920'
+            'term': 'président',
+            'bin': '1900-1920',
+            'similar1': 'droit',
+            'similar2': 'peut'
         }
     }
     case = cases.get(mock_corpus)
     term = case.get('term')
 
-    # context for bin that does not include the query term
-    missing_context = get_context_time_interval(term, mock_corpus, case.get('time1'), 5)
-    assert missing_context == "The query term is not in the word models' vocabulary."
+    bin_without_match = case.get('bin_without_match')
+    if bin_without_match:
+        # context for bin that does not include the query term
+        missing_context = get_context_time_interval(term, mock_corpus, bin_without_match, 5)
+        assert missing_context == "The query term is not in the word models' vocabulary."
 
 
     # context for bin that includes the query term
-    context = get_context_time_interval(term, mock_corpus, case.get('time2'), 5)
-    print(context)
+    context = get_context_time_interval(term, mock_corpus, case.get('bin'), 5)
 
     # check format
 
@@ -48,13 +51,12 @@ def test_context_time_interval(test_app, mock_corpus):
 
 
     # check common-sense nearest neighbours
-
     similar_terms = [item['key'] for item in context]
-    assert 'she' in similar_terms and 'her' in similar_terms
+    assert case.get('similar1') in similar_terms and case.get('similar2') in similar_terms
 
     sorted_by_similarity = sorted(context, key = lambda item : item['similarity'], reverse = True)
     most_similar_term = sorted_by_similarity[0]['key']
-    assert most_similar_term == 'she'
+    assert most_similar_term == case.get('similar1')
 
 @pytest.mark.parametrize("mock_corpus, query_term", zip(WM_MOCK_CORPORA, ['she', 'participer']))
 def test_diachronic_context(test_app, mock_corpus, query_term):
