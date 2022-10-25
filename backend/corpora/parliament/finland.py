@@ -14,17 +14,28 @@ from bs4.element import NavigableString
 from flask import current_app
 
 def extract_party_data(node):
+    id = node['xml:id']
+
+    full_name_node = node.find('orgName', full='yes')
+    full_name = full_name_node.text if full_name_node else None
+
+    abbreviation_node = node.find('orgName', full='init')
+    name = abbreviation_node.text if abbreviation_node else full_name or id
+
     return {
-        'name': node['xml:id'],
+        'name': name,
+        'full_name': full_name,
         'role': node['role'],
-        'id': node['xml:id']
+        'id': id
     }
 
 def extract_all_party_data(soup):
     parties_list = soup.find('listOrg')
     party_data = map(extract_party_data, parties_list.find_all('org'))
+    make_id = lambda name: '#party.' + name if not name.startswith('party.') else '#' + name
+
     return {
-        '#party.' + party['id']: party for party in party_data
+        make_id(party['id']): party for party in party_data
     }
 
 def extract_person_data(node):
@@ -34,7 +45,12 @@ def extract_person_data(node):
     name = ' '.join([forename, surname])
     role = node.persName.roleName.text.strip() if node.persName.roleName else None
     gender = node.sex.text.strip() if node.sex else None
-    party_id = node.affliation['ref'] if node.affliation else None
+
+    #get party id
+    is_party_node = lambda node : node.name in ['affliation', 'affiliation'] and node.has_attr('ref')
+    party_node = node.find(is_party_node)
+    party_id = party_node['ref'] if party_node else None
+
     party = party_id.split('.', maxsplit=1)[1] if party_id else None
     birth_date = node.birth['when'] if node.birth else None
     birth_year = int(birth_date[:4]) if birth_date else None

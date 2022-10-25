@@ -10,6 +10,7 @@ from flask import current_app
 import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined, Choice
+from corpora.parliament.finland import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults  as field_defaults
@@ -17,9 +18,10 @@ import re
 
 logger = logging.getLogger('indexing')
 
-if 'PP_NL_RECENT_DATA' in current_app.config:
-    with open(join(current_app.config['PP_NL_RECENT_DATA'], 'ParlaMint-NL.xml'), 'rb') as f:
+def load_nl_recent_metadata(directory):
+    with open(join(directory, 'ParlaMint-NL.xml'), 'rb') as f:
         soup = BeautifulSoup(f.read(), 'xml')
+    return soup
 
 
 def format_role(role):
@@ -109,45 +111,6 @@ def get_sequence(node, tag_entry):
 def is_old(metadata):
     return metadata['dataset'] == 'old'
 
-def get_speaker_recent(who):
-    person = get_person(who)
-    surname = person.find('surname').text
-    forename = person.find('forename').text
-    return '{} {}'.format(forename, surname)
-
-def get_speaker_gender_recent(who):
-    person = get_person(who)
-    gender = person.find('sex').text
-    return gender
-
-def get_person(who):
-    person = soup.find(attrs={'xml:id':who[1:]})
-    return person
-
-def get_party_id_recent(who):
-    person = get_person(who)
-    if not person:
-        return None
-    member_of = person.find(attrs={'role': 'member'})
-    if not member_of:
-        return None
-    party_id = member_of.attrs['ref']
-    return party_id
-
-def get_party_recent(who):
-    party_id = get_party_id_recent(who)
-    if not party_id:
-        return None
-    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'init'}).text
-    return party
-
-def get_party_full_recent(who):
-    party_id = get_party_id_recent(who)
-    if not party_id:
-        return None
-    party = soup.find(attrs={'xml:id':party_id[1:]}).find(attrs={'full': 'yes'}).text
-    return party
-
 def get_sequence_recent(id):
     pattern = r'u(\d+)$'
     match = re.search(pattern, id)
@@ -196,9 +159,20 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
         # new data
         if self.data_directory_recent:
+            soup = load_nl_recent_metadata(self.data_directory_recent)
+            role_data = extract_role_data(soup)
+            party_data = extract_all_party_data(soup)
+            person_data = extract_people_data(soup)
+            metadata = {
+                'dataset': 'recent',
+                'roles': role_data,
+                'parties': party_data,
+                'persons': person_data
+            }
+
             for year in range(start.year, end.year):
                 for xml_file in glob('{}/{}/*.xml'.format(self.data_directory_recent, year)):
-                    yield xml_file, { 'dataset': 'recent' }
+                    yield xml_file, metadata
 
 
     country = field_defaults.country()
@@ -312,13 +286,9 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             XML(attribute='function'),
             XML(attribute='speaker'),
             transform=' '.join,
-            applicable=is_old
+            applicable=is_old,
         ),
-        XML(
-            tag=None,
-            attribute='who',
-            transform=get_speaker_recent
-        )
+        person_attribute_extractor('name')
     )
 
     speaker_id = field_defaults.speaker_id()
@@ -327,10 +297,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute='member-ref',
             applicable=is_old
         ),
-        XML(
-            tag=None,
-            attribute='who'
-        )
+        XML(attribute='who'),
     )
 
     speaker_gender = field_defaults.speaker_gender()
@@ -339,11 +306,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             None,
             applicable=is_old
         ),
-        XML(
-            tag=None,
-            attribute='who',
-            transform=get_speaker_gender_recent
-        )
+        person_attribute_extractor('gender')
     )
 
     role = field_defaults.parliamentary_role()
@@ -368,11 +331,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             transform=format_party,
             applicable = is_old
         ),
-        XML(
-            tag=None,
-            attribute='who',
-            transform=get_party_recent
-        )
+        party_attribute_extractor('name')
     )
 
 
@@ -382,11 +341,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             attribute='party-ref',
             applicable = is_old
         ),
-        XML(
-            tag=None,
-            attribute='who',
-            transform=get_party_id_recent
-        )
+        person_attribute_extractor('party_id')
     )
 
     party_full = field_defaults.party_full()
@@ -396,11 +351,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
             transform_soup_func=get_party_full,
             applicable = is_old,
         ),
-        XML(
-            tag=None,
-            attribute='who',
-            transform=get_party_full_recent
-        )
+        party_attribute_extractor('full_name')
     )
 
     page = field_defaults.page()
