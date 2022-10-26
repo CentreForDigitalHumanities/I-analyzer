@@ -18,6 +18,5 @@ class MockSVDPPMICorpus(Corpus):
     fields = [
         Field(
             name = 'content',
-            visualizations=['relatedwords']
         )
     ]

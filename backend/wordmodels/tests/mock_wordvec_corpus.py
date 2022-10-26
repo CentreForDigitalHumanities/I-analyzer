@@ -18,6 +18,5 @@ class MockWordVecCorpus(Corpus):
     fields = [
         Field(
             name = 'content',
-            visualizations=['relatedwords']
         )
     ]
