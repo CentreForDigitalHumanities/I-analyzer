@@ -4,7 +4,8 @@ Corpora have the option to include word vectors. I-analyzer visualisations are b
 
 ## Format
 
-Word models should be saved in two python pickle files. The names of these files are set in your configuration. The default config names them `complete.pkl` and `binned.pkl`; there is no reason to change this configuration. Note that the configuration is set for the entire app, not per corpus.
+### SVD_PPMI
+SVD_PPMI word models should be saved in two python pickle files. The names of these files are set in your configuration. The default config names them `complete.pkl` and `binned.pkl`; there is no reason to change this configuration. Note that the configuration is set for the entire app, not per corpus.
 
 The file `complete.pkl` provides word vectors trained on the complete corpus. The unpickled object is a dictionary with the following keys:
 
@@ -13,9 +14,19 @@ The file `complete.pkl` provides word vectors trained on the complete corpus. Th
 
 The file `binned.pkl` provides word vectors for each time frame. The unpickled object is a _list of dictionaries_, providing the models in chronological order. Each model contains a `transformer` object and `svd_ppmi` matrix, like the complete model. In addition, it has the keys `'start_year'` and `'end_year'`, which give the starting and ending year of the bin as integers.
 
+### Word2Vec
+Word2Vec models are expected to come with the following files:
+- `_full.w2v` (contains gensim KeyedVectors for a model trained on the whole time period)
+- `_full_analyzer.pkl` (a function to transform queries to terms)
+- `_full_vocab.pkl` (contains a list of terms present in the word vectors of the whole time period)
+For each time bin, it expects files of the format
+- `_{startYear}_{endYear}.w2v` (contains gensim KeyedVectors for a model trained on the time bin)
+- `_{startYear}_{endYear}_vocab.pkl` (contains a list of terms present in the word vectors of the time bin)
+
+## Dcoumentation
+Please include documentation on the method and settings used to train a model. This documentation is expected to be located in `wm/documentation.md`, next to the corpus definition that includes word models.
+
 ## Including word models
 
-The two word model files must be stored in the same location as your corpus definition. That is to say, the directory that contains your definition `my-corpus.py` should have a subdirectory `wm` that contains the two pickle files. (The name `wm` is set in the default configuration and can be changed in your own config, though you probably won't have a reason to do this.) Note that the `wm` folder is ignored by git.
-
-If your are adding newly trained word models, you will also need to specify in the corpus definition that they may be included. Set the `word_models_present` property in the corpus to look in the subdirectory. See [troonredes.py](../backend/corpora/troonredes/troonredes.py) or [dutchannualreports.py](../backend/corpora/dutchannualreports/dutchannualreports.py) for examples.
+If your are adding newly trained word models, you will also need to specify in the corpus definition that they may be included. Set the `word_models_path` property in the corpus to the directory in which the word models are stored. Also set the `word_model_type` property to the type of training used for the model ('svd_ppmi' or 'word2vec'). See [troonredes.py](../backend/corpora/troonredes/troonredes.py) or [uk.py](../backend/corpora/parliament/uk.py) for examples.
 
