@@ -10,7 +10,7 @@ NUMBER_SIMILAR = 8
 def get_similarity_over_time(query_term, comparison_term, corpus_string):
     corpus = load_corpus(corpus_string)
     binned = load_word_models(corpus, True)
-    wm_type == corpus.word_model_type
+    wm_type = corpus.word_model_type
     data = [
         term_similarity(
             time_bin,
