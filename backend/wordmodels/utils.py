@@ -35,7 +35,7 @@ def load_word_models(corpus, binned=False):
         try:
             w2v_list.remove(full_model)
         except:
-           return "No full word model found for this corpus."
+           raise(Exception("No full word model found for this corpus."))
         analyzer = get_analyzer(corpus)
         if binned:
             w2v_list.sort()
