@@ -21,8 +21,8 @@ def term_similarity(wm, wm_type, term1, term2):
     if wm_type == 'svd_ppmi':
         transformer = wm['transformer']
         vocab = transformer.get_feature_names_out()
-        vec1 = term_vector(matrix, vocab, term1)
-        vec2 = term_vector(matrix, vocab, term2)
+        vec1 = term_to_vector(matrix, vocab, term1)
+        vec2 = term_to_vector(matrix, vocab, term2)
 
         if type(vec1) != type(None) and type(vec2) != type(None):
             return float(cosine_similarity_vectors(vec1, vec2))
@@ -74,24 +74,3 @@ def find_n_most_similar(wm, wm_type, query_term, n):
             'similarity': result[1]
         } for result in results]
 
-
-def similarity_with_top_terms(matrix, transformer, query_term, word_data, wm_type):
-    """given a matrix of svd_ppmi values,
-    the transformer (i.e., sklearn CountVectorizer), and a word list
-    of the terms matching the query term best over the whole corpus,
-    determine the similarity for each time interval
-    """
-    if wm_type == 'svd_ppmi':
-        query_vec = term_to_vector(query_term, transformer, matrix)
-        for item in word_data:
-            item_vec = term_to_vector(item['label'], transformer, matrix)
-            if type(item_vec) == type(None):
-                value = 0
-            else:
-                value = cosine_similarity_vectors(item_vec, query_vec)
-            item['data'].append(value)
-    elif wm_type == 'word2vec':
-        for item in word_data:
-            value = matrix.similarity(query_term, item['label'])
-            item['data'].append(value)
-    return word_data

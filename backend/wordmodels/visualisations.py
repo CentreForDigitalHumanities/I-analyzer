@@ -1,7 +1,7 @@
 from flask import current_app
 
 from addcorpus.load_corpus import load_corpus
-from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms, term_similarity
+from wordmodels.similarity import find_n_most_similar, term_similarity
 from wordmodels.utils import load_word_models
 
 
@@ -45,7 +45,6 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     wm_type = corpus.word_model_type
     complete = load_word_models(corpus)
     binned = load_word_models(corpus, binned=True)
-    model = complete[corpus.word_model_type]
     word_list = find_n_most_similar(
         complete,
         wm_type,
