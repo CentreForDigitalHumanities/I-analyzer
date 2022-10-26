@@ -47,12 +47,14 @@ def test_term_similarity(test_app, mock_corpus):
         'mock-svd-ppmi-corpus': {
             'term': 'elizabeth',
             'similar_term': 'she',
-            'less_similar': 'he'
+            'less_similar': 'he',
+            'uppercase_term': 'She'
         },
         'mock-wordvec-corpus': {
             'term': 'payement',
             'similar_term': 'payeur',
-            'less_similar': 'finances'
+            'less_similar': 'finances',
+            'uppercase_term': 'Payeur'
         }
     }
     case = cases.get(mock_corpus)
@@ -67,3 +69,6 @@ def test_term_similarity(test_app, mock_corpus):
     similarity2 = similarity.term_similarity(model, wm_type, case['term'], case['less_similar'])
 
     assert similarity1 > similarity2
+
+    similarity3 = similarity.term_similarity(model, wm_type, case['term'], case['uppercase_term'])
+    assert similarity1 == similarity3

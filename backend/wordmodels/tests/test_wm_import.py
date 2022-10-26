@@ -65,7 +65,22 @@ def test_word_in_model(test_app, mock_corpus):
             }
         ],
         'mock-wordvec-corpus': [
-
+                        {
+                'term': 'ils',
+                'expected': {'exists': True}
+            },
+            {
+                'term':  'président',
+                'expected': {'exists': True}
+            },
+            {
+                'term':  'Président!',
+                'expected': {'exists': True}
+            },
+            {
+                'term':  'president',
+                'expected': {'exists': False, 'similar_keys': ['président']}
+            }
         ]
     }
 
