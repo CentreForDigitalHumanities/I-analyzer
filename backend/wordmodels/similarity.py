@@ -20,25 +20,18 @@ def term_similarity(wm, wm_type, term1, term2):
 
     if wm_type == 'svd_ppmi':
         transformer = wm['transformer']
-        vocab = transformer.get_feature_names_out()
-        vec1 = term_to_vector(matrix, vocab, term1)
-        vec2 = term_to_vector(matrix, vocab, term2)
+        vec1 = term_to_vector(term1, transformer, matrix)
+        vec2 = term_to_vector(term2, transformer, matrix)
 
         if type(vec1) != type(None) and type(vec2) != type(None):
             return float(cosine_similarity_vectors(vec1, vec2))
 
     elif wm_type == 'word2vec':
-        similarity = matrix.similarity(term1, term2)
+        analyzer = wm['analyzer']
+        transformed1 = transform_query(term1, analyzer)
+        transformed2 = transform_query(term2, analyzer)
+        similarity = matrix.similarity(transformed1, transformed2)
         return float(similarity)
-
-def term_vector(matrix, vocab, term):
-    index = next(
-        (i for i, a in enumerate(vocab)
-         if a == term), None)
-    if not(index):
-        return None
-    vec = matrix[:, index]
-    return vec
 
 def find_n_most_similar(wm, wm_type, query_term, n):
     """given a matrix of svd_ppmi or word2vec values
