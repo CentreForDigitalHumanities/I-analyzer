@@ -80,6 +80,7 @@ import { WordSimilarityComponent } from './word-models/word-similarity/word-simi
 import { TermComparisonEditorComponent } from './visualization/barchart/term-comparison-editor/term-comparison-editor.component';
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
+import { FooterComponent } from './footer/footer.component';
 
 
 export const appRoutes: Routes = [
@@ -157,6 +158,7 @@ export const declarations: any[] = [
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
+    FooterComponent,
     FreqtableComponent,
     FullDataButtonComponent,
     HomeComponent,
