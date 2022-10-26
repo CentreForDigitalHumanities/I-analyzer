@@ -29,7 +29,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData(): void {
-        this.showLoading(this.getTotalData().then(this.getZoomedInData.bind(this)));
+        this.showLoading(this.getTotalData());
     }
 
     /** execute a process with loading spinner */
