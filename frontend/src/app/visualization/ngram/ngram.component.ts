@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
+import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
-import { ApiService, SearchService } from '../../services';
+import { ApiService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ParamDirective } from '../../param/param-directive';
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
@@ -27,7 +27,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     @ViewChild('chart-container') chartContainer: ElementRef;
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true, },
         { key: 'ngram', label: 'N-gram', isSecondaryFactor: true, },
         { key: 'freq', label: 'Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue }
@@ -63,8 +63,8 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     faTimes = faTimes;
 
     constructor(
-        private searchService: SearchService,
         private apiService: ApiService,
+        private visualizationService: VisualizationService,
         route: ActivatedRoute,
         router: Router
     ) {
@@ -102,7 +102,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
-        this.loadGraph();
+
+        if (this.currentParameters) {
+            this.loadGraph();
+        }
     }
 
     setParameters(params: Params) {
@@ -130,17 +133,17 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         if (cachedResult) {
             this.onDataLoaded(cachedResult, changeAspectRatio);
         } else {
-            this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
+            this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
                 .then(result => {
                     this.tasksToCancel = result.task_ids;
                     const childTask = result.task_ids[0];
-                    this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
-                        if (outcome.success === true) {
+                    this.apiService.pollTask(childTask).then(outcome => {
+                        if (outcome.success === true && outcome.done === true) {
                             this.cacheResult(outcome.results, this.currentParameters);
                             this.onDataLoaded(outcome.results, changeAspectRatio);
                         } else {
-                            this.error.emit({message: outcome.message});
+                            this.error.emit({message: outcome['message']});
                         }
                     });
             }).catch(error => {

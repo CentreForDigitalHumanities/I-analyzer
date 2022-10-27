@@ -29,10 +29,11 @@ def format_house(house):
         return 'House of Lords'
 
 def format_speaker(speaker):
-    if speaker.startswith('*'):
-        speaker = speaker[1:]
+    if speaker:
+        if speaker.startswith('*'):
+            speaker = speaker[1:]
 
-    return speaker.title()
+        return speaker.title()
 
 class ParliamentUK(Parliament, CSVCorpus):
     title = 'People & Parliament (UK)'
@@ -45,10 +46,8 @@ class ParliamentUK(Parliament, CSVCorpus):
     word_model_path = current_app.config['PP_UK_WM']
     word_model_type = 'word2vec'
     language = 'english'
-
-
+    description_page = 'uk.md'
     field_entry = 'speech_id'
-
     document_context = document_context()
 
     def sources(self, start, end):

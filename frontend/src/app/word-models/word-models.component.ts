@@ -81,7 +81,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
     }
 
     getDocumentation() {
-        this.wordModelsService.getWordModelsDocumentation({corpus_name: this.corpus.name}).then(result => {
+        this.wordModelsService.wordModelsDocumentationRequest({corpus_name: this.corpus.name}).then(result => {
             this.modelDocumentation = result.documentation;
         });
     }
@@ -91,7 +91,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
         this.activeQuery = this.queryText;
         this.validateQuery();
         if (this.queryFeedback === undefined) {
-            this.searchService.wordInModel(this.queryText, this.corpus.name)
+            this.wordModelsService.wordInModel(this.queryText, this.corpus.name)
                 .then(this.handleWordInModel.bind(this))
                 .catch(() => this.queryFeedback = { status: 'error' });
         }

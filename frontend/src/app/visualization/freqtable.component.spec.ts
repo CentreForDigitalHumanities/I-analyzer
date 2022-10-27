@@ -1,9 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
 import * as _ from 'lodash';
-import { TableModule } from 'primeng/table';
-import { freqTableHeaders } from '../models';
-
+import { commonTestBed } from '../common-test-bed';
 import { FreqtableComponent } from './freqtable.component';
 
 describe('FreqtableComponent', () => {
@@ -11,12 +8,7 @@ describe('FreqtableComponent', () => {
     let fixture: ComponentFixture<FreqtableComponent>;
 
     beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-        imports: [FormsModule, TableModule],
-        providers: [],
-        declarations: [FreqtableComponent]
-    })
-        .compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

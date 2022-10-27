@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { DialogService, SearchService } from '../../services/index';
+import { Corpus, WordSimilarity } from '../../models';
+import { WordmodelsService } from '../../services/index';
 import * as _ from 'lodash';
 
 @Component({
@@ -22,7 +22,7 @@ export class RelatedWordsComponent implements OnChanges {
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-    constructor(private searchService: SearchService) { }
+    constructor(private wordModelsService: WordmodelsService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.corpus || changes.queryText) {
@@ -43,7 +43,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getTotalData(): Promise<void> {
-        return this.searchService.getRelatedWords(this.queryText, this.corpus.name)
+        return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name)
             .then(results => {
                 this.totalSimilarities = results.total_similarities;
                 this.totalData = results.similarities_over_time;
@@ -60,7 +60,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getTimeData(time: string): Promise<WordSimilarity[]> {
-        return this.searchService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
+        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
     }
 
     onError(error) {

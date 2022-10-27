@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { DropdownComponent } from './dropdown.component';
 
@@ -7,9 +8,7 @@ describe('DropdownComponent', () => {
     let fixture: ComponentFixture<DropdownComponent<TestItem>>;
 
     beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-            declarations: [DropdownComponent]
-        }).compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

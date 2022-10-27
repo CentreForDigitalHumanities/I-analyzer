@@ -41,7 +41,7 @@ class ParliamentDenmarkNew(Parliament, CSVCorpus):
     data_directory = current_app.config['PP_DENMARK_NEW_DATA']
     es_index = current_app.config['PP_DENMARK_NEW_INDEX']
     image = 'denmark.jpg'
-
+    description_page = 'denmark-new.md'
     language = 'danish'
     delimiter = '\t'
     document_context = constants.document_context()

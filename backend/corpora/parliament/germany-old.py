@@ -24,6 +24,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
     language = 'german'
 
+    description_page = 'germany-old.md'
+
     field_entry = 'item_order'
     required_field = 'text'
 

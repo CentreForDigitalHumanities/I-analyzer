@@ -26,6 +26,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     field_entry = 'id'
     required_field = 'speech_content'
 
+    description_page = 'germany-new.md'
+
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
         for csv_file in glob('{}/*.csv'.format(self.data_directory)):

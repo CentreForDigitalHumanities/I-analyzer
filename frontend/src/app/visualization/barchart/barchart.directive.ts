@@ -1,46 +1,34 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { SearchService } from '../../services/index';
+import { ApiService, NotificationService, SearchService } from '../../services/index';
 import { Chart, ChartOptions } from 'chart.js';
-import { AggregateResult, BarchartResult, Corpus, freqTableHeaders, QueryModel, CorpusField } from '../../models';
+import { AggregateResult, BarchartResult, Corpus, FreqTableHeaders, QueryModel, CorpusField, TaskResult,
+    BarchartSeries, AggregateQueryFeedback, TimelineDataPoint, HistogramDataPoint, TermFrequencyResult } from '../../models';
 import Zoom from 'chartjs-plugin-zoom';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../select-color';
+import { VisualizationService } from '../../services/visualization.service';
 
 const hintSeenSessionStorageKey = 'hasSeenTimelineZoomingHint';
 const hintHidingMinDelay = 500;       // milliseconds
 const hintHidingDebounceTime = 1000;  // milliseconds
 
 
-@Component({
+@Directive({
     selector: 'ia-barchart',
-    templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss']
 })
 
 /** The barchartComponent is used to define shared functionality between the
  * histogram and timeline components. It does not function as a stand-alone component. */
-export class BarChartComponent<Result extends BarchartResult> implements OnChanges, OnInit {
+export abstract class BarchartDirective
+    <DataPoint extends TimelineDataPoint|HistogramDataPoint>
+    implements OnChanges, OnInit {
     public showHint: boolean;
 
-    /**
-     * Template for a series, used for typedefs: don't store data here.
-     * Each dataseries defines its own query text
-     * and sores results for that query.
-     * `data` contains the results per bin on the x-axis.
-     * Elements of `data` are often called cat/category in the code.
-     */
-    private seriesType: {
-        data: Result[],
-        total_doc_count: number, // total documents matching the query across the series
-        searchRatio: number, // ratio of total_doc_count that can be searched through without exceeding documentLimit
-        queryText?: string, // replaces the text in this.queryModel when searching
-    };
-
     // rawData: a list of series
-    rawData: (typeof this.seriesType)[];
+    rawData: (BarchartSeries<DataPoint>)[];
 
     // chart object
     chart: Chart;
@@ -54,18 +42,18 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     @Input() frequencyMeasure: 'documents'|'tokens' = 'documents';
     normalizer: 'raw' | 'percent' | 'documents'|'terms' = 'raw';
 
-    @Input() documentLimit = 1000; // maximum number of documents to search through for term frequency
+    documentLimit = 10000; // maximum number of documents to search through for term frequency
     documentLimitExceeded = false; // whether the results include documents than the limit
     totalTokenCountAvailable: boolean; // whether the data includes token count totals
 
     // table data
-    tableHeaders: freqTableHeaders;
+    tableHeaders: FreqTableHeaders;
     tableData: any[];
 
     /** list of query used by each series in te graph */
     queries: string[] = [];
 
-    /** Stores the key that can be used in a Result object
+    /** Stores the key that can be used in a DataPoint object
      * to retrieve the y-axis value.
      * Key can be retrieved as
      * `valueKeys[frequencyMeasure][normalizer]`
@@ -134,7 +122,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     };
 
     constructor(
-        public searchService: SearchService
+        public searchService: SearchService,
+        public visualizationService: VisualizationService,
+        public apiService: ApiService,
+        private notificationService: NotificationService,
     ) {
         const chartDefault = Chart.defaults;
         chartDefault.elements.bar.backgroundColor = selectColor();
@@ -158,7 +149,10 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
 
     /** check whether input changes should force reloading the data */
     changesRequireRefresh(changes: SimpleChanges): boolean {
-        return (changes.corpus || changes.queryModel || changes.visualizedField || changes.frequencyMeasure) !== undefined;
+        const relevantChanges = [changes.corpus, changes.queryModel, changes.visualizedField, changes.frequencyMeasure]
+            .filter(change => !_.isUndefined(change));
+
+        return _.some(relevantChanges, change => !_.isEqual(change.currentValue, change.previousValue));
     }
 
     /** update graph after changes to the normalisation menu (i.e. normalizer) */
@@ -194,7 +188,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         }
     }
 
-    /** add a new series (i.e. a new query) to the graph. */
+    /** update the queries in the graph to the input array. Preserve results if possible, and kick off loading the rest. */
     updateQueries(queries: string[]) {
         this.rawData = queries.map(queryText => {
             const existingSeries = this.rawData.find(series => series.queryText === queryText);
@@ -204,7 +198,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     /** make a blank series object */
-    newSeries(queryText: string): (typeof this.seriesType) {
+    newSeries(queryText: string): BarchartSeries<DataPoint> {
         return {
             queryText: queryText,
             data: [],
@@ -217,6 +211,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * Only keep the original query */
     clearAddedQueries() {
         this.rawData = this.rawData.slice(0, 1);
+        this.queries = [this.queryText];
         this.prepareChart();
     }
 
@@ -236,42 +231,45 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         this.isLoading.next(false);
     }
 
+
     /** load data for the graph (if needed), update the graph and freqtable. */
-    async loadData() {
+    loadData(): Promise<void> {
         // load data if needed
-        await this.requestDocumentData();
-        if (this.frequencyMeasure === 'tokens') { await this.requestTermFrequencyData(); }
+        return this.requestDocumentData().then(
+            this.frequencyMeasure === 'tokens' ? this.requestTermFrequencyData.bind(this) : _.identity
+        ).then(rawData => {
+            this.rawData = rawData;
 
-        if (!this.rawData.length) {
-            this.error.emit({message: 'No results'});
-        }
+            if (!this.rawData.length) {
+                this.error.emit({message: 'No results'});
+            }
 
-        // initialise or update chart
-        this.setChart();
+            // initialise or update chart
+            this.setChart();
 
-        // update freqtable
-        this.setTableHeaders();
-        this.setTableData();
+            // update freqtable
+            this.setTableHeaders();
+            this.setTableData();
 
-        // load zoomed-in data if needed
-        if (this.isZoomedIn) {
-            this.onZoomIn(this.chart, true);
-        }
+            // load zoomed-in data if needed
+            if (this.isZoomedIn) {
+                this.onZoomIn(this.chart, true);
+            }
+        });
     }
 
     /** Retrieve all document frequencies and store in `rawData`.
      * Document frequencies are only loaded if they are not already in the data. */
-    async requestDocumentData() {
-        const dataPromises = this.rawData.map((series, seriesIndex) => {
+    requestDocumentData(): Promise<typeof this.rawData> {
+        const dataPromises = this.rawData.map(series => {
             if (!series.data.length) { // retrieve data if it was not already loaded
-                return this.requestSeriesDocumentData(series).then(result =>
-                    this.rawData[seriesIndex] = result
-                );
+                return this.getSeriesDocumentData(series);
+            } else {
+                return series;
             }
         });
 
-        await Promise.all(dataPromises);
-        this.checkDocumentLimitExceeded();
+        return Promise.all(dataPromises).then(this.checkDocumentLimitExceeded.bind(this));
     }
 
     selectSearchFields(queryModel: QueryModel) {
@@ -289,7 +287,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
 
     /**
      * Convert the result from an document search into a data series object.
-     * - Converts to the relevant Result type using `aggregateResultToResult`
+     * - Converts to the relevant DataPoint type using `aggregateResultToDataPoint`
      * - Adds the total document count and search ratio for retrieving term frequencies.
      * - Adds the relative document count.
      * @param result result from aggregation search
@@ -298,9 +296,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * may be set to `false` when loading a portion of the series during zoom.
      * @returns a copy of the series with the document counts included.
      */
-    docCountResultIntoSeries(result, series: (typeof this.seriesType), setSearchRatio = true): (typeof this.seriesType) {
+    docCountResultIntoSeries(result, series: BarchartSeries<DataPoint>, setSearchRatio = true): BarchartSeries<DataPoint> {
         let data = result.aggregations[this.visualizedField.name]
-            .map(this.aggregateResultToResult);
+            .map(this.aggregateResultToDataPoint);
         const total_doc_count = this.totalDocCount(data);
         const searchRatio = setSearchRatio ? this.documentLimit / total_doc_count : series.searchRatio;
         data = this.includeRelativeDocCount(data, total_doc_count);
@@ -313,16 +311,14 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     /** convert the output of an aggregation search to the relevant result type */
-    aggregateResultToResult(cat: AggregateResult): Result {
-        return cat as Result;
-    }
+    abstract aggregateResultToDataPoint(cat: AggregateResult): DataPoint;
 
     /** fill in the `relative_doc_count` property for an array of datapoints.
      */
-    includeRelativeDocCount(data: Result[], total: number): Result[] {
+    includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
         return data.map(item => {
             const result = _.clone(item);
-            result.relative_doc_count = result.doc_count / total;
+            result.relative_doc_count = result.total_doc_count / total;
             return result;
         });
     }
@@ -331,35 +327,61 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * Check whether any series found more documents than the document limit.
      * This means that not all documents will be read when counting term frequency.
     */
-     checkDocumentLimitExceeded(): void {
-        this.documentLimitExceeded = this.rawData.find(series => series.searchRatio < 1) !== undefined;
+     checkDocumentLimitExceeded(rawData: typeof this.rawData): typeof this.rawData {
+        this.documentLimitExceeded = rawData.find(series => series.searchRatio < 1) !== undefined;
+        return rawData;
     }
 
 
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-     async requestTermFrequencyData() {
-        const dataPromises = _.flatMap(this.rawData, (series => {
-            if (series.queryText && series.data[0].match_count === undefined) { // retrieve data if it was not already loaded
-                return series.data.map((cat, index) =>
-                    this.requestCategoryTermFrequencyData(cat, index, series)
-                );
+    requestTermFrequencyData(rawData: typeof this.rawData) {
+        const dataPromises = rawData.map(series => {
+            if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
+                // retrieve data if it was not already loaded
+                return this.getTermFrequencies(series, this.queryModel);
+            } else {
+                return series;
             }
-        }));
+        });
 
-        await Promise.all(dataPromises);
+        return Promise.all(dataPromises).then(this.checkTotalTokenCount.bind(this));
+    }
 
-        // signal if total token counts are available
-        const totalTokenCountAvailable = this.rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
+    checkTotalTokenCount(rawData: typeof this.rawData): typeof this.rawData {
+        const totalTokenCountAvailable = rawData.find(series => series.data.find(cat => cat.token_count)) !== undefined;
         if (this.frequencyMeasure === 'tokens' && totalTokenCountAvailable && !this.totalTokenCountAvailable) {
             this.normalizer = 'terms';
         }
         this.totalTokenCountAvailable = totalTokenCountAvailable;
+        return rawData;
     }
 
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<any> {
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
+        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
+            if (result.success === true) {
+                return this.apiService.pollTask(result.task_id);
+            }
+        }).then(res => {
+            if (res && res.success && res.done) {
+                return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
+            } else {
+                return series;
+            }
+        });
+    }
+
+    abstract requestSeriesTermFrequency(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<TaskResult>;
+
+    abstract makeTermFrequencyBins(series: BarchartSeries<DataPoint>);
+
+    abstract processSeriesTermFrequency(results: TermFrequencyResult[], series: BarchartSeries<DataPoint>): BarchartSeries<DataPoint>;
+
+
     /** total document count for a data array */
-    totalDocCount(data: Result[]) {
+    totalDocCount(data: AggregateResult[]) {
         return _.sumBy(data, item => item.doc_count);
     }
 
@@ -367,41 +389,57 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * calculate the maximum number of documents to read through in a bin
      * when determining term frequency.
      */
-     documentLimitForCategory(cat: Result, series: (typeof this.seriesType)): number {
+     documentLimitForCategory(cat: DataPoint, series: BarchartSeries<DataPoint>): number {
         return _.min([10000, _.ceil(cat.doc_count * series.searchRatio)]);
     }
 
 
     /**
-     * add term frequency data to a Result object
+     * add term frequency data to a DataPoint object
      * @param result output from request for term frequencies
-     * @param cat Result object where the data should be added
+     * @param cat DataPoint object where the data should be added
      */
-    addTermFrequencyToCategory(result: {data?: AggregateResult}, cat: Result): void {
-        const data = result.data;
+    addTermFrequencyToCategory(data: TermFrequencyResult, cat: DataPoint): DataPoint {
         cat.match_count = data.match_count;
-        cat.total_doc_count = data.doc_count;
+        cat.total_doc_count = data.total_doc_count;
         cat.token_count = data.token_count;
-        cat.matches_by_doc_count = data.match_count / data.doc_count,
+        cat.matches_by_doc_count = data.match_count / data.total_doc_count,
         cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
+        return cat;
     }
 
-    // implemented on child components
+    /** Request and fill in doc counts for a series */
+    getSeriesDocumentData(
+        series: BarchartSeries<DataPoint>, queryModel: QueryModel = this.queryModel, setSearchRatio = true
+    ): Promise<BarchartSeries<DataPoint>> {
+        const queryModelCopy = this.queryModelForSeries(series, queryModel);
 
-    /** Retrieve doc counts for a series */
-    requestSeriesDocumentData(series: typeof this.seriesType): Promise<typeof this.seriesType> {
-        return undefined;
+        return this.requestSeriesDocCounts(queryModelCopy).then(result =>
+            this.docCountResultIntoSeries(result, series, setSearchRatio));
     }
-    /**
-     * retrieve term frequencies for a bin and store in `rawData`
-     * @param cat the Result object of one bin/category in one series of the data.
-     * @param catIndex the index of the bin/category in the series.
-     * @param series the series object that the bin/category belongs to.
-     * @returns a Promise object, finishes when the frequencies have been inserted into the result.
-     */
-    requestCategoryTermFrequencyData(cat: Result, catIndex: number, series: typeof this.seriesType): Promise<void> {
-        return undefined;
+
+    /** adapt query model to fit series: use correct search fields and query text */
+    queryModelForSeries(series: BarchartSeries<DataPoint>, queryModel: QueryModel) {
+        return this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
     }
+
+    /** Request doc counts for a series */
+    abstract requestSeriesDocCounts(queryModel: QueryModel): Promise<AggregateQueryFeedback>;
+
+    requestFullData() {
+        this.fullDataRequest().then(() =>
+            this.notificationService.showMessage(
+                'Full data requested! You will receive an email when your download is ready.',
+                'success'
+            )
+        ).catch(error => {
+            console.error(error);
+            this.notificationService.showMessage('Could not set up data generation.', 'danger');
+        });
+    }
+
+    abstract fullDataRequest(): Promise<TaskResult>;
+
     /** update or initialise chart (should be ran after updates to `rawData`) */
     setChart(): void {
         if (this.chart) {
@@ -411,15 +449,13 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         }
     }
     /** select the columns/headers for the frequency table */
-    setTableHeaders(): void { }
+    abstract setTableHeaders(): void;
     /** code to be executed when zooming in, or when parameters are updated while zoomed in */
     onZoomIn(chart, triggeredByDataUpdate = false) { }
     /** options for the chart.
      * @param datasets array of dataset objects for the chart
      */
-    chartOptions(datasets): any {
-        return this.basicChartOptions;
-    }
+    abstract chartOptions(datasets);
 
     /** initalise a new chart */
     initChart() {
@@ -467,9 +503,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     /** return chartJS dataset objects based on rawData */
-    getDatasets(): any[] {
-        return undefined;
-    }
+    abstract getDatasets(): any[];
 
 
     /**
@@ -546,7 +580,7 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
         }
     }
 
-    /** which key of a Result object should be used as the y-axis value */
+    /** which key of a DataPoint object should be used as the y-axis value */
     get currentValueKey(): string {
         return this.valueKeys[this.frequencyMeasure][this.normalizer];
     }
@@ -556,7 +590,9 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
      * This differs per series, but user message only gives one value, currently the minimum.
      */
     get percentageDocumentsSearched() {
-        return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        if (this.rawData) {
+            return _.round(100 *  _.min(this.rawData.map(series => series.searchRatio)));
+        }
     }
 
     /**
@@ -584,13 +620,15 @@ export class BarChartComponent<Result extends BarchartResult> implements OnChang
     }
 
     chartTitle() {
-        if (this.queryText == null) {
+        const queryTexts = this.rawData.map(series => series.queryText);
+        if (this.queryText == null && this.rawData.length == 1) {
             return `Frequency of documents by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}, ${this.normalizer})`;
         } else {
             const normalizationText = ['raw', 'percent'].includes(this.normalizer) ? '' : `, normalized by ${this.normalizer}`;
-            return `Frequency of '${this.queries}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
-        }
+            return `Frequency of '${queryTexts.join(", ")}' by ${this.visualizedField.displayName} (n of ${this.frequencyMeasure}${normalizationText})`;
+            }
     }
+
 
     get queryText(): string {
         if (this.queryModel) {

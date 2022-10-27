@@ -9,7 +9,7 @@ gensim
 Werkzeug==2.0
 WTForms
 celery>=5.2.2
-elasticsearch>=7.0, <8.0
+elasticsearch
 beautifulsoup4
 lxml<4.9.2
 pytest

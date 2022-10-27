@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { ScanImageComponent } from './scan-image.component';
 
@@ -7,10 +8,7 @@ describe('ScanImageComponent', () => {
   let fixture: ComponentFixture<ScanImageComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ScanImageComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,30 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { FoundDocument, Corpus, CorpusField, ElasticSearchIndex, QueryModel, SearchResults,
+import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
     AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
 
-import { ApiRetryService } from './api-retry.service';
 
 import * as _ from 'lodash';
 
 
-type Connections = { [serverName: string]: Connection };
-
 @Injectable()
 export class ElasticSearchService {
-    private connections: Promise<Connections>;
+    private client: Client;
+    private resultsPerPage = 20;
 
-    constructor(apiRetryService: ApiRetryService, private http: HttpClient) {
-        this.connections = apiRetryService.requireLogin(api => api.esConfig()).then(configs =>
-            configs.reduce((connections: Connections, config) => {
-                const client = new Client(this.http, config.host);
-                connections[config.name] = {
-                    config,
-                    client: client
-                };
-                return connections;
-            }, {}));
+    constructor(private http: HttpClient) {
+        this.client = new Client(this.http);
     }
 
     public makeEsQuery(queryModel: QueryModel, fields?: CorpusField[]): EsQuery | EsQuerySorted {
@@ -100,21 +90,20 @@ export class ElasticSearchService {
         return aggregation;
     }
 
-    private executeAggregate(index: ElasticSearchIndex, aggregationModel) {
-        return this.connections.then((connections) => connections[index.serverName].client.search({
-            index: index.index,
+    private executeAggregate(index: Corpus, aggregationModel) {
+        return this.client.search({
+            index: index.name,
             size: 0,
             body: aggregationModel
-        }));
+        });
     }
 
     /**
      * Execute an ElasticSearch query and return a dictionary containing the results.
      */
-    private async execute<T>(index: ElasticSearchIndex, esQuery: EsQuery, size: number, from?: number) {
-        const connection = (await this.connections)[index.serverName];
-        return connection.client.search<T>({
-            index: index.index,
+    private async execute<T>(index: Corpus, esQuery: EsQuery, size: number, from?: number) {
+        return this.client.search<T>({
+            index: index.name,
             from: from,
             size: size,
             body: esQuery
@@ -122,7 +111,7 @@ export class ElasticSearchService {
     }
 
     public async aggregateSearch<TKey>(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel,
         aggregators: Aggregator[]): Promise<AggregateQueryFeedback> {
         const aggregations = {};
@@ -143,7 +132,7 @@ export class ElasticSearchService {
     }
 
     public async dateHistogramSearch<TKey>(
-        corpusDefinition: ElasticSearchIndex,
+        corpusDefinition: Corpus,
         queryModel: QueryModel,
         fieldName: string,
         timeInterval: string): Promise<AggregateQueryFeedback> {
@@ -175,10 +164,9 @@ export class ElasticSearchService {
         queryModel: QueryModel,
         size?: number,
     ): Promise<SearchResults> {
-        const connection = (await this.connections)[corpusDefinition.serverName];
         const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize);
+        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage);
         return this.parseResponse(response);
     }
 
@@ -190,10 +178,9 @@ export class ElasticSearchService {
         corpusDefinition: Corpus,
         queryModel: QueryModel, from: number,
         size: number): Promise<SearchResults> {
-        const connection = (await this.connections)[corpusDefinition.serverName];
         const esQuery = this.makeEsQuery(queryModel, corpusDefinition.fields);
         // Perform the search
-        const response = await this.execute(corpusDefinition, esQuery, size || connection.config.overviewQuerySize, from);
+        const response = await this.execute(corpusDefinition, esQuery, size || this.resultsPerPage, from);
         return this.parseResponse(response);
     }
 
@@ -227,7 +214,7 @@ export class ElasticSearchService {
     /**
     * Convert filters from query model into elasticsearch form
     */
-    private mapFilters(filters: SearchFilter<SearchFilterData>[]) {
+    private mapFilters(filters: SearchFilter<SearchFilterData>[]): EsFilter[] {
         return filters.map(filter => {
             switch (filter.currentData.filterType) {
                 case 'BooleanFilter':
@@ -273,26 +260,65 @@ export type EsQuerySorted = EsQuery & {
 export interface EsQuery {
     aborted?: boolean;
     completed?: Date;
-    query: EsSearchClause | {
-        'bool': {
-            must: EsSearchClause,
-            filter: any[],
-        }
-    };
+    query: EsSearchClause | BooleanQuery;
     highlight?: {};
     transferred?: Number;
 }
 
-type EsSearchClause = {
+interface BooleanQuery {
+    'bool': {
+        must: EsSearchClause,
+        filter: EsFilter[],
+    };
+}
+
+interface MatchAll {
+    match_all: {};
+}
+
+interface SimpleQueryString {
     simple_query_string: {
         query: string,
         fields?: string[],
         lenient: true,
         default_operator: 'or'
-    }
-} | {
-    match_all: {}
-};
+    };
+}
+
+type EsSearchClause = MatchAll | SimpleQueryString;
+
+interface EsDateFilter {
+    range: {
+        [field: string]: {
+            gte: string,
+            lte: string,
+            format: 'yyyy-MM-dd'
+        }
+    };
+}
+
+interface EsTermsFilter {
+    terms: {
+        [field: string]: string[]
+    };
+}
+
+interface EsBooleanFilter {
+    term: {
+        [field: string]: boolean
+    };
+}
+
+interface EsRangeFilter {
+    range: {
+        [field: string]: {
+            gte: number,
+            lte: number
+        }
+    };
+}
+
+type EsFilter = EsDateFilter | EsTermsFilter | EsBooleanFilter | EsRangeFilter;
 
 interface Aggregator {
     name: string;
@@ -300,13 +326,12 @@ interface Aggregator {
 }
 
 export class Client {
-    constructor(private http: HttpClient, private host: string) {
+    constructor(private http: HttpClient) {
     }
     search<T>(searchParams: SearchParams): Promise<SearchResponse> {
-        const url = `${this.host}/${searchParams.index}/_search`;
+        const url = `es/${searchParams.index}/_search`;
         const optionDict = {
-            'size': searchParams.size.toString(),
-            'track_total_hits': 'true'
+            'size': searchParams.size.toString()
         };
         if (searchParams.from) {
             optionDict['from'] = searchParams.from.toString();

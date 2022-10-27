@@ -3,7 +3,7 @@ import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../../visualization/select-color';
-import { freqTableHeaders, WordSimilarity } from '../../models';
+import { FreqTableHeaders, WordSimilarity } from '../../models';
 
 /**
  * Child component of the related words and compare similarity graphs.
@@ -28,7 +28,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     chartOptions: ChartOptions = {};
     chart: Chart;
 
-    tableHeaders: freqTableHeaders;
+    tableHeaders: FreqTableHeaders;
     tableData: WordSimilarity[];
 
     graphStyle = new BehaviorSubject<'line'|'stream'|'bar'>('line');

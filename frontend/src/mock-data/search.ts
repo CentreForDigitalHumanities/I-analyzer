@@ -19,7 +19,6 @@ export class SearchServiceMock {
         };
     }
     public async getRelatedWords() {}
-    public async getNgramTasks() {}
     public getParamForFieldName(fieldName: string) { return `${fieldName}`; }
     createQueryModel(
         queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],

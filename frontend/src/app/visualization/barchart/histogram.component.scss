@@ -1,4 +1,4 @@
-@import "barchart.component";
+@import "../../../_utilities";
 
 div.tooltip {
     line-height: 1;
@@ -12,14 +12,20 @@ div.tooltip {
     visibility: hidden;
     width: fit-content;
 }
-  
-  /* Creates a small triangle extender for the tooltip 
+
+  /* Creates a small triangle extender for the tooltip
   Not currently working */
 div.tooltip::after {
-    width: 0; 
-    height: 0; 
+    width: 0;
+    height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid black;
     opacity: .8;
   }
+
+
+  .notification {
+    @include unselectable;
+    opacity: 0.75;
+}
