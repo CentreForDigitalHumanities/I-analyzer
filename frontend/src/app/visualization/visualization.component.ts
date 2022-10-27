@@ -128,7 +128,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     setStateFromParams(params: Params) {
         if (params.has('visualize')) {
-            this.visualizationType = params.get('visualize');
+            this.setVisualizationType(params.get('visualize'));
             const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
             this.setVisualizedField(visualizedField);
         } else {

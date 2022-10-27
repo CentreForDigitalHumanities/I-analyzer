@@ -140,7 +140,7 @@ export class ElasticSearchService {
             [fieldName]: {
                 date_histogram: {
                     field: fieldName,
-                    interval: timeInterval
+                    calendar_interval: timeInterval
                 }
             }
         };
