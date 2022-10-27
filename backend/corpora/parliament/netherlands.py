@@ -10,7 +10,7 @@ from flask import current_app
 import bs4
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Constant, Combined, Choice
-from corpora.parliament.finland import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
+from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor
 from corpora.parliament.utils.formatting import format_page_numbers
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults  as field_defaults
