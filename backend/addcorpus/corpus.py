@@ -123,7 +123,6 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    # @property
     def scan_image_type(self):
         '''
         Filetype of scanned documents (images)
@@ -133,14 +132,23 @@ class Corpus(object):
         else:
             return self.scan_image_type
 
+    def word_model_path(self):
+        ''' (optional) path where word models are stored
+        '''
+        return None
+
+    def word_model_type(self):
+        ''' (optional) type of word models:
+        word2vec or svd_ppmi
+        '''
+        return None
+
+    @property
     def word_models_present(self):
         '''
         if word models are present for this corpus
         '''
-        if self.word_models_present is None:
-            return False
-        else:
-            return self.word_models_present
+        return self.word_model_path != None
 
     def allow_image_download(self):
         '''

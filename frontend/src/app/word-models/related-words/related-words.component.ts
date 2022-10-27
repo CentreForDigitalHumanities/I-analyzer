@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Corpus, WordSimilarity } from '../../models';
 import { WordmodelsService } from '../../services/index';
 import * as _ from 'lodash';
@@ -24,12 +24,14 @@ export class RelatedWordsComponent implements OnChanges {
 
     constructor(private wordModelsService: WordmodelsService) { }
 
-    ngOnChanges() {
-        this.getData();
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.corpus || changes.queryText) {
+            this.getData();
+        }
     }
 
     getData(): void {
-        this.showLoading(this.getTotalData().then(this.getZoomedInData.bind(this)));
+        this.showLoading(this.getTotalData());
     }
 
     /** execute a process with loading spinner */

@@ -20,6 +20,8 @@ class ParliamentGermanyNew(Parliament, CSVCorpus):
     es_index = current_app.config['PP_GERMANY_NEW_INDEX']
     image = current_app.config['PP_GERMANY_NEW_IMAGE']
     language = 'german'
+    word_model_path = current_app.config['PP_UK_WM']
+    word_model_type = 'word2vec'
 
     field_entry = 'id'
     required_field = 'speech_content'

@@ -15,57 +15,57 @@ def cosine_similarity_matrix_vector(vector, matrix):
     matrix_vector_norms = np.multiply(matrix_norms, vector_norm)
     return dot / matrix_vector_norms
 
-def term_similarity(matrix, transformer, term1, term2):
-    vec1 = term_vector(matrix, transformer, term1)
-    vec2 = term_vector(matrix, transformer, term2)
+def term_similarity(wm, wm_type, term1, term2):
+    matrix = wm[wm_type]
 
-    if type(vec1) != type(None) and type(vec2) != type(None):
-        return float(cosine_similarity_vectors(vec1, vec2))
+    if wm_type == 'svd_ppmi':
+        transformer = wm['transformer']
+        vec1 = term_to_vector(term1, transformer, matrix)
+        vec2 = term_to_vector(term2, transformer, matrix)
 
-def term_vector(matrix, transformer, term):
-    index = next(
-        (i for i, a in enumerate(transformer.get_feature_names())
-         if a == term), None)
-    if not(index):
-        return None
-    vec = matrix[:, index]
-    return vec
+        if type(vec1) != type(None) and type(vec2) != type(None):
+            return float(cosine_similarity_vectors(vec1, vec2))
 
-def find_n_most_similar(matrix, transformer, query_term, n):
-    """given a matrix of svd_ppmi values
-    and the transformer (i.e., sklearn CountVectorizer),
+    elif wm_type == 'word2vec':
+        analyzer = wm['analyzer']
+        transformed1 = transform_query(term1, analyzer)
+        transformed2 = transform_query(term2, analyzer)
+        vocab = wm['vocab']
+        if transformed1 in vocab and transformed2 in vocab:
+            similarity = matrix.similarity(transformed1, transformed2)
+            return float(similarity)
+
+def find_n_most_similar(wm, wm_type, query_term, n):
+    """given a matrix of svd_ppmi or word2vec values
+    with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
-    transformed_query = transform_query(query_term, transformer)
-    vec = term_to_vector(query_term, transformer, matrix)
+    analyzer = wm['analyzer']
+    vocab = wm['vocab']
+    transformed_query = transform_query(query_term, analyzer)
+    matrix = wm[wm_type]
+    if wm_type == 'svd_ppmi':
+        vec = term_to_vector(query_term, wm['transformer'], matrix)
 
-    if type(vec) == type(None):
-        return None
+        if type(vec) == type(None):
+            return None
 
-    similarities = cosine_similarity_matrix_vector(vec, matrix)
-    sorted_sim = np.sort(similarities)
-    most_similar_indices = np.where(similarities >= sorted_sim[-n])
-    output_terms = [{
-        'key': index_to_term(index, transformer),
-        'similarity': similarities[index]
-        } for index in most_similar_indices[0] if
-        index_to_term(index, transformer)!=transformed_query
-    ]
-    return output_terms
+        similarities = cosine_similarity_matrix_vector(vec, matrix)
+        sorted_sim = np.sort(similarities)
+        most_similar_indices = np.where(similarities >= sorted_sim[-n])
+        return [{
+            'key': index_to_term(index, vocab),
+            'similarity': similarities[index]
+            } for index in most_similar_indices[0] if
+            index_to_term(index, vocab)!=transformed_query
+        ]
+    elif wm_type == 'word2vec':
+        try:
+            results = matrix.most_similar(transformed_query, topn=n)
+        except:
+            return None
+        return [{
+            'key': result[0],
+            'similarity': result[1]
+        } for result in results]
 
-
-def similarity_with_top_terms(matrix, transformer, query_term, word_data):
-    """given a matrix of svd_ppmi values,
-    the transformer (i.e., sklearn CountVectorizer), and a word list
-    of the terms matching the query term best over the whole corpus,
-    determine the similarity for each time interval
-    """
-    query_vec = term_to_vector(query_term, transformer, matrix)
-    for item in word_data:
-        item_vec = term_to_vector(item['label'], transformer, matrix)
-        if type(item_vec) == type(None):
-            value = 0
-        else:
-            value = cosine_similarity_vectors(item_vec, query_vec)
-        item['data'].append(value)
-    return word_data

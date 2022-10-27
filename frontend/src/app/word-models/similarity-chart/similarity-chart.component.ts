@@ -236,7 +236,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 y: {
                     title: {
                         display: true,
-                        text: 'Cosine similarity (SVD_PPMI)'
+                        text: 'Cosine similarity'
                     }
                 },
             },
