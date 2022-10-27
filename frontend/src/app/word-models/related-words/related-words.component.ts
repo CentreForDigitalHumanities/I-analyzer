@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
 import { DialogService, SearchService } from '../../services/index';
 import * as _ from 'lodash';
@@ -24,8 +24,10 @@ export class RelatedWordsComponent implements OnChanges {
 
     constructor(private searchService: SearchService) { }
 
-    ngOnChanges() {
-        this.getData();
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.corpus || changes.queryText) {
+            this.getData();
+        }
     }
 
     getData(): void {
