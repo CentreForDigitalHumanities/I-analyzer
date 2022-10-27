@@ -30,8 +30,10 @@ def term_similarity(wm, wm_type, term1, term2):
         analyzer = wm['analyzer']
         transformed1 = transform_query(term1, analyzer)
         transformed2 = transform_query(term2, analyzer)
-        similarity = matrix.similarity(transformed1, transformed2)
-        return float(similarity)
+        vocab = wm['vocab']
+        if transformed1 in vocab and transformed2 in vocab:
+            similarity = matrix.similarity(transformed1, transformed2)
+            return float(similarity)
 
 def find_n_most_similar(wm, wm_type, query_term, n):
     """given a matrix of svd_ppmi or word2vec values
