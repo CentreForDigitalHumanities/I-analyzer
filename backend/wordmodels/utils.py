@@ -1,5 +1,5 @@
 import os
-from os.path import dirname, exists, join, splitext
+from os.path import basename, dirname, exists, join, splitext
 import pickle
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
@@ -73,7 +73,7 @@ def get_analyzer_and_vocab_ppmi(model):
     return model
 
 def get_year(kv_filename, position):
-    return int(splitext(kv_filename)[0].split('_')[position])
+    return int(splitext(basename(kv_filename))[0].split('_')[position])
 
 def get_analyzer(corpus):
     analyzer_file = glob('{}/*analyzer.pkl'.format(corpus.word_model_path))[0]
