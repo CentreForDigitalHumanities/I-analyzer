@@ -155,22 +155,6 @@ def api_reset_password():
     return jsonify({'success': True, 'username': username})
 
 
-@api.route('/es_config', methods=['GET'])
-@login_required
-def api_es_config():
-    return jsonify([{
-        'name': server_name,
-        'host': url_for('es.forward_head', server_name=server_name, _external=True),
-        'port': None,
-        'chunkSize': server_config['chunk_size'],
-        'maxChunkBytes': server_config['max_chunk_bytes'],
-        'bulkTimeout': server_config['bulk_timeout'],
-        'overviewQuerySize': server_config['overview_query_size'],
-        'scrollTimeout': server_config['scroll_timeout'],
-        'scrollPagesize': server_config['scroll_page_size']
-    } for server_name, server_config in current_app.config['SERVERS'].items()])
-
-
 @api.route('/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():

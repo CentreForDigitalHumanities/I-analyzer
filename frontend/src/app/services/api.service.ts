@@ -126,22 +126,6 @@ export class ApiService extends Resource {
     public corpus: ResourceMethod<void, any>;
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/es_config'
-    })
-    public esConfig: ResourceMethod<void, [{
-        'name': string,
-        'host': string,
-        'port': number,
-        'chunkSize': number,
-        'maxChunkBytes': number,
-        'bulkTimeout': string,
-        'overviewQuerySize': number,
-        'scrollTimeout': string,
-        'scrollPagesize': number
-    }]>;
-
-    @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/log'
     })
