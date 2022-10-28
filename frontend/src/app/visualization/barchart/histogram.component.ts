@@ -125,8 +125,8 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     toggleFullTable() {
-        this.fullTableToggle = !this.fullTableToggle
-        this.setTableHeaders()
+        this.fullTableToggle = !this.fullTableToggle;
+        this.setTableHeaders();
     }
 
     setTableHeaders() {
