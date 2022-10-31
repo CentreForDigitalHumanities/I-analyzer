@@ -12,15 +12,6 @@
     </ia-barchart-options>
 </div>
 
-<div class="toggle-div" *ngIf="!disableToggleButton && frequencyMeasure == 'tokens'">
-    <div *ngIf="asTable" class="level-right">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" (click)="toggleFullTable()">
-        <label class="form-check-label" for="flexCheckDefault">
-            Show Full Table
-        </label>
-    </div>
-</div>
-
 <div class="block" [ngClass]="{ 'is-hidden': asTable }">
     <canvas id="barchart" width="400" height="200" aria-label="histogram" role="img"></canvas>
 </div>

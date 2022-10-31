@@ -24,6 +24,10 @@ export class FreqtableComponent implements OnChanges {
     wideFormatColumn: number;
     format: 'long'|'wide' = 'long';
 
+    fullTableToggle: boolean = false;
+    disableToggleButton: boolean = false;
+
+
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -48,7 +52,14 @@ export class FreqtableComponent implements OnChanges {
         this.formatData();
     }
 
+    toggleFullTable() {
+        this.fullTableToggle = !this.fullTableToggle;
+        this.formatData();
+    }
+
     formatData() {
+        /** Formats the data in default (long) format, wide format, or fulltable format */
+
         let filteredData: any[];
         if (this.requiredColumn && this.data) {
             filteredData = this.data.filter(row => row[this.requiredColumn]);
@@ -60,8 +71,11 @@ export class FreqtableComponent implements OnChanges {
             const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
-        } else {
+        } else if (this.fullTableToggle === true || this.headers == undefined) {  // checks if full table is selected or if no data is present yet to avoid error
             this.formattedHeaders = this.headers;
+            this.formattedData = filteredData;
+        } else {
+            this.formattedHeaders = this.headers.filter(header => !header.isOptional);
             this.formattedData = filteredData;
         }
     }

@@ -1,3 +1,12 @@
+<div class="toggle-div" *ngIf="!disableToggleButton">
+    <div class="level-right">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" (click)="toggleFullTable()">
+        <label class="form-check-label" for="flexCheckDefault">
+            Show Full Table
+        </label>
+    </div>
+</div>
+
 <div class="block table-container">
     <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
         <ng-template pTemplate="header">
@@ -18,7 +27,7 @@
                 </td>
             </tr>
         </ng-template>
-    </p-table>    
+    </p-table>
 </div>
 
 <div class="level">
