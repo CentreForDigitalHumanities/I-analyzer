@@ -37,7 +37,8 @@ export class FreqtableComponent implements OnChanges {
     }
 
     checkWideFormat(): void {
-
+        /** Checks whether wide format is available (i.e. whether there are
+         * several queries) and assigns wideFormatColumn */
 
         if (this.headers && this.headers.find(header => header.isMainFactor)) {
             this.wideFormatColumn = _.range(this.headers.length)
@@ -71,7 +72,7 @@ export class FreqtableComponent implements OnChanges {
             const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
-        } else if (this.fullTableToggle === true || this.headers == undefined) {  // checks if full table is selected or if no data is present yet to avoid error
+        } else if (this.fullTableToggle === true || this.headers == undefined) {  // also checks if no data is present to avoid error
             this.formattedHeaders = this.headers;
             this.formattedData = filteredData;
         } else {
