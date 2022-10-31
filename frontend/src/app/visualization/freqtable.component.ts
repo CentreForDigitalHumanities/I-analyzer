@@ -25,13 +25,14 @@ export class FreqtableComponent implements OnChanges {
     format: 'long'|'wide' = 'long';
 
     fullTableToggle: boolean = false;
-    disableToggleButton: boolean = false;
+    disableFullTable: boolean = false;
 
 
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.checkWideFormat();
+        this.checkFullTable();
 
         this.formatData();
     }
@@ -45,6 +46,18 @@ export class FreqtableComponent implements OnChanges {
                 .find(index => this.headers[index].isMainFactor);
         } else {
             this.wideFormatColumn = undefined;
+        }
+    }
+
+    checkFullTable(): void {
+        /** Checks if there are several queries or if the Number of Results visualization
+         * is selected. If so, it disables the full table switch.
+         */
+        if (this.headers && (this.headers.find(header => header.isMainFactor) ||
+        this.headers.find(header => header.key == 'doc_count' && !header.isOptional))) {
+            this.disableFullTable = true;
+        } else {
+            this.disableFullTable = false;
         }
     }
 
