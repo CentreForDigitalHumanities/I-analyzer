@@ -31,4 +31,8 @@ export class ApiServiceMock {
     public getWordcloudData() {
         return this.get('get_wordcloud_data');
     }
+
+    public pollTask() {
+        return Promise.resolve({});
+    }
 }
