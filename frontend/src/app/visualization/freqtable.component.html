@@ -1,9 +1,6 @@
 <div class="toggle-div" *ngIf="!disableFullTable">
     <div class="level-right">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" (click)="toggleFullTable()">
-        <label class="form-check-label" for="flexCheckDefault">
-            Show Full Table
-        </label>
+        <button class="button" [class.is-primary]="fullTableToggle == true" (click)="toggleFullTable()">Show Full Table</button>
     </div>
 </div>
 
