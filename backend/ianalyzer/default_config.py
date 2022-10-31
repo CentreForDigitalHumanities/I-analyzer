@@ -137,6 +137,8 @@ PP_GERMANY_OLD_IMAGE = 'germany-old.jpeg'
 PP_CANADA_IMAGE = 'canada.jpeg'
 PP_FR_IMAGE = 'france.jpeg'
 
+PP_UK_WM = None
+
 #################
 
 # Celery configuration

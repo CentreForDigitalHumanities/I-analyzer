@@ -41,6 +41,7 @@ class UnittestConfig:
     PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     PP_UK_INDEX = 'parliament-uk'
     PP_UK_IMAGE = 'uk.jpeg'
+    PP_UK_WM = None
 
     PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
     PP_NL_RECENT_DATA = os.path.join(here, 'tests', 'data', 'netherlands-recent')
@@ -75,6 +76,7 @@ class UnittestConfig:
     PP_DENMARK_INDEX = 'parliament-denmark'
     PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
     PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
+
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"

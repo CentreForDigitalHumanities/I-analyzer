@@ -3,9 +3,10 @@ import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnIni
 import * as cloud from 'd3-cloud';
 import * as d3 from 'd3';
 
-import { AggregateResult, CorpusField, QueryModel, Corpus, freqTableHeaders } from '../../models/index';
+import { AggregateResult, CorpusField, QueryModel, Corpus, FreqTableHeaders } from '../../models/index';
 import { DialogService, SearchService, ApiService } from '../../services/index';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { VisualizationService } from '../../services/visualization.service';
 
 @Component({
     selector: 'ia-wordcloud',
@@ -26,7 +27,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     @Output() error = new EventEmitter();
     @Output() isLoading = new BehaviorSubject<boolean>(false);
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         { key: 'key', label: 'Term' },
         { key: 'doc_count', label: 'Frequency' }
     ];
@@ -45,7 +46,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     private chartElement: any;
     private svg: any;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) { }
+    constructor(private visualizationService: VisualizationService, private apiService: ApiService) { }
 
     ngOnInit() {
         if (this.resultsCount > 0) {
@@ -68,7 +69,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     loadData(size: number = null) {
         this.isLoading.next(true);
-        this.searchService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
+        this.visualizationService.getWordcloudData(this.visualizedField.name, this.queryModel, this.corpus.name, size).then(result => {
             this.significantText = result[this.visualizedField.name];
             this.onDataLoaded();
         })
@@ -81,10 +82,10 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         this.isLoading.next(true);
         const queryModel = this.queryModel;
         if (queryModel) {
-            this.searchService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
+            this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
                 this.tasksToCancel = result['taskIds'];
                     const childTask = result['taskIds'][0];
-                    this.apiService.getTaskOutcome({'task_id': childTask}).then( outcome => {
+                    this.apiService.pollTask({'task_id': childTask}).then( outcome => {
                         if (outcome['success'] === true) {
                             this.significantText = outcome['results'] as AggregateResult[];
                             this.onDataLoaded();

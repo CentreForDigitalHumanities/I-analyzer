@@ -27,35 +27,14 @@
         </div>
     </div>
 
-    <div class="field is-grouped">
-        <div class="control is-expanded">
-            <div class="field" *ngIf="!showEdit">
-                <div class="control">
-                    <button class="button" (click)="showEdit = true">Compare with another query...</button>
-                </div>
-            </div>
-
-            <div class="field has-addons" *ngIf="showEdit">
-                <div class="control is-expanded">
-                    <p-chips name="queries" [(ngModel)]="queries" separator="," addOnBlur="true"></p-chips>
-                </div>
-                <div class="control">
-                    <button class="button is-primary" (click)="confirmQueries()" [disabled]="disableConfirm">
-                        <span class="icon">
-                            <fa-icon [icon]="faCheck"></fa-icon>
-                        </span>
-                        <span>Confirm</span>
-                    </button>
-                </div>
-            </div>
+    <div class="field">
+        <div class="control" *ngIf="!showEdit">
+            <button class="button" (click)="showEdit = true">Compare with another query...</button>
         </div>
-        <div class="control" *ngIf="showEdit && queries.length > 1" >
-            <button class="button" (click)="signalClearQueries()">
-                <span class="icon">
-                    <i class="fa fa-times"></i>
-                </span>
-                <span>Reset</span>
-            </button>
+
+        <div class="control" *ngIf="showEdit">
+            <ia-term-comparison-editor [initialValue]="queries"
+                (queriesChanged)="updateQueries($event)" (clearQueries)="signalClearQueries()"></ia-term-comparison-editor>
         </div>
     </div>
 </form>

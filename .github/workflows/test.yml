@@ -17,7 +17,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python-version: [3.8]
@@ -58,5 +58,5 @@ jobs:
       run: |
         cd frontend
         yarn install --frozen-lockfile
-        yarn build
+        yarn build-git
         yarn test:once

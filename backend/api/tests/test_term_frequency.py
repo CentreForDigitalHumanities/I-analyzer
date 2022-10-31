@@ -1,8 +1,8 @@
 import api.analyze as analyze
 import pytest
-
-from api.conftest import UnittestConfig
-from elasticsearch import Elasticsearch
+import csv
+import api.tasks as tasks
+from large_mock_corpus import MIN_YEAR as LARGE_CORPUS_MIN_YEAR, MAX_YEAR as LARGE_CORPUS_MAX_YEAR, TOTAL_DOCUMENTS as LARGE_CORPUS_DOCUMENTS
 
 TOTAL_DOCS_IN_MOCK_CORPUS = 3
 TOTAL_WORDS_IN_MOCK_CORPUS = 67
@@ -66,26 +66,26 @@ def test_total_docs_and_tokens(test_app, test_es_client):
 
     query = make_query(query_text='*', search_in_fields=['content'])
     fieldnames, aggregators = analyze.extract_data_for_term_frequency('mock-corpus', query)
-    doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, 'mock-corpus', aggregators)
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, 'mock-corpus', aggregators)
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
 
 def test_term_frequency(test_app, test_es_client):
 
     ## search in all fields
     query = make_query(query_text='Alice')
-    match_count, doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
+    match_count, total_doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
 
     assert match_count == 2
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == None
 
     ## search in content (includes token count)
     query = make_query(query_text='Alice', search_in_fields=['content'])
-    match_count, doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
+    match_count, total_doc_count, token_count = analyze.get_term_frequency(query, 'mock-corpus', 100)
 
     assert match_count == 1
-    assert doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
     assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
 
 def test_histogram_term_frequency(test_app, test_es_client):
@@ -113,7 +113,7 @@ def test_histogram_term_frequency(test_app, test_es_client):
         assert result == {
             'key': case['genre'],
             'match_count': case['matches'],
-            'doc_count': 1,
+            'total_doc_count': 1,
             'token_count': case['tokens']
         }
 
@@ -137,7 +137,7 @@ def test_timeline_term_frequency(test_app, test_es_client):
             'key': case['min_date'],
             'key_as_string': case['min_date'],
             'match_count': case['matches'],
-            'doc_count': 2,
+            'total_doc_count': 2,
             'token_count': case['tokens']
         }
 
@@ -165,3 +165,36 @@ def make_query(query_text=None, search_in_fields=None):
 
 
     return query
+
+full_data_parameters = [{
+    'es_query': make_query(query_text = 'the', search_in_fields=['content']),
+    'corpus_name': 'large-mock-corpus',
+    'field_name': 'date',
+    'bins': [
+        {
+            'start_date': '{}-01-01'.format(year),
+            'end_date': '{}-12-31'.format(year),
+            'size': 10,
+        }
+        for year in range(LARGE_CORPUS_MIN_YEAR, LARGE_CORPUS_MAX_YEAR + 1)
+    ],
+    'unit': 'year'
+}]
+
+def test_timeline_full_data(large_mock_corpus):
+    filename = tasks.timeline_term_frequency_full_data(full_data_parameters)
+
+    with open(filename) as f:
+        reader = csv.DictReader(f)
+        rows = list(row for row in reader)
+
+        total_expectations = {
+            'Total documents': LARGE_CORPUS_DOCUMENTS,
+            'Term frequency': LARGE_CORPUS_DOCUMENTS * 2, # 2 hits per document
+            'Relative term frequency (by # documents)': 2 * len(full_data_parameters[0]['bins'])
+        }
+
+        for column, expected_total in total_expectations.items():
+            total = sum(float(row[column]) for row in rows)
+            assert total == expected_total
+

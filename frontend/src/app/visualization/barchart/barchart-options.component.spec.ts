@@ -2,18 +2,18 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { commonTestBed } from '../../common-test-bed';
 
-import { barchartOptionsComponent } from './barchart-options.component';
+import { BarchartOptionsComponent } from './barchart-options.component';
 
-describe('barchartOptionsComponent', () => {
-  let component: barchartOptionsComponent;
-  let fixture: ComponentFixture<barchartOptionsComponent>;
+describe('BarchartOptionsComponent', () => {
+  let component: BarchartOptionsComponent;
+  let fixture: ComponentFixture<BarchartOptionsComponent>;
 
   beforeEach(waitForAsync(() => {
       commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(barchartOptionsComponent);
+    fixture = TestBed.createComponent(BarchartOptionsComponent);
     component = fixture.componentInstance;
     component.queryText = 'spam';
     component.showTokenCountOption = true;

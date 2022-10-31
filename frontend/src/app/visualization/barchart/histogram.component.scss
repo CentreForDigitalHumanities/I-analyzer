@@ -1,4 +1,4 @@
-@import "barchart.component";
+@import "../../../_utilities";
 
 div.tooltip {
     line-height: 1;
@@ -28,6 +28,7 @@ div.tooltip::after {
     margin-left: 5px;
 }
 
-label[disabled], label:disabled {
-    text-decoration: line-through;
+.notification {
+    @include unselectable;
+    opacity: 0.75;
 }

@@ -162,7 +162,8 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     title = "People & Parliament (Netherlands)"
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
-    min_date = datetime(year = 1815, month = 1, day = 1)
+    min_date = datetime(year=1815, month=1, day=1)
+    max_date = datetime(year=2020, month=12, day=31)
     data_directory = current_app.config['PP_NL_DATA']
 
     if 'PP_NL_RECENT_DATA' in current_app.config:
@@ -172,6 +173,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
 
     es_index = current_app.config['PP_NL_INDEX']
     image = current_app.config['PP_NL_IMAGE']
+    description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'
     language = 'dutch'

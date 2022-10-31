@@ -1,12 +1,12 @@
 import { APP_INITIALIZER, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ElementRef } from '@angular/core';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
-import { of } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 
-import { declarations, imports, providers } from './app.module';
+import { appRoutes, declarations, imports, providers } from './app.module';
 
 import { ApiServiceMock } from '../mock-data/api';
 import * as corpus from '../mock-data/corpus-response';
@@ -15,21 +15,25 @@ import { ElasticSearchServiceMock } from '../mock-data/elastic-search';
 import { MockCorpusResponse } from '../mock-data/corpus-response';
 import { SearchServiceMock } from '../mock-data/search';
 import { UserServiceMock } from '../mock-data/user';
-import { ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService } from './services';
+import { ApiService, CorpusService, DialogService, ElasticSearchService, QueryService, SearchService, UserService } from './services';
+import { WordmodelsService } from './services/wordmodels.service';
+import { WordmodelsServiceMock } from '../mock-data/wordmodels';
+import { VisualizationService } from './services/visualization.service';
+import { visualizationServiceMock } from '../mock-data/visualization';
 
 export function commonTestBed() {
+    const filteredImports = imports.filter(value => !(value in [HttpClientModule]));
+    filteredImports.push(RouterTestingModule.withRoutes(appRoutes));
     const filteredProviders = providers.filter(provider => !(
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService]));
     filteredProviders.push(
         {
-            provide: ActivatedRoute, useValue: {
-                paramMap: of(<{ corpus: corpus.MockCorpusName }>{ corpus: 'test1' }).subscribe(convertToParamMap)
-            }
-        },
-        {
             provide: ApiService, useValue: new ApiServiceMock({
                 ['corpus']: MockCorpusResponse
             }),
+        },
+        {
+            provide: CorpusService
         },
         {
             provide: APP_INITIALIZER,
@@ -47,20 +51,23 @@ export function commonTestBed() {
             provide: ElementRef, useClass: MockElementRef
         },
         {
-            provide: Router, useValue: { events: of({}) }
-        },
-        {
             provide: SearchService, useValue: new SearchServiceMock()
         },
         {
             provide: UserService, useValue: new UserServiceMock()
         },
+        {
+            provide: WordmodelsService, useValue: new WordmodelsServiceMock()
+        },
+        {
+            provide: VisualizationService, useValue: new visualizationServiceMock(),
+        }
     );
 
     return {
         testingModule: TestBed.configureTestingModule({
             declarations,
-            imports,
+            imports: filteredImports,
             providers: filteredProviders
         })
     };

@@ -28,13 +28,7 @@ export type AggregateFrequencyResults = {
 
 export type AggregateResult = {
     key: string,
-    doc_count: number,
-    relative_doc_count?: number;
-    match_count?: number,
-    token_count?: number,
-    total_doc_count?: number,
-    matches_by_token_count?: number;
-    matches_by_doc_count?: number;
+    doc_count: number
     key_as_string?: string
 }
 
@@ -47,12 +41,6 @@ export type DateFrequencyPair = {
 export type DateResult = {
     date: Date,
     doc_count: number,
-    relative_doc_count?: number;
-    match_count?: number,
-    token_count?: number,
-    total_doc_count?: number,
-    matches_by_token_count?: number;
-    matches_by_doc_count?: number;
 }
 
 export type AggregateData = {
@@ -61,16 +49,13 @@ export type AggregateData = {
 
 export type WordSimilarity = {
     key: string,
-    similarity: number
+    similarity: number,
+    time?: string,
 }
 
 export type RelatedWordsResults = {
-    similar_words_all: {
-        [word: string]: WordSimilarity[]
-    },
-    similar_words_subsets: {
-        [word: string]: number[]
-    },
+    total_similarities: WordSimilarity[],
+    similarities_over_time: WordSimilarity[],
     time_points: string[]
 }
 
@@ -81,3 +66,17 @@ export type NgramResults = {
     }[],
     time_points: string[],
 };
+
+export type WordInModelResult = {
+    exists: true
+} | {
+    exists: false,
+    similar_keys: string[],
+};
+
+export type QueryFeedback = {
+    status: 'not in model'|'success'|'error'|'multiple words'|'empty',
+    similarTerms?: string[],
+};
+
+export type TaskResult = { success: false, message: string } | { success: true, task_id: string }

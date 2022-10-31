@@ -28,6 +28,7 @@ from flask_mail import Message
 from ianalyzer import models, celery_app
 from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
+import wordmodels.visualisations as wordmodel_visualisations
 
 from api.user_mail import send_user_mail
 from . import security
@@ -154,22 +155,6 @@ def api_reset_password():
     return jsonify({'success': True, 'username': username})
 
 
-@api.route('/es_config', methods=['GET'])
-@login_required
-def api_es_config():
-    return jsonify([{
-        'name': server_name,
-        'host': url_for('es.forward_head', server_name=server_name, _external=True),
-        'port': None,
-        'chunkSize': server_config['chunk_size'],
-        'maxChunkBytes': server_config['max_chunk_bytes'],
-        'bulkTimeout': server_config['bulk_timeout'],
-        'overviewQuerySize': server_config['overview_query_size'],
-        'scrollTimeout': server_config['scroll_timeout'],
-        'scrollPagesize': server_config['scroll_page_size']
-    } for server_name, server_config in current_app.config['SERVERS'].items()])
-
-
 @api.route('/corpus', methods=['GET'])
 @login_required
 def api_corpus_list():
@@ -280,19 +265,10 @@ def api_download_task():
         tasks.make_csv.s(request.json))
     csvs = csv_task.apply_async()
     if csvs:
-        filename = split(csvs.get())[1]
+        filepath = csvs.get()[1]
         # we are sending the results to the user by email
         current_app.logger.info("should now be sending email")
-        send_user_mail(
-            email=current_user.email,
-            username=current_user.username,
-            subject_line="I-Analyzer CSV download",
-            email_title="Download CSV",
-            message="Your .csv file is ready for download.",
-            prompt="Click on the link below.",
-            link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
-            link_text="Download .csv file"
-            )
+        tasks.csv_data_email(filepath, current_user.email, current_user.username)
         return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
@@ -510,20 +486,20 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-
-
-@api.route('/task_outcome/<task_id>', methods=['GET'])
+@api.route('/task_status/<task_id>', methods=['GET'])
 @login_required
-def api_task_outcome(task_id):
+def api_task_status(task_id):
     results = celery_app.AsyncResult(id=task_id)
     if not results:
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
-        try:
+        if results.state == 'SUCCESS':
             outcome = results.get()
-        except Exception as e:
-            return jsonify({'success': False, 'message': 'Task canceled.'})
-        return jsonify({'success': True, 'results': outcome})
+            return jsonify({'success': True, 'done': True, 'results': outcome})
+        elif results.state in ['PENDING', 'STARTED']:
+            return jsonify({'success': True, 'done': False})
+        else:
+            return jsonify({'success': False, 'message': 'Task failed.'})
 
 
 @api.route('/abort_tasks', methods=['POST'])
@@ -585,93 +561,26 @@ def api_request_media():
         data['success'] = True
         return jsonify(data)
 
-
-@api.route('/get_related_words', methods=['POST'])
-@login_required
-def api_get_related_words():
-    if not request.json:
-        abort(400)
-    results = analyze.get_diachronic_contexts(
-        request.json['query_term'],
-        request.json['corpus_name']
-    )
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'related_word_data': {
-                'similar_words_all': results[0],
-                'similar_words_subsets': results[1],
-                'time_points': results[2]
-            }
-        })
-    return response
-
-
-@api.route('/get_related_words_time_interval', methods=['POST'])
-@login_required
-def api_get_related_words_time_interval():
-    if not request.json:
-        abort(400)
-    results = analyze.get_context_time_interval(
-        request.json['query_term'],
-        request.json['corpus_name'],
-        request.json['time']
-    )
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'related_word_data': {
-                'similar_words_subsets': results,
-                'time_points': [request.json['time']]
-            }
-        })
-    return response
-
 @api.route('aggregate_term_frequency', methods=['POST'])
 @login_required
 def api_aggregate_term_frequency():
     if not request.json:
         abort(400)
 
-    def calculate():
-        try:
-            return analyze.get_aggregate_term_frequency(
-                request.json['es_query'],
-                request.json['corpus_name'],
-                request.json['field_name'],
-                request.json['field_value'],
-                request.json['size'],
-            )
-        except KeyError:
-            return 'missing parameters'
+    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+        if not key in request.json:
+            abort(400)
 
-    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
-    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+    for bin in request.json['bins']:
+        for key in ['field_value', 'size']:
+            if not key in bin:
+                abort(400)
 
-    if results == 'missing parameters':
-        abort(400)
-
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
+    task = tasks.get_histogram_term_frequency.delay(request.json)
+    if not task:
+        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        response = jsonify({
-            'success': True,
-            'data': results
-        })
-    return response
+        return jsonify({'success': True, 'task_id': task.id})
 
 @api.route('date_term_frequency', methods=['POST'])
 @login_required
@@ -679,33 +588,46 @@ def api_date_term_frequency():
     if not request.json:
         abort(400)
 
-    def calculate():
-        try:
-            return analyze.get_date_term_frequency(
-                request.json['es_query'],
-                request.json['corpus_name'],
-                request.json['field_name'],
-                request.json['start_date'],
-                request.json['end_date'],
-                request.json['size'],
-            )
-        except KeyError:
-            return 'missing parameters'
+    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+        if not key in request.json:
+            abort(400)
 
-    corpus = request.json['corpus_name'] if 'corpus_name' in request.json else abort(400)
-    results = cache.make_visualization('termfrequency', corpus, request.json, calculate)
+    for bin in request.json['bins']:
+        for key in ['start_date', 'end_date', 'size']:
+            if not key in bin:
+                abort(400)
 
-    if results == 'missing parameters':
+    task = tasks.get_timeline_term_frequency.delay(request.json)
+    if not task:
+        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
+    else:
+        return jsonify({'success': True, 'task_id': task.id})
+
+@api.route('request_full_data', methods=['POST'])
+@login_required
+def api_request_full_data():
+    if not request.json:
         abort(400)
 
-    if isinstance(results, str):
-        # the method returned an error string
-        response = jsonify({
-            'success': False,
-            'message': results})
-    else:
-        response = jsonify({
-            'success': True,
-            'data': results
-        })
-    return response
+    for key in ['visualization', 'parameters']:
+        if not key in request.json:
+            abort(400)
+
+    task_per_type = {
+        'date_term_frequency': tasks.timeline_term_frequency_full_data,
+        'aggregate_term_frequency': tasks.histogram_term_frequency_full_data
+    }
+
+    visualization_type = request.json['visualization']
+    if visualization_type not in task_per_type:
+        abort(400, 'unknown visualization type "{}"'.format(visualization_type))
+
+    task = task_per_type[visualization_type]
+
+
+    task_chain = chain(task.s(request.json['parameters']),
+        tasks.csv_data_email.s(current_user.email, current_user.username))
+
+    task_chain.apply_async()
+
+    return jsonify({'success': True, 'task_id': task_chain.id})
