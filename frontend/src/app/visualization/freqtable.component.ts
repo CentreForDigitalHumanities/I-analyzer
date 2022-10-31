@@ -54,7 +54,8 @@ export class FreqtableComponent implements OnChanges {
          * is selected. If so, it disables the full table switch.
          */
         if (this.headers && (this.headers.find(header => header.isMainFactor) ||
-        this.headers.find(header => header.key == 'doc_count' && !header.isOptional))) {
+        this.headers.find(header => header.key == 'doc_count' && !header.isOptional) ||
+        this.headers.find(header => header.key == 'relative_doc_count' && !header.isOptional))) {
             this.disableFullTable = true;
         } else {
             this.disableFullTable = false;
