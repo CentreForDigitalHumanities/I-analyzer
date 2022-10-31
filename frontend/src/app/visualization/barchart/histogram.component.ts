@@ -23,9 +23,6 @@ function formatXAxisLabel(value): string {
 })
 export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
 
-    fullTableToggle: boolean = false;
-    disableToggleButton: boolean = false;
-
     /** specify aggregator object based on visualised field;
      * used in document requests.
     */
@@ -92,6 +89,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     getDatasets() {
         const labels = this.getLabels();
         const valueKey = this.currentValueKey;
+
         return this.rawData.map((series, seriesIndex) => (
             {
                 label: series.queryText ? series.queryText : '(no query)',
@@ -124,36 +122,27 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
         return options;
     }
 
-    toggleFullTable() {
-        this.fullTableToggle = !this.fullTableToggle;
-        this.setTableHeaders();
-    }
-
     setTableHeaders() {
+        /*
+        Provides the table headers to the freqTable component. Determines optional headers.
+        */
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.rawData.length > 1) {
-            this.disableToggleButton = true;  // if there are several queries, disable the toggle button
+        if (this.rawData.length > 1) {  // if there are several queries, fulltable is disabled
             this.tableHeaders = [
                 { key: 'key', label: label, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
                 { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
             ];
-        } else if (this.fullTableToggle) {
-            this.disableToggleButton = false;
+        } else {
             this.tableHeaders = [
                 { key: 'key', label: label },
-                { key: 'match_count', label: 'Raw Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue },
-                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue, formatDownload: this.formatDownloadValue },
-                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue, formatDownload: this.formatDownloadValue },
-            ];
-        } else {
-            this.disableToggleButton = false;
-            this.tableHeaders = [
-                { key: 'key', label: label},
-                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
+                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }
