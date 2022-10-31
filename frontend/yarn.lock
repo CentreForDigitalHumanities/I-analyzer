@@ -6502,12 +6502,7 @@ make-fetch-happen@^9.1.0:
     socks-proxy-agent "^6.0.0"
     ssri "^8.0.0"
 
-marked@^4.0.10:
-  version "4.0.12"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
-  integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
-
-marked@^4.0.17:
+marked@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.1.1.tgz#2f709a4462abf65a283f2453dc1c42ab177d302e"
   integrity sha512-0cNMnTcUJPxbA6uWmCmjWz4NJRe/0Xfk2NhXCUHjew9qJzFN20krFnsUe7QynwqOwa5m1fZ4UDg0ycKFVC0ccw==
@@ -6822,15 +6817,6 @@ ngx-cookie-service@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/ngx-cookie-service/-/ngx-cookie-service-2.4.0.tgz#293de6d393220f8fe5712a4c9f724042404e6971"
   integrity sha512-uR/6mCQ1t+XY5G1/irqRhoEddx1PPtmz7JHM/2nn5yQmicnj+n48x8C2PMxwaYDHKRh7QPQ9G5scR36Mmdz09A==
-
-ngx-md@^14.0:
-  version "14.0.9"
-  resolved "https://registry.yarnpkg.com/ngx-md/-/ngx-md-14.0.9.tgz#ebfb95921b9014f64b392314930084de0215af9d"
-  integrity sha512-Y5vEPfMGcEEPNsjgoCXNn8Iv8hUe2bL2VuPyIrq7wZnL7sI+TD5l2T5VuGS8E0B+DIhA4CUOtS6zXeL1LBxDHA==
-  dependencies:
-    marked "^4.0.17"
-    prismjs "^1.28.0"
-    tslib "^2.3.0"
 
 nice-napi@^1.0.2:
   version "1.0.2"
@@ -7757,11 +7743,6 @@ primeng@13.1.1:
   integrity sha512-gqSuKbPq8x8ITpv2r7Ne96S3htt0aa0ZxJgHPyj/MNDNdfmrXk1Phm1EzkAbIy66t0RdJjc4RUWqLfAgsKEAYw==
   dependencies:
     tslib "^2.3.0"
-
-prismjs@^1.28.0:
-  version "1.29.0"
-  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.29.0.tgz#f113555a8fa9b57c35e637bba27509dcf802dd12"
-  integrity sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==
 
 private@^0.1.8:
   version "0.1.8"
