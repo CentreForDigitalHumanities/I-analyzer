@@ -21,7 +21,8 @@ export type TimelineSeries = {
 export type freqTableHeader = {
     key: string,
     label: string,
-    format?: (value) => string,
+    normalizer?: string,
+    format?: (value, normalizer?) => string,
     formatDownload?: (value) => string,
     isOptional?: boolean,
     isMainFactor?: boolean,
