@@ -293,9 +293,9 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'doc_count', label: 'Document Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
                 { key: 'relative_doc_count', label: 'Document Frequency (%)', normalizer: 'percent', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
-                { key: 'match_count', label: 'Token Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
                 { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', normalizer: 'documents', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
                 { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', normalizer: 'terms', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
