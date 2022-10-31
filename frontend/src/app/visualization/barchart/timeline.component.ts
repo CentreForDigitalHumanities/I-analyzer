@@ -287,12 +287,17 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+                { key: valueKey, label: rightColumnName, normalizer: this.normalizer, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'relative_doc_count', label: 'Document Frequency (%)', normalizer: 'percent', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatDownloadValue, formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', normalizer: 'documents', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
+                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', normalizer: 'terms', format: this.formatValue, formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }
