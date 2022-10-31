@@ -489,23 +489,20 @@ export class BarChartComponent<Result extends BarchartResult> implements OnInit,
     }
 
     /** based on current parameters, get a formatting function for y-axis values */
-    get formatValue(): (value?: number) => string|undefined {
-        if (this.normalizer === 'percent') {
-            return (value?: number) => {
-                if (value !== undefined && value !== null) {
-                    return `${_.round(100 * value, 1)}%`;
-                }
-            };
-        } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
-            return (value: number) => {
+    formatValue(value: number, normalizer?: string): string|undefined {
+        if (normalizer === undefined) {
+            normalizer = this.normalizer;
+        }
+        if (value !== undefined && value !== null) {
+            if (normalizer === 'percent') {
+                return `${_.round(100 * value, 1)}%`;
+            } else if (normalizer === 'documents' || normalizer === 'terms') {
                 return value.toPrecision(2);
-            }
-        } else {
-            return (value: number) => {
-                if (value !== undefined && value !== null) {
-                    return value.toString();
-                }
+            } else {
+                return value.toString();
             };
+        } else {
+            return undefined;
         }
     }
 
