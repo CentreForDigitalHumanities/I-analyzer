@@ -13,13 +13,13 @@ MAX_LENGTH_EMAIL = 254
 DOWNLOAD_LIMIT = 10000
 MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_CORPUS_NAME = 254
-
+MAX_LENGTH_FILENAME = 254
 
 db = SQLAlchemy()
 
 
 '''
-   connects corpus id to role id 
+   connects corpus id to role id
 '''
 corpora_roles = db.Table(
     'corpora_roles',
@@ -78,7 +78,7 @@ class User(db.Model):
     '''
     Whether the user has provided the correct credentials.
     '''
-    
+
     download_limit = db.Column(db.Integer, default=DOWNLOAD_LIMIT)
     '''
     How high the download limit for the user is.
@@ -152,10 +152,10 @@ class User(db.Model):
                 return True
         return False
 
-    def has_role(self, role):        
+    def has_role(self, role):
         return self.role.name == role
 
-        
+
 
 
 class Query(db.Model):
@@ -260,10 +260,34 @@ class Visualization(db.Model):
         self.started = datetime.now()
         self.completed = None
         self.result = None
-    
+
     def __repr__(self):
         return f'Visualisation #{self.id}: {self.visualization_type} of {self.corpus_name} corpus made at {self.started}'
-    
+
+    @property
+    def is_done(self):
+        return self.completed != None
+
+class Download(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    started = db.Column(db.DateTime())
+    completed = db.Column(db.DateTime())
+    download_type = db.Column(db.String(MAX_LENGTH_NAME))
+    corpus_name = db.Column(db.String(MAX_LENGTH_CORPUS_NAME))
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    parameters = db.Column(db.Text())
+    filename = db.Column(db.String(MAX_LENGTH_FILENAME))
+
+    def __init__(self, download_type, corpus_name, parameters, user):
+        self.download_type = download_type
+        self.corpus_name = corpus_name
+        self.parameters = parameters
+        self.user = user
+        self.started = datetime.now()
+
+    def __repr__(self):
+        return f'Download #{self.id}: {self.download_type} of {self.corpus_name} corpus made at {self.started}'
+
     @property
     def is_done(self):
         return self.completed != None
