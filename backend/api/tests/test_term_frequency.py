@@ -166,6 +166,7 @@ def make_query(query_text=None, search_in_fields=None):
 
     return query
 
+@pytest.mark.xfail(reason = 'task gets wrong app context', raises = KeyError)
 def test_timeline_full_data(indexed_large_mock_corpus):
     full_data_parameters = [{
         'es_query': make_query(query_text = 'the', search_in_fields=['content']),
