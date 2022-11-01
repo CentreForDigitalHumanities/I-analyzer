@@ -38,7 +38,6 @@ def test_download_log(mock_user):
     found_file = api_download.get_result_filename(id)
     assert found_file == filename
 
-
 @pytest.fixture
 def mock_es_result():
     return {
