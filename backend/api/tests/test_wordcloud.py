@@ -16,7 +16,7 @@ def make_filtered_query():
         return query.add_filter(empty_query, datefilter)
 
 
-def test_wordcloud(test_app, test_es_client):
+def test_wordcloud(test_app, indexed_mock_corpus):
     query = {
         "query": {
             "match_all": {}
@@ -24,7 +24,7 @@ def test_wordcloud(test_app, test_es_client):
     }
 
     result = search.search(
-        corpus = 'mock-corpus',
+        corpus = indexed_mock_corpus,
         query_model = query,
         size = 10
     )
@@ -76,7 +76,7 @@ def test_wordcloud(test_app, test_es_client):
         { 'key': 'accompanied', 'doc_count': 1 }
     ]
 
-    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
+    output = analyze.make_wordcloud_data(documents, 'content', indexed_mock_corpus)
     for item in target_unfiltered:
         term = item['key']
         doc_count = item['doc_count']
@@ -84,7 +84,7 @@ def test_wordcloud(test_app, test_es_client):
         assert match
         assert doc_count == match['doc_count']
 
-def test_wordcloud_filtered(test_app, test_es_client):
+def test_wordcloud_filtered(test_app, test_es_client, indexed_mock_corpus):
     """Test the word cloud on a query with date filter"""
 
     filtered_query = make_filtered_query()
@@ -121,14 +121,14 @@ def test_wordcloud_filtered(test_app, test_es_client):
     ]
 
     result = search.search(
-        corpus = 'mock-corpus',
+        corpus = indexed_mock_corpus,
         query_model = filtered_query,
         size = 10,
         client = test_es_client
     )
 
     documents = search.hits(result)
-    output = analyze.make_wordcloud_data(documents, 'content', 'mock-corpus')
+    output = analyze.make_wordcloud_data(documents, 'content', indexed_mock_corpus)
 
     for item in target_filtered:
         term = item['key']
