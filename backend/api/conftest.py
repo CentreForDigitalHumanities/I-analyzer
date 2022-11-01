@@ -1,4 +1,3 @@
-from re import T
 from time import sleep
 import pytest
 import os
@@ -8,8 +7,13 @@ from ianalyzer.factories.app import flask_app
 import es.es_index as index
 from es.search import get_index
 from addcorpus.load_corpus import load_corpus
-
+from ianalyzer.models import db as _db, User, Role, Corpus
 here = os.path.abspath(os.path.dirname(__file__))
+from werkzeug.security import generate_password_hash
+from flask.testing import FlaskClient
+import json
+
+MOCK_USER_PASSWORD = '1234'
 
 class UnittestConfig:
     SECRET_KEY = b'dd5520c21ee49d64e7f78d3220b2be1dde4eb4a0933c8baf'
@@ -50,6 +54,71 @@ def test_app(request, tmpdir_factory):
 
     with app.app_context():
         yield app
+
+
+@pytest.fixture(scope='session')
+def db(test_app):
+    """Session-wide test database."""
+    _db.app = test_app
+    _db.create_all()
+    yield _db
+
+    # performed after running tests
+    _db.drop_all()
+
+
+@pytest.fixture(scope='function')
+def session(db, request):
+    """Creates a new database session for a test."""
+    connection = db.engine.connect()
+    transaction = connection.begin()
+
+    options = dict(bind=connection, binds={})
+    session = db.create_scoped_session(options=options)
+
+    db.session = session
+    yield session
+
+    # performed after running tests
+    session.remove()
+    transaction.rollback()
+    connection.close()
+
+@pytest.fixture()
+def mock_user(session):
+    """ Ensure a user exists who has access to the mock corpora. """
+    user = User('mock-user', generate_password_hash(MOCK_USER_PASSWORD))
+    role = Role(name='mock-access')
+    mock_corpus = Corpus(name='mock-corpus')
+    large_mock_corpus = Corpus(name='large-mock-corpus')
+    role.corpora.append(mock_corpus)
+    role.corpora.append(large_mock_corpus)
+    user.role = role
+    session.add(user)
+    session.add(mock_corpus)
+    session.add(large_mock_corpus)
+    session.add(role)
+    session.commit()
+    return user
+
+
+class CustomTestClient(FlaskClient):
+    def mock_user_login(self):
+        return self.login('mock-user', MOCK_USER_PASSWORD)
+
+    def login(self, user_name, password):
+        return self.post('/api/login', data=json.dumps({
+            'username': user_name,
+            'password': password,
+        }), content_type='application/json')
+
+
+@pytest.fixture()
+def client(test_app):
+    test_app.test_client_class = CustomTestClient
+    with test_app.test_client() as client:
+        yield client
+
 
 @pytest.fixture(scope='session')
 def test_es_client(test_app):
