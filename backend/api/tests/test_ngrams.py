@@ -55,7 +55,7 @@ def test_time_bins(test_app, basic_query):
         (1858, 1858), (1859, 1859)
     ]
     assert bins == target_bins
-    
+
 
 def test_top_10_ngrams():
     docs = [
@@ -71,7 +71,7 @@ def test_top_10_ngrams():
         'b': [1, 1, 0],
         'c': [0, 1, 1]
     }
-   
+
     ttf = {
         'a': 100,
         'b': 200,
@@ -82,7 +82,7 @@ def test_top_10_ngrams():
     for word in target_data:
         dataset_absolute = next(series for series in output_absolute if series['label'] == word)
         assert dataset_absolute['data'] == target_data[word]
-    
+
 
     output_relative = analyze.get_top_n_ngrams(counts, ttf)
 
@@ -93,7 +93,7 @@ def test_top_10_ngrams():
             for w in target_data }
         assert dataset_relative['data'] == relative_frequencies[word]
 
-def test_absolute_bigrams(test_app, test_es_client, basic_query):
+def test_absolute_bigrams(test_app, indexed_mock_corpus, basic_query):
     # search for a word that occurs a few times
     query = basic_query
     query['query']['bool']['must']['simple_query_string']['query'] = 'to'
@@ -138,7 +138,7 @@ def test_absolute_bigrams(test_app, test_es_client, basic_query):
         }
     ]
 
-    result = analyze.get_ngrams(query, 'mock-corpus', 'content', freq_compensation=False)
+    result = analyze.get_ngrams(query, indexed_mock_corpus, 'content', freq_compensation=False)
 
     assert result['time_points'] == ['{}-{}'.format(start, end) for start, end in CENTURY_BINS]
 
@@ -152,10 +152,7 @@ def test_absolute_bigrams(test_app, test_es_client, basic_query):
             else:
                 assert freq == 0
 
-def test_bigrams_with_quote(test_app, test_es_client, basic_query):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
-
+def test_bigrams_with_quote(test_app, indexed_mock_corpus, basic_query):
     cases = [
         {
             'query': '"to hear"',
@@ -180,13 +177,13 @@ def test_bigrams_with_quote(test_app, test_es_client, basic_query):
             }
         }
     ]
-    
+
     for case in cases:
         # search for a word that occurs a few times
         query = basic_query
         query['query']['bool']['must']['simple_query_string']['query'] = case['query']
 
-        result = analyze.get_ngrams(query, 'mock-corpus', 'content', freq_compensation=False)
+        result = analyze.get_ngrams(query, indexed_mock_corpus, 'content', freq_compensation=False)
 
         ngrams = case['ngrams']
 

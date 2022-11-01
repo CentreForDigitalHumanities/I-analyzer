@@ -1,4 +1,5 @@
 import api.termvectors as termvectors
+from addcorpus.load_corpus import load_corpus
 from es import search
 import pytest
 
@@ -91,19 +92,19 @@ def test_query_components():
         assert sorted(components) == sorted(case['components']) # ignore order
 
 
-def test_query_analysis(test_es_client):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
+def test_query_analysis(test_es_client, indexed_mock_corpus):
+    corpus = load_corpus(indexed_mock_corpus)
+    es_index = corpus.es_index
 
     for case in QUERY_ANALYSIS_CASES:
-        analyzed = termvectors.analyze_query(case['query_text'], 'ianalyzer-mock-corpus', 'content.clean', test_es_client)
+        analyzed = termvectors.analyze_query(case['query_text'], es_index, 'content.clean', test_es_client)
         assert sorted(analyzed) == sorted(case['analyzed'])
 
 
 @pytest.fixture
-def termvectors_result(test_app, test_es_client):
-    if not test_es_client:
-        pytest.skip('No elastic search client')
+def termvectors_result(test_app, test_es_client, indexed_mock_corpus):
+    corpus = load_corpus(indexed_mock_corpus)
+    es_index = corpus.es_index
 
     frankenstein_query = {
         'query': {
@@ -112,12 +113,12 @@ def termvectors_result(test_app, test_es_client):
             }
         }
     }
-    result = search.search('mock-corpus', frankenstein_query, test_es_client)
+    result = search.search(indexed_mock_corpus, frankenstein_query, test_es_client)
     hit = search.hits(result)[0]
     id = hit['_id']
 
     termvectors_result = test_es_client.termvectors(
-        index='ianalyzer-mock-corpus',
+        index=es_index,
         id=id,
         term_statistics=True,
         fields = ['title', 'content']

@@ -64,18 +64,18 @@ def test_es_client(test_app):
     except:
         pytest.skip('Cannot connect to elasticsearch server')
 
-    # add data from mock corpus
-    index_test_corpus(client, 'mock-corpus')
-
-    yield client
-
-    # delete index when done
-    clear_test_corpus(client, 'mock-corpus')
+    return client
 
 @pytest.fixture(scope='session')
-def large_mock_corpus(test_app, test_es_client):
+def indexed_mock_corpus(test_es_client):
+    index_test_corpus(test_es_client, 'mock-corpus')
+    yield 'mock-corpus'
+    clear_test_corpus(test_es_client, 'mock-corpus')
+
+@pytest.fixture(scope='session')
+def indexed_large_mock_corpus(test_es_client):
     index_test_corpus(test_es_client, 'large-mock-corpus')
-    yield test_es_client
+    yield 'large-mock-corpus'
     clear_test_corpus(test_es_client, 'large-mock-corpus')
 
 def index_test_corpus(es_client, corpus_name):
