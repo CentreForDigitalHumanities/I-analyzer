@@ -528,7 +528,6 @@ export abstract class BarchartDirective
         if (normalizer === 'percent') {
             return (value?: number) => {
                 if (value !== undefined && value !== null) {
-                    console.log('hey now')
                     return `${_.round(100 * value, 1)}%`;
                 }
             }
