@@ -38,8 +38,7 @@ export class FreqtableComponent implements OnChanges {
     }
 
     checkWideFormat(): void {
-        /** Checks whether wide format is available (i.e. whether there are
-         * several queries) and assigns wideFormatColumn */
+        /** Checks whether wide format is available and assigns wideFormatColumn */
 
         if (this.headers && this.headers.find(header => header.isMainFactor)) {
             this.wideFormatColumn = _.range(this.headers.length)
@@ -49,16 +48,14 @@ export class FreqtableComponent implements OnChanges {
         }
     }
 
+    /** Checks if full table is available. If so, it disables the full table switch.
+    */
     checkFullTable(): void {
-        /** Checks if there are several queries or if the Number of Results visualization
-         * is selected. If so, it disables the full table switch.
-         */
-        if (this.headers && (this.headers.find(header => header.isMainFactor) ||
-        this.headers.find(header => header.key == 'doc_count' && !header.isOptional) ||
-        this.headers.find(header => header.key == 'relative_doc_count' && !header.isOptional))) {
-            this.disableFullTable = true;
-        } else {
+
+        if (this.headers && (this.headers.find(header => header.isOptional))) {
             this.disableFullTable = false;
+        } else {
+            this.disableFullTable = true;
         }
     }
 
