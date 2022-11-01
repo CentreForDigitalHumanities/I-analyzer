@@ -1,9 +1,3 @@
-<div class="toggle-div" *ngIf="!disableFullTable">
-    <div class="level-right">
-        <button class="button" [class.is-primary]="fullTableToggle == true" (click)="toggleFullTable()">Show Full Table</button>
-    </div>
-</div>
-
 <div class="block table-container">
     <p-table [value]="formattedData" [paginator]="true" [rows]="15" sortField={{defaultSort}} sortOrder={{defaultSortOrder}}>
         <ng-template pTemplate="header">
@@ -39,7 +33,11 @@
                 </div>
             </div>
         </div>
+        <div class="toggle-div" *ngIf="!disableFullTable">
+            <button class="button" [class.is-primary]="fullTableToggle == true" (click)="toggleFullTable()">Show Full Table</button>
+        </div>
     </div>
+
     <div class="level-right">
         <div class="level-item">
             <a class="button" (click)="downloadTable()">
