@@ -82,8 +82,7 @@ export interface WordcloudParameters {
 export type FreqTableHeader = {
     key: string,
     label: string,
-    normalizer?: string,
-    format?: (value, normalizer?) => string,
+    format?: (value) => string,
     formatDownload?: (value) => string,
     isOptional?: boolean,
     isMainFactor?: boolean,
