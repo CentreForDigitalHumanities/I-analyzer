@@ -85,7 +85,7 @@ export abstract class BarchartDirective
                 title: { display: true, text: 'Frequency' },
                 grid: { drawBorder: true, drawOnChartArea: false, },
                 ticks: {
-                    callback: (value, index, values) => this.formatValue(value as number),
+                    callback: (value, index, values) => this.formatValue(this.normalizer)(value as number),
                 },
                 min: 0,
             }
@@ -524,15 +524,14 @@ export abstract class BarchartDirective
         }
     }
 
-    /** based on current parameters, get a formatting function for y-axis values */
-    get formatValue(): (value?: number) => string|undefined {
-        if (this.normalizer === 'percent') {
+    formatValue(normalizer: string): (value?: number) => string|undefined {
+        if (normalizer === 'percent') {
             return (value?: number) => {
                 if (value !== undefined && value !== null) {
                     return `${_.round(100 * value, 1)}%`;
                 }
-            };
-        } else if (this.normalizer === 'documents' || this.normalizer === 'terms') {
+            }
+        } else if (normalizer === 'documents' || normalizer === 'terms') {
             return (value: number) => {
                 if (value !== undefined && value !== null) {
                     return value.toPrecision(2);

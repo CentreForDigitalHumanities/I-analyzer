@@ -170,7 +170,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                 },
                 label: (tooltipItem) => {
                     const value = tooltipItem.parsed.y;
-                    return this.formatValue(value);
+                    return this.formatValue(this.normalizer)(value);
                 }
             }
         };
@@ -300,12 +300,17 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+                { key: valueKey, label: rightColumnName, format: this.formatValue(this.normalizer),  formatDownload: this.formatDownloadValue  }
+
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'relative_doc_count', label: 'Document Frequency (%)', format: this.formatValue('percent'), formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue('documents'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
+                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue('terms'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }

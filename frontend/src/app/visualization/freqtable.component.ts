@@ -24,15 +24,22 @@ export class FreqtableComponent implements OnChanges {
     wideFormatColumn: number;
     format: 'long'|'wide' = 'long';
 
+    fullTableToggle: boolean = false;
+    disableFullTable: boolean = false;
+
+
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.checkWideFormat();
+        this.checkFullTable();
 
         this.formatData();
     }
 
     checkWideFormat(): void {
+        /** Checks whether wide format is available and assigns wideFormatColumn */
+
         if (this.headers && this.headers.find(header => header.isMainFactor)) {
             this.wideFormatColumn = _.range(this.headers.length)
                 .find(index => this.headers[index].isMainFactor);
@@ -41,12 +48,29 @@ export class FreqtableComponent implements OnChanges {
         }
     }
 
+    /** Checks if full table is available. If so, it disables the full table switch.
+    */
+    checkFullTable(): void {
+        if (this.headers && (this.headers.find(header => header.isOptional))) {
+            this.disableFullTable = false;
+        } else {
+            this.disableFullTable = true;
+        }
+    }
+
     setFormat(format: 'long'|'wide'): void {
         this.format = format;
         this.formatData();
     }
 
+    toggleFullTable() {
+        this.fullTableToggle = !this.fullTableToggle;
+        this.formatData();
+    }
+
     formatData() {
+        /** Formats the data in default (long) format, wide format, or fulltable format */
+
         let filteredData: any[];
         if (this.requiredColumn && this.data) {
             filteredData = this.data.filter(row => row[this.requiredColumn]);
@@ -58,8 +82,11 @@ export class FreqtableComponent implements OnChanges {
             const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
-        } else {
+        } else if (this.fullTableToggle === true || this.headers == undefined) {  // also checks if no data is present to avoid error
             this.formattedHeaders = this.headers;
+            this.formattedData = filteredData;
+        } else {
+            this.formattedHeaders = this.headers.filter(header => !header.isOptional);
             this.formattedData = filteredData;
         }
     }

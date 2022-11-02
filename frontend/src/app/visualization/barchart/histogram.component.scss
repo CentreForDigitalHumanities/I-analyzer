@@ -24,8 +24,11 @@ div.tooltip::after {
     opacity: .8;
   }
 
+.form-check-label {
+    margin-left: 5px;
+}
 
-  .notification {
+.notification {
     @include unselectable;
     opacity: 0.75;
 }
