@@ -1,0 +1,12 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - 4200:4200
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+    command: bash -c "flask run"
+    
