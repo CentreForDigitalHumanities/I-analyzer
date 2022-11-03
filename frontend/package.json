@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "npm run serve & npm run test",
+    "start": "yarn serve & yarn test",
+    "start-docker": "ng serve --host 0.0.0.0 --port 4200",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --configuration production --aot",
     "build-git": "ng build --configuration git --aot",
