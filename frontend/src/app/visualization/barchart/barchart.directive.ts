@@ -318,7 +318,7 @@ export abstract class BarchartDirective
     includeRelativeDocCount(data: DataPoint[], total: number): DataPoint[] {
         return data.map(item => {
             const result = _.clone(item);
-            result.relative_doc_count = result.total_doc_count / total;
+            result.relative_doc_count = result.doc_count / total;
             return result;
         });
     }

@@ -20,7 +20,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() asTable: boolean;
     @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
-    @Output() error = new EventEmitter<({ message: string })>();
+    @Output() error = new EventEmitter<string>();
 
     allDateFields: CorpusField[];
     dateField: CorpusField;
@@ -136,22 +136,33 @@ export class NgramComponent extends ParamDirective implements OnChanges {
             this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
                 .then(result => {
-                    this.tasksToCancel = result.task_ids;
-                    const childTask = result.task_ids[0];
-                    this.apiService.pollTask(childTask).then(outcome => {
-                        if (outcome.success === true && outcome.done === true) {
-                            this.cacheResult(outcome.results, this.currentParameters);
-                            this.onDataLoaded(outcome.results, changeAspectRatio);
-                        } else {
-                            this.error.emit({message: outcome['message']});
-                        }
-                    });
-            }).catch(error => {
-                this.chartData = undefined;
-                this.error.emit(error);
-                this.isLoading.emit(false);
+                    if (result.success) {
+                        this.tasksToCancel = result.task_ids;
+                        const childTask = result.task_ids[0];
+                        this.apiService.pollTask(childTask).then(outcome => {
+                            if (outcome.success === true && outcome.done === true) {
+                                this.cacheResult(outcome.results, this.currentParameters);
+                                this.onDataLoaded(outcome.results, changeAspectRatio);
+                            } else {
+                                this.onFailure(outcome['message']);
+                            }
+                        });
+                    } else {
+                        this.onFailure(result['message']);
+                    }
+            }).catch(response => {
+                console.log(response);
+                const body = response.body as string;
+                const message = body.slice(body.lastIndexOf('<p>') + 3, body.lastIndexOf('</p>'));
+                this.onFailure(message);
             });
         }
+    }
+
+    onFailure(message: string) {
+        this.chartData = undefined;
+        this.error.emit(message);
+        this.isLoading.emit(false);
     }
 
     onDataLoaded(result, changeAspectRatio = false) {
