@@ -2,7 +2,7 @@ import api.analyze as analyze
 import pytest
 import csv
 import api.tasks as tasks
-from large_mock_corpus import MIN_YEAR as LARGE_CORPUS_MIN_YEAR, MAX_YEAR as LARGE_CORPUS_MAX_YEAR, TOTAL_DOCUMENTS as LARGE_CORPUS_DOCUMENTS
+from mock_corpora.large_mock_corpus import MIN_YEAR as LARGE_CORPUS_MIN_YEAR, MAX_YEAR as LARGE_CORPUS_MAX_YEAR, TOTAL_DOCUMENTS as LARGE_CORPUS_DOCUMENTS
 
 TOTAL_DOCS_IN_MOCK_CORPUS = 3
 TOTAL_WORDS_IN_MOCK_CORPUS = 67

@@ -22,8 +22,8 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'mock-corpus': os.path.join(here, 'tests', 'mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, 'tests', 'large_mock_corpus.py')
+        'mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'mock_corpus.py'),
+        'large-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'large_mock_corpus.py')
     }
     SERVERS = {
         'default': config.SERVERS['default']

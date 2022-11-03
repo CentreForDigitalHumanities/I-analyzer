@@ -1,4 +1,4 @@
-from large_mock_corpus import TOTAL_DOCUMENTS as TOTAL_DOCUMENTS_LARGE
+from mock_corpora.large_mock_corpus import TOTAL_DOCUMENTS as TOTAL_DOCUMENTS_LARGE
 from test_term_frequency import TOTAL_DOCS_IN_MOCK_CORPUS as TOTAL_DOCUMENTS_SMALL
 from es import download
 from addcorpus.load_corpus import load_corpus
