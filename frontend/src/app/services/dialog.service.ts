@@ -1,9 +1,8 @@
-import { Injectable } from "@angular/core";
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { Injectable } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
-
-import { NgxMdService } from 'ngx-md';
-import { ApiService } from "./api.service";
+import { marked } from 'marked';
+import { ApiService } from './api.service';
 
 import { Corpus } from '../models/index';
 
@@ -12,11 +11,11 @@ export class DialogService {
     private behavior = new BehaviorSubject<DialogPageEvent>({ status: 'hide' });
     private manifest: Promise<ManualPageMetaData[]> | undefined;
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     public pageEvent = this.behavior.asObservable();
 
     public constructor(
         private domSanitizer: DomSanitizer,
-        private markdownService: NgxMdService,
         private apiService: ApiService) {
     }
 
@@ -52,6 +51,7 @@ export class DialogService {
 
     /**
      * Requests that a manual page should be shown to the user.
+     *
      * @param identifier Name of the page
      */
     public async showManualPage(identifier: string) {
@@ -90,11 +90,11 @@ export class DialogService {
         });
 
         const doc = await documentation;
-        const html = await this.markdownService.compile(doc);
+        const html = marked.parse(doc);
         this.behavior.next({
-            identifier: identifier,
-            html: html,
-            title: title,
+            identifier,
+            html,
+            title,
             status: 'show',
             footer: null
         });
@@ -107,7 +107,7 @@ export class DialogService {
 
     private async parseResponse(response: Response) {
         const text = await response.text();
-        const html = this.markdownService.compile(text);
+        const html = marked.parse(text);
         // mark that the output of the markdown service is safe to accept: it can contain style and id attributes,
         // which normally aren't liked by Angular
         return this.domSanitizer.bypassSecurityTrustHtml(html.replace(/<a href=/g, '<a target="_blank" href='));
@@ -116,22 +116,22 @@ export class DialogService {
 
 export type DialogPageEvent =
   {
-    status: 'loading'
+    status: 'loading';
   } | {
-    status: 'show',
-    identifier: string,
-    title: string,
-    html: SafeHtml
+    status: 'show';
+    identifier: string;
+    title: string;
+    html: SafeHtml;
     footer: {
-      routerLink: string[],
-      buttonLabel: string
-    }
+      routerLink: string[];
+      buttonLabel: string;
+    };
   } | {
-    status: 'hide'
-  }
+    status: 'hide';
+  };
 
 
-export type ManualPageMetaData = {
-    title: string,
-    id: string
+export interface ManualPageMetaData {
+    title: string;
+    id: string;
 }
