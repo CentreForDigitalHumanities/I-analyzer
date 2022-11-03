@@ -46,7 +46,7 @@ def test_find_matches(test_es_client, termvectors_result):
     ]
 
     for query_text, expected_matches in cases:
-        matches = list(termvectors.token_matches(title_tokens, query_text, 'mock-corpus', 'title', test_es_client))
+        matches = list(termvectors.token_matches(title_tokens, query_text, 'ianalyzer-mock-corpus', 'title', test_es_client))
         assert len(matches) == expected_matches
 
 QUERY_ANALYSIS_CASES = [
@@ -96,7 +96,7 @@ def test_query_analysis(test_es_client):
         pytest.skip('No elastic search client')
 
     for case in QUERY_ANALYSIS_CASES:
-        analyzed = termvectors.analyze_query(case['query_text'], 'mock-corpus', 'content.clean', test_es_client)
+        analyzed = termvectors.analyze_query(case['query_text'], 'ianalyzer-mock-corpus', 'content.clean', test_es_client)
         assert sorted(analyzed) == sorted(case['analyzed'])
 
 
@@ -117,7 +117,7 @@ def termvectors_result(test_app, test_es_client):
     id = hit['_id']
 
     termvectors_result = test_es_client.termvectors(
-        index='mock-corpus',
+        index='ianalyzer-mock-corpus',
         id=id,
         term_statistics=True,
         fields = ['title', 'content']

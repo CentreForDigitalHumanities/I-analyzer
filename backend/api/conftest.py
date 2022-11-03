@@ -87,7 +87,9 @@ def index_test_corpus(es_client, corpus_name):
     sleep(2)
 
 def clear_test_corpus(es_client, corpus_name):
-    es_client.indices.delete(index = corpus_name)
+    corpus = load_corpus(corpus_name)
+    index = corpus.es_index
+    es_client.indices.delete(index = index)
 
 
 @pytest.fixture
