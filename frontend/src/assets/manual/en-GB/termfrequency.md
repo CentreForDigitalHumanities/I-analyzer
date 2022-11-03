@@ -1,4 +1,4 @@
-This graph shows the frequency of the search term, compared by the value of a particular field, such as the date.
+This graph shows the frequency of the search term, compared by the value of a particular field. You can use the dropdown 'compare frequency by...' to select a field that you want to compare: depending on the metadata available for the corpus, this can be something like the date, the author, the genre, etc. This field will be shown on the x-axis, while the y-axis shows the number of results.
 
 While it looks similar to the 'number of results' graph, this visualisation counts all occurrences of the search term. If your search term has three matches within a single document, these will count as three occurences.
 

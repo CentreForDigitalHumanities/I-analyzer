@@ -1,4 +1,4 @@
-This graph compares the number of results by the value of a particular field, such as the date.
+This graph compares the number of results, compared by the value of a particular field. You can use the dropdown 'compare frequency by...' to select a field that you want to compare: depending on the metadata available for the corpus, this can be something like the date, the author, the genre, etc. This field will be shown on the x-axis, while the y-axis shows the number of results.
 
 This visualisation counts the number of documents that match your search criteria. If you search for a term that occurs multiple times in a single documents, this is counted as a single result.
 
