@@ -35,8 +35,8 @@ export class WordModelsComponent implements DoCheck, OnInit {
         },
         wordsimilarity: {
             title: 'Compare similarity',
-            manual: undefined,
-            chartID: undefined,
+            manual: 'comparesimilarity',
+            chartID: 'chart',
         }
     };
 
