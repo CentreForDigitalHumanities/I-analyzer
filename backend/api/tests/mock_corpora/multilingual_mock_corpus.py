@@ -16,6 +16,7 @@ class MultilingualMockCorpus(CSVCorpus):
     es_index = 'ianalyzer-mixed-language-mock-corpus'
     image = 'test.jpeg'
     data_directory = 'bogus'
+    delimiter = '\t'
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'sources_mixed_language')):

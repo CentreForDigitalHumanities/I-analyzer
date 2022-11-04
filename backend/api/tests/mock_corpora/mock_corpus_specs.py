@@ -8,17 +8,20 @@ CORPUS_SPECS = {
         'max_date': MockCorpus.max_date,
         'total_docs': 3,
         'total_words': 67,
+        'fields':  ['date', 'title', 'genre', 'content'],
     },
     'large-mock-corpus': {
         'min_date': LargeMockCorpus.min_date,
         'max_date': LargeMockCorpus.max_date,
         'total_docs': 11000,
         'total_words': 55000,
+        'fields': ['date', 'content'],
     },
     'multilingual-mock-corpus': {
         'min_date': MultilingualMockCorpus.min_date,
         'max_date': MultilingualMockCorpus.max_date,
         'total_docs': 2,
         'total_words': 176,
+        'fields': ['content', 'language']
     }
 }

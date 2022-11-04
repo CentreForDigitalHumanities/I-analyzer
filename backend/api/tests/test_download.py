@@ -2,7 +2,7 @@ from es import download
 from mock_corpora.mock_corpus_specs import CORPUS_SPECS
 import pytest
 import csv
-from api.tasks import create_csv
+from api import create_csv, tasks
 
 match_all = {
     "query": {
@@ -62,15 +62,15 @@ def mock_es_result():
     }
 
 @pytest.fixture
-def mock_es_query():
+def mock_route():
     return "parliament-netherlands_query=test"
 
 @pytest.fixture
 def mock_csv_fields():
     return ['speech']
 
-def test_create_csv(mock_es_result, mock_csv_fields, mock_es_query, test_app):
-    filename = create_csv.search_results_csv(mock_es_result['hits']['hits'], mock_csv_fields, mock_es_query)
+def test_create_csv(mock_es_result, mock_csv_fields, mock_route, test_app):
+    filename = create_csv.search_results_csv(mock_es_result['hits']['hits'], mock_csv_fields, mock_route)
     counter = 0
     with open(filename) as f:
         csv_output = csv.DictReader(f, delimiter=';', quotechar='"')
@@ -79,6 +79,91 @@ def test_create_csv(mock_es_result, mock_csv_fields, mock_es_query, test_app):
             counter += 1
             assert 'speech' in row
         assert counter == 1
+
+def test_format_route_to_filename():
+    route = '/search/mock-corpus;query=test'
+    request_json = { 'route': route }
+    output = tasks.create_query(request_json)
+    assert output == 'mock-corpus_query=test'
+
+def all_results_csv(corpus):
+    '''generate a results csv for a corpus based on a match_all query'''
+    corpus_specs = CORPUS_SPECS[corpus]
+    fields = corpus_specs['fields']
+
+    request_json = {
+        'corpus': corpus,
+        'es_query': match_all,
+        'fields': fields,
+        'route': '/search/{};query=test'.format(corpus)
+    }
+    results = tasks.download_scroll(request_json)
+    filename = tasks.make_csv(results, request_json)
+
+    return filename, corpus_specs
+
+
+def test_csv_fieldnames(indexed_mock_corpus):
+    filename, corpus_specs = all_results_csv(indexed_mock_corpus)
+
+    with open(filename) as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
+        assert set(reader.fieldnames) == set(corpus_specs['fields'] + ['query'])
+
+def assert_result_csv_expectations(csv_path, expectations, delimiter=','):
+    '''Check that a CSV contains the expected data. Parameters:
+
+    - `csv_path`: path to csv file
+    - `expectations`: list of dicts. Each item gives expectations for a row.
+    '''
+    with open(csv_path) as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=delimiter)
+        rows = [row for row in reader]
+
+        for i, expected_row in enumerate(expectations):
+            for item in expected_row:
+                assert rows[i][item] == expected_row[item]
+
+
+def test_csv_contents(indexed_mock_corpus):
+    '''Check the contents of the results csv for the basic mock corpus.'''
+
+    filename, corpus_specs = all_results_csv(indexed_mock_corpus)
+
+    expected = [{
+        'date': '1818-01-01',
+        'genre': "Science fiction",
+        'title': "Frankenstein, or, the Modern Prometheus",
+        'content': "You will rejoice to hear that no disaster has accompanied the commencement of an enterprise which you have regarded with such evil forebodings.",
+    }, {
+        'content': 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+    }]
+
+    assert_result_csv_expectations(filename, expected, delimiter=';')
+
+def test_csv_contents_multilingual(indexed_multilingual_mock_corpus):
+    '''Check the contents of the multilingual corpus, which also contains some special characters. This hangs on the entire pipeline of
+
+    - extracting data from a CSV source file
+    - indexing in elasticsearch
+    - querying elasticsearc
+    - exporting results to csv
+
+    and thus checks that none of these steps mess up diacritics.
+    '''
+
+    filename, corpus_specs = all_results_csv(indexed_multilingual_mock_corpus)
+
+    expected = [{
+        'language': 'Swedish',
+        'content': 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk, men även som det ena nationalspråket i Finland och som enda officiella språk på Åland. I övriga Finland talas det som modersmål framförallt i de finlandssvenska kustområdena i Österbotten, Åboland och Nyland. En liten minoritet svenskspråkiga finns även i Estland. Svenska är nära besläktat och i hög grad ömsesidigt begripligt med danska och norska. De andra nordiska språken, isländska och färöiska, är mindre ömsesidigt begripliga med svenska. Liksom de övriga nordiska språken härstammar svenskan från en gren av fornnordiska, vilket var det språk som talades av de germanska folken i Skandinavien.'
+    }, {
+        'language': 'German',
+        'content': 'Das Deutsche ist eine plurizentrische Sprache, enthält also mehrere Standardvarietäten in verschiedenen Regionen. Ihr Sprachgebiet umfasst Deutschland, Österreich, die Deutschschweiz, Liechtenstein, Luxemburg, Ostbelgien, Südtirol, das Elsass und Lothringen sowie Nordschleswig. Außerdem ist Deutsch eine Minderheitensprache in einigen europäischen und außereuropäischen Ländern, z. B. in Rumänien und Südafrika sowie Nationalsprache im afrikanischen Namibia. Deutsch ist die meistgesprochene Muttersprache in der Europäischen Union (EU).'
+    }]
+
+    assert_result_csv_expectations(filename, expected, delimiter=';')
+
 
 mock_queries = ['test', 'test2']
 
@@ -152,11 +237,9 @@ mock_timeline_expected_data = [
 
 def test_timeline_csv(test_app):
     filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
-    with open(filename) as f:
-        reader = csv.DictReader(f)
-        for expected_row in mock_timeline_expected_data:
-            row = next(reader)
-            assert row == expected_row
+
+    assert_result_csv_expectations(filename, mock_timeline_expected_data, delimiter=',')
+
 
 def test_date_format():
     cases = [
