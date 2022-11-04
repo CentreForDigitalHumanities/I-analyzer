@@ -154,6 +154,12 @@ def indexed_multilingual_mock_corpus(test_es_client):
     yield 'multilingual-mock-corpus'
     clear_test_corpus(test_es_client, 'multilingual-mock-corpus')
 
+mock_corpora = ['mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus']
+
+@pytest.fixture(scope='session', params=mock_corpora, ids=mock_corpora)
+def any_indexed_mock_corpus(request, indexed_mock_corpus, indexed_large_mock_corpus, indexed_multilingual_mock_corpus):
+    return request.param
+
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
     index.create(es_client, corpus, False, True, False)
