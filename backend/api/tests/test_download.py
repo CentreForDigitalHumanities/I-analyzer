@@ -1,6 +1,5 @@
 from es import download
 from mock_corpora.mock_corpus_specs import CORPUS_SPECS
-import pytest
 
 match_all = {
     "query": {
