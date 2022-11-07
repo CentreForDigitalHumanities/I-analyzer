@@ -116,8 +116,8 @@ export class ApiService extends Resource {
         path: '/request_full_data'
     })
     public requestFullData: ResourceMethod<
-        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[] } |
-        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[] },
+        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[], corpus: string, } |
+        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[], corpus: string, },
         TaskResult>;
 
     @ResourceAction({

@@ -605,25 +605,17 @@ def api_request_full_data():
     if not request.json:
         abort(400)
 
-    for key in ['visualization', 'parameters']:
+    for key in ['visualization', 'parameters', 'corpus']:
         if not key in request.json:
             abort(400)
 
-    task_per_type = {
-        'date_term_frequency': tasks.timeline_term_frequency_full_data,
-        'aggregate_term_frequency': tasks.histogram_term_frequency_full_data
-    }
-
     visualization_type = request.json['visualization']
-    if visualization_type not in task_per_type:
+    known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+
+    if visualization_type not in known_visualisations:
         abort(400, 'unknown visualization type "{}"'.format(visualization_type))
 
-    task = task_per_type[visualization_type]
-
-
-    task_chain = chain(task.s(request.json['parameters']),
-        tasks.csv_data_email.s(current_user.email, current_user.username))
-
+    task_chain = tasks.download_full_data(request.json, current_user)
     task_chain.apply_async()
 
     return jsonify({'success': True, 'task_id': task_chain.id})

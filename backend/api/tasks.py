@@ -117,12 +117,12 @@ def get_histogram_term_frequency(request_json):
     return result
 
 @celery_app.task()
-def histogram_term_frequency_full_data(parameters_per_series):
+def histogram_term_frequency_full_data(log_id, parameters_per_series):
     query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
     field_name = parameters_per_series[0]['field_name']
     results_per_series = map(get_histogram_term_frequency, parameters_per_series)
     filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
-    return filepath
+    return log_id, filepath
 
 
 @celery_app.task()
@@ -149,14 +149,14 @@ def get_timeline_term_frequency(request_json):
 
 
 @celery_app.task()
-def timeline_term_frequency_full_data(parameters_per_series):
+def timeline_term_frequency_full_data(log_id, parameters_per_series):
     query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
     field_name = parameters_per_series[0]['field_name']
     unit = parameters_per_series[0]['unit']
     parameters_unlimited = map(remove_size_limit, parameters_per_series)
     results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
     filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
-    return filepath
+    return log_id, filepath
 
 def remove_size_limit(parameters):
     for bin in parameters['bins']:
@@ -176,4 +176,25 @@ def csv_data_email(csv_filepath, user_email, username):
         prompt="Click on the link below.",
         link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
         link_text="Download .csv file"
+    )
+
+
+def download_full_data(request_json, user):
+    visualization_type = request_json['visualization']
+
+    task_per_type = {
+        'date_term_frequency': timeline_term_frequency_full_data,
+        'aggregate_term_frequency': histogram_term_frequency_full_data
+    }
+
+    task = task_per_type[visualization_type]
+
+    parameters = request_json['parameters']
+    corpus_name = request_json['corpus']
+
+    return chain(
+        start_download.s(visualization_type, corpus_name, request_json, user.id),
+        task.s(parameters),
+        complete_download.s(),
+        csv_data_email.s(user.email, user.username),
     )
