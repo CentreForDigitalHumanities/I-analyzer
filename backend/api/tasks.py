@@ -8,28 +8,52 @@ from requests.exceptions import Timeout, ConnectionError, HTTPError
 import re
 import os
 
-from api import analyze
+from api import analyze, query, download as api_download
 from api.user_mail import send_user_mail
-from api import query
-from es import es_forward, download
+from es import es_forward, download as es_download
 from ianalyzer import celery_app
 import api.cache as cache
 from api import create_csv
+from celery import chain
 
 logger = logging.getLogger(__name__)
 
+def download_search_results(request_json, user):
+    download_limit = user.download_limit
+    corpus_name = request_json['corpus']
+
+    return chain(
+        start_download.s('search_results', corpus_name, request_json, user.id),
+        download_scroll.s(request_json, download_limit),
+        make_csv.s(request_json),
+        complete_download.s(),
+        csv_data_email.s(user.email, user.username),
+    )
 
 @celery_app.task()
-def download_scroll(request_json, download_size=10000):
-    results, _ = download.scroll(request_json['corpus'], request_json['es_query'], download_size)
-    return results
+def start_download(download_type, corpus_name, parameters, user_id):
+    id = api_download.store_download_started(download_type, corpus_name, parameters, user_id)
+    return id
+
+@celery_app.task()
+def complete_download(log_id_and_filename):
+    log_id, filename = log_id_and_filename
+    api_download.store_download_completed(log_id, filename)
+    return filename
 
 
 @celery_app.task()
-def make_csv(results, request_json):
+def download_scroll(log_id, request_json, download_size=10000):
+    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    return log_id, results
+
+
+@celery_app.task()
+def make_csv(log_id_and_results, request_json):
+    log_id, results = log_id_and_results
     query = create_query(request_json)
     filepath = create_csv.search_results_csv(results, request_json['fields'], query)
-    return filepath
+    return log_id, filepath
 
 
 def create_query(request_json):
@@ -43,7 +67,7 @@ def create_query(request_json):
 @celery_app.task()
 def get_wordcloud_data(request_json):
     def calculate():
-        list_of_texts, _ = download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
+        list_of_texts, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], current_app.config['WORDCLOUD_LIMIT'])
         word_counts = analyze.make_wordcloud_data(list_of_texts, request_json['field'], request_json['corpus'])
         return word_counts
 
@@ -141,6 +165,7 @@ def remove_size_limit(parameters):
 
 @celery_app.task()
 def csv_data_email(csv_filepath, user_email, username):
+    logger.info('should now be sending email')
     _, filename = os.path.split(csv_filepath)
     send_user_mail(
         email=user_email,

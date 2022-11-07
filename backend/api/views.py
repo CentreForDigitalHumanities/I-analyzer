@@ -218,7 +218,7 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            filepath = tasks.make_csv.delay(search_results, request.json)
+            filepath = tasks.make_csv.delay((None, search_results), request.json)
         except:
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
@@ -260,16 +260,12 @@ def api_download_task():
     elif not current_user.email:
         error_response.headers['message'] += 'user email not known.'
         return error_response
+
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(request.json))
-    csvs = csv_task.apply_async()
-    if csvs:
-        filepath = csvs.get()[1]
-        # we are sending the results to the user by email
-        current_app.logger.info("should now be sending email")
-        tasks.csv_data_email(filepath, current_user.email, current_user.username)
-        return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
+    task_chain = tasks.download_search_results(request.json, current_user)
+    if task_chain:
+        result = task_chain.apply_async()
+        return jsonify({'success': True, 'task_ids': [result.id, result.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
 

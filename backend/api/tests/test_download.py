@@ -112,7 +112,7 @@ def all_results_csv(corpus):
         'route': '/search/{};query=test'.format(corpus)
     }
     results = tasks.download_scroll(request_json)
-    filename = tasks.make_csv(results, request_json)
+    filename = tasks.make_csv((None, results), request_json)
 
     return filename, corpus_specs
 
