@@ -38,21 +38,37 @@ def start_download(download_type, corpus_name, parameters, user_id):
 @celery_app.task()
 def complete_download(log_id_and_filename):
     log_id, filename = log_id_and_filename
-    api_download.store_download_completed(log_id, filename)
+
+    if filename:
+        api_download.store_download_completed(log_id, filename)
+    else:
+        api_download.store_download_failed(log_id)
+
     return filename
 
 
 @celery_app.task()
 def download_scroll(log_id, request_json, download_size=10000):
-    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
-    return log_id, results
+    try:
+        results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
+    except Exception as e:
+        results = None
+        logger.error(e)
 
+    return log_id, results
 
 @celery_app.task()
 def make_csv(log_id_and_results, request_json):
     log_id, results = log_id_and_results
-    query = create_query(request_json)
-    filepath = create_csv.search_results_csv(results, request_json['fields'], query)
+
+
+    try:
+        query = create_query(request_json)
+        filepath = create_csv.search_results_csv(results, request_json['fields'], query)
+    except Exception as e:
+        filepath = None
+        logger.error(e)
+
     return log_id, filepath
 
 
@@ -118,11 +134,15 @@ def get_histogram_term_frequency(request_json):
 
 @celery_app.task()
 def histogram_term_frequency_full_data(log_id, parameters_per_series):
-    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
-    field_name = parameters_per_series[0]['field_name']
-    results_per_series = map(get_histogram_term_frequency, parameters_per_series)
-    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
-    return log_id, filepath
+    try:
+        query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+        field_name = parameters_per_series[0]['field_name']
+        results_per_series = map(get_histogram_term_frequency, parameters_per_series)
+        filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
+        return log_id, filepath
+    except Exception as e:
+        logger.error(e)
+        return log_id, None
 
 
 @celery_app.task()
@@ -150,13 +170,17 @@ def get_timeline_term_frequency(request_json):
 
 @celery_app.task()
 def timeline_term_frequency_full_data(log_id, parameters_per_series):
-    query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
-    field_name = parameters_per_series[0]['field_name']
-    unit = parameters_per_series[0]['unit']
-    parameters_unlimited = map(remove_size_limit, parameters_per_series)
-    results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
-    filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
-    return log_id, filepath
+    try:
+        query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
+        field_name = parameters_per_series[0]['field_name']
+        unit = parameters_per_series[0]['unit']
+        parameters_unlimited = map(remove_size_limit, parameters_per_series)
+        results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
+        filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
+        return log_id, filepath
+    except Exception as e:
+        logger.error(e)
+        return log_id, None
 
 def remove_size_limit(parameters):
     for bin in parameters['bins']:

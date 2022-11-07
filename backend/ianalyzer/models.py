@@ -291,3 +291,12 @@ class Download(db.Model):
     @property
     def is_done(self):
         return self.completed != None
+
+    @property
+    def status(self):
+        if self.is_done and self.filename:
+            return 'done'
+        elif self.is_done:
+            return 'error'
+        else:
+            return 'working'

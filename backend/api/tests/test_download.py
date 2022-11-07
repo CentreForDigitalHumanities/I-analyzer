@@ -3,6 +3,7 @@ from es import download as es_download
 from api import create_csv, tasks, download as api_download
 from addcorpus.load_corpus import load_corpus
 import csv
+from ianalyzer.models import Download
 import pytest
 
 match_all = {
@@ -29,14 +30,30 @@ def test_download_log(mock_user):
         'size': 2
     }
     id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download = Download.query.get(id)
 
     found_file = api_download.get_result_filename(id)
     assert found_file == None
+    assert download.status == 'working'
 
     filename = 'result.csv'
     api_download.store_download_completed(id, filename)
     found_file = api_download.get_result_filename(id)
     assert found_file == filename
+    assert download.status == 'done'
+
+    # different download, mark as failed
+    parameters = {
+        'es_query': match_all,
+        'size': 3
+    }
+    id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download = Download.query.get(id)
+
+    api_download.store_download_failed(id)
+    assert download.status == 'error'
+
+
 
 @pytest.fixture
 def mock_es_result():
@@ -111,8 +128,8 @@ def all_results_csv(corpus):
         'fields': fields,
         'route': '/search/{};query=test'.format(corpus)
     }
-    results = tasks.download_scroll(request_json)
-    filename = tasks.make_csv((None, results), request_json)
+    results = tasks.download_scroll(None, request_json)
+    _, filename = tasks.make_csv(results, request_json)
 
     return filename, corpus_specs
 

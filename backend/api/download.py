@@ -19,6 +19,13 @@ def store_download_completed(id, filename):
     db.session.flush()
     db.session.commit()
 
+def store_download_failed(id):
+    download = Download.query.get(id)
+    download.completed = datetime.now()
+    db.session.merge(download)
+    db.session.flush()
+    db.session.commit()
+
 def get_result_filename(id):
     download = Download.query.get(id)
     if download.is_done:
