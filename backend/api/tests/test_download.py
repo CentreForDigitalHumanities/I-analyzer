@@ -164,6 +164,19 @@ def test_csv_contents_multilingual(indexed_multilingual_mock_corpus):
 
     assert_result_csv_expectations(filename, expected, delimiter=';')
 
+def test_csv_encoding(indexed_multilingual_mock_corpus):
+    '''Assert that the results csv file matches utf-8 encoding'''
+
+    filename, corpus_specs = all_results_csv(indexed_multilingual_mock_corpus)
+
+    with open(filename, 'rb') as f:
+        binary_contents = f.read()
+
+    expected_sentence = 'Svenska är ett östnordiskt språk som talas av ungefär tio miljoner personer främst i Sverige där språket har en dominant ställning som huvudspråk'
+    bytes = str.encode(expected_sentence, 'utf-8')
+
+    assert bytes in binary_contents
+
 
 mock_queries = ['test', 'test2']
 
