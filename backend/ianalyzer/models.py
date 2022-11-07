@@ -5,7 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
-
+import os
 
 MAX_LENGTH_NAME = 126
 MAX_LENGTH_PASSWORD = 254
@@ -307,12 +307,17 @@ class Download(db.Model):
     def serialize(self):
         '''Convert to json-friendly format'''
 
+        if self.filename:
+            _, filename = os.path.split(self.filename)
+        else:
+            filename = None
+
         return {
             'started': self.started,
             'completed': self.completed,
             'download_type': self.download_type,
             'corpus': self.corpus_name,
             'parameters': self.parameters,
-            'filename': self.filename,
+            'filename': filename,
             'status': self.status,
         }

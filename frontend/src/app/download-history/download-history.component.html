@@ -1,1 +1,46 @@
-<p>downloads works!</p>
+<section class="section">
+    <p-table #dt *ngIf="downloads" [value]="downloads" [paginator]="true" [rows]="10">
+        <ng-template pTemplate="caption">
+            <div style="text-align: left">
+                Downloads
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th>Corpus</th>
+                <th>Status</th>
+                <th>Download</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    <p-dropdown [options]="corpora" [style]="{'width':'100%'}"
+                        placeholder="Any" showClear="true"
+                        (onChange)="dt.filter($event.value, 'corpus', 'equals')"></p-dropdown>
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-download>
+            <tr>
+                <td>{{download.started}}</td>
+                <td>{{download.download_type}}</td>
+                <td>{{download.corpus}}</td>
+                <td>{{download.status}}</td>
+                <td>
+                    <a *ngIf="download.status == 'done'" [href]="downloadLink(download)">
+                        <span class="icon">
+                            <fa-icon [icon]="faDownload"></fa-icon>
+                        </span>
+                        <span>download file</span>
+                    </a>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</section>
+
