@@ -80,6 +80,7 @@ import { TermComparisonEditorComponent } from './visualization/barchart/term-com
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 import { FooterComponent } from './footer/footer.component';
+import { DownloadHistoryComponent } from './download-history/download-history.component';
 
 
 export const appRoutes: Routes = [
@@ -135,6 +136,10 @@ export const appRoutes: Routes = [
         component: SearchHistoryComponent
     },
     {
+        path: 'download-history',
+        component: DownloadHistoryComponent
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -154,6 +159,7 @@ export const declarations: any[] = [
     DialogComponent,
     DocumentViewComponent,
     DownloadComponent,
+    DownloadHistoryComponent,
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
