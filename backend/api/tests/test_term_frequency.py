@@ -59,14 +59,16 @@ def test_match_count(test_app, test_es_client, indexed_mock_corpus):
         match_count = analyze.get_match_count(test_es_client, query, indexed_mock_corpus, 100, fieldnames)
         assert match_count == freq
 
-def test_total_docs_and_tokens(test_app, test_es_client, indexed_mock_corpus):
+def test_total_docs_and_tokens(test_app, test_es_client, any_indexed_mock_corpus):
     """Test total document counter"""
 
+    specs =  CORPUS_SPECS[any_indexed_mock_corpus]
+
     query = make_query(query_text='*', search_in_fields=['content'])
-    fieldnames, aggregators = analyze.extract_data_for_term_frequency(indexed_mock_corpus, query)
-    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, indexed_mock_corpus, aggregators)
-    assert total_doc_count == CORPUS_SPECS[indexed_mock_corpus]['total_docs']
-    assert token_count == CORPUS_SPECS[indexed_mock_corpus]['total_words']
+    fieldnames, aggregators = analyze.extract_data_for_term_frequency(any_indexed_mock_corpus, query)
+    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, any_indexed_mock_corpus, aggregators)
+    assert total_doc_count == specs['total_docs']
+    assert token_count == (specs['total_words'] if specs['has_token_counts'] else None)
 
 def test_term_frequency(test_app, indexed_mock_corpus):
 
