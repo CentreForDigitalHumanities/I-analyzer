@@ -23,8 +23,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     public allVisualizationFields: CorpusField[];
 
-    public histogramDocumentLimit = 10000;
-
     public showTableButtons: boolean;
 
     public visualizationType: string;
