@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -184,6 +184,7 @@ export class ApiService extends Resource {
         { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
 
+
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/register'
@@ -228,6 +229,13 @@ export class ApiService extends Resource {
         path: '/search_history'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/downloads'
+    })
+    public downloads: ResourceMethod<void, Download[]>;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,

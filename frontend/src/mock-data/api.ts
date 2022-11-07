@@ -35,4 +35,8 @@ export class ApiServiceMock {
     public pollTask() {
         return Promise.resolve({});
     }
+
+    public downloads() {
+        return Promise.resolve([]);
+    }
 }

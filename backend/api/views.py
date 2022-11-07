@@ -269,8 +269,11 @@ def api_download_task():
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
 
-
-
+@api.route('/downloads', methods=['GET'])
+@login_required
+def api_user_downloads():
+    result = [d.serialize() for d in current_user.downloads]
+    return jsonify(result)
 
 # endpoint for link send in email to download csv file
 @api.route('/csv/<filename>', methods=['get'])

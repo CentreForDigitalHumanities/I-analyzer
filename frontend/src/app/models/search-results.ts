@@ -80,3 +80,16 @@ export type QueryFeedback = {
 };
 
 export type TaskResult = { success: false, message: string } | { success: true, task_id: string }
+
+export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency'
+export type downloadStatus = 'done' | 'working' | 'error';
+
+export type Download = {
+    started: Date,
+    completed?: Date,
+    download_type: DownloadType,
+    corpus: string,
+    parameters: any,
+    filename?: string,
+    status: downloadStatus,
+};
