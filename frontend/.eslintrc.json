@@ -25,16 +25,14 @@
           "error",
           {
             "type": "element",
-            "prefix": "app",
-            "style": "kebab-case"
+            "prefix": "ia",
+            "style": "scss"
           }
         ],
         "@angular-eslint/directive-selector": [
           "error",
           {
-            "type": "attribute",
-            "prefix": "app",
-            "style": "camelCase"
+            "prefix": "ia"
           }
         ],
         "@typescript-eslint/consistent-type-definitions": "error",
