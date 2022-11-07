@@ -2,7 +2,7 @@ from random import sample
 from typing import Counter
 import api.analyze as analyze
 import api.query as query
-from mock_corpus import MockCorpus
+from mock_corpora.mock_corpus import MockCorpus
 from datetime import datetime
 import pytest
 

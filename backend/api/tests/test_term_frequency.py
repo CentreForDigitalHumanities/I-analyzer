@@ -2,10 +2,8 @@ import api.analyze as analyze
 import pytest
 import csv
 import api.tasks as tasks
-from large_mock_corpus import MIN_YEAR as LARGE_CORPUS_MIN_YEAR, MAX_YEAR as LARGE_CORPUS_MAX_YEAR, TOTAL_DOCUMENTS as LARGE_CORPUS_DOCUMENTS
+from mock_corpora.mock_corpus_specs import CORPUS_SPECS
 
-TOTAL_DOCS_IN_MOCK_CORPUS = 3
-TOTAL_WORDS_IN_MOCK_CORPUS = 67
 
 def test_extract_data_for_term_frequency(test_app):
     es_query = make_query('test', ['content', 'title'])
@@ -61,14 +59,17 @@ def test_match_count(test_app, test_es_client, indexed_mock_corpus):
         match_count = analyze.get_match_count(test_es_client, query, indexed_mock_corpus, 100, fieldnames)
         assert match_count == freq
 
-def test_total_docs_and_tokens(test_app, test_es_client, indexed_mock_corpus):
+def test_total_docs_and_tokens(test_app, test_es_client, any_indexed_mock_corpus):
     """Test total document counter"""
 
+    specs =  CORPUS_SPECS[any_indexed_mock_corpus]
+
     query = make_query(query_text='*', search_in_fields=['content'])
-    fieldnames, aggregators = analyze.extract_data_for_term_frequency(indexed_mock_corpus, query)
-    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, indexed_mock_corpus, aggregators)
-    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
-    assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
+
+    fieldnames, aggregators = analyze.extract_data_for_term_frequency(any_indexed_mock_corpus, query)
+    total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, any_indexed_mock_corpus, aggregators)
+    assert total_doc_count == specs['total_docs']
+    assert token_count == (specs['total_words'] if specs['has_token_counts'] else None)
 
 def test_term_frequency(test_app, indexed_mock_corpus):
 
@@ -77,7 +78,7 @@ def test_term_frequency(test_app, indexed_mock_corpus):
     match_count, total_doc_count, token_count = analyze.get_term_frequency(query, indexed_mock_corpus, 100)
 
     assert match_count == 2
-    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
+    assert total_doc_count == CORPUS_SPECS[indexed_mock_corpus]['total_docs']
     assert token_count == None
 
     ## search in content (includes token count)
@@ -85,8 +86,8 @@ def test_term_frequency(test_app, indexed_mock_corpus):
     match_count, total_doc_count, token_count = analyze.get_term_frequency(query, indexed_mock_corpus, 100)
 
     assert match_count == 1
-    assert total_doc_count == TOTAL_DOCS_IN_MOCK_CORPUS
-    assert token_count == TOTAL_WORDS_IN_MOCK_CORPUS
+    assert total_doc_count == CORPUS_SPECS[indexed_mock_corpus]['total_docs']
+    assert token_count == CORPUS_SPECS[indexed_mock_corpus]['total_words']
 
 def test_histogram_term_frequency(test_app, indexed_mock_corpus):
 
@@ -166,8 +167,10 @@ def make_query(query_text=None, search_in_fields=None):
 
     return query
 
-@pytest.mark.xfail(reason = 'task gets wrong app context', raises = KeyError)
 def test_timeline_full_data(indexed_large_mock_corpus):
+    specs = CORPUS_SPECS[indexed_large_mock_corpus]
+    min_year = specs['min_date'].year
+    max_year = specs['max_date'].year
     full_data_parameters = [{
         'es_query': make_query(query_text = 'the', search_in_fields=['content']),
         'corpus_name': indexed_large_mock_corpus,
@@ -178,8 +181,8 @@ def test_timeline_full_data(indexed_large_mock_corpus):
                 'end_date': '{}-12-31'.format(year),
                 'size': 10,
             }
-            for year in range(LARGE_CORPUS_MIN_YEAR, LARGE_CORPUS_MAX_YEAR + 1)
-        ],
+            for year in range(min_year, max_year + 2)
+       ],
         'unit': 'year'
     }]
 
@@ -190,8 +193,8 @@ def test_timeline_full_data(indexed_large_mock_corpus):
         rows = list(row for row in reader)
 
         total_expectations = {
-            'Total documents': LARGE_CORPUS_DOCUMENTS,
-            'Term frequency': LARGE_CORPUS_DOCUMENTS * 2, # 2 hits per document
+            'Total documents': specs['total_docs'],
+            'Term frequency': specs['total_docs'] * 2, # 2 hits per document
             'Relative term frequency (by # documents)': 2 * len(full_data_parameters[0]['bins'])
         }
 

@@ -22,15 +22,16 @@ class UnittestConfig:
     DEBUG = True
     TESTING = True
     CORPORA = {
-        'mock-corpus': os.path.join(here, 'tests', 'mock_corpus.py'),
-        'large-mock-corpus': os.path.join(here, 'tests', 'large_mock_corpus.py')
+        'mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'mock_corpus.py'),
+        'large-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'large_mock_corpus.py'),
+        'multilingual-mock-corpus': os.path.join(here, 'tests', 'mock_corpora', 'multilingual_mock_corpus.py'),
     }
     SERVERS = {
         'default': config.SERVERS['default']
     }
     CORPUS_SERVER_NAMES = {
-        'mock-corpus': 'default',
-        'large-mock-corpus': 'default',
+        corpus: 'default'
+        for corpus in CORPORA
     }
     CORPUS_DEFINITIONS = {}
 
@@ -146,6 +147,18 @@ def indexed_large_mock_corpus(test_es_client):
     index_test_corpus(test_es_client, 'large-mock-corpus')
     yield 'large-mock-corpus'
     clear_test_corpus(test_es_client, 'large-mock-corpus')
+
+@pytest.fixture(scope='session')
+def indexed_multilingual_mock_corpus(test_es_client):
+    index_test_corpus(test_es_client, 'multilingual-mock-corpus')
+    yield 'multilingual-mock-corpus'
+    clear_test_corpus(test_es_client, 'multilingual-mock-corpus')
+
+mock_corpora = ['mock-corpus', 'large-mock-corpus', 'multilingual-mock-corpus']
+
+@pytest.fixture(scope='session', params=mock_corpora, ids=mock_corpora)
+def any_indexed_mock_corpus(request, indexed_mock_corpus, indexed_large_mock_corpus, indexed_multilingual_mock_corpus):
+    return request.param
 
 def index_test_corpus(es_client, corpus_name):
     corpus = load_corpus(corpus_name)
