@@ -5,6 +5,7 @@ from addcorpus.load_corpus import load_corpus
 import csv
 from ianalyzer.models import Download
 import pytest
+from flask import jsonify
 
 match_all = {
     "query": {
@@ -25,6 +26,8 @@ def test_download_limit(any_indexed_mock_corpus):
     assert len(results) == min(limit, docs_in_corpus)
 
 def test_download_log(mock_user):
+    assert mock_user.downloads == []
+
     parameters = {
         'es_query': match_all,
         'size': 2
@@ -41,6 +44,7 @@ def test_download_log(mock_user):
     found_file = api_download.get_result_filename(id)
     assert found_file == filename
     assert download.status == 'done'
+    assert mock_user.downloads == [download]
 
     # different download, mark as failed
     parameters = {
@@ -48,12 +52,25 @@ def test_download_log(mock_user):
         'size': 3
     }
     id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
-    download = Download.query.get(id)
+    download_2 = Download.query.get(id)
 
     api_download.store_download_failed(id)
-    assert download.status == 'error'
+    assert download_2.status == 'error'
+    assert mock_user.downloads == [download, download_2]
 
 
+def test_download_serialization(mock_user):
+    parameters = {
+        'es_query': match_all,
+        'size': 2
+    }
+    id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download = Download.query.get(id)
+    api_download.store_download_completed(id, 'result.csv')
+
+    serialised = download.serialize()
+    response = jsonify(serialised)
+    assert response
 
 @pytest.fixture
 def mock_es_result():

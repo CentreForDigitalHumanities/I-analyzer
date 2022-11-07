@@ -98,6 +98,8 @@ class User(db.Model):
     Which queries the user has performed.
     '''
 
+    downloads = db.relationship('Download', back_populates='user')
+
     def __init__(self, username=None, password=None, email=None, active=True, authenticated=False, download_limit=DOWNLOAD_LIMIT, role_id=None, saml=False):
         self.username = username
         self.password = password
@@ -277,6 +279,7 @@ class Download(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     parameters = db.Column(db.Text())
     filename = db.Column(db.String(MAX_LENGTH_FILENAME))
+    user = db.relationship('User', back_populates='downloads')
 
     def __init__(self, download_type, corpus_name, parameters, user):
         self.download_type = download_type
@@ -300,3 +303,16 @@ class Download(db.Model):
             return 'error'
         else:
             return 'working'
+
+    def serialize(self):
+        '''Convert to json-friendly format'''
+
+        return {
+            'started': self.started,
+            'completed': self.completed,
+            'download_type': self.download_type,
+            'corpus': self.corpus_name,
+            'parameters': self.parameters,
+            'filename': self.filename,
+            'status': self.status,
+        }
