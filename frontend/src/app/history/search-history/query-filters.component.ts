@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { QueryModel, searchFilterDataToParam } from '../models/index'
+import { QueryModel, searchFilterDataToParam } from '../../models/index'
 
 @Component({
     selector: '[ia-query-filters]',

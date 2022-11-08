@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-import { Corpus, Download, DownloadParameters, DownloadType, QueryModel } from '../models';
-import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../services';
+import { Corpus, Download, DownloadParameters, DownloadType, QueryModel } from '../../models';
+import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../../services';
 
 @Component({
     selector: 'ia-download-history',

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-import { User, Query, Corpus } from '../models/index';
-import { CorpusService, SearchService, QueryService } from '../services/index';
+import { User, Query, Corpus } from '../../models/index';
+import { CorpusService, SearchService, QueryService } from '../../services/index';
 
 @Component({
     selector: 'search-history',
