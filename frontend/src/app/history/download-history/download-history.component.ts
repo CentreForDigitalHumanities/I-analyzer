@@ -4,38 +4,27 @@ import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
 import { Corpus, Download, DownloadParameters, DownloadType, QueryModel } from '../../models';
 import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../../services';
+import { HistoryDirective } from '../history.directive';
 
 @Component({
     selector: 'ia-download-history',
     templateUrl: './download-history.component.html',
     styleUrls: ['./download-history.component.scss']
 })
-export class DownloadHistoryComponent implements OnInit {
-    private corpora: Corpus[];
-    corpusMenuItems: SelectItem[];
+export class DownloadHistoryComponent extends HistoryDirective implements OnInit {
     downloads: Download[];
 
     faDownload = faDownload;
 
-    constructor(private apiService: ApiService, private corpusService: CorpusService, private elasticSearchService: ElasticSearchService) { }
+    constructor(private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService) {
+        super(corpusService);
+    }
 
     ngOnInit(): void {
-        this.corpusService.get().then((items) => {
-            this.corpora = items;
-            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.title, 'value': corpus.name }) );
-        }).catch(error => {
-            console.log(error);
-        });
-
+        this.retrieveCorpora();
         this.apiService.downloads()
             .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))
             .catch(err => console.error(err));
-    }
-
-    sortByDate(downloads: Download[]): Download[] {
-        return downloads.sort((a, b) =>
-            new Date(b.started).getTime() - new Date(a.started).getTime()
-        );
     }
 
     downloadLink(download: Download): string {
@@ -75,9 +64,4 @@ export class DownloadHistoryComponent implements OnInit {
         )
         return _.join(fields, ', ')
     }
-
-    corpusTitle(corpusName: string): string {
-        return this.corpora.find(corpus => corpus.name == corpusName).title || corpusName
-    }
-
 }

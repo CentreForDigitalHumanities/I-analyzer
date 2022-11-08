@@ -81,6 +81,7 @@ import { SimilarityChartComponent } from './word-models/similarity-chart/similar
 import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
+import { HistoryDirective } from './history/history.directive';
 
 
 export const appRoutes: Routes = [
@@ -166,6 +167,7 @@ export const declarations: any[] = [
     FooterComponent,
     FreqtableComponent,
     FullDataButtonComponent,
+    HistoryDirective,
     HomeComponent,
     HighlightPipe,
     HistogramComponent,
