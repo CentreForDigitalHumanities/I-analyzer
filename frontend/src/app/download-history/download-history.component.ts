@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { SelectItem } from 'primeng/api';
-import { Corpus, Download } from '../models';
-import { ApiService, CorpusService } from '../services';
+import { Corpus, Download, DownloadParameters, QueryModel } from '../models';
+import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../services';
 
 @Component({
     selector: 'ia-download-history',
@@ -10,16 +10,18 @@ import { ApiService, CorpusService } from '../services';
     styleUrls: ['./download-history.component.scss']
 })
 export class DownloadHistoryComponent implements OnInit {
-    corpora: SelectItem[];
+    private corpora: Corpus[];
+    corpusMenuItems: SelectItem[];
     downloads: Download[];
 
     faDownload = faDownload;
 
-    constructor(private apiService: ApiService, private corpusService: CorpusService) { }
+    constructor(private apiService: ApiService, private corpusService: CorpusService, private elasticSearchService: ElasticSearchService) { }
 
     ngOnInit(): void {
         this.corpusService.get().then((items) => {
-            this.corpora = items.map(corpus => ({ 'label': corpus.name, 'value': corpus.name }) );
+            this.corpora = items;
+            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.name, 'value': corpus.name }) );
         }).catch(error => {
             console.log(error);
         });
@@ -31,6 +33,19 @@ export class DownloadHistoryComponent implements OnInit {
 
     downloadLink(download: Download): string {
         return '/api/csv/' + download.filename;
+    }
+
+    queryText(download: Download): string {
+        const queryModel = this.getQueryModel(download);
+        return queryModel.queryText;
+    }
+
+    getQueryModel(download: Download): QueryModel {
+        const parameters: DownloadParameters = JSON.parse(download.parameters);
+        const esQuery =  'es_query' in parameters ?
+            parameters.es_query : parameters[0].es_query;
+        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
+        return this.elasticSearchService.esQueryToQueryModel(esQuery, corpus);
     }
 
 }

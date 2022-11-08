@@ -95,7 +95,6 @@ describe('ElasticSearchService', () => {
         querymodels.forEach(queryModel => {
             const esQuery = service.makeEsQuery(queryModel);
             const restoredQueryModel = service.esQueryToQueryModel(esQuery, mockCorpus);
-            console.log(restoredQueryModel);
             expect(restoredQueryModel).toEqual(queryModel);
         });
     });

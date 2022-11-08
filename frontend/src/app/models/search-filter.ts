@@ -76,7 +76,6 @@ export function searchFilterDataFromField(field: CorpusField, value: string[]): 
             return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
         case 'date': {
             let [min, max] = parseMinMax(value);
-            console.log(min, max);
             return { filterType: 'DateFilter', min: min, max: max };
         }
         case 'integer': {

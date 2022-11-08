@@ -1,5 +1,5 @@
 <section class="section">
-    <p-table #dt *ngIf="downloads" [value]="downloads" [paginator]="true" [rows]="10">
+    <p-table #dt *ngIf="downloads && corpora" [value]="downloads" [paginator]="true" [rows]="10">
         <ng-template pTemplate="caption">
             <div style="text-align: left">
                 Downloads
@@ -10,6 +10,9 @@
                 <th>Timestamp</th>
                 <th>Type</th>
                 <th>Corpus</th>
+                <th>Query</th>
+                <th>Filters</th>
+                <th>Fields</th>
                 <th>Status</th>
                 <th>Download</th>
             </tr>
@@ -17,10 +20,13 @@
                 <th></th>
                 <th></th>
                 <th>
-                    <p-dropdown [options]="corpora" [style]="{'width':'100%'}"
+                    <p-dropdown [options]="corpusMenuItems" [style]="{'width':'100%'}"
                         placeholder="Any" showClear="true"
                         (onChange)="dt.filter($event.value, 'corpus', 'equals')"></p-dropdown>
                 </th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -30,6 +36,9 @@
                 <td>{{download.started}}</td>
                 <td>{{download.download_type}}</td>
                 <td>{{download.corpus}}</td>
+                <td>{{queryText(download)}}</td>
+                <td ia-query-filters [queryModel]="getQueryModel(download)"></td>
+                <td></td>
                 <td>{{download.status}}</td>
                 <td>
                     <a *ngIf="download.status == 'done'" [href]="downloadLink(download)">

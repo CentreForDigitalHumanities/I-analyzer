@@ -9,10 +9,10 @@ import { QueryModel, searchFilterDataToParam } from '../models/index'
 })
 export class QueryFiltersComponent implements OnInit {
     @Input() public queryModel: QueryModel;
-    public formattedFilters: { 
-        name: string, 
+    public formattedFilters: {
+        name: string,
         formattedData: string | string[] }[];
-    
+
     constructor() { }
 
     ngOnInit() {
@@ -20,7 +20,7 @@ export class QueryFiltersComponent implements OnInit {
             this.queryModel = JSON.parse(this.queryModel);
         }
 
-        if (this.queryModel.filters.length>0) {
+        if (this.queryModel.filters?.length>0) {
             this.formattedFilters = this.queryModel.filters.map(filter => {
                 return {name: filter.fieldName, formattedData: searchFilterDataToParam(filter)}
             });
