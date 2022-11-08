@@ -95,7 +95,7 @@ def get_word_models_documentation():
 def get_word_in_model():
     if not request.args:
         abort(400)
-    results = utils.word_in_model(
+    results = utils.word_in_corpus_model(
         request.args['query_term'],
         request.args['corpus_name']
     )
@@ -109,4 +109,30 @@ def get_word_in_model():
             'success': True,
             'result': results
         })
+    return response
+
+@wordmodels.route('/get_2d_contexts_over_time', methods=['GET'])
+@login_required
+def api_get_2d_contexts_over_time():
+    corpus = request.args.get('corpus')
+    term = request.args.get('query_term')
+
+    print(corpus, term)
+
+    if not corpus and term:
+        abort(400)
+
+    results = visualisations.get_2d_contexts_over_time(term, corpus)
+
+    if isinstance(results, str):
+        response = jsonify({
+            'succes': False,
+            'message': results
+        })
+    else:
+        response = jsonify({
+            'success': True,
+            'data': results
+        })
+
     return response

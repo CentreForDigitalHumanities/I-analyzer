@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartOptions } from 'chart.js';
-import { ContextResults, Corpus, freqTableHeaders, QueryModel } from '../../models';
-import { SearchService } from '../../services';
+import { ContextResults, Corpus, FreqTableHeaders, QueryModel } from '../../models';
+import { SearchService, WordmodelsService } from '../../services';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as _ from 'lodash';
 
-type DataPoint = {label: string, x: number, y: number};
+interface DataPoint {label: string; x: number; y: number}
 
 @Component({
     selector: 'ia-word-context',
@@ -18,6 +18,7 @@ export class WordContextComponent implements OnChanges {
     @Input() asTable: boolean;
     @Input() palette: string[];
 
+    // eslint-disable-next-line @angular-eslint/no-output-native
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
@@ -48,14 +49,12 @@ export class WordContextComponent implements OnChanges {
                 display: false,
             },
             datalabels: {
-                formatter(value, context): string {
-                    return value.label;
-                }
+                formatter: (value, _context) => value.label,
             }
         }
     };
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         {
             key: 'word',
             label: 'Word',
@@ -75,12 +74,12 @@ export class WordContextComponent implements OnChanges {
         }
     ];
 
-    tableData: { word: string, time: string, x: number, y: number }[];
+    tableData: { word: string; time: string; x: number; y: number }[];
 
-    constructor(private searchService: SearchService) { }
+    constructor(private wordModelsService: WordmodelsService) { }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.queryText || changes.coropus) {
+        if (changes.queryText || changes.corpus) {
             if (this.queryText && this.corpus) {
                 this.showLoading(this.getResults());
             }
@@ -88,7 +87,7 @@ export class WordContextComponent implements OnChanges {
     }
 
     getResults(): Promise<void> {
-        return this.searchService.get2dContextOverTime(this.queryText, this.corpus.name).then(result => {
+        return this.wordModelsService.get2dContextOverTime(this.queryText, this.corpus.name).then(result => {
             if (result.success) {
                 this.data = result.data;
                 this.timeIntervals = result.data.map(item => item.time);

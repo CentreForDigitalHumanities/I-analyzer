@@ -20,8 +20,8 @@ def term_similarity(wm, wm_type, term1, term2):
 
     if wm_type == 'svd_ppmi':
         transformer = wm['transformer']
-        vec1 = term_to_vector(term1, transformer, matrix)
-        vec2 = term_to_vector(term2, transformer, matrix)
+        vec1 = term_to_vector(term1, wm, wm_type)
+        vec2 = term_to_vector(term2, wm, wm_type)
 
         if type(vec1) != type(None) and type(vec2) != type(None):
             return float(cosine_similarity_vectors(vec1, vec2))
@@ -45,7 +45,7 @@ def find_n_most_similar(wm, wm_type, query_term, n):
     transformed_query = transform_query(query_term, analyzer)
     matrix = wm[wm_type]
     if wm_type == 'svd_ppmi':
-        vec = term_to_vector(query_term, wm['transformer'], matrix)
+        vec = term_to_vector(query_term, wm, wm_type)
 
         if type(vec) == type(None):
             return None

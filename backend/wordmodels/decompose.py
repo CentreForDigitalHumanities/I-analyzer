@@ -5,17 +5,16 @@ from sklearn.decomposition import PCA
 import numpy as np
 from scipy.optimize import minimize
 
-from wordmodels.similarity import query_vector
+import wordmodels.utils as utils
+
 
 def model_contains_terms(terms, model):
-    model_terms = model['transformer'].get_feature_names_out()
-    in_model = lambda term: term in model_terms
+    in_model = lambda term: utils.word_in_model(term, model)
     return any(in_model(term) for term in terms)
-
 
 def find_optimal_2d_maps(binned_models, terms_per_model):
     original_vectors = [
-        np.array([query_vector(term, model['transformer'], model['svd_ppmi'])
+        np.array([utils.term_to_vector(term, model, 'svd_ppmi')
         for term in terms]) if model_contains_terms(terms, model) else None
         for model, terms in zip(binned_models, terms_per_model)
     ]

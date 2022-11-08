@@ -2,8 +2,8 @@
     <canvas id="context-chart" role="img"></canvas>
 
     <div class="control" *ngIf="timeIntervals">
-        <input class="time-slider" type="range" min="0" [max]="timeIntervals.length - 1" [value]="currentTimeIndex" step="1"
-            (change)="setCurrentTime($event)">
+        <input class="time-slider" type="range" min="0" [max]="timeIntervals.length - 1" [value]="currentTimeIndex"
+            step="1" (change)="setCurrentTime($event)">
 
         <p style="text-align: center;">
             {{timeIntervals[currentTimeIndex]}}
@@ -14,3 +14,5 @@
 <div class="block" *ngIf="asTable">
     <ia-freqtable [headers]="tableHeaders" [data]="tableData" name="context"></ia-freqtable>
 </div>
+
+sdfd

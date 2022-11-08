@@ -80,23 +80,26 @@ def get_analyzer(corpus):
     with open(analyzer_file, 'rb') as f:
         return pickle.load(f)
 
-def word_in_model(query_term, corpus, max_distance = 2):
-    model = load_word_models(corpus)
+def word_in_model(term, model):
     analyzer = model['analyzer']
     vocab = model['vocab']
-    transformed_query = transform_query(query_term, analyzer)
+    transformed_term = transform_query(term, analyzer)
+    return transformed_term in vocab
 
-    if transformed_query in model['vocab']:
+def word_in_corpus_model(query_term, corpus, max_distance = 2):
+    model = load_word_models(corpus)
+    in_model = word_in_model(query_term, model)
+
+    if in_model:
         return { 'exists': True }
     else:
         is_similar = lambda term : damerau_levenshtein(query_term, term) <= max_distance
-        similar_keys = [term for term in vocab if is_similar(term)]
+        similar_keys = [term for term in model['vocab'] if is_similar(term)]
 
         return {
             'exists': False,
             'similar_keys': similar_keys
         }
-
 
 def load_wm_documentation(corpus_string):
     corpus = load_corpus(corpus_string)
@@ -108,6 +111,8 @@ def load_wm_documentation(corpus_string):
             return contents
     else:
         return None
+
+
 
 def transform_query(query, analyzer):
     transformed = analyzer(query)
@@ -123,8 +128,12 @@ def term_to_index(query, transformer):
 def index_to_term(index, vocab):
     return vocab[index]
 
-def term_to_vector(query, transformer, matrix):
-    index = term_to_index(query, transformer)
-
-    if index != None:
-        return matrix[:, index]
+def term_to_vector(term, model, wm_type):
+    if wm_type == 'svd_ppmi':
+        transformer = model['transformer']
+        matrix = model['svd_ppmi']
+        index = term_to_index(term, transformer)
+        if index != None:
+            return matrix[:, index]
+    else:
+        return None

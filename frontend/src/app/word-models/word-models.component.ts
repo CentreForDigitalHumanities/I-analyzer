@@ -37,6 +37,11 @@ export class WordModelsComponent implements DoCheck, OnInit {
             title: 'Compare similarity',
             manual: 'comparesimilarity',
             chartID: 'chart',
+        },
+        wordcontext: {
+            title: '2D context',
+            manual: 'wordcontext',
+            chartID: 'chart',
         }
     };
 

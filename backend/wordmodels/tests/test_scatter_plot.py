@@ -35,7 +35,7 @@ def find_term(term, interval_result):
 
 def test_2d_context_over_time_result(test_app):
     """Test if the context result makes sense."""
-    all_data = get_2d_contexts_over_time('she', 'mock-corpus')
+    all_data = get_2d_contexts_over_time('she', 'mock-svd-ppmi-corpus')
 
     for interval in all_data:
         assert find_term('she', interval)
@@ -45,7 +45,7 @@ def test_2d_context_over_time_result(test_app):
     assert find_term('alice', all_data[1])
 
 def test_term_not_in_all_intervals(test_app):
-    all_data = get_2d_contexts_over_time('alice', 'mock-corpus', NUMBER_SIMILAR)
+    all_data = get_2d_contexts_over_time('alice', 'mock-svd-ppmi-corpus', NUMBER_SIMILAR)
 
     # check that each interval returns coordinates for the keyword
     for interval in all_data:
@@ -64,7 +64,7 @@ def test_term_not_in_all_intervals(test_app):
 def test_2d_contexts_over_time_format(test_app):
     term = 'she'
 
-    data = get_2d_contexts_over_time(term, 'mock-corpus')
+    data = get_2d_contexts_over_time(term, 'mock-svd-ppmi-corpus')
     assert data and len(data)
 
     for item in data:

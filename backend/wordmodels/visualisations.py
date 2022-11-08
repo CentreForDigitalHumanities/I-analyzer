@@ -3,7 +3,7 @@ from os.path import join
 import pickle
 
 from addcorpus.load_corpus import corpus_dir
-from wordmodels.similarity import find_n_most_similar, similarity_with_top_terms
+from wordmodels.similarity import find_n_most_similar
 from wordmodels.decompose import find_optimal_2d_maps
 import random
 from flask import current_app
@@ -115,15 +115,17 @@ def get_context_time_interval(query_term, corpus_string, which_time_interval, nu
     ]
     return word_data
 
-def get_2d_contexts_over_time(query_term, corpus, number_similar = NUMBER_SIMILAR):
+def get_2d_contexts_over_time(query_term, corpus_name, number_similar = NUMBER_SIMILAR):
     """
     Given a query term and corpus, creates a scatter plot of the term's nearest neigbours for each
     time interval.
     """
 
-    binned_models = load_word_models(corpus, current_app.config['WM_BINNED_FN'])
+    corpus = load_corpus(corpus_name)
+    binned_models = load_word_models(corpus_name, binned = True)
+    wm_type = corpus.word_model_type
     neighbours_per_model = [
-        find_n_most_similar(model['svd_ppmi'], model['transformer'], query_term, number_similar + 1)
+        find_n_most_similar(model, wm_type, query_term, number_similar + 1)
         for model in binned_models
     ]
     # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
