@@ -76,6 +76,7 @@ export function searchFilterDataFromField(field: CorpusField, value: string[]): 
             return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
         case 'date': {
             let [min, max] = parseMinMax(value);
+            console.log(min, max);
             return { filterType: 'DateFilter', min: min, max: max };
         }
         case 'integer': {
@@ -92,8 +93,10 @@ function parseMinMax(value: string[]): [string, string] {
     const term = value[0];
     if (term.split(':').length === 2) {
         return term.split(':') as [string, string];
-    } else {
+    } else if (value.length == 1) {
         return [term, term];
+    } else {
+        return [value[0], value[1]];
     }
 }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { FoundDocument, Corpus, CorpusField, QueryModel, SearchResults,
-    AggregateQueryFeedback, SearchFilter, SearchFilterData } from '../models/index';
+    AggregateQueryFeedback, SearchFilter, SearchFilterData, searchFilterDataFromField } from '../models/index';
 
 
 import * as _ from 'lodash';
@@ -73,6 +73,59 @@ export class ElasticSearchService {
         }
 
         return query;
+    }
+
+    public esQueryToQueryModel(query: EsQuery, corpus: Corpus): QueryModel {
+        const queryText = this.queryTextFromEsSearchClause(query.query);
+        const filters = this.filtersFromEsQuery(query, corpus);
+
+        if (filters.length) {
+            return { queryText, filters };
+        } else {
+            return { queryText };
+        }
+    }
+
+    private queryTextFromEsSearchClause(query: EsSearchClause | BooleanQuery): string {
+        const clause = 'bool' in query ? query.bool.must : query;
+
+        if ('simple_query_string' in clause) {
+            return clause.simple_query_string.query;
+        }
+    }
+
+    private filtersFromEsQuery(query: EsQuery, corpus: Corpus): SearchFilter<SearchFilterData>[] {
+        if ('bool' in query.query) {
+            const filters = query.query.bool.filter;
+            return filters.map(filter => this.EsFilterToSearchFilter(filter, corpus));
+        }
+        return [];
+    }
+
+    private EsFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
+        let field: CorpusField;
+        let fieldName: string;
+        let value: any;
+
+        if ('term' in filter) { // boolean filter
+            fieldName = _.keys(filter.term)[0];
+            value = filter.term[fieldName];
+        } else if ('terms' in filter) { // multiple choice filter
+            fieldName = _.keys(filter.terms)[0];
+            value = filter.terms[fieldName];
+        } else { // range or date filter
+            fieldName = _.keys(filter.range)[0];
+            value = [filter.range[fieldName].gte.toString(), filter.range[fieldName].lte.toString()];
+        }
+        field = corpus.fields.find(f => f.name === fieldName);
+        const filterData = searchFilterDataFromField(field, value);
+        return {
+            fieldName: field.name,
+            description: field.searchFilter.description,
+            useAsFilter: true,
+            currentData: filterData,
+            defaultData: field.searchFilter.defaultData,
+        };
     }
 
     /**
