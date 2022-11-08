@@ -218,16 +218,14 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            filepath = tasks.make_csv.delay((None, search_results), request.json)
+            _, csv_file = tasks.make_csv((None, search_results), request.json)
         except:
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
 
-        if not os.path.isabs(filepath.get()):
+        if not os.path.isabs(csv_file):
             error_response.headers['message'] += 'csv filepath is not absolute.'
             return error_response
-
-        csv_file = filepath.get()
 
         if not csv_file:
             error_response.headers.message += 'Could not create csv file.'
