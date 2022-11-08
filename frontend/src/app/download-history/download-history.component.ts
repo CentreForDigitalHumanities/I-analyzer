@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-import { Corpus, Download, DownloadParameters, QueryModel } from '../models';
+import { Corpus, Download, DownloadParameters, DownloadType, QueryModel } from '../models';
 import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../services';
 
 @Component({
@@ -22,18 +22,34 @@ export class DownloadHistoryComponent implements OnInit {
     ngOnInit(): void {
         this.corpusService.get().then((items) => {
             this.corpora = items;
-            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.name, 'value': corpus.name }) );
+            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.title, 'value': corpus.name }) );
         }).catch(error => {
             console.log(error);
         });
 
         this.apiService.downloads()
-            .then(result => this.downloads = result)
+            .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))
             .catch(err => console.error(err));
+    }
+
+    sortByDate(downloads: Download[]): Download[] {
+        return downloads.sort((a, b) =>
+            new Date(b.started).getTime() - new Date(a.started).getTime()
+        );
     }
 
     downloadLink(download: Download): string {
         return '/api/csv/' + download.filename;
+    }
+
+    downloadType(type: DownloadType): string {
+        const displayNames = {
+            'search_results': 'Search results',
+            'date_term_frequency': 'Term frequency',
+            'aggregate_term_frequency': 'Term frequency'
+            // timeline/histogram distinction is relevant for backend but not for the user
+        }
+        return displayNames[type];
     }
 
     queryText(download: Download): string {
@@ -58,6 +74,10 @@ export class DownloadHistoryComponent implements OnInit {
             corpus.fields.find(field => field.name === fieldName).displayName
         )
         return _.join(fields, ', ')
+    }
+
+    corpusTitle(corpusName: string): string {
+        return this.corpora.find(corpus => corpus.name == corpusName).title || corpusName
     }
 
 }

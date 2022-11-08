@@ -34,8 +34,8 @@
         <ng-template pTemplate="body" let-download>
             <tr>
                 <td>{{download.started | date:'medium'}}</td>
-                <td>{{download.download_type}}</td>
-                <td>{{download.corpus}}</td>
+                <td>{{downloadType(download.download_type)}}</td>
+                <td>{{corpusTitle(download.corpus)}}</td>
                 <td>{{queryText(download)}}</td>
                 <td ia-query-filters [queryModel]="getQueryModel(download)"></td>
                 <td>{{getFields(download)}}</td>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
-import { User, Query } from '../models/index';
+import { User, Query, Corpus } from '../models/index';
 import { CorpusService, SearchService, QueryService } from '../services/index';
 
 @Component({
@@ -14,7 +14,8 @@ export class SearchHistoryComponent implements OnInit {
     private user: User;
     public queries: Query[];
     public displayCorpora = false;
-    private corpora: SelectItem[];
+    private corpora: Corpus[];
+    private corpusMenuItems: SelectItem[];
     constructor(
         private searchService: SearchService,
         private corpusService: CorpusService,
@@ -24,7 +25,8 @@ export class SearchHistoryComponent implements OnInit {
 
     async ngOnInit() {
         this.corpusService.get().then((items) => {
-            this.corpora = items.map(corpus => ({ 'label': corpus.name, 'value': corpus.name }) );
+            this.corpora = items;
+            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.title, 'value': corpus.name }) );
         }).catch(error => {
             console.log(error);
         });
@@ -46,4 +48,9 @@ export class SearchHistoryComponent implements OnInit {
             window.scrollTo(0, 0);
         }
     }
+
+    corpusTitle(corpusName: string): string {
+        return this.corpora.find(corpus => corpus.name == corpusName).title || corpusName
+    }
+
 }
