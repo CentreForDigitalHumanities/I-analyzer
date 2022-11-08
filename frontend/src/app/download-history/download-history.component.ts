@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
 import { Corpus, Download, DownloadParameters, QueryModel } from '../models';
 import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../services';
@@ -46,6 +47,17 @@ export class DownloadHistoryComponent implements OnInit {
             parameters.es_query : parameters[0].es_query;
         const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
         return this.elasticSearchService.esQueryToQueryModel(esQuery, corpus);
+    }
+
+    getFields(download: Download): string {
+        const parameters: DownloadParameters = JSON.parse(download.parameters);
+        const fieldNames =  'fields' in parameters ?
+            parameters.fields : [parameters[0].field_name];
+        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
+        const fields = fieldNames.map(fieldName =>
+            corpus.fields.find(field => field.name === fieldName).displayName
+        )
+        return _.join(fields, ', ')
     }
 
 }

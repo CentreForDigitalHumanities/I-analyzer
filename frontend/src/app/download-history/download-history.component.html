@@ -12,7 +12,7 @@
                 <th>Corpus</th>
                 <th>Query</th>
                 <th>Filters</th>
-                <th>Fields</th>
+                <th>Field(s)</th>
                 <th>Status</th>
                 <th>Download</th>
             </tr>
@@ -33,12 +33,12 @@
         </ng-template>
         <ng-template pTemplate="body" let-download>
             <tr>
-                <td>{{download.started}}</td>
+                <td>{{download.started | date:'medium'}}</td>
                 <td>{{download.download_type}}</td>
                 <td>{{download.corpus}}</td>
                 <td>{{queryText(download)}}</td>
                 <td ia-query-filters [queryModel]="getQueryModel(download)"></td>
-                <td></td>
+                <td>{{getFields(download)}}</td>
                 <td>{{download.status}}</td>
                 <td>
                     <a *ngIf="download.status == 'done'" [href]="downloadLink(download)">
