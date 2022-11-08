@@ -217,7 +217,7 @@ def download_full_data(request_json, user):
     corpus_name = request_json['corpus']
 
     return chain(
-        start_download.s(visualization_type, corpus_name, request_json, user.id),
+        start_download.s(visualization_type, corpus_name, parameters, user.id),
         task.s(parameters),
         complete_download.s(),
         csv_data_email.s(user.email, user.username),
