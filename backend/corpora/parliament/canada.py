@@ -16,17 +16,16 @@ from corpora.parliament.utils.es_settings import parliament_es_settings
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'
     description = "Speeches from House of Commons"
-    min_date = datetime(year = 1901, month = 1, day = 1)
+    min_date = datetime(year=1901, month=1, day=1)
     data_directory = current_app.config['PP_CANADA_DATA']
     es_index = current_app.config['PP_CANADA_INDEX']
     image = current_app.config['PP_CANADA_IMAGE']
     language = 'english'
-
+    description_page = 'canada.md'
     field_entry = 'speech_id'
     required_field = 'content'
 
-    document_context = document_context()
-    document_context['sort_field'] = None
+    document_context = document_context(sort_field=None)
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')

@@ -6,6 +6,10 @@ I-analyzer does not train models; the code used for training is found in the [Wo
 
 The code here is used to retrieve word models belonging to a corpus and perform analysis for visualisations.
 
+## Documentation
+
+To display documentation about word models, save "documentation.md" file into a "wm" directory within the corpus path.
+
 ## Testing
 
 The module comes with a mock corpus that includes trained word models.

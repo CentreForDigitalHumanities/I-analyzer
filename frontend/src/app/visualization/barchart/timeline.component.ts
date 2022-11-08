@@ -1,10 +1,10 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit } from '@angular/core';
 
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, DateResult, AggregateResult, TimelineSeries, DateFilterData } from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult, TimeCategory } from '../../models/index';
+import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
 import { selectColor } from '../select-color';
@@ -15,9 +15,9 @@ import { selectColor } from '../select-color';
     templateUrl: './timeline.component.html',
     styleUrls: ['./timeline.component.scss']
 })
-export class TimelineComponent extends BarChartComponent<DateResult> implements OnChanges, OnInit {
+export class TimelineComponent extends BarchartDirective<TimelineDataPoint> implements OnChanges, OnInit {
     /** time unit on the x-axis */
-    private currentTimeCategory: 'year'|'week'|'month'|'day';
+    private currentTimeCategory: TimeCategory;
     /** threshold for scaling down a unit on the time scale */
     private scaleDownThreshold = 10;
     /** formatting function for time in ES queries */
@@ -41,7 +41,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         this.currentTimeCategory = this.calculateTimeCategory(min, max);
     }
 
-    aggregateResultToResult(cat: AggregateResult): DateResult {
+    aggregateResultToDataPoint(cat: AggregateResult): TimelineDataPoint {
         /* date fields are returned with keys containing identifiers by elasticsearch
         replace with string representation, contained in 'key_as_string' field
         */
@@ -56,29 +56,37 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
      * True when retrieving results for the entire series, false when retrieving a window.
      */
-    requestSeriesDocumentData(series: TimelineSeries, setSearchRatio = true): Promise<TimelineSeries> {
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
-
+    requestSeriesDocCounts(queryModel: QueryModel) {
         return this.searchService.dateHistogramSearch(
-            this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result =>
-                this.docCountResultIntoSeries(result, series, setSearchRatio)
+            this.corpus, queryModel, this.visualizedField.name, this.currentTimeCategory
         );
     }
 
-    requestCategoryTermFrequencyData(
-        cat: DateResult, catIndex: number, series: TimelineSeries, queryModel = this.queryModel) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(queryModel, series.queryText));
-            const timeDomain = this.categoryTimeDomain(cat, catIndex, series);
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
 
-            return this.searchService.dateTermFrequencySearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, binDocumentLimit,
-                ...timeDomain)
-                .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    requestSeriesTermFrequency(series: TimelineSeries, queryModel: QueryModel) {
+        const bins = this.makeTermFrequencyBins(series);
+        return this.visualizationService.dateTermFrequencySearch(
+            this.corpus, queryModel, this.visualizedField.name, bins, this.currentTimeCategory
+        );
+    }
+
+    makeTermFrequencyBins(series: TimelineSeries) {
+        return series.data.map((bin, index) => {
+            const [minDate, maxDate] = this.categoryTimeDomain(bin, index, series);
+            return {
+                start_date: minDate,
+                end_date: maxDate,
+                size: this.documentLimitForCategory(bin, series)
+            };
+        });
+    }
+
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: TimelineSeries) {
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
     }
 
     /** time domain for a bin */
@@ -88,10 +96,24 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         return [startDate, endDate];
     }
 
+    fullDataRequest() {
+        const paramsPerSeries = this.rawData.map(series => {
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
+            const bins = this.makeTermFrequencyBins(series);
+            const unit = this.calculateTimeCategory(...this.xDomain); // use initial unit, not zoomed-in-status
+            return this.visualizationService.makeDateTermFrequencyParameters(
+                this.corpus, queryModel, this.visualizedField.name, bins, unit);
+        });
+        return this.apiService.requestFullData({
+            visualization: 'date_term_frequency',
+            'parameters': paramsPerSeries
+        });
+    }
+
     setChart() {
         if (this.chart) {
             // reset time unit to the one set in the chart
-            const unit = (this.chart.options.scales.xAxis as any).time.unit as ('year'|'week'|'month'|'day');
+            const unit = (this.chart.options.scales.xAxis as any).time.unit as TimeCategory;
             if (unit) {
                 this.currentTimeCategory = unit;
             }
@@ -148,7 +170,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
                 },
                 label: (tooltipItem) => {
                     const value = tooltipItem.parsed.y;
-                    return this.formatValue(value);
+                    return this.formatValue(this.normalizer)(value);
                 }
             }
         };
@@ -207,29 +229,20 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
         // when zooming, hide data for smooth transition
         chart.update(triggeredByDataUpdate ? 'none' : 'hide');
 
-        const docPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
+        const dataPromises: Promise<TimelineSeries>[] = chart.data.datasets.map((dataset, seriesIndex) => {
             const series = this.rawData[seriesIndex];
-            const queryModelCopy = this.addQueryDateFilter(
-                this.setQueryText(this.queryModel, series.queryText),
-                min, max);
+            const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
+            return this.getSeriesDocumentData(series, queryModelCopy, false).then(result => {
+                if (this.frequencyMeasure === 'tokens') {
+                    return this.getTermFrequencies(result, queryModelCopy);
+                } else {
+                    return result;
+                }
 
-            return this.searchService.dateHistogramSearch(
-                this.corpus, queryModelCopy, this.visualizedField.name, this.currentTimeCategory).then(result => {
-                    return this.docCountResultIntoSeries(result, series, false);
             });
         });
 
-        const zoomedInResults = await Promise.all(docPromises);
-
-        if (this.frequencyMeasure === 'tokens') {
-            const dataPromises = _.flatMap(zoomedInResults, (series, seriesIndex) => {
-                return series.data.map((cat, index) => {
-                    const queryModelCopy = this.addQueryDateFilter(this.queryModel, min, max);
-                    this.requestCategoryTermFrequencyData(cat, index, series, queryModelCopy);
-                });
-            });
-            await Promise.all(dataPromises);
-        }
+        const zoomedInResults = await Promise.all(dataPromises);
 
         zoomedInResults.forEach((data, seriesIndex) => {
             chart.data.datasets[seriesIndex].data = this.chartDataFromSeries(data);
@@ -266,7 +279,7 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
      * Get the time category (year/month/week/day) that should be used in the graph,
      * based on minimum and maximum dates on the x axis.
      */
-    public calculateTimeCategory(min: Date, max: Date): 'year'|'month'|'week'|'day' {
+    public calculateTimeCategory(min: Date, max: Date): TimeCategory {
         const diff = moment.duration(moment(max).diff(moment(min)));
         if (diff.asYears() >= this.scaleDownThreshold) {
             return 'year';
@@ -287,12 +300,17 @@ export class TimelineComponent extends BarChartComponent<DateResult> implements 
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+                { key: valueKey, label: rightColumnName, format: this.formatValue(this.normalizer),  formatDownload: this.formatDownloadValue  }
+
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'relative_doc_count', label: 'Document Frequency (%)', format: this.formatValue('percent'), formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue('documents'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
+                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue('terms'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }

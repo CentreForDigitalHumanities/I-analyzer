@@ -31,7 +31,7 @@ class UnittestConfig:
     }
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
-    TIMES_ES_INDEX = 'times'
+    TIMES_ES_INDEX = 'ianalyzer-times'
     TIMES_ES_DOCTYPE = 'article'
     TIMES_IMAGE = 'times.jpg'
     TIMES_SCAN_IMAGE_TYPE = 'image/png'
@@ -39,9 +39,9 @@ class UnittestConfig:
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
-    SAML_MAIL_KEY = "mail" 
+    SAML_MAIL_KEY = "mail"
 
-    USE_VISUALIZATION_CACHE = True 
+    USE_VISUALIZATION_CACHE = True
 
 
 @pytest.fixture(scope='session')

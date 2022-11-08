@@ -35,12 +35,10 @@ class Troonredes(XMLCorpus):
     es_index = current_app.config['TROONREDES_ES_INDEX']
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
     image = current_app.config['TROONREDES_IMAGE']
-    word_models_present = isfile(
-        join(
-            corpus_dir('troonredes'),
-            current_app.config['WM_PATH'],
-            current_app.config['WM_BINNED_FN']
-        )
+    word_model_type = 'svd_ppmi'
+    word_model_path = join(
+        corpus_dir('troonredes'),
+        current_app.config['WM_PATH']
     )
 
     tag_toplevel = 'doc'
@@ -134,7 +132,7 @@ class Troonredes(XMLCorpus):
             description='Text content.',
             results_overview=True,
             search_field_core=True,
-            visualizations=['wordcloud', 'ngram', 'relatedwords', 'wordcontext'],
+            visualizations=['wordcloud', 'ngram'],
             extractor=extract.XML(tag='content')
         ),
     ]

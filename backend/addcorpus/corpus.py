@@ -123,7 +123,6 @@ class Corpus(object):
         '''
         raise NotImplementedError()
 
-    # @property
     def scan_image_type(self):
         '''
         Filetype of scanned documents (images)
@@ -133,14 +132,23 @@ class Corpus(object):
         else:
             return self.scan_image_type
 
+    def word_model_path(self):
+        ''' (optional) path where word models are stored
+        '''
+        return None
+
+    def word_model_type(self):
+        ''' (optional) type of word models:
+        word2vec or svd_ppmi
+        '''
+        return None
+
+    @property
     def word_models_present(self):
         '''
         if word models are present for this corpus
         '''
-        if self.word_models_present is None:
-            return False
-        else:
-            return self.word_models_present
+        return self.word_model_path != None
 
     def allow_image_download(self):
         '''
@@ -573,6 +581,13 @@ class CSVCorpus(Corpus):
         an empty value for `required_field` will be skipped.
         '''
 
+    @property
+    def delimiter(self):
+        '''
+        Set the delimiter for the CSV reader.
+        '''
+        return ','
+
     def source2dicts(self, source):
         # make sure the field size is as big as the system permits
         csv.field_size_limit(sys.maxsize)
@@ -583,20 +598,22 @@ class CSVCorpus(Corpus):
                 extract.CSV,
                 extract.Constant,
                 extract.Backup,
+                extract.Metadata,
             )):
                 raise RuntimeError(
                     "Specified extractor method cannot be used with a CSV corpus")
 
         if isinstance(source, str):
             filename = source
+            metadata = {}
         if isinstance(source, bytes):
             raise NotImplementedError()
         else:
-            filename = source[0]
+            filename, metadata = source
 
         with open(filename, 'r') as f:
             logger.info('Reading CSV file {}...'.format(filename))
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, delimiter=self.delimiter)
             document_id = None
             rows = []
             for row in reader:
@@ -614,19 +631,19 @@ class CSVCorpus(Corpus):
                         document_id = identifier
 
                 if is_new_document and rows:
-                    yield self.document_from_rows(rows)
+                    yield self.document_from_rows(rows, metadata)
                     rows = [row]
                 else:
                     rows.append(row)
 
-            yield self.document_from_rows(rows)
+            yield self.document_from_rows(rows, metadata)
 
-    def document_from_rows(self, rows):
+    def document_from_rows(self, rows, metadata):
         doc = {
             field.name: field.extractor.apply(
                 # The extractor is put to work by simply throwing at it
                 # any and all information it might need
-                rows=rows,
+                rows=rows, metadata = metadata
             )
             for field in self.fields if field.indexed
         }
@@ -650,7 +667,7 @@ class Field(object):
     - whether they appear in the preselection of csv fields (csv_core)
     - whether they appear in the preselection of search fields (search_field_core)
     - whether they are associated with a visualization type (visualizations)
-        options: resultscount, termfrequency, wordcloud, relatedwords, ngram, wordcontext
+        options: resultscount, termfrequency, wordcloud, ngram, wordcontext
     - how the visualization's x-axis should be sorted (visualization_sort)
     - the mapping of the field in Elasticsearch (es_mapping)
     - definitions for if the field is also used as search filter (search_filter)

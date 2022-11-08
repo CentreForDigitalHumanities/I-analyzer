@@ -1,28 +1,33 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ChartOptions, Chart, ChartData } from 'chart.js';
 import * as _ from 'lodash';
-import { Corpus, freqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters } from '../../models';
+import { Corpus, FreqTableHeaders, QueryModel, CorpusField, NgramResults, NgramParameters, ngramSetNull } from '../../models';
 import { selectColor } from '../select-color';
-import { ApiService, SearchService } from '../../services';
+import { ApiService, VisualizationService } from '../../services';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ParamDirective } from '../../param/param-directive';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 
 @Component({
     selector: 'ia-ngram',
     templateUrl: './ngram.component.html',
     styleUrls: ['./ngram.component.scss']
 })
-export class NgramComponent implements OnInit, OnChanges, OnDestroy {
+export class NgramComponent extends ParamDirective implements OnChanges {
     @Input() queryModel: QueryModel;
     @Input() corpus: Corpus;
     @Input() visualizedField: CorpusField;
     @Input() asTable: boolean;
     @Input() palette: string[];
     @Output() isLoading = new EventEmitter<boolean>();
-    @Output() error = new EventEmitter<({ message: string })>();
+    @Output() error = new EventEmitter<string>();
+
+    allDateFields: CorpusField[];
+    dateField: CorpusField;
 
     @ViewChild('chart-container') chartContainer: ElementRef;
 
-    tableHeaders: freqTableHeaders = [
+    tableHeaders: FreqTableHeaders = [
         { key: 'date', label: 'Date', isMainFactor: true, },
         { key: 'ngram', label: 'N-gram', isSecondaryFactor: true, },
         { key: 'freq', label: 'Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue }
@@ -33,16 +38,16 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     chartOptions: any;
     chart: Chart;
 
-    fixLineGraphHeights = true;
+    fixLineGraphHeights = false;
     maxDataPoint: number;
 
     timeLabels: string[] = [];
     ngrams: string[] = [];
 
     // options
-    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}];
-    positionsOptions = [{label: 'any', value: [0, 1]}, {label: 'first', value: [0]}, {label: 'second', value: [1]}];
-    freqCompensationOptions = [{label: 'Yes', value: true}, {label: 'No', value: false}];
+    sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
+    positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
+    freqCompensationOptions = [{label: 'No', value: false}, {label: 'Yes', value: true}];
     analysisOptions: {label: string, value: string}[];
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     numberOfNgramsOptions = [10, 20, 50, 100].map(n => ({label: `${n}`, value: n}));
@@ -57,17 +62,34 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     faCheck = faCheck;
     faTimes = faTimes;
 
-    constructor(private searchService: SearchService, private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private visualizationService: VisualizationService,
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
     }
 
-    ngOnInit(): void { }
+    initialize(): void {
 
-    ngOnDestroy(): void {
+    }
+
+    teardown(): void {
         this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+        this.setParams(ngramSetNull);
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.setParameters(params);
+        this.loadGraph();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.queryModel || changes.corpus || changes.visualizedField) {
+        if (changes.queryModel || changes.visualizedField) {
+            this.resultsCache = {};
+            this.allDateFields = this.corpus.fields.filter(field => field.mappingType === 'date');
+            this.dateField = this.allDateFields[0];
             if (this.visualizedField.multiFields) {
                 this.analysisOptions = [{label: 'None', value: 'none'}]
                     .concat(this.visualizedField.multiFields.map(subfield => {
@@ -77,22 +99,26 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
             } else {
                 this.analysisOptions = undefined;
             }
-
-            this.setDefaultParameters();
-            this.loadGraph();
         } else if (changes.palette && this.chartData) {
             this.updateChartColors();
         }
+
+        if (this.currentParameters) {
+            this.loadGraph();
+        }
     }
 
-    setDefaultParameters() {
+    setParameters(params: Params) {
         this.currentParameters = {
-            size: this.sizeOptions[0].value,
-            positions: this.positionsOptions[0].value,
-            freqCompensation: this.freqCompensationOptions[0].value,
-            analysis: 'none',
-            maxDocuments: 100,
-            numberOfNgrams: 10,
+            size: parseInt(params.get('size'), 10) || this.sizeOptions[0].value,
+            positions: params.get('positions') || this.positionsOptions[0].value,
+            freqCompensation: params.get('freqCompensation') !==  undefined ?
+                params.get('freqCompensation') === 'true' :
+                this.freqCompensationOptions[0].value,
+            analysis: params.get('analysis') || 'none',
+            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
+            numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
+            dateField: params.get('dateField') || 'date',
         };
     }
 
@@ -107,25 +133,36 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         if (cachedResult) {
             this.onDataLoaded(cachedResult, changeAspectRatio);
         } else {
-            this.searchService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
+            this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
                 .then(result => {
-                    this.tasksToCancel = result.task_ids;
-                    const childTask = result.task_ids[0];
-                    this.apiService.getTaskOutcome({'task_id': childTask}).then(outcome => {
-                        if (outcome.success === true) {
-                            this.cacheResult(outcome.results, this.currentParameters);
-                            this.onDataLoaded(outcome.results, changeAspectRatio);
-                        } else {
-                            this.error.emit({message: outcome.message});
-                        }
-                    });
-            }).catch(error => {
-                this.chartData = undefined;
-                this.error.emit(error);
-                this.isLoading.emit(false);
+                    if (result.success) {
+                        this.tasksToCancel = result.task_ids;
+                        const childTask = result.task_ids[0];
+                        this.apiService.pollTask(childTask).then(outcome => {
+                            if (outcome.success === true && outcome.done === true) {
+                                this.cacheResult(outcome.results, this.currentParameters);
+                                this.onDataLoaded(outcome.results, changeAspectRatio);
+                            } else {
+                                this.onFailure(outcome['message']);
+                            }
+                        });
+                    } else {
+                        this.onFailure(result['message']);
+                    }
+            }).catch(response => {
+                console.log(response);
+                const body = response.body as string;
+                const message = body.slice(body.lastIndexOf('<p>') + 3, body.lastIndexOf('</p>'));
+                this.onFailure(message);
             });
         }
+    }
+
+    onFailure(message: string) {
+        this.chartData = undefined;
+        this.error.emit(message);
+        this.isLoading.emit(false);
     }
 
     onDataLoaded(result, changeAspectRatio = false) {
@@ -228,7 +265,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     parametersKey(params: NgramParameters): string {
-        return `${params.size}/${params.positions}/${params.freqCompensation}/${params.analysis}/${params.maxDocuments}/${params.numberOfNgrams}`;
+        const values = _.values(params);
+        return _.join(values, '/');
     }
 
     updateChartColors() {
@@ -257,6 +295,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
         const maxTotal = _.max(totals);
 
         const numberOfRows = data.datasets.length - 1;
+        const xLabel = `frequency by ${this.dateField.displayName.toLowerCase()}`;
 
         return {
             aspectRatio: 24 / (4 + numberOfRows),
@@ -285,7 +324,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
                 x: {
                     type: 'category',
                     title: {
-                        text: 'Frequency over time',
+                        text: xLabel,
                         display: true,
                     },
                     position: 'top',
@@ -386,11 +425,8 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     setPositionsOptions(size) {
         // set positions dropdown options and reset its value
-        const positions = Array.from(Array(size).keys());
-        this.positionsOptions =  [ { value: positions, label: 'any' } ]
-        .concat(positions.map(position => {
-            return { value : [position], label: ['first', 'second', 'third'][position] };
-        }));
+        this.positionsOptions =  ['any'].concat(['first', 'second', 'third', 'fourth'].slice(0, size)).map(
+            item => ({ value: item, label: item }));
         this.currentParameters.positions = this.positionsOptions[0].value;
     }
 
@@ -411,7 +447,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     confirmChanges() {
         this.parametersChanged = false;
-        this.loadGraph();
+        this.setParams(this.currentParameters);
     }
 
     get currentSizeOption() {
@@ -422,7 +458,7 @@ export class NgramComponent implements OnInit, OnChanges, OnDestroy {
 
     get currentPositionsOption() {
         if (this.currentParameters) {
-            return this.positionsOptions.find(item => _.isEqual(item.value, this.currentParameters.positions));
+            return this.positionsOptions.find(item => item.value === this.currentParameters.positions);
         }
     }
 

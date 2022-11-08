@@ -2,9 +2,21 @@ import { Component, OnChanges, OnInit, SimpleChanges, } from '@angular/core';
 import * as _ from 'lodash';
 
 import { AggregateResult, MultipleChoiceFilterData, RangeFilterData,
-    HistogramSeries } from '../../models/index';
-import { BarChartComponent } from './barchart.component';
+    HistogramSeries,
+    QueryModel,
+    HistogramDataPoint,
+    TermFrequencyResult} from '../../models/index';
+import { BarchartDirective } from './barchart.directive';
 import { selectColor } from '../select-color';
+
+function formatXAxisLabel(value): string {
+    const label = this.getLabelForValue(value); // from chartJS api
+    const max_length = 30;
+    if (label.length > max_length) {
+        return `${label.slice(0, max_length)}...`;
+    }
+    return label;
+}
 
 
 @Component({
@@ -12,7 +24,7 @@ import { selectColor } from '../select-color';
     templateUrl: './histogram.component.html',
     styleUrls: ['./histogram.component.scss']
 })
-export class HistogramComponent extends BarChartComponent<AggregateResult> implements OnInit, OnChanges {
+export class HistogramComponent extends BarchartDirective<HistogramDataPoint> implements OnInit, OnChanges {
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
@@ -23,36 +35,58 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
             return {name: this.visualizedField.name, size: 100};
         }
 
-        if (this.visualizedField.searchFilter.defaultData.filterType === 'MultipleChoiceFilter') {
-            size = (<MultipleChoiceFilterData>this.visualizedField.searchFilter.defaultData).optionCount;
-        } else if (this.visualizedField.searchFilter.defaultData.filterType === 'RangeFilter') {
-            size = (<RangeFilterData>this.visualizedField.searchFilter.defaultData).max - (<RangeFilterData>this.visualizedField.searchFilter.defaultData).min;
+        const defaultData = this.visualizedField.searchFilter.defaultData;
+        if (defaultData.filterType === 'MultipleChoiceFilter') {
+            size = (<MultipleChoiceFilterData>defaultData).optionCount;
+        } else if (defaultData.filterType === 'RangeFilter') {
+            size = (<RangeFilterData>defaultData).max - (<RangeFilterData>defaultData).min;
         }
         return {name: this.visualizedField.name, size: size};
     }
 
-    requestSeriesDocumentData(series: HistogramSeries): Promise<HistogramSeries> {
+    requestSeriesDocCounts(queryModel: QueryModel) {
         const aggregator = this.getAggregator();
-        const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
 
         return this.searchService.aggregateSearch(
-            this.corpus, queryModelCopy, [aggregator]).then(result =>
-                    this.docCountResultIntoSeries(result, series)
-                );
+            this.corpus, queryModel, [aggregator]);
     }
 
-    requestCategoryTermFrequencyData(cat: AggregateResult, catIndex: number, series: HistogramSeries) {
-        if (cat.doc_count) {
-            const queryModelCopy = this.selectSearchFields(this.setQueryText(this.queryModel, series.queryText));
-            const binDocumentLimit = this.documentLimitForCategory(cat, series);
-            return this.searchService.aggregateTermFrequencySearch(
-                    this.corpus, queryModelCopy, this.visualizedField.name, cat.key, binDocumentLimit)
-                    .then(result => this.addTermFrequencyToCategory(result, cat));
-        } else {
-            return new Promise<void>(resolve => resolve());
-        }
+    aggregateResultToDataPoint(cat: AggregateResult) {
+        return cat;
     }
 
+    requestSeriesTermFrequency(series: HistogramSeries, queryModel: QueryModel) {
+        const bins = this.makeTermFrequencyBins(series);
+        return this.visualizationService.aggregateTermFrequencySearch(this.corpus, queryModel, this.visualizedField.name, bins);
+    }
+
+    makeTermFrequencyBins(series: HistogramSeries) {
+        return series.data.map(bin => ({
+            fieldValue: bin.key,
+            size: this.documentLimitForCategory(bin, series)
+        }));
+    }
+
+    processSeriesTermFrequency(results: TermFrequencyResult[], series: HistogramSeries) {
+        series.data = _.zip(series.data, results).map(pair => {
+            const [bin, res] = pair;
+            return this.addTermFrequencyToCategory(res, bin);
+        });
+        return series;
+    }
+
+    fullDataRequest() {
+        const paramsPerSeries = this.rawData.map(series => {
+            const queryModel = this.queryModelForSeries(series, this.queryModel);
+            const bins = this.makeTermFrequencyBins(series);
+            return this.visualizationService.makeAggregateTermFrequencyParameters(
+                this.corpus, queryModel, this.visualizedField.name, bins);
+        });
+        return this.apiService.requestFullData({
+            visualization: 'aggregate_term_frequency',
+            'parameters': paramsPerSeries
+        });
+    }
 
     getLabels(): string[] {
         // make an array of all unique labels and sort
@@ -79,6 +113,7 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     getDatasets() {
         const labels = this.getLabels();
         const valueKey = this.currentValueKey;
+
         return this.rawData.map((series, seriesIndex) => (
             {
                 label: series.queryText ? series.queryText : '(no query)',
@@ -95,14 +130,15 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     chartOptions(datasets: any[]) {
         const xAxisLabel = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const options = this.basicChartOptions;
-        options.plugins.title.text = this.chartTitle()
+        options.plugins.title.text = this.chartTitle();
         options.scales.xAxis.type = 'category';
         (options.scales.xAxis as any).title.text = xAxisLabel;
+        options.scales.xAxis.ticks = { callback: formatXAxisLabel };
         options.plugins.tooltip = {
             callbacks: {
                 label: (tooltipItem) => {
                     const value = (tooltipItem.raw as number);
-                    return this.formatValue(value);
+                    return this.formatValue(this.normalizer)(value);
                 }
             }
         };
@@ -111,24 +147,30 @@ export class HistogramComponent extends BarChartComponent<AggregateResult> imple
     }
 
     setTableHeaders() {
+        /*
+        Provides the table headers to the freqTable component. Determines optional headers.
+        */
         const label = this.visualizedField.displayName ? this.visualizedField.displayName : this.visualizedField.name;
         const rightColumnName = this.normalizer === 'raw' ? 'Frequency' : 'Relative frequency';
         const valueKey = this.currentValueKey;
 
-        if (this.rawData.length > 1) {
+        if (this.rawData.length > 1) {  // if there are several queries, fulltable is disabled
             this.tableHeaders = [
                 { key: 'key', label: label, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue,  formatDownload: this.formatDownloadValue  }
+                { key: valueKey, label: rightColumnName, format: this.formatValue(this.normalizer),  formatDownload: this.formatDownloadValue  }
             ];
         } else {
             this.tableHeaders = [
                 { key: 'key', label: label },
-                { key: valueKey, label: rightColumnName, format: this.formatValue, formatDownload: this.formatDownloadValue }
+                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
+                { key: 'relative_doc_count', label: 'Document Frequency (%)', format: this.formatValue('percent'), formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
+                { key: 'match_count', label: 'Token Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
+                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue('documents'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
+                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue('terms'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }
-
 
     /** On what property should the data be sorted? */
     get defaultSort(): string {

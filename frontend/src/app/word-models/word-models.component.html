@@ -1,48 +1,11 @@
-<section class="section title-section">
+<ia-corpus-header [corpus]="corpus" [modelDocumentation]="modelDocumentation" currentPage="word-models"></ia-corpus-header>
+
+<section class="section search-section" #searchSection [ngClass]="{'is-scrolled-down': isScrolledDown}" *ngIf="user">
     <div class="container is-readable">
-        <div class="level">
-            <div class="level-right">
-                <div class="level-item">
-                    <h1 class="title">
-                        Word models of
-                        <a class="corpus-name" [routerLink]="['/home']" *ngIf="corpus">&ldquo;{{corpus?.title}}&rdquo;</a>
-                        <sup>
-                            <span *ngIf="corpus && corpus.descriptionpage" class="moreInfoLink icon is-small" iaBalloon="More information" iaBalloonPosition="up-left" (click)="showCorpusInfo(corpus)">
-                                <i class="moreInfoLink fa fa-info-circle info-icon"></i>
-                            </span>
-                        </sup>
-                    </h1>
-                </div>
-            </div>
-            <div class="level-left">
-                <div class="field has-addons">
-                    <div class="control">
-                        <a class="button is-medium" [routerLink]="['/search', corpus?.name]">
-                            <span class="icon">
-                                <fa-icon [icon]="searchIcon">search</fa-icon>
-                            </span>
-                            <!-- <span>Search documents</span> -->
-                        </a>
-                    </div>
-                    <div class="control">
-                        <button class="button is-primary is-medium">
-                            <span class="icon">
-                                <fa-icon [icon]="wordModelsIcon">models</fa-icon>
-                            </span>
-                            <!-- <span>Word models</span> -->
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section *ngIf="user">
-    <div class="container is-readable">
-        <div class="block">
+        <form class="block">
             <div class="field has-addons">
                 <div class="control is-expanded">
-                    <input class="input" placeholder="Query" [(ngModel)]="queryText">
+                    <input class="input" name="query" placeholder="Query" [(ngModel)]="queryText">
                 </div>
                 <div class="control">
                     <button type="submit" class="button is-primary" (click)="submitQuery()">
@@ -50,33 +13,77 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </form>
+    </div>
+</section>
 
+<section class="section">
+    <div class="container is-readable">
+        <ia-query-feedback *ngIf="activeQuery || queryFeedback" [query]="activeQuery" [queryFeedback]="queryFeedback" (selectedSuggestion)="queryText = $event; submitQuery()"></ia-query-feedback>
 
-        <ng-container *ngIf="activeQuery">
+        <ng-container *ngIf="activeQuery && queryFeedback && queryFeedback.status == 'success'">
             <div class="tabs is-boxed">
                 <ul>
-                    <li [ngClass]="{'is-active': tabIndex==0}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=0" (click)="tabIndex=0">Related words</a>
-                    </li>
-                    <li [ngClass]="{'is-active': tabIndex==1}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=1" (click)="tabIndex=1">Word context</a>
-                    </li>
-                    <li [ngClass]="{'is-active': tabIndex==2}">
-                        <a role="button" tabindex="0" (keydown.enter)="tabIndex=2" (click)="tabIndex=2">Plain text</a>
+                    <li *ngFor="let tab of tabNames" [ngClass]="{'is-active': tabIndex.value==tab}">
+                        <a role="button" tabindex="0" (keydown.enter)="tabIndex.next(tab)" (click)="tabIndex.next(tab)">{{tabs[tab].title}}</a>
                     </li>
                 </ul>
             </div>
 
-            <ng-container *ngIf="tabIndex==0">
-                <ia-related-words [corpus]="corpus" [queryText]="activeQuery"
-                    [asTable]="false">
-                </ia-related-words>
-            </ng-container>
-            <ng-container *ngIf="tabIndex==1">
-                <ia-word-context [corpus]="corpus" [queryText]="activeQuery"></ia-word-context>
-            </ng-container>
-        </ng-container>
+            <ng-container *ngIf="!errorMessage; else noVisualsMessage">
+                <div class="columns">
+                    <div class="column"></div>
+                    <div class="column is-narrow">
+                        <div class="field has-addons">
+                            <!-- Buttons for switching between table and graphical representation -->
+                            <div class="control">
+                                <button class="button" [class.is-primary]="!asTable" (click)="asTable = false">
+                                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <button class="button" [class.is-primary]="asTable" (click)="asTable = true">
+                                    <i class="fa fa-table" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="block" [ngClass]="{'is-loading':isLoading}">
+                    <ia-related-words *ngIf="tabIndex.value=='relatedwords'"
+                        [corpus]="corpus" [queryText]="activeQuery"
+                        [asTable]="asTable" [palette]="palette"
+                        (isLoading)="onIsLoading($event)"
+                        (error)="setErrorMessage($event)">
+                    </ia-related-words>
+
+                    <ia-word-similarity *ngIf="tabIndex.value=='wordsimilarity'"
+                        [corpus]="corpus" [queryText]="activeQuery"
+                        [asTable]="asTable" [palette]="palette"
+                        (isLoading)="onIsLoading($event)"
+                        (error)="setErrorMessage($event)">
+                    </ia-word-similarity>
+
+                    <ia-word-context *ngIf="tabIndex.value=='wordcontext" [corpus]="corpus" [queryText]="activeQuery"></ia-word-context>
+                </div>
+
+                <div class="block">
+                    <ia-visualization-footer [tableView]="asTable" [manualPage]="currentTab.manual"
+                        [chartElementID]="currentTab.chartID" [imageFileName]="imageFileName"
+                        (palette)="palette = $event">
+                    </ia-visualization-footer>
+                </div>
+            </ng-container>
+
+            <ng-template #noVisualsMessage>
+                <b> Did not find data to visualize.</b>
+                <div class="container" *ngIf="errorMessage && errorMessage.length > 0">
+                    <div class="notification is-warning">
+                        {{errorMessage}}
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
     </div>
 </section>

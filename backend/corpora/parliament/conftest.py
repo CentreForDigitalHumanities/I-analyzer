@@ -21,6 +21,11 @@ class UnittestConfig:
         'parliament-france': os.path.join(here, 'france.py'),
         'parliament-sweden': os.path.join(here, 'sweden.py'),
         'parliament-sweden-old': os.path.join(here, 'sweden-old.py'),
+        'parliament-denmark': os.path.join(here, 'denmark.py'),
+        'parliament-denmark-new': os.path.join(here, 'denmark-new.py'),
+        'parliament-finland': os.path.join(here, 'finland.py'),
+        'parliament-norway': os.path.join(here, 'norway.py'),
+        'parliament-norway-new': os.path.join(here, 'norway-new.py'),
     }
 
     SERVERS = {
@@ -36,6 +41,7 @@ class UnittestConfig:
     PP_UK_DATA = os.path.join(here, 'tests', 'data', 'uk')
     PP_UK_INDEX = 'parliament-uk'
     PP_UK_IMAGE = 'uk.jpeg'
+    PP_UK_WM = None
 
     PP_NL_DATA = os.path.join(here, 'tests', 'data', 'netherlands')
     PP_NL_RECENT_DATA = os.path.join(here, 'tests', 'data', 'netherlands-recent')
@@ -60,6 +66,17 @@ class UnittestConfig:
     PP_SWEDEN_OLD_INDEX = 'parliament-sweden-old'
     PP_SWEDEN_OLD_DATA = os.path.join(here, 'tests', 'data', 'sweden-old')
     PP_SWEDEN_OLD_IMAGE = 'sweden-old.jpg'
+    PP_FINLAND_INDEX = 'parliament-finland'
+    PP_FINLAND_DATA = os.path.join(here, 'tests', 'data', 'finland')
+    PP_NORWAY_INDEX = 'parliament-norway'
+    PP_NORWAY_DATA = os.path.join(here, 'tests', 'data', 'norway')
+    PP_NORWAY_NEW_INDEX = 'parliament-norway-new'
+    PP_NORWAY_NEW_DATA = os.path.join(here, 'tests', 'data', 'norway-new')
+    PP_DENMARK_DATA = os.path.join(here, 'tests', 'data', 'denmark')
+    PP_DENMARK_INDEX = 'parliament-denmark'
+    PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
+    PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
+
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"

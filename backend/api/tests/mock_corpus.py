@@ -13,14 +13,14 @@ class MockCorpus(CSVCorpus):
     visualize = []
     min_date = datetime(year=1800, month=1, day=1)
     max_date = datetime(year=1899, month=12, day=31)
-    es_index = 'mock-corpus'
+    es_index = 'ianalyzer-mock-corpus'
     image = 'test.jpeg'
     data_directory = 'bogus'
 
     def sources(self, start=min_date, end=max_date):
         for csv_file in os.listdir(os.path.join(here, 'source_files')):
             yield os.path.join(here, 'source_files', csv_file), {}
-    
+
     date = Field(
         name = 'date',
         es_mapping = {

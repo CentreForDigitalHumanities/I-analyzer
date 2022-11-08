@@ -25,10 +25,14 @@ export class ApiServiceMock {
     }
 
     public search_history() {
-        return this.get('search_history');
-    };
+        return Promise.resolve({'queries': []});
+    }
 
-    public getWordcloudData(){
+    public getWordcloudData() {
         return this.get('get_wordcloud_data');
+    }
+
+    public pollTask() {
+        return Promise.resolve({});
     }
 }

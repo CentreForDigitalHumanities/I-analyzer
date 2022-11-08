@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { ChartOptions } from 'chart.js';
-import { Corpus, freqTableHeaders, QueryModel, WordSimilarity } from '../../models';
-import { selectColor } from '../../visualization/select-color';
-import { DialogService, SearchService } from '../../services/index';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Corpus, WordSimilarity } from '../../models';
+import { WordmodelsService } from '../../services/index';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-related-words',
@@ -18,128 +17,57 @@ export class RelatedWordsComponent implements OnChanges {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
-    graphData: {
-        labels: string[],
-        datasets: {
-            label: string,
-            data: number[],
-            fill?: boolean,
-            borderColor?: string
-        }[]
-    };
+    timeIntervals: string[] = [];
+    totalSimilarities: WordSimilarity[]; // similarities over all time periods
+    totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
+    zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
 
-    tableHeaders: freqTableHeaders = [
-        { key: 'key', label: 'Term' },
-        { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
-    ];
-    tableData: [WordSimilarity];
+    constructor(private wordModelsService: WordmodelsService) { }
 
-    public zoomedInData; // data requested when clicking on a time interval
-    public chartOptions: ChartOptions = {
-        elements: {
-            line: {
-                tension: 0, // disables bezier curves
-            },
-        },
-        scales: {
-            xAxis: {},
-            yAxis: {
-                title: {
-                    display: true,
-                    text: 'Cosine similarity (SVD_PPMI)'
-                }
-            },
-        },
-        plugins: {
-            legend: {
-                display: true,
-                labels: {
-                    boxHeight: 0, // flat boxes so the border is a line
-                }
-            },
-            tooltip: {
-                displayColors: true,
-                callbacks: {
-                    labelColor(tooltipItem: any): any {
-                        const color = tooltipItem.dataset.borderColor;
-                        return {
-                            borderColor: color,
-                            backgroundColor: color,
-                        };
-                    },
-                }
-            }
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.corpus || changes.queryText) {
+            this.getData();
         }
-    };
-
-    constructor(private dialogService: DialogService, private searchService: SearchService) { }
-
-    ngOnChanges() {
-        this.getData();
     }
 
-    getData() {
-        this.isLoading.emit(true);
-        this.searchService.getRelatedWords(this.queryText, this.corpus.name).then(results => {
-            this.graphData = results['graphData'];
-            this.graphData.datasets.map((d, index) => {
-                d.fill = false;
-                d.borderColor = selectColor(this.palette, index);
-            });
-
-            this.tableData = results['tableData'];
-            this.isLoading.emit(false);
-        })
-            .catch(error => {
-                this.graphData = undefined;
-                this.tableData = undefined;
-                this.isLoading.emit(false);
-                this.error.emit(error);
-
-            });
+    getData(): void {
+        this.showLoading(this.getTotalData());
     }
 
-    zoomTimeInterval(event: any) {
-        console.log(event);
-        this.isLoading.emit(true);
-        this.searchService.getRelatedWordsTimeInterval(
-            this.queryText,
-            this.corpus.name,
-            this.graphData.labels[event.element.index])
+    /** execute a process with loading spinner */
+    async showLoading(promise): Promise<any> {
+        this.isLoading.next(true);
+        const result = await promise;
+        this.isLoading.next(false);
+        return result;
+    }
+
+    getTotalData(): Promise<void> {
+        return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name)
             .then(results => {
-                this.zoomedInData = results['graphData'];
-                this.zoomedInData.datasets
-                    .sort((a, b) => { return b.data[0] - a.data[0] })
-                    .map((d, index) => {
-                        d.backgroundColor = selectColor(this.palette, index);
-                        d.hoverBackgroundColor = selectColor(this.palette, index);
-                    });
-                // hide grid lines as we only have one data point on x axis
-                this.chartOptions.scales.xAxis = {
-                    grid: {
-                        display: false
-                    }
-                };
-                this.chartOptions.plugins.legend.labels.boxHeight = undefined;
-                this.isLoading.emit(false);
+                this.totalSimilarities = results.total_similarities;
+                this.totalData = results.similarities_over_time;
+                this.timeIntervals = results.time_points;
             })
-            .catch(error => {
-                this.error.emit(error['message']);
-            });
+            .catch(this.onError.bind(this));
     }
 
-    zoomBack() {
-        this.zoomedInData = null;
-        this.chartOptions.scales.xAxis = {};
-        this.chartOptions.plugins.legend.labels.boxHeight = 0;
+    async getZoomedInData(): Promise<void> {
+        const resultsPerTime: Promise<WordSimilarity[]>[] = this.timeIntervals.map(this.getTimeData.bind(this));
+        Promise.all(resultsPerTime)
+            .then(results => this.zoomedInData = results)
+            .catch(error => this.onError(error));
     }
 
-    formatValue(value: number): string {
-        return `${value.toPrecision(3)}`;
+    getTimeData(time: string): Promise<WordSimilarity[]> {
+        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
     }
 
-    formatDownloadValue(value: number): string {
-        return `${value}`;
+    onError(error) {
+        this.totalData = undefined;
+        this.zoomedInData = undefined;
+        this.error.emit(error);
+
     }
 
 }

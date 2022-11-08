@@ -7,28 +7,28 @@
         "title": "Terms of use and privacy"
     },
     {
-        "id": "privacy",
-        "title": "Privacy statement"
-    },
-    {
         "id": "query",
         "title": "Search Query"
     },
     {   "id": "numberofresults",
-        "title": "Number of results visualization"
+        "title": "Number of results visualisation"
     },
     {   "id": "termfrequency",
-        "title": "Search term frequency visualization"
+        "title": "Search term frequency visualisation"
     },
     {   "id": "wordcloud",
-        "title": "Word cloud visualization"
+        "title": "Word cloud visualisation"
     },
     {   "id": "ngrams",
-        "title": "Common n-grams visualization"
+        "title": "Common n-grams visualisation"
     },
     {
         "id": "relatedwords",
-        "title": "Related Words visualization"
+        "title": "Related words visualisation"
+    },
+    {
+        "id": "comparesimilarity",
+        "title": "Compare similarity visualisation"
     },
     {
         "id": "wordcontext",

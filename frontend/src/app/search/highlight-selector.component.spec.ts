@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { commonTestBed } from '../common-test-bed';
 
 import { HighlightSelectorComponent } from './highlight-selector.component';
 
@@ -7,10 +8,7 @@ describe('HighlightSelectorComponent', () => {
   let fixture: ComponentFixture<HighlightSelectorComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ HighlightSelectorComponent ]
-    })
-    .compileComponents();
+    commonTestBed().testingModule.compileComponents();
   });
 
   beforeEach(() => {

@@ -2,6 +2,7 @@ from glob import glob
 import logging
 import bs4
 import re
+from datetime import datetime
 
 from flask import current_app
 
@@ -28,22 +29,25 @@ def format_house(house):
         return 'House of Lords'
 
 def format_speaker(speaker):
-    if speaker.startswith('*'):
-        speaker = speaker[1:]
+    if speaker:
+        if speaker.startswith('*'):
+            speaker = speaker[1:]
 
-    return speaker.title()
+        return speaker.title()
 
 class ParliamentUK(Parliament, CSVCorpus):
     title = 'People & Parliament (UK)'
     description = "Speeches from the House of Lords and House of Commons"
     data_directory = current_app.config['PP_UK_DATA']
+    min_date = datetime(year=1803, month=1, day=1)
+    max_date = datetime(year=2021, month=12, day=31)
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
+    word_model_path = current_app.config['PP_UK_WM']
+    word_model_type = 'word2vec'
     language = 'english'
-
-
+    description_page = 'uk.md'
     field_entry = 'speech_id'
-
     document_context = document_context()
 
     def sources(self, start, end):

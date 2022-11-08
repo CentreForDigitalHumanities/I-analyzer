@@ -14,6 +14,8 @@ export class CorpusService {
 
     public currentCorpus = this.currentCorpusSubject.asObservable();
 
+    public corporaPromise: Promise<Corpus[]>;
+
     constructor(private apiRetryService: ApiRetryService, private userService: UserService) {
     }
 
@@ -22,7 +24,7 @@ export class CorpusService {
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
-        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name == corpusName) {
+        if (this.currentCorpusSubject.value && this.currentCorpusSubject.value.name === corpusName) {
             // no need to retrieve the corpus again if nothing changed
             return Promise.resolve(true);
         }
@@ -38,7 +40,12 @@ export class CorpusService {
     }
 
     public get(): Promise<Corpus[]> {
-        return this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+        if (this.corporaPromise) {
+            return this.corporaPromise;
+        } else {
+            this.corporaPromise = this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));
+            return this.corporaPromise;
+        }
     }
 
     private async parseCorpusList(data: any): Promise<Corpus[]> {
@@ -72,13 +79,13 @@ export class CorpusService {
         return {
             description: data.description,
             displayName: data.display_name || data.name,
-            displayType: data.display_type || data['es_mapping'].type,
+            displayType: data.display_type || data['es_mapping']?.type,
             resultsOverview: data.results_overview,
             csvCore: data.csv_core,
             searchFieldCore: data.search_field_core,
             visualizations: data.visualizations,
             visualizationSort: data.visualization_sort,
-            multiFields: data['es_mapping'].fields ? Object.keys(data['es_mapping'].fields) : undefined,
+            multiFields: data['es_mapping']?.fields ? Object.keys(data['es_mapping'].fields) : undefined,
             hidden: data.hidden,
             sortable: data.sortable,
             primarySort: data.primary_sort,
@@ -86,7 +93,7 @@ export class CorpusService {
             downloadable: data.downloadable,
             name: data.name,
             searchFilter: data['search_filter'] ? this.parseSearchFilter(data['search_filter'], data['name']) : null,
-            mappingType: data.es_mapping.type,
+            mappingType: data.es_mapping?.type,
         };
     }
 

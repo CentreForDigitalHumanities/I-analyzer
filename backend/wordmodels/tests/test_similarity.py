@@ -1,5 +1,10 @@
 import numpy as np
+import pytest
+
+from addcorpus.load_corpus import load_corpus
 import wordmodels.similarity as similarity
+from wordmodels.visualisations import load_word_models
+from wordmodels.conftest import WM_MOCK_CORPORA
 
 def test_cosine_similarity_vectors():
     cases = [
@@ -36,3 +41,34 @@ def test_cosine_similarity_matrix_vector():
         # check output with small error margin
         assert np.all(np.round(output, 8) == case['similarity'])
 
+@pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
+def test_term_similarity(test_app, mock_corpus):
+    cases = {
+        'mock-svd-ppmi-corpus': {
+            'term': 'elizabeth',
+            'similar_term': 'she',
+            'less_similar': 'he',
+            'uppercase_term': 'She'
+        },
+        'mock-wordvec-corpus': {
+            'term': 'payement',
+            'similar_term': 'payeur',
+            'less_similar': 'finances',
+            'uppercase_term': 'Payeur'
+        }
+    }
+    case = cases.get(mock_corpus)
+    corpus = load_corpus(mock_corpus)
+    binned_models = load_word_models(corpus, True)
+    model = binned_models[0]
+    wm_type = corpus.word_model_type
+
+    similarity1 = similarity.term_similarity(model, wm_type, case['term'], case['similar_term'])
+    assert type(similarity1) == float
+
+    similarity2 = similarity.term_similarity(model, wm_type, case['term'], case['less_similar'])
+
+    assert similarity1 > similarity2
+
+    similarity3 = similarity.term_similarity(model, wm_type, case['term'], case['uppercase_term'])
+    assert similarity1 == similarity3

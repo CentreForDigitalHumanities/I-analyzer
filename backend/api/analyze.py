@@ -8,35 +8,53 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
+from corpora.parliament.utils.es_settings import get_nltk_stopwords
+from es import download as download
 
 NUMBER_SIMILAR = 8
 
-def make_wordcloud_data(documents, field):
+def make_wordcloud_data(documents, field, corpus):
     texts = []
     for document in documents:
         content = document['_source'][field]
         if content and content != '':
             texts.append(content)
-    # token_pattern allows 3 to 30 characters now (exluding numbers and whitespace)
-    cv = CountVectorizer(max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', max_features=50)
-    counts = cv.fit_transform(texts).toarray().ravel()
-    words = cv.get_feature_names_out()
-    output = [{'key': word, 'doc_count': int(counts[i])+1} for i, word in enumerate(words)]
+
+    try:
+        nltk_stopwords = get_nltk_stopwords(load_corpus(corpus).language)
+    except:
+        nltk_stopwords = []  # if language is not available, no stopwords are filtered
+    cv = CountVectorizer(max_features=100, max_df=0.7, token_pattern=r'(?u)\b[^0-9\s]{3,30}\b', stop_words=nltk_stopwords)
+    cvtexts = cv.fit_transform(texts)
+    counts = cvtexts.sum(axis=0).A1
+    words = list(cv.get_feature_names_out())
+    freq_distribution = Counter(dict(zip(words, counts)))
+    output = [{'key': word, 'doc_count': int(freq_distribution[word])} for word in words]
     return output
 
 
 def get_ngrams(es_query, corpus, field,
-    ngram_size=2, term_positions=[0,1], freq_compensation=True, subfield='none', max_size_per_interval=50,
-    number_of_ngrams=10):
+    ngram_size=2, positions='any', freq_compensation=True, subfield='none', max_size_per_interval=50,
+    number_of_ngrams=10, date_field = 'date'):
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
     time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
 
+    positions_dict = {
+        'any': list(range(ngram_size)),
+        'first': [0],
+        'second': [1],
+        'third': [2],
+        'fourth': [3],
+    }
+    term_positions = positions_dict[positions]
+
     # find ngrams
 
     docs, total_frequencies = tokens_by_time_interval(
-        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval
+        corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval,
+        date_field
     )
     if freq_compensation:
         ngrams = get_top_n_ngrams(docs, total_frequencies, number_of_ngrams)
@@ -91,9 +109,9 @@ def get_time_bins(es_query, corpus):
     return bins
 
 
-def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval):
+def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_positions, freq_compensation, subfield, max_size_per_interval, date_field):
     index = get_index(corpus)
-    client = elasticsearch(index)
+    client = elasticsearch(corpus)
     ngrams_per_bin = []
     ngram_ttfs = dict()
 
@@ -105,7 +123,7 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         end_date = datetime(end_year, 12, 31)
 
         # filter query on this time bin
-        date_filter = query.make_date_filter(start_date, end_date)
+        date_filter = query.make_date_filter(start_date, end_date, date_field)
         narrow_query = query.add_filter(es_query, date_filter)
 
         #search for the query text
@@ -119,12 +137,12 @@ def tokens_by_time_interval(corpus, es_query, field, bins, ngram_size, term_posi
         bin_ngrams = Counter()
 
         for hit in search_results['hits']['hits']:
-            id = hit['_id']
+            identifier = hit['_id']
 
             # get the term vectors for the hit
             result = client.termvectors(
                 index=index,
-                id=id,
+                id=identifier,
                 term_statistics=freq_compensation,
                 fields = [field]
             )
@@ -195,12 +213,15 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
 
     return output
 
+def parse_datestring(datestring):
+    return datetime.strptime(datestring, '%Y-%m-%d')
+
 def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
 
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d') if end_date_str else None
+    start_date = parse_datestring(start_date_str)
+    end_date = parse_datestring(end_date_str) if end_date_str else None
 
-    date_filter = query.make_date_filter(start_date, end_date)
+    date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
@@ -208,7 +229,7 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
     data = {
         'key': start_date_str,
         'key_as_string': start_date_str,
-        'doc_count': doc_count,
+        'total_doc_count': doc_count,
         'match_count': match_count,
         'token_count': token_count,
     }
@@ -243,15 +264,11 @@ def extract_data_for_term_frequency(corpus, es_query):
     return fieldnames, token_count_aggregators
 
 def get_match_count(es_client, es_query, corpus, size, fieldnames):
-    results = search(
-        corpus = corpus,
-        query_model = es_query,
-        client = es_client,
-        size = size,
-        track_total_hits = True,
+    found_hits, total_results = download.scroll(corpus = corpus,
+        query_model=es_query,
+        download_size=size
     )
 
-    found_hits = hits(results)
     index = get_index(corpus)
     query_text = query.get_query_text(es_query)
 
@@ -260,7 +277,7 @@ def get_match_count(es_client, es_query, corpus, size, fieldnames):
         for hit in found_hits
     )
 
-    skipped_docs = total_hits(results) - len(found_hits)
+    skipped_docs = total_results - len(found_hits)
     match_count = matches + skipped_docs
 
     return match_count
@@ -293,10 +310,11 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     results = search(
         corpus = corpus,
         query_model = query,
-        size = 0 # don't include documents
+        size = 0, # don't include documents
+        track_total_hits = True
     )
 
-    doc_count = total_hits(results)
+    total_doc_count = total_hits(results)
 
     if token_count_aggregators:
         token_count = int(sum(
@@ -306,7 +324,7 @@ def get_total_docs_and_tokens(es_client, query, corpus, token_count_aggregators)
     else:
         token_count = None
 
-    return doc_count, token_count
+    return total_doc_count, token_count
 
 def get_term_frequency(es_query, corpus, size):
     client = elasticsearch(corpus)
@@ -319,9 +337,9 @@ def get_term_frequency(es_query, corpus, size):
 
     # get total document count and (if available) token count for bin
     agg_query = query.remove_query(es_query) #remove search term filter
-    doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
+    total_doc_count, token_count = get_total_docs_and_tokens(client, agg_query, corpus, token_count_aggregators)
 
-    return match_count, doc_count, token_count
+    return match_count, total_doc_count, token_count
 
 def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
     # filter for relevant value
@@ -333,7 +351,7 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
     result = {
         'key': field_value,
         'match_count': match_count,
-        'doc_count': doc_count,
+        'total_doc_count': doc_count,
         'token_count': token_count,
     }
 

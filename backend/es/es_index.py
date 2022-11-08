@@ -40,7 +40,7 @@ def create(client, corpus_definition, add, clear, prod):
         alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
         corpus_definition.es_index = "{}-{}".format(
             corpus_definition.es_index, get_new_version_number(client, alias, corpus_definition.es_index))
-        if client.indices.exists(corpus_definition.es_index):
+        if client.indices.exists(index=corpus_definition.es_index):
             logger.error('Index `{}` already exists. Do you need to add an alias for it or perhaps delete it?'.format(
                 corpus_definition.es_index))
             sys.exit(1)
@@ -49,7 +49,7 @@ def create(client, corpus_definition, add, clear, prod):
         if not settings.get('index'):
             settings['index'] = {
                 'number_of_replicas' : 0,
-                'number_of_shards': 5
+                'number_of_shards': 6
             }
 
     logger.info('Attempting to create index `{}`...'.format(
@@ -129,4 +129,6 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
         logger.info('Updating settings for index `{}`'.format(
             corpus_definition.es_index))
         client.indices.put_settings(
-            {'number_of_replicas': 1}, corpus_definition.es_index)
+            settings={'number_of_replicas': 1},
+            index=corpus_definition.es_index
+        )

@@ -12,6 +12,38 @@ def get_query_text(query):
 
     return text
 
+def set_query_text(query, text):
+    """Set the query text"""
+    new_query = deepcopy(query)
+
+    if get_query_text(query):
+        new_query['query']['bool']['must']['simple_query_string']['query'] = text
+
+    elif query['query']['bool']['must']:
+        new_query['query']['bool']['must'] = {
+            "simple_query_string": {
+                "query": text,
+                "lenient": True,
+                "default_operator": "or"
+            }
+        }
+
+    else:
+        new_query['query'] ={
+            "bool": {
+                "must": {
+                    "simple_query_string": {
+                        "query": text,
+                        "lenient": True,
+                        "default_operator": "or"
+                    }
+                },
+                "filter": []
+            }
+        }
+
+    return new_query
+
 def get_search_fields(query):
     """Get the search fields specified in the query."""
     try:
@@ -69,7 +101,7 @@ def add_filter(query, filter):
     new_query['query']['bool']['filter'] = filters
     return new_query
 
-def make_date_filter(min_date = None, max_date = None):
+def make_date_filter(min_date = None, max_date = None, date_field = 'date'):
     params = { 'format': 'yyyy-MM-dd' }
     if min_date:
         params['gte'] = date.strftime(min_date, '%Y-%m-%d')
@@ -79,7 +111,7 @@ def make_date_filter(min_date = None, max_date = None):
 
     return {
         'range': {
-            'date': params
+            date_field: params
         }
     }
 

@@ -348,16 +348,16 @@ class CSV(Extractor):
     - multiple: Boolean. If a document spans multiple rows of the CSV, the extracted value for a field with
     `multiple = True` is a list of the value in each row. If `multiple = False` (default), only the value
     from the first row is extracted.
-    - convert_empty_to_none: Boolean. If true, `''` values are converted to `None`
+    - convert_to_none: optional, default is `['']`. Listed values are converted to `None`. If `None`/`False`, nothing is converted.
     '''
     def __init__(self,
             field,
             multiple=False,
-            convert_empty_to_none = True,
+            convert_to_none = [''],
             *nargs, **kwargs):
         self.field = field
         self.multiple = multiple
-        self.convert_empty_to_none = convert_empty_to_none
+        self.convert_to_none = convert_to_none or []
         super().__init__(*nargs, **kwargs)
 
     def _apply(self, rows, *nargs, **kwargs):
@@ -369,7 +369,7 @@ class CSV(Extractor):
                 return self.format(row[self.field])
 
     def format(self, value):
-        if value or not self.convert_empty_to_none:
+        if value and value not in self.convert_to_none:
             return value
 
 class ExternalFile(Extractor):

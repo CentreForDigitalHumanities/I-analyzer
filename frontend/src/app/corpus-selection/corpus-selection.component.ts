@@ -25,7 +25,7 @@ export class CorpusSelectionComponent implements OnInit {
 
     navigateToCorpus(event: any, corpusName: string): void {
         if (!event.target.classList.contains('moreInfoLink')) {
-            this.router.navigate(['/search', corpusName])
+            this.router.navigate(['/search', corpusName]);
         }
     }
 }

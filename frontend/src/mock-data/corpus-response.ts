@@ -8,7 +8,9 @@ export const MockCorpusResponse = {
         "es_doctype": "article",
         "es_index": "test1",
         "overview_fields": [],
-        "fields": [],
+        "fields": [{
+            'displayName': 'Test Field', 'name': 'test_field'
+        }],
         "max_date": { "day": 31, "hour": 0, "minute": 0, "month": 12, "year": 2010 },
         "min_date": { "day": 1, "hour": 0, "minute": 0, "month": 1, "year": 1785 }
     },

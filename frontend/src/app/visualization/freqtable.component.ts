@@ -1,7 +1,7 @@
 import { Input, Component, OnChanges, OnDestroy, ViewEncapsulation, SimpleChanges } from '@angular/core';
 import * as _ from 'lodash';
 import { saveAs } from 'file-saver';
-import { freqTableHeader, freqTableHeaders } from '../models';
+import { FreqTableHeader, FreqTableHeaders } from '../models';
 
 @Component({
     selector: 'ia-freqtable',
@@ -10,7 +10,7 @@ import { freqTableHeader, freqTableHeaders } from '../models';
     encapsulation: ViewEncapsulation.None
 })
 export class FreqtableComponent implements OnChanges {
-    @Input() headers: freqTableHeaders;
+    @Input() headers: FreqTableHeaders;
     @Input() data: any[];
     @Input() name: string; // name for CSV file
     @Input() defaultSort: string; // default field for sorting
@@ -18,16 +18,21 @@ export class FreqtableComponent implements OnChanges {
 
     public defaultSortOrder = '-1';
 
-    formattedHeaders: freqTableHeaders;
+    formattedHeaders: FreqTableHeaders;
     formattedData: any[];
 
     wideFormatColumn: number;
     format: 'long'|'wide' = 'long';
 
+    fullTableToggle: boolean = false;
+    disableFullTable: boolean = false;
+
+
     constructor() { }
 
     ngOnChanges(changes: SimpleChanges): void {
         this.checkWideFormat();
+        this.checkFullTable();
 
         this.formatData();
 
@@ -35,6 +40,8 @@ export class FreqtableComponent implements OnChanges {
     }
 
     checkWideFormat(): void {
+        /** Checks whether wide format is available and assigns wideFormatColumn */
+
         if (this.headers && this.headers.find(header => header.isMainFactor)) {
             this.wideFormatColumn = _.range(this.headers.length)
                 .find(index => this.headers[index].isMainFactor);
@@ -43,12 +50,29 @@ export class FreqtableComponent implements OnChanges {
         }
     }
 
+    /** Checks if full table is available. If so, it disables the full table switch.
+    */
+    checkFullTable(): void {
+        if (this.headers && (this.headers.find(header => header.isOptional))) {
+            this.disableFullTable = false;
+        } else {
+            this.disableFullTable = true;
+        }
+    }
+
     setFormat(format: 'long'|'wide'): void {
         this.format = format;
         this.formatData();
     }
 
+    toggleFullTable() {
+        this.fullTableToggle = !this.fullTableToggle;
+        this.formatData();
+    }
+
     formatData() {
+        /** Formats the data in default (long) format, wide format, or fulltable format */
+
         let filteredData: any[];
         if (this.requiredColumn && this.data) {
             filteredData = this.data.filter(row => row[this.requiredColumn]);
@@ -60,13 +84,16 @@ export class FreqtableComponent implements OnChanges {
             const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
-        } else {
+        } else if (this.fullTableToggle === true || this.headers == undefined) {  // also checks if no data is present to avoid error
             this.formattedHeaders = this.headers;
+            this.formattedData = filteredData;
+        } else {
+            this.formattedHeaders = this.headers.filter(header => !header.isOptional);
             this.formattedData = filteredData;
         }
     }
 
-    transformWideFormat(data: any[]): [freqTableHeaders, any[]] {
+    transformWideFormat(data: any[]): [FreqTableHeaders, any[]] {
         const mainFactor = this.headers[this.wideFormatColumn];
 
         const mainFactorValues = _.uniqBy(
@@ -114,12 +141,12 @@ export class FreqtableComponent implements OnChanges {
         return [newHeaders, newData];
     }
 
-    wideFormatHeaders(mainFactor: freqTableHeader, factorValues: any[]) {
-        const newLabel = (header: freqTableHeader, factor: freqTableHeader, factorValue) =>
+    wideFormatHeaders(mainFactor: FreqTableHeader, factorValues: any[]) {
+        const newLabel = (header: FreqTableHeader, factor: FreqTableHeader, factorValue) =>
             `${header.label} (${this.formatValue(factorValue, factor)})`;
 
         const otherHeaders = this.headers.filter((header, index) => header.key !== mainFactor.key);
-        const newHeaders: freqTableHeaders = _.flatMap(otherHeaders, header => {
+        const newHeaders: FreqTableHeaders = _.flatMap(otherHeaders, header => {
             if (header.isSecondaryFactor) {
                 // other factors are kept as-is
                 return [header];
@@ -131,7 +158,7 @@ export class FreqtableComponent implements OnChanges {
                         key: this.wideFormatColumnKey(header, mainFactor, value),
                         format: header.format,
                         formatDownload: header.formatDownload,
-                    } as freqTableHeader
+                    } as FreqTableHeader
                 ));
             }
         });
@@ -139,11 +166,11 @@ export class FreqtableComponent implements OnChanges {
         return newHeaders;
     }
 
-    wideFormatColumnKey(header: freqTableHeader, mainFactor: freqTableHeader, mainFactorValue): string {
+    wideFormatColumnKey(header: FreqTableHeader, mainFactor: FreqTableHeader, mainFactorValue): string {
         return `${header.key}###${this.formatValue(mainFactorValue, mainFactor)}`;
     }
 
-    filterFactors(headers: freqTableHeaders): freqTableHeaders {
+    filterFactors(headers: FreqTableHeaders): FreqTableHeaders {
         return headers.filter(header => header.isSecondaryFactor);
     }
 
@@ -156,11 +183,11 @@ export class FreqtableComponent implements OnChanges {
         return data;
     }
 
-    getValue(row, column: freqTableHeader, download = false) {
+    getValue(row, column: FreqTableHeader, download = false) {
         return this.formatValue(row[column.key], column, download);
     }
 
-    formatValue(value, column: freqTableHeader, download = false) {
+    formatValue(value, column: FreqTableHeader, download = false) {
         if (download && column.formatDownload) {
             return column.formatDownload(value);
         }

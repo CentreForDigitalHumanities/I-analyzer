@@ -12,3 +12,4 @@ backend/migrations/versions/migration_detainment_chamber
 .pytest_cache
 saml/
 nltk_data/
+dump.rdb

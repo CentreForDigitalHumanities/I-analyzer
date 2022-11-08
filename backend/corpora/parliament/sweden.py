@@ -53,6 +53,7 @@ class ParliamentSweden(Parliament, CSVCorpus):
 
 
     language = 'swedish'
+    description_page = 'sweden.md'
     image = 'sweden.jpg'
 
     country = field_defaults.country()

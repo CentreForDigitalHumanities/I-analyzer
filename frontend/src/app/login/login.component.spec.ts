@@ -1,22 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { FormsModule } from '@angular/forms';
-
-import { UserService } from '../services/index';
 import { LoginComponent } from './login.component';
+import { commonTestBed } from '../common-test-bed';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
 
     beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
-            declarations: [LoginComponent],
-            imports: [ FormsModule, RouterTestingModule ],
-            providers: [
-                { provide: UserService, useValue: {} }
-            ]
-        }).compileComponents();
+        commonTestBed().testingModule.compileComponents();
     }));
 
     beforeEach(() => {

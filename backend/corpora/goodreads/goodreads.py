@@ -8,23 +8,24 @@ from datetime import datetime
 from flask import current_app
 import openpyxl
 
-from addcorpus.extract import XML, Metadata, Combined
+from addcorpus.extract import CSV, Metadata
 # SliderRangeFilter, BoxRangeFilter
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
-from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.corpus import CSVCorpus, Field
 
+logger = logging.getLogger('indexing')
 
-class GoodReads(XMLCorpus):
-    """ Home-scraped XML corpus of GoodReads reviews. """
+class GoodReads(CSVCorpus):
+    """ Home-scraped CSV corpus of GoodReads reviews. """
 
     # Data overrides from .common.Corpus (fields at bottom of class)
     title = "DIOPTRA-L"
     description = "Goodreads reviews of translated literary texts"
 
-    tag_entry = 'review'
+    delimiter = ';'
 
     min_date=datetime(2007, 1, 1)
-    max_date=datetime(2020, 12, 31)
+    max_date=datetime(2022, 12, 31)
     data_directory = current_app.config['GOODREADS_DATA']
     es_index = current_app.config['GOODREADS_ES_INDEX']
     image = current_app.config['GOODREADS_IMAGE']
@@ -45,26 +46,26 @@ class GoodReads(XMLCorpus):
             book_title = row[0]
             book_genre = row[2]
             age_category = row[3]
+            original_language = row[4]
             title_dir = re.sub('[^\w .-]', '', book_title).replace(' ', '_')
             path = os.path.join(self.data_directory, title_dir)
+            logger.info(path)
             if os.path.isdir(path):
-                os.chdir(os.path.join(path, 'XML'))
-                for file in glob.glob("*.xml"):
-                    full_path = os.path.join(path, 'XML', file)
-                    yield full_path, {
-                        'book_title': book_title,
-                        'book_genre': book_genre,
-                        'age_category': age_category
-                    }
+                full_path = os.path.join(path, 'CSV', 'reviews.csv')
+                yield full_path, {
+                    'book_title': book_title,
+                    'book_genre': book_genre,
+                    'age_category': age_category,
+                    'original_language': original_language
+                }
 
     fields = [
         Field(
             name='year',
             display_name='Year',
             description='Year the review was written.',
-            extractor=XML(
-                tag=['date'],
-                toplevel=False,
+            extractor=CSV(
+                field='date',
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y')
             ),
@@ -82,9 +83,8 @@ class GoodReads(XMLCorpus):
             name='id',
             display_name='ID',
             description='ID of the review.',
-            extractor=XML(
-                tag=['id'],
-                toplevel=False,
+            extractor=CSV(
+                field='id',
             ),
             es_mapping={'type': 'keyword'},
             csv_core=True,
@@ -105,10 +105,7 @@ class GoodReads(XMLCorpus):
             name='original_language',
             display_name='Original language',
             description='The original language the book reviews were made for was written in.',
-            extractor=XML(
-                tag=['original_language'],
-                toplevel=False,
-            ),
+            extractor=Metadata('original_language'),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
                 description='Accept only reviews made for titles originally in this language(s).',
@@ -120,9 +117,8 @@ class GoodReads(XMLCorpus):
             name='edition_id',
             display_name='Edition ID',
             description='ID of the edition the review was made for.',
-            extractor=XML(
-                tag=['edition_id'],
-                toplevel=False,
+            extractor=CSV(
+                field='edition_id',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -130,9 +126,8 @@ class GoodReads(XMLCorpus):
             name='edition_language',
             display_name='Edition language',
             description='The language that the edition that the review is for was written in',
-            extractor=XML(
-                tag=['edition_language'],
-                toplevel=False,
+            extractor=CSV(
+                field='edition_language',
             ),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -171,9 +166,8 @@ class GoodReads(XMLCorpus):
             name='url',
             display_name='URL',
             description='URL of the review.',
-            extractor=XML(
-                tag=['url'],
-                toplevel=False,
+            extractor=CSV(
+                field='url',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -181,9 +175,8 @@ class GoodReads(XMLCorpus):
             name='text',
             display_name='Text',
             description='Fulltext of the review.',
-            extractor=XML(
-                tag=['text'],
-                toplevel=False,
+            extractor=CSV(
+                field='text',
             ),
             es_mapping={'type': 'text'},
             display_type='text_content',
@@ -196,9 +189,8 @@ class GoodReads(XMLCorpus):
             name='language',
             display_name='Review language',
             description='The language of the review.',
-            extractor=XML(
-                tag=['language'],
-                toplevel=False,
+            extractor=CSV(
+                field='language',
             ),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -213,9 +205,8 @@ class GoodReads(XMLCorpus):
             name='date',
             display_name='Date',
             description='Date the review was written.',
-            extractor=XML(
-                tag=['date'],
-                toplevel=False,
+            extractor=CSV(
+                field='date',
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
@@ -225,9 +216,8 @@ class GoodReads(XMLCorpus):
             name='author',
             display_name='Author',
             description='Author of the review.',
-            extractor=XML(
-                tag=['author'],
-                toplevel=False,
+            extractor=CSV(
+                field='author',
             ),
             es_mapping={'type': 'keyword'},
             csv_core=True,
@@ -236,9 +226,8 @@ class GoodReads(XMLCorpus):
             name='author_gender',
             display_name='Reviewer gender',
             description='Gender of the reviewer, guessed based on name.',
-            extractor=XML(
-                tag=['author_gender'],
-                toplevel=False,
+            extractor=CSV(
+                field='author_gender',
             ),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -252,9 +241,8 @@ class GoodReads(XMLCorpus):
             name='rating_text',
             display_name='Goodreads rating',
             description='Rating in the Goodreads style, e.g. \'really liked it\'.',
-            extractor=XML(
-                tag=['rating'],
-                toplevel=False,
+            extractor=CSV(
+                field='rating',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -262,9 +250,8 @@ class GoodReads(XMLCorpus):
             name='rating_no',
             display_name='Rating',
             description='Rating as a number.',
-            extractor=XML(
-                tag=['rating_no'],
-                toplevel=False,
+            extractor=CSV(
+                field='rating_no',
             ),
             es_mapping={'type': 'keyword'},
             search_filter=MultipleChoiceFilter(
@@ -279,9 +266,8 @@ class GoodReads(XMLCorpus):
             name='word_count',
             display_name='Word count',
             description='Number of words (whitespace-delimited) in the review.',
-            extractor=XML(
-                tag=['text'],
-                toplevel=False,
+            extractor=CSV(
+                field='text',
                 transform=lambda x: len(x.split(' '))
             ),
             es_mapping={'type': 'integer'},
@@ -296,9 +282,8 @@ class GoodReads(XMLCorpus):
             name='edition_publisher',
             display_name='Edition publisher',
             description='Publisher of the edition the review was written for',
-            extractor=XML(
-                tag=['edition_publisher'],
-                toplevel=False,
+            extractor=CSV(
+                field='edition_publisher',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -306,9 +291,8 @@ class GoodReads(XMLCorpus):
             name='edition_publishing_year',
             display_name='Edition publishing year',
             description='Year the edition the review was written for was published.',
-            extractor=XML(
-                tag=['edition_publishing_year'],
-                toplevel=False,
+            extractor=CSV(
+                field='edition_publishing_year',
             ),
             es_mapping={'type': 'keyword'},
         ),
@@ -349,4 +333,4 @@ class GoodReads(XMLCorpus):
                 }
             }
             yield update_body
-            
+

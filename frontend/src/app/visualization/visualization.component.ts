@@ -1,22 +1,25 @@
-import { DoCheck, Input, Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { SelectItem, SelectItemGroup } from 'primeng/api';
+import { DoCheck, Input, Component, SimpleChanges, OnChanges } from '@angular/core';
+import { SelectItem } from 'primeng/api';
 import * as _ from 'lodash';
 
-import { Corpus, QueryModel, CorpusField } from '../models/index';
+import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
 import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { DialogService } from '../services';
 import * as htmlToImage from 'html-to-image';
+import { ParamDirective } from '../param/param-directive';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+
+
 
 @Component({
     selector: 'ia-visualization',
     templateUrl: './visualization.component.html',
     styleUrls: ['./visualization.component.scss'],
 })
-export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
+export class VisualizationComponent extends ParamDirective implements DoCheck, OnChanges {
     @Input() public corpus: Corpus;
     @Input() public queryModel: QueryModel;
-    @Input() public resultsCount: number;
 
     public allVisualizationFields: CorpusField[];
 
@@ -35,6 +38,8 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
     public visDropdown: SelectItem[];
     public fieldDropdown: SelectItem[];
+    public visualizationTypeDropdownValue: SelectItem;
+    public visualizedFieldDropdownValue: SelectItem;
 
     public visualizations: string [];
     public freqtable = false;
@@ -43,28 +48,30 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         termfrequency: 'Frequency of the search term',
         ngram: 'Neighbouring words',
         wordcloud: 'Most frequent words',
-        relatedwords: 'Related words',
-        wordcontext: 'Word context',
     };
     public manualPages = {
         ngram: 'ngrams',
-        relatedwords: 'relatedwords',
         wordcloud: 'wordcloud',
         resultscount: 'numberofresults',
         termfrequency: 'termfrequency',
         wordcontext: 'wordcontext'
     };
 
-
     public visualExists = false;
     public isLoading = false;
     private childComponentLoading = false;
 
-    public palette = PALETTES[0];
+    public palette: string[];
+    public params: Params = {};
 
     faQuestion = faCircleQuestion;
 
-    constructor(private dialogService: DialogService) {
+    constructor(
+        private dialogService: DialogService,
+        route: ActivatedRoute,
+        router: Router
+    ) {
+        super(route, router);
     }
 
     ngDoCheck() {
@@ -74,50 +81,74 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['corpus']) {
-            this.allVisualizationFields = [];
-            if (this.corpus && this.corpus.fields) {
-                this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations);
-            }
-            this.visDropdown = [];
+        if (changes.queryModel || changes.corpus) {
+            this.initialize();
+        }
+    }
 
-            const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
-            const filteredTypes = visualisationTypes.filter(visType => {
-                const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords', 'wordcontext']
-                    .find(vis => vis === visType);
-                const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
-                const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;
-                return searchTermSatisfied && wordModelsSatisfied;
-            });
-            filteredTypes.forEach(visType =>
-                this.visDropdown.push({
-                    label: this.visualizationsDisplayNames[visType],
-                    value: visType
-                })
-            );
+    setupDropdowns() {
+        this.allVisualizationFields = [];
+        if (this.corpus && this.corpus.fields) {
+            this.allVisualizationFields = this.corpus.fields.filter(field => field.visualizations);
+        }
+        this.visDropdown = [];
+        const visualisationTypes = _.uniq(_.flatMap(this.allVisualizationFields, field => field.visualizations));
+        const filteredTypes = visualisationTypes.filter(visType => {
+            const requiresSearchTerm = ['termfrequency', 'ngram', 'relatedwords']
+                .find(vis => vis === visType);
+            const searchTermSatisfied = !requiresSearchTerm || this.queryModel.queryText;
+            const wordModelsSatisfied = visType !== 'relatedwords' || this.corpus.word_models_present;
+            return searchTermSatisfied && wordModelsSatisfied;
+        });
+        filteredTypes.forEach(visType =>
+            this.visDropdown.push({
+                label: this.visualizationsDisplayNames[visType],
+                value: visType
+            })
+        );
+    }
 
-            if (!this.allVisualizationFields) {
+    async initialize() {
+        this.setupDropdowns();
+        this.showTableButtons = true;
+    }
+
+    teardown() {
+        /* set all visualization params to null here -
+        so all params, also from children are guaranteed to be null */
+        this.setParams(
+            Object.assign(
+                {
+                    visualize: null,
+                    visualizedField: null
+                },
+                barChartSetNull,
+                ngramSetNull
+        ));
+    }
+
+    setStateFromParams(params: Params) {
+        if (params.has('visualize')) {
+            this.setVisualizationType(params.get('visualize'));
+            const visualizedField = this.corpus.fields.filter( f => f.name === params.get('visualizedField'))[0];
+            this.setVisualizedField(visualizedField);
+        } else {
+            if (!this.allVisualizationFields.length) {
                 this.noVisualizations = true;
             } else {
                 this.noVisualizations = false;
                 this.setVisualizationType(this.allVisualizationFields[0].visualizations[0]);
+                this.updateParams();
             }
-        } else if (changes['queryModel']) {
-            this.checkResults();
         }
+        this.visualizationTypeDropdownValue = this.visDropdown.find(
+            item => item.value === this.visualizationType) || this.visDropdown[0];
     }
 
-    ngOnInit() {
-        this.checkResults();
-        this.showTableButtons = true;
-    }
-
-    checkResults() {
-        if (this.resultsCount > 0) {
-            this.setVisualizedField(this.visualizedField);
-        } else {
-            this.foundNoVisualsMessage = this.noResults;
-        }
+    updateParams() {
+        this.params['visualize'] = this.visualizationType;
+        this.params['visualizedField'] = this.visualizedField.name;
+        this.setParams(this.params);
     }
 
     setVisualizationType(visType: string) {
@@ -130,6 +161,13 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
             value: field
         }));
         this.visualizedField = this.filteredVisualizationFields[0];
+        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
+            item => item.value === this.visualizedField) || this.fieldDropdown[0];
+    }
+
+    changeVisualizationType(visType: string) {
+        this.setVisualizationType(visType);
+        this.updateParams();
     }
 
     setVisualizedField(selectedField: CorpusField) {
@@ -138,6 +176,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
         this.visualizedField = selectedField;
         this.foundNoVisualsMessage = 'Retrieving data...';
+    }
+
+    changeVisualizedField(selectedField: CorpusField) {
+        this.setVisualizedField(selectedField);
+        this.updateParams();
     }
 
     setErrorMessage(message: string) {
@@ -150,12 +193,11 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
         this.childComponentLoading = event;
     }
 
-    showHelp() {
-        const manualPage = this.manualPages[this.visualizationType];
-        this.dialogService.showManualPage(manualPage);
+    get manualPage(): string {
+        if (this.visualizationType) {
+            return this.manualPages[this.visualizationType];
+        }
     }
-
-
 
     onRequestImage() {
         const filenamestring = `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
@@ -163,9 +205,9 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
 
         htmlToImage.toPng(node)
           .then(function (dataUrl) {
-            var img = new Image();
+            const img = new Image();
             img.src = dataUrl;
-            var anchor = document.createElement("a");
+            const anchor = document.createElement("a");
             anchor.href = dataUrl;
             anchor.download = filenamestring;
             anchor.click();
@@ -175,15 +217,22 @@ export class VisualizationComponent implements DoCheck, OnInit, OnChanges {
           });
 
     }
+
     chartElementId(visualizationType): string {
         if (visualizationType === 'resultscount' || visualizationType === 'termfrequency') {
             return 'barchart';
         }
-        if (visualizationType === 'ngram') {
+        if (this.visualizationType === 'ngram') {
             return 'chart';
         }
-        if (visualizationType === 'wordcloud') {
+        if (this.visualizationType === 'wordcloud') {
             return 'wordcloud_div';
+        }
+    }
+
+    get imageFileName(): string {
+        if (this.visualizationType && this.corpus && this.visualizedField) {
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`
         }
     }
 }
