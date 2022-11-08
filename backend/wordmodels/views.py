@@ -1,5 +1,5 @@
-from flask import request, abort, current_app, jsonify, Blueprint
-from flask_login import LoginManager, login_required
+from flask import request, abort, jsonify, Blueprint
+from flask_login import login_required
 import wordmodels.visualisations as visualisations
 import wordmodels.utils as utils
 

@@ -12,14 +12,15 @@ def model_contains_terms(terms, model):
     in_model = lambda term: utils.word_in_model(term, model)
     return any(in_model(term) for term in terms)
 
-def find_optimal_2d_maps(binned_models, terms_per_model):
+def find_optimal_2d_maps(binned_models, terms_per_model, wm_type):
     original_vectors = [
-        np.array([utils.term_to_vector(term, model, 'svd_ppmi')
+        np.array([utils.term_to_vector(term, model, wm_type)
         for term in terms]) if model_contains_terms(terms, model) else None
         for model, terms in zip(binned_models, terms_per_model)
     ]
 
     coordinates = find_optimal_coordinates(original_vectors, terms_per_model)
+
     data = format_final_data(coordinates, terms_per_model)
     return data
 
@@ -72,10 +73,13 @@ def coordinates_from_parameters(parameters, terms_per_timeframe):
 def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
     initial = initial_coordinates(vectors_per_timeframe, terms_per_timeframe)
     parameters = parameters_from_coordinates(initial)
+    options = {
+        'maxiter': 10000
+    }
 
     evaluation = lambda params: evaluate_coordinates(coordinates_from_parameters(params, terms_per_timeframe), vectors_per_timeframe, terms_per_timeframe)
 
-    res = minimize(evaluation, parameters, method = 'nelder-mead')
+    res = minimize(evaluation, parameters, method = 'nelder-mead', options=options)
     final = coordinates_from_parameters(res.x, terms_per_timeframe)
     return final
 

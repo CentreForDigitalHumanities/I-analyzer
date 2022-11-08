@@ -1,10 +1,9 @@
-import os
 from os.path import basename, dirname, exists, join, splitext
 import pickle
 from textdistance import damerau_levenshtein
 from gensim.models import KeyedVectors
 
-from addcorpus.load_corpus import corpus_dir, load_corpus
+from addcorpus.load_corpus import load_corpus
 from flask import current_app
 
 from glob import glob
@@ -136,4 +135,8 @@ def term_to_vector(term, model, wm_type):
         if index != None:
             return matrix[:, index]
     else:
-        return None
+        analyzer = model['analyzer']
+        transformed = transform_query(term, analyzer)
+        vocab = model['vocab']
+        if transformed in vocab:
+            return  model['word2vec'].get_vector(transformed)

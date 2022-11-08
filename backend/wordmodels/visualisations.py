@@ -1,12 +1,5 @@
-import os
-from os.path import join
-import pickle
-
-from addcorpus.load_corpus import corpus_dir
 from wordmodels.similarity import find_n_most_similar
 from wordmodels.decompose import find_optimal_2d_maps
-import random
-from flask import current_app
 
 from addcorpus.load_corpus import load_corpus
 from wordmodels.similarity import find_n_most_similar, term_similarity
@@ -136,7 +129,7 @@ def get_2d_contexts_over_time(query_term, corpus_name, number_similar = NUMBER_S
         for neighbours in neighbours_per_model
     ]
 
-    data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model)
+    data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model, wm_type)
 
     data = [
         {

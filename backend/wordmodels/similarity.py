@@ -1,6 +1,6 @@
 import numpy as np
 
-from wordmodels.utils import transform_query, term_to_vector, index_to_term
+from wordmodels.utils import transform_query, term_to_vector, index_to_term, word_in_model
 
 def cosine_similarity_vectors(array1, array2):
     dot = np.inner(array1, array2)
@@ -61,9 +61,12 @@ def find_n_most_similar(wm, wm_type, query_term, n):
         ]
     elif wm_type == 'word2vec':
         try:
-            results = matrix.most_similar(transformed_query, topn=n)
+            most_similar = matrix.most_similar(transformed_query, topn=n)
+            valid_term = lambda res : word_in_model(res[0], wm)
+            results = filter(valid_term, most_similar)
         except:
             return None
+
         return [{
             'key': result[0],
             'similarity': result[1]

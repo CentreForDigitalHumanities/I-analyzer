@@ -1,8 +1,9 @@
 import re
 import numpy as np
 from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates,  pairwise_similarities, similarity_loss
-from wordmodels.visualisations import load_word_models, get_2d_contexts_over_time
+from wordmodels.visualisations import get_2d_contexts_over_time
 import pytest
+from wordmodels.conftest import WM_MOCK_CORPORA
 
 NUMBER_SIMILAR = 5
 
@@ -61,10 +62,15 @@ def test_term_not_in_all_intervals(test_app):
     for interval in keyword_not_in_model:
         assert len(interval['data']) == 1
 
-def test_2d_contexts_over_time_format(test_app):
-    term = 'she'
+@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
+def test_2d_contexts_over_time_format(test_app, mock_corpus):
+    terms_per_corpus = {
+        'mock-svd-ppmi-corpus': 'she',
+        'mock-wordvec-corpus': 'payement'
+    }
+    term = terms_per_corpus[mock_corpus]
 
-    data = get_2d_contexts_over_time(term, 'mock-svd-ppmi-corpus')
+    data = get_2d_contexts_over_time(term, mock_corpus)
     assert data and len(data)
 
     for item in data:
