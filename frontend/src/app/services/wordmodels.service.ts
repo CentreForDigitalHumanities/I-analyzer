@@ -46,7 +46,7 @@ export class WordmodelsService extends Resource {
         path: '/get_2d_contexts_over_time'
     })
     public context2dRequest: IResourceMethodFull<
-        { query_term: string, corpus: string, },
+        { query_terms: string[], corpus: string, neighbours: number },
         { ContextFeedback }>;
 
     @ResourceAction({
@@ -128,11 +128,12 @@ export class WordmodelsService extends Resource {
         });
     }
 
-    get2dContextOverTime(queryTerm: string, corpusName: string): any {
+    get2dContextOverTime(queryTerms: string[], corpusName: string, neighbours: number): any {
         return this.context2dRequest(
             {
-                query_term: queryTerm,
+                query_terms: queryTerms,
                 corpus: corpusName,
+                neighbours: neighbours,
             },
         );
     }

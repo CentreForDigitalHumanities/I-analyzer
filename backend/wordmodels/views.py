@@ -115,14 +115,16 @@ def get_word_in_model():
 @login_required
 def api_get_2d_contexts_over_time():
     corpus = request.args.get('corpus')
-    term = request.args.get('query_term')
+    terms = request.args.get('query_terms').split(',')
+    neigbours = request.args.get('neighbours')
 
-    print(corpus, term)
-
-    if not corpus and term:
+    if not corpus and terms and neigbours:
         abort(400)
 
-    results = visualisations.get_2d_contexts_over_time(term, corpus)
+    try:
+        results = visualisations.get_2d_contexts_over_time(terms, corpus, number_similar = int(neigbours))
+    except:
+        results = 'something went wrong'
 
     if isinstance(results, str):
         response = jsonify({

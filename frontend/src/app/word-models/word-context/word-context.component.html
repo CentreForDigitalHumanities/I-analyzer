@@ -1,4 +1,39 @@
+<div class="block">
+    <div class="field">
+        <div class="control">
+            <label class="label">Enter one or more terms to compare to "{{queryText}}":</label>
+            <ia-term-comparison-editor (queriesChanged)="updateComparisonTerms($event)"
+                (clearQueries)="updateComparisonTerms()">
+            </ia-term-comparison-editor>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Nearest neighbours to include:</label>
+        <div class="field has-addons">
+            <div class="control">
+                <input class="input" type="number" value="5" min="0" max="10" name="neighbours"
+                    [(ngModel)]="neighbours">
+            </div>
+            <div class="control">
+                <button class="button is-primary" (click)="updateNeighbours()">
+                    <span class="icon">
+                        <fa-icon [icon]="faCheck"></fa-icon>
+                    </span>
+                    <span>Confirm</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <div class="block" [class.is-hidden]="asTable">
+    <div class="columns is-centered">
+        <div class="column is-8">
+            <canvas id="context-chart" role="img"></canvas>
+        </div>
+    </div>
     <div class="control" *ngIf="timeIntervals">
         <input class="time-slider" type="range" min="0" [max]="timeIntervals.length - 1" [value]="currentTimeIndex"
             step="1" (change)="setCurrentTime($event)">
@@ -7,11 +42,6 @@
             {{timeIntervals[currentTimeIndex]}}
         </p>
     </div>
-<div class="columns is-centered">
-    <div class="column is-8">
-        <canvas id="context-chart" role="img"></canvas>
-    </div>
-</div>
 </div>
 
 <div class="block" *ngIf="asTable">

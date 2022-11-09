@@ -47,6 +47,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     childComponentLoading: boolean;
     isLoading: boolean;
+    noVisual = false;
     errorMessage: string;
 
     queryFeedback: QueryFeedback;
@@ -93,6 +94,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     submitQuery(): void {
         this.errorMessage = undefined;
+        this.noVisual = false;
         this.activeQuery = this.queryText;
         this.validateQuery();
         if (this.queryFeedback === undefined) {
@@ -129,6 +131,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
 
     setErrorMessage(event: {message: string}): void {
         this.errorMessage = event.message;
+        this.noVisual = true;
     }
 
     get currentTab(): any {

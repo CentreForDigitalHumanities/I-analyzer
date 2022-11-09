@@ -40,6 +40,11 @@ def find_n_most_similar(wm, wm_type, query_term, n):
     with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
+    if not n:
+        return None
+
+    in_model = word_in_model(query_term, wm)
+
     analyzer = wm['analyzer']
     vocab = wm['vocab']
     transformed_query = transform_query(query_term, analyzer)

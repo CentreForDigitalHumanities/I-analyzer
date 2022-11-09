@@ -1,9 +1,10 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartOptions } from 'chart.js';
 import { ContextResults, Corpus, FreqTableHeaders, QueryModel } from '../../models';
-import { SearchService, WordmodelsService } from '../../services';
+import { NotificationService, SearchService, WordmodelsService } from '../../services';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as _ from 'lodash';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface DataPoint {label: string; x: number; y: number}
 
@@ -22,9 +23,14 @@ export class WordContextComponent implements OnChanges {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
+    neighbours = 5;
+    comparisonTerms: string[] = [];
+
     data: ContextResults;
     timeIntervals: string[];
     currentTimeIndex: number;
+
+    faCheck = faCheck;
 
     chart: Chart;
     chartOptions: ChartOptions = {
@@ -90,7 +96,8 @@ export class WordContextComponent implements OnChanges {
     }
 
     getResults(): Promise<void> {
-        return this.wordModelsService.get2dContextOverTime(this.queryText, this.corpus.name).then(result => {
+        const queries = [this.queryText].concat(this.comparisonTerms);
+        return this.wordModelsService.get2dContextOverTime(queries, this.corpus.name, this.neighbours).then(result => {
             if (result.success) {
                 this.data = result.data;
                 this.timeIntervals = result.data.map(item => item.time);
@@ -98,9 +105,13 @@ export class WordContextComponent implements OnChanges {
                 this.makeTableData(result.data);
                 this.makeGraph(result.data, this.currentTimeIndex);
             } else {
-                this.error.emit(result);
+                this.requestFailed(result.message)
             }
         });
+    }
+
+    requestFailed(message) {
+        this.error.emit({message})
     }
 
     /** execute a process with loading spinner */
@@ -112,15 +123,24 @@ export class WordContextComponent implements OnChanges {
 
 
     makeGraph(data: ContextResults, timeIndex: number) {
-        const dataset = data[timeIndex];
-        this.chart = new Chart('context-chart', {
-            type: 'scatter',
-            data: {
-                datasets: [dataset]
-            },
-            plugins: [ ChartDataLabels ],
-            options: this.chartOptions
-        });
+        if (!this.chart) {
+            const dataset = data[timeIndex];
+            this.chart = new Chart('context-chart', {
+                type: 'scatter',
+                data: {
+                    datasets: [dataset]
+                },
+                plugins: [ ChartDataLabels ],
+                options: this.chartOptions
+            })
+        } else {
+            this.updateGraph();
+        }
+    }
+
+    updateGraph() {
+        this.updateDataset(this.chart.data.datasets[0], this.data[this.currentTimeIndex]);
+        this.chart.update();
     }
 
     makeTableData(data: ContextResults) {
@@ -144,14 +164,13 @@ export class WordContextComponent implements OnChanges {
 
 
         if (this.chart) {
-            console.log(this.data[this.currentTimeIndex]);
             this.updateDataset(this.chart.data.datasets[0], this.data[this.currentTimeIndex]);
             this.chart.update();
         }
     }
 
     updateDataset(dataset, newDataset) {
-        // remove points no longer included
+        // removea points no longer included
         const indexToDelete = () => dataset.data.findIndex((point: DataPoint) =>
             newDataset.data.find(p => p.label === point.label) === undefined
         );
@@ -173,4 +192,12 @@ export class WordContextComponent implements OnChanges {
         newPoints.forEach(point => dataset.data.push(point));
     }
 
+    updateNeighbours() {
+        this.showLoading(this.getResults());
+    }
+
+    updateComparisonTerms(terms?: string[]) {
+        this.comparisonTerms = terms || [];
+        this.showLoading(this.getResults());
+    }
 }

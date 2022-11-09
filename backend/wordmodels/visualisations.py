@@ -3,7 +3,7 @@ from wordmodels.decompose import find_optimal_2d_maps
 
 from addcorpus.load_corpus import load_corpus
 from wordmodels.similarity import find_n_most_similar, term_similarity
-from wordmodels.utils import load_word_models
+from wordmodels.utils import load_word_models, word_in_model
 
 
 NUMBER_SIMILAR = 8
@@ -108,7 +108,7 @@ def get_context_time_interval(query_term, corpus_string, which_time_interval, nu
     ]
     return word_data
 
-def get_2d_contexts_over_time(query_term, corpus_name, number_similar = NUMBER_SIMILAR):
+def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_SIMILAR):
     """
     Given a query term and corpus, creates a scatter plot of the term's nearest neigbours for each
     time interval.
@@ -118,15 +118,25 @@ def get_2d_contexts_over_time(query_term, corpus_name, number_similar = NUMBER_S
     binned_models = load_word_models(corpus_name, binned = True)
     wm_type = corpus.word_model_type
     neighbours_per_model = [
-        find_n_most_similar(model, wm_type, query_term, number_similar + 1)
+        [
+            similar_term
+            for query_term in query_terms
+            for similar_term in
+            (find_n_most_similar(model, wm_type, query_term, number_similar + 1) or [])
+        ]
         for model in binned_models
     ]
     # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
     # i.e. for 10 neighbours, we have to specify number_similar = 11
 
+    query_terms_per_model = [
+        [term for term in query_terms if word_in_model(term, model)]
+        for model in binned_models
+    ]
+
     terms_per_model = [
-        [query_term] + [item['key'] for item in neighbours] if neighbours else [query_term]
-        for neighbours in neighbours_per_model
+        query_terms + [item['key'] for item in neighbours] if neighbours else query_terms
+        for query_terms, neighbours in zip(query_terms_per_model, neighbours_per_model)
     ]
 
     data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model, wm_type)
