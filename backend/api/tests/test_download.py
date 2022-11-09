@@ -148,6 +148,7 @@ def all_results_csv(corpus):
     results = tasks.download_scroll(None, request_json)
     _, filename = tasks.make_csv(results, request_json)
 
+
     return filename, corpus_specs
 
 
