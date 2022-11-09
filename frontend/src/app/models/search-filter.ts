@@ -92,8 +92,10 @@ function parseMinMax(value: string[]): [string, string] {
     const term = value[0];
     if (term.split(':').length === 2) {
         return term.split(':') as [string, string];
-    } else {
+    } else if (value.length == 1) {
         return [term, term];
+    } else {
+        return [value[0], value[1]];
     }
 }
 

@@ -1,28 +1,76 @@
-from es import download
 from mock_corpora.mock_corpus_specs import CORPUS_SPECS
-import pytest
+from es import download as es_download
+from api import create_csv, tasks, download as api_download
+from addcorpus.load_corpus import load_corpus
 import csv
-from api import create_csv, tasks
+from ianalyzer.models import Download
+import pytest
+from flask import jsonify
 
 match_all = {
     "query": {
         "match_all": {}
     }
 }
-
 def test_no_donwnload_limit(any_indexed_mock_corpus):
-    results, total = download.scroll(any_indexed_mock_corpus, match_all)
+    results, total = es_download.scroll(any_indexed_mock_corpus, match_all)
     docs_in_corpus = CORPUS_SPECS[any_indexed_mock_corpus]['total_docs']
     assert total == docs_in_corpus
     assert len(results) == docs_in_corpus
 
 def test_download_limit(any_indexed_mock_corpus):
     limit = 2
-    results, total = download.scroll(any_indexed_mock_corpus, match_all, download_size=limit)
+    results, total = es_download.scroll(any_indexed_mock_corpus, match_all, download_size=limit)
     docs_in_corpus = CORPUS_SPECS[any_indexed_mock_corpus]['total_docs']
     assert total == docs_in_corpus
     assert len(results) == min(limit, docs_in_corpus)
 
+def test_download_log(mock_user):
+    assert mock_user.downloads == []
+
+    parameters = {
+        'es_query': match_all,
+        'size': 2
+    }
+    id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download = Download.query.get(id)
+
+    found_file = api_download.get_result_filename(id)
+    assert found_file == None
+    assert download.status == 'working'
+
+    filename = 'result.csv'
+    api_download.store_download_completed(id, filename)
+    found_file = api_download.get_result_filename(id)
+    assert found_file == filename
+    assert download.status == 'done'
+    assert mock_user.downloads == [download]
+
+    # different download, mark as failed
+    parameters = {
+        'es_query': match_all,
+        'size': 3
+    }
+    id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download_2 = Download.query.get(id)
+
+    api_download.store_download_failed(id)
+    assert download_2.status == 'error'
+    assert mock_user.downloads == [download, download_2]
+
+
+def test_download_serialization(mock_user):
+    parameters = {
+        'es_query': match_all,
+        'size': 2
+    }
+    id = api_download.store_download_started('search_results', 'mock-corpus', parameters, mock_user.id)
+    download = Download.query.get(id)
+    api_download.store_download_completed(id, 'result.csv')
+
+    serialised = download.serialize()
+    response = jsonify(serialised)
+    assert response
 
 @pytest.fixture
 def mock_es_result():
@@ -97,8 +145,9 @@ def all_results_csv(corpus):
         'fields': fields,
         'route': '/search/{};query=test'.format(corpus)
     }
-    results = tasks.download_scroll(request_json)
-    filename = tasks.make_csv(results, request_json)
+    results = tasks.download_scroll(None, request_json)
+    _, filename = tasks.make_csv(results, request_json)
+
 
     return filename, corpus_specs
 

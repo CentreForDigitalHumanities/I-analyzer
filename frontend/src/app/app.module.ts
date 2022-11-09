@@ -48,7 +48,7 @@ import { TimelineComponent } from './visualization/barchart/timeline.component';
 import { WordcloudComponent } from './visualization/wordcloud/wordcloud.component';
 import { VisualizationComponent } from './visualization/visualization.component';
 import { FreqtableComponent } from './visualization/freqtable.component';
-import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './search-history/index';
+import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
@@ -80,6 +80,8 @@ import { TermComparisonEditorComponent } from './visualization/barchart/term-com
 import { SimilarityChartComponent } from './word-models/similarity-chart/similarity-chart.component';
 import { FullDataButtonComponent } from './visualization/full-data-button/full-data-button.component';
 import { FooterComponent } from './footer/footer.component';
+import { DownloadHistoryComponent } from './history/download-history/download-history.component';
+import { HistoryDirective } from './history/history.directive';
 
 
 export const appRoutes: Routes = [
@@ -135,6 +137,10 @@ export const appRoutes: Routes = [
         component: SearchHistoryComponent
     },
     {
+        path: 'download-history',
+        component: DownloadHistoryComponent
+    },
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -154,12 +160,14 @@ export const declarations: any[] = [
     DialogComponent,
     DocumentViewComponent,
     DownloadComponent,
+    DownloadHistoryComponent,
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
     FooterComponent,
     FreqtableComponent,
     FullDataButtonComponent,
+    HistoryDirective,
     HomeComponent,
     HighlightPipe,
     HistogramComponent,

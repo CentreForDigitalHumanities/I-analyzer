@@ -65,6 +65,7 @@ def test_total_docs_and_tokens(test_app, test_es_client, any_indexed_mock_corpus
     specs =  CORPUS_SPECS[any_indexed_mock_corpus]
 
     query = make_query(query_text='*', search_in_fields=['content'])
+
     fieldnames, aggregators = analyze.extract_data_for_term_frequency(any_indexed_mock_corpus, query)
     total_doc_count, token_count = analyze.get_total_docs_and_tokens(test_es_client, query, any_indexed_mock_corpus, aggregators)
     assert total_doc_count == specs['total_docs']
@@ -181,7 +182,7 @@ def test_timeline_full_data(indexed_large_mock_corpus):
                 'size': 10,
             }
             for year in range(min_year, max_year + 2)
-        ],
+       ],
         'unit': 'year'
     }]
 

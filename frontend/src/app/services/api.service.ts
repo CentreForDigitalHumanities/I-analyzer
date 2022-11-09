@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -116,8 +116,8 @@ export class ApiService extends Resource {
         path: '/request_full_data'
     })
     public requestFullData: ResourceMethod<
-        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[] } |
-        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[] },
+        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[], corpus: string, } |
+        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[], corpus: string, },
         TaskResult>;
 
     @ResourceAction({
@@ -173,7 +173,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
+        LimitedResultsDownloadParameters,
         { success: false, message: string } | any >;
 
     @ResourceAction({
@@ -181,8 +181,9 @@ export class ApiService extends Resource {
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
+        ResultsDownloadParameters,
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -228,6 +229,13 @@ export class ApiService extends Resource {
         path: '/search_history'
     })
     public search_history: ResourceMethod<void, { 'queries': Query[] }>;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/downloads'
+    })
+    public downloads: ResourceMethod<void, Download[]>;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
