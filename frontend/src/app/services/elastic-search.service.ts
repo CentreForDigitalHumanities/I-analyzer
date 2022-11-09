@@ -97,12 +97,12 @@ export class ElasticSearchService {
     private filtersFromEsQuery(query: EsQuery, corpus: Corpus): SearchFilter<SearchFilterData>[] {
         if ('bool' in query.query) {
             const filters = query.query.bool.filter;
-            return filters.map(filter => this.EsFilterToSearchFilter(filter, corpus));
+            return filters.map(filter => this.esFilterToSearchFilter(filter, corpus));
         }
         return [];
     }
 
-    private EsFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
+    private esFilterToSearchFilter(filter: EsFilter, corpus: Corpus): SearchFilter<SearchFilterData> {
         let field: CorpusField;
         let fieldName: string;
         let value: any;
