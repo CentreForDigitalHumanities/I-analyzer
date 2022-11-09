@@ -1,11 +1,10 @@
 from sklearn.preprocessing import minmax_scale
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import mean_squared_error
 from sklearn.decomposition import PCA
 import numpy as np
 from scipy.optimize import minimize
-
 import wordmodels.utils as utils
+from math import radians, cos, sin
 
 
 def model_contains_terms(terms, model):
@@ -48,26 +47,10 @@ def decompose_to_2d(vectors):
     return decomposed
 
 def parameters_from_coordinates(coordinates_per_timeframe):
-    return [
-        coordinate
-        for coordinates in coordinates_per_timeframe
-        for coordinate in np.nditer(coordinates)
-    ]
+    return [ 0 for coordinates in coordinates_per_timeframe ]
 
-def coordinates_from_parameters(parameters, terms_per_timeframe):
-    start_slice = lambda index : sum(len(terms) for terms in terms_per_timeframe[:index])
-    slice_per_timeframe = [
-        (start_slice(index) * 2, (start_slice(index) + len(terms)) * 2)
-        for index, terms in enumerate(terms_per_timeframe)
-    ]
-    parameters_per_timeframe = [
-        np.array(parameters[start:stop])
-        for start, stop in slice_per_timeframe
-    ]
-    coordinates_per_timeframe = [
-        p.reshape(int(p.size / 2), 2)
-        for p in parameters_per_timeframe
-    ]
+def coordinates_from_parameters(parameters, initial_coordinates):
+    coordinates_per_timeframe = rotate_coordinates(initial_coordinates, parameters)
     return coordinates_per_timeframe
 
 def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
@@ -77,57 +60,34 @@ def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
         'maxiter': 10000
     }
 
-    evaluation = lambda params: evaluate_coordinates(coordinates_from_parameters(params, terms_per_timeframe), vectors_per_timeframe, terms_per_timeframe)
+    evaluation = lambda params: evaluate_coordinates(
+        coordinates_from_parameters(params, initial),
+        vectors_per_timeframe,
+        terms_per_timeframe
+    )
 
     res = minimize(evaluation, parameters, method = 'nelder-mead', options=options)
-    final = coordinates_from_parameters(res.x, terms_per_timeframe)
+    final = coordinates_from_parameters(res.x, initial)
     return final
 
-def evaluate_coordinates(coordinates_per_timeframe, vectors_per_timeframe, terms_per_timeframe):
-    similarity_loss = total_similarity_loss(coordinates_per_timeframe, vectors_per_timeframe)
-    alignment_loss = total_alignment_loss(coordinates_per_timeframe, terms_per_timeframe)
-    loss = similarity_loss + alignment_loss
-
-    return loss
-
-def total_similarity_loss(coordinates_per_timeframe, vectors_per_timeframe):
-    loss_per_timeframe = [
-        similarity_loss(vectors, coordinates)
-        for coordinates, vectors in zip(coordinates_per_timeframe, vectors_per_timeframe)
+def rotate_coordinates(coordinates_per_timeframe, angle_per_timeframe):
+    return [
+        rotate_coordinates_in_timeframe(coordinates, angle)
+        for coordinates, angle in zip(coordinates_per_timeframe, angle_per_timeframe)
     ]
 
-    return sum(loss_per_timeframe)
+def rotate_coordinates_in_timeframe(coordinates, angle):
+    r = radians(-angle)
+    rotation_matrix = np.array([
+        [cos(r), -sin(r)],
+        [sin(r), cos(r)]
+    ])
+    rotated_coordinates = np.dot(coordinates, np.transpose(rotation_matrix))
+    return rotated_coordinates
 
-def similarity_loss(original_vectors, coordinates):
-    """
-    Given a numpy array of the original term vectors and a numpy array of new coordinates
-    (presumably a 2d map), give the loss over the similarity between terms.
-    This is the squared difference in the cosine similarity between each pair of terms.
-    """
-
-    if not similarities_defined(original_vectors):
-        return 0.0
-
-    vector_similarities = pairwise_similarities(original_vectors)
-    coordinate_similarities = pairwise_similarities(coordinates)
-
-    loss = mean_squared_error(vector_similarities, coordinate_similarities)
-    return loss
-
-def pairwise_similarities(vectors):
-    """
-    Given a 2d matrix, calculate the cosine similarity between each pair of rows
-    and return a vector of similarity scores.
-    Pairing is deterministic, so output between matrices of the same length can be compared.
-    """
-
-    n_rows = vectors.shape[0]
-    pairs = [(i, j) for i in range(n_rows) for j in range(n_rows) if i < j]
-
-    all_similarities = cosine_similarity(vectors, vectors)
-    unique_similarities = np.array([all_similarities[i, j] for i, j in pairs])
-    return unique_similarities
-
+def evaluate_coordinates(coordinates_per_timeframe, vectors_per_timeframe, terms_per_timeframe):
+    alignment_loss = total_alignment_loss(coordinates_per_timeframe, terms_per_timeframe)
+    return alignment_loss
 
 def total_alignment_loss(coordinates_per_timeframe, terms_per_timeframe):
     """

@@ -1,9 +1,10 @@
 import re
 import numpy as np
-from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates,  pairwise_similarities, similarity_loss
+from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates, rotate_coordinates_in_timeframe
 from wordmodels.visualisations import get_2d_contexts_over_time
 import pytest
 from wordmodels.conftest import WM_MOCK_CORPORA
+import pytest
 
 NUMBER_SIMILAR = 5
 
@@ -20,11 +21,11 @@ def test_coordinates_parameters_conversion():
         ]),
     ]
     terms = [['a', 'b', 'c'], ['a', 'b']]
-    parameters = [1.0, 0.0, 0.25, 0.75, 0.5, 0.5, 0.0, 0.0, 0.2, 0.3]
+    parameters = [0.0, 0.0]
 
     assert parameters_from_coordinates(parameters) == parameters
 
-    for timeframe, converted in enumerate(coordinates_from_parameters(parameters, terms)):
+    for timeframe, converted in enumerate(coordinates_from_parameters(parameters, coordinates)):
         original = coordinates[timeframe]
 
         assert converted.shape == original.shape
@@ -103,56 +104,6 @@ def test_initial_map():
     for coordinates, terms in zip(coordinates_per_timeframe, terms_per_timeframe):
         assert coordinates.shape == (len(terms), 2)
 
-
-def test_pairwise_similarities():
-    vectors = np.array([
-        [1.0, 1.0, 0.0, 0.0],
-        [1.0, 1.0, 0.0, 0.0],
-        [1.0, 0.0, 1.0, 0.0],
-        [0.0, 0.0, 1.0, 1.0]
-    ])
-
-    similarities = pairwise_similarities(vectors)
-
-    assert similarities.size == 6
-
-    assert round(similarities[0], 5) == 1.0
-    assert round(similarities[1], 5) == 0.5
-    assert round(similarities[2], 5) == 0.0
-
-def test_similarity_loss():
-
-    X_identical = np.array([
-        [1.0, 1.0, 0.0, 0.0],
-        [1.0, 1.0, 0.0, 0.0]
-    ])
-
-    X_orthagonal = np.array([
-        [0.0, 0.0, 1.0, 1.0],
-        [1.0, 1.0, 0.0, 0.0]
-    ])
-
-    y_identical = np.array([
-        [1.0, 0.0],
-        [1.0, 0.0]
-    ])
-
-    y_mixed = np.array([
-        [1.0, 0.0],
-        [0.5, 0.5]
-    ])
-
-    y_orthagonal = np.array([
-        [1.0, 0.0],
-        [0.0, 1.0]
-    ])
-
-    assert similarity_loss(X_identical, y_identical) < similarity_loss(X_identical, y_mixed)
-    assert similarity_loss(X_identical, y_identical) < similarity_loss(X_identical, y_orthagonal)
-
-    assert similarity_loss(X_orthagonal, y_orthagonal) < similarity_loss(X_orthagonal, y_identical)
-    assert similarity_loss(X_orthagonal, y_orthagonal) < similarity_loss(X_orthagonal, y_mixed)
-
 def test_alignment_loss_adjacent_timeframes():
 
     coordinates_1 = np.array([
@@ -204,3 +155,30 @@ def test_alignment_loss():
 
     assert total_alignment_loss(coordinates, terms) == 0.0625
     assert total_alignment_loss(coordinates[:2], terms[:2]) == 0.0
+
+@pytest.fixture(params=[0, 90])
+def rotation_test_case(request):
+    original_coordinates = np.array([
+        [1.0, 0.0],
+        [0.0, 1.0],
+        [1.0, 0.5],
+    ])
+
+    expected_results = {
+        0: original_coordinates,
+        90: np.array([
+            [0.0, -1.0],
+            [1.0, 0.0],
+            [0.5, -1.0],
+        ])
+    }
+    angle = request.param
+    expected_result = expected_results[angle]
+
+    return original_coordinates, angle, expected_result
+
+def test_rotation(rotation_test_case):
+    original_coordinates, angle, expected_result = rotation_test_case
+    result = rotate_coordinates_in_timeframe(original_coordinates, angle)
+    rounded_result = np.round(result, 2)
+    assert np.all(np.equal(rounded_result, expected_result))
