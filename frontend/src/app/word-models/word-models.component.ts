@@ -41,7 +41,7 @@ export class WordModelsComponent implements DoCheck, OnInit {
         wordcontext: {
             title: '2D context',
             manual: 'wordcontext',
-            chartID: 'chart',
+            chartID: 'context-chart',
         }
     };
 

@@ -50,6 +50,9 @@ export class WordContextComponent implements OnChanges {
             },
             datalabels: {
                 formatter: (value, _context) => value.label,
+                font: {
+                    size: 16
+                }
             }
         }
     };
