@@ -138,6 +138,10 @@ PP_CANADA_IMAGE = 'canada.jpeg'
 PP_FR_IMAGE = 'france.jpeg'
 
 PP_UK_WM = None
+PP_DE_WM = None
+PP_FR_WM = None
+PP_CA_WM = None
+PP_NL_WM = None
 
 #################
 
