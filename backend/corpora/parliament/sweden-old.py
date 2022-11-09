@@ -115,11 +115,11 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
 
     def __init__(self):
         self.fields = [
+            self.date_earliest, self.date_latest,
             self.book_id, self.book_label,
             self.country,
             self.era,
             self.chamber,
-            self.date_earliest, self.date_latest,
             self.speech,
             self.page,
             self.sequence,
