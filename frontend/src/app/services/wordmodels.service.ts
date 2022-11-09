@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, IResourceMethodFull, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
 
 import { environment } from '../../environments/environment';
-import { RelatedWordsResults, WordInModelResult, WordSimilarity } from '../models';
+import { RelatedWordsResults, TaskResult, WordInModelResult, WordSimilarity } from '../models';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034
 type ResourceMethod<IB, O> = IResourceMethod<IB, O>;
@@ -45,9 +45,9 @@ export class WordmodelsService extends Resource {
         method: ResourceRequestMethod.Get,
         path: '/get_2d_contexts_over_time'
     })
-    public context2dRequest: IResourceMethodFull<
+    public context2dRequest: ResourceMethod<
         { query_terms: string[], corpus: string, neighbours: number },
-        { ContextFeedback }>;
+        TaskResult>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -128,7 +128,7 @@ export class WordmodelsService extends Resource {
         });
     }
 
-    get2dContextOverTime(queryTerms: string[], corpusName: string, neighbours: number): any {
+    get2dContextOverTime(queryTerms: string[], corpusName: string, neighbours: number): Promise<TaskResult> {
         return this.context2dRequest(
             {
                 query_terms: queryTerms,

@@ -1,7 +1,6 @@
 from flask import request, abort, jsonify, Blueprint
 from flask_login import login_required
-import wordmodels.visualisations as visualisations
-import wordmodels.utils as utils
+from wordmodels import visualisations, utils, tasks
 
 wordmodels = Blueprint('wordmodels', __name__)
 
@@ -116,25 +115,19 @@ def get_word_in_model():
 def api_get_2d_contexts_over_time():
     corpus = request.args.get('corpus')
     terms = request.args.get('query_terms').split(',')
-    neigbours = request.args.get('neighbours')
+    neighbours = request.args.get('neighbours')
 
-    if not corpus and terms and neigbours:
+    if not corpus and terms and neighbours:
         abort(400)
 
     try:
-        results = visualisations.get_2d_contexts_over_time(terms, corpus, number_similar = int(neigbours))
-    except:
-        results = 'something went wrong'
-
-    if isinstance(results, str):
-        response = jsonify({
-            'succes': False,
-            'message': results
-        })
-    else:
-        response = jsonify({
+        task = tasks.get_2d_context_results.delay(terms, corpus, int(neighbours))
+        return jsonify({
             'success': True,
-            'data': results
+            'task_id': task.id,
         })
-
-    return response
+    except:
+        return jsonify({
+            'succes': False,
+            'message': 'could not set up result generation'
+        })

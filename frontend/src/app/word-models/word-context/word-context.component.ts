@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartOptions } from 'chart.js';
 import { ContextResults, Corpus, FreqTableHeaders, QueryModel } from '../../models';
-import { NotificationService, SearchService, WordmodelsService } from '../../services';
+import { ApiService, NotificationService, SearchService, WordmodelsService } from '../../services';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -85,7 +85,7 @@ export class WordContextComponent implements OnChanges {
 
     tableData: { word: string; time: string; x: number; y: number }[];
 
-    constructor(private wordModelsService: WordmodelsService) { }
+    constructor(private wordModelsService: WordmodelsService, private apiService: ApiService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.queryText || changes.corpus) {
@@ -97,15 +97,21 @@ export class WordContextComponent implements OnChanges {
 
     getResults(): Promise<void> {
         const queries = [this.queryText].concat(this.comparisonTerms);
-        return this.wordModelsService.get2dContextOverTime(queries, this.corpus.name, this.neighbours).then(result => {
-            if (result.success) {
-                this.data = result.data;
-                this.timeIntervals = result.data.map(item => item.time);
-                this.currentTimeIndex = 0;
-                this.makeTableData(result.data);
-                this.makeGraph(result.data, this.currentTimeIndex);
+        return this.wordModelsService.get2dContextOverTime(queries, this.corpus.name, this.neighbours).then(taskResult => {
+            if (taskResult.success === true) {
+                return this.apiService.pollTask<ContextResults>(taskResult.task_id);
             } else {
-                this.requestFailed(result.message)
+                this.error.emit(taskResult.message);
+            }
+        }).then(result => {
+            if (result.success === true && result.done) {
+                this.data = result.results;
+                this.timeIntervals = this.data.map(item => item.time);
+                this.currentTimeIndex = 0;
+                this.makeTableData(this.data);
+                this.makeGraph(this.data, this.currentTimeIndex);
+            } else {
+                this.requestFailed(result['message'])
             }
         });
     }
