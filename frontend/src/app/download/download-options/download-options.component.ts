@@ -11,12 +11,16 @@ export class DownloadOptionsComponent implements OnInit {
 
     @Output() cancel = new EventEmitter();
 
+    encodingOptions = [ 'utf-8', 'utf-16'];
+    encoding: 'utf-8'|'utf-16' = 'utf-8';
+
     constructor() { }
 
     ngOnInit(): void {
     }
 
     downloadLink(download: Download): string {
+        if (download) {
             return '/api/csv/' + download.filename;
         }
     }
