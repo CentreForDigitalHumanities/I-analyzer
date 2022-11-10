@@ -72,7 +72,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
             } else {
                 this.downloadFailed(result);
             }
-        }).catch(this.downloadFailed);
+        }).catch(this.downloadFailed.bind(this));
     }
 
     downloadFailed(result) {

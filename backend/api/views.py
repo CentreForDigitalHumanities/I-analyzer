@@ -36,6 +36,7 @@ from . import analyze
 from . import tasks
 from . import api
 from . import cache
+from . import convert_csv
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -274,10 +275,17 @@ def api_user_downloads():
     return jsonify(result)
 
 # endpoint for link send in email to download csv file
-@api.route('/csv/<filename>', methods=['get'])
-def api_csv(filename):
-    csv_files_dir=current_app.config['CSV_FILES_PATH']
-    return send_from_directory(csv_files_dir, filename)
+@api.route('/csv/<id>', methods=['get'])
+def api_csv(id):
+    encoding = request.args.get('encoding', 'utf-8')
+
+    record = models.Download.query.get(id)
+    directory, filename = os.path.split(record.filename)
+    download_type = record.download_type
+
+    filename = convert_csv.convert_csv(directory, filename, download_type, encoding)
+
+    return send_from_directory(directory, filename)
 
 
 @api.route('/login', methods=['POST'])

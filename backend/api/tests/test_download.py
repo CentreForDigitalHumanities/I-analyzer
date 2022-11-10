@@ -1,11 +1,13 @@
 from mock_corpora.mock_corpus_specs import CORPUS_SPECS
 from es import download as es_download
-from api import create_csv, tasks, download as api_download
+from api import create_csv, convert_csv, tasks, download as api_download
 from addcorpus.load_corpus import load_corpus
 import csv
 from ianalyzer.models import Download
 import pytest
 from flask import jsonify
+from es.search import hits
+import os
 
 match_all = {
     "query": {
@@ -101,7 +103,8 @@ def mock_es_result():
                     },
                     "highlight" : {
                         "speech" : [
-                            "Het gaat om een driehoek waarin <em>testen</em> en toetsen een"
+                            "Het gaat om een driehoek waarin <em>testen</em> en toetsen een",
+                            "om de highlights te <em>testen</em>"
                         ]
                     }
                 }
@@ -117,10 +120,13 @@ def mock_route():
 def mock_csv_fields():
     return ['speech']
 
-def test_create_csv(mock_es_result, mock_csv_fields, mock_route, test_app):
-    filename = create_csv.search_results_csv(mock_es_result['hits']['hits'], mock_csv_fields, mock_route)
+@pytest.fixture()
+def result_csv_with_highlights(test_app, mock_es_result, mock_route, mock_csv_fields):
+    return create_csv.search_results_csv(hits(mock_es_result), mock_csv_fields, mock_route)
+
+def test_create_csv(result_csv_with_highlights):
     counter = 0
-    with open(filename) as f:
+    with open(result_csv_with_highlights) as f:
         csv_output = csv.DictReader(f, delimiter=';', quotechar='"')
         assert csv_output != None
         for row in csv_output:
@@ -213,6 +219,8 @@ def test_csv_contents_multilingual(indexed_multilingual_mock_corpus):
 
     assert_result_csv_expectations(filename, expected, delimiter=';')
 
+
+
 def test_csv_encoding(indexed_multilingual_mock_corpus):
     '''Assert that the results csv file matches utf-8 encoding'''
 
@@ -297,10 +305,14 @@ mock_timeline_expected_data = [
     }
 ]
 
-def test_timeline_csv(test_app):
+@pytest.fixture()
+def term_frequency_file(indexed_mock_corpus):
     filename = create_csv.term_frequency_csv(mock_queries, mock_timeline_result, 'date', unit = 'year')
+    return filename
 
-    assert_result_csv_expectations(filename, mock_timeline_expected_data, delimiter=',')
+
+def test_timeline_csv(term_frequency_file):
+    assert_result_csv_expectations(term_frequency_file, mock_timeline_expected_data, delimiter=',')
 
 
 def test_date_format():
@@ -314,3 +326,38 @@ def test_date_format():
 
     for value, unit, expected in cases:
         assert create_csv.format_field_value(value, unit) == expected
+
+@pytest.fixture()
+def csv_directory(test_app):
+    return test_app.config['CSV_FILES_PATH']
+
+def assert_content_matches(file_1, encoding_1, file_2, encoding_2):
+    '''Assert that the content of a file is unchanged after saving it with different encoding'''
+    with open(file_1, 'r', encoding=encoding_1) as f:
+        contents_1 = f.read()
+
+    with open(file_2, 'r', encoding=encoding_2) as f:
+        contents_2 = f.read()
+
+    assert contents_1 == contents_2
+
+@pytest.mark.parametrize('target_encoding', ['utf-8', 'utf-16'])
+def test_encoding_conversion_results(csv_directory, indexed_multilingual_mock_corpus, target_encoding):
+    filename, corpus_specs = all_results_csv(indexed_multilingual_mock_corpus)
+    converted = convert_csv.convert_csv(csv_directory, filename, 'search_results', encoding = target_encoding, )
+    converted_path = os.path.join(csv_directory, converted)
+    assert_content_matches(filename, 'utf-8', converted_path, target_encoding)
+
+@pytest.mark.parametrize('target_encoding', ['utf-8', 'utf-16'])
+def test_encoding_conversion_term_frequency(csv_directory, term_frequency_file, target_encoding):
+    converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', encoding = target_encoding)
+    converted_path = os.path.join(csv_directory, converted)
+
+    assert_content_matches(term_frequency_file, 'utf-8', converted_path, target_encoding)
+
+def test_conversion_with_highlights(csv_directory, result_csv_with_highlights):
+    target_encoding = 'utf-16'
+    converted = convert_csv.convert_csv(csv_directory, result_csv_with_highlights, 'search_results', encoding = target_encoding)
+    converted_path = os.path.join(csv_directory, converted)
+
+    assert_content_matches(result_csv_with_highlights, 'utf-8', converted_path, target_encoding)

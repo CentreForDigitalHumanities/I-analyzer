@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -183,7 +183,7 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public csv: ResourceMethod<
-        { filename: string },
+        { id: number } | ({ id: number } & DownloadOptions),
         { success: false, message: string } | any >;
 
 
