@@ -64,7 +64,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     downloadFile(download: Download, options: DownloadOptions) {
         this.apiService.csv({
-            filename: download.filename,
+            id: download.id,
         }).then( result => {
             if (result.status === 200) {
                 saveAs(result.body, download.filename);

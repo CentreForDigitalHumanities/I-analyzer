@@ -97,6 +97,7 @@ export type DownloadStatus = 'done' | 'working' | 'error';
 export type DownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[] | ResultsDownloadParameters;
 
 export type Download = {
+    id: number,
     started: Date,
     completed?: Date,
     download_type: DownloadType,

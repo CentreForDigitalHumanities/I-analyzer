@@ -44,7 +44,7 @@ def complete_download(log_id_and_filename):
     else:
         api_download.store_download_failed(log_id)
 
-    return filename
+    return log_id
 
 
 @celery_app.task()
@@ -188,9 +188,9 @@ def remove_size_limit(parameters):
     return parameters
 
 @celery_app.task()
-def csv_data_email(csv_filepath, user_email, username):
+def csv_data_email(log_id, user_email, username):
     logger.info('should now be sending email')
-    _, filename = os.path.split(csv_filepath)
+    link_url = current_app.config['BASE_URL'] + '/api/csv/{}'.format(log_id) #this is the route defined for csv download in views.py
     send_user_mail(
         email=user_email,
         username=username,
@@ -198,7 +198,7 @@ def csv_data_email(csv_filepath, user_email, username):
         email_title="Download CSV",
         message="Your .csv file is ready for download.",
         prompt="Click on the link below.",
-        link_url=current_app.config['BASE_URL'] + "/api/csv/" + filename, #this is the route defined for csv download in views.py
+        link_url=link_url,
         link_text="Download .csv file"
     )
 

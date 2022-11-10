@@ -178,7 +178,7 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
-        path: '/csv/{filename}',
+        path: '/csv/{id}',
         responseBodyType: ResourceResponseBodyType.Blob,
         asResourceResponse: true
     })

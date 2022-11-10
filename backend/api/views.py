@@ -30,6 +30,7 @@ from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 import wordmodels.visualisations as wordmodel_visualisations
 
+
 from api.user_mail import send_user_mail
 from . import security
 from . import analyze
@@ -196,7 +197,6 @@ def api_corpus_document(corpus, document_name):
     Return a document for a corpus.
     '''
     return send_from_directory(corpus_dir(corpus), 'documents/{}'.format(document_name))
-
 
 @api.route('/download', methods=['POST'])
 @login_required
