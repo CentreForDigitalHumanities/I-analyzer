@@ -4,7 +4,7 @@ FROM python:3.8-buster
 ENV PYTHONUNBUFFERED 1
 # Get required libraries for xmlsec
 RUN apt-get -y update
-RUN apt-get install -y pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+RUN apt-get install -y pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl default-libmysqlclient-dev
 
 # make a directory in the container
 WORKDIR /backend

@@ -1,7 +1,23 @@
 services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    volumes:
+      - ianalyzer-db:/var/lib/mysql
   backend:
     build:
       context: ./backend
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
     ports:
       - 5000:5000
     volumes:
@@ -19,3 +35,6 @@ services:
         source: ./frontend/src
         target: /frontend/src
     command: sh -c "yarn start-docker"
+
+volumes:
+  ianalyzer-db:

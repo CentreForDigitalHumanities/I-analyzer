@@ -13,3 +13,4 @@ backend/migrations/versions/migration_detainment_chamber
 saml/
 nltk_data/
 dump.rdb
+.env
