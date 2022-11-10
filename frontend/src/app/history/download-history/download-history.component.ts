@@ -16,6 +16,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     faDownload = faDownload;
 
+    itemToDownload: Download;
+
     constructor(private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService) {
         super(corpusService);
     }
@@ -25,10 +27,6 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         this.apiService.downloads()
             .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))
             .catch(err => console.error(err));
-    }
-
-    downloadLink(download: Download): string {
-        return '/api/csv/' + download.filename;
     }
 
     downloadType(type: DownloadType): string {

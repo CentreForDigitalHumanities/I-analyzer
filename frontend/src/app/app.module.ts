@@ -82,6 +82,7 @@ import { FullDataButtonComponent } from './visualization/full-data-button/full-d
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryDirective } from './history/history.directive';
+import { DownloadOptionsComponent } from './download/download-options/download-options.component';
 
 
 export const appRoutes: Routes = [
@@ -161,6 +162,7 @@ export const declarations: any[] = [
     DocumentViewComponent,
     DownloadComponent,
     DownloadHistoryComponent,
+    DownloadOptionsComponent,
     DropdownComponent,
     ErrorComponent,
     FilterManagerComponent,
