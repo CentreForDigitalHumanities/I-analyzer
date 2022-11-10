@@ -209,7 +209,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route', 'encoding']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -219,7 +219,10 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            _, csv_file = tasks.make_csv((None, search_results), request.json)
+            _, csv_path = tasks.make_csv((None, search_results), request.json)
+            directory, filename = os.path.split(csv_path)
+            converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
+            csv_file = os.path.join(directory, converted_filename)
         except:
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response

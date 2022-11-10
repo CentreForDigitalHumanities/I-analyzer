@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { Download, DownloadOptions } from '../../models';
+import { Download, PendingDownload, DownloadOptions } from '../../models';
 
 @Component({
     selector: 'ia-download-options',
@@ -7,7 +7,7 @@ import { Download, DownloadOptions } from '../../models';
     styleUrls: ['./download-options.component.scss']
 })
 export class DownloadOptionsComponent implements OnInit {
-    @Input() download: Download;
+    @Input() download: Download | PendingDownload;
 
     @Output() confirm = new EventEmitter<DownloadOptions>();
     @Output() cancel = new EventEmitter();

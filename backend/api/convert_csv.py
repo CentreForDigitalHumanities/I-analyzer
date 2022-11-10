@@ -3,6 +3,7 @@ import os
 
 
 def convert_csv(directory, filename, download_type, encoding='utf-8'):
+    '''Convert CSV to match encoding. Returns the filename (not the full path) of the converted file.'''
     if not conversion_needed(encoding):
         return filename
 
