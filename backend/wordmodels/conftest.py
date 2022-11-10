@@ -8,10 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 TEST_VOCAB_SIZE = 200
 TEST_DIMENSIONS = 20
-TEST_BINS = {
-    'mock-svd-ppmi-corpus': [(1810, 1839), (1840, 1869), (1870, 1899)],
-    'mock-wordvec-corpus': [(1880, 1900), (1900, 1920), (1920, 1940)]
-}
+TEST_BINS = [(1810, 1839), (1840, 1869), (1870, 1899)]
 WM_MOCK_CORPORA = ['mock-svd-ppmi-corpus', 'mock-wordvec-corpus']
 WM_TYPES = ['svd_ppmi', 'word2vec']
 
