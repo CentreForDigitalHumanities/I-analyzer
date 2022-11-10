@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
 import { Corpus, Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
+import { ApiService, CorpusService, DownloadService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
 
 @Component({
@@ -17,7 +17,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     itemToDownload: Download;
 
-    constructor(private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService, private notificationService: NotificationService) {
+    constructor(private downloadService: DownloadService, private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService, private notificationService: NotificationService) {
         super(corpusService);
     }
 
@@ -63,9 +63,7 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
     }
 
     downloadFile(download: Download, options: DownloadOptions) {
-        this.apiService.csv({
-            id: download.id,
-        }).then( result => {
+        this.downloadService.retrieveFinishedDownload(download.id, options).then( result => {
             if (result.status === 200) {
                 saveAs(result.body, download.filename);
                 this.itemToDownload = undefined;
