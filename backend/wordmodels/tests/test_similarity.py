@@ -43,21 +43,12 @@ def test_cosine_similarity_matrix_vector():
 
 @pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
 def test_term_similarity(test_app, mock_corpus):
-    cases = {
-        'mock-svd-ppmi-corpus': {
-            'term': 'elizabeth',
-            'similar_term': 'she',
-            'less_similar': 'he',
-            'uppercase_term': 'She'
-        },
-        'mock-wordvec-corpus': {
-            'term': 'payement',
-            'similar_term': 'payeur',
-            'less_similar': 'finances',
-            'uppercase_term': 'Payeur'
-        }
+    case = {
+        'term': 'elizabeth',
+        'similar_term': 'she',
+        'less_similar': 'he',
+        'uppercase_term': 'She'
     }
-    case = cases.get(mock_corpus)
     corpus = load_corpus(mock_corpus)
     binned_models = load_word_models(corpus, True)
     model = binned_models[0]
