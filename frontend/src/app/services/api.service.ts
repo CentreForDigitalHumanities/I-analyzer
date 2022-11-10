@@ -177,6 +177,17 @@ export class ApiService extends Resource {
         { success: false, message: string } | any >;
 
     @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/csv/{filename}',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true
+    })
+    public csv: ResourceMethod<
+        { filename: string },
+        { success: false, message: string } | any >;
+
+
+    @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/download_task'
     })
@@ -268,6 +279,9 @@ export class ApiService extends Resource {
         responseBodyType: ResourceResponseBodyType.Text
     })
     public corpusdescription: ResourceMethod<{ filename: string, corpus: string }, any>;
+
+
+
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);

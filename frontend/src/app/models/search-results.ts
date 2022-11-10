@@ -105,3 +105,7 @@ export type Download = {
     filename?: string,
     status: DownloadStatus,
 };
+
+export type DownloadOptions = {
+    encoding: 'utf-8'|'utf-16';
+};

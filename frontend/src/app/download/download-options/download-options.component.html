@@ -22,9 +22,9 @@
             </form>
         </section>
         <footer class="modal-card-foot">
-            <a class="button is-primary" [href]="downloadLink(download)">
+            <button class="button is-primary" (click)="confirmDownload()">
                 Download
-            </a>
+            </button>
             <button class="button" (click)="cancelDownload()">
                 Cancel
             </button>

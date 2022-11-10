@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { Download } from '../../models';
+import { Download, DownloadOptions } from '../../models';
 
 @Component({
     selector: 'ia-download-options',
@@ -9,6 +9,7 @@ import { Download } from '../../models';
 export class DownloadOptionsComponent implements OnInit {
     @Input() download: Download;
 
+    @Output() confirm = new EventEmitter<DownloadOptions>();
     @Output() cancel = new EventEmitter();
 
     encodingOptions = [ 'utf-8', 'utf-16'];
@@ -19,10 +20,10 @@ export class DownloadOptionsComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    downloadLink(download: Download): string {
-        if (download) {
-            return '/api/csv/' + download.filename;
-        }
+    confirmDownload() {
+        this.confirm.emit({
+            encoding: this.encoding,
+        })
     }
 
     cancelDownload() {

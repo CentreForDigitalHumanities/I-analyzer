@@ -54,4 +54,5 @@
     </p-table>
 </section>
 
-<ia-download-options [download]="itemToDownload" (cancel)="itemToDownload = undefined"></ia-download-options>
+<ia-download-options [download]="itemToDownload" (cancel)="itemToDownload = undefined"
+    (confirm)="downloadFile(itemToDownload, $event)"></ia-download-options>
