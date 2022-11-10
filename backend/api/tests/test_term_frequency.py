@@ -186,7 +186,7 @@ def test_timeline_full_data(indexed_large_mock_corpus):
         'unit': 'year'
     }]
 
-    filename = tasks.timeline_term_frequency_full_data(full_data_parameters)
+    _, filename = tasks.timeline_term_frequency_full_data(None, full_data_parameters)
 
     with open(filename) as f:
         reader = csv.DictReader(f)
