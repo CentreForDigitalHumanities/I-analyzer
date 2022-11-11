@@ -17,7 +17,7 @@
             <a class="dropdown-item" [ngClass]="{'is-active': value === undefined}" (click)="select(undefined)" *ngIf="canDeselect">
                 {{placeholder}}
             </a>
-            <a class="dropdown-item" *ngFor="let option of options" [ngClass]="{'is-active': value !== undefined && option == value}"
+            <a class="dropdown-item" *ngFor="let option of options" [ngClass]="{'is-active': value !== undefined && option['label'] == value['label']}"
                 (click)="select(option)">
                 <ng-container *ngIf="optionLabel === undefined">{{option}}</ng-container>
                 <ng-container *ngIf="optionLabel !== undefined">{{option[optionLabel]}}</ng-container>
