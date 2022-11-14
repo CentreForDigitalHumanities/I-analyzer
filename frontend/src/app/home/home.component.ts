@@ -16,6 +16,6 @@ export class HomeComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.corpusService.get().then((items) => this.items = items);
+        this.corpusService.get(true).then((items) => this.items = items);
     }
 }
