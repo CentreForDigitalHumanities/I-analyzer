@@ -104,14 +104,8 @@
 
 <div [ngClass]="{ 'is-hidden': asTable }">
     <div class="block">
-        <canvas id="chart" width="400"></canvas>
-    </div>
-
-    <div class="field">
-        <label class="checkbox" iaBalloon="scale the line graph for each ngram to the same size">
-            <input type="checkbox" [checked]="fixLineGraphHeights" (change)="setFixLineHeights($event)">
-            Fixed height for line graphs
-        </label>
+        <ia-joyplot [data]="currentResults" [xAxisLabel]="xAxisLabel" [formatValue]="formatValue" [palette]="palette">
+        </ia-joyplot>
     </div>
 </div>
 
