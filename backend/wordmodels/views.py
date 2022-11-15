@@ -13,7 +13,8 @@ def get_related_words():
         abort(400)
     results = visualisations.get_diachronic_contexts(
         request.json['query_term'],
-        request.json['corpus_name']
+        request.json['corpus_name'],
+        number_similar = request.json.get('neighbours'),
     )
     if isinstance(results, str):
         # the method returned an error string
@@ -40,7 +41,8 @@ def get_related_words_time_interval():
     results = visualisations.get_context_time_interval(
         request.json['query_term'],
         request.json['corpus_name'],
-        request.json['time']
+        request.json['time'],
+        number_similar = request.json.get('neighbours'),
     )
     if isinstance(results, str):
         response = jsonify({

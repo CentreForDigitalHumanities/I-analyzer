@@ -54,7 +54,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getTotalData(): Promise<void> {
-        return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name)
+        return this.wordModelsService.getRelatedWords(this.queryText, this.corpus.name, this.neighbours)
             .then(results => {
                 this.totalSimilarities = results.total_similarities;
                 this.totalData = results.similarities_over_time;
@@ -71,7 +71,7 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getTimeData(time: string): Promise<WordSimilarity[]> {
-        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time);
+        return this.wordModelsService.getRelatedWordsTimeInterval(this.queryText, this.corpus.name, time, this.neighbours);
     }
 
     onError(error) {
