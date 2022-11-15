@@ -52,7 +52,7 @@ def find_n_most_similar(wm, wm_type, query_term, n):
 
         similarities = cosine_similarity_matrix_vector(vec, matrix)
         sorted_sim = np.sort(similarities)
-        most_similar_indices = np.where(similarities >= sorted_sim[-n])
+        most_similar_indices = np.where(similarities >= sorted_sim[-(n + 1)])
         return [{
             'key': index_to_term(index, vocab),
             'similarity': similarities[index]
