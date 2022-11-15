@@ -5,6 +5,7 @@ from addcorpus.load_corpus import load_corpus
 import wordmodels.similarity as similarity
 from wordmodels.visualisations import load_word_models
 from wordmodels.conftest import WM_MOCK_CORPORA
+from copy import copy
 
 def test_cosine_similarity_vectors():
     cases = [
@@ -76,3 +77,37 @@ def test_n_nearest_neighbours_amount(test_app, mock_corpus):
 
         result = similarity.find_n_most_similar(model, wm_type, term, n)
         assert len(result) == n
+
+@pytest.fixture(params=WM_MOCK_CORPORA)
+def model_with_term_removed(request, test_app):
+    mock_corpus = request.param
+    corpus = load_corpus(mock_corpus)
+    binned_models = load_word_models(corpus, True)
+    original_model = binned_models[0]
+    model = copy(original_model)
+
+    term = 'darcy'
+    model['vocab'] = list(model['vocab']) # convert from np.array if needed
+    model['vocab'].remove(term)
+
+    return corpus, model, original_model, term
+
+
+def test_vocab_is_subset_of_model(model_with_term_removed):
+    '''Test cases where the vocab array is a subset of terms with vectors.'''
+
+    corpus, model, original_model, missing_term = model_with_term_removed
+    assert missing_term not in model['vocab']
+
+    wm_type = corpus.word_model_type
+
+    other_term = 'elizabeth'
+
+    # there SHOULD be a score for the original model...
+    similarity_score = similarity.term_similarity(original_model, wm_type, missing_term, other_term)
+    assert similarity_score != None
+
+    # but not with the adjusted vocab
+    similarity_score = similarity.term_similarity(model, wm_type, missing_term, other_term)
+    assert similarity_score == None
+
