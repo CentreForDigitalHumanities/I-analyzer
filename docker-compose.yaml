@@ -35,6 +35,25 @@ services:
         source: ./frontend/src
         target: /frontend/src
     command: sh -c "yarn start-docker"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    environment:
+      - node.name=ianalyzer-node
+      - discovery.type=single-node
+      - cluster.name=ianalizer-es-data-cluster
+      - bootstrap.memory_lock=true
+      - xpack.security.enrollment.enabled=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTIC_PASSWORD=$ELASTIC_ROOT_PASSWORD
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ianalyzer-es:/usr/share/elasticsearch/data
+    ports:
+      - 127.0.0.1:9200:9200
 
 volumes:
   ianalyzer-db:
+  ianalyzer-es:
