@@ -63,3 +63,16 @@ def test_term_similarity(test_app, mock_corpus):
 
     similarity3 = similarity.term_similarity(model, wm_type, case['term'], case['uppercase_term'])
     assert similarity1 == similarity3
+
+@pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
+def test_n_nearest_neighbours_amount(test_app, mock_corpus):
+
+    for n in range(1, 16, 5):
+        term = 'elizabeth'
+        corpus = load_corpus(mock_corpus)
+        binned_models = load_word_models(corpus, True)
+        model = binned_models[0]
+        wm_type = corpus.word_model_type
+
+        result = similarity.find_n_most_similar(model, wm_type, term, n)
+        assert len(result) == n
