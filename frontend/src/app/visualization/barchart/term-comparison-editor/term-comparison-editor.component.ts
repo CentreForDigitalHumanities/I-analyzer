@@ -8,6 +8,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 })
 export class TermComparisonEditorComponent implements OnChanges {
     @Input() initialValue = []; // starting value
+    @Input() termLimit = 10;
 
     queries: string[] = [];
 
@@ -34,6 +35,6 @@ export class TermComparisonEditorComponent implements OnChanges {
 
     get disableConfirm(): boolean {
         if (!this.queries || !this.queries.length) { return false; }
-        return this.queries.length >= 10;
+        return this.queries.length >= this.termLimit;
     }
 }

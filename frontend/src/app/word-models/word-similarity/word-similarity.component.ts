@@ -15,6 +15,7 @@ export class WordSimilarityComponent implements OnChanges {
     @Input() asTable: boolean;
     @Input() palette: string[];
 
+    comparisonTermLimit = Infinity;
     comparisonTerms: string[] = [];
 
     @Output() error = new EventEmitter();
