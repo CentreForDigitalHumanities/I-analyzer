@@ -107,7 +107,17 @@ def test_vocab_is_subset_of_model(model_with_term_removed):
     similarity_score = similarity.term_similarity(original_model, wm_type, missing_term, other_term)
     assert similarity_score != None
 
-    # but not with the adjusted vocab
+    # ... but not with the adjusted vocab
     similarity_score = similarity.term_similarity(model, wm_type, missing_term, other_term)
     assert similarity_score == None
 
+    # term should be included in nearest neighbours with original model...
+    similar_term = 'bingley'
+    neighbours = similarity.find_n_most_similar(original_model, wm_type, similar_term, 10)
+    assert any([neighbour['key'] == missing_term for neighbour in neighbours])
+    assert len(neighbours) == 10
+
+    # ... but not with the adjusted vocab
+    neighbours = similarity.find_n_most_similar(model, wm_type, similar_term, 10)
+    assert not any([neighbour['key'] == missing_term for neighbour in neighbours])
+    assert len(neighbours) == 10
