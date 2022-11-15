@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Chart, ChartData, ChartOptions, Filler, TooltipItem } from 'chart.js';
+import Zoom from 'chartjs-plugin-zoom';
 import * as _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { selectColor } from '../../visualization/select-color';
@@ -266,6 +267,21 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
             options.elements.point.radius = 4;
             options.plugins.legend.labels.usePointStyle = true;
+            options.plugins.zoom = {
+                zoom: {
+                    mode: 'x',
+                    drag: {
+                        enabled: true,
+                        threshold: 0,
+                    },
+                    pinch: {
+                        enabled: false,
+                    },
+                    wheel: {
+                        enabled: false,
+                    },
+                }
+            }
         }
 
         if (style === 'stream') {
@@ -307,8 +323,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 type: 'line',
                 data: data,
                 options: options,
-                plugins: [Filler]
+                plugins: [Filler, Zoom]
             });
+            this.chart.canvas.ondblclick = (event) => this.chart.resetZoom();
         }
     }
 }
