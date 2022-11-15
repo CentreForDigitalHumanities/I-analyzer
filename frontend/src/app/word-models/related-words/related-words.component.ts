@@ -19,7 +19,6 @@ export class RelatedWordsComponent implements OnChanges {
     @Output() isLoading = new EventEmitter<boolean>();
 
     neighbours = 5;
-    maxNeighbours = 10;
 
     timeIntervals: string[] = [];
     totalSimilarities: WordSimilarity[]; // similarities over all time periods
@@ -37,13 +36,9 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData(): void {
-        this.checkNeighbours();
         this.showLoading(this.getTotalData());
     }
 
-    checkNeighbours(): void {
-        this.neighbours = _.min([this.neighbours, this.maxNeighbours])
-    }
 
     /** execute a process with loading spinner */
     async showLoading(promise): Promise<any> {
