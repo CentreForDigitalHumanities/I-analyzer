@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { Corpus, WordSimilarity } from '../../models';
 import { WordmodelsService } from '../../services/index';
 import * as _ from 'lodash';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'ia-related-words',
@@ -17,10 +18,15 @@ export class RelatedWordsComponent implements OnChanges {
     @Output() error = new EventEmitter();
     @Output() isLoading = new EventEmitter<boolean>();
 
+    neighbours = 5;
+    maxNeighbours = 10;
+
     timeIntervals: string[] = [];
     totalSimilarities: WordSimilarity[]; // similarities over all time periods
     totalData: WordSimilarity[]; // similarities of overall nearest neighbours per time period
     zoomedInData: WordSimilarity[][]; // data when focusing on a single time interval: shows nearest neighbours from that period
+
+    faCheck = faCheck;
 
     constructor(private wordModelsService: WordmodelsService) { }
 
@@ -31,7 +37,12 @@ export class RelatedWordsComponent implements OnChanges {
     }
 
     getData(): void {
+        this.checkNeighbours();
         this.showLoading(this.getTotalData());
+    }
+
+    checkNeighbours(): void {
+        this.neighbours = _.min([this.neighbours, this.maxNeighbours])
     }
 
     /** execute a process with loading spinner */
