@@ -70,33 +70,9 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
         }
         for (time_label, time_bin) in zip(times, binned) for word in words]
 
-    return word_list, word_data, times
-
-
-def get_context_time_interval(query_term, corpus_string, which_time_interval, number_similar=NUMBER_SIMILAR):
-    """ Given a query term and corpus, and a number indicating the mean of the requested time interval,
-    return a word list of number_similar most similar words.
-    """
-    corpus = load_corpus(corpus_string)
-    wm_type = corpus.word_model_type
-    binned = load_word_models(corpus, binned=True)
-    start_year, end_year = which_time_interval.split('-')
-    time_bin = next((time for time in binned if time['start_year']==int(start_year) and
-        time['end_year']==int(end_year)), None)
-    time_label = '{}-{}'.format(time_bin['start_year'], time_bin['end_year'])
-    word_list = find_n_most_similar(
-        time_bin,
-        wm_type,
-        query_term,
-        number_similar)
-    if not word_list:
-        return "The query term is not in the word models' vocabulary."
-    word_data = [
-        {
-            'key': word['key'],
-            'similarity': word['similarity'],
-            'time': time_label
-        }
-        for word in word_list
+    data_per_timeframe = [
+        find_n_most_similar(time_bin, wm_type, query_term, number_similar)
+        for time_bin in binned
     ]
-    return word_data
+
+    return word_list, word_data, times, data_per_timeframe
