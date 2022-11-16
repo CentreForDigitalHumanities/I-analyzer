@@ -13,7 +13,7 @@ from api.user_mail import send_user_mail
 from es import es_forward, download as es_download
 from ianalyzer import celery_app
 from api import create_csv
-from celery import chain
+from celery import chain, group
 
 logger = logging.getLogger(__name__)
 
@@ -103,12 +103,18 @@ def get_ngram_data(request_json):
     )
 
 @celery_app.task()
+def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_value, size):
+    return analyze.get_aggregate_term_frequency(
+        es_query, corpus_name, field_name, field_value, size
+    )
+
+@celery_app.task()
 def get_histogram_term_frequency(request_json):
     corpus = request_json['corpus_name']
     bins = request_json['bins']
 
-    data = [
-        analyze.get_aggregate_term_frequency(
+    bin_tasks = group([
+        get_histogram_term_frequency_bin.s(
             request_json['es_query'],
             corpus,
             request_json['field_name'],
@@ -116,7 +122,8 @@ def get_histogram_term_frequency(request_json):
             bin['size'],
         )
         for bin in bins
-    ]
+    ])
+    data = bin_tasks().get()
     return data
 
 @celery_app.task()
@@ -124,7 +131,11 @@ def histogram_term_frequency_full_data(log_id, parameters_per_series):
     try:
         query_per_series = [query.get_query_text(params['es_query']) for params in parameters_per_series]
         field_name = parameters_per_series[0]['field_name']
-        results_per_series = map(get_histogram_term_frequency, parameters_per_series)
+        parameters_unlimited = map(remove_size_limit, parameters_per_series)
+        series_tasks = group(
+            [get_histogram_term_frequency.s(series_parameters) for series_parameters in parameters_unlimited]
+        )
+        results_per_series = series_tasks().get()
         filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
         return log_id, filepath
     except Exception as e:
@@ -133,12 +144,18 @@ def histogram_term_frequency_full_data(log_id, parameters_per_series):
 
 
 @celery_app.task()
+def get_timeline_term_frequency_bin(es_query, corpus_name, field_name, start_date, end_date, size):
+    return analyze.get_date_term_frequency(
+        es_query, corpus_name, field_name, start_date, end_date, size,
+    )
+
+@celery_app.task()
 def get_timeline_term_frequency(request_json):
     corpus = request_json['corpus_name']
     bins = request_json['bins']
 
-    data = [
-        analyze.get_date_term_frequency(
+    bin_tasks = group([
+        get_timeline_term_frequency_bin.s(
             request_json['es_query'],
             corpus,
             request_json['field_name'],
@@ -147,7 +164,9 @@ def get_timeline_term_frequency(request_json):
             bin['size'],
         )
         for bin in bins
-    ]
+    ])
+    data = bin_tasks().get()
+    print(data)
     return data
 
 
@@ -158,7 +177,10 @@ def timeline_term_frequency_full_data(log_id, parameters_per_series):
         field_name = parameters_per_series[0]['field_name']
         unit = parameters_per_series[0]['unit']
         parameters_unlimited = map(remove_size_limit, parameters_per_series)
-        results_per_series = list(map(get_timeline_term_frequency, parameters_unlimited))
+        series_tasks = group(
+            [get_timeline_term_frequency.s(series_parameters) for series_parameters in parameters_unlimited]
+        )
+        results_per_series = series_tasks().get()
         filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
         return log_id, filepath
     except Exception as e:
