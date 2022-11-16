@@ -495,6 +495,7 @@ def api_task_status(task_id):
         elif results.state in ['PENDING', 'STARTED']:
             return jsonify({'success': True, 'done': False})
         else:
+            logger.error(results.info)
             return jsonify({'success': False, 'message': 'Task failed.'})
 
 
