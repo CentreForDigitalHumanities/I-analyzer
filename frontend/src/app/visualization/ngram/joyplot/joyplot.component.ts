@@ -1,7 +1,7 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartData, ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
-import { CorpusField, NgramResults } from '../../../models';
+import { NgramResults } from '../../../models';
 import { selectColor } from '../../select-color';
 
 @Component({
@@ -120,15 +120,6 @@ export class JoyplotComponent implements OnChanges {
         const max = this.fixLineGraphHeights ? _.max(data) : this.maxDataPoint;
         return data.map(point => 1.1 * point / max);
     }
-
-    updateChartColors() {
-        this.chartData.datasets.forEach((dataset, index) => {
-            const inverseIndex = this.chartData.datasets.length - (index + 1);
-            dataset.borderColor = selectColor(this.palette, inverseIndex);
-        });
-        this.chart.update();
-    }
-
 
     getFillColor(context) {
         const borderColor = context.dataset.borderColor as string;
