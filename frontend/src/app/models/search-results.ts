@@ -58,7 +58,8 @@ export type WordSimilarity = {
 export type RelatedWordsResults = {
     total_similarities: WordSimilarity[],
     similarities_over_time: WordSimilarity[],
-    time_points: string[]
+    time_points: string[],
+    similarities_over_time_local_top_n: WordSimilarity[][],
 }
 
 export type NgramResults = {
