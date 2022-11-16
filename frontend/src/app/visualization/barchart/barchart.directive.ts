@@ -368,6 +368,7 @@ export abstract class BarchartDirective
             if (res && res.success && res.done) {
                 return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
             } else {
+                this.error.emit(res['message'] || 'could not load results');
                 return series;
             }
         });
