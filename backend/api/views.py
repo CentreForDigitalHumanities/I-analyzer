@@ -573,7 +573,7 @@ def api_aggregate_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.get_histogram_term_frequency.delay(request.json)
+    task = tasks.histogram_term_frequency_tasks(request.json).apply_async()
     if not task:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
@@ -594,7 +594,7 @@ def api_date_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.get_timeline_term_frequency.delay(request.json)
+    task = tasks.timeline_term_frequency_tasks(request.json).apply_async()
     if not task:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:

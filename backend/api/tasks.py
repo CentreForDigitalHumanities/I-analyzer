@@ -108,12 +108,11 @@ def get_histogram_term_frequency_bin(es_query, corpus_name, field_name, field_va
         es_query, corpus_name, field_name, field_value, size
     )
 
-@celery_app.task()
-def get_histogram_term_frequency(request_json):
+def histogram_term_frequency_tasks(request_json):
     corpus = request_json['corpus_name']
     bins = request_json['bins']
 
-    bin_tasks = group([
+    return group([
         get_histogram_term_frequency_bin.s(
             request_json['es_query'],
             corpus,
@@ -123,8 +122,6 @@ def get_histogram_term_frequency(request_json):
         )
         for bin in bins
     ])
-    data = bin_tasks().get()
-    return data
 
 @celery_app.task()
 def histogram_term_frequency_full_data(log_id, parameters_per_series):
@@ -133,7 +130,7 @@ def histogram_term_frequency_full_data(log_id, parameters_per_series):
         field_name = parameters_per_series[0]['field_name']
         parameters_unlimited = map(remove_size_limit, parameters_per_series)
         series_tasks = group(
-            [get_histogram_term_frequency.s(series_parameters) for series_parameters in parameters_unlimited]
+            histogram_term_frequency_tasks(series_parameters) for series_parameters in parameters_unlimited
         )
         results_per_series = series_tasks().get()
         filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name)
@@ -149,12 +146,11 @@ def get_timeline_term_frequency_bin(es_query, corpus_name, field_name, start_dat
         es_query, corpus_name, field_name, start_date, end_date, size,
     )
 
-@celery_app.task()
-def get_timeline_term_frequency(request_json):
+def timeline_term_frequency_tasks(request_json):
     corpus = request_json['corpus_name']
     bins = request_json['bins']
 
-    bin_tasks = group([
+    return group([
         get_timeline_term_frequency_bin.s(
             request_json['es_query'],
             corpus,
@@ -165,9 +161,6 @@ def get_timeline_term_frequency(request_json):
         )
         for bin in bins
     ])
-    data = bin_tasks().get()
-    print(data)
-    return data
 
 
 @celery_app.task()
@@ -178,7 +171,7 @@ def timeline_term_frequency_full_data(log_id, parameters_per_series):
         unit = parameters_per_series[0]['unit']
         parameters_unlimited = map(remove_size_limit, parameters_per_series)
         series_tasks = group(
-            [get_timeline_term_frequency.s(series_parameters) for series_parameters in parameters_unlimited]
+            timeline_term_frequency_tasks(series_parameters) for series_parameters in parameters_unlimited
         )
         results_per_series = series_tasks().get()
         filepath = create_csv.term_frequency_csv(query_per_series, results_per_series, field_name, unit = unit)
