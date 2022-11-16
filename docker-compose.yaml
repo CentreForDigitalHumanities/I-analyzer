@@ -24,6 +24,9 @@ services:
       - type: bind
         source: ./backend
         target: /backend
+      - type: bind
+        source: ~/corpora
+        target: /corpora
     command: bash -c "flask run --host=0.0.0.0"
   frontend:
     build:
@@ -42,7 +45,7 @@ services:
       - discovery.type=single-node
       - cluster.name=ianalizer-es-data-cluster
       - bootstrap.memory_lock=true
-      - xpack.security.enrollment.enabled=true
+      - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
       - ELASTIC_PASSWORD=$ELASTIC_ROOT_PASSWORD
     ulimits:
