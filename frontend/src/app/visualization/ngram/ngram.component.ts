@@ -269,10 +269,4 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
         return `${value}`;
     }
-
-    get xAxisLabel(): string {
-        if (this.dateField) {
-            return `frequency by ${this.dateField.displayName.toLowerCase()}`;
-        }
-    }
 }

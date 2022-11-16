@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Chart, ChartData, ChartOptions } from 'chart.js';
 import * as _ from 'lodash';
-import { NgramResults } from '../../../models';
+import { CorpusField, NgramResults } from '../../../models';
 import { selectColor } from '../../select-color';
 
 @Component({
@@ -11,9 +11,10 @@ import { selectColor } from '../../select-color';
 })
 export class JoyplotComponent implements OnChanges {
     @Input() data: NgramResults;
-    @Input() xAxisLabel: string;
     @Input() formatValue: (x: number) => string;
     @Input() palette: string[];
+    @Input() quantity = 'frequency'
+    @Input() comparedByQuantity = 'date';
 
     maxDataPoint: number;
 
@@ -86,7 +87,7 @@ export class JoyplotComponent implements OnChanges {
             type: 'bar',
             xAxisID: 'xTotal',
             indexAxis: 'y',
-            label: 'total frequency',
+            label: `total ${this.quantity}`,
             backgroundColor: colors,
             hoverBackgroundColor: colors,
             data: totalsData,
@@ -147,7 +148,7 @@ export class JoyplotComponent implements OnChanges {
         const maxTotal = _.max(totals);
 
         const numberOfRows = data.datasets.length - 1;
-        const xLabel = this.xAxisLabel;
+        const xLabel = `${this.quantity} by ${this.comparedByQuantity}`;
 
         return {
             aspectRatio: 24 / (4 + numberOfRows),
@@ -161,7 +162,7 @@ export class JoyplotComponent implements OnChanges {
                 xTotal: {
                     type: 'linear',
                     title: {
-                        text: 'Total Frequency',
+                        text: `total ${this.quantity}`,
                         display: true,
                     },
                     ticks: {
@@ -206,7 +207,7 @@ export class JoyplotComponent implements OnChanges {
                         title: (tooltipItems) => {
                             const tooltipItem = tooltipItems[0];
                             if (tooltipItem.dataset.xAxisID === 'xTotal') {
-                                return 'Total frequency';
+                                return `total ${this.quantity}`;
                             } else {
                                 return tooltipItem.label;
                             }
