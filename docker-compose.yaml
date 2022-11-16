@@ -56,6 +56,20 @@ services:
       - ianalyzer-es:/usr/share/elasticsearch/data
     ports:
       - 127.0.0.1:9200:9200
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+  celery:
+    build:
+      context: ./backend
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+    command: celery -A ianalyzer.runcelery.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+
 
 volumes:
   ianalyzer-db:
