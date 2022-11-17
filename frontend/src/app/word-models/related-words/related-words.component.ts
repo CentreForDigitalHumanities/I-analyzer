@@ -48,15 +48,9 @@ export class RelatedWordsComponent implements OnChanges {
                 this.totalSimilarities = results.total_similarities;
                 this.totalData = results.similarities_over_time;
                 this.timeIntervals = results.time_points;
+                this.zoomedInData = results.similarities_over_time_local_top_n;
             })
             .catch(this.onError.bind(this));
-    }
-
-    async getZoomedInData(): Promise<void> {
-        const resultsPerTime: Promise<WordSimilarity[]>[] = this.timeIntervals.map(this.getTimeData.bind(this));
-        Promise.all(resultsPerTime)
-            .then(results => this.zoomedInData = results)
-            .catch(error => this.onError(error));
     }
 
     getTimeData(time: string): Promise<WordSimilarity[]> {
