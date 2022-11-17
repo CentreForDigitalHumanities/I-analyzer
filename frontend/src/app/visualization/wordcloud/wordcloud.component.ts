@@ -84,10 +84,11 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
         if (queryModel) {
             this.visualizationService.getWordcloudTasks(this.visualizedField.name, queryModel, this.corpus.name).then(result => {
                 this.tasksToCancel = result['taskIds'];
-                    const childTask = result['taskIds'][0];
-                    this.apiService.pollTask({'task_id': childTask}).then( outcome => {
-                        if (outcome['success'] === true) {
-                            this.significantText = outcome['results'] as AggregateResult[];
+                    const childTasks = result['taskIds'];
+                    this.apiService.pollTasks<AggregateResult[]>(childTasks).then( outcome => {
+                        if (outcome['success'] === true && outcome['done'] == true) {
+                            const result = outcome.results[0];
+                            this.significantText = result;
                             this.onDataLoaded();
                         } else {
                             this.error.emit(outcome);

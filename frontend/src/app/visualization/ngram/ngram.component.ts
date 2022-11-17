@@ -126,11 +126,11 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 .then(result => {
                     if (result.success) {
                         this.tasksToCancel = result.task_ids;
-                        const childTask = result.task_ids[0];
-                        this.apiService.pollTask(childTask).then(outcome => {
+                        this.apiService.pollTasks<NgramResults>(result.task_ids).then(outcome => {
                             if (outcome.success === true && outcome.done === true) {
-                                this.cacheResult(outcome.results, this.currentParameters);
-                                this.onDataLoaded(outcome.results as NgramResults);
+                                const result = outcome.results[0];
+                                this.cacheResult(result, this.currentParameters);
+                                this.onDataLoaded(result as NgramResults);
                             } else {
                                 this.onFailure(outcome['message']);
                             }

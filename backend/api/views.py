@@ -482,20 +482,21 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-@api.route('/task_status/<task_id>', methods=['GET'])
+@api.route('/task_status/<task_ids>', methods=['GET'])
 @login_required
-def api_task_status(task_id):
-    results = celery_app.AsyncResult(id=task_id)
-    if not results:
+def api_task_status(task_ids):
+    results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids.split(',')]
+    if not all(results):
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
-        if results.state == 'SUCCESS':
-            outcome = results.get()
-            return jsonify({'success': True, 'done': True, 'results': outcome})
-        elif results.state in ['PENDING', 'STARTED']:
+        if all(result.state == 'SUCCESS' for result in results):
+            outcomes = [result.get() for result in results]
+            return jsonify({'success': True, 'done': True, 'results': outcomes})
+        elif all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
             return jsonify({'success': True, 'done': False})
         else:
-            logger.error(results.info)
+            for result in results:
+                logger.error(result.info)
             return jsonify({'success': False, 'message': 'Task failed.'})
 
 
@@ -577,7 +578,7 @@ def api_aggregate_term_frequency():
     if not task:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_id': task.id})
+        return jsonify({'success': True, 'task_ids': [task.id]})
 
 @api.route('date_term_frequency', methods=['POST'])
 @login_required
@@ -598,7 +599,7 @@ def api_date_term_frequency():
     if not task:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_id': task.id})
+        return jsonify({'success': True, 'task_ids': [task.id]})
 
 @api.route('request_full_data', methods=['POST'])
 @login_required
@@ -619,4 +620,4 @@ def api_request_full_data():
     task_chain = tasks.download_full_data(request.json, current_user)
     task_chain.apply_async()
 
-    return jsonify({'success': True, 'task_id': task_chain.id})
+    return jsonify({'success': True, 'task_ids': [task_chain.id]})
