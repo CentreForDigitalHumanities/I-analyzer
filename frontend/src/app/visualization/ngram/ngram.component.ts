@@ -106,7 +106,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                 params.get('freqCompensation') === 'true' :
                 this.freqCompensationOptions[0].value,
             analysis: params.get('analysis') || 'none',
-            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 100,
+            maxDocuments: parseInt(params.get('maxDocuments'), 10) || 50,
             numberOfNgrams: parseInt(params.get('numberOfNgrams'), 10) || 10,
             dateField: params.get('dateField') || 'date',
         };
