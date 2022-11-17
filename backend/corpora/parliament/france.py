@@ -22,7 +22,6 @@ class ParliamentFrance(Parliament, CSVCorpus):
     language = 'french'
     description_page = 'france.md'
     word_model_path = current_app.config['PP_FR_WM']
-    word_model_type = 'word2vec'
 
     field_entry = 'speech_id'
 

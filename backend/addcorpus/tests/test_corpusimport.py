@@ -30,7 +30,7 @@ def test_import_error(test_app, monkeypatch):
 
 
 def test_import_from_anywhere(session, db, test_app, admin_role, monkeypatch, tmpdir):
-    ''' Verify that the corpus definition 
+    ''' Verify that the corpus definition
     can live anywhere in the file system
     '''
     testdir = tmpdir.mkdir('/testdir')

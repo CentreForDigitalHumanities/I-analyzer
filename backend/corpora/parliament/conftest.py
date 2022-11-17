@@ -77,6 +77,11 @@ class UnittestConfig:
     PP_DENMARK_NEW_DATA = os.path.join(here, 'tests', 'data', 'denmark-new')
     PP_DENMARK_NEW_INDEX = 'parliament-denmark-new'
 
+    PP_UK_WM = None
+    PP_DE_WM = None
+    PP_FR_WM = None
+    PP_CA_WM = None
+    PP_NL_WM = None
 
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"

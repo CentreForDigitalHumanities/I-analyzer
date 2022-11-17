@@ -27,7 +27,6 @@ class ParliamentCanada(Parliament, CSVCorpus):
 
     document_context = document_context(sort_field=None)
     word_model_path = current_app.config['PP_CA_WM']
-    word_model_type = 'word2vec'
 
     def sources(self, start, end):
         logger = logging.getLogger('indexing')
