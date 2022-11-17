@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
+import { Subject } from 'rxjs';
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData, CorpusField } from '../models/index';
 import { SearchService } from '../services';
@@ -15,7 +16,9 @@ export class FilterManagerComponent implements OnInit, OnChanges {
     @Input() private queryModel: QueryModel;
 
     @Output('filtersChanged')
-    public filtersChangedEmitter = new EventEmitter<SearchFilter<SearchFilterData> []>()
+    public filtersChangedEmitter = new EventEmitter<SearchFilter<SearchFilterData> []>();
+
+    inputChanged = new Subject<void>();
 
     public searchFilters: SearchFilter<SearchFilterData> [] = [];
     public activeFilters: SearchFilter<SearchFilterData> [] = [];
@@ -45,6 +48,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
             this.setAdHocFilters();
         }
         this.aggregateSearchForMultipleChoiceFilters();
+        this.inputChanged.next();
     }
 
     /**
