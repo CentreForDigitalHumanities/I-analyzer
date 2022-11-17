@@ -574,11 +574,12 @@ def api_aggregate_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.histogram_term_frequency_tasks(request.json).apply_async()
-    if not task:
+    group = tasks.histogram_term_frequency_tasks(request.json).apply_async()
+    subtasks = group.children
+    if not tasks:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_ids': [task.id]})
+        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
 
 @api.route('date_term_frequency', methods=['POST'])
 @login_required
@@ -595,11 +596,12 @@ def api_date_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.timeline_term_frequency_tasks(request.json).apply_async()
-    if not task:
+    group = tasks.timeline_term_frequency_tasks(request.json).apply_async()
+    subtasks = group.children
+    if not tasks:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_ids': [task.id]})
+        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
 
 @api.route('request_full_data', methods=['POST'])
 @login_required
