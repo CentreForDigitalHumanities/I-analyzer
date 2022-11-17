@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from wordmodels.visualisations import get_diachronic_contexts, get_context_time_interval
+from wordmodels.visualisations import get_diachronic_contexts
 from wordmodels.conftest import TEST_BINS, WM_MOCK_CORPORA
 
 def assert_similarity_format(item, must_specify_time = True):
@@ -25,20 +25,23 @@ def test_context_time_interval(test_app, mock_corpus):
     }
     term = case.get('term')
 
+    _, _, times, results = get_diachronic_contexts(term, mock_corpus, 5)
+
     bin_without_match = case.get('bin_without_match')
     if bin_without_match:
         # context for bin that does not include the query term
-        missing_context = get_context_time_interval(term, mock_corpus, bin_without_match, 5)
-        assert missing_context == "The query term is not in the word models' vocabulary."
-
+        index = next(i for i, time in enumerate(times) if time == bin_without_match)
+        bin_result = results[index]
+        assert bin_result == []
 
     # context for bin that includes the query term
-    context = get_context_time_interval(term, mock_corpus, case.get('bin'), 5)
+    index = next(i for i, time in enumerate(times) if time == case.get('bin'))
+    context = results[index]
 
     # check format
 
     for item in context:
-        assert_similarity_format(item)
+        assert_similarity_format(item, must_specify_time = False)
 
 
     # check common-sense nearest neighbours
@@ -51,7 +54,7 @@ def test_context_time_interval(test_app, mock_corpus):
 
 @pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
 def test_diachronic_context(test_app, mock_corpus):
-    word_list, word_data, times = get_diachronic_contexts('she', mock_corpus)
+    word_list, word_data, times, _ = get_diachronic_contexts('she', mock_corpus)
     # test format
 
     for item in word_list:

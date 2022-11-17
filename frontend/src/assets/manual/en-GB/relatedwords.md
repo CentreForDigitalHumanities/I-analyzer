@@ -19,3 +19,7 @@ You can select the `bar` view to view the most similar terms for each timeframe 
 ### Selecting terms
 
 If you want to select a few terms to compare, you can click terms in the legend to hide them in the graph. If you want a clean graph with just a few selected terms (without crossed-out terms in the legend), you can also use the 'compare similarity' tab of the word models page. In that graph, you can enter the specific terms you want to compare to your query term.
+
+## Zooming
+
+You can zoom in on the x-axis by dragging the mouse. Double click on the graph to reset the zoom level.

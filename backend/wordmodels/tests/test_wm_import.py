@@ -74,17 +74,17 @@ def test_term_to_vector(test_app):
     transformer = model['transformer']
     matrix = model['svd_ppmi']
 
-    vec1 = term_to_vector('whale', transformer, matrix)
-    vec2 = term_to_vector('Whale!', transformer, matrix)
+    vec1 = term_to_vector('whale', model, 'svd_ppmi')
+    vec2 = term_to_vector('Whale!', model, 'svd_ppmi')
 
     assert np.all(np.equal(vec1, vec2))
     assert type(vec1) != type(None)
 
-    vec3 = term_to_vector('man', transformer, matrix)
+    vec3 = term_to_vector('man', model, 'svd_ppmi')
 
     assert not np.all(np.equal(vec1, vec3))
 
-    novec = term_to_vector('skdfjksdjfkdf', transformer, matrix)
+    novec = term_to_vector('skdfjksdjfkdf', model, 'svd_ppmi')
     assert novec == None
 
 def test_description_import(test_app):
