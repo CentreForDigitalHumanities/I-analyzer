@@ -39,8 +39,15 @@ export class CorpusService {
         });
     }
 
-    public get(): Promise<Corpus[]> {
-        if (this.corporaPromise) {
+    /**
+     * retrieve the available corpora
+     *
+     * @param refresh if `true`, forces the corpus list to be requested from the backend
+     * regardless of whether a list of corpora has already been loaded.
+     * @returns Promise object with list of all corpora
+     */
+    public get(refresh = false): Promise<Corpus[]> {
+        if (!refresh && this.corporaPromise) {
             return this.corporaPromise;
         } else {
             this.corporaPromise = this.apiRetryService.requireLogin(api => api.corpus()).then(data => this.parseCorpusList(data));

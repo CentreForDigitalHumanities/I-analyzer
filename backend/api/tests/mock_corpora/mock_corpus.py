@@ -29,7 +29,7 @@ class MockCorpus(CSVCorpus):
         extractor = CSV('date')
     )
 
-    title = Field(
+    title_field = Field(
         name = 'title',
         es_mapping = {
             'type': 'text',
@@ -65,4 +65,4 @@ class MockCorpus(CSVCorpus):
         extractor = CSV('genre')
     )
 
-    fields = [date, title, content, genre]
+    fields = [date, title_field, content, genre]

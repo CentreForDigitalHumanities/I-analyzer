@@ -1,4 +1,5 @@
 import pytest
+from mock_corpora.mock_corpus_specs import CORPUS_SPECS
 
 @pytest.fixture
 def date_term_frequency_body(basic_query):
@@ -70,3 +71,12 @@ def test_date_term_frequency(client, mock_user, test_app, test_es_client, date_t
     del date_term_frequency_body['corpus_name']
     post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
     assert post_response.status_code == 400
+
+def test_load_all_corpora(client, mock_user, test_app):
+    client.mock_user_login()
+    response = client.get('/api/corpus')
+    assert response.status_code == 200
+    json_response = response.json
+
+    assert set(json_response.keys()) == set(CORPUS_SPECS.keys())
+
