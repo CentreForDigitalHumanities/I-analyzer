@@ -47,7 +47,7 @@ def find_n_most_similar(wm, wm_type, query_term, n):
         vec = term_to_vector(query_term, wm, wm_type)
 
         if type(vec) == type(None):
-            return None
+            return []
 
         similarities = cosine_similarity_matrix_vector(vec, matrix)
         sorted_sim = np.sort(similarities)
