@@ -23,6 +23,8 @@ class ParliamentGermanyOld(Parliament, CSVCorpus):
     es_index = current_app.config['PP_GERMANY_OLD_INDEX']
     image = current_app.config['PP_GERMANY_OLD_IMAGE']
     language = 'german'
+    word_model_path = current_app.config['PP_DE_WM']
+    word_model_type = 'word2vec'
 
     description_page = 'germany-old.md'
 

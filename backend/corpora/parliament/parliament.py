@@ -37,6 +37,7 @@ class Parliament(Corpus):
     data_directory = 'bogus'
 
     language = 'english'
+    word_model_type = 'word2vec'
 
     @property
     def es_settings(self):
