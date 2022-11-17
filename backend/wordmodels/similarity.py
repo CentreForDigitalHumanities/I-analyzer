@@ -67,7 +67,7 @@ def find_n_most_similar(wm, wm_type, query_term, n):
 
 def most_similar_items(matrix, vocab, term, n, missing_terms = 0):
     '''
-    Find the n most similar terms in a keyed vectors matrix, while filtering on the vocabular.
+    Find the n most similar terms in a keyed vectors matrix, while filtering on the vocabulary.
 
     parameters:
     - `matrix`: the KeyedVectors matrix
@@ -83,7 +83,6 @@ def most_similar_items(matrix, vocab, term, n, missing_terms = 0):
     if term in vocab:
         results = matrix.most_similar(term, topn=n + missing_terms)
         filtered_results = [(key, score) for key, score in results if key in vocab]
-        print(len(filtered_results), n)
         results_complete = len(filtered_results) == min(n, len(vocab) - 1)
         if results_complete:
             return filtered_results
