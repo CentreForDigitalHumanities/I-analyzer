@@ -35,7 +35,6 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
-from . import cache
 
 
 @api.route('/ensure_csrf', methods=['GET'])
