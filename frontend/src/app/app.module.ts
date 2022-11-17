@@ -82,6 +82,7 @@ import { FullDataButtonComponent } from './visualization/full-data-button/full-d
 import { FooterComponent } from './footer/footer.component';
 import { DownloadHistoryComponent } from './history/download-history/download-history.component';
 import { HistoryDirective } from './history/history.directive';
+import { JoyplotComponent } from './visualization/ngram/joyplot/joyplot.component';
 
 
 export const appRoutes: Routes = [
@@ -174,6 +175,7 @@ export const declarations: any[] = [
     HighlightSelectorComponent,
     ImageViewComponent,
     ImageNavigationComponent,
+    JoyplotComponent,
     LoginComponent,
     ManualComponent,
     ManualNavigationComponent,

@@ -27,34 +27,12 @@ def get_related_words():
             'data': {
                 'total_similarities': results[0],
                 'similarities_over_time': results[1],
+                'similarities_over_time_local_top_n': results[3],
                 'time_points': results[2]
             }
         })
     return response
 
-
-@wordmodels.route('/get_related_words_time_interval', methods=['POST'])
-@login_required
-def get_related_words_time_interval():
-    if not request.json:
-        abort(400)
-    results = visualisations.get_context_time_interval(
-        request.json['query_term'],
-        request.json['corpus_name'],
-        request.json['time'],
-        number_similar = request.json.get('neighbours'),
-    )
-    if isinstance(results, str):
-        response = jsonify({
-            'success': True,
-            'data': []
-        })
-    else:
-        response = jsonify({
-            'success': True,
-            'data': results
-        })
-    return response
 
 @wordmodels.route('/get_similarity_over_time', methods=['GET'])
 @login_required
