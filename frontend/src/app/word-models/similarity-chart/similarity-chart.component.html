@@ -5,7 +5,7 @@
                 <label class="label">Show as:</label>
                 <label class="radio" *ngFor="let style of ['line', 'bar']">
                     <input type="radio" [checked]="graphStyle.value==style" (click)="graphStyle.next(style)" (keydown.enter)="graphStyle.next(style)">
-                    {{style}}
+                    {{style | titlecase}}
                 </label>
             </div>
         </div>
