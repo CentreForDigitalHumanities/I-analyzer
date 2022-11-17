@@ -7,6 +7,7 @@ def store_download_started(download_type, corpus_name, parameters, user_id):
     parameter_key = json.dumps(parameters)
     download = Download(download_type, corpus_name, parameter_key, user)
     db.session.add(download)
+    db.session.flush()
     db.session.commit()
 
     return download.id

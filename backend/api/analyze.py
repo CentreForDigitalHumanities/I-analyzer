@@ -216,13 +216,14 @@ def get_top_n_ngrams(counters, total_frequencies = None, number_of_ngrams=10):
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')
 
-def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100):
+def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_str = None, size = 100, include_query_in_result = False):
 
     start_date = parse_datestring(start_date_str)
     end_date = parse_datestring(end_date_str) if end_date_str else None
 
     date_filter = query.make_date_filter(start_date, end_date, date_field = field)
     es_query = query.add_filter(es_query, date_filter)
+    query_text = query.get_query_text(es_query)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 
@@ -233,6 +234,9 @@ def get_date_term_frequency(es_query, corpus, field, start_date_str, end_date_st
         'match_count': match_count,
         'token_count': token_count,
     }
+
+    if include_query_in_result:
+        data['query'] = query_text
 
     return data
 
@@ -341,10 +345,11 @@ def get_term_frequency(es_query, corpus, size):
 
     return match_count, total_doc_count, token_count
 
-def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100):
+def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size = 100, include_query_in_result = False):
     # filter for relevant value
     term_filter = query.make_term_filter(field_name, field_value)
     es_query = query.add_filter(es_query, term_filter)
+    query_text = query.get_query_text(es_query)
 
     match_count, doc_count, token_count = get_term_frequency(es_query, corpus, size)
 
@@ -354,5 +359,8 @@ def get_aggregate_term_frequency(es_query, corpus, field_name, field_value, size
         'total_doc_count': doc_count,
         'token_count': token_count,
     }
+
+    if include_query_in_result:
+        result['query'] = query_text
 
     return result
