@@ -32,12 +32,10 @@ class DutchAnnualReports(XMLCorpus):
     filename = op.join(corpus_dir('dutchannualreports'),
         current_app.config['WM_PATH'],
         current_app.config['WM_BINNED_FN'])
-    word_models_present = op.isfile(
-        op.join(
+    word_model_type = 'svd_ppmi'
+    word_model_path = op.join(
             corpus_dir('dutchannualreports'),
-            current_app.config['WM_PATH'],
-            current_app.config['WM_BINNED_FN']
-        )
+            current_app.config['WM_PATH']
     )
 
     mimetype = 'application/pdf'
