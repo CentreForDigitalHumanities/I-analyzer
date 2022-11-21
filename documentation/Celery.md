@@ -12,7 +12,7 @@ Celery is used for
 
 ## Running celery
 
-See the repository readme for installation instructions. For development, it is possible to
+See the repository readme for installation instructions. For development, it is possible to run I-analyzer without celery if you are not intending to use any of the functions listed above.
 
 ### Redis
 
@@ -46,3 +46,12 @@ celery -A ianalyzer.runcelery.celery_ap flower
 ```
 
 Then open `localhost:5555` in your browser to see the flower interface.
+
+## Developing with celery
+
+Some tips:
+
+- We currently do not have a setup to write unit tests that use celery. Make sure that your underlying functions are properly tested, and the tasks themselves do not contain complicated logic.
+- The arguments and outputs for celery tasks must be JSON-serialisable. For example, a task function can have a user ID string as an argument, but not a `User` object.
+- Use `group` to run tasks in parallel and `chain` to run tasks in series.
+- You can use flower (see above) for an overview of your celery tasks. Note that groups and chains are not tasks themselves, and will not show up as tasks on Flower.
