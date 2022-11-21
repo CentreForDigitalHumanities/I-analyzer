@@ -68,8 +68,8 @@ export class ApiService extends Resource {
 
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/task_status/{task_ids}'
+        method: ResourceRequestMethod.Post,
+        path: '/task_status'
     })
     public getTasksStatus: ResourceMethod<
     { task_ids: string[]},

@@ -482,10 +482,14 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-@api.route('/task_status/<task_ids>', methods=['GET'])
+@api.route('/task_status', methods=['POST'])
 @login_required
-def api_task_status(task_ids):
-    results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids.split(',')]
+def api_task_status():
+    task_ids = request.json.get('task_ids')
+    if not task_ids:
+        abort(400, 'no task id specified')
+
+    results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
     if not all(results):
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
