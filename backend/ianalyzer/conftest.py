@@ -41,8 +41,6 @@ class UnittestConfig:
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
 
-    USE_VISUALIZATION_CACHE = True
-
 
 @pytest.fixture(scope='session')
 def test_app(request):

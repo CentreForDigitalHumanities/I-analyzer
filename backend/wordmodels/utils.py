@@ -115,16 +115,17 @@ def transform_query(query, analyzer):
     if len(transformed) == 1:
         return transformed[0]
 
-def term_to_index(query, transformer):
-    transformed = transform_query(query, transformer.build_analyzer())
-    if transformed and transformed in transformer.vocabulary_:
-        return transformer.vocabulary_[transformed]
+def term_to_index(query, model):
+    transformed = transform_query(query, model['analyzer'])
+    if transformed and transformed in model['vocab']:
+        return model['transformer'].vocabulary_[transformed]
 
 def index_to_term(index, vocab):
     return vocab[index]
 
-def term_to_vector(query, transformer, matrix):
-    index = term_to_index(query, transformer)
+def term_to_vector(query, model, wm_type):
+    if wm_type == 'svd_ppmi':
+        index = term_to_index(query, model)
 
-    if index != None:
-        return matrix[:, index]
+        if index != None:
+            return model['svd_ppmi'][:, index]

@@ -36,7 +36,6 @@ from . import security
 from . import analyze
 from . import tasks
 from . import api
-from . import cache
 from . import convert_csv
 
 

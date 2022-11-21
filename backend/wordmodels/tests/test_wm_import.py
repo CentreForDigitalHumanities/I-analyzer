@@ -26,10 +26,9 @@ def test_complete_import(test_app, mock_corpus, wm_type):
 def test_binned_import(test_app, mock_corpus, wm_type):
     corpus = load_corpus(mock_corpus)
     models = load_word_models(corpus, binned=True)
-    test_bins = TEST_BINS.get(mock_corpus)
-    assert len(models) == len(test_bins)
+    assert len(models) == len(TEST_BINS)
 
-    for model, t_bin in zip(models, test_bins):
+    for model, t_bin in zip(models, TEST_BINS):
         start_year, end_year = t_bin
 
         assert model['start_year'] == start_year
@@ -45,46 +44,25 @@ def test_binned_import(test_app, mock_corpus, wm_type):
 
 @pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
 def test_word_in_model(test_app, mock_corpus):
-    CASES = {
-        'mock-svd-ppmi-corpus': [
-            {
-                'term': 'she',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'whale',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'Whale!',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'hwale',
-                'expected': {'exists': False, 'similar_keys': ['whale']}
-            }
-        ],
-        'mock-wordvec-corpus': [
-                        {
-                'term': 'ils',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'président',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'Président!',
-                'expected': {'exists': True}
-            },
-            {
-                'term':  'president',
-                'expected': {'exists': False, 'similar_keys': ['président']}
-            }
-        ]
-    }
+    cases = [
+        {
+            'term': 'she',
+            'expected': {'exists': True}
+        },
+        {
+            'term':  'whale',
+            'expected': {'exists': True}
+        },
+        {
+            'term':  'Whale!',
+            'expected': {'exists': True}
+        },
+        {
+            'term':  'hwale',
+            'expected': {'exists': False, 'similar_keys': ['whale']}
+        }
+    ]
 
-    cases = CASES.get(mock_corpus)
     for case in cases:
         corpus = load_corpus(mock_corpus)
         result = word_in_model(case['term'], corpus, 1)
@@ -96,17 +74,17 @@ def test_term_to_vector(test_app):
     transformer = model['transformer']
     matrix = model['svd_ppmi']
 
-    vec1 = term_to_vector('whale', transformer, matrix)
-    vec2 = term_to_vector('Whale!', transformer, matrix)
+    vec1 = term_to_vector('whale', model, 'svd_ppmi')
+    vec2 = term_to_vector('Whale!', model, 'svd_ppmi')
 
     assert np.all(np.equal(vec1, vec2))
     assert type(vec1) != type(None)
 
-    vec3 = term_to_vector('man', transformer, matrix)
+    vec3 = term_to_vector('man', model, 'svd_ppmi')
 
     assert not np.all(np.equal(vec1, vec3))
 
-    novec = term_to_vector('skdfjksdjfkdf', transformer, matrix)
+    novec = term_to_vector('skdfjksdjfkdf', model, 'svd_ppmi')
     assert novec == None
 
 def test_description_import(test_app):
@@ -118,21 +96,13 @@ def test_query_transform(test_app, mock_corpus):
     corpus = load_corpus(mock_corpus)
     model = load_word_models(corpus)
 
-    cases = {
-        'mock-svd-ppmi-corpus': [
-            ('whale', 'whale'),
-            ('Whale!', 'whale'),
-            ('!?%)#', None),
-            ('multiple words', None)
-        ],
-        'mock-wordvec-corpus': [
-            ('président', 'président'),
-            ('Président,', 'président'),
-            ('!?%)#', None),
-            ('encore une fois', None)
-        ]
-    }
+    cases = [
+        ('whale', 'whale'),
+        ('Whale!', 'whale'),
+        ('!?%)#', None),
+        ('multiple words', None)
+    ]
 
-    for query, expected in cases.get(mock_corpus):
+    for query, expected in cases:
         transformed = transform_query(query, model['analyzer'])
         assert transformed == expected

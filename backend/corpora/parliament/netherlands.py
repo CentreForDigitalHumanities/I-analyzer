@@ -128,6 +128,7 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = current_app.config['PP_NL_DATA']
+    word_model_path = current_app.config['PP_NL_WM']
 
     if 'PP_NL_RECENT_DATA' in current_app.config:
         data_directory_recent = current_app.config['PP_NL_RECENT_DATA']

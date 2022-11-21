@@ -242,34 +242,6 @@ class Corpus(db.Model):
         return self.name
 
 
-class Visualization(db.Model):
-    '''
-    Cached results for a visualisation
-    '''
-
-    id = db.Column(db.Integer(), primary_key=True)
-    corpus_name = db.Column(db.String(MAX_LENGTH_NAME), unique=True)
-    visualization_type = db.Column(db.String(MAX_LENGTH_NAME))
-    parameters = db.Column(db.Text())
-    started = db.Column(db.DateTime)
-    completed = db.Column(db.DateTime)
-    result = db.Column(db.JSON())
-
-    def __init__(self, visualization_type, corpus_name, parameters):
-        self.visualization_type = visualization_type
-        self.corpus_name = corpus_name
-        self.parameters = parameters
-        self.started = datetime.now()
-        self.completed = None
-        self.result = None
-
-    def __repr__(self):
-        return f'Visualisation #{self.id}: {self.visualization_type} of {self.corpus_name} corpus made at {self.started}'
-
-    @property
-    def is_done(self):
-        return self.completed != None
-
 class Download(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     started = db.Column(db.DateTime())

@@ -64,5 +64,6 @@ def load_all_corpora():
                 models.db.session.add(corpus_db)
                 # add it to admin role, too
                 admin = models.Role.query.filter_by(name='admin').first()
-                admin.corpora.append(corpus_db)
-                models.db.session.commit()
+                if admin:
+                    admin.corpora.append(corpus_db)
+                    models.db.session.commit()

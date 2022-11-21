@@ -44,7 +44,6 @@ class ParliamentUK(Parliament, CSVCorpus):
     es_index = current_app.config['PP_UK_INDEX']
     image = current_app.config['PP_UK_IMAGE']
     word_model_path = current_app.config['PP_UK_WM']
-    word_model_type = 'word2vec'
     language = 'english'
     description_page = 'uk.md'
     field_entry = 'speech_id'

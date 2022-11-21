@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from wordmodels.visualisations import get_diachronic_contexts, get_context_time_interval
+from wordmodels.visualisations import get_diachronic_contexts
 from wordmodels.conftest import TEST_BINS, WM_MOCK_CORPORA
 
 def assert_similarity_format(item, must_specify_time = True):
@@ -16,38 +16,32 @@ def assert_similarity_format(item, must_specify_time = True):
 
 @pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
 def test_context_time_interval(test_app, mock_corpus):
-    cases = {
-        'mock-svd-ppmi-corpus': {
-            'term': 'alice',
-            'bin_without_match':'1810-1839',
-            'bin': '1840-1869',
-            'similar1': 'she',
-            'similar2': 'her'
-        },
-        'mock-wordvec-corpus': {
-            'term': 'président',
-            'bin': '1900-1920',
-            'similar1': 'droit',
-            'similar2': 'peut'
-        }
+    case = {
+        'term': 'alice',
+        'bin_without_match':'1810-1839',
+        'bin': '1840-1869',
+        'similar1': 'she',
+        'similar2': 'her'
     }
-    case = cases.get(mock_corpus)
     term = case.get('term')
+
+    _, _, times, results = get_diachronic_contexts(term, mock_corpus, 5)
 
     bin_without_match = case.get('bin_without_match')
     if bin_without_match:
         # context for bin that does not include the query term
-        missing_context = get_context_time_interval(term, mock_corpus, bin_without_match, 5)
-        assert missing_context == "The query term is not in the word models' vocabulary."
-
+        index = next(i for i, time in enumerate(times) if time == bin_without_match)
+        bin_result = results[index]
+        assert bin_result == []
 
     # context for bin that includes the query term
-    context = get_context_time_interval(term, mock_corpus, case.get('bin'), 5)
+    index = next(i for i, time in enumerate(times) if time == case.get('bin'))
+    context = results[index]
 
     # check format
 
     for item in context:
-        assert_similarity_format(item)
+        assert_similarity_format(item, must_specify_time = False)
 
 
     # check common-sense nearest neighbours
@@ -58,10 +52,9 @@ def test_context_time_interval(test_app, mock_corpus):
     most_similar_term = sorted_by_similarity[0]['key']
     assert most_similar_term == case.get('similar1')
 
-@pytest.mark.parametrize("mock_corpus, query_term", zip(WM_MOCK_CORPORA, ['she', 'participer']))
-def test_diachronic_context(test_app, mock_corpus, query_term):
-
-    word_list, word_data, times = get_diachronic_contexts(query_term, mock_corpus)
+@pytest.mark.parametrize("mock_corpus", WM_MOCK_CORPORA)
+def test_diachronic_context(test_app, mock_corpus):
+    word_list, word_data, times, _ = get_diachronic_contexts('she', mock_corpus)
     # test format
 
     for item in word_list:
@@ -70,7 +63,7 @@ def test_diachronic_context(test_app, mock_corpus, query_term):
     for item in word_data:
         assert_similarity_format(item)
 
-    bins = TEST_BINS.get(mock_corpus)
+    bins = TEST_BINS
 
     assert len(times) == len(bins)
     for item, interval in zip(times, bins):
@@ -79,8 +72,7 @@ def test_diachronic_context(test_app, mock_corpus, query_term):
 
     # test nearest neighbours
 
-    cases = {
-        'mock-svd-ppmi-corpus': [
+    cases = [
         {
             'term': 'elizabeth',
             'most_similar_interval': '1810-1839' # best score in pride and prejudice => first bin
@@ -88,19 +80,10 @@ def test_diachronic_context(test_app, mock_corpus, query_term):
         {
             'term': 'alice',
             'most_similar_interval': '1840-1869', # best score in alice in wonderland => second bin
-        }],
-        'mock-wordvec-corpus': [
-        {
-            'term': 'directeur',
-            'most_similar_interval': '1900-1920'
-        },
-        {
-            'term': 'titulaires',
-            'most_similar_interval': '1920-1940'
-        }]
-    }
+        }
+    ]
 
-    for case in cases.get(mock_corpus):
+    for case in cases:
         data = [item for item in word_data if item['key'] == case['term'] and item['similarity']]
         assert data
 

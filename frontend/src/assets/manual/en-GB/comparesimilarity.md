@@ -15,3 +15,7 @@ You can enter one or more terms to compare your query term.
 For each term, the graph will show the cosine similarity of that term compared to your query term. For example, if you searched for _netherlands_ and enter _belgium_ and _germany_ as your comparison terms, you will see the similarity scores of _netherlands_-_belgium_ and _netherlands_-_germany_.
 
 The graph will show how the similarity develops over time, using the model from each timeframe (see above).
+
+## Zooming
+
+You can zoom in on the x-axis by dragging the mouse. Double click on the graph to reset the zoom level.

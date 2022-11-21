@@ -1,0 +1,10 @@
+<div class="block">
+    <canvas id="chart" width="400"></canvas>
+</div>
+
+<div class="field">
+    <label class="checkbox" iaBalloon="scale the line graph for each ngram to the same size">
+        <input type="checkbox" [checked]="fixLineGraphHeights" (change)="setFixLineHeights($event)">
+        Fixed height for line graphs
+    </label>
+</div>
