@@ -1,6 +1,7 @@
 from datetime import datetime
 from ianalyzer.models import Download, db, User
 import json
+import os
 
 def store_download_started(download_type, corpus_name, parameters, user_id):
     user = User.query.get(user_id)
@@ -29,4 +30,5 @@ def store_download_failed(id):
 def get_result_filename(id):
     download = Download.query.get(id)
     if download.is_done:
-        return download.filename
+        _, name = os.path.split(download.filename)
+        return name

@@ -173,13 +173,14 @@ def remove_size_limit(parameters):
 @celery_app.task()
 def csv_data_email(log_id, user_email, username):
     logger.info('should now be sending email')
+    filename = api_download.get_result_filename(log_id)
     link_url = current_app.config['BASE_URL'] + '/api/csv/{}'.format(log_id) #this is the route defined for csv download in views.py
     send_user_mail(
         email=user_email,
         username=username,
         subject_line="I-Analyzer CSV download",
         email_title="Download CSV",
-        message="Your .csv file is ready for download.",
+        message=f"Your file '{filename}' is ready for download.",
         prompt="Click on the link below.",
         link_url=link_url,
         link_text="Download .csv file"
