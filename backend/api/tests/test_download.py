@@ -145,8 +145,8 @@ def all_results_csv(corpus):
         'fields': fields,
         'route': '/search/{};query=test'.format(corpus)
     }
-    results = tasks.download_scroll(None, request_json)
-    _, filename = tasks.make_csv(results, request_json)
+    results = tasks.download_scroll(request_json)
+    filename = tasks.make_csv(results, request_json)
 
 
     return filename, corpus_specs
@@ -230,35 +230,35 @@ def test_csv_encoding(indexed_multilingual_mock_corpus):
 mock_queries = ['test', 'test2']
 
 mock_timeline_result = [
-    [
-        {
-            'key': '1800-01-01',
-            'key_as_string': '1800-01-01',
-            'match_count': 3,
-            'total_doc_count': 2,
-            'token_count': 10
-        }, {
-            'key': '1801-01-01',
-            'key_as_string': '1801-01-01',
-            'match_count': 5,
-            'total_doc_count': 4,
-            'token_count': 20
-        }
-    ], [
-        {
-            'key': '1800-01-01',
-            'key_as_string': '1800-01-01',
-            'match_count': 1,
-            'total_doc_count': 2,
-            'token_count': 10
-        }, {
-            'key': '1801-01-01',
-            'key_as_string': '1801-01-01',
-            'match_count': 3,
-            'total_doc_count': 4,
-            'token_count': 20
-        }
-    ]
+    {
+        'query': 'test',
+        'key': '1800-01-01',
+        'key_as_string': '1800-01-01',
+        'match_count': 3,
+        'total_doc_count': 2,
+        'token_count': 10
+    }, {
+        'query': 'test',
+        'key': '1801-01-01',
+        'key_as_string': '1801-01-01',
+        'match_count': 5,
+        'total_doc_count': 4,
+        'token_count': 20
+    }, {
+        'query': 'test2',
+        'key': '1800-01-01',
+        'key_as_string': '1800-01-01',
+        'match_count': 1,
+        'total_doc_count': 2,
+        'token_count': 10
+    }, {
+        'query': 'test2',
+        'key': '1801-01-01',
+        'key_as_string': '1801-01-01',
+        'match_count': 3,
+        'total_doc_count': 4,
+        'token_count': 20
+    }
 ]
 
 mock_timeline_expected_data = [
