@@ -9,7 +9,7 @@ import { DialogService } from '../services';
     templateUrl: './corpus-header.component.html',
     styleUrls: ['./corpus-header.component.scss']
 })
-export class CorpusHeaderComponent implements OnChanges {
+export class CorpusHeaderComponent implements OnChanges, OnInit {
     @Input() corpus: Corpus;
     @Input() currentPage: 'search'|'word-models';
     @Input() modelDocumentation: string;
@@ -22,6 +22,10 @@ export class CorpusHeaderComponent implements OnChanges {
     faInfo = faInfoCircle;
 
     constructor(private dialogService: DialogService) {
+    }
+
+    ngOnInit() {
+        window.scrollTo(0,0);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
