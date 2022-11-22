@@ -78,8 +78,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     setTableHeaders(): void {
         if (this.terms.length > 1) {
             this.tableHeaders = [
-                { key: 'key', label: 'Term', isMainFactor: true, },
-                { key: 'time', label: 'Time interval', isSecondaryFactor: true, },
+                { key: 'key', label: 'Term', isSecondaryFactor: true, },
+                { key: 'time', label: 'Time interval', isMainFactor: true, },
                 { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
             ];
         } else {
