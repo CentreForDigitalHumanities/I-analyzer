@@ -21,7 +21,7 @@ def download_search_results(request_json, user):
     download_limit = user.download_limit
     corpus_name = request_json['corpus']
 
-    log_id = start_download.s('search_results', corpus_name, request_json, user.id),
+    log_id = start_download('search_results', corpus_name, request_json, user.id)
 
     return chain(
         download_scroll.s(request_json, download_limit),
