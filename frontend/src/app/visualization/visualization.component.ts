@@ -172,6 +172,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.visualExists = true;
 
         this.visualizedField = selectedField;
+        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
+            item => item.value === this.visualizedField);
+
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
 
