@@ -1,19 +1,14 @@
-from urllib import request
-import requests
-import json
-from flask import Flask, abort, current_app, render_template, jsonify
-from flask_mail import Mail, Message
+from flask import current_app
 import logging
-from requests.exceptions import Timeout, ConnectionError, HTTPError
 import re
 import os
 
 from api import analyze, query, download as api_download
 from api.user_mail import send_user_mail
-from es import es_forward, download as es_download
+from es import download as es_download
 from ianalyzer import celery_app
 from api import create_csv
-from celery import chain, group, chord
+from celery import chain, group
 
 logger = logging.getLogger(__name__)
 
