@@ -91,13 +91,18 @@ export type ResultsDownloadParameters = {
     route: string,
 };
 
-export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number };
+export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
 
 export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency'
 export type DownloadStatus = 'done' | 'working' | 'error';
 export type DownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[] | ResultsDownloadParameters;
 
+export type PendingDownload = {
+    download_type: DownloadType,
+}
+
 export type Download = {
+    id: number,
     started: Date,
     completed?: Date,
     download_type: DownloadType,
@@ -105,4 +110,8 @@ export type Download = {
     parameters: string,
     filename?: string,
     status: DownloadStatus,
+};
+
+export type DownloadOptions = {
+    encoding: 'utf-8'|'utf-16';
 };
