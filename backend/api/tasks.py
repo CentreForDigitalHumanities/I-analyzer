@@ -21,49 +21,35 @@ def download_search_results(request_json, user):
     download_limit = user.download_limit
     corpus_name = request_json['corpus']
 
-    log_id = start_download('search_results', corpus_name, request_json, user.id)
+    log_id = api_download.store_download_started('search_results', corpus_name, request_json, user.id)
 
     return chain(
         download_scroll.s(request_json, download_limit),
         make_csv.s(request_json),
         complete_download.s(log_id),
         csv_data_email.s(user.email, user.username),
-    )
-
-@celery_app.task()
-def start_download(download_type, corpus_name, parameters, user_id):
-    id = api_download.store_download_started(download_type, corpus_name, parameters, user_id)
-    return id
+    ).on_error(complete_failed_download.s(log_id))
 
 @celery_app.task()
 def complete_download(filename, log_id):
-    if filename:
-        api_download.store_download_completed(log_id, filename)
-    else:
-        api_download.store_download_failed(log_id)
-
+    api_download.store_download_completed(log_id, filename)
     return filename
+
+@celery_app.task()
+def complete_failed_download(request, exc, traceback, log_id):
+    logger.error('DOWNLOAD #{} FAILED'.format(log_id)) # traceback is already logged
+    api_download.store_download_failed(log_id)
 
 
 @celery_app.task()
 def download_scroll(request_json, download_size=10000):
-    try:
-        results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
-    except Exception as e:
-        results = None
-        logger.error(e)
-
+    results, _ = es_download.scroll(request_json['corpus'], request_json['es_query'], download_size)
     return results
 
 @celery_app.task()
 def make_csv(results, request_json):
-    try:
-        query = create_query(request_json)
-        filepath = create_csv.search_results_csv(results, request_json['fields'], query)
-    except Exception as e:
-        filepath = None
-        logger.error(e)
-
+    query = create_query(request_json)
+    filepath = create_csv.search_results_csv(results, request_json['fields'], query)
     return filepath
 
 
@@ -197,11 +183,11 @@ def download_full_data(request_json, user):
     corpus_name = request_json['corpus']
     task = task_per_type[visualization_type](parameters, visualization_type)
 
-    log_id = start_download(visualization_type, corpus_name, parameters, user.id)
+    log_id = api_download.store_download_started(visualization_type, corpus_name, parameters, user.id)
 
     return chain(
         task,
         make_term_frequency_csv.s(parameters),
         complete_download.s(log_id),
         csv_data_email.s(user.email, user.username),
-    )
+    ).on_error(complete_failed_download.s(log_id))
