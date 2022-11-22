@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import * as _ from 'lodash';
-import { SelectItem } from 'primeng/api';
-import { Corpus, Download, DownloadParameters, DownloadType, QueryModel } from '../../models';
-import { ApiService, CorpusService, ElasticSearchService, EsQuery } from '../../services';
+import { Corpus, Download, DownloadOptions, DownloadParameters, DownloadType, QueryModel } from '../../models';
+import { ApiService, CorpusService, DownloadService, ElasticSearchService, EsQuery, NotificationService } from '../../services';
 import { HistoryDirective } from '../history.directive';
 
 @Component({
@@ -16,7 +15,9 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     faDownload = faDownload;
 
-    constructor(private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService) {
+    itemToDownload: Download;
+
+    constructor(private downloadService: DownloadService, private apiService: ApiService, corpusService: CorpusService, private elasticSearchService: ElasticSearchService, private notificationService: NotificationService) {
         super(corpusService);
     }
 
@@ -25,10 +26,6 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         this.apiService.downloads()
             .then(downloadHistory => this.downloads = this.sortByDate(downloadHistory))
             .catch(err => console.error(err));
-    }
-
-    downloadLink(download: Download): string {
-        return '/api/csv/' + download.filename;
     }
 
     downloadType(type: DownloadType): string {
@@ -63,5 +60,22 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
             corpus.fields.find(field => field.name === fieldName).displayName
         )
         return _.join(fields, ', ')
+    }
+
+    downloadFile(download: Download, options: DownloadOptions) {
+        this.downloadService.retrieveFinishedDownload(download.id, options).then( result => {
+            if (result.status === 200) {
+                saveAs(result.body, download.filename);
+                this.itemToDownload = undefined;
+            } else {
+                this.downloadFailed(result);
+            }
+        }).catch(this.downloadFailed.bind(this));
+    }
+
+    downloadFailed(result) {
+        console.error(result);
+        this.notificationService.showMessage('could not download file', 'danger');
+        this.itemToDownload = undefined;
     }
 }

@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -177,6 +177,17 @@ export class ApiService extends Resource {
         { success: false, message: string } | any >;
 
     @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/csv/{id}',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true
+    })
+    public csv: ResourceMethod<
+        { id: number } | ({ id: number } & DownloadOptions),
+        { success: false, message: string } | any >;
+
+
+    @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/download_task'
     })
@@ -268,6 +279,9 @@ export class ApiService extends Resource {
         responseBodyType: ResourceResponseBodyType.Text
     })
     public corpusdescription: ResourceMethod<{ filename: string, corpus: string }, any>;
+
+
+
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);

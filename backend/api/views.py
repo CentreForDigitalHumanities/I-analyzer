@@ -30,11 +30,13 @@ from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 import wordmodels.visualisations as wordmodel_visualisations
 
+
 from api.user_mail import send_user_mail
 from . import security
 from . import analyze
 from . import tasks
 from . import api
+from . import convert_csv
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -195,7 +197,6 @@ def api_corpus_document(corpus, document_name):
     '''
     return send_from_directory(corpus_dir(corpus), 'documents/{}'.format(document_name))
 
-
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
@@ -207,7 +208,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route', 'encoding']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -217,7 +218,10 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            _, csv_file = tasks.make_csv((None, search_results), request.json)
+            _, csv_path = tasks.make_csv((None, search_results), request.json)
+            directory, filename = os.path.split(csv_path)
+            converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
+            csv_file = os.path.join(directory, converted_filename)
         except:
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
@@ -273,10 +277,17 @@ def api_user_downloads():
     return jsonify(result)
 
 # endpoint for link send in email to download csv file
-@api.route('/csv/<filename>', methods=['get'])
-def api_csv(filename):
-    csv_files_dir=current_app.config['CSV_FILES_PATH']
-    return send_from_directory(csv_files_dir, filename)
+@api.route('/csv/<id>', methods=['get'])
+def api_csv(id):
+    encoding = request.args.get('encoding', 'utf-8')
+
+    record = models.Download.query.get(id)
+    directory, filename = os.path.split(record.filename)
+    download_type = record.download_type
+
+    filename = convert_csv.convert_csv(directory, filename, download_type, encoding)
+
+    return send_from_directory(directory, filename)
 
 
 @api.route('/login', methods=['POST'])

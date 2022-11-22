@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
 import { DownloadService, NotificationService } from '../services/index';
-import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, PendingDownload, QueryModel } from '../models/index';
 
 const highlightFragmentSize = 50;
 
@@ -24,6 +24,8 @@ export class DownloadComponent implements OnChanges {
     public isDownloading: boolean;
     public isModalActive: boolean = false;
     public isModalActiveError: boolean = false;
+
+    public pendingDownload: PendingDownload;
 
     private resultsCutoff = 1000;
 
@@ -57,30 +59,48 @@ export class DownloadComponent implements OnChanges {
      */
     public chooseDownloadMethod() {
         if (this.resultsCount < this.resultsCutoff) {
-            this.isDownloading = true;
-            this.downloadService.download(
-                this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount, this.route, highlightFragmentSize
-            ).then( results => {
-                this.isDownloading = false;
-            }).catch( error => {
-                this.isDownloading = false;
-                this.notificationService.showMessage(error);
-            });
+            this.directDownload();
         } else {
-            this.downloadService.downloadTask(
-                this.corpus, this.queryModel, this.getCsvFields(), this.route, highlightFragmentSize
-            ).then( results => {
-                if (results.success === false) {
-                    this.notificationService.showMessage(results.message);
-                } else {
-                    this.notificationService.showMessage(
-                        'Downloading CSV file... A link will be sent to your email address shortly.', 'success'
-                    );
-                }
-            }).catch( error => {
-                this.notificationService.showMessage(error);
-            });
+            this.longDownload();
         }
+    }
+
+    /** results can be downloaded directly: show menu to pick file options */
+    private directDownload() {
+        this.pendingDownload = { download_type: 'search_results' };
+    }
+
+    /** download short file directly */
+    public confirmDirectDownload(options: DownloadOptions) {
+        this.isDownloading = true;
+        this.downloadService.download(
+            this.corpus, this.queryModel, this.getCsvFields(), this.resultsCount, this.route, highlightFragmentSize, options
+        ).catch( error => {
+            this.notificationService.showMessage(error);
+        }).then(() => {
+            this.isDownloading = false;
+            this.pendingDownload = undefined;
+        }
+        );
+    }
+
+    /** start backend task to create csv file */
+    private longDownload() {
+        this.downloadService.downloadTask(
+            this.corpus, this.queryModel, this.getCsvFields(), this.route, highlightFragmentSize
+        ).then( results => {
+            if (results.success === false) {
+                this.notificationService.showMessage(results.message);
+            } else {
+                this.notificationService.showMessage(
+                    'Downloading CSV file... A link will be sent to your email address shortly.', 'success'
+                );
+            }
+        }).catch( error => {
+            this.notificationService.showMessage(error);
+        });
+
+
     }
 
     public selectCsvFields(selection: CorpusField[]) {

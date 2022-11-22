@@ -289,6 +289,7 @@ class Download(db.Model):
             filename = None
 
         return {
+            'id': self.id,
             'started': self.started,
             'completed': self.completed,
             'download_type': self.download_type,

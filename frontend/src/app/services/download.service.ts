@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
-import { Corpus, CorpusField, QueryModel } from '../models/index';
+import { Corpus, CorpusField, DownloadOptions, QueryModel } from '../models/index';
+import * as _ from 'lodash';
 
 @Injectable()
 export class DownloadService {
@@ -20,13 +21,22 @@ export class DownloadService {
      */
     public async download(
         corpus: Corpus, queryModel: QueryModel, fields: CorpusField[],
-        requestedResults: number, route: string, highlightFragmentSize: number
+        requestedResults: number, route: string, highlightFragmentSize: number,
+        fileOptions: DownloadOptions
         ): Promise<string | void> {
             const esQuery = this.elasticSearchService.makeEsQuery(
                 queryModel, corpus.fields); // to create elastic search query
-            return this.apiService.download(
-                {'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ),
-                'size': requestedResults, 'route': route }).then( result => {
+            const parameters = _.merge(
+                {
+                    corpus: corpus.name,
+                    es_query: esQuery,
+                    fields: fields.map( field => field.name ),
+                    size: requestedResults,
+                    route: route
+                },
+                fileOptions
+            );
+            return this.apiService.download(parameters).then( result => {
                 if (result.status === 200) {
                     const filename = result.headers.filename;
                     saveAs(result.body, filename);
@@ -55,5 +65,10 @@ export class DownloadService {
     }).catch( error => {
         throw new Error(error.headers.message[0]);
     });
+    }
+
+    public retrieveFinishedDownload(id: number, options: DownloadOptions) {
+        const parameters = _.merge({id}, options);
+        return this.apiService.csv(parameters);
     }
 }
