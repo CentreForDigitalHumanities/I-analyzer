@@ -121,7 +121,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
         });
 
-        const labels = (style == 'line') ? this.timeIntervals : [this.timeIntervals[this.currentTimeIndex]];
+        const labels = (style === 'line') ? this.timeIntervals : [this.timeIntervals[this.currentTimeIndex]];
 
         return {
             labels,
@@ -139,7 +139,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             this.currentTimeIndex = undefined;
             data = this.totalData;
         } else {
-            if (this.currentTimeIndex === undefined) { this.currentTimeIndex = 0; }
+            if (this.currentTimeIndex === undefined) {
+                this.currentTimeIndex = 0;
+            }
             const time = this.timeIntervals[this.currentTimeIndex];
             if (this.zoomedInData === undefined) {
                 data = this.filterTimeInterval(this.totalData, time);
@@ -180,7 +182,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 tooltip: {
                     displayColors: true,
                     callbacks: {
-                        labelColor(tooltipItem: any): any {
+                        labelColor: (tooltipItem: any): any => {
                             const color = tooltipItem.dataset.borderColor;
                             return {
                                 borderColor: color,
@@ -212,7 +214,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                         enabled: false,
                     },
                 }
-            }
+            };
         }
 
         if (style === 'bar') {
@@ -232,8 +234,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.chart = new Chart('chart', {
                 type: 'line',
-                data: data,
-                options: options,
+                data,
+                options,
                 plugins: [Filler, Zoom]
             });
             this.chart.canvas.ondblclick = (event) => this.chart.resetZoom();
