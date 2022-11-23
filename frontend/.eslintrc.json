@@ -26,7 +26,7 @@
           {
             "type": "element",
             "prefix": "ia",
-            "style": "scss"
+            "style": "kebab-case"
           }
         ],
         "@angular-eslint/directive-selector": [
@@ -50,7 +50,15 @@
         "id-blacklist": "off",
         "id-match": "off",
         "no-underscore-dangle": "off",
-        "valid-typeof": "error"
+        "valid-typeof": "error",
+        "quotes": [
+            "warn",
+            "single",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
+        ]
       }
     },
     {
