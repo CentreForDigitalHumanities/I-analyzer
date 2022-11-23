@@ -42,7 +42,7 @@ celery -A ianalyzer.runcelery.celery_app worker --loglevel=info
 You can use [flower](https://flower.readthedocs.io/) to monitor your tasks and workers. To run flower, open a new terminal, activate your python environment, navigate to the backend and run
 
 ```bash
-celery -A ianalyzer.runcelery.celery_ap flower
+celery -A ianalyzer.runcelery.celery_app flower
 ```
 
 Then open `localhost:5555` in your browser to see the flower interface.
