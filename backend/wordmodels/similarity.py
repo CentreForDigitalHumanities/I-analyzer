@@ -94,5 +94,5 @@ def most_similar_items(matrix, vocab, term, n, missing_terms = 0):
             return filtered_results
         else:
             delta = n - len(filtered_results)
-            return most_similar_items(matrix, vocab, term, n, missing_terms=delta)
+            return most_similar_items(matrix, vocab, term, n, missing_terms=delta + missing_terms)
     return []
