@@ -130,7 +130,10 @@ def alignment_loss_adjacent_timeframes(coordinates_1, terms_1, coordinates_2, te
     filtered_coordinates_1 = filter_coordinates(coordinates_1, terms_to_index_1)
     filtered_coordinates_2 = filter_coordinates(coordinates_2, terms_to_index_2)
 
-    loss = mean_squared_error(filtered_coordinates_1, filtered_coordinates_2)
+    if filtered_coordinates_1.size:
+        loss = mean_squared_error(filtered_coordinates_1, filtered_coordinates_2)
+    else:
+        loss = 0
 
     return loss
 

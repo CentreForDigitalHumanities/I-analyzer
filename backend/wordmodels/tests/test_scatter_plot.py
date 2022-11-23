@@ -35,9 +35,10 @@ def find_term(term, interval_result):
     data = interval_result['data']
     return next((item for item in data if item['label'] == term), None)
 
-def test_2d_context_over_time_result(test_app):
+@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
+def test_2d_context_over_time_result(test_app, mock_corpus):
     """Test if the context result makes sense."""
-    all_data = get_2d_contexts_over_time('she', 'mock-svd-ppmi-corpus')
+    all_data = get_2d_contexts_over_time(['she'], mock_corpus)
 
     for interval in all_data:
         assert find_term('she', interval)
@@ -46,30 +47,26 @@ def test_2d_context_over_time_result(test_app):
     assert find_term('elizabeth', all_data[0])
     assert find_term('alice', all_data[1])
 
-def test_term_not_in_all_intervals(test_app):
-    all_data = get_2d_contexts_over_time('alice', 'mock-svd-ppmi-corpus', NUMBER_SIMILAR)
+@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
+def test_term_not_in_all_intervals(test_app, mock_corpus):
+    all_data = get_2d_contexts_over_time(['alice'], mock_corpus, NUMBER_SIMILAR)
 
-    # check that each interval returns coordinates for the keyword
-    for interval in all_data:
-        assert find_term('alice', interval)
 
-    # check that interval 1 includes neighbouring words, but 0 and 2 do not
+    # check that interval 1 includes keyword + neighbouring words, but 0 and 2 do not
     keyword_in_model = [all_data[1]]
     keyword_not_in_model = [all_data[0], all_data[2]]
 
     for interval in keyword_in_model:
+        assert find_term('alice', interval)
         assert len(interval['data']) == NUMBER_SIMILAR + 1
 
     for interval in keyword_not_in_model:
-        assert len(interval['data']) == 1
+        assert not find_term('alice', interval)
+        assert len(interval['data']) == 0
 
 @pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
 def test_2d_contexts_over_time_format(test_app, mock_corpus):
-    terms_per_corpus = {
-        'mock-svd-ppmi-corpus': 'she',
-        'mock-wordvec-corpus': 'payement'
-    }
-    term = terms_per_corpus[mock_corpus]
+    term = 'she'
 
     data = get_2d_contexts_over_time(term, mock_corpus)
     assert data and len(data)

@@ -97,12 +97,10 @@ def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_
             similar_term
             for query_term in query_terms
             for similar_term in
-            (find_n_most_similar(model, wm_type, query_term, number_similar + 1) or [])
+            (find_n_most_similar(model, wm_type, query_term, number_similar) or [])
         ]
         for model in binned_models
     ]
-    # find_n_most_similar always excludes the term itself, resulting in one result less than number_similar
-    # i.e. for 10 neighbours, we have to specify number_similar = 11
 
     query_terms_per_model = [
         [term for term in query_terms if word_in_model(term, model)]
@@ -110,7 +108,7 @@ def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_
     ]
 
     terms_per_model = [
-        query_terms + [item['key'] for item in neighbours] if neighbours else query_terms
+        query_terms + [item['key'] for item in neighbours]
         for query_terms, neighbours in zip(query_terms_per_model, neighbours_per_model)
     ]
 
