@@ -218,11 +218,12 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            _, csv_path = tasks.make_csv((None, search_results), request.json)
+            csv_path = tasks.make_csv(search_results, request.json)
             directory, filename = os.path.split(csv_path)
             converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
             csv_file = os.path.join(directory, converted_filename)
-        except:
+        except Exception as e:
+            logger.error(e)
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
 
