@@ -190,6 +190,14 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                             };
                         },
                     }
+                },
+                zoom: {
+                    zoom: {
+                        mode: 'x',
+                        drag: { enabled: false },
+                        pinch: { enabled: false },
+                        wheel: { enabled: false },
+                    }
                 }
             }
         };
@@ -200,20 +208,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
             options.elements.point.radius = 4;
             options.plugins.legend.labels.usePointStyle = true;
-            options.plugins.zoom = {
-                zoom: {
-                    mode: 'x',
-                    drag: {
-                        enabled: true,
-                        threshold: 0,
-                    },
-                    pinch: {
-                        enabled: false,
-                    },
-                    wheel: {
-                        enabled: false,
-                    },
-                }
+            options.plugins.zoom.zoom.drag = {
+                enabled: true,
+                threshold: 0,
             };
         }
 
@@ -230,6 +227,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         if (this.chart) {
             this.chart.data = data;
             this.chart.options = options;
+            console.log(options);
             this.chart.update();
         } else {
             this.chart = new Chart('chart', {
