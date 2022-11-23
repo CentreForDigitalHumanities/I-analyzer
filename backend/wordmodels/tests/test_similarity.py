@@ -121,3 +121,28 @@ def test_vocab_is_subset_of_model(model_with_term_removed):
     neighbours = similarity.find_n_most_similar(model, wm_type, similar_term, 10)
     assert not any([neighbour['key'] == missing_term for neighbour in neighbours])
     assert len(neighbours) == 10
+
+
+class TestMatrix:
+    """Mock of keyed vectors for term similarity. Implements
+    a most_similar function."""
+
+    def __init__(self, terms):
+        self.terms = terms
+
+    def most_similar(self, term, topn=10):
+        n = min(topn, len(self.terms) - 1)
+        filtered_terms = list(filter(lambda t: t != term, self.terms))
+        index_to_score = lambda index: 1 / (1 + index)
+        return ((term, index_to_score(i)) for i, term in enumerate(filtered_terms[:n]))
+
+def test_most_similar_recursion():
+    """Test that the recursion in the most_similar_items
+    function works correctly"""
+
+    terms = [str(i) for i in range(0, 100)]
+    vocab = [str(i) for i in range(0, 100, 2)]
+    matrix = TestMatrix(terms)
+
+    neighbours = similarity.most_similar_items(matrix, vocab, '50', 10)
+    assert len(neighbours) == 10
