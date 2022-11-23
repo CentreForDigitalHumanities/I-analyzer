@@ -1,4 +1,4 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, DoCheck, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
 import * as moment from 'moment';
 
@@ -10,7 +10,7 @@ import { BaseFilterComponent } from './base-filter.component';
   templateUrl: './date-filter.component.html',
   styleUrls: ['./date-filter.component.scss']
 })
-export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements DoCheck, OnInit {
+export class DateFilterComponent extends BaseFilterComponent<DateFilterData> implements DoCheck, OnInit, OnChanges {
     public minDate: Date;
     public maxDate: Date;
     public minYear: number;
@@ -30,6 +30,13 @@ export class DateFilterComponent extends BaseFilterComponent<DateFilterData> imp
             this.provideFilterData();
         }
     }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.inputChanged?.currentValue) {
+            this.inputChanged.subscribe(() => this.provideFilterData());
+        }
+    }
+
 
     getDisplayData(filter: SearchFilter<DateFilterData>) {
         let data = filter.currentData;

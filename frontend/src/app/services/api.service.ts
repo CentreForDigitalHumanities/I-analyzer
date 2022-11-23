@@ -5,7 +5,7 @@ import { Resource, ResourceAction, ResourceParams,
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, ContextFeedback, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, ContextFeedback, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,
@@ -117,8 +117,8 @@ export class ApiService extends Resource {
         path: '/request_full_data'
     })
     public requestFullData: ResourceMethod<
-        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[] } |
-        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[] },
+        { visualization: 'date_term_frequency', parameters: DateTermFrequencyParameters[], corpus: string, } |
+        { visualization: 'aggregate_term_frequency', parameters: AggregateTermFrequencyParameters[], corpus: string, },
         TaskResult>;
 
     @ResourceAction({
@@ -174,16 +174,28 @@ export class ApiService extends Resource {
         asResourceResponse: true
     })
     public download: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], size: number, route: string },
+        LimitedResultsDownloadParameters,
         { success: false, message: string } | any >;
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
+        path: '/csv/{id}',
+        responseBodyType: ResourceResponseBodyType.Blob,
+        asResourceResponse: true
+    })
+    public csv: ResourceMethod<
+        { id: number } | ({ id: number } & DownloadOptions),
+        { success: false, message: string } | any >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/download_task'
     })
     public downloadTask: ResourceMethod<
-        { corpus: string, es_query: EsQuery | EsQuerySorted, fields: string[], route: string },
+        ResultsDownloadParameters,
         { success: false, message: string } | { success: true, task_ids: string[] } | any >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -232,6 +244,13 @@ export class ApiService extends Resource {
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
+        path: '/downloads'
+    })
+    public downloads: ResourceMethod<void, Download[]>;
+
+
+    @ResourceAction({
+        method: ResourceRequestMethod.Get,
         path: '/get_media{!args}',
         responseBodyType: ResourceResponseBodyType.ArrayBuffer,
         asResourceResponse: true
@@ -261,6 +280,9 @@ export class ApiService extends Resource {
         responseBodyType: ResourceResponseBodyType.Text
     })
     public corpusdescription: ResourceMethod<{ filename: string, corpus: string }, any>;
+
+
+
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);

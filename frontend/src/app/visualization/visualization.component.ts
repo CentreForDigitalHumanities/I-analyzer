@@ -23,8 +23,6 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     public allVisualizationFields: CorpusField[];
 
-    public histogramDocumentLimit = 10000;
-
     public showTableButtons: boolean;
 
     public visualizationType: string;
@@ -175,6 +173,9 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         this.visualExists = true;
 
         this.visualizedField = selectedField;
+        this.visualizedFieldDropdownValue = this.fieldDropdown.find(
+            item => item.value === this.visualizedField);
+
         this.foundNoVisualsMessage = 'Retrieving data...';
     }
 

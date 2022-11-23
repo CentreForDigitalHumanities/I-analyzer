@@ -21,7 +21,7 @@ export class WordmodelsService extends Resource {
         path: '/get_related_words'
     })
     public relatedWordsRequest: ResourceMethod<
-        { query_term: string, corpus_name: string },
+        { query_term: string, corpus_name: string, neighbours: number },
         { success: false, message: string } | { success: true, data: RelatedWordsResults }>;
 
     @ResourceAction({
@@ -29,7 +29,7 @@ export class WordmodelsService extends Resource {
         path: '/get_related_words_time_interval'
     })
     public relatedWordsTimeIntervalRequest: ResourceMethod<
-        { query_term: string, corpus_name: string, time: string },
+        { query_term: string, corpus_name: string, time: string, neighbours: number },
         { success: false, message: string } | { success: true, data: WordSimilarity[] }>;
 
     @ResourceAction({
@@ -72,8 +72,12 @@ export class WordmodelsService extends Resource {
         return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
     }
 
-    public async getRelatedWords(queryTerm: string, corpusName: string): Promise<RelatedWordsResults> {
-        return this.relatedWordsRequest({'query_term': queryTerm, 'corpus_name': corpusName}).then( result => {
+    public async getRelatedWords(queryTerm: string, corpusName: string, neighbours: number): Promise<RelatedWordsResults> {
+        return this.relatedWordsRequest({
+            'query_term': queryTerm,
+            'corpus_name': corpusName,
+            neighbours,
+        }).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve(result.data);
@@ -98,10 +102,10 @@ export class WordmodelsService extends Resource {
     }
 
     public async getRelatedWordsTimeInterval(
-        queryTerm: string, corpusName: string, timeInterval: string
+        queryTerm: string, corpusName: string, timeInterval: string, neighbours: number
     ): Promise<WordSimilarity[]> {
         return this.relatedWordsTimeIntervalRequest(
-            {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval}
+            {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval, neighbours}
         ).then( result => {
             return new Promise( (resolve, reject) => {
                 if (result['success'] === true) {

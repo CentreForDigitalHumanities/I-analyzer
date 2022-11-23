@@ -30,12 +30,13 @@ from es import download, search
 from addcorpus.load_corpus import corpus_dir, load_all_corpora, load_corpus
 import wordmodels.visualisations as wordmodel_visualisations
 
+
 from api.user_mail import send_user_mail
 from . import security
 from . import analyze
 from . import tasks
 from . import api
-from . import cache
+from . import convert_csv
 
 
 @api.route('/ensure_csrf', methods=['GET'])
@@ -196,7 +197,6 @@ def api_corpus_document(corpus, document_name):
     '''
     return send_from_directory(corpus_dir(corpus), 'documents/{}'.format(document_name))
 
-
 @api.route('/download', methods=['POST'])
 @login_required
 def api_download():
@@ -208,7 +208,7 @@ def api_download():
     elif request.mimetype != 'application/json':
         error_response.headers.message += 'unsupported mime type.'
         return error_response
-    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route']):
+    elif not all(key in request.json.keys() for key in ['es_query', 'corpus', 'fields', 'route', 'encoding']):
         error_response.headers['message'] += 'missing arguments.'
         return error_response
     elif request.json['size']>1000:
@@ -218,16 +218,17 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            filepath = tasks.make_csv.delay(search_results, request.json)
+            _, csv_path = tasks.make_csv((None, search_results), request.json)
+            directory, filename = os.path.split(csv_path)
+            converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
+            csv_file = os.path.join(directory, converted_filename)
         except:
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
 
-        if not os.path.isabs(filepath.get()):
+        if not os.path.isabs(csv_file):
             error_response.headers['message'] += 'csv filepath is not absolute.'
             return error_response
-
-        csv_file = filepath.get()
 
         if not csv_file:
             error_response.headers.message += 'Could not create csv file.'
@@ -260,27 +261,33 @@ def api_download_task():
     elif not current_user.email:
         error_response.headers['message'] += 'user email not known.'
         return error_response
+
     # Celery task
-    csv_task = chain(tasks.download_scroll.s(request.json, current_user.download_limit),
-        tasks.make_csv.s(request.json))
-    csvs = csv_task.apply_async()
-    if csvs:
-        filepath = csvs.get()[1]
-        # we are sending the results to the user by email
-        current_app.logger.info("should now be sending email")
-        tasks.csv_data_email(filepath, current_user.email, current_user.username)
-        return jsonify({'success': True, 'task_ids': [csvs.id, csvs.parent.id]})
+    task_chain = tasks.download_search_results(request.json, current_user)
+    if task_chain:
+        result = task_chain.apply_async()
+        return jsonify({'success': True, 'task_ids': [result.id, result.parent.id]})
     else:
         return jsonify({'success': False, 'message': 'Could not create csv file.'})
 
-
-
+@api.route('/downloads', methods=['GET'])
+@login_required
+def api_user_downloads():
+    result = [d.serialize() for d in current_user.downloads]
+    return jsonify(result)
 
 # endpoint for link send in email to download csv file
-@api.route('/csv/<filename>', methods=['get'])
-def api_csv(filename):
-    csv_files_dir=current_app.config['CSV_FILES_PATH']
-    return send_from_directory(csv_files_dir, filename)
+@api.route('/csv/<id>', methods=['get'])
+def api_csv(id):
+    encoding = request.args.get('encoding', 'utf-8')
+
+    record = models.Download.query.get(id)
+    directory, filename = os.path.split(record.filename)
+    download_type = record.download_type
+
+    filename = convert_csv.convert_csv(directory, filename, download_type, encoding)
+
+    return send_from_directory(directory, filename)
 
 
 @api.route('/login', methods=['POST'])
@@ -608,25 +615,17 @@ def api_request_full_data():
     if not request.json:
         abort(400)
 
-    for key in ['visualization', 'parameters']:
+    for key in ['visualization', 'parameters', 'corpus']:
         if not key in request.json:
             abort(400)
 
-    task_per_type = {
-        'date_term_frequency': tasks.timeline_term_frequency_full_data,
-        'aggregate_term_frequency': tasks.histogram_term_frequency_full_data
-    }
-
     visualization_type = request.json['visualization']
-    if visualization_type not in task_per_type:
+    known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+
+    if visualization_type not in known_visualisations:
         abort(400, 'unknown visualization type "{}"'.format(visualization_type))
 
-    task = task_per_type[visualization_type]
-
-
-    task_chain = chain(task.s(request.json['parameters']),
-        tasks.csv_data_email.s(current_user.email, current_user.username))
-
+    task_chain = tasks.download_full_data(request.json, current_user)
     task_chain.apply_async()
 
     return jsonify({'success': True, 'task_id': task_chain.id})

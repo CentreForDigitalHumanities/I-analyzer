@@ -1,5 +1,7 @@
+import { EsQuery, EsQuerySorted } from '../services';
 import { CorpusField } from './corpus';
 import { FoundDocument } from './found-document';
+import { AggregateTermFrequencyParameters, DateTermFrequencyParameters } from './visualization';
 
 export type SearchResults = {
     fields?: CorpusField[],
@@ -56,7 +58,8 @@ export type WordSimilarity = {
 export type RelatedWordsResults = {
     total_similarities: WordSimilarity[],
     similarities_over_time: WordSimilarity[],
-    time_points: string[]
+    time_points: string[],
+    similarities_over_time_local_top_n: WordSimilarity[][],
 };
 
 export type ContextResults = {
@@ -93,3 +96,35 @@ export type QueryFeedback = {
 };
 
 export type TaskResult = { success: false, message: string } | { success: true, task_id: string }
+
+export type ResultsDownloadParameters = {
+    corpus: string,
+    es_query: EsQuery | EsQuerySorted,
+    fields: string[],
+    route: string,
+};
+
+export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
+
+export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency'
+export type DownloadStatus = 'done' | 'working' | 'error';
+export type DownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[] | ResultsDownloadParameters;
+
+export type PendingDownload = {
+    download_type: DownloadType,
+}
+
+export type Download = {
+    id: number,
+    started: Date,
+    completed?: Date,
+    download_type: DownloadType,
+    corpus: string,
+    parameters: string,
+    filename?: string,
+    status: DownloadStatus,
+};
+
+export type DownloadOptions = {
+    encoding: 'utf-8'|'utf-16';
+};

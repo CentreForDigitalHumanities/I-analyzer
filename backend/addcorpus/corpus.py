@@ -132,6 +132,7 @@ class Corpus(object):
         else:
             return self.scan_image_type
 
+    @property
     def word_model_path(self):
         ''' (optional) path where word models are stored
         '''

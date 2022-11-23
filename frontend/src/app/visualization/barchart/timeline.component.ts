@@ -106,7 +106,8 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         });
         return this.apiService.requestFullData({
             visualization: 'date_term_frequency',
-            'parameters': paramsPerSeries
+            parameters: paramsPerSeries,
+            corpus: this.corpus.name,
         });
     }
 
