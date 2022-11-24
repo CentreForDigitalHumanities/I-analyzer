@@ -11,6 +11,7 @@ import bs4
 import csv
 import sys
 from datetime import datetime, timedelta
+from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
 
@@ -149,7 +150,7 @@ class Corpus(object):
         '''
         if word models are present for this corpus
         '''
-        return self.word_model_path != None
+        return self.word_model_path and isdir(self.word_model_path)
 
     def allow_image_download(self):
         '''
