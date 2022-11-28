@@ -68,11 +68,11 @@ export class ApiService extends Resource {
 
 
     @ResourceAction({
-        method: ResourceRequestMethod.Get,
-        path: '/task_status/{task_id}'
+        method: ResourceRequestMethod.Post,
+        path: '/task_status'
     })
-    public getTaskStatus: ResourceMethod<
-    { task_id: string},
+    public getTasksStatus: ResourceMethod<
+    { task_ids: string[]},
     { success: false, message: string } | { success: true, done: false } |
     { success: true, done: true, results: any }
     >;
@@ -292,16 +292,16 @@ export class ApiService extends Resource {
         return Promise.all([this.apiUrl, urlPromise]).then(([apiUrl, url]) => `${apiUrl}${url}`);
     }
 
-    private taskDone(response: { success: false, message: string } | { success: true, done: false } |
-        { success: true, done: true, results: AggregateResult[]|NgramResults }) {
+    private tasksDone<ExpectedResult>(response: { success: false, message: string } | { success: true, done: false } |
+        { success: true, done: true, results: ExpectedResult[] }) {
         return response.success === false || response.done === true;
     }
 
-    public pollTask(id): Promise<{ success: false, message: string } | { success: true, done: false } |
-    { success: true, done: true, results: TermFrequencyResult[]|NgramResults|AggregateResult[] }> {
+    public pollTasks<ExpectedResult>(ids: string[]): Promise<{ success: false, message: string } | { success: true, done: false } |
+    { success: true, done: true, results: ExpectedResult[] }> {
         return timer(0, 5000).pipe(
-            switchMap((_) => this.getTaskStatus({'task_id': id})),
-            filter(this.taskDone),
+            switchMap((_) => this.getTasksStatus({'task_ids': ids})),
+            filter(this.tasksDone),
             take(1)
         ).toPromise();
     }

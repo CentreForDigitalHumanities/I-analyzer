@@ -362,12 +362,13 @@ export abstract class BarchartDirective
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
-                return this.apiService.pollTask(result.task_id);
+                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
             }
         }).then(res => {
             if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
+                return this.processSeriesTermFrequency(res.results, series);
             } else {
+                this.error.emit(res['message'] || 'could not load results');
                 return series;
             }
         });

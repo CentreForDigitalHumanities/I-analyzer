@@ -75,7 +75,6 @@ yarn postinstall
 8. Set up the database and migrations by running `flask db upgrade`.
 9. Initialize the admin and corpus roles in the MySQL database and create a superuser with all these roles by running `flask admin -n adminname`, providing an administrator name. You will be prompted for a password, and to repeat the password.
 10. Go to `/frontend` and follow the instructions in the README to install it.
-11. If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your config.py as CELERY_BROKER_URL=redis://host:port/db_number; do the same for CELERY_BACKEND.
 
 ## Adding corpora
 

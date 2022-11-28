@@ -15,7 +15,11 @@ MAX_LENGTH_DESCRIPTION = 254
 MAX_LENGTH_CORPUS_NAME = 254
 MAX_LENGTH_FILENAME = 254
 
-db = SQLAlchemy()
+db = SQLAlchemy(
+    session_options={
+        'expire_on_commit': False
+    }
+)
 
 
 '''

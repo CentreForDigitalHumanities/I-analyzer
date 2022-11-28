@@ -82,7 +82,7 @@ export type QueryFeedback = {
     similarTerms?: string[],
 };
 
-export type TaskResult = { success: false, message: string } | { success: true, task_id: string }
+export type TaskResult = { success: false, message: string } | { success: true, task_ids: string[] }
 
 export type ResultsDownloadParameters = {
     corpus: string,
