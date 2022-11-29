@@ -69,7 +69,7 @@ def get_time_bins(es_query, corpus):
     min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
-    if time_range <= 1:
+    if time_range < 1:
         year_step = None
     elif time_range <= 20:
         year_step = 1
