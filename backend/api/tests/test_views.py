@@ -48,13 +48,13 @@ def ngram_body(basic_query):
         'max_size_per_interval': 2
     }
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker')
+@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
 def test_ngrams(client, mock_user, test_app, test_es_client, ngram_body):
     client.mock_user_login()
     post_response = client.post('/api/ngram_tasks', json=ngram_body)
     assert post_response.status_code == 200
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker')
+@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
 def test_aggregate_term_frequency(client, mock_user, test_app, test_es_client, aggregate_term_frequency_body):
     client.mock_user_login()
     post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
@@ -63,7 +63,7 @@ def test_aggregate_term_frequency(client, mock_user, test_app, test_es_client, a
     post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
     assert post_response.status_code == 400
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker')
+@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
 def test_date_term_frequency(client, mock_user, test_app, test_es_client, date_term_frequency_body):
     client.mock_user_login()
     post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
