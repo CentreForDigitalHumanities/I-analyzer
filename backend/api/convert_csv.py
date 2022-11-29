@@ -10,8 +10,9 @@ def convert_csv(directory, filename, download_type, encoding='utf-8', format = N
 
     dialect = choose_dialect(download_type)
     df = read_file(directory, filename, dialect=dialect)
+    df_formatted = set_long_wide_format(df, format)
     path_out, filename_out = output_path(directory, filename)
-    write_output(path_out, df, encoding=encoding, dialect_name=dialect)
+    write_output(path_out, df_formatted, encoding=encoding, format=format, dialect_name=dialect)
     return filename_out
 
 def choose_dialect(download_type):
@@ -38,10 +39,30 @@ def output_path(directory, filename):
     output_name = name + '_converted' + '.' + ext
     return os.path.join(directory, output_name), output_name
 
-def write_output(filename, df, encoding='utf-8', dialect_name='excel'):
+def write_output(filename, df, encoding='utf-8', format = None, dialect_name='excel'):
     dialect = csv.get_dialect(dialect_name)
 
-    df.to_csv(filename, index=False, encoding=encoding,
+    if format == 'wide':
+        header =  ['{} ({})'.format(*column) for column in df.columns] # nicely format wide format columns
+        include_index = True # show index after wide format reformatting, when the field value is used as the index
+        index_label = df.index.name
+    else:
+        header = df.columns
+        include_index = False
+        index_label = None
+
+    df.to_csv(filename, index=include_index, header=header, index_label=index_label, encoding=encoding,
         sep=dialect.delimiter, quotechar=dialect.quotechar, quoting=dialect.quoting)
 
+
+def set_long_wide_format(df, format):
+    if format == 'wide' and df.columns[0] == 'Query':
+        query_column = df.columns[0]
+        field_column = df.columns[1] # the field values are being compared on
+        value_columns = df.columns[2:]
+
+        wide = pandas.pivot(df, index = field_column, columns=query_column, values = value_columns)
+        return wide
+
+    return df
 

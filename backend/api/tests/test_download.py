@@ -392,6 +392,7 @@ wide_format_expected_data = [
 
 
 
+
 def test_wide_format(csv_directory, term_frequency_file):
     converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', format='wide')
     converted_path = os.path.join(csv_directory, converted)
@@ -405,4 +406,3 @@ def test_wide_format(csv_directory, term_frequency_file):
 
             for column in expected_row:
                 assert expected_row[column] == row[column]
-
