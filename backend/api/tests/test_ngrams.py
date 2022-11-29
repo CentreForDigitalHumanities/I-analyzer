@@ -56,6 +56,16 @@ def test_time_bins(test_app, basic_query):
     ]
     assert bins == target_bins
 
+def test_short_interval(test_app, basic_query):
+    start_date = datetime(year=1850, month=1, day=1)
+    end_date = datetime(year=1850, month=12, day=31)
+    date_filter = query.make_date_filter(start_date, end_date)
+    short_query = query.add_filter(basic_query, date_filter)
+
+    bins = analyze.get_time_bins(short_query, 'mock-corpus')
+
+    assert bins == [(1850, 1850)]
+
 
 def test_top_10_ngrams():
     docs = [
