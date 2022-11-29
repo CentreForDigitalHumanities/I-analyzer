@@ -352,7 +352,8 @@ class XMLCorpus(Corpus):
         tag = self.get_entry_tag(metadata)
         bowl = self.bowl_from_soup(soup, metadata=metadata)
         if bowl:
-            for spoon in bowl.find_all(tag):
+            spoonfuls = bowl.find_all(tag) if tag else [bowl]
+            for spoon in spoonfuls:
                 regular_field_dict = {field.name: field.extractor.apply(
                     # The extractor is put to work by simply throwing at it
                     # any and all information it might need
