@@ -65,8 +65,8 @@ def extract_content(soup):
 
 
 class Rechtspraak(XMLCorpus):
-    title = "de Rechtspraak"
-    description = "Open data van (geanonimiseerde) uitspraken van de Nederlandse rechtspraak"
+    title = "Judicial system Netherlands"
+    description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)
     max_date = datetime(year=2022, month=10, day=13)
     data_directory = current_app.config['RECHTSPRAAK_DATA']
@@ -192,13 +192,13 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='year',
-            display_name='Jaar',
+            display_name='Year',
             extractor=extract.Metadata('year'),
             search_filter=filters.RangeFilter(min_date.year, max_date.year)
         ),
         Field(
             name='date',
-            display_name='Datum',
+            display_name='Date',
             extractor=rdf_description_extractor('dcterms:date'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             results_overview=True,
@@ -215,7 +215,7 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='issued',
-            display_name='Publicatiedatum',
+            display_name='Publication Date',
             extractor=rdf_description_extractor('dcterms:issued'),
             es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
             search_filter=filters.DateFilter(
@@ -228,9 +228,9 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='publisher',
-            display_name='Uitgever',
+            display_name='Publisher',
             extractor=rdf_description_extractor('dcterms:publisher'),
-            es_mapping={'type': 'keyword'},
+            es_mapping={'type': 'keyword'}
         ),
         Field(
             name='creator',
@@ -247,7 +247,7 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='zaaknr',
-            display_name='Zaaknummer',
+            display_name='Case Number',
             extractor=rdf_description_extractor('psi:zaaknummer')
         ),
         Field(
@@ -294,20 +294,20 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='title',
-            display_name='Titel',
+            display_name='Title',
             extractor=rdf_description_extractor(
                 'dcterms:title', section='html'),
             results_overview=True,
         ),
         Field(
             name='abstract',
-            display_name='Inhoudsindicatie',
+            display_name='Abstract',
             extractor=extract.XML(tag='inhoudsindicatie', flatten=True),
             results_overview=True,
         ),
         Field(
             name='content',
-            display_name='Uitspraak',
+            display_name='Content',
             display_type='text_content',
             extractor=extract.XML(
                 toplevel=True,
@@ -315,11 +315,10 @@ class Rechtspraak(XMLCorpus):
                 extract_soup_func=extract_content
             ),
             csv_core=True,
-            required=True
         ),
         Field(
             name='url',
-            display_name='url',
+            display_name='URL',
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
         )
