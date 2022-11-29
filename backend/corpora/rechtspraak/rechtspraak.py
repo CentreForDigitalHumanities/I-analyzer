@@ -28,21 +28,40 @@ def rdf_description_extractor(tag, section='xml', **kwargs):
     )
 
 
+def get_content(soup):
+    uitspraak = soup.find('uitspraak')
+    if uitspraak:
+        return uitspraak
+
+    conclusie = soup.find('conclusie')
+    if conclusie:
+        return conclusie
+
+    return None
+
+
+def has_content(soup):
+    '''Check if document has content.
+    Used for boolean filtering on documents with no content.
+    '''
+    if get_content(soup):
+        return True
+    return False
+
+
 def extract_content(soup):
     '''Extract the content.
     This can be either in the '<uitspraak>' or '<conclusie>' tag,
     depending on document type.
     Argument soup contains the whole document.
     '''
-    uitspraak = soup.find('uitspraak')
-    conclusie = soup.find('conclusie')
-    extractor = extract.XML()  # need an extractor here to access _flatten
 
-    if uitspraak:
-        return extractor._flatten(uitspraak)
-    elif conclusie:
-        return extractor._flatten(conclusie)
-    return None
+    extractor = extract.XML()  # need an extractor here to access _flatten
+    content = get_content(soup)
+
+    if content:
+        return extractor._flatten(content)
+    return 'Content not available'
 
 
 class Rechtspraak(XMLCorpus):
@@ -152,6 +171,24 @@ class Rechtspraak(XMLCorpus):
             description='',
             extractor=rdf_description_extractor('dcterms:identifier'),
             csv_core=True,
+        ),
+        Field(
+            name='has_content',
+            display_name='Has text content',
+            description='Document has available text content.',
+            es_mapping={'type': 'boolean'},
+            extractor=extract.XML(
+                toplevel=True,
+                flatten=True,
+                extract_soup_func=has_content
+            ),
+            search_filter=filters.BooleanFilter(
+                true='has content',
+                false='does not have content',
+                description=(
+                    'Accept only articles that have available text content.'
+                )
+            ),
         ),
         Field(
             name='year',
