@@ -82,7 +82,6 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      */
     private aggregateSearchForMultipleChoiceFilters() {
         const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
-
         const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
         Promise.all(aggregateResultPromises).then(results => {
             results.forEach( r =>
