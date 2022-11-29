@@ -15,7 +15,20 @@ export class DownloadOptionsComponent implements OnInit {
     encodingOptions = [ 'utf-8', 'utf-16'];
     encoding: 'utf-8'|'utf-16' = 'utf-8';
 
+    format: 'long'|'wide';
+
     constructor() { }
+
+    get showFormatChoice() {
+        const termFrequencyTypes =  ['aggregate_term_frequency', 'date_term_frequency'];
+        const isTermFrequency = termFrequencyTypes.includes(this.download?.download_type);
+
+        if (isTermFrequency) {
+            const parameterString = (this.download as Download).parameters || '[]';
+            const parameters = JSON.parse(parameterString);
+            return parameters.length > 1;
+        }
+    }
 
     ngOnInit(): void {
     }
@@ -23,11 +36,13 @@ export class DownloadOptionsComponent implements OnInit {
     confirmDownload() {
         this.confirm.emit({
             encoding: this.encoding,
-        })
+            format: this.format,
+        });
     }
 
     cancelDownload() {
         this.cancel.emit();
     }
+
 
 }

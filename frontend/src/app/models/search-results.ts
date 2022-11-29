@@ -93,7 +93,7 @@ export type ResultsDownloadParameters = {
 
 export type LimitedResultsDownloadParameters = ResultsDownloadParameters & { size: number } & DownloadOptions;
 
-export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency'
+export type DownloadType = 'search_results' | 'aggregate_term_frequency' | 'date_term_frequency';
 export type DownloadStatus = 'done' | 'working' | 'error';
 export type DownloadParameters = DateTermFrequencyParameters[] | AggregateTermFrequencyParameters[] | ResultsDownloadParameters;
 
@@ -114,4 +114,5 @@ export type Download = {
 
 export type DownloadOptions = {
     encoding: 'utf-8'|'utf-16';
+    format?: 'long'|'wide';
 };
