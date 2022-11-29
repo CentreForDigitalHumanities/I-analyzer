@@ -39,16 +39,23 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
     }
 
     queryText(download: Download): string {
-        const queryModel = this.getQueryModel(download);
-        return queryModel.queryText;
+        const queryModels = this.getAllQueryModels(download);
+        const queryTexts = queryModels.map(model => model.queryText);
+        return _.join(queryTexts, ', ');
     }
 
-    getQueryModel(download: Download): QueryModel {
+    getAllQueryModels(download: Download): QueryModel[] {
         const parameters: DownloadParameters = JSON.parse(download.parameters);
-        const esQuery =  'es_query' in parameters ?
-            parameters.es_query : parameters[0].es_query;
-        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
-        return this.elasticSearchService.esQueryToQueryModel(esQuery, corpus);
+        const esQueries =  'es_query' in parameters ?
+            [parameters.es_query] : parameters.map(p => p.es_query);
+        const corpus = this.corpora.find(c => c.name === download.corpus);
+        return esQueries.map(esQuery => this.elasticSearchService.esQueryToQueryModel(esQuery, corpus));
+    }
+
+
+    getQueryModel(download: Download): QueryModel {
+        const queryModels = this.getAllQueryModels(download);
+        return queryModels[0];
     }
 
     getFields(download: Download): string {
