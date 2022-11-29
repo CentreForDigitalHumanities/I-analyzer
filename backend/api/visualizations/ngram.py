@@ -15,7 +15,7 @@ def get_ngrams(es_query, corpus, field,
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
-    time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
+    time_labels = [format_time_label(start_year, end_year) for start_year, end_year in bins]
 
     positions_dict = {
         'any': list(range(ngram_size)),
@@ -39,6 +39,12 @@ def get_ngrams(es_query, corpus, field,
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
+
+def format_time_label(start_year, end_year):
+    if start_year == end_year:
+        return str(start_year)
+    else:
+        return '{}-{}'.format(start_year, end_year)
 
 def get_total_time_interval(es_query, corpus):
     """
