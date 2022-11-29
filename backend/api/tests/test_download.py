@@ -361,3 +361,52 @@ def test_conversion_with_highlights(csv_directory, result_csv_with_highlights):
     converted_path = os.path.join(csv_directory, converted)
 
     assert_content_matches(result_csv_with_highlights, 'utf-8', converted_path, target_encoding)
+
+wide_format_expected_data = [
+    {
+        'date': '1800',
+        'Term frequency (test)': '3',
+        'Relative term frequency (by # documents) (test)': '1.5',
+        'Total documents (test)': '2',
+        'Relative term frequency (by # words) (test)': '0.3',
+        'Total word count (test)': '10',
+        'Term frequency (test2)': '1',
+        'Relative term frequency (by # documents) (test2)': '0.5',
+        'Total documents (test2)': '2',
+        'Relative term frequency (by # words) (test2)': '0.1',
+        'Total word count (test2)': '10'
+    }, {
+        'date': '1801',
+        'Term frequency (test)': '5',
+        'Relative term frequency (by # documents) (test)': '1.25',
+        'Total documents (test)': '4',
+        'Relative term frequency (by # words) (test)': '0.25',
+        'Total word count (test)': '20',
+        'Term frequency (test2)': '3',
+        'Relative term frequency (by # documents) (test2)': '0.75',
+        'Total documents (test2)': '4',
+        'Relative term frequency (by # words) (test2)': '0.15',
+        'Total word count (test2)': '20'
+    }
+]
+
+
+
+def test_wide_format(csv_directory, term_frequency_file):
+    converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', format='wide')
+    converted_path = os.path.join(csv_directory, converted)
+
+    with open(converted_path, 'r') as f:
+        reader = csv.DictReader(f)
+        assert reader.fieldnames == [
+            'date',
+            'Term frequency (test)',
+            'Relative term frequency (by # documents) (test)',
+            'Relative term frequency (by # words) (test)',
+            'Term frequency (test2)',
+            'Relative term frequency (by # documents) (test2)',
+            'Relative term frequency (by # words) (test2)',
+            'Total documents',
+            'Total word count',
+        ]
+

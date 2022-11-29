@@ -2,9 +2,9 @@ import csv
 import os
 
 
-def convert_csv(directory, filename, download_type, encoding='utf-8'):
+def convert_csv(directory, filename, download_type, encoding='utf-8', format = None):
     '''Convert CSV to match encoding. Returns the filename (not the full path) of the converted file.'''
-    if not conversion_needed(encoding):
+    if not conversion_needed(encoding, format):
         return filename
 
     dialect = choose_dialect(download_type)
@@ -23,8 +23,8 @@ def choose_dialect(download_type):
     }
     return dialects[download_type]
 
-def conversion_needed(encoding):
-    return encoding != 'utf-8'
+def conversion_needed(encoding, format):
+    return encoding != 'utf-8' or format == 'wide'
 
 
 def read_file(directory, filename, dialect='excel'):
