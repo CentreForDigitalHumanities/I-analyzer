@@ -1,5 +1,6 @@
 import csv
 import os
+import pandas
 
 
 def convert_csv(directory, filename, download_type, encoding='utf-8', format = None):
@@ -8,9 +9,9 @@ def convert_csv(directory, filename, download_type, encoding='utf-8', format = N
         return filename
 
     dialect = choose_dialect(download_type)
-    fieldnames, rows = read_file(directory, filename, dialect=dialect)
+    df = read_file(directory, filename, dialect=dialect)
     path_out, filename_out = output_path(directory, filename)
-    write_output(path_out, fieldnames, rows, encoding=encoding, dialect=dialect)
+    write_output(path_out, df, encoding=encoding, dialect_name=dialect)
     return filename_out
 
 def choose_dialect(download_type):
@@ -29,22 +30,18 @@ def conversion_needed(encoding, format):
 
 def read_file(directory, filename, dialect='excel'):
     path = os.path.join(directory, filename)
-    with open(path) as csv_file:
-        reader = csv.DictReader(csv_file, dialect=dialect)
-        fieldnames = reader.fieldnames
-        rows = [row for row in reader]
-
-    return fieldnames, rows
+    df = pandas.read_csv(path, dialect=dialect, dtype=str)
+    return df
 
 def output_path(directory, filename):
     name, ext = os.path.splitext(filename)
     output_name = name + '_converted' + '.' + ext
     return os.path.join(directory, output_name), output_name
 
-def write_output(filename, fieldnames, rows, encoding='utf-8', dialect='excel'):
-    with open(filename, 'w', encoding=encoding) as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames, dialect=dialect)
-        writer.writeheader()
-        writer.writerows(rows)
+def write_output(filename, df, encoding='utf-8', dialect_name='excel'):
+    dialect = csv.get_dialect(dialect_name)
+
+    df.to_csv(filename, index=False, encoding=encoding,
+        sep=dialect.delimiter, quotechar=dialect.quotechar, quoting=dialect.quoting)
 
 

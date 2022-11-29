@@ -26,3 +26,4 @@ nltk
 Redis
 textdistance
 flower==1.0
+pandas

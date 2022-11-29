@@ -398,15 +398,11 @@ def test_wide_format(csv_directory, term_frequency_file):
 
     with open(converted_path, 'r') as f:
         reader = csv.DictReader(f)
-        assert reader.fieldnames == [
-            'date',
-            'Term frequency (test)',
-            'Relative term frequency (by # documents) (test)',
-            'Relative term frequency (by # words) (test)',
-            'Term frequency (test2)',
-            'Relative term frequency (by # documents) (test2)',
-            'Relative term frequency (by # words) (test2)',
-            'Total documents',
-            'Total word count',
-        ]
+        assert set(reader.fieldnames) == set(wide_format_expected_data[0].keys())
+
+        for expected_row in wide_format_expected_data:
+            row = next(reader)
+
+            for column in expected_row:
+                assert expected_row[column] == row[column]
 
