@@ -10,7 +10,7 @@
                     <div class="control">
                         <label class="label">Format</label>
                         <label class="radio" *ngFor="let formatOption of ['long', 'wide']">
-                            <input type="radio" name="format" (click)="format=formatOption" [checked]="encoding===formatOption">
+                            <input type="radio" name="format" (click)="format=formatOption" [checked]="format===formatOption">
                             {{formatOption}} format
                         </label>
                         <p class="help">
@@ -23,9 +23,9 @@
                 <div class="field">
                     <div class="control">
                         <label class="label">File encoding</label>
-                        <label class="radio" *ngFor="let enc of encodingOptions">
-                            <input type="radio" name="encoding" (click)="encoding=enc" [checked]="encoding===enc">
-                            {{enc}}
+                        <label class="radio" *ngFor="let encodingOption of encodingOptions">
+                            <input type="radio" name="encoding" (click)="encoding=encodingOption" [checked]="encoding===encodingOption">
+                            {{encodingOption}}
                         </label>
                         <p class="help">
                             We recommend using utf-8 encoding for most applications, including Python and R.
