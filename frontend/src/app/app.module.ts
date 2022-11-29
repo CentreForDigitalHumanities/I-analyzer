@@ -50,14 +50,14 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
-import { RegistrationComponent } from './registration/registration.component';
+import { RegistrationComponent } from './login/registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { RequestResetComponent } from './reset-password/request-reset.component';
+import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
+import { RequestResetComponent } from './login/reset-password/request-reset.component';
 import { PaginationComponent } from './search/pagination/pagination.component';
 import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
