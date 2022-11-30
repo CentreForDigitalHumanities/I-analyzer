@@ -36,7 +36,6 @@ class Troonredes(XMLCorpus):
     es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
     image = current_app.config['TROONREDES_IMAGE']
     word_model_path = current_app.config['TROONREDES_WM']
-    word_model_type = 'word2vec'
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'

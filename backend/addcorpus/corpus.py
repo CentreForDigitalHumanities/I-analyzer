@@ -139,12 +139,6 @@ class Corpus(object):
         '''
         return None
 
-    def word_model_type(self):
-        ''' (optional) type of word models:
-        word2vec or svd_ppmi
-        '''
-        return None
-
     @property
     def word_models_present(self):
         '''
