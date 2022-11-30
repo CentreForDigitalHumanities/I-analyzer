@@ -6,14 +6,14 @@ import wordmodels.similarity as similarity
 from wordmodels.visualisations import load_word_models
 from copy import copy
 
-def test_term_similarity(test_app):
+def test_term_similarity(test_app, mock_corpus):
     case = {
         'term': 'elizabeth',
         'similar_term': 'she',
         'less_similar': 'he',
         'uppercase_term': 'She'
     }
-    corpus = load_corpus('mock-corpus')
+    corpus = load_corpus(mock_corpus)
     binned_models = load_word_models(corpus, True)
     model = binned_models[0]
 
@@ -27,11 +27,11 @@ def test_term_similarity(test_app):
     similarity3 = similarity.term_similarity(model, case['term'], case['uppercase_term'])
     assert similarity1 == similarity3
 
-def test_n_nearest_neighbours_amount(test_app):
+def test_n_nearest_neighbours_amount(test_app, mock_corpus):
 
     for n in range(1, 16, 5):
         term = 'elizabeth'
-        corpus = load_corpus('mock-corpus')
+        corpus = load_corpus(mock_corpus)
         binned_models = load_word_models(corpus, True)
         model = binned_models[0]
 
@@ -39,8 +39,8 @@ def test_n_nearest_neighbours_amount(test_app):
         assert len(result) == n
 
 @pytest.fixture
-def model_with_term_removed(test_app):
-    corpus = load_corpus('mock-corpus')
+def model_with_term_removed(test_app, mock_corpus):
+    corpus = load_corpus(mock_corpus)
     binned_models = load_word_models(corpus, True)
     original_model = binned_models[0]
     model = copy(original_model)

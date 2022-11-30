@@ -40,3 +40,8 @@ def test_app(request):
 
     with app.app_context():
         yield app
+
+@pytest.fixture
+def mock_corpus(test_app):
+    ''' return the first key of the CORPORA dict '''
+    return next(iter(test_app.config['CORPORA'].keys()))
