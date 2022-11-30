@@ -26,11 +26,12 @@ export class NotificationsComponent implements OnDestroy {
     }
 
     private showNotification(notification: Notification) {
-        let notificationDisplay: NotificationDisplay = {
+        const notificationDisplay: NotificationDisplay = {
             canDelete: true,
             fadeOut: false,
             message: notification.message,
-            class: notificationClassMap[notification.type]
+            class: notificationClassMap[notification.type],
+            link: notification.link,
         };
 
         this.notifications.push(notificationDisplay);
@@ -55,10 +56,14 @@ export class NotificationsComponent implements OnDestroy {
 }
 
 interface NotificationDisplay {
-    canDelete: boolean,
-    fadeOut: boolean,
-    message: string,
+    canDelete: boolean;
+    fadeOut: boolean;
+    message: string;
     // class type of the Bulma notification
-    class: 'is-primary' | 'is-info' | 'is-success' | 'is-warning' | 'is-danger',
-    timeout?
+    class: 'is-primary' | 'is-info' | 'is-success' | 'is-warning' | 'is-danger';
+    timeout?;
+    link?: {
+        text: string;
+        route: string[];
+    };
 }
