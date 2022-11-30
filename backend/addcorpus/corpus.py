@@ -150,7 +150,7 @@ class Corpus(object):
         '''
         if word models are present for this corpus
         '''
-        return self.word_model_path and isdir(self.word_model_path)
+        return self.word_model_path != None and isdir(self.word_model_path)
 
     def allow_image_download(self):
         '''
