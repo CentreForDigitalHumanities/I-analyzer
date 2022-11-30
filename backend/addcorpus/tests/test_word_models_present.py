@@ -1,5 +1,9 @@
 import datetime
+import os
+
 from addcorpus.corpus import Corpus
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 class ExampleCorpus(Corpus):
     """Example corpus class for testing"""
@@ -16,7 +20,7 @@ class ExampleCorpus(Corpus):
     fields = []
 
 class ExampleCorpusWithWordModels(ExampleCorpus):
-    word_model_path = '/somewhere'
+    word_model_path = here
 
 def test_word_models_present():
     corpus = ExampleCorpus()

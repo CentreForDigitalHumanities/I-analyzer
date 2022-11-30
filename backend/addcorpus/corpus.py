@@ -11,6 +11,7 @@ import bs4
 import csv
 import sys
 from datetime import datetime, timedelta
+from os.path import isdir
 import logging
 logger = logging.getLogger('indexing')
 
@@ -138,18 +139,12 @@ class Corpus(object):
         '''
         return None
 
-    def word_model_type(self):
-        ''' (optional) type of word models:
-        word2vec or svd_ppmi
-        '''
-        return None
-
     @property
     def word_models_present(self):
         '''
         if word models are present for this corpus
         '''
-        return self.word_model_path != None
+        return self.word_model_path != None and isdir(self.word_model_path)
 
     def allow_image_download(self):
         '''

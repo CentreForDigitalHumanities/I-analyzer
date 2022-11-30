@@ -10,11 +10,9 @@ NUMBER_SIMILAR = 8
 def get_similarity_over_time(query_term, comparison_term, corpus_string):
     corpus = load_corpus(corpus_string)
     binned = load_word_models(corpus, True)
-    wm_type = corpus.word_model_type
     data = [
         term_similarity(
             time_bin,
-            wm_type,
             query_term,
             comparison_term
         )
@@ -42,12 +40,10 @@ def get_time_labels(binned_model):
 
 def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIMILAR):
     corpus = load_corpus(corpus_string)
-    wm_type = corpus.word_model_type
     complete = load_word_models(corpus)
     binned = load_word_models(corpus, binned=True)
     word_list = find_n_most_similar(
         complete,
-        wm_type,
         query_term,
         number_similar)
     if not word_list:
@@ -57,7 +53,6 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     words = [word['key'] for word in word_list]
     get_similarity = lambda word, time_bin: term_similarity(
         time_bin,
-        wm_type,
         query_term,
         word
     )
@@ -71,7 +66,7 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
         for (time_label, time_bin) in zip(times, binned) for word in words]
 
     data_per_timeframe = [
-        find_n_most_similar(time_bin, wm_type, query_term, number_similar)
+        find_n_most_similar(time_bin, query_term, number_similar)
         for time_bin in binned
     ]
 
