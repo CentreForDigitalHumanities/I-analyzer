@@ -1,4 +1,45 @@
+def main_content_mapping(token_counts = True, stopword_analysis = False, stemming_analysis = False):
+    '''
+    Mapping for the main content field. Options:
+
+    - `token_counts`: enables aggregations for the total number of words. Used for relative term frequencies.
+    - `stopword_analysis`: enables analysis using stopword removal. Requires setting a `clean` analyser in the `es_settings` of the corpus.
+    - `stemming_analysis`: enables analysis using stemming. Requires a `stemmed` analyser in the `es_settings` for the corpus.
+    '''
+
+    mapping = {
+        'type': 'text'
+    }
+
+    if any([token_counts, stopword_analysis, stemming_analysis]):
+        multifields = {}
+        if token_counts:
+            multifields['length'] = {
+                "type":     "token_count",
+                "analyzer": "standard"
+            }
+        if stopword_analysis:
+            multifields['clean'] = {
+                "type": "text",
+                "analyzer": "clean",
+                "term_vector": "with_positions_offsets" # include character positions for highlighting
+            }
+        if stemming_analysis:
+            multifields['stemmed'] = {
+                "type": "text",
+                "analyzer": "stemmed",
+                "term_vector": "with_positions_offsets",
+            }
+        mapping['fields'] = multifields
+
+    return mapping
+
+
 def text_mapping():
+    '''
+    Mapping for text fields that are not the main content. Allows full text search but no special analysis options.
+    '''
+
     return {
         'type': 'text'
     }

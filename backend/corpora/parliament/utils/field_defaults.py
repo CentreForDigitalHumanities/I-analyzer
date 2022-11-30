@@ -1,7 +1,7 @@
 from addcorpus.corpus import Field
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
-from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping
+from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, main_content_mapping
 
 # For every field `foo` in the Parliament corpora, this file should have a function `foo()`
 # which creates a default instance of the field. It does not include an extractor, since that
@@ -280,25 +280,7 @@ def speech():
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = {
-            "type" : "text",
-            "fields": {
-                "clean": {
-                    "type": "text",
-                    "analyzer": "clean",
-                    "term_vector": "with_positions_offsets"
-                },
-                "stemmed": {
-                    "type": "text",
-                    "analyzer": "stemmed",
-                    "term_vector": "with_positions_offsets",
-                },
-                "length": {
-                    "type":     "token_count",
-                    "analyzer": "standard"
-                }
-            }
-        },
+        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
