@@ -43,7 +43,7 @@ def write_output(filename, df, encoding='utf-8', format = None, dialect_name='ex
     dialect = csv.get_dialect(dialect_name)
 
     if format == 'wide':
-        header =  ['{} ({})'.format(*column) for column in df.columns] # nicely format wide format columns
+        header =  [format_wide_format_column_name(column) for column in df.columns] # nicely format wide format columns
         include_index = True # show index after wide format reformatting, when the field value is used as the index
         index_label = df.index.name
     else:
@@ -55,6 +55,15 @@ def write_output(filename, df, encoding='utf-8', format = None, dialect_name='ex
         sep=dialect.delimiter, quotechar=dialect.quotechar, quoting=dialect.quoting)
 
 
+def format_wide_format_column_name(column):
+    '''Format the wide format columns for output'''
+
+    quantity, query = column
+    if quantity.startswith('Total'):
+        return quantity
+    else:
+        return '{} ({})'.format(quantity, query)
+
 def set_long_wide_format(df, format):
     if format == 'wide' and df.columns[0] == 'Query':
         query_column = df.columns[0]
@@ -62,7 +71,22 @@ def set_long_wide_format(df, format):
         value_columns = df.columns[2:]
 
         wide = pandas.pivot(df, index = field_column, columns=query_column, values = value_columns)
-        return wide
+        no_duplicate_columns = drop_duplicate_total_columns(wide)
+        return no_duplicate_columns
 
     return df
 
+def drop_duplicate_total_columns(df):
+    '''
+    Merge the total documents and total words columns on a wide-format dataframe
+    so they are not split up by query (as the value does not depend on the query)
+    '''
+
+    total_docs_columns = [col for col in df.columns if col[0] == 'Total documents']
+    df.drop(columns = total_docs_columns[1:])
+
+    total_words_columns = [col for col in df.columns if col[0] == 'Total word count']
+    if total_words_columns:
+        df.drop(columns = total_words_columns[1:])
+
+    return df
