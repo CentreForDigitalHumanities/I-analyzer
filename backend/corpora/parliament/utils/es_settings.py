@@ -5,6 +5,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 NLTK_DATA_PATH = os.path.join(HERE, 'nltk_data')
 
 SETTINGS = {
+    'index': {'number_of_replicas': 0},
     "analysis": {
         "analyzer": {
             "clean": {
