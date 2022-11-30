@@ -322,16 +322,7 @@ def speaker():
         name='speaker',
         display_name='Speaker',
         description='The speaker of the transcribed speech',
-        es_mapping={
-            'type': 'keyword',
-            'fields': {
-                'text': { 'type': 'text' },
-                'length': {
-                    'type': 'token_count',
-                    'analyzer': 'standard',
-                }
-            }
-        },
+        es_mapping=keyword_mapping(enable_full_text_search=True),
         results_overview=True,
         search_field_core=True,
         visualizations=['resultscount', 'termfrequency'],
