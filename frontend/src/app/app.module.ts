@@ -50,15 +50,15 @@ import { VisualizationComponent } from './visualization/visualization.component'
 import { FreqtableComponent } from './visualization/freqtable.component';
 import { SearchHistoryComponent, QueryFiltersComponent, QueryTextPipe } from './history/search-history/index';
 import { SelectFieldComponent } from './select-field/select-field.component';
-import { RegistrationComponent } from './registration/registration.component';
+import { RegistrationComponent } from './login/registration/registration.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { RelatedWordsComponent } from './word-models/related-words/related-words.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { DownloadComponent } from './download/download.component';
 import { HistogramComponent } from './visualization/barchart/histogram.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { RequestResetComponent } from './reset-password/request-reset.component';
-import { PaginationComponent } from './pagination/pagination.component';
+import { ResetPasswordComponent } from './login/reset-password/reset-password.component';
+import { RequestResetComponent } from './login/reset-password/request-reset.component';
+import { PaginationComponent } from './search/pagination/pagination.component';
 import { BooleanFilterComponent, FilterManagerComponent, MultipleChoiceFilterComponent, DateFilterComponent, RangeFilterComponent } from './filter/index';
 import { ErrorComponent } from './error/error.component';
 import { DocumentViewComponent } from './document-view/document-view.component';
@@ -69,7 +69,7 @@ import { BarchartOptionsComponent } from './visualization/barchart/barchart-opti
 import { PaletteSelectComponent } from './visualization/visualization-footer/palette-select/palette-select.component';
 import { AdHocFilterComponent } from './filter/ad-hoc-filter.component';
 import { HighlightSelectorComponent } from './search/highlight-selector.component';
-import { TimeIntervalSliderComponent } from './visualization/related-words/time-interval-slider/time-interval-slider.component';
+import { TimeIntervalSliderComponent } from './word-models/similarity-chart/time-interval-slider/time-interval-slider.component';
 import { WordModelsComponent } from './word-models/word-models.component';
 import { CorpusHeaderComponent } from './corpus-header/corpus-header.component';
 import { VisualizationFooterComponent } from './visualization/visualization-footer/visualization-footer.component';

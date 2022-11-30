@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { ApiService, UserService } from '../services/index';
+import { ApiService, UserService } from '../../services/index';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -43,6 +43,6 @@ export class ResetPasswordComponent implements OnInit {
             }
         });
     }
-    
+
 
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
@@ -431,7 +432,11 @@ export abstract class BarchartDirective
         this.fullDataRequest().then(() =>
             this.notificationService.showMessage(
                 'Full data requested! You will receive an email when your download is ready.',
-                'success'
+                'success',
+                {
+                    text: 'view downloads',
+                    route: ['/download-history']
+                }
             )
         ).catch(error => {
             console.error(error);

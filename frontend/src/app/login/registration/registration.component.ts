@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserService } from '../services/user.service';
+import { UserService } from '../../services/user.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -28,7 +28,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-   
+
   }
   ngOnDestroy() {
     UserService.loginActivated = false;
@@ -44,7 +44,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     let email: string = signupForm.value.email;
 
     this.userService.register(username, email, signupForm.value.password).then(result => {
-      if (result.success) { 
+      if (result.success) {
         this.registration_succeeded = true;
         this.username = username;
         this.email = email;

@@ -1,17 +1,18 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RegistrationComponent } from './registration.component';
-import { commonTestBed } from '../common-test-bed';
 
-describe('RegistrationComponent', () => {
-  let component: RegistrationComponent;
-  let fixture: ComponentFixture<RegistrationComponent>;
+import { ResetPasswordComponent } from './reset-password.component';
+import { commonTestBed } from '../../common-test-bed';
+
+describe('ResetPasswordComponent', () => {
+  let component: ResetPasswordComponent;
+  let fixture: ComponentFixture<ResetPasswordComponent>;
 
   beforeEach(waitForAsync(() => {
     commonTestBed().testingModule.compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RegistrationComponent);
+    fixture = TestBed.createComponent(ResetPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

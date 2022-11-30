@@ -78,8 +78,8 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
     setTableHeaders(): void {
         if (this.terms.length > 1) {
             this.tableHeaders = [
-                { key: 'key', label: 'Term', isMainFactor: true, },
-                { key: 'time', label: 'Time interval', isSecondaryFactor: true, },
+                { key: 'key', label: 'Term', isSecondaryFactor: true, },
+                { key: 'time', label: 'Time interval', isMainFactor: true, },
                 { key: 'similarity', label: 'Similarity', format: this.formatValue, formatDownload: this.formatDownloadValue }
             ];
         } else {
@@ -121,7 +121,7 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
         });
 
-        const labels = (style == 'line') ? this.timeIntervals : [this.timeIntervals[this.currentTimeIndex]];
+        const labels = (style === 'line') ? this.timeIntervals : [this.timeIntervals[this.currentTimeIndex]];
 
         return {
             labels,
@@ -139,7 +139,9 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             this.currentTimeIndex = undefined;
             data = this.totalData;
         } else {
-            if (this.currentTimeIndex === undefined) { this.currentTimeIndex = 0; }
+            if (this.currentTimeIndex === undefined) {
+                this.currentTimeIndex = 0;
+            }
             const time = this.timeIntervals[this.currentTimeIndex];
             if (this.zoomedInData === undefined) {
                 data = this.filterTimeInterval(this.totalData, time);
@@ -180,13 +182,21 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
                 tooltip: {
                     displayColors: true,
                     callbacks: {
-                        labelColor(tooltipItem: any): any {
+                        labelColor: (tooltipItem: any): any => {
                             const color = tooltipItem.dataset.borderColor;
                             return {
                                 borderColor: color,
                                 backgroundColor: color,
                             };
                         },
+                    }
+                },
+                zoom: {
+                    zoom: {
+                        mode: 'x',
+                        drag: { enabled: false },
+                        pinch: { enabled: false },
+                        wheel: { enabled: false },
                     }
                 }
             }
@@ -198,21 +208,10 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
             };
             options.elements.point.radius = 4;
             options.plugins.legend.labels.usePointStyle = true;
-            options.plugins.zoom = {
-                zoom: {
-                    mode: 'x',
-                    drag: {
-                        enabled: true,
-                        threshold: 0,
-                    },
-                    pinch: {
-                        enabled: false,
-                    },
-                    wheel: {
-                        enabled: false,
-                    },
-                }
-            }
+            options.plugins.zoom.zoom.drag = {
+                enabled: true,
+                threshold: 0,
+            };
         }
 
         if (style === 'bar') {
@@ -228,12 +227,13 @@ export class SimilarityChartComponent implements OnInit, OnChanges, OnDestroy {
         if (this.chart) {
             this.chart.data = data;
             this.chart.options = options;
+            console.log(options);
             this.chart.update();
         } else {
             this.chart = new Chart('chart', {
                 type: 'line',
-                data: data,
-                options: options,
+                data,
+                options,
                 plugins: [Filler, Zoom]
             });
             this.chart.canvas.ondblclick = (event) => this.chart.resetZoom();
