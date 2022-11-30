@@ -30,7 +30,6 @@ class DutchAnnualReports(XMLCorpus):
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
     allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
     word_model_path = current_app.config['DUTCHANNUALREPORTS_WM']
-    word_model_type = 'word2vec'
 
     mimetype = 'application/pdf'
 
