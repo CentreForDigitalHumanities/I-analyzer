@@ -615,7 +615,7 @@ class CSVCorpus(Corpus):
             for row in reader:
                 is_new_document = True
 
-                if self.required_field and not row[self.required_field]:  # skip row if required_field is empty
+                if self.required_field and not row.get(self.required_field):  # skip row if required_field is empty
                     continue
 
 
