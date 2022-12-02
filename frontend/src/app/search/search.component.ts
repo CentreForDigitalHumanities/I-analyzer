@@ -186,10 +186,11 @@ export class SearchComponent extends ParamDirective {
             this.corpus = corpus;
             this.availableSearchFields = this.getAvailableSearchFields(corpus);
             this.selectedSearchFields = [];
-            this.queryModel = null;
+            this.queryModel = {queryText: ''};
             this.searchFilters = corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
             this.defaultSortField = corpus.fields.find(field => field.primarySort);
+            this.setParams({});
         }
     }
 

@@ -57,7 +57,7 @@
             <div class="is-boxed column is-9" *ngIf="queryModel">
                 <div class="tabs is-boxed">
                     <ul>
-                        <li [ngClass]="{'is-active': tabIndex==0}">
+                        <li [ngClass]="{'is-active': tabIndex === 0}">
                             <a (click)="switchTabs(0)">
                                 <span class="icon is-small"><i class="fa fa-list" aria-hidden="true"></i></span>
                                 <span>Search Results</span>
