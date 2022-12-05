@@ -476,6 +476,11 @@ OSLO LOBO MEDIA AS 2005""",
         ],
         'n_documents': 22,
     },
+    {
+        'name': 'parliament-ireland',
+        'docs': [],
+        'n_documents': 0,
+    }
 ]
 
 def corpus_test_name(corpus_spec):
