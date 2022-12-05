@@ -495,6 +495,18 @@ OSLO LOBO MEDIA AS 2005""",
             },
         ],
         'n_documents': 19,
+    },
+    {
+        'name': 'parliament-ireland',
+        'start': datetime(2014, 1, 1),
+        'docs': [
+            {
+                'country': 'Ireland',
+                'speech': '''As we have a quorum, we will commence in public session.  All mobile phones should be switched off because they cause interference.  I have apologies from Deputies Michael McNamara and Martin Heydon.  This meeting has been convened to consider a Supplementary Estimate on Vote 30 - Agriculture, Food and the Marine, which was referred by the Dáil to the committee on 3 December with an instruction to report back to the Dáil not later than 11 December.
+I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them for the briefing material provided, which has been circulated to the members of the committee.  I invite the Minister to make his opening statement.'''
+            }
+        ],
+        'n_documents': 25,
     }
 ]
 

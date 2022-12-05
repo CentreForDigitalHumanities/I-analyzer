@@ -4,10 +4,16 @@ import os
 from glob import glob
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
-from addcorpus.extract import Constant, CSV
+from addcorpus.extract import Constant, CSV, XML
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
+
+def in_date_range(corpus, start, end):
+    start_date = start or corpus.min_date
+    end_date = end or corpus.max_date
+
+    return start_date <= corpus.max_date and end_date >= corpus.min_date
 
 class ParliamentIrelandOld(CSVCorpus):
     '''
@@ -53,7 +59,7 @@ class ParliamentIrelandOld(CSVCorpus):
     speech.extractor = CSV(
         'speech',
         multiple=True,
-        transform = lambda rows : '\n'.join(rows)
+        transform = '\n'.join,
     )
 
     speech_id = field_defaults.speech_id()
@@ -79,6 +85,11 @@ class ParliamentIrelandOld(CSVCorpus):
         topic,
     ]
 
+def strip_and_join_paragraphs(paragraphs):
+    '''Strip whitespace from each  paragraph and join into a single string'''
+
+    stripped = map(str.strip, paragraphs)
+    return '\n'.join(stripped)
 
 class ParliamentIrelandNew(XMLCorpus):
     '''
@@ -89,8 +100,15 @@ class ParliamentIrelandNew(XMLCorpus):
 
     data_directory = current_app.config['PP_IRELAND_DATA']
 
+    tag_toplevel = 'debate'
+    tag_entry = 'speech'
+
     def sources(self, start, end):
-        return []
+        if in_date_range(self, start, end):
+            for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
+                yield xml_file, {}
+        else:
+            return []
 
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
@@ -110,6 +128,11 @@ class ParliamentIrelandNew(XMLCorpus):
     speaker_constituency = field_defaults.speaker_constituency()
 
     speech = field_defaults.speech()
+    speech.extractor = XML(
+        'p',
+        multiple = True,
+        transform = strip_and_join_paragraphs,
+    )
 
     speech_id = field_defaults.speech_id()
 
