@@ -503,6 +503,12 @@ OSLO LOBO MEDIA AS 2005""",
         'docs': [
             {
                 'country': 'Ireland',
+                'sequence': 1,
+                'speaker_id': '#AndrewDoyle',
+                'date': '2014-12-09',
+                'topic': 'Vote 30 - Agriculture, Food and the Marine (Supplementary)',
+                'speaker': 'Andrew Doyle',
+                'chamber': 'HOUSES OF THE OIREACHTAS',
                 'speech': '''As we have a quorum, we will commence in public session.  All mobile phones should be switched off because they cause interference.  I have apologies from Deputies Michael McNamara and Martin Heydon.  This meeting has been convened to consider a Supplementary Estimate on Vote 30 - Agriculture, Food and the Marine, which was referred by the Dáil to the committee on 3 December with an instruction to report back to the Dáil not later than 11 December.
 I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them for the briefing material provided, which has been circulated to the members of the committee.  I invite the Minister to make his opening statement.'''
             }

@@ -2,12 +2,15 @@ from datetime import datetime
 from flask import current_app
 import os
 from glob import glob
+import re
+from bs4 import BeautifulSoup
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
 from addcorpus.extract import Constant, CSV, XML
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
+import corpora.parliament.utils.parlamint as parlamint
 
 def in_date_range(corpus, start, end):
     start_date = start or corpus.min_date
@@ -90,6 +93,23 @@ class ParliamentIrelandOld(CSVCorpus):
         topic,
     ]
 
+def extract_people_data(soup):
+    references = soup.find(['meta', 'identification', 'references'])
+    people_nodes = references.find_all('TLCPerson')
+    data = map(extract_person_data, people_nodes)
+    return {
+        id: person_data for id, person_data in data
+    }
+
+def extract_person_data(person_node):
+    id = '#' + person_node['eId']
+    name = person_node['showAs']
+    return id, { 'name': name }
+
+def extract_roles_data(soup):
+    references = soup.find(['meta', 'identification', 'references'])
+    return {}
+
 def strip_and_join_paragraphs(paragraphs):
     '''Strip whitespace from each  paragraph and join into a single string'''
 
@@ -119,7 +139,21 @@ class ParliamentIrelandNew(XMLCorpus):
     tag_entry = 'speech'
 
     def sources(self, start, end):
-        return []
+        if in_date_range(self, start, end):
+            for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
+
+                with open(xml_file) as infile:
+                    soup = BeautifulSoup(infile, features = 'xml')
+                role_data = extract_roles_data(soup)
+                person_data = extract_people_data(soup)
+                metadata = {
+                    'roles': role_data,
+                    'persons': person_data
+                }
+
+                yield xml_file, metadata
+        else:
+            return []
 
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
@@ -139,6 +173,10 @@ class ParliamentIrelandNew(XMLCorpus):
     party_id = field_defaults.party_id()
 
     speaker = field_defaults.speaker()
+    speaker.extractor = parlamint.person_attribute_extractor(
+        'name',
+        id_attribute = 'by'
+    )
 
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = XML(attribute='by')
@@ -165,6 +203,7 @@ class ParliamentIrelandNew(XMLCorpus):
         attribute = 'eId',
         transform = extract_number_from_id,
     )
+
 
     fields = [
         country,
