@@ -538,24 +538,9 @@ def page_source():
         name='page_source',
         display_name='Source page number',
         description='Page number in source document',
-        es_mapping={'type': 'keyword'}
+        es_mapping=BASIC_KEYWORD_MAPPING,
     )
 
-
-def subject():
-    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
-    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
-    return Field(
-        name='subject',
-        display_name='Subject',
-        description='Subject that the speech is concerned with',
-        es_mapping={'type': 'keyword'},
-        search_filter = MultipleChoiceFilter(
-            description='Search only in speeches about the selected subjects',
-            option_count=50
-        ),
-        visualizations = ['resultscount', 'termfrequency']
-    )
 
 def url():
     """url of the source file"""
@@ -565,26 +550,4 @@ def url():
         description='URL to source file of this speech',
         es_mapping=BASIC_KEYWORD_MAPPING,
         searchable=False,
-    )
-
-
-def sequence():
-    "integer index of the speech in a debate"
-    return Field(
-        name='sequence',
-        display_name='Sequence',
-        description='Index of the sequence of speeches in a debate',
-        es_mapping={'type': 'integer'},
-        sortable=True,
-        searchable=False,
-        csv_core=True,
-    )
-
-def url():
-    "url to source from which the data is extracted"
-    return Field(
-        name='url',
-        display_name='URL',
-        description='URL to source file of this speech',
-        es_mapping={'type':'keyword'}
     )
