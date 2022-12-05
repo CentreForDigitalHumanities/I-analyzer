@@ -17,6 +17,9 @@ class ParliamentIrelandOld(CSVCorpus):
 
     data_directory = current_app.config['PP_IRELAND_DATA']
 
+    field_entry = 'speechID'
+    delimiter = '\t'
+
     def sources(self, start, end):
         for tsv_file in glob('{}/**/*.tab'.format(self.data_directory)):
             yield tsv_file, {}
@@ -24,7 +27,42 @@ class ParliamentIrelandOld(CSVCorpus):
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
 
-    fields = [country]
+    date = field_defaults.date()
+    date.extractor = CSV('date')
+
+    party = field_defaults.party()
+    party.extractor = CSV('party_name')
+
+    party_id = field_defaults.party_id()
+    party_id.extractor = CSV('partyID')
+
+    speaker = field_defaults.speaker()
+    speaker.extractor = CSV('member_name')
+
+    speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = CSV('memberID')
+
+    speaker_constituency = field_defaults.speaker_constituency()
+    speaker_constituency.extractor = CSV('const_name')
+
+    speech = field_defaults.speech()
+    speech.extractor = CSV('speech')
+
+    speech_id = field_defaults.speech_id()
+    speech_id.extractor = CSV('speechID')
+
+    topic = field_defaults.topic()
+    topic.extractor = CSV('title')
+
+    fields = [
+        country,
+        date,
+        party, party_id,
+        speaker, speaker_id, speaker_constituency,
+        speech, speech_id,
+        topic,
+    ]
+
 
 class ParliamentIrelandNew(XMLCorpus):
     '''
@@ -41,7 +79,33 @@ class ParliamentIrelandNew(XMLCorpus):
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
 
-    fields = [country]
+    date = field_defaults.date()
+
+    party = field_defaults.party()
+
+    party_id = field_defaults.party_id()
+
+    speaker = field_defaults.speaker()
+
+    speaker_id = field_defaults.speaker_id()
+
+    speaker_constituency = field_defaults.speaker_constituency()
+
+    speech = field_defaults.speech()
+
+    speech_id = field_defaults.speech_id()
+
+    topic = field_defaults.topic()
+
+    fields = [
+        country,
+        date,
+        party, party_id,
+        speaker, speaker_id, speaker_constituency,
+        speech, speech_id,
+        topic,
+    ]
+
 
 class ParliamentIreland(Parliament, Corpus):
     '''
@@ -82,5 +146,22 @@ class ParliamentIreland(Parliament, Corpus):
         return subcorpus.source2dicts(source)
 
     country = field_defaults.country()
+    date = field_defaults.date()
+    party = field_defaults.party()
+    party_id = field_defaults.party_id()
+    speaker = field_defaults.speaker()
+    speaker_id = field_defaults.speaker_id()
+    speaker_constituency = field_defaults.speaker_constituency()
+    speech = field_defaults.speech()
+    speech_id = field_defaults.speech_id()
+    topic = field_defaults.topic()
 
-    fields = [country]
+
+    fields = [
+        country,
+        date,
+        party, party_id,
+        speaker, speaker_id, speaker_constituency,
+        speech, speech_id,
+        topic,
+    ]
