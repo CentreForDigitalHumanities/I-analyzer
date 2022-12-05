@@ -83,6 +83,9 @@ class ParliamentIrelandOld(CSVCorpus):
         transform = formatting.extract_integer_value
     )
 
+    source_archive = field_defaults.source_archive()
+    source_archive.extractor = Constant('1919-2013')
+
     url = field_defaults.url()
 
     fields = [
@@ -93,6 +96,7 @@ class ParliamentIrelandOld(CSVCorpus):
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
         sequence,
+        source_archive,
         topic,
         url,
     ]
@@ -154,6 +158,7 @@ def extract_number_from_id(id):
 
 def find_topic_heading(speech_node):
     return speech_node.find_previous_sibling('heading')
+
 
 
 class ParliamentIrelandNew(XMLCorpus):
@@ -243,6 +248,9 @@ class ParliamentIrelandNew(XMLCorpus):
         transform = extract_number_from_id,
     )
 
+    source_archive = field_defaults.source_archive()
+    source_archive.extractor = Constant('2014-2020')
+
     url = field_defaults.url()
     url.extractor = Metadata('url')
 
@@ -254,6 +262,7 @@ class ParliamentIrelandNew(XMLCorpus):
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
         sequence,
+        source_archive,
         topic,
         url,
     ]
@@ -309,6 +318,7 @@ class ParliamentIreland(Parliament, Corpus):
     speech_id = field_defaults.speech_id()
     topic = field_defaults.topic()
     sequence = field_defaults.sequence()
+    source_archive = field_defaults.source_archive()
     url = field_defaults.url()
 
     fields = [
@@ -319,6 +329,7 @@ class ParliamentIreland(Parliament, Corpus):
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
         sequence,
+        source_archive,
         topic,
         url,
     ]
