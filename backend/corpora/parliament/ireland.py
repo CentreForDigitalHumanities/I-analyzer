@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import current_app
 import os
+from glob import glob
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
 from addcorpus.extract import Constant, CSV
@@ -14,8 +15,11 @@ class ParliamentIrelandOld(CSVCorpus):
     Only used for data extraction, use the `ParliamentIreland` class in the application.
     '''
 
+    data_directory = current_app.config['PP_IRELAND_DATA']
+
     def sources(self, start, end):
-        return []
+        for tsv_file in glob('{}/**/*.tab'.format(self.data_directory)):
+            yield tsv_file, {}
 
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
@@ -28,6 +32,8 @@ class ParliamentIrelandNew(XMLCorpus):
 
     Only used for data extraction, use the `ParliamentIreland` class in the application.
     '''
+
+    data_directory = current_app.config['PP_IRELAND_DATA']
 
     def sources(self, start, end):
         return []
