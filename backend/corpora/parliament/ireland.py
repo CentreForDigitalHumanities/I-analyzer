@@ -3,7 +3,9 @@ from flask import current_app
 import os
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
+from addcorpus.extract import Constant, CSV
 from corpora.parliament.parliament import Parliament
+import corpora.parliament.utils.field_defaults as field_defaults
 
 class ParliamentIrelandOld(CSVCorpus):
     '''
@@ -15,6 +17,11 @@ class ParliamentIrelandOld(CSVCorpus):
     def sources(self, start, end):
         return []
 
+    country = field_defaults.country()
+    country.extractor = Constant('Ireland')
+
+    fields = [country]
+
 class ParliamentIrelandNew(XMLCorpus):
     '''
     Class for extracting 2014-2020 Irish debates.
@@ -24,6 +31,11 @@ class ParliamentIrelandNew(XMLCorpus):
 
     def sources(self, start, end):
         return []
+
+    country = field_defaults.country()
+    country.extractor = Constant('Ireland')
+
+    fields = [country]
 
 class ParliamentIreland(Parliament, Corpus):
     '''
@@ -62,3 +74,7 @@ class ParliamentIreland(Parliament, Corpus):
         subcorpus = self.subcorpora[subcorpus_index]
 
         return subcorpus.source2dicts(source)
+
+    country = field_defaults.country()
+
+    fields = [country]
