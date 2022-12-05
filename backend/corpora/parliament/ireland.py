@@ -5,19 +5,55 @@ from glob import glob
 import re
 from bs4 import BeautifulSoup
 import json
+import csv
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
-from addcorpus.extract import Constant, CSV, XML, Metadata
+from addcorpus.extract import Constant, CSV, XML, Metadata, Combined
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
 import corpora.parliament.utils.parlamint as parlamint
+
 
 def in_date_range(corpus, start, end):
     start_date = start or corpus.min_date
     end_date = end or corpus.max_date
 
     return start_date <= corpus.max_date and end_date >= corpus.min_date
+
+def extract_minister_data(data_directory):
+    for filename in glob('{}/**/*ministers.tab'.format(data_directory)):
+        with(open(filename)) as tsv_file:
+            reader = csv.DictReader(tsv_file, delimiter='\t')
+            for row in reader:
+                speaker_id = row['memberID']
+                start_date = row['start_date']
+                end_date = row['end_date'] if row['end_date'] != 'NULL' else '2011-12-01' # data goes up to 2011
+                position = row['position']
+                department = row['department']
+
+                yield {
+                    'speaker_id': speaker_id,
+                    'start_date': datetime.strptime(start_date, '%Y-%m-%d'),
+                    'end_date': datetime.strptime(end_date, '%Y-%m-%d'),
+                    'role': f'{position} ({department})'
+                }
+
+
+def between_dates(date, start_date, end_date):
+    return date >= start_date and date <= end_date
+
+def find_ministerial_role(data):
+    speaker_id, datestring, minister_data = data
+    date = datetime.strptime(datestring, '%Y-%m-%d')
+
+    def identity_matches(minister):
+        return minister['speaker_id'] == speaker_id and between_dates(date, minister['start_date'], minister['end_date'])
+
+    positions = list(filter(identity_matches, minister_data))
+
+    if len(positions):
+        return ', '.join(position['role'] for position in positions)
 
 class ParliamentIrelandOld(CSVCorpus):
     '''
@@ -39,9 +75,11 @@ class ParliamentIrelandOld(CSVCorpus):
             max_year = end.year if end else self.max_date.year
             for tsv_file in glob('{}/**/Dail_debates_1919-2013_*.tab'.format(self.data_directory), recursive=True):
                 year = int(re.search(r'(\d{4}).tab$', tsv_file).group(1))
-                if year >= min_year and year <= max_year:
-                    metadata = {}
-                    yield tsv_file, metadata
+                minister_data = list(extract_minister_data(self.data_directory))
+                metadata = {
+                    'ministers': minister_data
+                }
+                yield tsv_file, metadata
         else:
             return []
 
@@ -53,6 +91,14 @@ class ParliamentIrelandOld(CSVCorpus):
 
     date = field_defaults.date()
     date.extractor = CSV('date')
+
+    ministerial_role = field_defaults.ministerial_role()
+    ministerial_role.extractor = Combined(
+        CSV('memberID'),
+        CSV('date'),
+        Metadata('ministers'),
+        transform = find_ministerial_role,
+    )
 
     party = field_defaults.party()
     party.extractor = CSV('party_name')
@@ -97,6 +143,7 @@ class ParliamentIrelandOld(CSVCorpus):
         country,
         chamber,
         date,
+        ministerial_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
@@ -218,6 +265,8 @@ class ParliamentIrelandNew(XMLCorpus):
         toplevel = True,
     )
 
+    ministerial_role = field_defaults.ministerial_role()
+
     party = field_defaults.party()
     party_id = field_defaults.party_id()
 
@@ -263,6 +312,7 @@ class ParliamentIrelandNew(XMLCorpus):
         country,
         chamber,
         date,
+        ministerial_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
@@ -314,6 +364,7 @@ class ParliamentIreland(Parliament, Corpus):
     country = field_defaults.country()
     chamber = field_defaults.chamber()
     date = field_defaults.date()
+    ministerial_role = field_defaults.ministerial_role()
     party = field_defaults.party()
     party_id = field_defaults.party_id()
     speaker = field_defaults.speaker()
@@ -330,6 +381,7 @@ class ParliamentIreland(Parliament, Corpus):
         country,
         chamber,
         date,
+        ministerial_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,

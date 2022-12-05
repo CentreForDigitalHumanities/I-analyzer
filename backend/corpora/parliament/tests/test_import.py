@@ -495,9 +495,45 @@ OSLO LOBO MEDIA AS 2005""",
                 'sequence': 1,
                 'source_archive': '1919-2013',
                 'url': None,
+                'ministerial_role': None,
             },
         ],
         'n_documents': 5,
+    },
+    {
+        'name': 'parliament-ireland',
+        'start': datetime(2000, 1, 1),
+        'end': datetime(2013, 12, 31),
+        'docs': [
+            {
+                'country': 'Ireland',
+                'id': '3088872',
+                'date': '2000-01-26',
+                'speaker': 'Mr. Ruairí Quinn',
+                'speaker_id': '985',
+                'speaker_constituency': 'Dublin South-East',
+                'party': 'The Labour Party',
+                'party_id': '14',
+                'speech': 'asked the Taoiseach if he will make a statement on his visit to South Africa and Lesotho.',
+                'topic': 'Ceisteanna &ndash Questions. - Official Engagements.',
+                'chamber': 'Dáil',
+                'sequence': 3088872,
+                'source_archive': '1919-2013',
+                'url': None,
+                'ministerial_role': None,
+            },
+        ] +
+        [ {} ] * 13 + # skip ahead to the first speech from a minister
+        [
+            {
+                'id': '3088886',
+                'speaker_id': '5',
+                'speaker': 'Mr. Bertie Ahern',
+                'ministerial_role': 'Taoiseach (Taoiseach), Minister (Foreign Affairs)',
+            }
+        ]
+        ,
+        'n_documents': 15,
     },
     {
         'name': 'parliament-ireland',
