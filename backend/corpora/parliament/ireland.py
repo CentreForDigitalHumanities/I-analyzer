@@ -23,13 +23,18 @@ class ParliamentIrelandOld(CSVCorpus):
     '''
 
     data_directory = current_app.config['PP_IRELAND_DATA']
+    min_date = datetime(year=1919, month=1, day=1)
+    max_date = datetime(year=2013, month=12, day=31)
 
     field_entry = 'speechID'
     delimiter = '\t'
 
     def sources(self, start, end):
-        for tsv_file in glob('{}/**/*.tab'.format(self.data_directory)):
-            yield tsv_file, {}
+        if in_date_range(self, start, end):
+            for tsv_file in glob('{}/**/*.tab'.format(self.data_directory)):
+                yield tsv_file, {}
+        else:
+            return []
 
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
@@ -99,16 +104,14 @@ class ParliamentIrelandNew(XMLCorpus):
     '''
 
     data_directory = current_app.config['PP_IRELAND_DATA']
+    min_date = datetime(year=2014, month=1, day=1)
+    max_date = datetime(year=2020, month=12, day=31)
 
     tag_toplevel = 'debate'
     tag_entry = 'speech'
 
     def sources(self, start, end):
-        if in_date_range(self, start, end):
-            for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
-                yield xml_file, {}
-        else:
-            return []
+        return []
 
     country = field_defaults.country()
     country.extractor = Constant('Ireland')
@@ -159,7 +162,7 @@ class ParliamentIreland(Parliament, Corpus):
 
     title = 'People & Parliament (Ireland)'
     description = 'Speeches from the Dáil Éireann and Seanad Éireann'
-    min_date = datetime(year=1913, month=1, day=1)
+    min_date = datetime(year=1919, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
     data_directory = current_app.config['PP_IRELAND_DATA']
     es_index = current_app.config['PP_IRELAND_INDEX']

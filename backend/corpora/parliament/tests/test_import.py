@@ -478,6 +478,7 @@ OSLO LOBO MEDIA AS 2005""",
     },
     {
         'name': 'parliament-ireland',
+        'end': datetime(2013, 12, 31),
         'docs': [
             {
                 'country': 'Ireland',
