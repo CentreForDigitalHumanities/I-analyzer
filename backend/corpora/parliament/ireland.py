@@ -96,6 +96,14 @@ def strip_and_join_paragraphs(paragraphs):
     stripped = map(str.strip, paragraphs)
     return '\n'.join(stripped)
 
+def extract_number_from_id(id):
+    match = re.search(r'\d+', id)
+    if match:
+        return int(match.group(0))
+
+def find_topic_heading(speech_node):
+    return speech_node.find_previous_sibling('heading')
+
 class ParliamentIrelandNew(XMLCorpus):
     '''
     Class for extracting 2014-2020 Irish debates.
@@ -119,6 +127,12 @@ class ParliamentIrelandNew(XMLCorpus):
     chamber = field_defaults.chamber()
 
     date = field_defaults.date()
+    date.extractor = XML(
+        tag = 'docDate',
+        attribute = 'date',
+        recursive = True,
+        toplevel = True,
+    )
 
     party = field_defaults.party()
 
@@ -127,6 +141,7 @@ class ParliamentIrelandNew(XMLCorpus):
     speaker = field_defaults.speaker()
 
     speaker_id = field_defaults.speaker_id()
+    speaker_id.extractor = XML(attribute='by')
 
     speaker_constituency = field_defaults.speaker_constituency()
 
@@ -140,8 +155,16 @@ class ParliamentIrelandNew(XMLCorpus):
     speech_id = field_defaults.speech_id()
 
     topic = field_defaults.topic()
+    topic.extractor = XML(
+        transform_soup_func = find_topic_heading,
+        extract_soup_func = lambda node : node.text,
+    )
 
     sequence = field_defaults.sequence()
+    sequence.extractor = XML(
+        attribute = 'eId',
+        transform = extract_number_from_id,
+    )
 
     fields = [
         country,
