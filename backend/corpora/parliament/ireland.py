@@ -4,9 +4,10 @@ import os
 from glob import glob
 import re
 from bs4 import BeautifulSoup
+import json
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
-from addcorpus.extract import Constant, CSV, XML
+from addcorpus.extract import Constant, CSV, XML, Metadata
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
@@ -82,6 +83,8 @@ class ParliamentIrelandOld(CSVCorpus):
         transform = formatting.extract_integer_value
     )
 
+    url = field_defaults.url()
+
     fields = [
         country,
         chamber,
@@ -91,7 +94,35 @@ class ParliamentIrelandOld(CSVCorpus):
         speech, speech_id,
         sequence,
         topic,
+        url,
     ]
+
+def get_json_metadata(directory):
+    files = os.listdir(directory)
+    filename = next(f for f in files if f.endswith('.json'))
+    path = os.path.join(directory, filename)
+    with open(path) as json_file:
+        data = json.load(json_file)
+
+    return data
+
+def get_file_metadata(json_data, filename):
+    data = next(
+        file_data for file_data in json_data
+        if file_data['file'] == filename
+    )
+
+    chamber_data = data['house_uri']
+    useful_data = {
+        'url': data['xml_url'],
+        'house': chamber_data['houseCode'],
+        'debate_type': chamber_data['chamberType'],
+        'committee': chamber_data['showAs'] if chamber_data.get('committeeCode', None) else None,
+        'legislature': chamber_data['houseNo'],
+    }
+
+    return useful_data
+
 
 def extract_people_data(soup):
     references = soup.find(['meta', 'identification', 'references'])
@@ -124,6 +155,7 @@ def extract_number_from_id(id):
 def find_topic_heading(speech_node):
     return speech_node.find_previous_sibling('heading')
 
+
 class ParliamentIrelandNew(XMLCorpus):
     '''
     Class for extracting 2014-2020 Irish debates.
@@ -140,18 +172,23 @@ class ParliamentIrelandNew(XMLCorpus):
 
     def sources(self, start, end):
         if in_date_range(self, start, end):
-            for xml_file in glob('{}/**/*.xml'.format(self.data_directory)):
+            for root, _, files in os.walk(self.data_directory):
+                xml_files = [f for f in files if f.endswith('.xml')]
+                if any(xml_files):
+                    json_metadata = get_json_metadata(root)
+                    for filename in xml_files:
+                        xml_file = os.path.join(root, filename)
 
-                with open(xml_file) as infile:
-                    soup = BeautifulSoup(infile, features = 'xml')
-                role_data = extract_roles_data(soup)
-                person_data = extract_people_data(soup)
-                metadata = {
-                    'roles': role_data,
-                    'persons': person_data
-                }
+                        with open(xml_file) as infile:
+                            soup = BeautifulSoup(infile, features = 'xml')
 
-                yield xml_file, metadata
+                        metadata = {
+                            **get_file_metadata(json_metadata, filename),
+                            'roles': extract_roles_data(soup),
+                            'persons': extract_people_data(soup),
+                        }
+
+                        yield xml_file, metadata
         else:
             return []
 
@@ -159,6 +196,9 @@ class ParliamentIrelandNew(XMLCorpus):
     country.extractor = Constant('Ireland')
 
     chamber = field_defaults.chamber()
+    chamber.extractor = Metadata(
+        'house'
+    )
 
     date = field_defaults.date()
     date.extractor = XML(
@@ -169,7 +209,6 @@ class ParliamentIrelandNew(XMLCorpus):
     )
 
     party = field_defaults.party()
-
     party_id = field_defaults.party_id()
 
     speaker = field_defaults.speaker()
@@ -204,6 +243,8 @@ class ParliamentIrelandNew(XMLCorpus):
         transform = extract_number_from_id,
     )
 
+    url = field_defaults.url()
+    url.extractor = Metadata('url')
 
     fields = [
         country,
@@ -214,6 +255,7 @@ class ParliamentIrelandNew(XMLCorpus):
         speech, speech_id,
         sequence,
         topic,
+        url,
     ]
 
 
@@ -267,6 +309,7 @@ class ParliamentIreland(Parliament, Corpus):
     speech_id = field_defaults.speech_id()
     topic = field_defaults.topic()
     sequence = field_defaults.sequence()
+    url = field_defaults.url()
 
     fields = [
         country,
@@ -277,4 +320,5 @@ class ParliamentIreland(Parliament, Corpus):
         speech, speech_id,
         sequence,
         topic,
+        url,
     ]
