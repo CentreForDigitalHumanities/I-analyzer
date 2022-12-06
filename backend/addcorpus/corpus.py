@@ -381,6 +381,8 @@ class XMLCorpus(Corpus):
     def get_entry_tag(self, metadata):
         if type(self.tag_entry) == str:
             return self.tag_entry
+        elif self.tag_entry is None:
+            return None
         else:
             return self.tag_entry(metadata)
 

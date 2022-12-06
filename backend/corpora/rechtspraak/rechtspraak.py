@@ -40,7 +40,6 @@ class Rechtspraak(XMLCorpus):
     toplevel_zip_file = 'OpenDataUitspraken.zip'
 
     tag_toplevel = 'open-rechtspraak'
-    tag_entry = ''
 
     def unpack(self,
                min_year: Optional[int] = None,
