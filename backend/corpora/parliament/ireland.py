@@ -233,6 +233,12 @@ def extract_number_from_id(id):
 def find_topic_heading(speech_node):
     return speech_node.find_previous_sibling('heading')
 
+def get_debate_id(filename):
+    name, _ = os.path.splitext(filename)
+    # leave out the first segments which are the same for the whole corpus
+    parts = name.split('#')
+    shortened_name = '#'.join(parts[3:])
+    return shortened_name
 
 
 class ParliamentIrelandNew(XMLCorpus):
@@ -265,7 +271,8 @@ class ParliamentIrelandNew(XMLCorpus):
                             **get_file_metadata(json_metadata, filename),
                             'roles': extract_roles_data(soup),
                             'persons': extract_people_data(soup),
-                            'roll_call': extract_roles_from_roll_call(soup)
+                            'roll_call': extract_roles_from_roll_call(soup),
+                            'id': get_debate_id(filename),
                         }
 
                         yield xml_file, metadata
@@ -328,6 +335,11 @@ class ParliamentIrelandNew(XMLCorpus):
     )
 
     speech_id = field_defaults.speech_id()
+    speech_id.extractor = Combined(
+        Metadata('id'),
+        XML(attribute='eId'),
+        transform = lambda parts: '#'.join(parts)
+    )
 
     topic = field_defaults.topic()
     topic.extractor = XML(
