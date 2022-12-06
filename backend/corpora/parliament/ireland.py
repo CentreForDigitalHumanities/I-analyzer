@@ -224,7 +224,7 @@ def find_person_in_roll_call(person, roles):
 def strip_and_join_paragraphs(paragraphs):
     '''Strip whitespace from each  paragraph and join into a single string'''
 
-    stripped = map(str.strip, paragraphs)
+    stripped = map(str.strip, filter(None, paragraphs))
     return '\n'.join(stripped)
 
 def extract_number_from_id(id):
