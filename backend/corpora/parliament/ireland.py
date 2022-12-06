@@ -210,6 +210,8 @@ def extract_roles_from_roll_call(soup):
     '''
 
     roll_call = soup.find('rollCall')
+    if not roll_call:
+        return {}
     people = roll_call.find_all('person')
     return {
         person['refersTo'] : person.get('as', None)
