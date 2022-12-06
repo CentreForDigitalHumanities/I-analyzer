@@ -2,7 +2,7 @@ import glob
 import logging
 import os.path as op
 from datetime import datetime
-from os import makedirs
+from os import makedirs, remove
 from typing import Optional
 from zipfile import ZipFile, BadZipFile
 
@@ -111,6 +111,7 @@ class Rechtspraak(XMLCorpus):
                                     target_dir, members=to_extract)
                             else:
                                 nestedz.extractall(target_dir)
+                            remove(op.join(unpack_dir, arch))
                     except BadZipFile:
                         logger.warning(
                             f'skipping bad file {op.join(unpack_dir, arch)}')
