@@ -32,7 +32,7 @@ class Rechtspraak(XMLCorpus):
     title = "Judicial system Netherlands"
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
     min_date = datetime(year=1900, month=1, day=1)
-    max_date = datetime(year=2022, month=10, day=13)
+    max_date = datetime(year=2022, month=12, day=6)
     data_directory = current_app.config['RECHTSPRAAK_DATA']
     es_index = current_app.config['RECHTSPRAAK_ES_INDEX']
     es_doctype = current_app.config['RECHTSPRAAK_ES_DOCTYPE']
