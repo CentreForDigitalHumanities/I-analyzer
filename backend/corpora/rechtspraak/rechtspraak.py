@@ -28,42 +28,6 @@ def rdf_description_extractor(tag, section='xml', **kwargs):
     )
 
 
-def get_content(soup):
-    uitspraak = soup.find('uitspraak')
-    if uitspraak:
-        return uitspraak
-
-    conclusie = soup.find('conclusie')
-    if conclusie:
-        return conclusie
-
-    return None
-
-
-def has_content(soup):
-    '''Check if document has content.
-    Used for boolean filtering on documents with no content.
-    '''
-    if get_content(soup):
-        return True
-    return False
-
-
-def extract_content(soup):
-    '''Extract the content.
-    This can be either in the '<uitspraak>' or '<conclusie>' tag,
-    depending on document type.
-    Argument soup contains the whole document.
-    '''
-
-    extractor = extract.XML()  # need an extractor here to access _flatten
-    content = get_content(soup)
-
-    if content:
-        return extractor._flatten(content)
-    return 'Content not available'
-
-
 class Rechtspraak(XMLCorpus):
     title = "Judicial system Netherlands"
     description = "Open data of (anonymised) court rulings of the Dutch judicial system"
@@ -177,10 +141,11 @@ class Rechtspraak(XMLCorpus):
             display_name='Has text content',
             description='Document has available text content.',
             es_mapping={'type': 'boolean'},
-            extractor=extract.XML(
-                toplevel=True,
-                flatten=True,
-                extract_soup_func=has_content
+            extractor=extract.Backup(
+                extract.XML('uitspraak', flatten=True),
+                extract.XML('conclusie', flatten=True),
+                extract.Constant(False),
+                transform=bool
             ),
             search_filter=filters.BooleanFilter(
                 true='has content',
@@ -309,10 +274,10 @@ class Rechtspraak(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            extractor=extract.XML(
-                toplevel=True,
-                flatten=True,
-                extract_soup_func=extract_content
+            extractor=extract.Backup(
+                extract.XML('uitspraak', flatten=True),
+                extract.XML('conclusie', flatten=True),
+                extract.Constant('Content not available')
             ),
             csv_core=True,
         ),
