@@ -198,13 +198,13 @@ class Rechtspraak(XMLCorpus):
         ),
         Field(
             name='creator',
-            display_name='Instantie',
+            display_name='Court',
             extractor=rdf_description_extractor('dcterms:creator'),
             es_mapping={'type': 'keyword'},
             csv_core=True,
             results_overview=True,
             search_filter=filters.MultipleChoiceFilter(
-                description='Zoek alleen binnen uitspraken van geselecteerde instanties.',
+                description='Accept only rulings of selected courts.',
                 option_count=9999
             ),
             visualizations=['resultscount', 'termfrequency']
@@ -222,36 +222,36 @@ class Rechtspraak(XMLCorpus):
             csv_core=True,
             results_overview=True,
             search_filter=filters.MultipleChoiceFilter(
-                description='Zoek alleen binnen geselecteerde type document.',
+                description='Accept only rulings of selected type.',
                 option_count=2
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='procedure',
-            display_name='Procedure',
+            display_name='(type of) Procedure',
             extractor=rdf_description_extractor('psi:procedure'),
             csv_core=True,
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
-                description='Zoek alleen binnen geselecteerde gevolgde procedures.',
+                description='Accept only rulings of selected procedure type.',
                 option_count=44
             ),
             visualizations=['resultscount', 'termfrequency']
         ),
         Field(
             name='spatial',
-            display_name='Zittingsplaats',
+            display_name='Location',
             extractor=rdf_description_extractor('dcterms:spatial')
         ),
         Field(
             name='subject',
-            display_name='Rechtsgebied',
+            display_name='Area of law',
             extractor=rdf_description_extractor('dcterms:subject'),
             csv_core=True,
             es_mapping={'type': 'keyword'},
             search_filter=filters.MultipleChoiceFilter(
-                description='Zoek alleen binnen geselecteerde rechtsgebieden.',
+                description='Accept only rulings within this area of law.',
                 option_count=32
             ),
             visualizations=['resultscount', 'termfrequency']
