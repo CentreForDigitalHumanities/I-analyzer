@@ -11,7 +11,7 @@ from addcorpus.corpus import Field, XMLCorpus
 from flask import current_app
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('indexing')
 
 
 def rdf_description_extractor(tag, section='xml', **kwargs):
