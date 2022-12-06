@@ -8,7 +8,7 @@ import json
 import csv
 
 from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
-from addcorpus.extract import Constant, CSV, XML, Metadata, Combined
+from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.formatting as formatting
@@ -186,19 +186,38 @@ def get_file_metadata(json_data, filename):
 def extract_people_data(soup):
     references = soup.find(['meta', 'identification', 'references'])
     people_nodes = references.find_all('TLCPerson')
-    data = map(extract_person_data, people_nodes)
+    data = map(extract_reference_data, people_nodes)
     return {
         id: person_data for id, person_data in data
     }
 
-def extract_person_data(person_node):
-    id = '#' + person_node['eId']
-    name = person_node['showAs']
+def extract_reference_data(reference_node):
+    id = '#' + reference_node['eId']
+    name = reference_node['showAs']
     return id, { 'name': name }
 
 def extract_roles_data(soup):
     references = soup.find(['meta', 'identification', 'references'])
-    return {}
+    role_nodes = references.find_all('TLCRole')
+    data = map(extract_reference_data, role_nodes)
+    return {
+        id: person_data for id, person_data in data
+    }
+
+def extract_roles_from_roll_call(soup):
+    '''
+    Extract roles written in the roll call section
+    '''
+
+    roll_call = soup.find('rollCall')
+    people = roll_call.find_all('person')
+    return {
+        person['refersTo'] : person.get('as', None)
+        for person in people
+    }
+
+def find_person_in_roll_call(person, roles):
+    return roles.get(person, None)
 
 def strip_and_join_paragraphs(paragraphs):
     '''Strip whitespace from each  paragraph and join into a single string'''
@@ -246,6 +265,7 @@ class ParliamentIrelandNew(XMLCorpus):
                             **get_file_metadata(json_metadata, filename),
                             'roles': extract_roles_data(soup),
                             'persons': extract_people_data(soup),
+                            'roll_call': extract_roles_from_roll_call(soup)
                         }
 
                         yield xml_file, metadata
@@ -269,8 +289,22 @@ class ParliamentIrelandNew(XMLCorpus):
     )
 
     ministerial_role = field_defaults.ministerial_role()
+    ministerial_role.extractor = Combined(
+        XML(attribute='as'),
+        Metadata('roles'),
+        transform = parlamint.metadata_attribute_transform_func('name'),
+    )
 
     parliamentary_role = field_defaults.parliamentary_role()
+    parliamentary_role.extractor = Combined(
+        Combined(
+            XML(attribute='by'),
+            Metadata('roll_call'),
+            transform = lambda data: find_person_in_roll_call(*data)
+        ),
+        Metadata('roles'),
+        transform = parlamint.metadata_attribute_transform_func('name'),
+    )
 
     party = field_defaults.party()
     party_id = field_defaults.party_id()
