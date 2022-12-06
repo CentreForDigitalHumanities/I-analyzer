@@ -478,7 +478,7 @@ OSLO LOBO MEDIA AS 2005""",
     },
     {
         'name': 'parliament-ireland',
-        'end': datetime(2013, 12, 31),
+        'end': datetime(1999, 12, 31),
         'docs': [
             {
                 'country': 'Ireland',
@@ -497,7 +497,7 @@ OSLO LOBO MEDIA AS 2005""",
                 'url': None,
             },
         ],
-        'n_documents': 19,
+        'n_documents': 5,
     },
     {
         'name': 'parliament-ireland',

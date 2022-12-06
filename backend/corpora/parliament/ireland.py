@@ -35,8 +35,13 @@ class ParliamentIrelandOld(CSVCorpus):
 
     def sources(self, start, end):
         if in_date_range(self, start, end):
-            for tsv_file in glob('{}/**/*.tab'.format(self.data_directory)):
-                yield tsv_file, {}
+            min_year = start.year if start else self.min_date.year
+            max_year = end.year if end else self.max_date.year
+            for tsv_file in glob('{}/**/Dail_debates_1919-2013_*.tab'.format(self.data_directory), recursive=True):
+                year = int(re.search(r'(\d{4}).tab$', tsv_file).group(1))
+                if year >= min_year and year <= max_year:
+                    metadata = {}
+                    yield tsv_file, metadata
         else:
             return []
 
