@@ -100,6 +100,8 @@ class ParliamentIrelandOld(CSVCorpus):
         transform = find_ministerial_role,
     )
 
+    parliamentary_role = field_defaults.parliamentary_role()
+
     party = field_defaults.party()
     party.extractor = CSV('party_name')
 
@@ -144,6 +146,7 @@ class ParliamentIrelandOld(CSVCorpus):
         chamber,
         date,
         ministerial_role,
+        parliamentary_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
@@ -267,6 +270,8 @@ class ParliamentIrelandNew(XMLCorpus):
 
     ministerial_role = field_defaults.ministerial_role()
 
+    parliamentary_role = field_defaults.parliamentary_role()
+
     party = field_defaults.party()
     party_id = field_defaults.party_id()
 
@@ -313,6 +318,7 @@ class ParliamentIrelandNew(XMLCorpus):
         chamber,
         date,
         ministerial_role,
+        parliamentary_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
@@ -365,6 +371,7 @@ class ParliamentIreland(Parliament, Corpus):
     chamber = field_defaults.chamber()
     date = field_defaults.date()
     ministerial_role = field_defaults.ministerial_role()
+    parliamentary_role = field_defaults.parliamentary_role()
     party = field_defaults.party()
     party_id = field_defaults.party_id()
     speaker = field_defaults.speaker()
@@ -382,6 +389,7 @@ class ParliamentIreland(Parliament, Corpus):
         chamber,
         date,
         ministerial_role,
+        parliamentary_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
