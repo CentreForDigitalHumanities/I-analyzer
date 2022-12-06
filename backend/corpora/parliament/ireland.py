@@ -423,7 +423,19 @@ class ParliamentIreland(Parliament, Corpus):
     speaker = field_defaults.speaker()
     speaker_id = field_defaults.speaker_id()
     speaker_constituency = field_defaults.speaker_constituency()
+
     speech = field_defaults.speech()
+    # no language-specific analysers since the corpus is mixed-language
+    speech.es_mapping = {
+        "type" : "text",
+        "fields": {
+            "length": {
+                "type":     "token_count",
+                "analyzer": "standard"
+            }
+        }
+    }
+
     speech_id = field_defaults.speech_id()
     topic = field_defaults.topic()
     sequence = field_defaults.sequence()
