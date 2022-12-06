@@ -282,7 +282,6 @@ class Corpus(object):
                 for document in self.source2dicts(
                     source
                 )
-                if document is not None
                 )
 
 
@@ -372,10 +371,8 @@ class XMLCorpus(Corpus):
                     external_dict.items(), regular_field_dict.items()))
 
                 # check if required fields are filled
-                if any((not full_dict[field_name]
+                if all((full_dict[field_name]
                         for field_name in required_fields)):
-                    yield None
-                else:
                     yield full_dict
         else:
             logger.warning(
