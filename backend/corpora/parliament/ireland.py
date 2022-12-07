@@ -262,6 +262,57 @@ def get_debate_id(filename):
     return shortened_name
 
 
+def compose(function_1, function_2):
+    '''
+    Compose two unary functions.
+    '''
+    return lambda x: function_1(function_2(x))
+
+def role_type_filter(role_type):
+    '''
+    Returns a unary function that filters role names on the given type.
+    I.e. only pass parliamentary roles, or only ministerial roles. For the
+    other type, return None.
+    '''
+    parliamentary_roles = ['Chair', 'Acting Chairman']
+
+    def filter_role(role):
+        if role in parliamentary_roles:
+            if role_type == 'parliamentary':
+                return role
+        else:
+            if role_type != 'parliamentary':
+                return role
+
+    return filter_role
+
+def role_id_extractor():
+    '''
+    Extractor for 2014-2020 role IDs (used in role extractor)
+    '''
+    from_speech_attribute = XML(attribute='as')
+    from_roll_call = Combined(
+        XML(attribute='by'),
+        Metadata('roll_call'),
+        transform = lambda data: find_person_in_roll_call(*data)
+    )
+
+    return Backup(from_speech_attribute, from_roll_call)
+
+def role_extractor(role_type):
+    '''
+    Extractor for 2014-2020 roles.
+    '''
+    return Combined(
+        role_id_extractor(),
+        Metadata('roles'),
+        transform = compose(
+            role_type_filter(role_type),
+            parlamint.metadata_attribute_transform_func('name')
+        ),
+    )
+
+
 class ParliamentIrelandNew(XMLCorpus):
     '''
     Class for extracting 2014-2020 Irish debates.
@@ -317,22 +368,10 @@ class ParliamentIrelandNew(XMLCorpus):
     )
 
     ministerial_role = field_defaults.ministerial_role()
-    ministerial_role.extractor = Combined(
-        XML(attribute='as'),
-        Metadata('roles'),
-        transform = parlamint.metadata_attribute_transform_func('name'),
-    )
+    ministerial_role.extractor = role_extractor('ministerial')
 
     parliamentary_role = field_defaults.parliamentary_role()
-    parliamentary_role.extractor = Combined(
-        Combined(
-            XML(attribute='by'),
-            Metadata('roll_call'),
-            transform = lambda data: find_person_in_roll_call(*data)
-        ),
-        Metadata('roles'),
-        transform = parlamint.metadata_attribute_transform_func('name'),
-    )
+    parliamentary_role.extractor = role_extractor('parliamentary')
 
     party = field_defaults.party()
     party_id = field_defaults.party_id()
