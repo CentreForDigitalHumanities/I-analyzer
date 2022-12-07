@@ -176,6 +176,13 @@ def get_json_metadata(directory):
 
     return data
 
+def format_chamber(house_code):
+    codes = {
+        'dail': 'Dáil',
+        'seanad': 'Seanad'
+    }
+    return codes.get(house_code, house_code)
+
 def get_file_metadata(json_data, filename):
 
     data = next(
@@ -186,7 +193,7 @@ def get_file_metadata(json_data, filename):
     chamber_data = data['house_uri']
     useful_data = {
         'url': data['xml_url'],
-        'house': chamber_data['houseCode'],
+        'house': format_chamber(chamber_data['houseCode']),
         'debate_type': chamber_data['chamberType'],
         'committee': chamber_data['showAs'] if chamber_data.get('committeeCode', None) else None,
         'legislature': chamber_data['houseNo'],
