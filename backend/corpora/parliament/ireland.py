@@ -85,11 +85,12 @@ class ParliamentIrelandOld(CSVCorpus):
             max_year = end.year if end else self.max_date.year
             for tsv_file in glob('{}/**/Dail_debates_1919-2013_*.tab'.format(self.data_directory), recursive=True):
                 year = int(re.search(r'(\d{4}).tab$', tsv_file).group(1))
-                minister_data = list(extract_minister_data(self.data_directory))
-                metadata = {
-                    'ministers': minister_data
-                }
-                yield tsv_file, metadata
+                if year >= min_year and year <= max_year:
+                    minister_data = list(extract_minister_data(self.data_directory))
+                    metadata = {
+                        'ministers': minister_data
+                    }
+                    yield tsv_file, metadata
         else:
             return []
 
