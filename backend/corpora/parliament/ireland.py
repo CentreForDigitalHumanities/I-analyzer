@@ -166,6 +166,7 @@ def get_json_metadata(directory):
     return data
 
 def get_file_metadata(json_data, filename):
+
     data = next(
         file_data for file_data in json_data
         if file_data['file'] == filename
@@ -447,8 +448,8 @@ class ParliamentIreland(Parliament, Corpus):
     def __init__(self):
         self.fields = [
             self.country,
-            self.chamber,
             self.date,
+            self.chamber,
             self.ministerial_role,
             self.parliamentary_role,
             self.party, self.party_id,
