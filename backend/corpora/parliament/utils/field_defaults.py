@@ -40,6 +40,19 @@ def chamber():
         visualizations = ['resultscount', 'termfrequency']
     )
 
+def committee():
+    'Committee that held the debate.'
+    return Field(
+        name = 'committee',
+        display_name = 'Committee',
+        description = 'Committee that held the debate',
+        es_mapping = BASIC_KEYWORD_MAPPING,
+        search_filter = MultipleChoiceFilter(
+            description='Search only in debates from the selected chamber(s)',
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
+
 def country():
     "Country in which the debate took place"
     return Field(

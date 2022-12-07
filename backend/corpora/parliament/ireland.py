@@ -100,6 +100,10 @@ class ParliamentIrelandOld(CSVCorpus):
     chamber = field_defaults.chamber()
     chamber.extractor = Constant('Dáil')
 
+    committee = field_defaults.committee()
+
+    debate_type = field_defaults.debate_type()
+
     date = field_defaults.date()
     date.extractor = CSV('date')
 
@@ -155,6 +159,8 @@ class ParliamentIrelandOld(CSVCorpus):
     fields = [
         country,
         chamber,
+        committee,
+        debate_type,
         date,
         ministerial_role,
         parliamentary_role,
@@ -359,6 +365,9 @@ class ParliamentIrelandNew(XMLCorpus):
         'house'
     )
 
+    committee = field_defaults.committee()
+    committee.extractor = Metadata('committee')
+
     date = field_defaults.date()
     date.extractor = XML(
         tag = 'docDate',
@@ -366,6 +375,9 @@ class ParliamentIrelandNew(XMLCorpus):
         recursive = True,
         toplevel = True,
     )
+
+    debate_type = field_defaults.debate_type()
+    debate_type.extractor = Metadata('debate_type')
 
     ministerial_role = field_defaults.ministerial_role()
     ministerial_role.extractor = role_extractor('ministerial')
@@ -423,6 +435,8 @@ class ParliamentIrelandNew(XMLCorpus):
         country,
         chamber,
         date,
+        committee,
+        debate_type,
         ministerial_role,
         parliamentary_role,
         party, party_id,
@@ -475,6 +489,8 @@ class ParliamentIreland(Parliament, Corpus):
 
     country = field_defaults.country()
     chamber = field_defaults.chamber()
+    committee = field_defaults.committee()
+    debate_type = field_defaults.debate_type()
     date = field_defaults.date()
     ministerial_role = field_defaults.ministerial_role()
     parliamentary_role = field_defaults.parliamentary_role()
@@ -507,6 +523,8 @@ class ParliamentIreland(Parliament, Corpus):
             self.country,
             self.date,
             self.chamber,
+            self.committee,
+            self.debate_type,
             self.ministerial_role,
             self.parliamentary_role,
             self.party, self.party_id,
