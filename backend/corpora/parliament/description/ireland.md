@@ -8,7 +8,7 @@ Debates are in English or Irish.
 
 The data up to 2013 and from 2014 onwards were extracted from different source data. This means that some metadata fields are only available up to 2013, or only from 2014. Specifically:
 
-- The fields _party_, _party ID_, and _speaker constituency_ are only available from 1919-2020.
+- The fields _party_, _party ID_, and _speaker constituency_ are only available from 1919-2013.
 - The fields _parliamentary role_, _debate type_, _committee_ and _url_ are only available from 2014-2020.
 - Ministerial roles are available from 1937-2011 and 2014-2020.
 
