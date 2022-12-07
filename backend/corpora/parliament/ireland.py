@@ -100,10 +100,6 @@ class ParliamentIrelandOld(CSVCorpus):
     chamber = field_defaults.chamber()
     chamber.extractor = Constant('Dáil')
 
-    committee = field_defaults.committee()
-
-    debate_type = field_defaults.debate_type()
-
     date = field_defaults.date()
     date.extractor = CSV('date')
 
@@ -114,8 +110,6 @@ class ParliamentIrelandOld(CSVCorpus):
         Metadata('ministers'),
         transform = find_ministerial_role,
     )
-
-    parliamentary_role = field_defaults.parliamentary_role()
 
     party = field_defaults.party()
     party.extractor = CSV('party_name')
@@ -154,23 +148,18 @@ class ParliamentIrelandOld(CSVCorpus):
     source_archive = field_defaults.source_archive()
     source_archive.extractor = Constant('1919-2013')
 
-    url = field_defaults.url()
 
     fields = [
         country,
         chamber,
-        committee,
-        debate_type,
         date,
         ministerial_role,
-        parliamentary_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
         speech, speech_id,
         sequence,
         source_archive,
         topic,
-        url,
     ]
 
 def get_json_metadata(directory):
@@ -397,8 +386,6 @@ class ParliamentIrelandNew(XMLCorpus):
     speaker_id = field_defaults.speaker_id()
     speaker_id.extractor = XML(attribute='by')
 
-    speaker_constituency = field_defaults.speaker_constituency()
-
     speech = field_defaults.speech()
     speech.extractor = XML(
         'p',
@@ -440,7 +427,7 @@ class ParliamentIrelandNew(XMLCorpus):
         ministerial_role,
         parliamentary_role,
         party, party_id,
-        speaker, speaker_id, speaker_constituency,
+        speaker, speaker_id,
         speech, speech_id,
         sequence,
         source_archive,
@@ -485,7 +472,12 @@ class ParliamentIreland(Parliament, Corpus):
         subcorpus_index = metadata['subcorpus']
         subcorpus = self.subcorpora[subcorpus_index]
 
-        return subcorpus.source2dicts(source)
+        docs = subcorpus.source2dicts(source)
+        for doc in docs:
+            yield {
+                field.name : doc.get(field.name, None)
+                for field in self.fields
+            }
 
     country = field_defaults.country()
     chamber = field_defaults.chamber()
