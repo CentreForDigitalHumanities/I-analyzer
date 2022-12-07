@@ -444,17 +444,18 @@ class ParliamentIreland(Parliament, Corpus):
     source_archive = field_defaults.source_archive()
     url = field_defaults.url()
 
-    fields = [
-        country,
-        chamber,
-        date,
-        ministerial_role,
-        parliamentary_role,
-        party, party_id,
-        speaker, speaker_id, speaker_constituency,
-        speech, speech_id,
-        sequence,
-        source_archive,
-        topic,
-        url,
-    ]
+    def __init__(self):
+        self.fields = [
+            self.country,
+            self.chamber,
+            self.date,
+            self.ministerial_role,
+            self.parliamentary_role,
+            self.party, self.party_id,
+            self.speaker, self.speaker_id, self.speaker_constituency,
+            self.speech, self.speech_id,
+            self.sequence,
+            self.source_archive,
+            self.topic,
+            self.url,
+        ]
