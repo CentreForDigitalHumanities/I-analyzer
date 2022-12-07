@@ -21,6 +21,16 @@ def in_date_range(corpus, start, end):
 
     return start_date <= corpus.max_date and end_date >= corpus.min_date
 
+def format_mininster_role(position, department):
+    '''Format 1919-2013 minister positions analogous to the 2014-2020 positions'''
+
+    if position == 'Taoiseach':
+        return position
+    elif position == 'Minister':
+        return f'{position} for {department}'
+    else:
+        return f'{position} at the department of {department}'
+
 def extract_minister_data(data_directory):
     for filename in glob('{}/**/*ministers.tab'.format(data_directory)):
         with(open(filename)) as tsv_file:
@@ -36,7 +46,7 @@ def extract_minister_data(data_directory):
                     'speaker_id': speaker_id,
                     'start_date': datetime.strptime(start_date, '%Y-%m-%d'),
                     'end_date': datetime.strptime(end_date, '%Y-%m-%d'),
-                    'role': f'{position} ({department})'
+                    'role': format_mininster_role(position, department)
                 }
 
 

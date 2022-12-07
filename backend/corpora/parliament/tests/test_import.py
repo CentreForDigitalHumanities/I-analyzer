@@ -531,7 +531,7 @@ OSLO LOBO MEDIA AS 2005""",
                 'id': '3088886',
                 'speaker_id': '5',
                 'speaker': 'Mr. Bertie Ahern',
-                'ministerial_role': 'Taoiseach (Taoiseach), Minister (Foreign Affairs)',
+                'ministerial_role': 'Taoiseach, Minister for Foreign Affairs',
             }
         ]
         ,
