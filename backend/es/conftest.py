@@ -14,7 +14,7 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from ianalyzer.models import db as _db, Corpus, User, Role
 import ianalyzer.config_fallback as config
 
-import es.es_index as index
+from es import es_index
 
 from addcorpus.load_corpus import load_corpus
 
@@ -38,7 +38,7 @@ class UnittestConfig:
     }
     CORPUS_DEFINITIONS = {}
     TIMES_DATA = 'addcorpus/tests'
-    TIMES_ES_INDEX = 'ianalyzer-times'
+    TIMES_ES_INDEX = 'ianalyzer-test-times'
     TIMES_ES_DOCTYPE = 'article'
     TIMES_IMAGE = 'times.jpg'
     TIMES_SCAN_IMAGE_TYPE = 'image/png'
@@ -47,6 +47,8 @@ class UnittestConfig:
     SAML_FOLDER = "saml"
     SAML_SOLISID_KEY = "uuShortID"
     SAML_MAIL_KEY = "mail"
+
+CORPUS_NAME = 'times'
 
 
 @pytest.fixture(scope='session')
@@ -58,8 +60,57 @@ def test_app(request):
     with app.app_context():
         yield app
 
-@pytest.fixture(scope='session')
-def test_es_client(test_app):
+@pytest.fixture
+def corpus_definition(test_app):
+    corpus = load_corpus(CORPUS_NAME)
+    yield corpus
+
+@pytest.fixture(scope='module')
+def es_forward_client(test_app):
+    """
+    Create and populate an index for the mock corpus in elasticsearch.
+    Returns an elastic search client for the mock corpus.
+    """
+    client = elasticsearch(CORPUS_NAME)
+    # check if client is available, else skip test
+    try:
+        client.info()
+    except:
+        pytest.skip('Cannot connect to elasticsearch server')
+
+    # add data from mock corpus
+    corpus = load_corpus(CORPUS_NAME)
+    es_index.create(client, corpus, False, True, False)
+    es_index.populate(client, CORPUS_NAME, corpus)
+    client.index(index=corpus.es_index, document={'content': 'banana'})
+
+    # ES is "near real time", so give it a second before we start searching the index
+    sleep(1)
+    yield client
+    # delete index when done
+    client.indices.delete(index='ianalyzer-test-times')
+
+@pytest.fixture
+def es_index_client(test_app):
+    """
+    Create and populate an index for the mock corpus in elasticsearch.
+    Returns an elastic search client for the mock corpus.
+    """
+    client = elasticsearch('times')
+    # check if client is available, else skip test
+    try:
+        client.info()
+    except:
+        pytest.skip('Cannot connect to elasticsearch server')
+
+    yield client
+    # delete indices when done
+    indices = client.indices.get(index='ianalyzer-test*')
+    for index in indices.keys():
+        client.indices.delete(index=index)
+
+@pytest.fixture()
+def es_alias_client(test_app):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
@@ -73,15 +124,15 @@ def test_es_client(test_app):
 
     # add data from mock corpus
     corpus = load_corpus('times')
-    index.create(client, corpus, False, True, False)
-    index.populate(client, 'times', corpus)
-    client.index(index='ianalyzer-times', document={'content': 'banana'})
+    es_index.create(client, corpus, False, True, True) # create ianalyzer-times_1 index
+    client.indices.create(index='ianalyzer-test-times_2')
+    client.indices.create(index='ianalyzer-test-times-bla_3')
 
-    # ES is "near real time", so give it a second before we start searching the index
-    sleep(2)
     yield client
     # delete index when done
-    client.indices.delete(index='ianalyzer-times')
+    indices = client.indices.get(index='ianalyzer-test*')
+    for index in indices.keys():
+        client.indices.delete(index=index)
 
 
 class CustomTestClient(FlaskClient):

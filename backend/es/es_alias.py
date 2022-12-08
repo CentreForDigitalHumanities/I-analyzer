@@ -13,7 +13,7 @@ def alias(corpus_name, corpus_definition, clean=False):
     client = elasticsearch(corpus_name)
 
     alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-    indices = client.indices.get(index='{}-*'.format(corpus_definition.es_index))
+    indices = client.indices.get(index='{}_*'.format(corpus_definition.es_index))
     highest_version = get_highest_version_number(indices)
 
     actions = []
@@ -40,7 +40,7 @@ def alias(corpus_name, corpus_definition, clean=False):
                 alias, index_name))
 
     if len(actions) > 0:
-        client.indices.update_aliases({'actions': actions})
+        client.indices.update_aliases(actions=actions)
     logger.info('Done updating aliases')
 
 
@@ -63,6 +63,7 @@ def get_new_version_number(client, alias, current_index = None):
     if not client.indices.exists(index=alias):
         return 1
     # get the indices aliased with `alias`
+    indices = client.indices.get(index='ianalyzer-test*')
     indices = client.indices.get_alias(name=alias)
     highest_version = get_highest_version_number(indices, current_index)
     return str(highest_version + 1)
@@ -74,7 +75,7 @@ def extract_version(index_name):
     Format of the index_name should be `index_name-<version>`, eg `indexname-5`.
     Returns -1 if no version number is found in `index_name`.
     '''
-    _index = index_name.rfind('-')
+    _index = index_name.rfind('_')
     if _index == -1:
         return _index
     try:
@@ -83,7 +84,7 @@ def extract_version(index_name):
         return None
 
 
-def get_highest_version_number(indices, current_index = None):
+def get_highest_version_number(indices, current_index=None):
     '''
     Get the version number of the index with the highest version number currently present in ES.
     Note that this relies on the existence of version numbers in the index names (e.g. `index_name-1`).

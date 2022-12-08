@@ -78,7 +78,7 @@ FORWARD_CASES = {
 def scenario(request):
     return request.param
 
-def test_es_forwarding_views(test_app, test_es_client, times_user, client, requests, session, scenario):
+def test_es_forwarding_views(test_app, es_forward_client, times_user, client, requests, session, scenario):
     (authenticate, method, route, data,
      n_hits, status) = scenario
     if isinstance(data, dict):
