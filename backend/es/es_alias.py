@@ -40,7 +40,7 @@ def alias(corpus_name, corpus_definition, clean=False):
                 alias, index_name))
 
     if len(actions) > 0:
-        client.indices.update_aliases({'actions': actions})
+        client.indices.update_aliases(actions=actions)
     logger.info('Done updating aliases')
 
 

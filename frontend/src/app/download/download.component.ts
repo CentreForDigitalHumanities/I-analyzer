@@ -29,6 +29,11 @@ export class DownloadComponent implements OnChanges {
 
     private resultsCutoff = 1000;
 
+    private downloadsPageLink = {
+        text: 'view downloads',
+        route: ['/download-history']
+    };
+
     constructor(private downloadService: DownloadService, private notificationService: NotificationService) { }
 
     ngOnChanges() {
@@ -90,14 +95,15 @@ export class DownloadComponent implements OnChanges {
             this.corpus, this.queryModel, this.getCsvFields(), this.route, highlightFragmentSize
         ).then( results => {
             if (results.success === false) {
-                this.notificationService.showMessage(results.message);
+                this.notificationService.showMessage(results.message, 'danger');
             } else {
                 this.notificationService.showMessage(
-                    'Downloading CSV file... A link will be sent to your email address shortly.', 'success'
+                    'Downloading CSV file... A link will be sent to your email address shortly.', 'success',
+                    this.downloadsPageLink,
                 );
             }
         }).catch( error => {
-            this.notificationService.showMessage(error);
+            this.notificationService.showMessage(error, 'danger');
         });
 
 

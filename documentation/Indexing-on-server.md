@@ -6,7 +6,7 @@ On the server, move data to a location in the `/its` share.
 ## Deployment settings
 In the Deployment repository, set the variables of the corpus, with the `YOUR_CORPUS_DATA` variable set to the location on the `/its` share. Also add the corpus to the list of `CORPORA`, pointing to the correct location of the corpus definition on the server.
 
-Change user to www-data (`sudo -su www-data`), adjust branch and deploy changes with new corpus definition.
+Change user to www-data (`sudo -iu www-data`), adjust branch and deploy changes with new corpus definition.
 
 ## Indexing
 Start a screen with a descriptive name (e.g., `screen -S index-superb-corpus`). Go to the server's `data` directory, and run `source env/bin/activate`. Move to backend directory: `cd source/backend`

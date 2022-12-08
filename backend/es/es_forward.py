@@ -9,9 +9,10 @@ from flask_login import login_required, current_user
 
 from ianalyzer import config_fallback as config
 from ianalyzer.factories.elasticsearch import elasticsearch
-from . import es
 from .search import get_index
+from flask import Blueprint
 
+es = Blueprint('es', __name__)
 logger = logging.getLogger(__name__)
 
 

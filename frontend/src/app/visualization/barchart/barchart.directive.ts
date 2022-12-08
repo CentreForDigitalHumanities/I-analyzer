@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Directive, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
@@ -362,12 +363,13 @@ export abstract class BarchartDirective
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
         return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
             if (result.success === true) {
-                return this.apiService.pollTask(result.task_id);
+                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
             }
         }).then(res => {
             if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results as TermFrequencyResult[], series);
+                return this.processSeriesTermFrequency(res.results, series);
             } else {
+                this.error.emit(res['message'] || 'could not load results');
                 return series;
             }
         });
@@ -430,7 +432,11 @@ export abstract class BarchartDirective
         this.fullDataRequest().then(() =>
             this.notificationService.showMessage(
                 'Full data requested! You will receive an email when your download is ready.',
-                'success'
+                'success',
+                {
+                    text: 'view downloads',
+                    route: ['/download-history']
+                }
             )
         ).catch(error => {
             console.error(error);

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart, ChartOptions } from 'chart.js';
-import { ContextResults, Corpus, FreqTableHeaders, QueryModel } from '../../models';
-import { ApiService, NotificationService, SearchService, WordmodelsService } from '../../services';
+import { ContextResults, Corpus, FreqTableHeaders } from '../../models';
+import { ApiService, WordmodelsService } from '../../services';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import * as _ from 'lodash';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -99,25 +99,25 @@ export class WordContextComponent implements OnChanges {
         const queries = [this.queryText].concat(this.comparisonTerms);
         return this.wordModelsService.get2dContextOverTime(queries, this.corpus.name, this.neighbours).then(taskResult => {
             if (taskResult.success === true) {
-                return this.apiService.pollTask<ContextResults>(taskResult.task_id);
+                return this.apiService.pollTasks<ContextResults>(taskResult.task_ids);
             } else {
                 this.error.emit(taskResult.message);
             }
         }).then(result => {
             if (result.success === true && result.done) {
-                this.data = result.results;
+                this.data = result.results[0];
                 this.timeIntervals = this.data.map(item => item.time);
                 this.currentTimeIndex = 0;
                 this.makeTableData(this.data);
                 this.makeGraph(this.data, this.currentTimeIndex);
             } else {
-                this.requestFailed(result['message'])
+                this.requestFailed(result['message']);
             }
         });
     }
 
     requestFailed(message) {
-        this.error.emit({message})
+        this.error.emit({message});
     }
 
     /** execute a process with loading spinner */
@@ -138,7 +138,7 @@ export class WordContextComponent implements OnChanges {
                 },
                 plugins: [ ChartDataLabels ],
                 options: this.chartOptions
-            })
+            });
         } else {
             this.updateGraph();
         }

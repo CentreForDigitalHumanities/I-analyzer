@@ -11,9 +11,9 @@ def model_contains_terms(terms, model):
     in_model = lambda term: utils.word_in_model(term, model)
     return any(in_model(term) for term in terms)
 
-def find_optimal_2d_maps(binned_models, terms_per_model, wm_type):
+def find_optimal_2d_maps(binned_models, terms_per_model):
     original_vectors = [
-        np.array([utils.term_to_vector(term, model, wm_type)
+        np.array([utils.term_to_vector(term, model)
         for term in terms]) if model_contains_terms(terms, model) else None
         for model, terms in zip(binned_models, terms_per_model)
     ]

@@ -22,7 +22,7 @@ The following time frames are used:
 - 1840:1869: Alice in Wonderland, Moby Dick
 - 1870-1899: Sherlock Holmes
 
-The models for each time frame, as well as the complete model, are trained with a maximum vocabulary size of 200 words and 20 dimensions.
+The models for each time frame, as well as the complete model, are trained with a maximum vocabulary size of 200 words and 20 dimensions. The models were saved as gensim KeyedVectors.
 
 ### Training data
 

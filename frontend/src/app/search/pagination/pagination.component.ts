@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { SearchParameters } from '../models/index';
+import { SearchParameters } from '../../models/index';
 
 @Component({
   selector: 'ia-pagination',

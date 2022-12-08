@@ -17,11 +17,9 @@ def parse_time_interval(interval):
 def get_similarity_over_time(query_term, comparison_term, corpus_string):
     corpus = load_corpus(corpus_string)
     binned = load_word_models(corpus, True)
-    wm_type = corpus.word_model_type
     data = [
         term_similarity(
             time_bin,
-            wm_type,
             query_term,
             comparison_term
         )
@@ -49,12 +47,10 @@ def get_time_labels(binned_model):
 
 def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIMILAR):
     corpus = load_corpus(corpus_string)
-    wm_type = corpus.word_model_type
     complete = load_word_models(corpus)
     binned = load_word_models(corpus, binned=True)
     word_list = find_n_most_similar(
         complete,
-        wm_type,
         query_term,
         number_similar)
     if not word_list:
@@ -64,7 +60,6 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     words = [word['key'] for word in word_list]
     get_similarity = lambda word, time_bin: term_similarity(
         time_bin,
-        wm_type,
         query_term,
         word
     )
@@ -78,7 +73,7 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
         for (time_label, time_bin) in zip(times, binned) for word in words]
 
     data_per_timeframe = [
-        find_n_most_similar(time_bin, wm_type, query_term, number_similar)
+        find_n_most_similar(time_bin, query_term, number_similar)
         for time_bin in binned
     ]
     return word_list, word_data, times, data_per_timeframe
@@ -91,13 +86,12 @@ def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_
 
     corpus = load_corpus(corpus_name)
     binned_models = load_word_models(corpus_name, binned = True)
-    wm_type = corpus.word_model_type
     neighbours_per_model = [
         [
             similar_term
             for query_term in query_terms
             for similar_term in
-            (find_n_most_similar(model, wm_type, query_term, number_similar) or [])
+            (find_n_most_similar(model, query_term, number_similar) or [])
         ]
         for model in binned_models
     ]
@@ -112,7 +106,7 @@ def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_
         for query_terms, neighbours in zip(query_terms_per_model, neighbours_per_model)
     ]
 
-    data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model, wm_type)
+    data_per_timeframe = find_optimal_2d_maps(binned_models, terms_per_model)
 
     data = [
         {

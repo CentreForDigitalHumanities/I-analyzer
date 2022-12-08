@@ -12,64 +12,40 @@ from glob import glob
 def load_word_models(corpus, binned=False):
     if type(corpus)==str:
         corpus = load_corpus(corpus)
-    if corpus.word_model_type == 'svd_ppmi':
-        if binned:
-            path = join(corpus.word_model_path, 'binned.pkl')
-        else:
-            path = join(corpus.word_model_path, 'complete.pkl')
-        try:
-            with open(path, "rb") as f:
-                wm = pickle.load(f)
-            if type(wm)==list:
-                for model in wm:
-                    get_analyzer_and_vocab_ppmi(model)
-            else:
-                get_analyzer_and_vocab_ppmi(wm)
-
-        except FileNotFoundError:
-            return "No word models found for this corpus."
-    elif corpus.word_model_type == 'word2vec':
-        w2v_list = glob('{}/*.w2v'.format(corpus.word_model_path))
-        full_model = next((item for item in w2v_list if item.endswith('full.w2v')), None)
-        try:
-            w2v_list.remove(full_model)
-        except:
-           raise(Exception("No full word model found for this corpus."))
-        analyzer = get_analyzer(corpus)
-        if binned:
-            w2v_list.sort()
-            wm = [
-                    {
-                        "start_year": get_year(wm_file, 1),
-                        "end_year": get_year(wm_file, 2),
-                        "word2vec": KeyedVectors.load_word2vec_format(wm_file, binary=True),
-                        "analyzer": analyzer,
-                        "vocab": get_vocab(wm_file)
-                    }
-                for wm_file in w2v_list
-                ]
-        else:
-            model = KeyedVectors.load_word2vec_format(full_model, binary=True)
-            wm = {
-                "start_year": get_year(full_model, 1),
-                "end_year": get_year(full_model, 2),
-                "word2vec": model,
-                "analyzer": analyzer,
-                "vocab": get_vocab(full_model)
-            }
-
+    w2v_list = glob('{}/*.w2v'.format(corpus.word_model_path))
+    full_model = next((item for item in w2v_list if item.endswith('full.w2v')), None)
+    try:
+        w2v_list.remove(full_model)
+    except:
+       raise(Exception("No full word model found for this corpus."))
+    analyzer = get_analyzer(corpus)
+    if binned:
+        w2v_list.sort()
+        wm = [
+                {
+                    "start_year": get_year(wm_file, 1),
+                    "end_year": get_year(wm_file, 2),
+                    "matrix": KeyedVectors.load_word2vec_format(wm_file, binary=True),
+                    "analyzer": analyzer,
+                    "vocab": get_vocab(wm_file)
+                }
+            for wm_file in w2v_list
+            ]
+    else:
+        model = KeyedVectors.load_word2vec_format(full_model, binary=True)
+        wm = {
+            "start_year": get_year(full_model, 1),
+            "end_year": get_year(full_model, 2),
+            "matrix": model,
+            "analyzer": analyzer,
+            "vocab": get_vocab(full_model)
+        }
     return wm
 
 def get_vocab(kv_filename):
     vocab_name = '{}_vocab.pkl'.format(splitext(kv_filename)[0])
     with open(vocab_name, 'rb') as f:
         return pickle.load(f)
-
-def get_analyzer_and_vocab_ppmi(model):
-    transformer = model.get('transformer')
-    model['analyzer'] = transformer.build_analyzer()
-    model['vocab'] = transformer.get_feature_names_out()
-    return model
 
 def get_year(kv_filename, position):
     return int(splitext(basename(kv_filename))[0].split('_')[position])
@@ -127,15 +103,9 @@ def term_to_index(query, model):
 def index_to_term(index, vocab):
     return vocab[index]
 
-def term_to_vector(query, model, wm_type):
-    if wm_type == 'svd_ppmi':
-        index = term_to_index(query, model)
-
-        if index != None:
-            return model['svd_ppmi'][:, index]
-    else:
-        analyzer = model['analyzer']
-        transformed = transform_query(query, analyzer)
-        vocab = model['vocab']
-        if transformed in vocab:
-            return  model['word2vec'].get_vector(transformed)
+def term_to_vector(query, model):
+    analyzer = model['analyzer']
+    transformed = transform_query(query, analyzer)
+    vocab = model['vocab']
+    if transformed in vocab:
+        return  model['matrix'].get_vector(transformed)

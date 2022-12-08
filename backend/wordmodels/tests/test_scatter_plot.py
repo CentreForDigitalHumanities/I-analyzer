@@ -3,7 +3,6 @@ import numpy as np
 from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates, rotate_coordinates_in_timeframe
 from wordmodels.visualisations import get_2d_contexts_over_time
 import pytest
-from wordmodels.conftest import WM_MOCK_CORPORA
 import pytest
 
 NUMBER_SIMILAR = 5
@@ -35,7 +34,6 @@ def find_term(term, interval_result):
     data = interval_result['data']
     return next((item for item in data if item['label'] == term), None)
 
-@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
 def test_2d_context_over_time_result(test_app, mock_corpus):
     """Test if the context result makes sense."""
     all_data = get_2d_contexts_over_time(['she'], mock_corpus)
@@ -47,7 +45,6 @@ def test_2d_context_over_time_result(test_app, mock_corpus):
     assert find_term('elizabeth', all_data[0])
     assert find_term('alice', all_data[1])
 
-@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
 def test_term_not_in_all_intervals(test_app, mock_corpus):
     all_data = get_2d_contexts_over_time(['alice'], mock_corpus, NUMBER_SIMILAR)
 
@@ -64,7 +61,6 @@ def test_term_not_in_all_intervals(test_app, mock_corpus):
         assert not find_term('alice', interval)
         assert len(interval['data']) == 0
 
-@pytest.mark.parametrize('mock_corpus', WM_MOCK_CORPORA)
 def test_2d_contexts_over_time_format(test_app, mock_corpus):
     term = 'she'
 

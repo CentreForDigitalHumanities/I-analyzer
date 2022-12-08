@@ -218,11 +218,12 @@ def api_download():
         error_response = make_response("", 500)
         try:
             search_results = download.normal_search(request.json['corpus'], request.json['es_query'], request.json['size'])
-            _, csv_path = tasks.make_csv((None, search_results), request.json)
+            csv_path = tasks.make_csv(search_results, request.json)
             directory, filename = os.path.split(csv_path)
             converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.json['encoding'])
             csv_file = os.path.join(directory, converted_filename)
-        except:
+        except Exception as e:
+            logger.error(e)
             error_response.headers['message'] += 'Could not generate csv file'
             return error_response
 
@@ -493,19 +494,25 @@ def api_ngram_tasks():
         else:
             return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
-@api.route('/task_status/<task_id>', methods=['GET'])
+@api.route('/task_status', methods=['POST'])
 @login_required
-def api_task_status(task_id):
-    results = celery_app.AsyncResult(id=task_id)
-    if not results:
+def api_task_status():
+    task_ids = request.json.get('task_ids')
+    if not task_ids:
+        abort(400, 'no task id specified')
+
+    results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
+    if not all(results):
         return jsonify({'success': False, 'message': 'Could not get data.'})
     else:
-        if results.state == 'SUCCESS':
-            outcome = results.get()
-            return jsonify({'success': True, 'done': True, 'results': outcome})
-        elif results.state in ['PENDING', 'STARTED']:
+        if all(result.state == 'SUCCESS' for result in results):
+            outcomes = [result.get() for result in results]
+            return jsonify({'success': True, 'done': True, 'results': outcomes})
+        elif all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
             return jsonify({'success': True, 'done': False})
         else:
+            for result in results:
+                logger.error(result.info)
             return jsonify({'success': False, 'message': 'Task failed.'})
 
 
@@ -582,11 +589,12 @@ def api_aggregate_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.get_histogram_term_frequency.delay(request.json)
-    if not task:
+    group = tasks.histogram_term_frequency_tasks(request.json).apply_async()
+    subtasks = group.children
+    if not tasks:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_id': task.id})
+        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
 
 @api.route('date_term_frequency', methods=['POST'])
 @login_required
@@ -603,11 +611,12 @@ def api_date_term_frequency():
             if not key in bin:
                 abort(400)
 
-    task = tasks.get_timeline_term_frequency.delay(request.json)
-    if not task:
+    group = tasks.timeline_term_frequency_tasks(request.json).apply_async()
+    subtasks = group.children
+    if not tasks:
         return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
     else:
-        return jsonify({'success': True, 'task_id': task.id})
+        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
 
 @api.route('request_full_data', methods=['POST'])
 @login_required
@@ -628,4 +637,4 @@ def api_request_full_data():
     task_chain = tasks.download_full_data(request.json, current_user)
     task_chain.apply_async()
 
-    return jsonify({'success': True, 'task_id': task_chain.id})
+    return jsonify({'success': True, 'task_ids': [task_chain.id]})

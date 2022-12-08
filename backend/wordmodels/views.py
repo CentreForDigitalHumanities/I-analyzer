@@ -104,7 +104,7 @@ def api_get_2d_contexts_over_time():
         task = tasks.get_2d_context_results.delay(terms, corpus, int(neighbours))
         return jsonify({
             'success': True,
-            'task_id': task.id,
+            'task_ids': [task.id],
         })
     except:
         return jsonify({

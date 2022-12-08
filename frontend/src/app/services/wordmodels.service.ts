@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, IResourceMethodFull, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
 
@@ -46,7 +47,7 @@ export class WordmodelsService extends Resource {
         path: '/get_2d_contexts_over_time'
     })
     public context2dRequest: ResourceMethod<
-        { query_terms: string[], corpus: string, neighbours: number },
+        { query_terms: string[]; corpus: string; neighbours: number },
         TaskResult>;
 
     @ResourceAction({

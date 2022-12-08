@@ -167,6 +167,7 @@ def make_query(query_text=None, search_in_fields=None):
 
     return query
 
+@pytest.mark.xfail(reason = 'cannot connect to celery', run=False)
 def test_timeline_full_data(indexed_large_mock_corpus):
     specs = CORPUS_SPECS[indexed_large_mock_corpus]
     min_year = specs['min_date'].year
