@@ -78,6 +78,9 @@ def get_diachronic_contexts(query_term, corpus_string, number_similar=NUMBER_SIM
     ]
     return word_list, word_data, times, data_per_timeframe
 
+def remove_duplicates(items):
+    return list(set(items))
+
 def context_terms(query_terms, model, number_similar = NUMBER_SIMILAR):
     neighbours = [
         similar_term['key']
@@ -88,7 +91,7 @@ def context_terms(query_terms, model, number_similar = NUMBER_SIMILAR):
 
     query_terms = [term for term in query_terms if word_in_model(term, model)]
 
-    return query_terms + neighbours
+    return remove_duplicates(query_terms + neighbours)
 
 def get_2d_contexts_over_time(query_terms, corpus_name, number_similar = NUMBER_SIMILAR):
     """
