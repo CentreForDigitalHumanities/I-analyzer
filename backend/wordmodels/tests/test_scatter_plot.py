@@ -1,9 +1,12 @@
 import re
 import numpy as np
 from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates, rotate_coordinates_in_timeframe
-from wordmodels.visualisations import get_2d_contexts_over_time
+from wordmodels.visualisations import get_2d_contexts_over_time, context_terms
 import pytest
 import pytest
+from addcorpus.load_corpus import load_corpus
+from wordmodels.visualisations import load_word_models
+from copy import copy
 
 NUMBER_SIMILAR = 5
 
@@ -175,3 +178,41 @@ def test_rotation(rotation_test_case):
     result = rotate_coordinates_in_timeframe(original_coordinates, angle)
     rounded_result = np.round(result, 2)
     assert np.all(np.equal(rounded_result, expected_result))
+
+
+@pytest.fixture
+def model_with_term_removed(test_app, mock_corpus):
+    corpus = load_corpus(mock_corpus)
+    binned_models = load_word_models(corpus, True)
+    original_model = binned_models[0]
+    model = copy(original_model)
+
+    term = 'darcy'
+    model['vocab'] = list(model['vocab']) # convert from np.array if needed
+    model['vocab'].remove(term)
+
+    return corpus, model, original_model, term
+
+def test_vocab_is_subset_of_model(model_with_term_removed):
+    '''Test cases where the vocab array is a subset of terms with vectors.'''
+
+    corpus, model, original_model, missing_term = model_with_term_removed
+
+    number_similar = 5
+
+    context = context_terms(['bingley'], model, number_similar)
+    assert len(context) == 1 + number_similar
+    assert missing_term not in context
+
+    context = context_terms(['bingley'], original_model, number_similar)
+    assert len(context) == 1 + number_similar
+    assert missing_term in context
+
+    context = context_terms([missing_term], model, number_similar)
+    assert len(context) == 0
+    assert missing_term not in context
+
+    context = context_terms([missing_term], original_model, number_similar)
+    assert len(context) == 1 + number_similar
+    assert missing_term in context
+
