@@ -55,20 +55,35 @@ def coordinates_from_parameters(parameters, initial_coordinates):
 
 def find_optimal_coordinates(vectors_per_timeframe, terms_per_timeframe):
     initial = initial_coordinates(vectors_per_timeframe, terms_per_timeframe)
-    parameters = parameters_from_coordinates(initial)
-    options = {
-        'maxiter': 10000
-    }
+
+    find_rotation = lambda time_index : find_optimal_rotation(
+        initial[time_index], terms_per_timeframe[time_index],
+        initial[time_index - 1], terms_per_timeframe[time_index - 1]
+    ) if time_index > 0 else 0
+
+    results = [ find_rotation(i) for i in range(len(initial)) ]
+    angles = [ sum(results[:i+1]) for i in range(len(results)) ]
+
+    final = coordinates_from_parameters(angles, initial)
+    return final
+
+def find_optimal_rotation(coordinates, terms, previous_coordinates, previous_terms):
+    '''
+    Find the optimal rotation for a 2D map, minimising the difference with the
+    previous set of coordinates.
+    '''
 
     evaluation = lambda params: evaluate_coordinates(
-        coordinates_from_parameters(params, initial),
-        vectors_per_timeframe,
-        terms_per_timeframe
+        coordinates_from_parameters([ 0, params[0]], [previous_coordinates, coordinates]),
+        [previous_terms, terms]
     )
 
-    res = minimize(evaluation, parameters, method = 'nelder-mead', options=options)
-    final = coordinates_from_parameters(res.x, initial)
-    return final
+    parameters = [0]
+    options = { 'maxiter': 10000 }
+    res = minimize(evaluation, parameters, method = 'nelder-mead', options = options)
+
+    angle = res.x[0]
+    return angle
 
 def rotate_coordinates(coordinates_per_timeframe, angle_per_timeframe):
     return [
@@ -85,7 +100,7 @@ def rotate_coordinates_in_timeframe(coordinates, angle):
     rotated_coordinates = np.dot(coordinates, np.transpose(rotation_matrix))
     return rotated_coordinates
 
-def evaluate_coordinates(coordinates_per_timeframe, vectors_per_timeframe, terms_per_timeframe):
+def evaluate_coordinates(coordinates_per_timeframe, terms_per_timeframe):
     alignment_loss = total_alignment_loss(coordinates_per_timeframe, terms_per_timeframe)
     return alignment_loss
 

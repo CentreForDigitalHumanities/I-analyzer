@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from wordmodels.decompose import coordinates_from_parameters, parameters_from_coordinates, total_alignment_loss, alignment_loss_adjacent_timeframes, initial_coordinates, rotate_coordinates_in_timeframe
+from wordmodels.decompose import *
 from wordmodels.visualisations import get_2d_contexts_over_time, context_terms
 import pytest
 import pytest
@@ -179,6 +179,14 @@ def test_rotation(rotation_test_case):
     rounded_result = np.round(result, 2)
     assert np.all(np.equal(rounded_result, expected_result))
 
+
+def test_optimal_rotation(rotation_test_case):
+    original_coordinates, angle, rotated_coordinates = rotation_test_case
+    terms = ['a', 'b', 'c']
+    optimal_angle = find_optimal_rotation(rotated_coordinates, terms, original_coordinates, terms)
+
+    # assert that the optimal angle is the inverse of the original transformation
+    assert round(optimal_angle, 2) == -1 * angle
 
 @pytest.fixture
 def model_with_term_removed(test_app, mock_corpus):
