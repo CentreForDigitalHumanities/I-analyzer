@@ -8,8 +8,7 @@ def term_similarity(wm, term1, term2):
     analyzer = wm['analyzer']
     transformed1 = transform_query(term1, analyzer)
     transformed2 = transform_query(term2, analyzer)
-    vocab = wm['vocab']
-    if transformed1 in vocab and transformed2 in vocab:
+    if word_in_model(term1, wm) and word_in_model(term2, wm):
         similarity = matrix.similarity(transformed1, transformed2)
         return float(similarity)
 
@@ -18,13 +17,14 @@ def find_n_most_similar(wm, query_term, n):
     with its vocabulary and analyzer,
     determine which n terms match the given query term best
     """
-    if not n:
+    if not n or not word_in_model(query_term, wm):
         return None
 
     analyzer = wm['analyzer']
     vocab = wm['vocab']
     transformed_query = transform_query(query_term, analyzer)
     matrix = wm['matrix']
+
     results = most_similar_items(matrix, vocab, transformed_query, n)
     return [{
         'key': result[0],

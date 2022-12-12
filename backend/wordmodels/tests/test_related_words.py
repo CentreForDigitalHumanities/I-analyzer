@@ -31,7 +31,7 @@ def test_context_time_interval(test_app, mock_corpus):
         # context for bin that does not include the query term
         index = next(i for i, time in enumerate(times) if time == bin_without_match)
         bin_result = results[index]
-        assert bin_result == []
+        assert bin_result == None
 
     # context for bin that includes the query term
     index = next(i for i, time in enumerate(times) if time == case.get('bin'))
