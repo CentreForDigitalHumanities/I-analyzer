@@ -150,9 +150,9 @@ class ParliamentIrelandOld(CSVCorpus):
 
 
     fields = [
+        date,
         country,
         chamber,
-        date,
         ministerial_role,
         party, party_id,
         speaker, speaker_id, speaker_constituency,
@@ -419,9 +419,9 @@ class ParliamentIrelandNew(XMLCorpus):
     url.extractor = Metadata('url')
 
     fields = [
+        date,
         country,
         chamber,
-        date,
         committee,
         debate_type,
         ministerial_role,
