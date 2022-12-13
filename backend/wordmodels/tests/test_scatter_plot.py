@@ -25,8 +25,6 @@ def test_coordinates_parameters_conversion():
     terms = [['a', 'b', 'c'], ['a', 'b']]
     parameters = [0.0, 0.0]
 
-    assert parameters_from_coordinates(parameters) == parameters
-
     for timeframe, converted in enumerate(coordinates_from_parameters(parameters, coordinates)):
         original = coordinates[timeframe]
 
@@ -127,30 +125,6 @@ def test_alignment_loss_adjacent_timeframes():
     ])
     assert alignment_loss_adjacent_timeframes(coordinates_1, terms_1, coordinates_2_alt, terms_2) == 0.0625
 
-def test_alignment_loss():
-    coordinates = [
-        np.array([
-            [1.0, 0.0],
-            [0.0, 1.0]
-        ]),
-        np.array([
-            [0.0, 1.0],
-            [1.0, 0.0],
-        ]),
-        np.array([
-            [0.0, 1.0],
-            [1.0, 0.5],
-        ])
-    ]
-
-    terms = [
-        ['a', 'b'],
-        ['b', 'a'],
-        ['b', 'a']
-    ]
-
-    assert total_alignment_loss(coordinates, terms) == 0.0625
-    assert total_alignment_loss(coordinates[:2], terms[:2]) == 0.0
 
 @pytest.fixture(params=[0, 90])
 def rotation_test_case(request):
