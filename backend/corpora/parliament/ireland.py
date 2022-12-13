@@ -483,7 +483,11 @@ class ParliamentIreland(Parliament, Corpus):
     chamber = field_defaults.chamber()
     committee = field_defaults.committee()
     debate_type = field_defaults.debate_type()
+
     date = field_defaults.date()
+    date.search_filter.lower = min_date
+    date.search_filter.upper = max_date
+
     ministerial_role = field_defaults.ministerial_role()
     parliamentary_role = field_defaults.parliamentary_role()
     party = field_defaults.party()
