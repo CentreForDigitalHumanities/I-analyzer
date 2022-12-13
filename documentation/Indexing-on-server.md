@@ -6,7 +6,7 @@ On the server, move data to a location in the `/its` share.
 ## Deployment settings
 In the Deployment repository, set the variables of the corpus, with the `YOUR_CORPUS_DATA` variable set to the location on the `/its` share. Also add the corpus to the list of `CORPORA`, pointing to the correct location of the corpus definition on the server.
 
-Change user to www-data (`sudo -su www-data`), adjust branch and deploy changes with new corpus definition.
+Change user to www-data (`sudo -iu www-data`), adjust branch and deploy changes with new corpus definition.
 
 ## Indexing
 Start a screen with a descriptive name (e.g., `screen -S index-superb-corpus`). Go to the server's `data` directory, and run `source env/bin/activate`. Move to backend directory: `cd source/backend`
@@ -31,3 +31,5 @@ CORPORA = {
 Then, `flask es -c corpus1 -p` will write to `overarching-corpus-1`. After this, you have to set the alias on Kibana (`PUT corpus1/_alias/overarching-corpus`). A consecutive `flask es -c corpus2 -p` will then write to `overarching-corpus-2`. The second indexing call will fail if you don't set the alias first. Also don't forget to set the alias for the second corpus (`PUT corpus2/_alias/overarching-corpus`).
 
 After this, you can search both corpora via `overarching-corpus`. Note that you still need to decide which corpus definition controls what is visible to the user in the frontend. If the corpus definitions are very different on the `fields` level, it probably makes more sense to display two different corpus definitions to the user.
+
+Be aware that the term frequency and ngram visualisations rely on term vector requests, which are rejected for an alias that has multiple indices connected to it. In other words, these visualisations will not work if you use this method. To prevent error messages in the interface, make sure to  **disable term frequency and ngram visualisations** if you are combining corpora this way.

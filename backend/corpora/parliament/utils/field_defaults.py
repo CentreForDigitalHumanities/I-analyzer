@@ -41,6 +41,19 @@ def chamber():
         visualizations = ['resultscount', 'termfrequency']
     )
 
+def committee():
+    'Committee that held the debate.'
+    return Field(
+        name = 'committee',
+        display_name = 'Committee',
+        description = 'Committee that held the debate',
+        es_mapping = keyword_mapping(),
+        search_filter = MultipleChoiceFilter(
+            description='Search only in debates from the selected chamber(s)',
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
+
 def country():
     "Country in which the debate took place"
     return Field(
@@ -539,26 +552,4 @@ def url():
         description='URL to source file of this speech',
         es_mapping=keyword_mapping(),
         searchable=False,
-    )
-
-
-def sequence():
-    "integer index of the speech in a debate"
-    return Field(
-        name='sequence',
-        display_name='Sequence',
-        description='Index of the sequence of speeches in a debate',
-        es_mapping={'type': 'integer'},
-        sortable=True,
-        searchable=False,
-        csv_core=True,
-    )
-
-def url():
-    "url to source from which the data is extracted"
-    return Field(
-        name='url',
-        display_name='URL',
-        description='URL to source file of this speech',
-        es_mapping={'type':'keyword'}
     )
