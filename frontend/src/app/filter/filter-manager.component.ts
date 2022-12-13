@@ -82,14 +82,16 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      */
     private aggregateSearchForMultipleChoiceFilters() {
         const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
-        const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
-        Promise.all(aggregateResultPromises).then(results => {
-            results.forEach( r =>
-                this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
-            );
-            // if multipleChoiceData is empty, gray out all filters
-            if (multipleChoiceFilters.length != 0) {this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;}
-        });
+        if (multipleChoiceFilters.length != 0) {
+            const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
+            Promise.all(aggregateResultPromises).then(results => {
+                results.forEach( r =>
+                    this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
+                    );
+                // if multipleChoiceData is empty, gray out all filters
+                this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;
+            });
+        }
     }
 
     async getMultipleChoiceFilterOptions(filter: SearchFilter<SearchFilterData>): Promise<AggregateData> {
