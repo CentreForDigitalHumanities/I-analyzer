@@ -312,7 +312,7 @@ export interface EsQuery {
     completed?: Date;
     query: EsSearchClause | BooleanQuery;
     highlight?: {};
-    transferred?: Number;
+    transferred?: number;
 }
 
 interface BooleanQuery {
@@ -395,8 +395,8 @@ export class Client {
 
 export interface SearchParams {
     index: string;
-    size: Number;
-    from?: Number;
+    size: number;
+    from?: number;
     body: EsQuery;
 }
 

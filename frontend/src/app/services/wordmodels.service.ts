@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams, ResourceRequestMethod } from '@ngx-resource/core';
+import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams,
+    ResourceRequestMethod } from '@ngx-resource/core';
 
 import { environment } from '../../environments/environment';
 import { RelatedWordsResults, WordInModelResult, WordSimilarity } from '../models';

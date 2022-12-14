@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
-import { Resource, ResourceAction, ResourceParams,
-    ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType, IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
+import { Resource, ResourceAction, ResourceParams, ResourceRequestMethod, ResourceHandler, ResourceResponseBodyType,
+    IResourceAction, IResourceMethod, IResourceMethodFull } from '@ngx-resource/core';
 
 import { environment } from '../../environments/environment';
 import { EsQuery, EsQuerySorted } from './elastic-search.service';
 import { ImageInfo } from '../image-view/image-view.component';
-import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
+import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument,
+    TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult,
+    Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
     catchError,

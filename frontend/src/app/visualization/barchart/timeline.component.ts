@@ -3,7 +3,8 @@ import { Component, OnChanges, OnInit } from '@angular/core';
 import * as d3TimeFormat from 'd3-time-format';
 import * as _ from 'lodash';
 
-import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult, TimeCategory } from '../../models/index';
+import { QueryModel, AggregateResult, TimelineSeries, DateFilterData, TimelineDataPoint, TermFrequencyResult,
+    TimeCategory } from '../../models/index';
 import { BarchartDirective } from './barchart.directive';
 import * as moment from 'moment';
 import 'chartjs-adapter-moment';
@@ -302,17 +303,51 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue(this.normalizer),  formatDownload: this.formatDownloadValue  }
-
+                {
+                    key: valueKey,
+                    label: rightColumnName,
+                    format: this.formatValue(this.normalizer),
+                    formatDownload: this.formatDownloadValue
+                }
             ];
         } else {
             this.tableHeaders = [
                 { key: 'date', label: 'Date', format: this.formatDate },
-                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
-                { key: 'relative_doc_count', label: 'Document Frequency (%)', format: this.formatValue('percent'), formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
-                { key: 'match_count', label: 'Token Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
-                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue('documents'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
-                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue('terms'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
+                {
+                    key: 'doc_count',
+                    label: 'Document Frequency',
+                    format: this.formatValue('raw'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'doc_count' !== valueKey
+                },
+                {
+                    key: 'relative_doc_count',
+                    label: 'Document Frequency (%)',
+                    format: this.formatValue('percent'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'relative_doc_count' !== valueKey
+                },
+                {
+                    key: 'match_count',
+                    label: 'Token Frequency',
+                    format: this.formatValue('raw'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'match_count' !== valueKey
+                },
+                {
+                    key: 'matches_by_doc_count',
+                    label: 'Relative Frequency (documents)',
+                    format: this.formatValue('documents'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'matches_by_doc_count' !== valueKey
+                },
+                {
+                    key: 'matches_by_token_count',
+                    label: 'Relative Frequency (terms)',
+                    format: this.formatValue('terms'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'matches_by_token_count' !== valueKey
+                }
             ];
         }
     }

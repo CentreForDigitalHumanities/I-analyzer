@@ -123,10 +123,10 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         } else {
             this.visualizationService.getNgramTasks(this.queryModel, this.corpus.name, this.visualizedField.name,
                 this.currentParameters)
-                .then(result => {
-                    if (result.success) {
-                        this.tasksToCancel = result.task_ids;
-                        this.apiService.pollTasks<NgramResults>(result.task_ids).then(outcome => {
+                .then(response => {
+                    if (response.success) {
+                        this.tasksToCancel = response.task_ids;
+                        this.apiService.pollTasks<NgramResults>(response.task_ids).then(outcome => {
                             if (outcome.success === true && outcome.done === true) {
                                 const result = outcome.results[0];
                                 this.cacheResult(result, this.currentParameters);
@@ -136,7 +136,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
                             }
                         });
                     } else {
-                        this.onFailure(result['message']);
+                        this.onFailure(response['message']);
                     }
             }).catch(response => {
                 console.log(response);

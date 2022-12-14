@@ -43,7 +43,7 @@ export class NotificationsComponent implements OnDestroy {
         notification.canDelete = false;
         notification.fadeOut = true;
         setTimeout(() => {
-            this.notifications = this.notifications.filter(candidate => candidate != notification);
+            this.notifications = this.notifications.filter(candidate => candidate !== notification);
             if (notification.timeout) {
                 clearTimeout(notification.timeout);
             }

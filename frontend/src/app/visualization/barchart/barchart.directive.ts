@@ -407,7 +407,7 @@ export abstract class BarchartDirective
         cat.match_count = data.match_count;
         cat.total_doc_count = data.total_doc_count;
         cat.token_count = data.token_count;
-        cat.matches_by_doc_count = data.match_count / data.total_doc_count,
+        cat.matches_by_doc_count = data.match_count / data.total_doc_count;
         cat.matches_by_token_count = data.token_count ? data.match_count / data.token_count : undefined;
         return cat;
     }

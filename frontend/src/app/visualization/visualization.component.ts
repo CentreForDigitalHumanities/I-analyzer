@@ -204,7 +204,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         const node = document.getElementById(this.chartElementId(this.visualizationType));
 
         htmlToImage.toPng(node)
-          .then(function(dataUrl) {
+          .then((dataUrl) => {
             const img = new Image();
             img.src = dataUrl;
             const anchor = document.createElement('a');

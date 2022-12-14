@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult, TimeCategory, TimelineBin } from '../models';
+import { AggregateTermFrequencyParameters, Corpus, DateTermFrequencyParameters, NgramParameters, QueryModel, TaskResult,
+    TimeCategory, TimelineBin } from '../models';
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
@@ -21,7 +22,8 @@ export class VisualizationService {
 
     public async getWordcloudData<TKey>(fieldName: string, queryModel: QueryModel, corpus: string, size: number): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.wordcloud({es_query: esQuery, corpus, field: fieldName, size}).then( result => new Promise( (resolve, reject) => {
+        return this.apiService.wordcloud({es_query: esQuery, corpus, field: fieldName, size})
+            .then( result => new Promise( (resolve, reject) => {
                 if (result['data']) {
                     resolve({[fieldName]: result['data']});
                 } else {
@@ -32,7 +34,8 @@ export class VisualizationService {
 
     public async getWordcloudTasks<TKey>(fieldName: string, queryModel: QueryModel, corpus: string): Promise<any> {
         const esQuery = this.elasticSearchService.makeEsQuery(queryModel);
-        return this.apiService.wordcloudTasks({es_query: esQuery, corpus, field: fieldName}).then( result => new Promise( (resolve, reject) => {
+        return this.apiService.wordcloudTasks({es_query: esQuery, corpus, field: fieldName})
+            .then( result => new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve({taskIds: result['task_ids']});
                 } else {

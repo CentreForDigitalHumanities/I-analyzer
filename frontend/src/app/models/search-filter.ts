@@ -37,7 +37,7 @@ export interface DateFilterData {
 
 export type SearchFilterType = SearchFilterData['filterType'];
 
-export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
+export const searchFilterDataToParam = (filter: SearchFilter<SearchFilterData>): string | string[] => {
     switch (filter.currentData.filterType) {
         case 'BooleanFilter':
             return `${filter.currentData.checked}`;
@@ -48,9 +48,10 @@ export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>):
         case 'DateFilter':
             return `${filter.currentData.min}:${filter.currentData.max}`;
     }
-}
+};
 
-export function searchFilterDataFromParam(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
+export const searchFilterDataFromParam = (
+    filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData => {
     switch (filterType) {
         case 'BooleanFilter':
             return { filterType, checked: value[0] === 'true' };
@@ -68,9 +69,9 @@ export function searchFilterDataFromParam(filterType: SearchFilterType|undefined
             return searchFilterDataFromField(field, value);
         }
     }
-}
+};
 
-export function searchFilterDataFromField(field: CorpusField, value: string[]): SearchFilterData {
+export const searchFilterDataFromField = (field: CorpusField, value: string[]): SearchFilterData => {
     switch (field.mappingType) {
         case 'boolean':
             return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
@@ -86,25 +87,23 @@ export function searchFilterDataFromField(field: CorpusField, value: string[]): 
             return { filterType: 'MultipleChoiceFilter', selected: value.map(encodeURIComponent) };
         }
     }
-}
+};
 
-function parseMinMax(value: string[]): [string, string] {
+const parseMinMax = (value: string[]): [string, string] => {
     const term = value[0];
     if (term.split(':').length === 2) {
         return term.split(':') as [string, string];
-    } else if (value.length == 1) {
+    } else if (value.length === 1) {
         return [term, term];
     } else {
         return [value[0], value[1]];
     }
-}
+};
 
-export function adHocFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
-    return {
-        fieldName: field.name,
-        description: `Search only within this ${field.displayName}`,
-        useAsFilter: true,
-        adHoc: true,
-        currentData: undefined,
-    };
-}
+export const adHocFilterFromField = (field: CorpusField): SearchFilter<SearchFilterData> => ({
+    fieldName: field.name,
+    description: `Search only within this ${field.displayName}`,
+    useAsFilter: true,
+    adHoc: true,
+    currentData: undefined,
+});

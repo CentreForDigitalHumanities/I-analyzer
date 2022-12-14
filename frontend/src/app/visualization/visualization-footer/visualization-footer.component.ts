@@ -30,7 +30,7 @@ export class VisualizationFooterComponent implements OnInit {
         const node = document.getElementById(this.chartElementID);
 
         htmlToImage.toPng(node)
-          .then(function(dataUrl) {
+          .then((dataUrl) => {
             const img = new Image();
             img.src = dataUrl;
             const anchor = document.createElement('a');

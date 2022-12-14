@@ -82,7 +82,7 @@ export class FreqtableComponent implements OnChanges {
             const [headers, data] = this.transformWideFormat(filteredData);
             this.formattedHeaders = headers;
             this.formattedData = data;
-        } else if (this.fullTableToggle === true || this.headers == undefined) {  // also checks if no data is present to avoid error
+        } else if (this.fullTableToggle === true || this.headers === undefined) {  // also checks if no data is present to avoid error
             this.formattedHeaders = this.headers;
             this.formattedData = filteredData;
         } else {

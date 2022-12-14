@@ -21,7 +21,9 @@ export class QueryFiltersComponent implements OnInit {
         }
 
         if (this.queryModel.filters?.length>0) {
-            this.formattedFilters = this.queryModel.filters.map(filter => ({name: filter.fieldName, formattedData: searchFilterDataToParam(filter)}));
+            this.formattedFilters = this.queryModel.filters.map(filter =>
+                ({name: filter.fieldName, formattedData: searchFilterDataToParam(filter)})
+            );
         }
     }
 

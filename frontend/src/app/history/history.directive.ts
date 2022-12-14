@@ -29,6 +29,6 @@ export class HistoryDirective {
 
 
     corpusTitle(corpusName: string): string {
-        return this.corpora.find(corpus => corpus.name == corpusName).title || corpusName;
+        return this.corpora.find(corpus => corpus.name === corpusName).title || corpusName;
     }
 }

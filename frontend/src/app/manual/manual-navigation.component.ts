@@ -37,12 +37,12 @@ export class ManualNavigationComponent implements OnInit {
     }
 
     private *filter(pages: ManualPageMetaData[], filter: string): Iterable<ManualPageMetaData> {
-        if (filter.trim().length == 0) {
+        if (filter.trim().length === 0) {
             filter = '*';
         }
 
         // make all terms a wildcard search
-        const parts = filter.split(' ').filter(part => part.length).map(part => part.slice(-1) != '*' ? `*${part}*` : part);
+        const parts = filter.split(' ').filter(part => part.length).map(part => part.slice(-1) !== '*' ? `*${part}*` : part);
         this.highlightText = filter = parts.join(' ');
 
         // this is a massively over-engineered filter, but as we have this function already anyway: why not?

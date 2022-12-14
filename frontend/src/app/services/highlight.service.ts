@@ -38,7 +38,7 @@ export class HighlightService {
      */
     public * highlight(value: string | number, query: string = ''): IterableIterator<TextPart> {
         const text = `${value}`;
-        if (query == null || query == '') {
+        if (query == null || query === '') {
             yield { substring: text, isHit: false };
             return;
         }
@@ -81,7 +81,7 @@ export class HighlightService {
         snippets.forEach((part, index) => {
             part.substring = this.cropSnippetText(part.substring,
                 lengths[index],
-                index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
+                index === snippets.length - 1 ? 'left' : (index === 0 ? 'right' : 'middle'));
         });
 
         return snippets;

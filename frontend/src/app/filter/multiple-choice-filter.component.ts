@@ -21,7 +21,10 @@ export class MultipleChoiceFilterComponent extends BaseFilterComponent<MultipleC
         this.data = filter.currentData;
         let options = [];
         if (this.optionsAndCounts) {
-            options = _.sortBy(this.optionsAndCounts.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })), o => o.label);
+            options = _.sortBy(
+                this.optionsAndCounts.map(x => ({ label: x.key, value: encodeURIComponent(x.key), doc_count: x.doc_count })),
+                o => o.label
+            );
         } else {
 options = [1, 2, 3];
 } // dummy array to make sure the component loads

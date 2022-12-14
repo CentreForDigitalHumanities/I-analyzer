@@ -60,10 +60,11 @@ export class DownloadService {
      */
     const esQuery = this.elasticSearchService.makeEsQuery(
         queryModel, corpus.fields); // to create elastic search query
-    return this.apiService.downloadTask(
-        {corpus: corpus.name, es_query: esQuery, fields: fields.map( field => field.name ), route }).then(result => result).catch( error => {
-        throw new Error(error.headers.message[0]);
-    });
+    return this.apiService.downloadTask({corpus: corpus.name, es_query: esQuery, fields: fields.map( field => field.name ), route })
+        .then(result => result)
+        .catch( error => {
+            throw new Error(error.headers.message[0]);
+        });
     }
 
     public retrieveFinishedDownload(id: number, options: DownloadOptions) {
