@@ -87,6 +87,14 @@ _Note:_ these instructions are for adding a corpus that already has a corpus def
 3. Create an ElasticSearch index from the source files by running, e.g., `flask es -c dutchannualreports -s 1785-01-01 -e 2010-12-31`, for indexing the Dutch Annual Reports corpus starting in 1785 and ending in 2010. Defaults to CORPUS set in config, and the specified minimum and maximum dates otherwise. (Note that new indices are created with `number_of_replicas` set to 0 (this is to make index creation easier/lighter). In production, you can automatically update this setting after index creation by adding the `--prod` flag (e.g. `flask es -c goodreads --prod`). Note though, that the
 `--prod` flag creates a _versioned_ index name, which needs an alias to actually work as `name_of_index_without_version` (see below for more details).
 
+#### Flags of indexing script
+- --prod / -p Whether or not to create a versioned index name
+- --mappings_only / -m Whether to only create an index with mappings and settings, without adding data to it (useful before reindexing from another index or another server)
+- --add / -a Add documents to an existing index (skip index creation)
+- --update / -u Add or change fields in the documents. This requires an `update_body` or `update_script` to be set in the corpus definition, see [example for update_body in dutchnewspapers](backend/corpora/dutchnewspapers/dutchnewspapers_all.py) and [example for update_script in goodreads](backend/corpora/goodreads/goodreads.py).
+- --delete / -d Delete an existing index with the `corpus.es_index` name. Note that in production, `corpus.es_index` will usually be an *alias*, and you would use the `flask es alias -c corpus-name --clean` to achieve the same thing.
+- --rollover / -r Only applies in production: rollover a versioned index to the newest version. This *will not* delete the old index (so you have a chance to check the new index and roll back, if necessary)
+
 #### Production
 
 On the servers, we work with aliases. Indices created with the `--prod` flag will have a version number (e.g. `indexname-1`), and as such will not be recognized by the corpus definition (which is looking for `indexname`). Create an alias for that using the `alias` command: `flask alias -c corpusname`. That script ensures that an alias is present for the index with the highest version numbers, and not for all others (i.e. older versions). The advantage of this approach is that an old version of the index can be kept in place as long as is needed, for example while a new version of the index is created. Note that removing an alias does not remove the index itself.
