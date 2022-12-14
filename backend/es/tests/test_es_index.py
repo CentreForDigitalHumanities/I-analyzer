@@ -14,7 +14,7 @@ end = datetime.strptime('1970-12-31','%Y-%m-%d')
 def mock_client(es_index_client):
     return es_index_client
 
-@pytest.mark.parametrize("prod, expected", [(True, "ianalyzer-test-times_1"), (False, "ianalyzer-test-times")])
+@pytest.mark.parametrize("prod, expected", [(True, "ianalyzer-test-times-1"), (False, "ianalyzer-test-times")])
 def test_prod_flag(test_app, es_index_client, corpus_definition, prod, expected):
     perform_indexing(
         CORPUS_NAME, corpus_definition, start, end,

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
+import re
 
-'''
-Script to create, update and remove aliases from ES
-'''
 from ianalyzer.factories.elasticsearch import elasticsearch
 
 import logging
@@ -10,16 +8,20 @@ logger = logging.getLogger('indexing')
 
 
 def alias(corpus_name, corpus_definition, clean=False):
+    '''
+    Script to create, update and remove aliases from ES
+    '''
     client = elasticsearch(corpus_name)
 
     alias = corpus_definition.es_alias if corpus_definition.es_alias else corpus_definition.es_index
-    indices = client.indices.get(index='{}_*'.format(corpus_definition.es_index))
-    highest_version = get_highest_version_number(indices)
+    indices = client.indices.get(index='{}-*'.format(corpus_definition.es_index))
+    highest_version = get_highest_version_number(indices, alias)
 
     actions = []
+
     for index_name, properties in indices.items():
         is_aliased = alias in properties['aliases'].keys()
-        is_highest_version = extract_version(index_name) == highest_version
+        is_highest_version = extract_version(index_name, alias) == highest_version
 
         if not is_highest_version and clean:
             logger.info('Removing index `{}`'.format(index_name))
@@ -63,25 +65,21 @@ def get_new_version_number(client, alias, current_index = None):
     if not client.indices.exists(index=alias):
         return 1
     # get the indices aliased with `alias`
-    indices = client.indices.get(index='ianalyzer-test*')
     indices = client.indices.get_alias(name=alias)
     highest_version = get_highest_version_number(indices, current_index)
     return str(highest_version + 1)
 
-
-def extract_version(index_name):
+def extract_version(index_name, current_index):
     '''
     Helper function to extract version number from an index name.
     Format of the index_name should be `index_name-<version>`, eg `indexname-5`.
-    Returns -1 if no version number is found in `index_name`.
+    Returns None if no version number is found in `index_name`.
     '''
-    _index = index_name.rfind('_')
-    if _index == -1:
-        return _index
-    try:
-        return int(index_name[_index + 1:])
-    except:
-        return None
+
+    if re.match('{}-[\d]+$'.format(current_index), index_name):
+        match = re.search(r'[\d]+$', index_name)
+        if match:
+            return int(match.group(0))
 
 
 def get_highest_version_number(indices, current_index=None):
@@ -96,12 +94,7 @@ def get_highest_version_number(indices, current_index=None):
     '''
     if type(indices) is list:
         raise RuntimeError('`indices` should not be list')
-    highest_version = 0
-    for index_name in indices.keys():
-        if current_index and not index_name.startswith(current_index):
-            # skip irrelevant indices
-            continue
-        version = extract_version(index_name)
-        if version and version > highest_version:
-            highest_version = version
-    return highest_version
+    versions = [extract_version(index_name, current_index) for index_name in indices.keys()]
+    if len(versions):
+        return max([v for v in versions if v is not None])
+    return 0

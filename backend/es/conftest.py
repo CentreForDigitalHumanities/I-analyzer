@@ -124,9 +124,9 @@ def es_alias_client(test_app):
 
     # add data from mock corpus
     corpus = load_corpus('times')
-    es_index.create(client, corpus, False, True, True) # create ianalyzer-times_1 index
-    client.indices.create(index='ianalyzer-test-times_2')
-    client.indices.create(index='ianalyzer-test-times-bla_3')
+    es_index.create(client, corpus, add=False, clear=True, prod=True) # create ianalyzer-times-1 index
+    client.indices.create(index='ianalyzer-test-times-2')
+    client.indices.create(index='ianalyzer-test-times-bla-3')
 
     yield client
     # delete index when done
