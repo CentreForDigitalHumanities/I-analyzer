@@ -35,6 +35,7 @@
             "prefix": "ia"
           }
         ],
+        "@typescript-eslint/member-ordering": "warn",
         "@typescript-eslint/consistent-type-definitions": "error",
         "@typescript-eslint/dot-notation": "off",
         "@typescript-eslint/explicit-member-accessibility": [
