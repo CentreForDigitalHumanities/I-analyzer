@@ -51,8 +51,8 @@ export class Query {
      * Number of total results available for the query.
      */
     public totalResults: {
-        value: number,
-        relation: string
+        value: number;
+        relation: string;
     };
 }
 

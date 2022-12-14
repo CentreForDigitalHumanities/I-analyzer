@@ -21,33 +21,33 @@ export class WordmodelsService extends Resource {
         path: '/get_related_words'
     })
     public relatedWordsRequest: ResourceMethod<
-        { query_term: string, corpus_name: string, neighbours: number },
-        { success: false, message: string } | { success: true, data: RelatedWordsResults }>;
+        { query_term: string; corpus_name: string; neighbours: number },
+        { success: false; message: string } | { success: true; data: RelatedWordsResults }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/get_related_words_time_interval'
     })
     public relatedWordsTimeIntervalRequest: ResourceMethod<
-        { query_term: string, corpus_name: string, time: string, neighbours: number },
-        { success: false, message: string } | { success: true, data: WordSimilarity[] }>;
+        { query_term: string; corpus_name: string; time: string; neighbours: number },
+        { success: false; message: string } | { success: true; data: WordSimilarity[] }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/get_similarity_over_time'
     })
     public wordSimilarityRequest: ResourceMethod<
-        { term_1: string, term_2: string, corpus_name: string},
-        { success: false, message: string } | { success: true, data: WordSimilarity[] }
-    >
+        { term_1: string; term_2: string; corpus_name: string},
+        { success: false; message: string } | { success: true; data: WordSimilarity[] }
+    >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/get_word_in_model'
     })
     public wordInModelRequest: ResourceMethod<
-        { query_term: string, corpus_name: string, },
-        { success: boolean, message: string, result: WordInModelResult }>;
+        { query_term: string; corpus_name: string },
+        { success: boolean; message: string; result: WordInModelResult }>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -66,62 +66,54 @@ export class WordmodelsService extends Resource {
 
     public async getRelatedWords(queryTerm: string, corpusName: string, neighbours: number): Promise<RelatedWordsResults> {
         return this.relatedWordsRequest({
-            'query_term': queryTerm,
-            'corpus_name': corpusName,
+            query_term: queryTerm,
+            corpus_name: corpusName,
             neighbours,
-        }).then( result => {
-            return new Promise( (resolve, reject) => {
+        }).then( result => new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve(result.data);
                 } else {
-                    reject({'message': result.message});
+                    reject({message: result.message});
                 }
-            });
-        });
+            }));
     }
 
     public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
-        return this.wordSimilarityRequest({'term_1': term1, 'term_2': term2, 'corpus_name': corpusName})
-            .then( result => {
-            return new Promise( (resolve, reject) => {
+        return this.wordSimilarityRequest({term_1: term1, term_2: term2, corpus_name: corpusName})
+            .then( result => new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve(result.data);
                 } else {
-                    reject({'message': result.message});
+                    reject({message: result.message});
                 }
-            });
-        });
+            }));
     }
 
     public async getRelatedWordsTimeInterval(
         queryTerm: string, corpusName: string, timeInterval: string, neighbours: number
     ): Promise<WordSimilarity[]> {
         return this.relatedWordsTimeIntervalRequest(
-            {'query_term': queryTerm, 'corpus_name': corpusName, 'time': timeInterval, neighbours}
-        ).then( result => {
-            return new Promise( (resolve, reject) => {
+            {query_term: queryTerm, corpus_name: corpusName, time: timeInterval, neighbours}
+        ).then( result => new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve(result['data']);
                 } else {
-                    reject({'message': result.message});
+                    reject({message: result.message});
                 }
-            });
-        });
+            }));
     }
 
     wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
         return this.wordInModelRequest({
             query_term: term,
             corpus_name: corpusName,
-        }).then(result => {
-            return new Promise( (resolve, reject) => {
+        }).then(result => new Promise( (resolve, reject) => {
                 if (result['success'] === true) {
                     resolve(result.result);
                 } else {
-                    reject({'message': result['message']});
+                    reject({message: result['message']});
                 }
-            });
-        });
+            }));
     }
 
 

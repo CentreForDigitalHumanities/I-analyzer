@@ -23,7 +23,7 @@ export class DownloadOptionsComponent implements OnInit {
     confirmDownload() {
         this.confirm.emit({
             encoding: this.encoding,
-        })
+        });
     }
 
     cancelDownload() {

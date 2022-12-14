@@ -204,15 +204,15 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
         const node = document.getElementById(this.chartElementId(this.visualizationType));
 
         htmlToImage.toPng(node)
-          .then(function (dataUrl) {
+          .then(function(dataUrl) {
             const img = new Image();
             img.src = dataUrl;
-            const anchor = document.createElement("a");
+            const anchor = document.createElement('a');
             anchor.href = dataUrl;
             anchor.download = filenamestring;
             anchor.click();
           })
-          .catch(function (error) {
+          .catch(function(error) {
             this.notificationService.showMessage('oops, something went wrong!', error);
           });
 
@@ -232,7 +232,7 @@ export class VisualizationComponent extends ParamDirective implements DoCheck, O
 
     get imageFileName(): string {
         if (this.visualizationType && this.corpus && this.visualizedField) {
-            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`
+            return `${this.visualizationType}_${this.corpus.name}_${this.visualizedField.name}.png`;
         }
     }
 }

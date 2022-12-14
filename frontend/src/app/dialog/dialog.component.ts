@@ -20,8 +20,8 @@ export class DialogComponent implements OnDestroy, OnInit {
   public showDialog = false;
   public isLoading = false;
 
-  constructor(private dialogService: DialogService, private router: Router) {    
-    this.dialogEventSubscription = dialogService.pageEvent.subscribe(event => {     
+  constructor(private dialogService: DialogService, private router: Router) {
+    this.dialogEventSubscription = dialogService.pageEvent.subscribe(event => {
       switch (event.status) {
         case 'hide':
           this.innerHtml = undefined;
@@ -42,8 +42,7 @@ export class DialogComponent implements OnDestroy, OnInit {
           if (event.footer){
             this.footerButtonLabel = event.footer.buttonLabel;
             this.footerRouterLink = event.footer.routerLink;
-          }
-          else {
+          } else {
             this.footerButtonLabel = null;
           }
           break;

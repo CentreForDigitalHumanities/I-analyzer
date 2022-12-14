@@ -52,6 +52,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     }
 
     /** Retrieve doc counts for a series.
+     *
      * @param series series object
      * @param setSearchRatio whether the `searchRatio` property of the series should be updated.
      * True when retrieving results for the entire series, false when retrieving a window.
@@ -131,7 +132,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
                 xAxisID: 'xAxis',
                 yAxisID: 'yAxis',
                 label: series.queryText ? series.queryText : '(no query)',
-                data: data,
+                data,
                 backgroundColor: selectColor(this.palette, seriesIndex),
                 hoverBackgroundColor: selectColor(this.palette, seriesIndex),
             };
@@ -139,7 +140,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     }
 
     /** turn a data series into a chartjs-compatible data array */
-    chartDataFromSeries(series: TimelineSeries): {x: string, y: number}[] {
+    chartDataFromSeries(series: TimelineSeries): {x: string; y: number}[] {
         const valueKey = this.currentValueKey;
         return series.data.map(item => ({
             x: item.date.toISOString(),
@@ -154,7 +155,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         const xMax = moment(this.xDomain[1]).add(margin).toDate();
 
         const options = this.basicChartOptions;
-        options.plugins.title.text = this.chartTitle()
+        options.plugins.title.text = this.chartTitle();
         const xAxis = options.scales.xAxis;
         (xAxis as any).title.text = xAxisLabel;
         xAxis.type = 'time';
@@ -166,9 +167,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         xAxis.max = xMax.toISOString();
         options.plugins.tooltip = {
             callbacks: {
-                title: ([tooltipItem]) => {
-                    return this.formatDate(Date.parse(tooltipItem.label as string));
-                },
+                title: ([tooltipItem]) => this.formatDate(Date.parse(tooltipItem.label as string)),
                 label: (tooltipItem) => {
                     const value = tooltipItem.parsed.y;
                     return this.formatValue(this.normalizer)(value);
@@ -195,6 +194,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
      * Code that should be executed when zooming in, or when the chart data
      * is updated while already zoomed in.
      * Checks whether is is necessary to load zoomed-in data and does so if needed.
+     *
      * @param chart chart object
      * @param triggeredByDataUpdate whether the function was triggered by an update in the
      * underlying data.
@@ -220,6 +220,7 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
     /**
      * load results for the zoomed-in window (using a narrower time category
      * than the zoomed-out chart)
+     *
      * @param chart chart object
      * @param min minimum date in window
      * @param max maximum date in window
@@ -324,19 +325,17 @@ export class TimelineComponent extends BarchartDirective<TimelineDataPoint> impl
         let dateFormat: string;
         switch (this.currentTimeCategory) {
             case 'year':
-                dateFormat = "YYYY";
+                dateFormat = 'YYYY';
                 break;
             case 'month':
-                dateFormat = "MMMM YYYY";
+                dateFormat = 'MMMM YYYY';
                 break;
             default:
-                dateFormat = "YYYY-MM-DD";
+                dateFormat = 'YYYY-MM-DD';
                 break;
         }
 
-        return (date: Date) => {
-            return moment(date).format(dateFormat);
-        };
+        return (date: Date) => moment(date).format(dateFormat);
     }
 
     get isZoomedIn(): boolean {

@@ -30,7 +30,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
         { key: 'ngram', label: 'N-gram', isSecondaryFactor: true, },
         { key: 'freq', label: 'Frequency', format: this.formatValue, formatDownload: this.formatDownloadValue }
     ];
-    tableData: { date: string, ngram: string, freq: number }[];
+    tableData: { date: string; ngram: string; freq: number }[];
 
     currentResults: NgramResults;
 
@@ -40,7 +40,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     sizeOptions = [{label: 'bigrams', value: 2}, {label: 'trigrams', value: 3}, {label: 'fourgrams', value: 4}];
     positionsOptions = ['any', 'first', 'second'].map(n => ({label: `${n}`, value: n}));
     freqCompensationOptions = [{label: 'No', value: false}, {label: 'Yes', value: true}];
-    analysisOptions: {label: string, value: string}[];
+    analysisOptions: {label: string; value: string}[];
     maxDocumentsOptions = [50, 100, 200, 500].map(n => ({label: `${n}`, value: n}));
     numberOfNgramsOptions = [10, 20, 50, 100].map(n => ({label: `${n}`, value: n}));
 
@@ -68,7 +68,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     teardown(): void {
-        this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+        this.apiService.abortTasks({task_ids: this.tasksToCancel});
         this.setParams(ngramSetNull);
     }
 
@@ -148,7 +148,7 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     }
 
     onFailure(message: string) {
-        this.currentResults = undefined
+        this.currentResults = undefined;
         this.error.emit(message);
         this.isLoading.emit(false);
     }
@@ -162,13 +162,11 @@ export class NgramComponent extends ParamDirective implements OnChanges {
 
     makeTableData(result: NgramResults): any[] {
         return _.flatMap(
-            result.time_points.map((date, index) => {
-                return result.words.map(dataset => ({
-                    date: date,
+            result.time_points.map((date, index) => result.words.map(dataset => ({
+                    date,
                     ngram: dataset.label,
                     freq: dataset.data[index],
-                }));
-            })
+                })))
         );
     }
 
@@ -200,7 +198,9 @@ export class NgramComponent extends ParamDirective implements OnChanges {
     onParameterChange(parameter: string, value: any) {
         this.currentParameters[parameter] = value;
 
-        if (parameter === 'size' && value) { this.setPositionsOptions(value); }
+        if (parameter === 'size' && value) {
+ this.setPositionsOptions(value);
+}
 
         this.parametersChanged = true;
     }

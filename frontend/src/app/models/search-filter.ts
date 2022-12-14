@@ -1,68 +1,68 @@
-import { CorpusField } from "./corpus";
+import { CorpusField } from './corpus';
 
-export type SearchFilter<T extends SearchFilterData> = {
-    fieldName: string,
-    description: string,
-    useAsFilter: boolean,
-    reset?: boolean,
-    grayedOut?: boolean,
-    adHoc?: boolean,
-    defaultData?: T,
-    currentData: T
-}
+export interface SearchFilter<T extends SearchFilterData> {
+    fieldName: string;
+    description: string;
+    useAsFilter: boolean;
+    reset?: boolean;
+    grayedOut?: boolean;
+    adHoc?: boolean;
+    defaultData?: T;
+    currentData: T;
+};
 
 export type SearchFilterData = BooleanFilterData | MultipleChoiceFilterData | RangeFilterData | DateFilterData;
 
-export type BooleanFilterData = {
-    filterType: 'BooleanFilter',
-    checked: boolean
-};
-export type MultipleChoiceFilterData = {
-    filterType: 'MultipleChoiceFilter',
-    optionCount?: number,
-    selected: string[]
-};
-export type RangeFilterData = {
-    filterType: 'RangeFilter',
-    min: number,
-    max: number
-};
-export type DateFilterData = {
-    filterType: 'DateFilter',
+export interface BooleanFilterData {
+    filterType: 'BooleanFilter';
+    checked: boolean;
+}
+export interface MultipleChoiceFilterData {
+    filterType: 'MultipleChoiceFilter';
+    optionCount?: number;
+    selected: string[];
+}
+export interface RangeFilterData {
+    filterType: 'RangeFilter';
+    min: number;
+    max: number;
+}
+export interface DateFilterData {
+    filterType: 'DateFilter';
     /** minimum of date range, format: yyyy-MM-dd */
-    min: string,
+    min: string;
     /** maximum of date range, format: yyyy-MM-dd */
-    max: string
-};
+    max: string;
+}
 
-export type SearchFilterType = SearchFilterData["filterType"];
+export type SearchFilterType = SearchFilterData['filterType'];
 
 export function searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
     switch (filter.currentData.filterType) {
-        case "BooleanFilter":
+        case 'BooleanFilter':
             return `${filter.currentData.checked}`;
-        case "MultipleChoiceFilter":
+        case 'MultipleChoiceFilter':
             return filter.currentData.selected as string[];
-        case "RangeFilter":
+        case 'RangeFilter':
             return `${filter.currentData.min}:${filter.currentData.max}`;
-        case "DateFilter":
+        case 'DateFilter':
             return `${filter.currentData.min}:${filter.currentData.max}`;
     }
 }
 
 export function searchFilterDataFromParam(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
     switch (filterType) {
-        case "BooleanFilter":
+        case 'BooleanFilter':
             return { filterType, checked: value[0] === 'true' };
-        case "MultipleChoiceFilter":
+        case 'MultipleChoiceFilter':
             return { filterType, selected: value };
-        case "RangeFilter": {
-            let [min, max] = parseMinMax(value);
+        case 'RangeFilter': {
+            const [min, max] = parseMinMax(value);
             return { filterType, min: parseFloat(min), max: parseFloat(max) };
         }
-        case "DateFilter": {
-            let [min, max] = parseMinMax(value);
-            return { filterType, min: min, max: max };
+        case 'DateFilter': {
+            const [min, max] = parseMinMax(value);
+            return { filterType, min, max };
         }
         case undefined: {
             return searchFilterDataFromField(field, value);
@@ -75,11 +75,11 @@ export function searchFilterDataFromField(field: CorpusField, value: string[]): 
         case 'boolean':
             return { filterType: 'BooleanFilter', checked: value[0] === 'true' };
         case 'date': {
-            let [min, max] = parseMinMax(value);
-            return { filterType: 'DateFilter', min: min, max: max };
+            const [min, max] = parseMinMax(value);
+            return { filterType: 'DateFilter', min, max };
         }
         case 'integer': {
-            let [min, max] = parseMinMax(value);
+            const [min, max] = parseMinMax(value);
             return { filterType: 'RangeFilter', min: parseFloat(min), max: parseFloat(max) };
         }
         case 'keyword': {

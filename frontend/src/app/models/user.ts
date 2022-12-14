@@ -6,7 +6,7 @@ export class User {
          * The download limit for this user, will be 0 if there is no limit.
          */
         public downloadLimit: number = 0, public isSolisLogin: boolean) {
-  
+
     }
 
     public canAccessCorpus(corpus: string): boolean {

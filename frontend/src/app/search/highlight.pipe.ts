@@ -11,13 +11,14 @@ export class HighlightPipe implements PipeTransform {
 
     /**
      * Transforms a text to highlight all the text matching the specified query.
+     *
      * @param snippets Only show snippets. When this enabled, line breaks will also be replaced with --
      */
     transform(text: string, query: string, snippets: boolean = false) {
-        let highlights = this.highlightService.highlight(text, query);
-        let parts = snippets ? this.highlightService.snippets(highlights) : Array.from(highlights);
-        let highlightedText = parts.map(part => {
-            let sanitizedText = this.sanitizedLineBreaks(part.substring, snippets ? " &mdash; " : "<br />");
+        const highlights = this.highlightService.highlight(text, query);
+        const parts = snippets ? this.highlightService.snippets(highlights) : Array.from(highlights);
+        const highlightedText = parts.map(part => {
+            const sanitizedText = this.sanitizedLineBreaks(part.substring, snippets ? ' &mdash; ' : '<br />');
 
             return part.isHit ? `<span class="highlight">${sanitizedText}</span>` : sanitizedText;
         }).join('');
@@ -26,9 +27,7 @@ export class HighlightPipe implements PipeTransform {
     }
 
     private sanitizedLineBreaks(text: string, breakPlaceholder: string) {
-        let substrings = text.split(/[\r\n]{1,2}/g);
-        return substrings.map(substring => {
-            return this.sanitizer.sanitize(SecurityContext.HTML, substring);
-        }).join(breakPlaceholder);
+        const substrings = text.split(/[\r\n]{1,2}/g);
+        return substrings.map(substring => this.sanitizer.sanitize(SecurityContext.HTML, substring)).join(breakPlaceholder);
     }
 }

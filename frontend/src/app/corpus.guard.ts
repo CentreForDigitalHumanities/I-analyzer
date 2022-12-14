@@ -15,11 +15,11 @@ export class CorpusGuard implements CanActivate {
         if (next.paramMap.has('corpus')) {
             return this.corpusService.set(next.paramMap.get('corpus')).then(authorized => {
                 if (!authorized) {
-                    this.notificationService.showMessage("You do not have access to this corpus. Log in as an authorized user.", "danger");
+                    this.notificationService.showMessage('You do not have access to this corpus. Log in as an authorized user.', 'danger');
                     this.userService.showLogin(state.url);
                 }
                 return authorized;
-            })
+            });
         }
 
         return false;

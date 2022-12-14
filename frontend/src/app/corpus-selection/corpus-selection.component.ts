@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Corpus } from '../models/corpus';
 
-import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
-import { DialogService } from "../services/dialog.service";
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DialogService } from '../services/dialog.service';
 
 @Component({
     selector: 'ia-corpus-selection',

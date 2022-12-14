@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, Observable, interval } from 'rxjs';
-import { debounce } from "rxjs/operators";
+import { debounce } from 'rxjs/operators';
 
 @Component({
   selector: 'ia-time-interval-slider',

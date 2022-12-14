@@ -34,7 +34,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
 
     public significantText: AggregateResult[];
-    public disableLoadMore: boolean = false;
+    public disableLoadMore = false;
     private tasksToCancel: string[] = [];
 
     private batchSize = 1000;
@@ -55,7 +55,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.apiService.abortTasks({'task_ids': this.tasksToCancel});
+        this.apiService.abortTasks({task_ids: this.tasksToCancel});
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -111,14 +111,14 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
 
     drawWordCloud(significantText: AggregateResult[]) {
         this.svg = d3.select(this.chartElement)
-            .append("svg")
+            .append('svg')
             .classed('wordcloud', true)
-            .attr("width", this.width)
-            .attr("height", this.height);
+            .attr('width', this.width)
+            .attr('height', this.height);
         const chart = this.svg
-            .append("g")
-            .attr("transform", "translate(" + this.width / 2 + "," + this.height / 2 + ")")
-            .selectAll("text");
+            .append('g')
+            .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')')
+            .selectAll('text');
 
         const fill = d3.scaleOrdinal(this.palette);
 
@@ -126,20 +126,26 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             .size([this.width, this.height])
             .words(significantText)
             .padding(5)
-            .rotate(function () { return ~~(Math.random() * 2) * 90; })
-            .font("Impact")
+            .rotate(function() {
+ return ~~(Math.random() * 2) * 90;
+})
+            .font('Impact')
             .fontSize(d => this.scaleFontSize((d.doc_count)))
-            .on("end", function (words) {
+            .on('end', function(words) {
                 // as d3 overwrites the "this" scope, this function is kept inline (cannot access the dom element otherwise)
                 chart
                     .data(words)
-                    .enter().append("text")
-                    .style("font-size", function (d) { return d.size + "px"; })
-                    .style("font-family", "Impact")
-                    .style("fill", function (d, i) { return fill(i); })
-                    .attr("text-anchor", "middle")
-                    .attr("transform", function (d) {
-                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    .enter().append('text')
+                    .style('font-size', function(d) {
+ return d.size + 'px';
+})
+                    .style('font-family', 'Impact')
+                    .style('fill', function(d, i) {
+ return fill(i);
+})
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', function(d) {
+                        return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
                     })
                     .text(d => d.key);
             });

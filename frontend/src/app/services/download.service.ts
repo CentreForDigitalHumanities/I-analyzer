@@ -32,7 +32,7 @@ export class DownloadService {
                     es_query: esQuery,
                     fields: fields.map( field => field.name ),
                     size: requestedResults,
-                    route: route
+                    route
                 },
                 fileOptions
             );
@@ -53,6 +53,7 @@ export class DownloadService {
     /**
      * Downloads the given tabular data as a CSV file on the backend.
      * Link to CSV is sent to user per email
+     *
      * @param corpus Corpus to be queried for constructing the file.
      * @param queryModel QueryModel for which download is requested.
      * @param fields The fields to appear as columns in the csv.
@@ -60,9 +61,7 @@ export class DownloadService {
     const esQuery = this.elasticSearchService.makeEsQuery(
         queryModel, corpus.fields); // to create elastic search query
     return this.apiService.downloadTask(
-        {'corpus': corpus.name, 'es_query': esQuery, 'fields': fields.map( field => field.name ), 'route': route }).then(result => {
-            return result;
-    }).catch( error => {
+        {corpus: corpus.name, es_query: esQuery, fields: fields.map( field => field.name ), route }).then(result => result).catch( error => {
         throw new Error(error.headers.message[0]);
     });
     }

@@ -26,10 +26,10 @@
         <div class="level-item" *ngIf="wideFormatColumn !== undefined" iaBalloon="change the format for the table">
             <div class="field has-addons">
                 <div class="control">
-                    <button class="button" [class.is-primary]="format == 'long'" (click)="setFormat('long')">long format</button>
+                    <button class="button" [class.is-primary]="format === 'long'" (click)="setFormat('long')">long format</button>
                 </div>
                 <div class="control">
-                    <button class="button" [class.is-primary]="format == 'wide'" (click)="setFormat('wide')">wide format</button>
+                    <button class="button" [class.is-primary]="format === 'wide'" (click)="setFormat('wide')">wide format</button>
                 </div>
             </div>
         </div>

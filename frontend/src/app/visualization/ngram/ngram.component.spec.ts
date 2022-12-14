@@ -32,10 +32,10 @@ describe('NgramComponent', () => {
   });
 
   it('should set the currentParameters with the right type', () => {
-    const params = convertToParamMap({'size': '5'});
+    const params = convertToParamMap({size: '5'});
     component.setParameters(params);
     expect(component.currentParameters.size).toEqual(5);
-    const newParams = convertToParamMap({'size': '2'});
+    const newParams = convertToParamMap({size: '2'});
     component.setParameters(newParams);
     expect(component.currentParameters.size).toEqual(2);
   });

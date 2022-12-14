@@ -31,14 +31,14 @@ describe('DropdownComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
 
-        let compiled = fixture.debugElement.nativeElement;
+        const compiled = fixture.debugElement.nativeElement;
         expect(compiled.innerHTML).toContain('Item 2');
         expect(compiled.innerHTML).not.toContain('Item 1');
         expect(compiled.innerHTML).not.toContain('item2');
 
         // allow switching value
         component.value = undefined;
-        component.placeholder = 'Hello world!'
+        component.placeholder = 'Hello world!';
         fixture.detectChanges();
         await fixture.whenStable();
 
@@ -48,7 +48,7 @@ describe('DropdownComponent', () => {
     });
 });
 
-type TestItem = {
-    name: string,
-    label: string
-}
+interface TestItem {
+    name: string;
+    label: string;
+};

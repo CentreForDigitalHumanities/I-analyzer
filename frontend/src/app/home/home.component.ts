@@ -26,6 +26,8 @@ export class HomeComponent implements OnInit {
 
     showLoading(promise: Promise<any>) {
         this.isLoading = true;
-        return promise.then(result => {this.isLoading = false; return result; });
+        return promise.then(result => {
+this.isLoading = false; return result;
+});
     }
 }

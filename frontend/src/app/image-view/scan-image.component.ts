@@ -31,7 +31,7 @@ export class ScanImageComponent implements AfterViewInit, OnChanges {
     }
 
     showCurrentImage() {
-        let imgObj = this.imagePaths[this.showPage];
+        const imgObj = this.imagePaths[this.showPage];
         this.viewer.load(imgObj, imgObj);
     }
 }

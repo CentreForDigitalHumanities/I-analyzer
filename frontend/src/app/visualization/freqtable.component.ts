@@ -24,8 +24,8 @@ export class FreqtableComponent implements OnChanges {
     wideFormatColumn: number;
     format: 'long'|'wide' = 'long';
 
-    fullTableToggle: boolean = false;
-    disableFullTable: boolean = false;
+    fullTableToggle = false;
+    disableFullTable = false;
 
 
     constructor() { }
@@ -49,7 +49,7 @@ export class FreqtableComponent implements OnChanges {
     }
 
     /** Checks if full table is available. If so, it disables the full table switch.
-    */
+     */
     checkFullTable(): void {
         if (this.headers && (this.headers.find(header => header.isOptional))) {
             this.disableFullTable = false;
