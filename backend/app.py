@@ -67,7 +67,7 @@ def admin(name, pwd):
     'If not set, indexing will stop at corpus maximum date.'
 )
 @click.option(
-    '--delete', '-d',
+    '--delete', '-d', is_flag=True,
     help='Define whether the current index should be deleted' +
     '(turned off by default)'
 )
@@ -75,6 +75,11 @@ def admin(name, pwd):
     '--update', '-u', is_flag=True,
     help='Set this to true to update an index' +
     '(adding / changing fields in documents)'
+)
+@click.option(
+    '--mappings_only', '-m', is_flag=True,
+    help='''Set this to true if you only want to create the index with mappings
+        without adding data to it. This is useful e.g. before a remote reindex.'''
 )
 @click.option(
     '--add', '-a', is_flag=True,
@@ -85,7 +90,11 @@ def admin(name, pwd):
     '--prod', '-p', is_flag=True, help='''Specifies if this is NOT a local indexing operation.
         This influences index settings in particular'''
 )
-def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
+@click.option(
+    '--rollover', '-r', is_flag=True, help='''Specifies that the alias of the index should be adjusted.
+        (Only applicable if -prod is True)'''
+)
+def es(corpus, start, end, add=False, delete=False, update=False, mappings_only=False, prod=False, rollover=False):
     if not corpus:
         corpus = list(config.CORPORA.keys())[0]
 
@@ -130,7 +139,7 @@ def es(corpus, start, end, add=False, delete=False, update=False, prod=False):
             logging.critical(e)
             raise
     else:
-        perform_indexing(corpus, this_corpus, start_index, end_index, add, delete, prod)
+        perform_indexing(corpus, this_corpus, start_index, end_index, mappings_only, add, delete, prod, rollover)
 
 @app.cli.command()
 @click.option(

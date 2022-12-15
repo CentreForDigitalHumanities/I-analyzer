@@ -16,18 +16,18 @@ describe('RangeFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RangeFilterComponent);
     component = fixture.componentInstance;
-    let mockRangeData = {
+    const mockRangeData = {
         filterType: 'RangeFilter',
         min: 1984,
         max: 1984
     } as RangeFilterData;
-    let data = { 
+    const data = {
         fieldName: 'year',
         description: 'Orwellian',
         useAsFilter: false,
         defaultData: mockRangeData,
         currentData: mockRangeData
-    }
+    };
     component.filter = data;
     component.data = data;
     fixture.detectChanges();

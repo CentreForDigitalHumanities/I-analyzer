@@ -38,6 +38,7 @@ export class QueryService {
 
     /**
      * Make other operations on this query wait for it to have received an id.
+     *
      * @param promise Returns a model with the id to assign.
      * @param query The query for which an id is to be promised.
      */
@@ -48,8 +49,8 @@ export class QueryService {
 
 
     /**
-    * Retrieve saved queries
-    */
+     * Retrieve saved queries
+     */
 
     async retrieveQueries(): Promise<Query[]> {
         const response = await this.apiRetryService.requireLogin(api => api.search_history());

@@ -15,8 +15,8 @@ export class ErrorComponent implements OnInit {
 
 }
 
-export type ShowError = {
-    date: string,
-    href: string,
-    message: string
-}
+export interface ShowError {
+    date: string;
+    href: string;
+    message: string;
+};

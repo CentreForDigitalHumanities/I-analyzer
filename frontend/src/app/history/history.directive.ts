@@ -15,7 +15,7 @@ export class HistoryDirective {
     retrieveCorpora() {
         this.corpusService.get().then((items) => {
             this.corpora = items;
-            this.corpusMenuItems = items.map(corpus => ({ 'label': corpus.title, 'value': corpus.name }) );
+            this.corpusMenuItems = items.map(corpus => ({ label: corpus.title, value: corpus.name }) );
         }).catch(error => {
             console.log(error);
         });
@@ -29,6 +29,6 @@ export class HistoryDirective {
 
 
     corpusTitle(corpusName: string): string {
-        return this.corpora.find(corpus => corpus.name == corpusName).title || corpusName
+        return this.corpora.find(corpus => corpus.name === corpusName).title || corpusName;
     }
 }

@@ -1,4 +1,4 @@
-<div class="block" *ngIf="frequencyMeasure == 'tokens'">
+<div class="block" *ngIf="frequencyMeasure === 'tokens'">
     <i>Searching in <strong>{{searchFields}}</strong></i>
 </div>
 
@@ -26,7 +26,7 @@
     </ia-freqtable>
 </div>
 
-<div class="message is-warning" *ngIf="!isLoading.value && documentLimitExceeded && frequencyMeasure == 'tokens'">
+<div class="message is-warning" *ngIf="!isLoading.value && documentLimitExceeded && frequencyMeasure === 'tokens'">
     <div class="message-body">
         <div class="block">
         The results for your search include too many documents to count all matches.

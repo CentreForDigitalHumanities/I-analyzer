@@ -82,13 +82,16 @@ export class FilterManagerComponent implements OnInit, OnChanges {
      */
     private aggregateSearchForMultipleChoiceFilters() {
         const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
+
         const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
         Promise.all(aggregateResultPromises).then(results => {
             results.forEach( r =>
                 this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
             );
             // if multipleChoiceData is empty, gray out all filters
-            this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;
+            if (multipleChoiceFilters.length != 0) {
+this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;
+}
         });
     }
 
@@ -100,13 +103,13 @@ export class FilterManagerComponent implements OnInit, OnChanges {
             if (index >= 0) {
                 filters.splice(index, 1);
             }
-        } else { filters = null; }
+        } else {
+ filters = null;
+}
         const defaultData = filter.defaultData as MultipleChoiceFilterData;
         const aggregator = {name: filter.fieldName, size: defaultData.optionCount};
         const queryModel = this.searchService.createQueryModel(this.queryModel.queryText, this.queryModel.fields, filters);
-        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
-            return results.aggregations;
-        }, error => {
+        return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => results.aggregations, error => {
             console.trace(error, aggregator);
             return {};
         });
@@ -114,6 +117,7 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     /**
      * Event triggered from filter components
+     *
      * @param filterData
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {

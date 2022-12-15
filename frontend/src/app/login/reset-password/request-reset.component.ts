@@ -22,8 +22,8 @@ export class RequestResetComponent implements OnInit {
     }
 
     requestReset(requestResetForm: NgForm) {
-        let email: string = requestResetForm.value.email;
-        this.apiService.requestReset({email: email}).then( response => {
+        const email: string = requestResetForm.value.email;
+        this.apiService.requestReset({email}).then( response => {
             this.success = response.success;
             this.message = response.message;
             this.showMessage = true;

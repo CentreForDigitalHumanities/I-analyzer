@@ -52,8 +52,8 @@ export type HistogramSeries = BarchartSeries<AggregateResult>;
 export type TimelineSeries = BarchartSeries<DateResult>;
 
 
-export interface TimelineBin {start_date: string; end_date: string; size: number; }
-export interface HistogramBin {field_value: string|number; size: number; }
+export interface TimelineBin {start_date: string; end_date: string; size: number }
+export interface HistogramBin {field_value: string|number; size: number }
 
 export type TimeCategory =  'year'|'week'|'month'|'day';
 
@@ -79,15 +79,15 @@ export interface WordcloudParameters {
 }
 
 
-export type FreqTableHeader = {
-    key: string,
-    label: string,
-    format?: (value) => string,
-    formatDownload?: (value) => string,
-    isOptional?: boolean,
-    isMainFactor?: boolean,
-    isSecondaryFactor?: boolean,
-};
+export interface FreqTableHeader {
+    key: string;
+    label: string;
+    format?: (value) => string;
+    formatDownload?: (value) => string;
+    isOptional?: boolean;
+    isMainFactor?: boolean;
+    isSecondaryFactor?: boolean;
+}
 
 export type FreqTableHeaders = FreqTableHeader[];
 

@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from "@angular/core";
-import { Subscription } from "rxjs";
+import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { Notification, NotificationService } from '../services/notification.service';
 
@@ -8,7 +8,7 @@ const notificationClassMap: {[T in Notification['type']]: NotificationDisplay['c
     warning: 'is-warning',
     danger: 'is-danger',
     success: 'is-success'
-}
+};
 
 @Component({
     selector: 'ia-notifications',
@@ -43,7 +43,7 @@ export class NotificationsComponent implements OnDestroy {
         notification.canDelete = false;
         notification.fadeOut = true;
         setTimeout(() => {
-            this.notifications = this.notifications.filter(candidate => candidate != notification);
+            this.notifications = this.notifications.filter(candidate => candidate !== notification);
             if (notification.timeout) {
                 clearTimeout(notification.timeout);
             }

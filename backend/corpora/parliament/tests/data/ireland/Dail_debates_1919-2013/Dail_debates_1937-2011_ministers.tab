@@ -1,0 +1,1186 @@
+govt_number	start_day	start_month	start_year	end_day	end_month	end_year	position	department	name	memberName	memberID	start_date	end_date
+18	9	3	1982	14	12	1982	Minister of State	Taoiseach	Bertie Ahern	Mr. Bertie Ahern	5	1982-03-09	1982-12-14
+18	23	3	1982	14	12	1982	Minister of State	Defence	Bertie Ahern	Mr. Bertie Ahern	5	1982-03-23	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Labour	Bertie Ahern	Mr. Bertie Ahern	5	1987-03-10	1989-07-12
+21	12	7	1989	14	11	1991	Minister	Labour	Bertie Ahern	Mr. Bertie Ahern	5	1989-07-12	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Finance	Bertie Ahern	Mr. Bertie Ahern	5	1991-11-14	1992-02-11
+22	11	2	1992	12	1	1993	Minister	Finance	Bertie Ahern	Mr. Bertie Ahern	5	1992-02-11	1993-01-12
+22	4	1	1993	12	1	1993	Minister	Industry and Commerce	Bertie Ahern	Mr. Bertie Ahern	5	1993-01-04	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Finance	Bertie Ahern	Mr. Bertie Ahern	5	1993-01-12	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Arts, Culture and the Gaeltacht	Bertie Ahern	Mr. Bertie Ahern	5	1994-11-18	1994-12-15
+23	19	11	1994	15	12	1994	Tánaiste	Tánaiste	Bertie Ahern	Mr. Bertie Ahern	5	1994-11-19	1994-12-15
+25	26	6	1997	6	6	2002	Taoiseach	Taoiseach	Bertie Ahern	Mr. Bertie Ahern	5	1997-06-26	2002-06-06
+25	7	10	1997	8	10	1997	Minister	Foreign Affairs	Bertie Ahern	Mr. Bertie Ahern	5	1997-10-07	1997-10-08
+25	26	1	2000	27	1	2000	Minister	Foreign Affairs	Bertie Ahern	Mr. Bertie Ahern	5	2000-01-26	2000-01-27
+26	6	6	2002	14	6	2007	Taoiseach	Taoiseach	Bertie Ahern	Mr. Bertie Ahern	5	2002-06-06	2007-06-14
+27	14	6	2007	7	5	2008	Taoiseach	Taoiseach	Bertie Ahern	Mr. Bertie Ahern	5	2007-06-14	2008-05-07
+21	15	11	1991	11	2	1992	Minister of State	Taoiseach	Dermot Ahern	Mr. Dermot Ahern	6	1991-11-15	1992-02-11
+21	15	11	1991	11	2	1992	Minister of State	Defence	Dermot Ahern	Mr. Dermot Ahern	6	1991-11-15	1992-02-11
+25	26	6	1997	6	6	2002	Minister	Social Welfare	Dermot Ahern	Mr. Dermot Ahern	6	1997-06-26	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Marine and Natural Resources	Dermot Ahern	Mr. Dermot Ahern	6	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Foreign Affairs	Dermot Ahern	Mr. Dermot Ahern	6	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Foreign Affairs	Dermot Ahern	Mr. Dermot Ahern	6	2007-06-14	2008-05-07
+28	7	5	2008	20	1	2011	Minister	Justice, Equality and Law Reform	Dermot Ahern	Mr. Dermot Ahern	6	2008-05-07	2011-01-20
+22	13	2	1992	12	1	1993	Minister of State	Industry and Commerce	Michael Ahern	Mr. Michael Ahern	9	1992-02-13	1993-01-12
+26	19	6	2002	14	6	2007	Minister of State	Enterprise, Trade and Employment	Michael Ahern	Mr. Michael Ahern	9	2002-06-19	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Enterprise, Trade and Employment	Michael Ahern	Mr. Michael Ahern	9	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Education and Science	Michael Ahern	Mr. Michael Ahern	9	2007-06-14	2008-05-07
+26	19	6	2002	14	6	2007	Minister of State	Environment and Local Government	Noel Ahern	Mr. Noel Ahern	10	2002-06-19	2007-06-14
+26	19	6	2002	14	6	2007	Minister of State	Community, Rural and Gaeltacht Affairs	Noel Ahern	Mr. Noel Ahern	10	2002-06-19	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Finance	Noel Ahern	Mr. Noel Ahern	10	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Transport	Noel Ahern	Mr. Noel Ahern	10	2008-05-13	2009-04-21
+1	21	7	1937	30	6	1938	Minister	Defence	Frank Aiken	Mr. Frank Aiken	11	1937-07-21	1938-06-30
+2	30	6	1938	8	9	1939	Minister	Defence	Frank Aiken	Mr. Frank Aiken	11	1938-06-30	1939-09-08
+2	8	9	1939	2	7	1943	Minister	Co-ordination of Defence Measures	Frank Aiken	Mr. Frank Aiken	11	1939-09-08	1943-07-02
+3	2	7	1943	9	6	1944	Minister	Co-ordination of Defence Measures	Frank Aiken	Mr. Frank Aiken	11	1943-07-02	1944-06-09
+4	9	6	1944	19	6	1945	Minister	Co-ordination of Defence Measures	Frank Aiken	Mr. Frank Aiken	11	1944-06-09	1945-06-19
+4	19	6	1945	18	2	1948	Minister	Finance	Frank Aiken	Mr. Frank Aiken	11	1945-06-19	1948-02-18
+6	13	6	1951	2	6	1954	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1957-03-20	1959-06-23
+8	20	3	1957	16	5	1957	Minister	Agriculture	Frank Aiken	Mr. Frank Aiken	11	1957-03-20	1957-05-16
+8	20	11	1957	27	11	1957	Minister	Agriculture	Frank Aiken	Mr. Frank Aiken	11	1957-11-20	1957-11-27
+9	23	6	1959	11	10	1961	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Tánaiste	Tánaiste	Frank Aiken	Mr. Frank Aiken	11	1965-04-21	1966-11-10
+11	21	4	1965	10	11	1966	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Tánaiste	Tánaiste	Frank Aiken	Mr. Frank Aiken	11	1966-11-10	1969-07-02
+12	10	11	1966	2	7	1969	Minister	External Affairs	Frank Aiken	Mr. Frank Aiken	11	1966-11-10	1969-07-02
+24	20	12	1994	26	6	1997	Minister of State	Education	Bernard Allen	Mr. Bernard Allen	14	1994-12-20	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Environment	Bernard Allen	Mr. Bernard Allen	14	1994-12-20	1997-06-26
+16	13	12	1979	30	6	1981	Minister of State	Agriculture	Lorcan Allen	Mr. Lorcan Allen	16	1979-12-13	1981-06-30
+18	23	3	1982	14	12	1982	Minister of State	Agriculture	Lorcan Allen	Mr. Lorcan Allen	16	1982-03-23	1982-12-14
+13	8	5	1970	14	3	1973	Secretary	Taoiseach	David Andrews	Mr. David Andrews	18	1970-05-08	1973-03-14
+13	8	5	1970	14	3	1973	Secretary	Defence	David Andrews	Mr. David Andrews	18	1970-05-08	1973-03-14
+15	5	7	1977	11	12	1979	Secretary	Foreign Affairs	David Andrews	Mr. David Andrews	18	1977-07-05	1979-12-11
+15	1	7	1978	11	12	1979	Secretary	Foreign Affairs	David Andrews	Mr. David Andrews	18	1978-07-01	1979-12-11
+15	1	1	1979	11	12	1979	Secretary	Justice	David Andrews	Mr. David Andrews	18	1979-01-01	1979-12-11
+22	11	2	1992	12	1	1993	Minister	Foreign Affairs	David Andrews	Mr. David Andrews	18	1992-02-11	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Defence	David Andrews	Mr. David Andrews	18	1993-01-12	1994-12-15
+23	12	1	1993	15	12	1994	Minister	Marine	David Andrews	Mr. David Andrews	18	1993-01-12	1994-12-15
+25	26	6	1997	8	10	1997	Minister	Defence	David Andrews	Mr. David Andrews	18	1997-06-26	1997-10-08
+25	8	10	1997	27	1	2000	Minister	Foreign Affairs	David Andrews	Mr. David Andrews	18	1997-10-08	2000-01-27
+18	27	10	1982	14	12	1982	Minister of State	Environment	Niall Andrews	Mr. Niall Andrews	19	1982-10-27	1982-12-14
+20	25	11	1988	12	7	1989	Minister of State	Energy	Liam Aylward	Mr. Liam Aylward	23	1988-11-25	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Energy	Liam Aylward	Mr. Liam Aylward	23	1989-07-19	1992-02-11
+22	13	2	1992	12	1	1993	Minister of State	Education	Liam Aylward	Mr. Liam Aylward	23	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Education	Liam Aylward	Mr. Liam Aylward	23	1993-01-14	1994-12-15
+26	19	6	2002	11	6	2004	Minister of State	Agriculture and Food	Liam Aylward	Mr. Liam Aylward	23	2002-06-19	2004-06-11
+19	14	12	1982	13	2	1986	Minister of State	Taoiseach	Sean Barrett	Mr. Sean Barrett	26	1982-12-14	1986-02-13
+19	14	12	1982	13	2	1986	Minister of State	Defence	Sean Barrett	Mr. Sean Barrett	26	1982-12-14	1986-02-13
+19	13	2	1986	10	3	1987	Minister of State	Taoiseach	Sean Barrett	Mr. Sean Barrett	26	1986-02-13	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Education	Sean Barrett	Mr. Sean Barrett	26	1986-02-13	1987-03-10
+24	23	5	1995	26	6	1997	Minister	Defence	Sean Barrett	Mr. Sean Barrett	26	1995-05-23	1997-06-26
+24	23	5	1995	26	6	1997	Minister	Marine	Sean Barrett	Mr. Sean Barrett	26	1995-05-23	1997-06-26
+24	15	12	1994	23	5	1995	Minister of State	Taoiseach	Sean Barrett	Mr. Sean Barrett	26	1994-12-15	1995-05-23
+24	15	12	1994	23	5	1995	Minister of State	Defence	Sean Barrett	Mr. Sean Barrett	26	1994-12-15	1995-05-23
+15	5	7	1977	11	12	1979	Minister	Local Government	Sylvester Barrett	Mr. Sylvester Barrett	28	1977-07-05	1979-12-11
+16	12	12	1979	15	10	1980	Minister	Environment	Sylvester Barrett	Mr. Sylvester Barrett	28	1979-12-12	1980-10-15
+16	15	10	1980	30	6	1981	Minister	Defence	Sylvester Barrett	Mr. Sylvester Barrett	28	1980-10-15	1981-06-30
+18	23	3	1982	14	12	1982	Minister of State	Finance	Sylvester Barrett	Mr. Sylvester Barrett	28	1982-03-23	1982-12-14
+14	14	3	1973	2	12	1976	Minister	Transport and Power	Peter Barry	Mr. Peter Barry	32	1973-03-14	1976-12-02
+14	2	12	1976	5	7	1977	Minister	Education	Peter Barry	Mr. Peter Barry	32	1976-12-02	1977-07-05
+17	30	6	1981	9	3	1982	Minister	Environment	Peter Barry	Mr. Peter Barry	32	1981-06-30	1982-03-09
+19	14	12	1982	10	3	1987	Minister	Foreign Affairs	Peter Barry	Mr. Peter Barry	32	1982-12-14	1987-03-10
+19	20	1	1987	10	3	1987	Tánaiste	Tánaiste	Peter Barry	Mr. Peter Barry	32	1987-01-20	1987-03-10
+14	14	3	1973	5	7	1977	Secretary	Health	Richard Barry	Mr. Richard Barry	33	1973-03-14	1977-07-05
+6	13	6	1951	2	6	1954	Secretary	Agriculture	Gerald Bartley	Mr. Gerald Bartley	34	1951-06-13	1954-06-02
+8	20	3	1957	23	2	1958	Secretary	Industry and Commerce	Gerald Bartley	Mr. Gerald Bartley	34	1957-03-20	1958-02-23
+8	24	2	1958	23	6	1959	Secretary	Finance	Gerald Bartley	Mr. Gerald Bartley	34	1958-02-24	1959-06-23
+9	23	7	1959	11	10	1961	Minister	Gaeltacht	Gerald Bartley	Mr. Gerald Bartley	34	1959-07-23	1961-10-11
+9	23	6	1959	23	7	1959	Secretary	Finance	Gerald Bartley	Mr. Gerald Bartley	34	1959-06-23	1959-07-23
+10	11	10	1961	21	4	1965	Minister	Defence	Gerald Bartley	Mr. Gerald Bartley	34	1961-10-11	1965-04-21
+6	13	6	1951	2	6	1954	Secretary	Finance	Patrick Beegan	Mr. Patrick Beegan	40	1951-06-13	1954-06-02
+8	20	3	1957	1	2	1958	Secretary	Finance	Patrick Beegan	Mr. Patrick Beegan	40	1957-03-20	1958-02-01
+14	14	3	1973	30	9	1975	Secretary	Local Government	Michael Begley	Mr. Michael Begley	41	1973-03-14	1975-09-30
+14	30	9	1975	5	7	1977	Secretary	Finance	Michael Begley	Mr. Michael Begley	41	1975-09-30	1977-07-05
+17	30	6	1981	9	3	1982	Secretary	Industry, Commerce and Tourism	Michael Begley	Mr. Michael Begley	41	1981-06-30	1982-03-09
+17	30	6	1981	9	3	1982	Secretary	Finance	Joseph Bermingham	Mr. Joseph Bermingham	53	1981-06-30	1982-03-09
+19	16	12	1982	13	2	1986	Minister of State	Finance	Joseph Bermingham	Mr. Joseph Bermingham	53	1982-12-16	1986-02-13
+19	16	12	1982	10	3	1987	Minister of State	Labour	George Birmingham	Mr. George Birmingham	56	1982-12-16	1987-03-10
+19	15	12	1982	13	2	1986	Minister of State	Education	George Birmingham	Mr. George Birmingham	56	1982-12-15	1986-02-13
+19	13	2	1986	10	3	1987	Minister of State	Foreign Affairs	George Birmingham	Mr. George Birmingham	56	1986-02-13	1987-03-10
+8	20	3	1957	4	12	1957	Minister	Posts and Telegraphs	Neil T. Blaney	Mr. Neil T. Blaney	59	1957-03-20	1957-12-04
+8	27	11	1957	23	6	1959	Minister	Local Government	Neil T. Blaney	Mr. Neil T. Blaney	59	1957-11-27	1959-06-23
+9	23	6	1959	11	10	1961	Minister	Local Government	Neil T. Blaney	Mr. Neil T. Blaney	59	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Local Government	Neil T. Blaney	Mr. Neil T. Blaney	59	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Local Government	Neil T. Blaney	Mr. Neil T. Blaney	59	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Agriculture and Fisheries	Neil T. Blaney	Mr. Neil T. Blaney	59	1966-11-10	1969-07-02
+13	2	7	1969	7	5	1970	Minister	Agriculture and Fisheries	Neil T. Blaney	Mr. Neil T. Blaney	59	1969-07-02	1970-05-07
+5	18	2	1948	13	6	1951	Minister	Lands	Joseph Blowick	Mr. Joseph Blowick	60	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Lands	Joseph Blowick	Mr. Joseph Blowick	60	1954-06-02	1957-03-20
+1	21	7	1937	30	6	1938	Minister	Lands	Gerald Boland	Mr. Gerald Boland	62	1937-07-21	1938-06-30
+2	30	6	1938	8	9	1939	Minister	Lands	Gerald Boland	Mr. Gerald Boland	62	1938-06-30	1939-09-08
+2	8	9	1939	2	7	1943	Minister	Justice	Gerald Boland	Mr. Gerald Boland	62	1939-09-08	1943-07-02
+3	2	7	1943	9	6	1944	Minister	Justice	Gerald Boland	Mr. Gerald Boland	62	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Justice	Gerald Boland	Mr. Gerald Boland	62	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Justice	Gerald Boland	Mr. Gerald Boland	62	1951-06-13	1954-06-02
+17	30	6	1981	9	3	1982	Minister	Education	John Boland	Mr. John Boland	64	1981-06-30	1982-03-09
+19	14	12	1982	14	2	1986	Minister	Public Service	John Boland	Mr. John Boland	64	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Environment	John Boland	Mr. John Boland	64	1986-02-14	1987-03-10
+19	20	1	1987	10	3	1987	Minister	Health	John Boland	Mr. John Boland	64	1987-01-20	1987-03-10
+8	20	3	1957	23	6	1959	Minister	Defence	Kevin Boland	Mr. Kevin Boland	65	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Minister	Defence	Kevin Boland	Mr. Kevin Boland	65	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Social Welfare	Kevin Boland	Mr. Kevin Boland	65	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Social Welfare	Kevin Boland	Mr. Kevin Boland	65	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Local Government	Kevin Boland	Mr. Kevin Boland	65	1966-11-10	1969-07-02
+13	2	7	1969	7	5	1970	Minister	Local Government	Kevin Boland	Mr. Kevin Boland	65	1969-07-02	1970-05-07
+13	2	7	1969	7	5	1970	Minister	Social Welfare	Kevin Boland	Mr. Kevin Boland	65	1969-07-02	1970-05-07
+18	27	10	1982	14	12	1982	Minister	Education	Gerard Brady	Mr. Gerard Brady	76	1982-10-27	1982-12-14
+18	23	3	1982	27	10	1982	Minister of State	Environment	Gerard Brady	Mr. Gerard Brady	76	1982-03-23	1982-10-27
+20	10	3	1987	12	7	1989	Minister of State	Taoiseach	Vincent Brady	Mr. Vincent Brady	84	1987-03-10	1989-07-12
+20	12	3	1987	12	7	1989	Minister of State	Defence	Vincent Brady	Mr. Vincent Brady	84	1987-03-12	1989-07-12
+21	14	11	1991	11	2	1992	Minister	Defence	Vincent Brady	Mr. Vincent Brady	84	1991-11-14	1992-02-11
+21	12	7	1989	14	11	1991	Minister of State	Taoiseach	Vincent Brady	Mr. Vincent Brady	84	1989-07-12	1991-11-14
+21	12	7	1989	14	11	1991	Minister of State	Defence	Vincent Brady	Mr. Vincent Brady	84	1989-07-12	1991-11-14
+21	6	2	1991	14	11	1991	Minister of State	Finance	Vincent Brady	Mr. Vincent Brady	84	1991-02-06	1991-11-14
+9	23	7	1959	11	10	1961	Secretary	Finance	Joseph Brennan	Mr. Joseph Brennan	89	1959-07-23	1961-10-11
+10	11	10	1961	21	4	1965	Secretary	Taoiseach	Joseph Brennan	Mr. Joseph Brennan	89	1961-10-11	1965-04-21
+10	11	10	1961	21	4	1965	Secretary	Defence	Joseph Brennan	Mr. Joseph Brennan	89	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Posts and Telegraphs	Joseph Brennan	Mr. Joseph Brennan	89	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Social Welfare	Joseph Brennan	Mr. Joseph Brennan	89	1966-11-10	1969-07-02
+13	2	7	1969	14	3	1973	Minister	Labour	Joseph Brennan	Mr. Joseph Brennan	89	1969-07-02	1973-03-14
+13	2	7	1969	9	5	1970	Minister	Social Welfare	Joseph Brennan	Mr. Joseph Brennan	89	1969-07-02	1970-05-09
+11	21	4	1965	10	11	1966	Secretary	Local Government	Paudge Brennan	Mr. Paudge Brennan	96	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Secretary	Local Government	Paudge Brennan	Mr. Paudge Brennan	96	1966-11-10	1969-07-02
+13	2	7	1969	8	5	1970	Secretary	Local Government	Paudge Brennan	Mr. Paudge Brennan	96	1969-07-02	1970-05-08
+22	13	2	1992	12	1	1993	Minister of State	Agriculture and Food	John Browne	Mr. John Browne	108	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Environment	John Browne	Mr. John Browne	108	1993-01-14	1994-12-15
+26	19	6	2002	29	9	2004	Minister of State	Communications, Marine and Natural Resources	John Browne	Mr. John Browne	108	2002-06-19	2004-09-29
+26	29	9	2004	14	2	2006	Minister of State	Agriculture and Food	John Browne	Mr. John Browne	108	2004-09-29	2006-02-14
+26	14	2	2006	14	6	2007	Minister of State	Communications, Marine and Natural Resources	John Browne	Mr. John Browne	108	2006-02-14	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Agriculture and Food	John Browne	Mr. John Browne	108	2007-06-14	2008-05-07
+5	7	3	1951	11	4	1951	Minister	Health	Dr. Noel C. Browne	Dr. Noel C. Browne	110	1951-03-07	1951-04-11
+14	14	3	1973	5	7	1977	Secretary	Education	John Bruton	Mr. John Bruton	118	1973-03-14	1977-07-05
+14	14	3	1973	5	7	1977	Secretary	Industry and Commerce	John Bruton	Mr. John Bruton	118	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Minister	Finance	John Bruton	Mr. John Bruton	118	1981-06-30	1982-03-09
+19	14	12	1982	13	12	1983	Minister	Industry and Energy	John Bruton	Mr. John Bruton	118	1982-12-14	1983-12-13
+19	13	12	1983	14	2	1986	Minister	Industry, Trade, Commerce and Tourism	John Bruton	Mr. John Bruton	118	1983-12-13	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Finance	John Bruton	Mr. John Bruton	118	1986-02-14	1987-03-10
+19	20	1	1987	10	3	1987	Minister	Public Service	John Bruton	Mr. John Bruton	118	1987-01-20	1987-03-10
+24	15	12	1994	26	6	1997	Taoiseach	Taoiseach	John Bruton	Mr. John Bruton	118	1994-12-15	1997-06-26
+24	30	11	1996	3	12	1996	Minister	Transport, Energy and Communications	John Bruton	Mr. John Bruton	118	1996-11-30	1996-12-03
+19	23	9	1986	10	3	1987	Minister of State	Industry and Commerce	Richard Bruton	Mr. Richard Bruton	119	1986-09-23	1987-03-10
+24	15	12	1994	26	6	1997	Minister	Enterprise and Employment	Richard Bruton	Mr. Richard Bruton	119	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Jobs, Enterprise and Innovation	Richard Bruton	Mr. Richard Bruton	119	2011-03-09	NULL
+15	1	1	1978	11	12	1979	Secretary	Industry, Commerce and Energy	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1978-01-01	1979-12-11
+16	15	10	1980	30	6	1981	Minister	Environment	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1980-10-15	1981-06-30
+16	13	12	1979	15	10	1980	Minister of State	Industry, Commerce and Energy	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1979-12-13	1980-10-15
+18	9	3	1982	14	12	1982	Minister	Environment	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1982-03-09	1982-12-14
+20	10	3	1987	24	11	1988	Minister	Energy	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1987-03-10	1988-11-24
+20	31	3	1987	12	7	1989	Minister	Communications	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1987-03-31	1989-07-12
+20	24	11	1988	12	7	1989	Minister	Industry and Commerce	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1988-11-24	1989-07-12
+21	12	7	1989	11	2	1992	Minister	Justice	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1989-07-12	1992-02-11
+21	12	7	1989	6	2	1991	Minister	Communications	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1989-07-12	1991-02-06
+25	26	6	1997	7	10	1997	Minister	Foreign Affairs	Raphael P. (Ray) Burke	Mr. Raphael P. (Ray) Burke	129	1997-06-26	1997-10-07
+14	14	3	1973	2	12	1976	Minister	Education	Richard Burke	Mr. Richard Burke	130	1973-03-14	1976-12-02
+23	14	1	1993	17	11	1994	Minister of State	Social Welfare	Joan Burton	Ms. Joan Burton	133	1993-01-14	1994-11-17
+24	20	12	1994	26	6	1997	Minister of State	Foreign Affairs	Joan Burton	Ms. Joan Burton	133	1994-12-20	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Social Protection	Joan Burton	Ms. Joan Burton	133	2011-03-09	NULL
+25	8	7	1997	6	6	2002	Minister of State	Marine and Natural Resources	Hugh Byrne	Mr. Hugh Byrne	145	1997-07-08	2002-06-06
+16	13	12	1979	30	6	1981	Minister of State	Public Service	Sean Calleary	Mr. Sean Calleary	155	1979-12-13	1981-06-30
+16	13	12	1979	30	6	1981	Minister of State	Labour	Sean Calleary	Mr. Sean Calleary	155	1979-12-13	1981-06-30
+18	28	10	1982	14	12	1982	Minister of State	Trade, Commerce and Tourism	Sean Calleary	Mr. Sean Calleary	155	1982-10-28	1982-12-14
+20	12	3	1987	12	7	1989	Minister of State	Foreign Affairs	Sean Calleary	Mr. Sean Calleary	155	1987-03-12	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Foreign Affairs	Sean Calleary	Mr. Sean Calleary	155	1989-07-19	1992-02-11
+26	19	6	2002	29	9	2004	Minister of State	Health and Children	Ivor Callely	Mr. Ivor Callely	156	2002-06-19	2004-09-29
+26	29	9	2004	8	12	2005	Minister of State	Transport	Ivor Callely	Mr. Ivor Callely	156	2004-09-29	2005-12-08
+24	27	1	1995	26	6	1997	Minister of State	Taoiseach	Donal Carey	Mr. Donal Carey	158	1995-01-27	1997-06-26
+24	27	1	1995	26	6	1997	Minister of State	Arts, Culture and the Gaeltacht	Donal Carey	Mr. Donal Carey	158	1995-01-27	1997-06-26
+27	14	6	2007	7	5	2008	Minister of State	Community, Rural and Gaeltacht Affairs	Pat Carey	Mr. Pat Carey	160	2007-06-14	2008-05-07
+28	23	3	2010	9	3	2011	Minister	Community, Rural and Gaeltacht Affairs	Pat Carey	Mr. Pat Carey	160	2010-03-23	2011-03-09
+28	20	1	2011	9	3	2011	Minister	Transport	Pat Carey	Mr. Pat Carey	160	2011-01-20	2011-03-09
+28	23	1	2011	9	3	2011	Minister	Communications, Energy and Natural Resources	Pat Carey	Mr. Pat Carey	160	2011-01-23	2011-03-09
+28	7	5	2008	9	3	2011	Minister of State	Taoiseach	Pat Carey	Mr. Pat Carey	160	2008-05-07	2011-03-09
+28	7	5	2008	23	3	2010	Minister of State	Defence	Pat Carey	Mr. Pat Carey	160	2008-05-07	2010-03-23
+11	21	4	1965	10	11	1966	Secretary	Taoiseach	Michael Carty	Mr. Michael Carty	169	1965-04-21	1966-11-10
+11	21	4	1965	10	11	1966	Secretary	Defence	Michael Carty	Mr. Michael Carty	169	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Secretary	Taoiseach	Michael Carty	Mr. Michael Carty	169	1966-11-10	1969-07-02
+12	10	11	1966	2	7	1969	Secretary	Defence	Michael Carty	Mr. Michael Carty	169	1966-11-10	1969-07-02
+3	31	3	1944	7	6	1944	Secretary	Local Government and Public Health	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1944-03-31	1944-06-07
+4	9	6	1944	18	2	1948	Secretary	Local Government and Public Health	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Posts and Telegraphs	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	Lands	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1957-03-20	1959-06-23
+9	27	7	1959	11	10	1961	Minister	Transport and Power	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1959-07-27	1961-10-11
+9	23	7	1959	11	10	1961	Minister	Lands	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1959-07-23	1961-10-11
+9	24	7	1959	26	7	1961	Minister	Minister without Portfolio	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1959-07-24	1961-07-26
+10	11	10	1961	21	4	1965	Minister	Transport and Power	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Transport and Power	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Transport and Power	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1966-11-10	1969-07-02
+12	10	11	1966	2	7	1969	Minister	Posts and Telegraphs	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1966-11-10	1969-07-02
+13	2	7	1969	14	3	1973	Tánaiste	Tánaiste	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1969-07-02	1973-03-14
+13	2	7	1969	14	3	1973	Minister	Health	Erskine Robert Childers	Mr. Erskine Robert Childers	173	1969-07-02	1973-03-14
+14	14	3	1973	5	7	1977	Minister	Agriculture and Fisheries	Mark A. Clinton	Mr. Mark A. Clinton	180	1973-03-14	1977-07-05
+14	14	3	1973	5	7	1977	Secretary	Social Welfare	Frank Cluskey	Mr. Frank Cluskey	184	1973-03-14	1977-07-05
+19	14	12	1982	8	12	1983	Minister	Trade, Commerce and Tourism	Frank Cluskey	Mr. Frank Cluskey	184	1982-12-14	1983-12-08
+10	21	11	1964	21	4	1965	Secretary	Lands	George Colley	Mr. George Colley	195	1964-11-21	1965-04-21
+11	21	4	1965	13	7	1966	Minister	Education	George Colley	Mr. George Colley	195	1965-04-21	1966-07-13
+11	13	7	1966	10	11	1966	Minister	Industry and Commerce	George Colley	Mr. George Colley	195	1966-07-13	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Industry and Commerce	George Colley	Mr. George Colley	195	1966-11-10	1969-07-02
+13	2	7	1969	14	3	1973	Minister	Gaeltacht	George Colley	Mr. George Colley	195	1969-07-02	1973-03-14
+13	2	7	1969	9	5	1970	Minister	Industry and Commerce	George Colley	Mr. George Colley	195	1969-07-02	1970-05-09
+13	9	5	1970	14	3	1973	Minister	Finance	George Colley	Mr. George Colley	195	1970-05-09	1973-03-14
+15	5	7	1977	11	12	1979	Tánaiste	Tánaiste	George Colley	Mr. George Colley	195	1977-07-05	1979-12-11
+15	5	7	1977	11	12	1979	Minister	Finance	George Colley	Mr. George Colley	195	1977-07-05	1979-12-11
+15	5	7	1977	11	12	1979	Minister	Public Service	George Colley	Mr. George Colley	195	1977-07-05	1979-12-11
+16	12	12	1979	25	1	1980	Tánaiste	Tánaiste	George Colley	Mr. George Colley	195	1979-12-12	1980-01-25
+16	12	12	1979	25	1	1980	Minister	Tourism and Transport	George Colley	Mr. George Colley	195	1979-12-12	1980-01-25
+16	22	1	1980	30	6	1981	Minister	Energy	George Colley	Mr. George Colley	195	1980-01-22	1981-06-30
+17	30	6	1981	9	3	1982	Secretary	Energy	Edward Collins	Mr. Edward Collins	198	1981-06-30	1982-03-09
+19	15	12	1982	10	3	1987	Minister of State	Trade, Commerce and Tourism	Edward Collins	Mr. Edward Collins	198	1982-12-15	1987-03-10
+19	16	12	1982	23	9	1986	Minister of State	Industry and Energy	Edward Collins	Mr. Edward Collins	198	1982-12-16	1986-09-23
+19	14	2	1986	10	3	1987	Minister of State	Energy	Edward Collins	Mr. Edward Collins	198	1986-02-14	1987-03-10
+19	14	2	1986	23	9	1986	Minister of State	Industry and Commerce	Edward Collins	Mr. Edward Collins	198	1986-02-14	1986-09-23
+13	9	5	1969	14	3	1973	Minister	Posts and Telegraphs	Gerard Collins	Mr. Gerard Collins	199	1969-05-09	1973-03-14
+13	2	7	1969	9	5	1970	Secretary	Industry and Commerce	Gerard Collins	Mr. Gerard Collins	199	1969-07-02	1970-05-09
+13	2	7	1969	9	5	1970	Secretary	Gaeltacht	Gerard Collins	Mr. Gerard Collins	199	1969-07-02	1970-05-09
+15	5	7	1977	11	12	1979	Minister	Justice	Gerard Collins	Mr. Gerard Collins	199	1977-07-05	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Justice	Gerard Collins	Mr. Gerard Collins	199	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Foreign Affairs	Gerard Collins	Mr. Gerard Collins	199	1982-03-09	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Justice	Gerard Collins	Mr. Gerard Collins	199	1987-03-10	1989-07-12
+21	12	7	1989	11	2	1992	Minister	Foreign Affairs	Gerard Collins	Mr. Gerard Collins	199	1989-07-12	1992-02-11
+19	16	12	1982	10	3	1987	Minister of State	Agriculture	Paul Connaughton	Mr. Paul Connaughton	212	1982-12-16	1987-03-10
+19	16	2	1986	10	3	1987	Minister of State	Agriculture	Paul Connaughton	Mr. Paul Connaughton	212	1986-02-16	1987-03-10
+16	13	12	1979	30	6	1981	Minister of State	Environment	Gerard C. Connolly	Mr. Gerard C. Connolly	214	1979-12-13	1981-06-30
+18	23	3	1982	14	12	1982	Minister of State	Environment	Gerard C. Connolly	Mr. Gerard C. Connolly	214	1982-03-23	1982-12-14
+20	12	3	1987	12	7	1989	Minister of State	Environment	Gerard C. Connolly	Mr. Gerard C. Connolly	214	1987-03-12	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Environment	Gerard C. Connolly	Mr. Gerard C. Connolly	214	1989-07-19	1992-02-11
+14	14	3	1973	5	7	1977	Minister	Justice	Patrick M. Cooney	Mr. Patrick M. Cooney	224	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Minister	Transport	Patrick M. Cooney	Mr. Patrick M. Cooney	224	1981-06-30	1982-03-09
+17	30	6	1981	9	3	1982	Minister	Posts and Telegraphs	Patrick M. Cooney	Mr. Patrick M. Cooney	224	1981-06-30	1982-03-09
+19	14	12	1982	14	2	1986	Minister	Defence	Patrick M. Cooney	Mr. Patrick M. Cooney	224	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Education	Patrick M. Cooney	Mr. Patrick M. Cooney	224	1986-02-14	1987-03-10
+5	18	2	1948	13	6	1951	Secretary	Local Government	Brendan Corish	Mr. Brendan Corish	228	1948-02-18	1951-06-13
+5	18	2	1948	13	6	1951	Secretary	Defence	Brendan Corish	Mr. Brendan Corish	228	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Social Welfare	Brendan Corish	Mr. Brendan Corish	228	1954-06-02	1957-03-20
+14	14	3	1973	5	7	1977	Tánaiste	Tánaiste	Brendan Corish	Mr. Brendan Corish	228	1973-03-14	1977-07-05
+14	14	3	1973	5	7	1977	Minister	Health	Brendan Corish	Mr. Brendan Corish	228	1973-03-14	1977-07-05
+14	14	3	1973	5	7	1977	Minister	Social Welfare	Brendan Corish	Mr. Brendan Corish	228	1973-03-14	1977-07-05
+5	18	2	1948	13	6	1951	Secretary	Taoiseach	Liam Cosgrave	Mr. Liam Cosgrave	234	1948-02-18	1951-06-13
+5	18	2	1948	13	6	1951	Secretary	Industry and Commerce	Liam Cosgrave	Mr. Liam Cosgrave	234	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	External Affairs	Liam Cosgrave	Mr. Liam Cosgrave	234	1954-06-02	1957-03-20
+14	14	3	1973	5	7	1977	Taoiseach	Taoiseach	Liam Cosgrave	Mr. Liam Cosgrave	234	1973-03-14	1977-07-05
+14	2	12	1976	16	12	1976	Minister	Defence	Liam Cosgrave	Mr. Liam Cosgrave	234	1976-12-02	1976-12-16
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Foreign Affairs and Trade	Joe Costello	Mr. Joe Costello	240	2011-03-09	NULL
+5	18	2	1948	13	6	1951	Taoiseach	Taoiseach	John Aloysius Costello	Mr. John Aloysius Costello	241	1948-02-18	1951-06-13
+5	12	4	1951	13	6	1951	Minister	Health	John Aloysius Costello	Mr. John Aloysius Costello	241	1951-04-12	1951-06-13
+7	2	6	1954	20	3	1957	Taoiseach	Taoiseach	John Aloysius Costello	Mr. John Aloysius Costello	241	1954-06-02	1957-03-20
+25	19	2	2001	6	6	2002	Minister of State	Arts, Heritage, Gaeltacht and the Islands	Mary Coughlan	Ms. Mary Coughlan	247	2001-02-19	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Social, Community and Family Affairs	Mary Coughlan	Ms. Mary Coughlan	247	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Agriculture and Food	Mary Coughlan	Ms. Mary Coughlan	247	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Agriculture and Food	Mary Coughlan	Ms. Mary Coughlan	247	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Tánaiste	Tánaiste	Mary Coughlan	Ms. Mary Coughlan	247	2008-05-07	2011-03-09
+28	23	3	2010	9	3	2011	Minister	Enterprise, Trade and Employment	Mary Coughlan	Ms. Mary Coughlan	247	2010-03-23	2011-03-09
+28	23	3	2010	9	3	2011	Minister	Education and Skills	Mary Coughlan	Ms. Mary Coughlan	247	2010-03-23	2011-03-09
+28	20	1	2011	9	3	2011	Minister	Health and Children	Mary Coughlan	Ms. Mary Coughlan	247	2011-01-20	2011-03-09
+24	15	12	1994	23	5	1995	Minister	Defence	Hugh Coveney	Mr. Hugh Coveney	249	1994-12-15	1995-05-23
+24	15	12	1994	23	5	1995	Minister	Marine	Hugh Coveney	Mr. Hugh Coveney	249	1994-12-15	1995-05-23
+24	24	5	1995	26	6	1997	Minister of State	Finance	Hugh Coveney	Mr. Hugh Coveney	249	1995-05-24	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Agriculture, Food and the Marine	Simon Coveney	Mr. Simon Coveney	250	2011-03-09	NULL
+18	23	3	1982	14	12	1982	Minister of State	Agriculture	Bernard F. Cowen	Mr. Bernard F. Cowen	252	1982-03-23	1982-12-14
+22	11	2	1992	12	1	1993	Minister	Labour	Brian Cowen	Mr. Brian Cowen	253	1992-02-11	1993-01-12
+23	12	1	1993	22	1	1993	Minister	Energy	Brian Cowen	Mr. Brian Cowen	253	1993-01-12	1993-01-22
+23	22	1	1993	15	12	1994	Minister	Transport, Energy and Communications	Brian Cowen	Mr. Brian Cowen	253	1993-01-22	1994-12-15
+25	26	6	1997	26	1	2000	Minister	Health	Brian Cowen	Mr. Brian Cowen	253	1997-06-26	2000-01-26
+25	26	1	2000	6	6	2002	Minister	Foreign Affairs	Brian Cowen	Mr. Brian Cowen	253	2000-01-26	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Foreign Affairs	Brian Cowen	Mr. Brian Cowen	253	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Finance	Brian Cowen	Mr. Brian Cowen	253	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Tánaiste	Tánaiste	Brian Cowen	Mr. Brian Cowen	253	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister	Finance	Brian Cowen	Mr. Brian Cowen	253	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Taoiseach	Taoiseach	Brian Cowen	Mr. Brian Cowen	253	2008-05-07	2011-03-09
+28	19	1	2011	9	3	2011	Minister	Foreign Affairs	Brian Cowen	Mr. Brian Cowen	253	2011-01-19	2011-03-09
+17	30	6	1981	11	11	1981	Secretary	Health	Donal Creed	Mr. Donal Creed	258	1981-06-30	1981-11-11
+17	30	6	1981	11	11	1981	Secretary	Environment	Donal Creed	Mr. Donal Creed	258	1981-06-30	1981-11-11
+19	16	12	1982	18	2	1986	Minister of State	Education	Donal Creed	Mr. Donal Creed	258	1982-12-16	1986-02-18
+13	9	5	1970	14	3	1973	Minister	Defence	Jeremiah Cronin	Mr. Jeremiah Cronin	261	1970-05-09	1973-03-14
+13	2	7	1969	9	5	1970	Secretary	Agriculture and Fisheries	Jeremiah Cronin	Mr. Jeremiah Cronin	261	1969-07-02	1970-05-09
+7	2	6	1954	20	3	1957	Secretary	Industry and Commerce	Patrick J. Crotty	Mr. Patrick J. Crotty	263	1954-06-02	1957-03-20
+14	14	3	1973	5	7	1977	Minister	Posts and Telegraphs	Dr. Conor Cruise O'Brien	Dr. Conor Cruise O'Brien	272	1973-03-14	1977-07-05
+25	8	7	1997	6	6	2002	Minister of State	Finance	Martin Cullen	Mr. Martin Cullen (Resigned)	274	1997-07-08	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Environment and Local Government	Martin Cullen	Mr. Martin Cullen (Resigned)	274	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Transport	Martin Cullen	Mr. Martin Cullen (Resigned)	274	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Social and Family Affairs	Martin Cullen	Mr. Martin Cullen (Resigned)	274	2007-06-14	2008-05-07
+28	7	5	2008	23	5	2010	Minister	Arts, Sport and Tourism	Martin Cullen	Mr. Martin Cullen (Resigned)	274	2008-05-07	2010-05-23
+13	9	5	1970	14	3	1973	Secretary	Local Government	Liam Cunningham	Mr. Liam Cunningham	277	1970-05-09	1973-03-14
+24	20	12	1994	26	6	1997	Minister of State	Health	Austin Currie	Mr. Austin Currie	280	1994-12-20	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Education	Austin Currie	Mr. Austin Currie	280	1994-12-20	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Justice	Austin Currie	Mr. Austin Currie	280	1994-12-20	1997-06-26
+17	30	6	1981	9	3	1982	Secretary	Agriculture	Michael D'Arcy	Mr. Michael D'Arcy	282	1981-06-30	1982-03-09
+19	16	12	1982	18	2	1986	Minister of State	Fisheries and Forestry	Michael D'Arcy	Mr. Michael D'Arcy	282	1982-12-16	1986-02-18
+19	16	12	1982	18	2	1986	Minister of State	Gaeltacht	Michael D'Arcy	Mr. Michael D'Arcy	282	1982-12-16	1986-02-18
+16	25	3	1980	30	6	1981	Minister of State	Labour	Brendan Daly	Mr. Brendan Daly	284	1980-03-25	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Fisheries and Forestry	Brendan Daly	Mr. Brendan Daly	284	1982-03-09	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Tourism, Fisheries and Forestry	Brendan Daly	Mr. Brendan Daly	284	1987-03-10	1989-07-12
+21	5	2	1991	14	11	1991	Minister	Defence	Brendan Daly	Mr. Brendan Daly	284	1991-02-05	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Social Welfare	Brendan Daly	Mr. Brendan Daly	284	1991-11-14	1992-02-11
+21	19	7	1989	5	2	1991	Minister of State	Finance	Brendan Daly	Mr. Brendan Daly	284	1989-07-19	1991-02-05
+21	19	7	1989	5	2	1991	Minister of State	Taoiseach	Brendan Daly	Mr. Brendan Daly	284	1989-07-19	1991-02-05
+22	13	2	1992	12	1	1993	Minister of State	Foreign Affairs	Brendan Daly	Mr. Brendan Daly	284	1992-02-13	1993-01-12
+12	10	11	1966	2	11	1968	Secretary	Agriculture and Fisheries	Donal (Owen Don Bosco) Davern	Mr. Donal (Owen Don Bosco) Davern	289	1966-11-10	1968-11-02
+21	14	11	1991	11	2	1992	Minister	Education	Noel Davern	Mr. Noel Davern	291	1991-11-14	1992-02-11
+25	8	7	1997	6	6	2002	Minister of State	Agriculture, Food and Forestry	Noel Davern	Mr. Noel Davern	291	1997-07-08	2002-06-06
+7	2	6	1954	1	3	1956	Secretary	Local Government	William Davin	Mr. William Davin	292	1954-06-02	1956-03-01
+24	15	12	1994	26	6	1997	Minister	Social Welfare	Proinsias De Rossa	Mr. Proinsias De Rossa	300	1994-12-15	1997-06-26
+1	21	7	1937	30	6	1938	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1937-07-21	1938-06-30
+1	21	7	1937	30	6	1938	Minister	External Affairs	Eamon de Valera	Mr. Eamon de Valera	301	1937-07-21	1938-06-30
+2	30	6	1938	1	7	1943	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1938-06-30	1943-07-01
+2	30	6	1938	2	7	1943	Minister	External Affairs	Eamon de Valera	Mr. Eamon de Valera	301	1938-06-30	1943-07-02
+2	15	8	1941	18	8	1941	Minister	Local Government and Public Health	Eamon de Valera	Mr. Eamon de Valera	301	1941-08-15	1941-08-18
+2	27	9	1939	18	6	1940	Minister	Education	Eamon de Valera	Mr. Eamon de Valera	301	1939-09-27	1940-06-18
+3	1	7	1943	9	6	1944	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1943-07-01	1944-06-09
+3	1	7	1943	9	6	1944	Minister	External Affairs	Eamon de Valera	Mr. Eamon de Valera	301	1943-07-01	1944-06-09
+4	9	6	1944	18	2	1948	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1944-06-09	1948-02-18
+4	9	6	1944	18	2	1948	Minister	External Affairs	Eamon de Valera	Mr. Eamon de Valera	301	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Taoiseach	Taoiseach	Eamon de Valera	Mr. Eamon de Valera	301	1957-03-20	1959-06-23
+25	26	6	1997	6	6	2002	Minister	Arts, Culture and the Gaeltacht	Síle de Valera	Ms. Síle de Valera	302	1997-06-26	2002-06-06
+26	19	6	2002	12	12	2006	Minister of State	Education and Science	Síle de Valera	Ms. Síle de Valera	302	2002-06-19	2006-12-12
+19	14	12	1982	10	3	1987	Minister	Agriculture	Austin Deasy	Mr. Austin Deasy	304	1982-12-14	1987-03-10
+24	20	12	1994	26	6	1997	Minister of State	Agriculture, Food and Forestry	Jimmy Deenihan	Mr. Jimmy Deenihan	306	1994-12-20	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Arts, Heritage and Gaeltacht	Jimmy Deenihan	Mr. Jimmy Deenihan	306	2011-03-09	NULL
+22	13	2	1992	12	1	1993	Minister of State	Taoiseach	Noel Dempsey	Mr. Noel Dempsey	309	1992-02-13	1993-01-12
+22	11	2	1992	12	1	1993	Minister of State	Defence	Noel Dempsey	Mr. Noel Dempsey	309	1992-02-11	1993-01-12
+23	12	1	1993	15	12	1994	Minister of State	Taoiseach	Noel Dempsey	Mr. Noel Dempsey	309	1993-01-12	1994-12-15
+23	12	1	1993	15	12	1994	Minister of State	Defence	Noel Dempsey	Mr. Noel Dempsey	309	1993-01-12	1994-12-15
+23	14	1	1993	15	12	1994	Minister of State	Finance	Noel Dempsey	Mr. Noel Dempsey	309	1993-01-14	1994-12-15
+25	26	6	1997	6	6	2002	Minister	Environment	Noel Dempsey	Mr. Noel Dempsey	309	1997-06-26	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Education and Science	Noel Dempsey	Mr. Noel Dempsey	309	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Communications, Marine and Natural Resources	Noel Dempsey	Mr. Noel Dempsey	309	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Transport	Noel Dempsey	Mr. Noel Dempsey	309	2007-06-14	2008-05-07
+28	7	5	2008	20	1	2011	Minister	Transport	Noel Dempsey	Mr. Noel Dempsey	309	2008-05-07	2011-01-20
+1	21	7	1937	30	6	1938	Minister	Education	Thomas Derrig	Mr. Thomas Derrig	312	1937-07-21	1938-06-30
+2	30	6	1938	8	9	1939	Minister	Education	Thomas Derrig	Mr. Thomas Derrig	312	1938-06-30	1939-09-08
+2	18	6	1940	2	7	1943	Minister	Education	Thomas Derrig	Mr. Thomas Derrig	312	1940-06-18	1943-07-02
+2	8	9	1939	2	7	1943	Minister	Lands	Thomas Derrig	Mr. Thomas Derrig	312	1939-09-08	1943-07-02
+2	8	9	1939	27	9	1939	Minister	Posts and Telegraphs	Thomas Derrig	Mr. Thomas Derrig	312	1939-09-08	1939-09-27
+3	2	7	1943	9	6	1944	Minister	Education	Thomas Derrig	Mr. Thomas Derrig	312	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Education	Thomas Derrig	Mr. Thomas Derrig	312	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Lands	Thomas Derrig	Mr. Thomas Derrig	312	1951-06-13	1954-06-02
+17	30	6	1981	9	3	1982	Secretary	Finance	Barry Desmond	Mr. Barry Desmond	313	1981-06-30	1982-03-09
+19	14	12	1982	20	1	1987	Minister	Health	Barry Desmond	Mr. Barry Desmond	313	1982-12-14	1987-01-20
+19	14	12	1982	14	2	1986	Minister	Social Welfare	Barry Desmond	Mr. Barry Desmond	313	1982-12-14	1986-02-14
+19	14	2	1986	20	1	1987	Minister	Health	Barry Desmond	Mr. Barry Desmond	313	1986-02-14	1987-01-20
+17	30	6	1981	9	3	1982	Minister	Health and Social Welfare	Eileen Desmond	Mrs. Eileen Desmond	315	1981-06-30	1982-03-09
+5	18	2	1948	13	6	1951	Minister	Agriculture	James M. Dillon	Mr. James M. Dillon	318	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Agriculture	James M. Dillon	Mr. James M. Dillon	318	1954-06-02	1957-03-20
+16	25	3	1980	30	6	1981	Minister of State	Justice	Sean (Longford-Roscommon) Doherty	Mr. Sean (Longford-Roscommon) Doherty	326	1980-03-25	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Justice	Sean (Longford-Roscommon) Doherty	Mr. Sean (Longford-Roscommon) Doherty	326	1982-03-09	1982-12-14
+14	14	3	1973	2	12	1976	Minister	Defence	Patrick S. Donegan	Mr. Patrick S. Donegan	331	1973-03-14	1976-12-02
+14	2	12	1976	5	7	1977	Minister	Lands	Patrick S. Donegan	Mr. Patrick S. Donegan	331	1976-12-02	1977-07-05
+19	16	12	1982	15	12	1983	Minister of State	Transport	John F. Donnellan	Mr. John F. Donnellan	332	1982-12-16	1983-12-15
+19	16	12	1982	15	12	1983	Minister of State	Posts and Telegraphs	John F. Donnellan	Mr. John F. Donnellan	332	1982-12-16	1983-12-15
+19	15	12	1983	10	3	1987	Minister of State	Health	John F. Donnellan	Mr. John F. Donnellan	332	1983-12-15	1987-03-10
+19	15	12	1983	10	3	1987	Minister of State	Social Welfare	John F. Donnellan	Mr. John F. Donnellan	332	1983-12-15	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Fisheries and Forestry	John F. Donnellan	Mr. John F. Donnellan	332	1986-02-13	1987-03-10
+5	18	2	1948	13	6	1951	Secretary	Finance	Michael Donnellan	Mr. Michael Donnellan	333	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Secretary	Finance	Michael Donnellan	Mr. Michael Donnellan	333	1954-06-02	1957-03-20
+19	13	2	1986	10	3	1987	Minister of State	Finance	Avril Doyle	Mr. Avril Doyle	339	1986-02-13	1987-03-10
+19	14	2	1986	10	3	1987	Minister of State	Environment	Avril Doyle	Mr. Avril Doyle	339	1986-02-14	1987-03-10
+24	27	1	1995	26	6	1997	Minister of State	Taoiseach	Avril Doyle	Mr. Avril Doyle	339	1995-01-27	1997-06-26
+24	27	1	1995	26	6	1997	Minister of State	Finance	Avril Doyle	Mr. Avril Doyle	339	1995-01-27	1997-06-26
+24	27	1	1995	26	6	1997	Minister of State	Transport, Energy and Communications	Avril Doyle	Mr. Avril Doyle	339	1995-01-27	1997-06-26
+17	30	6	1981	9	3	1982	Minister	Agriculture	Alan Dukes	Mr. Alan Dukes	352	1981-06-30	1982-03-09
+19	14	12	1982	14	2	1986	Minister	Finance	Alan Dukes	Mr. Alan Dukes	352	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Justice	Alan Dukes	Mr. Alan Dukes	352	1986-02-14	1987-03-10
+24	3	12	1996	26	6	1997	Minister	Transport, Energy and Communications	Alan Dukes	Mr. Alan Dukes	352	1996-12-03	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Social Welfare	Bernard Durkan	Mr. Bernard Durkan	355	1994-12-20	1997-06-26
+17	21	10	1981	9	3	1982	Minister	Foreign Affairs	James Dooge		NULL	1981-10-21	1982-03-09
+5	18	2	1948	13	6	1951	Minister	Posts and Telegraphs	James Everett	Mr. James Everett	371	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Justice	James Everett	Mr. James Everett	371	1954-06-02	1957-03-20
+20	12	3	1987	12	7	1989	Minister of State	Education	Frank Fahey	Mr. Frank Fahey	373	1987-03-12	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Education	Frank Fahey	Mr. Frank Fahey	373	1989-07-19	1992-02-11
+21	26	9	1989	11	2	1992	Minister of State	Tourism, Transport and Communications	Frank Fahey	Mr. Frank Fahey	373	1989-09-26	1992-02-11
+25	27	1	2000	6	6	2002	Minister	Marine	Frank Fahey	Mr. Frank Fahey	373	2000-01-27	2002-06-06
+25	8	7	1997	6	6	2002	Minister of State	Health and Children	Frank Fahey	Mr. Frank Fahey	373	1997-07-08	2002-06-06
+25	21	1	1998	6	6	2002	Minister of State	Education and Science	Frank Fahey	Mr. Frank Fahey	373	1998-01-21	2002-06-06
+25	21	1	1998	21	1	2000	Minister of State	Justice, Equality and Law Reform	Frank Fahey	Mr. Frank Fahey	373	1998-01-21	2000-01-21
+26	19	6	2002	29	9	2004	Minister of State	Enterprise, Trade and Employment	Frank Fahey	Mr. Frank Fahey	373	2002-06-19	2004-09-29
+26	29	9	2004	14	6	2007	Minister of State	Justice, Equality and Law Reform	Frank Fahey	Mr. Frank Fahey	373	2004-09-29	2007-06-14
+13	9	5	1970	14	3	1973	Secretary	Agriculture and Fisheries	John (Jackie) Fahey	Mr. John (Jackie) Fahey	374	1970-05-09	1973-03-14
+16	13	12	1979	30	6	1981	Minister of State	Environment	John (Jackie) Fahey	Mr. John (Jackie) Fahey	374	1979-12-13	1981-06-30
+11	21	4	1965	10	11	1966	Secretary	Gaeltacht	Padraig Faulkner	Mr. Padraig Faulkner	382	1965-04-21	1966-11-10
+12	27	3	1968	2	7	1969	Minister	Lands	Padraig Faulkner	Mr. Padraig Faulkner	382	1968-03-27	1969-07-02
+12	27	3	1968	2	7	1969	Minister	Gaeltacht	Padraig Faulkner	Mr. Padraig Faulkner	382	1968-03-27	1969-07-02
+12	10	11	1966	7	3	1968	Secretary	Gaeltacht	Padraig Faulkner	Mr. Padraig Faulkner	382	1966-11-10	1968-03-07
+13	2	7	1969	14	3	1973	Minister	Education	Padraig Faulkner	Mr. Padraig Faulkner	382	1969-07-02	1973-03-14
+15	5	7	1977	11	12	1979	Minister	Posts and Telegraphs	Padraig Faulkner	Mr. Padraig Faulkner	382	1977-07-05	1979-12-11
+15	5	7	1977	11	12	1979	Minister	Transport and Power	Padraig Faulkner	Mr. Padraig Faulkner	382	1977-07-05	1979-12-11
+16	12	12	1979	15	10	1980	Minister	Defence	Padraig Faulkner	Mr. Padraig Faulkner	382	1979-12-12	1980-10-15
+19	16	12	1982	10	3	1987	Minister of State	Taoiseach	Nuala Fennell	Ms. Nuala Fennell	383	1982-12-16	1987-03-10
+19	7	1	1983	10	3	1987	Minister of State	Justice	Nuala Fennell	Ms. Nuala Fennell	383	1983-01-07	1987-03-10
+19	16	2	1986	10	3	1987	Minister of State	Taoiseach	Nuala Fennell	Ms. Nuala Fennell	383	1986-02-16	1987-03-10
+19	16	2	1986	10	3	1987	Minister of State	Justice	Nuala Fennell	Ms. Nuala Fennell	383	1986-02-16	1987-03-10
+23	14	1	1993	17	11	1994	Minister of State	Finance	Eithne Fitzgerald	Ms. Eithne Fitzgerald	399	1993-01-14	1994-11-17
+24	20	12	1994	26	6	1997	Minister of State	Tánaiste	Eithne Fitzgerald	Ms. Eithne Fitzgerald	399	1994-12-20	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Enterprise and Employment	Eithne Fitzgerald	Ms. Eithne Fitzgerald	399	1994-12-20	1997-06-26
+15	5	7	1977	11	12	1979	Minister	Labour	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1977-07-05	1979-12-11
+16	12	12	1979	16	12	1980	Minister	Labour	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1979-12-12	1980-12-16
+16	24	3	1980	30	6	1981	Minister	Public Service	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1980-03-24	1981-06-30
+16	16	12	1980	30	6	1981	Minister	Finance	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1980-12-16	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Public Service	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1982-03-09	1982-12-14
+18	9	3	1982	14	12	1982	Minister	Labour	Eugene (Gene) Fitzgerald	Mr. Eugene (Gene) Fitzgerald	400	1982-03-09	1982-12-14
+29	9	3	2011	NULL	NULL	NULL	Minister	Children and Youth Affairs	Frances Fitzgerald	Ms. Frances Fitzgerald	401	2011-03-09	NULL
+14	14	3	1973	5	7	1977	Minister	Foreign Affairs	Garret FitzGerald	Mr. Garret FitzGerald	402	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Taoiseach	Taoiseach	Garret FitzGerald	Mr. Garret FitzGerald	402	1981-06-30	1982-03-09
+19	14	12	1982	10	3	1987	Taoiseach	Taoiseach	Garret FitzGerald	Mr. Garret FitzGerald	402	1982-12-14	1987-03-10
+19	8	12	1983	13	12	1983	Minister	Trade, Commerce and Tourism	Garret FitzGerald	Mr. Garret FitzGerald	402	1983-12-08	1983-12-13
+14	14	3	1973	2	12	1976	Minister	Lands	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1973-03-14	1976-12-02
+14	2	12	1976	5	7	1977	Minister	Transport and Power	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1976-12-02	1977-07-05
+15	5	7	1977	1	1	1978	Secretary	Posts and Telegraphs	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1977-07-05	1978-01-01
+15	5	7	1977	1	1	1978	Secretary	Transport and Power	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1977-07-05	1978-01-01
+15	1	1	1978	11	12	1979	Secretary	Posts and Telegraphs	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1978-01-01	1979-12-11
+15	1	1	1978	11	12	1979	Secretary	Transport and Power	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1978-01-01	1979-12-11
+17	30	6	1981	9	3	1982	Minister	Fisheries and Forestry	Thomas J. (Cavan) Fitzpatrick	Mr. Thomas J. (Cavan) Fitzpatrick	410	1981-06-30	1982-03-09
+18	28	10	1982	14	12	1982	Minister of State	Industry and Energy	James N. Fitzsimons	Mr. James N. Fitzsimons	412	1982-10-28	1982-12-14
+17	30	6	1981	9	3	1982	Secretary	Social Welfare	Mary Flaherty	Ms. Mary Flaherty	413	1981-06-30	1982-03-09
+7	2	6	1954	20	3	1957	Secretary	Agriculture	Oliver J. Flanagan	Mr. Oliver J. Flanagan	415	1954-06-02	1957-03-20
+14	16	12	1976	5	7	1977	Minister	Defence	Oliver J. Flanagan	Mr. Oliver J. Flanagan	415	1976-12-16	1977-07-05
+14	30	9	1975	2	12	1976	Secretary	Defence	Oliver J. Flanagan	Mr. Oliver J. Flanagan	415	1975-09-30	1976-12-02
+11	13	7	1966	10	11	1966	Minister	Health	Sean Flanagan	Mr. Sean Flanagan	416	1966-07-13	1966-11-10
+11	21	4	1965	13	7	1966	Secretary	Industry and Commerce	Sean Flanagan	Mr. Sean Flanagan	416	1965-04-21	1966-07-13
+12	10	11	1966	2	7	1969	Minister	Health	Sean Flanagan	Mr. Sean Flanagan	416	1966-11-10	1969-07-02
+13	2	7	1969	14	3	1973	Minister	Lands	Sean Flanagan	Mr. Sean Flanagan	416	1969-07-02	1973-03-14
+1	21	7	1937	30	6	1938	Secretary	Finance	Hugo Victor Flinn	Mr. Hugo Victor Flinn	419	1937-07-21	1938-06-30
+2	30	6	1938	28	1	1943	Secretary	Finance	Hugo Victor Flinn	Mr. Hugo Victor Flinn	419	1938-06-30	1943-01-28
+2	12	9	1941	28	1	1943	Secretary	Local Government and Public Health	Hugo Victor Flinn	Mr. Hugo Victor Flinn	419	1941-09-12	1943-01-28
+21	6	2	1991	11	2	1992	Minister of State	Health	Chris Flood	Mr. Chris Flood	420	1991-02-06	1992-02-11
+22	13	2	1992	12	1	1993	Minister of State	Health	Chris Flood	Mr. Chris Flood	420	1992-02-13	1993-01-12
+25	8	7	1997	26	1	2000	Minister of State	Tourism, Sport and Recreation	Chris Flood	Mr. Chris Flood	420	1997-07-08	2000-01-26
+16	25	3	1980	30	6	1981	Minister of State	Transport	Pádraig Flynn	Mr. Pádraig Flynn	422	1980-03-25	1981-06-30
+18	9	3	1982	27	10	1982	Minister	Gaeltacht	Pádraig Flynn	Mr. Pádraig Flynn	422	1982-03-09	1982-10-27
+18	27	10	1982	14	12	1982	Minister	Trade, Commerce and Tourism	Pádraig Flynn	Mr. Pádraig Flynn	422	1982-10-27	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Environment	Pádraig Flynn	Mr. Pádraig Flynn	422	1987-03-10	1989-07-12
+21	12	7	1989	8	11	1991	Minister	Environment	Pádraig Flynn	Mr. Pádraig Flynn	422	1989-07-12	1991-11-08
+22	11	2	1992	4	1	1993	Minister	Justice	Pádraig Flynn	Mr. Pádraig Flynn	422	1992-02-11	1993-01-04
+22	5	11	1992	4	1	1993	Minister	Industry and Commerce	Pádraig Flynn	Mr. Pádraig Flynn	422	1992-11-05	1993-01-04
+15	5	7	1977	11	12	1979	Minister	Gaeltacht	Denis Gallagher	Mr. Denis Gallagher	442	1977-07-05	1979-12-11
+16	15	10	1980	30	6	1981	Minister of State	Industry, Commerce and Energy	Denis Gallagher	Mr. Denis Gallagher	442	1980-10-15	1981-06-30
+18	27	10	1982	14	12	1982	Minister	Gaeltacht	Denis Gallagher	Mr. Denis Gallagher	442	1982-10-27	1982-12-14
+18	23	3	1982	27	10	1982	Minister of State	Social Welfare	Denis Gallagher	Mr. Denis Gallagher	442	1982-03-23	1982-10-27
+20	12	3	1987	12	7	1989	Minister of State	Gaeltacht	Denis Gallagher	Mr. Denis Gallagher	442	1987-03-12	1989-07-12
+20	12	3	1987	12	7	1989	Minister of State	Marine	Pat Gallagher	Mr. Pat Gallagher	445	1987-03-12	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Gaeltacht	Pat Gallagher	Mr. Pat Gallagher	445	1989-07-19	1992-02-11
+22	13	2	1992	12	1	1993	Minister of State	Marine	Pat Gallagher	Mr. Pat Gallagher	445	1992-02-13	1993-01-12
+22	13	2	1992	12	1	1993	Minister of State	Gaeltacht	Pat Gallagher	Mr. Pat Gallagher	445	1992-02-13	1993-01-12
+23	14	1	1993	15	6	1994	Minister of State	Arts, Culture and the Gaeltacht	Pat Gallagher	Mr. Pat Gallagher	445	1993-01-14	1994-06-15
+26	19	6	2002	29	9	2004	Minister of State	Environment and Local Government	Pat Gallagher	Mr. Pat Gallagher	445	2002-06-19	2004-09-29
+26	29	9	2004	14	6	2007	Minister of State	Communications, Marine and Natural Resources	Pat Gallagher	Mr. Pat Gallagher	445	2004-09-29	2007-06-14
+26	14	2	2006	14	6	2007	Minister of State	Transport	Pat Gallagher	Mr. Pat Gallagher	445	2006-02-14	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Health and Children	Pat Gallagher	Mr. Pat Gallagher	445	2007-06-14	2008-05-07
+13	9	5	1970	14	3	1973	Secretary	Social Welfare	John Geoghegan	Mr. John Geoghegan	453	1970-05-09	1973-03-14
+15	5	7	1977	1	1	1978	Secretary	Industry and Commerce	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1977-07-05	1978-01-01
+15	1	1	1978	11	12	1979	Secretary	Industry and Commerce	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1978-01-01	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Gaeltacht	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1979-12-12	1981-06-30
+18	23	3	1982	14	12	1982	Minister of State	Education	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1982-03-23	1982-12-14
+20	12	3	1987	12	7	1989	Minister of State	Taoiseach	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1987-03-12	1989-07-12
+21	19	7	1989	15	11	1991	Minister of State	Taoiseach	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1989-07-19	1991-11-15
+22	11	2	1992	12	1	1993	Minister	Tourism, Transport and Communications	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1992-02-11	1993-01-12
+22	4	1	1993	12	1	1993	Minister	Justice	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1993-01-04	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Justice	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1993-01-12	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Equality and Law Reform	Máire Geoghegan-Quinn	Mrs. Máire Geoghegan-Quinn	454	1994-11-18	1994-12-15
+11	21	4	1965	10	11	1966	Secretary	Finance	James Gibbons	Mr. James Gibbons	456	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Secretary	Finance	James Gibbons	Mr. James Gibbons	456	1966-11-10	1969-07-02
+13	2	7	1969	9	5	1970	Minister	Defence	James Gibbons	Mr. James Gibbons	456	1969-07-02	1970-05-09
+13	9	5	1970	14	3	1973	Minister	Agriculture and Fisheries	James Gibbons	Mr. James Gibbons	456	1970-05-09	1973-03-14
+15	5	7	1977	11	12	1979	Minister	Agriculture	James Gibbons	Mr. James Gibbons	456	1977-07-05	1979-12-11
+24	20	12	1994	26	6	1997	Minister of State	Marine	Eamon Gilmore	Mr. Eamon Gilmore	464	1994-12-20	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Tánaiste	Tánaiste	Eamon Gilmore	Mr. Eamon Gilmore	464	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister	Foreign Affairs and Trade	Eamon Gilmore	Mr. Eamon Gilmore	464	2011-03-09	NULL
+27	14	6	2007	7	5	2008	Minister	Environment, Heritage and Local Government	John Gormley	Mr. John Gormley	472	2007-06-14	2008-05-07
+28	7	5	2008	23	1	2011	Minister	Environment, Heritage and Local Government	John Gormley	Mr. John Gormley	472	2008-05-07	2011-01-23
+25	26	6	1997	6	6	2002	Minister of State	Health and Children	Mary Hanafin	Ms. Mary Hanafin	484	1997-06-26	2002-06-06
+25	26	6	1997	6	6	2002	Minister of State	Education and Science	Mary Hanafin	Ms. Mary Hanafin	484	1997-06-26	2002-06-06
+25	1	2	2000	6	6	2002	Minister of State	Justice, Equality and Law Reform	Mary Hanafin	Ms. Mary Hanafin	484	2000-02-01	2002-06-06
+26	29	9	2004	14	6	2007	Minister	Education and Science	Mary Hanafin	Ms. Mary Hanafin	484	2004-09-29	2007-06-14
+26	6	6	2002	29	9	2004	Minister of State	Taoiseach	Mary Hanafin	Ms. Mary Hanafin	484	2002-06-06	2004-09-29
+26	19	6	2002	29	9	2004	Minister of State	Defence	Mary Hanafin	Ms. Mary Hanafin	484	2002-06-19	2004-09-29
+27	14	6	2007	7	5	2008	Minister	Education and Science	Mary Hanafin	Ms. Mary Hanafin	484	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Minister	Social and Family Affairs	Mary Hanafin	Ms. Mary Hanafin	484	2008-05-07	2011-03-09
+28	23	3	2010	9	3	2011	Minister	Tourism, Culture and Sport	Mary Hanafin	Ms. Mary Hanafin	484	2010-03-23	2011-03-09
+28	20	1	2011	9	3	2011	Minister	Enterprise, Trade and Employment	Mary Hanafin	Ms. Mary Hanafin	484	2011-01-20	2011-03-09
+21	19	7	1989	11	2	1992	Minister of State	Environment	Mary Harney	Ms. Mary Harney	486	1989-07-19	1992-02-11
+22	13	2	1992	4	11	1992	Minister of State	Environment	Mary Harney	Ms. Mary Harney	486	1992-02-13	1992-11-04
+25	26	6	1997	6	6	2002	Tánaiste	Tánaiste	Mary Harney	Ms. Mary Harney	486	1997-06-26	2002-06-06
+25	26	6	1997	6	6	2002	Minister	Enterprise and Employment	Mary Harney	Ms. Mary Harney	486	1997-06-26	2002-06-06
+26	6	6	2002	12	9	2006	Tánaiste	Tánaiste	Mary Harney	Ms. Mary Harney	486	2002-06-06	2006-09-12
+26	6	6	2002	29	9	2004	Minister	Enterprise and Employment	Mary Harney	Ms. Mary Harney	486	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Health and Children	Mary Harney	Ms. Mary Harney	486	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Health and Children	Mary Harney	Ms. Mary Harney	486	2007-06-14	2008-05-07
+28	7	5	2008	20	1	2011	Minister	Health and Children	Mary Harney	Ms. Mary Harney	486	2008-05-07	2011-01-20
+17	30	6	1981	9	3	1982	Secretary	Posts and Telegraphs	Paddy Harte	Mr. Paddy Harte	488	1981-06-30	1982-03-09
+9	23	6	1959	11	10	1961	Secretary	Justice	Charles J. Haughey	Mr. Charles J. Haughey	491	1959-06-23	1961-10-11
+10	11	10	1961	8	10	1964	Minister	Justice	Charles J. Haughey	Mr. Charles J. Haughey	491	1961-10-11	1964-10-08
+10	8	10	1964	21	4	1965	Minister	Agriculture	Charles J. Haughey	Mr. Charles J. Haughey	491	1964-10-08	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Agriculture	Charles J. Haughey	Mr. Charles J. Haughey	491	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Finance	Charles J. Haughey	Mr. Charles J. Haughey	491	1966-11-10	1969-07-02
+13	2	7	1969	7	5	1970	Minister	Finance	Charles J. Haughey	Mr. Charles J. Haughey	491	1969-07-02	1970-05-07
+15	5	7	1977	11	12	1979	Minister	Health	Charles J. Haughey	Mr. Charles J. Haughey	491	1977-07-05	1979-12-11
+15	5	7	1977	11	12	1979	Minister	Social Welfare	Charles J. Haughey	Mr. Charles J. Haughey	491	1977-07-05	1979-12-11
+16	11	12	1979	30	6	1981	Taoiseach	Taoiseach	Charles J. Haughey	Mr. Charles J. Haughey	491	1979-12-11	1981-06-30
+18	9	3	1982	14	12	1982	Taoiseach	Taoiseach	Charles J. Haughey	Mr. Charles J. Haughey	491	1982-03-09	1982-12-14
+18	7	10	1982	27	10	1982	Minister	Education	Charles J. Haughey	Mr. Charles J. Haughey	491	1982-10-07	1982-10-27
+20	10	3	1987	12	7	1989	Taoiseach	Taoiseach	Charles J. Haughey	Mr. Charles J. Haughey	491	1987-03-10	1989-07-12
+20	10	3	1987	29	6	1989	Minister	Gaeltacht	Charles J. Haughey	Mr. Charles J. Haughey	491	1987-03-10	1989-06-29
+21	12	7	1989	11	2	1992	Taoiseach	Taoiseach	Charles J. Haughey	Mr. Charles J. Haughey	491	1989-07-12	1992-02-11
+21	12	7	1989	11	2	1992	Minister	Gaeltacht	Charles J. Haughey	Mr. Charles J. Haughey	491	1989-07-12	1992-02-11
+21	1	11	1990	5	2	1991	Minister	Defence	Charles J. Haughey	Mr. Charles J. Haughey	491	1990-11-01	1991-02-05
+21	8	11	1991	14	11	1991	Minister	Finance	Charles J. Haughey	Mr. Charles J. Haughey	491	1991-11-08	1991-11-14
+26	12	12	2006	14	6	2007	Minister of State	Education and Science	Sean Haughey	Mr. Sean Haughey	492	2006-12-12	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Enterprise, Trade and Employment	Sean Haughey	Mr. Sean Haughey	492	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Education and Science	Sean Haughey	Mr. Sean Haughey	492	2007-06-14	2008-05-07
+28	13	5	2008	9	3	2011	Minister of State	Education and Science	Sean Haughey	Mr. Sean Haughey	492	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Enterprise, Trade and Employment	Sean Haughey	Mr. Sean Haughey	492	2008-05-13	2011-03-09
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Public Expenditure and Reform	Brian Hayes	Mr. Brian Hayes	493	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Finance	Brian Hayes	Mr. Brian Hayes	493	2011-03-09	NULL
+19	16	12	1982	10	3	1987	Minister of State	Agriculture	Patrick Hegarty	Mr. Patrick Hegarty	503	1982-12-16	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Agriculture	Patrick Hegarty	Mr. Patrick Hegarty	503	1986-02-13	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Industry, Trade, Commerce and Tourism	Patrick Hegarty	Mr. Patrick Hegarty	503	1986-02-13	1987-03-10
+24	10	2	1995	23	5	1995	Minister of State	Finance	Jim Higgins	Mr. Jim Higgins	515	1995-02-10	1995-05-23
+24	15	12	1994	26	6	1997	Minister of State	Taoiseach	Jim Higgins	Mr. Jim Higgins	515	1994-12-15	1997-06-26
+24	24	5	1995	26	6	1997	Minister of State	Defence	Jim Higgins	Mr. Jim Higgins	515	1995-05-24	1997-06-26
+23	12	1	1993	17	11	1994	Minister	Gaeltacht	Michael D. Higgins	Mr. Michael D. Higgins	517	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Minister	Arts, Culture and the Gaeltacht	Michael D. Higgins	Mr. Michael D. Higgins	517	1994-12-15	1997-06-26
+9	23	6	1959	11	10	1961	Minister	Education	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Education	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1961-10-11	1965-04-21
+11	21	4	1965	13	7	1966	Minister	Industry and Commerce	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1965-04-21	1966-07-13
+11	21	4	1965	13	7	1966	Minister	Labour	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1965-04-21	1966-07-13
+12	10	11	1966	2	7	1969	Minister	Labour	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1966-11-10	1969-07-02
+13	2	7	1969	3	1	1973	Minister	External Affairs	Dr. Patrick J. Hillery	Dr. Patrick J. Hillery	519	1969-07-02	1973-01-03
+8	24	2	1958	23	6	1959	Secretary	Industry and Commerce	Michael Hilliard	Mr. Michael Hilliard	521	1958-02-24	1959-06-23
+9	23	6	1959	11	10	1961	Minister	Posts and Telegraphs	Michael Hilliard	Mr. Michael Hilliard	521	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Posts and Telegraphs	Michael Hilliard	Mr. Michael Hilliard	521	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Defence	Michael Hilliard	Mr. Michael Hilliard	521	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Minister	Defence	Michael Hilliard	Mr. Michael Hilliard	521	1966-11-10	1969-07-02
+24	20	12	1994	9	2	1995	Minister of State	Finance	Phil Hogan	Mr. Phil Hogan	528	1994-12-20	1995-02-09
+29	9	3	2011	NULL	NULL	NULL	Minister	Environment, Community and Local Government	Phil Hogan	Mr. Phil Hogan	528	2011-03-09	NULL
+23	12	1	1993	17	11	1994	Minister	Health	Brendan Howlin	Mr. Brendan Howlin	535	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Minister	Environment	Brendan Howlin	Mr. Brendan Howlin	535	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Public Expenditure and Reform	Brendan Howlin	Mr. Brendan Howlin	535	2011-03-09	NULL
+19	14	12	1982	14	2	1986	Minister	Education	Gemma Hussey	Mrs. Gemma Hussey	543	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Social Welfare	Gemma Hussey	Mrs. Gemma Hussey	543	1986-02-14	1987-03-10
+19	20	1	1987	10	3	1987	Minister	Labour	Gemma Hussey	Mrs. Gemma Hussey	543	1987-01-20	1987-03-10
+15	5	7	1977	1	1	1978	Secretary	Agriculture	Thomas Hussey	Mr. Thomas Hussey	544	1977-07-05	1978-01-01
+15	1	1	1978	11	12	1979	Secretary	Agriculture	Thomas Hussey	Mr. Thomas Hussey	544	1978-01-01	1979-12-11
+16	13	12	1979	17	12	1980	Minister of State	Agriculture	Thomas Hussey	Mr. Thomas Hussey	544	1979-12-13	1980-12-17
+16	13	12	1979	30	6	1981	Minister of State	Health	Thomas Hussey	Mr. Thomas Hussey	544	1979-12-13	1981-06-30
+16	13	12	1979	30	6	1981	Minister of State	Social Welfare	Thomas Hussey	Mr. Thomas Hussey	544	1979-12-13	1981-06-30
+22	13	2	1992	12	1	1993	Minister of State	Agriculture and Food	Liam Hyland	Mr. Liam Hyland	545	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Agriculture, Food and Forestry	Liam Hyland	Mr. Liam Hyland	545	1993-01-14	1994-12-15
+25	8	7	1997	6	6	2002	Minister of State	Public Enterprise	Joe Jacob	Mr. Joe Jacob	546	1997-07-08	2002-06-06
+17	30	6	1981	9	3	1982	Minister	Labour	Liam Kavanagh	Mr. Liam Kavanagh	554	1981-06-30	1982-03-09
+17	30	6	1981	9	3	1982	Minister	Public Service	Liam Kavanagh	Mr. Liam Kavanagh	554	1981-06-30	1982-03-09
+19	14	12	1982	13	12	1983	Minister	Labour	Liam Kavanagh	Mr. Liam Kavanagh	554	1982-12-14	1983-12-13
+19	13	12	1983	14	2	1986	Minister	Environment	Liam Kavanagh	Mr. Liam Kavanagh	554	1983-12-13	1986-02-14
+19	14	2	1986	20	1	1987	Minister	Tourism, Fisheries and Forestry	Liam Kavanagh	Mr. Liam Kavanagh	554	1986-02-14	1987-01-20
+14	14	3	1973	5	7	1977	Minister	Industry and Commerce	Justin Keating	Mr. Justin Keating	559	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Secretary	Education	Michael Keating	Mr. Michael Keating	560	1981-06-30	1982-03-09
+27	14	6	2007	7	5	2008	Minister of State	Enterprise, Trade and Employment	Billy Kelleher	Mr. Billy Kelleher	565	2007-06-14	2008-05-07
+28	13	5	2008	9	3	2011	Minister of State	Enterprise, Trade and Employment	Billy Kelleher	Mr. Billy Kelleher	565	2008-05-13	2011-03-09
+14	14	3	1973	5	7	1977	Secretary	Taoiseach	Professor John M. Kelly	Professor John M. Kelly	569	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Minister	Industry, Commerce and Tourism	Professor John M. Kelly	Professor John M. Kelly	569	1981-06-30	1982-03-09
+17	30	6	1981	21	10	1981	Minister	Foreign Affairs	Professor John M. Kelly	Professor John M. Kelly	569	1981-06-30	1981-10-21
+22	13	2	1992	12	1	1993	Minister of State	Tourism, Transport and Communications	Brendan Kenneally	Mr. Brendan Kenneally	574	1992-02-13	1993-01-12
+6	13	6	1951	2	6	1954	Secretary	Social Welfare	Michael Joseph Kennedy	Mr. Michael Joseph Kennedy	579	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Secretary	Social Welfare	Michael Joseph Kennedy	Mr. Michael Joseph Kennedy	579	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Secretary	Social Welfare	Michael Joseph Kennedy	Mr. Michael Joseph Kennedy	579	1959-06-23	1961-10-11
+19	13	2	1986	10	3	1987	Minister of State	Labour	Enda Kenny	Mr. Enda Kenny	580	1986-02-13	1987-03-10
+19	14	2	1986	10	3	1987	Minister of State	Education	Enda Kenny	Mr. Enda Kenny	580	1986-02-14	1987-03-10
+24	15	12	1994	26	6	1997	Minister	Tourism and Trade	Enda Kenny	Mr. Enda Kenny	580	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Taoiseach	Taoiseach	Enda Kenny	Mr. Enda Kenny	580	2011-03-09	NULL
+14	14	3	1973	25	9	1975	Secretary	Finance	Henry Kenny	Mr. Henry Kenny	581	1973-03-14	1975-09-25
+5	11	5	1949	13	6	1951	Minister	Local Government	Michael Keyes	Mr. Michael Keyes	589	1949-05-11	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Posts and Telegraphs	Michael Keyes	Mr. Michael Keyes	589	1954-06-02	1957-03-20
+26	29	9	2004	14	6	2007	Minister of State	Enterprise, Trade and Employment	Tony Killeen	Mr. Tony Killeen	594	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Environment, Heritage and Local Government	Tony Killeen	Mr. Tony Killeen	594	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Communications, Marine and Natural Resources	Tony Killeen	Mr. Tony Killeen	594	2007-06-14	2008-05-07
+28	23	3	2010	20	1	2011	Minister	Defence	Tony Killeen	Mr. Tony Killeen	594	2010-03-23	2011-01-20
+28	13	5	2008	23	3	2010	Minister of State	Agriculture, Fisheries and Food	Tony Killeen	Mr. Tony Killeen	594	2008-05-13	2010-03-23
+20	10	3	1987	12	7	1989	Minister of State	Agriculture and Food	Séamus Kirk	Mr. Séamus Kirk	600	1987-03-10	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Agriculture and Food	Séamus Kirk	Mr. Séamus Kirk	600	1989-07-19	1992-02-11
+2	10	2	1943	26	6	1943	Secretary	Lands	Eamon Kissane	Mr. Eamon Kissane	601	1943-02-10	1943-06-26
+3	2	7	1943	7	6	1944	Secretary	Taoiseach	Eamon Kissane	Mr. Eamon Kissane	601	1943-07-02	1944-06-07
+3	2	7	1943	7	6	1944	Secretary	Defence	Eamon Kissane	Mr. Eamon Kissane	601	1943-07-02	1944-06-07
+4	9	6	1944	18	2	1948	Secretary	Taoiseach	Eamon Kissane	Mr. Eamon Kissane	601	1944-06-09	1948-02-18
+4	9	6	1944	18	2	1948	Secretary	Defence	Eamon Kissane	Mr. Eamon Kissane	601	1944-06-09	1948-02-18
+21	15	11	1991	11	2	1992	Minister of State	Taoiseach	Michael P. Kitt	Mr. Michael P. Kitt	602	1991-11-15	1992-02-11
+27	14	6	2007	7	5	2008	Minister of State	Foreign Affairs	Michael P. Kitt	Mr. Michael P. Kitt	602	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Environment, Heritage and Local Government	Michael P. Kitt	Mr. Michael P. Kitt	602	2008-05-13	2009-04-21
+13	9	5	1970	14	3	1973	Secretary	Gaeltacht	Michael F. Kitt	Mr. Michael F. Kitt	603	1970-05-09	1973-03-14
+22	13	2	1992	12	1	1993	Minister of State	Taoiseach	Tom Kitt	Mr. Tom Kitt	604	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Taoiseach	Tom Kitt	Mr. Tom Kitt	604	1993-01-14	1994-12-15
+23	14	1	1993	15	12	1994	Minister of State	Foreign Affairs	Tom Kitt	Mr. Tom Kitt	604	1993-01-14	1994-12-15
+25	8	7	1997	6	6	2002	Minister of State	Enterprise, Trade and Employment	Tom Kitt	Mr. Tom Kitt	604	1997-07-08	2002-06-06
+26	19	6	2002	29	9	2004	Minister of State	Foreign Affairs	Tom Kitt	Mr. Tom Kitt	604	2002-06-19	2004-09-29
+26	29	9	2004	14	6	2007	Minister of State	Taoiseach	Tom Kitt	Mr. Tom Kitt	604	2004-09-29	2007-06-14
+26	29	9	2004	14	6	2007	Minister of State	Defence	Tom Kitt	Mr. Tom Kitt	604	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Taoiseach	Tom Kitt	Mr. Tom Kitt	604	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Defence	Tom Kitt	Mr. Tom Kitt	604	2007-06-14	2008-05-07
+17	30	6	1981	11	11	1981	Secretary	Taoiseach	Gerald L'Estrange	Mr. Gerald L'Estrange	606	1981-06-30	1981-11-11
+17	30	6	1981	11	11	1981	Secretary	Defence	Gerald L'Estrange	Mr. Gerald L'Estrange	606	1981-06-30	1981-11-11
+17	30	6	1981	11	11	1981	Secretary	Health	Gerald L'Estrange	Mr. Gerald L'Estrange	606	1981-06-30	1981-11-11
+11	21	4	1965	10	11	1966	Secretary	Agriculture	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Secretary	Posts and Telegraphs	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1966-11-10	1969-07-02
+12	10	11	1966	2	7	1969	Secretary	Transport and Power	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1966-11-10	1969-07-02
+13	2	7	1969	9	5	1970	Minister	Posts and Telegraphs	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1969-07-02	1970-05-09
+13	9	5	1970	14	3	1973	Minister	Industry and Commerce	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1970-05-09	1973-03-14
+15	5	7	1977	1	7	1979	Taoiseach	Taoiseach	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1977-07-05	1979-07-01
+15	5	7	1977	1	7	1979	Secretary	Defence	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1977-07-05	1979-07-01
+15	1	7	1978	1	7	1979	Taoiseach	Taoiseach	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1978-07-01	1979-07-01
+15	1	7	1978	1	7	1979	Secretary	Defence	Patrick J. Lalor	Mr. Patrick J. Lalor	608	1978-07-01	1979-07-01
+13	2	7	1969	8	5	1970	Secretary	Finance	Noel T. Lemass	Mr. Noel T. Lemass	625	1969-07-02	1970-05-08
+1	21	7	1937	30	6	1938	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1937-07-21	1938-06-30
+2	30	6	1938	16	9	1939	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1938-06-30	1939-09-16
+2	18	8	1941	2	7	1943	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1941-08-18	1943-07-02
+2	8	9	1939	2	7	1943	Minister	Supplies	Seán F. Lemass	Mr. Seán F. Lemass	626	1939-09-08	1943-07-02
+3	2	7	1943	9	6	1944	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1943-07-02	1944-06-09
+3	2	7	1943	9	6	1944	Minister	Supplies	Seán F. Lemass	Mr. Seán F. Lemass	626	1943-07-02	1944-06-09
+4	19	6	1945	18	2	1948	Tánaiste	Tánaiste	Seán F. Lemass	Mr. Seán F. Lemass	626	1945-06-19	1948-02-18
+4	9	6	1944	18	2	1948	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1944-06-09	1948-02-18
+4	9	6	1944	31	7	1945	Minister	Supplies	Seán F. Lemass	Mr. Seán F. Lemass	626	1944-06-09	1945-07-31
+6	13	6	1951	2	6	1954	Tánaiste	Tánaiste	Seán F. Lemass	Mr. Seán F. Lemass	626	1951-06-13	1954-06-02
+6	13	6	1951	2	6	1954	Minister	Industry and Commerce	Seán F. Lemass	Mr. Seán F. Lemass	626	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Tánaiste	Tánaiste	Seán F. Lemass	Mr. Seán F. Lemass	626	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Taoiseach	Taoiseach	Seán F. Lemass	Mr. Seán F. Lemass	626	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Taoiseach	Taoiseach	Seán F. Lemass	Mr. Seán F. Lemass	626	1961-10-11	1965-04-21
+10	8	10	1964	21	4	1965	Minister	Justice	Seán F. Lemass	Mr. Seán F. Lemass	626	1964-10-08	1965-04-21
+11	21	4	1965	10	11	1966	Taoiseach	Taoiseach	Seán F. Lemass	Mr. Seán F. Lemass	626	1965-04-21	1966-11-10
+26	19	6	2002	14	6	2007	Minister of State	Education and Science	Brian Joseph Lenihan	Mr. Brian Joseph Lenihan RIP	628	2002-06-19	2007-06-14
+26	19	6	2002	14	6	2007	Minister of State	Justice, Equality and Law Reform	Brian Joseph Lenihan	Mr. Brian Joseph Lenihan RIP	628	2002-06-19	2007-06-14
+26	19	6	2002	14	6	2007	Minister of State	Health and Children	Brian Joseph Lenihan	Mr. Brian Joseph Lenihan RIP	628	2002-06-19	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Justice, Equality and Law Reform	Brian Joseph Lenihan	Mr. Brian Joseph Lenihan RIP	628	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Minister	Finance	Brian Joseph Lenihan	Mr. Brian Joseph Lenihan RIP	628	2008-05-07	2011-03-09
+10	3	11	1964	21	4	1965	Minister	Justice	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1964-11-03	1965-04-21
+10	11	10	1961	3	11	1964	Secretary	Lands	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1961-10-11	1964-11-03
+10	11	10	1961	3	11	1964	Secretary	Justice	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1961-10-11	1964-11-03
+11	21	4	1965	10	11	1966	Minister	Justice	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1965-04-21	1966-11-10
+12	10	11	1966	26	3	1968	Minister	Justice	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1966-11-10	1968-03-26
+13	2	7	1969	3	1	1973	Minister	Transport and Power	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1969-07-02	1973-01-03
+13	3	1	1973	14	3	1973	Minister	External Affairs	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1973-01-03	1973-03-14
+15	5	7	1977	11	12	1979	Minister	Fisheries	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1977-07-05	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Foreign Affairs	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Agriculture	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1982-03-09	1982-12-14
+20	10	3	1987	12	7	1989	Tánaiste	Tánaiste	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1987-03-10	1989-07-12
+20	10	3	1987	12	7	1989	Minister	Foreign Affairs	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1987-03-10	1989-07-12
+21	12	7	1989	31	10	1990	Tánaiste	Tánaiste	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1989-07-12	1990-10-31
+21	12	7	1989	31	10	1990	Minister	Defence	Brian (Snr.) Lenihan	Mr. Brian (Snr.) Lenihan	629	1989-07-12	1990-10-31
+26	5	10	2004	14	6	2007	Minister of State	Foreign Affairs	Conor Lenihan	Mr. Conor Lenihan	630	2004-10-05	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Justice, Equality and Law Reform	Conor Lenihan	Mr. Conor Lenihan	630	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Community, Rural and Gaeltacht Affairs	Conor Lenihan	Mr. Conor Lenihan	630	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Education and Science	Conor Lenihan	Mr. Conor Lenihan	630	2007-06-14	2008-05-07
+28	13	5	2008	9	3	2011	Minister of State	Community, Rural and Gaeltacht Affairs	Conor Lenihan	Mr. Conor Lenihan	630	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Education and Science	Conor Lenihan	Mr. Conor Lenihan	630	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Justice, Equality and Law Reform	Conor Lenihan	Mr. Conor Lenihan	630	2008-05-13	2011-03-09
+18	23	3	1982	14	12	1982	Minister of State	Transport	Terry Leyden	Mr. Terry Leyden	636	1982-03-23	1982-12-14
+18	23	3	1982	14	12	1982	Minister of State	Posts and Telegraphs	Terry Leyden	Mr. Terry Leyden	636	1982-03-23	1982-12-14
+20	12	3	1987	12	7	1989	Minister of State	Health	Terry Leyden	Mr. Terry Leyden	636	1987-03-12	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Industry and Commerce	Terry Leyden	Mr. Terry Leyden	636	1989-07-19	1992-02-11
+7	24	10	1956	20	3	1957	Minister	Gaeltacht	Patrick James Lindsay	Mr. Patrick James Lindsay	638	1956-10-24	1957-03-20
+7	2	6	1954	24	10	1956	Secretary	Gaeltacht	Patrick James Lindsay	Mr. Patrick James Lindsay	638	1954-06-02	1956-10-24
+7	2	6	1954	24	10	1956	Secretary	Education	Patrick James Lindsay	Mr. Patrick James Lindsay	638	1954-06-02	1956-10-24
+1	21	7	1937	30	6	1938	Secretary	Taoiseach	Patrick J. Little	Mr. Patrick J. Little	641	1937-07-21	1938-06-30
+1	21	7	1937	30	6	1938	Secretary	External Affairs	Patrick J. Little	Mr. Patrick J. Little	641	1937-07-21	1938-06-30
+2	27	9	1939	2	7	1943	Minister	Posts and Telegraphs	Patrick J. Little	Mr. Patrick J. Little	641	1939-09-27	1943-07-02
+2	30	6	1938	26	9	1939	Secretary	Taoiseach	Patrick J. Little	Mr. Patrick J. Little	641	1938-06-30	1939-09-26
+2	30	6	1938	26	9	1939	Secretary	External Affairs	Patrick J. Little	Mr. Patrick J. Little	641	1938-06-30	1939-09-26
+3	2	7	1943	9	6	1944	Minister	Posts and Telegraphs	Patrick J. Little	Mr. Patrick J. Little	641	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Posts and Telegraphs	Patrick J. Little	Mr. Patrick J. Little	641	1944-06-09	1948-02-18
+24	15	12	1994	30	11	1996	Minister	Transport, Energy and Communications	Michael Lowry	Mr. Michael Lowry	645	1994-12-15	1996-11-30
+6	13	6	1951	2	6	1954	Secretary	Government	Jack Lynch	Mr. Jack Lynch	652	1951-06-13	1954-06-02
+6	13	6	1951	2	6	1954	Secretary	Lands	Jack Lynch	Mr. Jack Lynch	652	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	Education	Jack Lynch	Mr. Jack Lynch	652	1957-03-20	1959-06-23
+8	20	3	1957	26	6	1957	Minister	Gaeltacht	Jack Lynch	Mr. Jack Lynch	652	1957-03-20	1957-06-26
+9	23	6	1959	11	10	1961	Minister	Industry and Commerce	Jack Lynch	Mr. Jack Lynch	652	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Industry and Commerce	Jack Lynch	Mr. Jack Lynch	652	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Finance	Jack Lynch	Mr. Jack Lynch	652	1965-04-21	1966-11-10
+12	10	11	1966	2	7	1969	Taoiseach	Taoiseach	Jack Lynch	Mr. Jack Lynch	652	1966-11-10	1969-07-02
+12	11	3	1968	26	3	1968	Minister	Education	Jack Lynch	Mr. Jack Lynch	652	1968-03-11	1968-03-26
+13	2	7	1969	14	3	1973	Taoiseach	Taoiseach	Jack Lynch	Mr. Jack Lynch	652	1969-07-02	1973-03-14
+15	5	7	1977	11	12	1979	Taoiseach	Taoiseach	Jack Lynch	Mr. Jack Lynch	652	1977-07-05	1979-12-11
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Health	Kathleen Lynch	Ms. Kathleen Lynch	656	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Justice and Equality	Kathleen Lynch	Ms. Kathleen Lynch	656	2011-03-09	NULL
+20	12	3	1987	31	3	1987	Minister of State	Marine	Denis Lyons	Mr. Denis Lyons	660	1987-03-12	1987-03-31
+20	31	3	1987	12	7	1989	Minister of State	Tourism and Transport	Denis Lyons	Mr. Denis Lyons	660	1987-03-31	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Tourism, Transport and Communications	Denis Lyons	Mr. Denis Lyons	660	1989-07-19	1992-02-11
+5	18	2	1948	7	3	1951	Minister	Justice	Seán (Major-General) Mac Eoin	Mr. Seán (Major-General) Mac Eoin	666	1948-02-18	1951-03-07
+5	7	3	1951	13	6	1951	Minister	Defence	Seán (Major-General) Mac Eoin	Mr. Seán (Major-General) Mac Eoin	666	1951-03-07	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Defence	Seán (Major-General) Mac Eoin	Mr. Seán (Major-General) Mac Eoin	666	1954-06-02	1957-03-20
+5	3	5	1949	11	5	1949	Minister	External Affairs	Seán MacBride	Mr. Seán MacBride	671	1949-05-03	1949-05-11
+1	21	7	1937	30	6	1938	Minister	Finance	Seán MacEntee	Mr. Seán MacEntee	674	1937-07-21	1938-06-30
+2	30	6	1938	16	9	1939	Minister	Finance	Seán MacEntee	Mr. Seán MacEntee	674	1938-06-30	1939-09-16
+2	18	8	1941	2	7	1943	Minister	Local Government and Public Health	Seán MacEntee	Mr. Seán MacEntee	674	1941-08-18	1943-07-02
+2	16	9	1939	18	8	1941	Minister	Industry and Commerce	Seán MacEntee	Mr. Seán MacEntee	674	1939-09-16	1941-08-18
+3	2	7	1943	9	6	1944	Minister	Local Government and Public Health	Seán MacEntee	Mr. Seán MacEntee	674	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Local Government and Public Health	Seán MacEntee	Mr. Seán MacEntee	674	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Finance	Seán MacEntee	Mr. Seán MacEntee	674	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	Health	Seán MacEntee	Mr. Seán MacEntee	674	1957-03-20	1959-06-23
+8	27	11	1957	23	6	1959	Minister	Social Welfare	Seán MacEntee	Mr. Seán MacEntee	674	1957-11-27	1959-06-23
+9	23	6	1959	11	10	1961	Tánaiste	Tánaiste	Seán MacEntee	Mr. Seán MacEntee	674	1959-06-23	1961-10-11
+9	23	6	1959	11	10	1961	Minister	Health	Seán MacEntee	Mr. Seán MacEntee	674	1959-06-23	1961-10-11
+9	23	6	1959	11	10	1961	Minister	Social Welfare	Seán MacEntee	Mr. Seán MacEntee	674	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Tánaiste	Tánaiste	Seán MacEntee	Mr. Seán MacEntee	674	1961-10-11	1965-04-21
+10	11	10	1961	21	4	1965	Minister	Health	Seán MacEntee	Mr. Seán MacEntee	674	1961-10-11	1965-04-21
+15	1	1	1978	11	12	1979	Secretary	Public Service	Ray MacSharry	Mr. Ray MacSharry	676	1978-01-01	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Agriculture	Ray MacSharry	Mr. Ray MacSharry	676	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Tánaiste	Tánaiste	Ray MacSharry	Mr. Ray MacSharry	676	1982-03-09	1982-12-14
+18	9	3	1982	14	12	1982	Minister	Finance	Ray MacSharry	Mr. Ray MacSharry	676	1982-03-09	1982-12-14
+20	10	3	1987	20	3	1987	Minister	Finance and Public Service	Ray MacSharry	Mr. Ray MacSharry	676	1987-03-10	1987-03-20
+20	10	3	1987	24	11	1988	Minister	Finance	Ray MacSharry	Mr. Ray MacSharry	676	1987-03-10	1988-11-24
+20	20	3	1987	31	3	1987	Minister	Tourism and Transport	Ray MacSharry	Mr. Ray MacSharry	676	1987-03-20	1987-03-31
+25	26	6	1997	27	1	2000	Minister	Education	Micheál Martin	Mr. Micheál Martin	693	1997-06-26	2000-01-27
+25	27	1	2000	6	6	2002	Minister	Health	Micheál Martin	Mr. Micheál Martin	693	2000-01-27	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Health and Children	Micheál Martin	Mr. Micheál Martin	693	2002-06-06	2004-09-29
+26	29	9	2004	14	6	2007	Minister	Enterprise, Trade and Employment	Micheál Martin	Mr. Micheál Martin	693	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Enterprise, Trade and Employment	Micheál Martin	Mr. Micheál Martin	693	2007-06-14	2008-05-07
+28	7	5	2008	19	1	2011	Minister	Foreign Affairs	Micheál Martin	Mr. Micheál Martin	693	2008-05-07	2011-01-19
+20	10	3	1987	12	7	1989	Minister of State	Industry and Commerce	Dr. Sean (Tipperary) McCarthy	Dr. Sean (Tipperary) McCarthy	704	1987-03-10	1989-07-12
+22	11	2	1992	12	1	1993	Minister	Social Welfare	Charlie McCreevy	Mr. Charlie McCreevy	709	1992-02-11	1993-01-12
+23	12	1	1993	22	1	1993	Minister	Tourism, Transport and Communications	Charlie McCreevy	Mr. Charlie McCreevy	709	1993-01-12	1993-01-22
+23	22	1	1993	15	12	1994	Minister	Tourism and Trade	Charlie McCreevy	Mr. Charlie McCreevy	709	1993-01-22	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Enterprise and Employment	Charlie McCreevy	Mr. Charlie McCreevy	709	1994-11-18	1994-12-15
+25	26	6	1997	6	6	2002	Minister	Finance	Charlie McCreevy	Mr. Charlie McCreevy	709	1997-06-26	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Finance	Charlie McCreevy	Mr. Charlie McCreevy	709	2002-06-06	2004-09-29
+25	26	6	1997	6	6	2002	Minister	Tourism and Trade	Dr. James McDaid	Dr. James McDaid	712	1997-06-26	2002-06-06
+26	19	6	2002	5	10	2004	Minister of State	Transport	Dr. James McDaid	Dr. James McDaid	712	2002-06-19	2004-10-05
+26	6	6	2002	14	6	2007	Minister	Justice, Equality and Law Reform	Michael McDowell	Mr. Michael McDowell	719	2002-06-06	2007-06-14
+26	13	9	2006	14	6	2007	Tánaiste	Tánaiste	Michael McDowell	Mr. Michael McDowell	719	2006-09-13	2007-06-14
+5	3	5	1949	11	5	1949	Minister	Finance	Patrick McGilligan	Mr. Patrick McGilligan	727	1949-05-03	1949-05-11
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Arts, Heritage and Gaeltacht	Dinny McGinley	Mr. Dinny McGinley	728	2011-03-09	NULL
+27	14	6	2007	7	5	2008	Minister of State	Enterprise, Trade and Employment	John McGuinness	Mr. John McGuinness	741	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Enterprise, Trade and Employment	John McGuinness	Mr. John McGuinness	741	2008-05-13	2009-04-21
+24	20	12	1994	26	6	1997	Minister of State	Environment	Liz McManus	Ms. Liz McManus	749	1994-12-20	1997-06-26
+16	25	3	1980	30	6	1981	Minister of State	Industry, Commerce and Energy	Thomas Meaney	Mr. Thomas Meaney	754	1980-03-25	1981-06-30
+24	20	12	1994	26	6	1997	Minister of State	Taoiseach	Gay Mitchell	Mr. Gay Mitchell	762	1994-12-20	1997-06-26
+24	20	12	1994	26	6	1997	Minister of State	Foreign Affairs	Gay Mitchell	Mr. Gay Mitchell	762	1994-12-20	1997-06-26
+17	30	6	1981	9	3	1982	Minister	Justice	Jim Mitchell	Mr. Jim Mitchell	763	1981-06-30	1982-03-09
+19	14	12	1982	10	3	1987	Minister	Transport	Jim Mitchell	Mr. Jim Mitchell	763	1982-12-14	1987-03-10
+19	14	12	1982	10	3	1987	Minister	Posts and Telegraphs	Jim Mitchell	Mr. Jim Mitchell	763	1982-12-14	1987-03-10
+19	2	1	1984	10	3	1987	Minister	Communications	Jim Mitchell	Mr. Jim Mitchell	763	1984-01-02	1987-03-10
+25	8	7	1997	6	6	2002	Minister of State	Health and Children	Dr. Tom Moffatt	Dr. Tom Moffatt	766	1997-07-08	2002-06-06
+13	9	5	1970	14	3	1973	Minister	Local Government	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1970-05-09	1973-03-14
+13	2	7	1969	9	5	1970	Secretary	Education	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1969-07-02	1970-05-09
+15	5	7	1977	11	12	1979	Minister	Defence	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1977-07-05	1979-12-11
+21	12	7	1989	11	2	1992	Minister	Energy	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1989-07-12	1992-02-11
+22	11	2	1992	4	11	1992	Minister	Energy	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1992-02-11	1992-11-04
+25	26	6	1997	9	4	2002	Minister of State	Government	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1997-06-26	2002-04-09
+25	26	6	1997	6	6	2002	Minister of State	Environment and Local Government	Robert (Bobby) Molloy	Mr. Robert (Bobby) Molloy	768	1997-06-26	2002-06-06
+28	13	5	2008	9	3	2011	Minister of State	Health and Children	John Anthony Moloney	Mr. John Anthony Moloney	770	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Education and Science	John Anthony Moloney	Mr. John Anthony Moloney	770	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Enterprise, Trade and Employment	John Anthony Moloney	Mr. John Anthony Moloney	770	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Justice, Equality and Law Reform	John Anthony Moloney	Mr. John Anthony Moloney	770	2008-05-13	2011-03-09
+16	13	12	1979	30	6	1981	Minister of State	Taoiseach	Séan Moore	Mr. Séan Moore	777	1979-12-13	1981-06-30
+16	13	12	1979	30	6	1981	Minister of State	Defence	Séan Moore	Mr. Séan Moore	777	1979-12-13	1981-06-30
+8	26	6	1957	23	6	1959	Minister	Gaeltacht	Michael Moran	Mr. Michael Moran	778	1957-06-26	1959-06-23
+9	23	6	1959	23	7	1959	Minister	Gaeltacht	Michael Moran	Mr. Michael Moran	778	1959-06-23	1959-07-23
+9	23	7	1959	11	10	1961	Minister	Lands	Michael Moran	Mr. Michael Moran	778	1959-07-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Lands	Michael Moran	Mr. Michael Moran	778	1961-10-11	1965-04-21
+10	11	10	1961	21	4	1965	Minister	Gaeltacht	Michael Moran	Mr. Michael Moran	778	1961-10-11	1965-04-21
+11	21	4	1965	10	11	1966	Minister	Lands	Michael Moran	Mr. Michael Moran	778	1965-04-21	1966-11-10
+11	21	4	1965	10	11	1966	Minister	Gaeltacht	Michael Moran	Mr. Michael Moran	778	1965-04-21	1966-11-10
+12	10	11	1966	26	3	1968	Minister	Lands	Michael Moran	Mr. Michael Moran	778	1966-11-10	1968-03-26
+12	10	11	1966	26	3	1968	Minister	Gaeltacht	Michael Moran	Mr. Michael Moran	778	1966-11-10	1968-03-26
+12	27	3	1968	2	7	1969	Minister	Justice	Michael Moran	Mr. Michael Moran	778	1968-03-27	1969-07-02
+13	2	7	1969	5	5	1970	Minister	Justice	Michael Moran	Mr. Michael Moran	778	1969-07-02	1970-05-05
+5	18	2	1948	7	3	1951	Minister	Industry and Commerce	Daniel Morrissey	Mr. Daniel Morrissey	781	1948-02-18	1951-03-07
+5	18	2	1948	7	3	1951	Minister	Justice	Daniel Morrissey	Mr. Daniel Morrissey	781	1948-02-18	1951-03-07
+1	21	7	1937	30	6	1938	Secretary	Industry and Commerce	Seán Moylan	Mr. Seán Moylan	783	1937-07-21	1938-06-30
+2	30	6	1938	2	7	1943	Secretary	Industry and Commerce	Seán Moylan	Mr. Seán Moylan	783	1938-06-30	1943-07-02
+2	10	2	1943	26	6	1943	Secretary	Finance	Seán Moylan	Mr. Seán Moylan	783	1943-02-10	1943-06-26
+2	29	8	1939	26	6	1943	Secretary	Defence	Seán Moylan	Mr. Seán Moylan	783	1939-08-29	1943-06-26
+2	30	6	1938	9	2	1943	Secretary	Industry and Commerce	Seán Moylan	Mr. Seán Moylan	783	1938-06-30	1943-02-09
+3	2	7	1943	9	6	1944	Minister	Lands	Seán Moylan	Mr. Seán Moylan	783	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Lands	Seán Moylan	Mr. Seán Moylan	783	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Education	Seán Moylan	Mr. Seán Moylan	783	1951-06-13	1954-06-02
+8	16	5	1957	16	11	1957	Minister	Agriculture	Seán Moylan	Mr. Seán Moylan	783	1957-05-16	1957-11-16
+19	16	12	1982	10	3	1987	Minister of State	Trade, Commerce and Tourism	Michael Moynihan	Mr. Michael Moynihan	785	1982-12-16	1987-03-10
+19	13	2	1986	20	1	1987	Minister of State	Fisheries and Forestry	Michael Moynihan	Mr. Michael Moynihan	785	1986-02-13	1987-01-20
+5	18	2	1948	13	6	1951	Minister	Education	General Richard Mulcahy	General Richard Mulcahy	788	1948-02-18	1951-06-13
+7	2	6	1954	20	3	1957	Minister	Education	General Richard Mulcahy	General Richard Mulcahy	788	1954-06-02	1957-03-20
+7	2	7	1956	24	10	1956	Minister	Gaeltacht	General Richard Mulcahy	General Richard Mulcahy	788	1956-07-02	1956-10-24
+14	14	3	1973	5	7	1977	Secretary	Agriculture and Fisheries	Michael Pat Murphy	Mr. Michael Pat Murphy	801	1973-03-14	1977-07-05
+5	18	2	1948	29	4	1949	Minister	Local Government	Timothy Joseph Murphy	Mr. Timothy Joseph Murphy	803	1948-02-18	1949-04-29
+17	30	6	1981	9	3	1982	Secretary	Agriculture	Ted Nealon	Mr. Ted Nealon	811	1981-06-30	1982-03-09
+19	18	2	1983	2	1	1984	Minister of State	Taoiseach	Ted Nealon	Mr. Ted Nealon	811	1983-02-18	1984-01-02
+19	18	2	1983	2	1	1984	Minister of State	Posts and Telegraphs	Ted Nealon	Mr. Ted Nealon	811	1983-02-18	1984-01-02
+19	16	2	1986	10	3	1987	Minister of State	Taoiseach	Ted Nealon	Mr. Ted Nealon	811	1986-02-16	1987-03-10
+19	2	1	1984	10	3	1987	Minister of State	Communications	Ted Nealon	Mr. Ted Nealon	811	1984-01-02	1987-03-10
+16	16	12	1980	30	6	1981	Minister	Labour	Thomas Nolan	Mr. Thomas Nolan	820	1980-12-16	1981-06-30
+16	25	3	1980	16	12	1980	Minister of State	Health	Thomas Nolan	Mr. Thomas Nolan	820	1980-03-25	1980-12-16
+16	25	3	1980	16	12	1980	Minister of State	Social Welfare	Thomas Nolan	Mr. Thomas Nolan	820	1980-03-25	1980-12-16
+19	14	12	1982	14	2	1986	Minister	Justice	Michael Noonan	Mr. Michael Noonan	821	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Industry and Commerce	Michael Noonan	Mr. Michael Noonan	821	1986-02-14	1987-03-10
+19	20	1	1987	10	3	1987	Minister	Energy	Michael Noonan	Mr. Michael Noonan	821	1987-01-20	1987-03-10
+24	15	12	1994	26	6	1997	Minister	Health	Michael Noonan	Mr. Michael Noonan	821	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Finance	Michael Noonan	Mr. Michael Noonan	821	2011-03-09	NULL
+20	10	3	1987	12	7	1989	Minister	Defence	Michael J. (Limerick West) Noonan	Mr. Michael J. (Limerick West) Noonan	822	1987-03-10	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Marine	Michael J. (Limerick West) Noonan	Mr. Michael J. (Limerick West) Noonan	822	1989-07-19	1992-02-11
+5	18	2	1948	13	6	1951	Tánaiste	Tánaiste	William Norton	Mr. William Norton	825	1948-02-18	1951-06-13
+5	18	2	1948	13	6	1951	Minister	Social Welfare	William Norton	Mr. William Norton	825	1948-02-18	1951-06-13
+5	3	5	1949	11	5	1949	Minister	Local Government	William Norton	Mr. William Norton	825	1949-05-03	1949-05-11
+7	2	6	1954	20	3	1957	Tánaiste	Tánaiste	William Norton	Mr. William Norton	825	1954-06-02	1957-03-20
+7	2	6	1954	20	3	1957	Minister	Industry and Commerce	William Norton	Mr. William Norton	825	1954-06-02	1957-03-20
+6	13	6	1951	2	6	1954	Secretary	Taoiseach	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1951-06-13	1954-06-02
+6	13	6	1951	2	6	1954	Secretary	Defence	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Secretary	Taoiseach	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1957-03-20	1959-06-23
+8	20	3	1957	23	6	1959	Secretary	Defence	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Secretary	Taoiseach	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1959-06-23	1961-10-11
+9	23	6	1959	11	10	1961	Secretary	Defence	Donnchadh Ó Briain	Mr. Donnchadh Ó Briain	826	1959-06-23	1961-10-11
+17	30	6	1981	11	11	1981	Secretary	Environment	Fergus O'Brien	Mr. Fergus O'Brien	828	1981-06-30	1981-11-11
+17	11	11	1981	9	3	1982	Secretary	Taoiseach	Fergus O'Brien	Mr. Fergus O'Brien	828	1981-11-11	1982-03-09
+17	11	11	1981	9	3	1982	Secretary	Defence	Fergus O'Brien	Mr. Fergus O'Brien	828	1981-11-11	1982-03-09
+19	14	12	1982	15	12	1983	Minister of State	Health	Fergus O'Brien	Mr. Fergus O'Brien	828	1982-12-14	1983-12-15
+19	14	12	1982	15	12	1983	Minister of State	Social Welfare	Fergus O'Brien	Mr. Fergus O'Brien	828	1982-12-14	1983-12-15
+19	15	12	1983	10	3	1987	Minister of State	Environment	Fergus O'Brien	Mr. Fergus O'Brien	828	1983-12-15	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Taoiseach	Fergus O'Brien	Mr. Fergus O'Brien	828	1986-02-13	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Environment	Fergus O'Brien	Mr. Fergus O'Brien	828	1986-02-13	1987-03-10
+19	13	2	1986	10	3	1987	Minister of State	Defence	Fergus O'Brien	Mr. Fergus O'Brien	828	1986-02-13	1987-03-10
+22	11	2	1992	12	1	1993	Minister	Health	Dr. John F. O'Connell	Dr. John F. O'Connell (Deceased)	844	1992-02-11	1993-01-12
+25	8	7	1997	19	2	2001	Minister of State	Arts, Heritage, Gaeltacht and the Islands	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	1997-07-08	2001-02-19
+25	19	2	2001	6	6	2002	Minister of State	Agriculture, Food and Rural Development	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2001-02-19	2002-06-06
+26	6	6	2002	14	6	2007	Minister	Arts, Heritage, Gaeltacht and the Islands	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2002-06-06	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Community, Rural and Gaeltacht Affairs	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2007-06-14	2008-05-07
+28	7	5	2008	23	5	2010	Minister	Community, Rural and Gaeltacht Affairs	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2008-05-07	2010-05-23
+28	20	1	2011	9	3	2011	Minister	Defence	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2011-01-20	2011-03-09
+28	23	1	2011	9	3	2011	Minister	Environment, Heritage and Local Government	Éamon Ó Cuív	Mr. Éamon Ó Cuív	852	2011-01-23	2011-03-09
+22	13	2	1992	12	1	1993	Minister of State	Justice	Willie O'Dea	Mr. Willie O'Dea	854	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Justice	Willie O'Dea	Mr. Willie O'Dea	854	1993-01-14	1994-12-15
+23	14	1	1993	15	12	1994	Minister of State	Health	Willie O'Dea	Mr. Willie O'Dea	854	1993-01-14	1994-12-15
+25	8	7	1997	6	6	2002	Minister of State	Education and Science	Willie O'Dea	Mr. Willie O'Dea	854	1997-07-08	2002-06-06
+26	29	9	2004	14	6	2007	Minister	Defence	Willie O'Dea	Mr. Willie O'Dea	854	2004-09-29	2007-06-14
+26	19	6	2002	29	9	2004	Minister of State	Justice, Equality and Law Reform	Willie O'Dea	Mr. Willie O'Dea	854	2002-06-19	2004-09-29
+27	14	6	2007	7	5	2008	Minister	Defence	Willie O'Dea	Mr. Willie O'Dea	854	2007-06-14	2008-05-07
+28	7	5	2008	18	2	2010	Minister	Defence	Willie O'Dea	Mr. Willie O'Dea	854	2008-05-07	2010-02-18
+15	8	7	1977	11	12	1979	Minister	Economic Planning and Development	Martin O'Donoghue	Mr. Martin O'Donoghue	859	1977-07-08	1979-12-11
+15	5	7	1977	8	7	1977	Minister	Minister without Portfolio	Martin O'Donoghue	Mr. Martin O'Donoghue	859	1977-07-05	1977-07-08
+18	9	3	1982	6	10	1982	Minister	Education	Martin O'Donoghue	Mr. Martin O'Donoghue	859	1982-03-09	1982-10-06
+25	1	7	1997	6	6	2002	Minister of State	Foreign Affairs	Liz O'Donnell	Ms. Liz O'Donnell	861	1997-07-01	2002-06-06
+25	11	4	2002	6	6	2002	Minister of State	Government	Liz O'Donnell	Ms. Liz O'Donnell	861	2002-04-11	2002-06-06
+7	2	6	1954	20	3	1957	Minister	Local Government	Patrick O'Donnell	Mr. Patrick O'Donnell	862	1954-06-02	1957-03-20
+14	14	3	1973	5	7	1977	Minister	Gaeltacht	Thomas O'Donnell	Mr. Thomas O'Donnell	864	1973-03-14	1977-07-05
+21	15	11	1991	11	2	1992	Minister of State	Finance	John O'Donoghue	Mr. John O'Donoghue	868	1991-11-15	1992-02-11
+25	26	6	1997	6	6	2002	Minister	Justice	John O'Donoghue	Mr. John O'Donoghue	868	1997-06-26	2002-06-06
+25	26	6	1997	6	6	2002	Minister	Equality and Law Reform	John O'Donoghue	Mr. John O'Donoghue	868	1997-06-26	2002-06-06
+26	6	6	2002	14	6	2007	Minister	Tourism, Sport and Recreation	John O'Donoghue	Mr. John O'Donoghue	868	2002-06-06	2007-06-14
+7	2	6	1954	20	3	1957	Secretary	Government	John O'Donovan	Mr. John O'Donovan	870	1954-06-02	1957-03-20
+1	21	7	1937	30	6	1938	Secretary	Lands	Seán O'Grady	Mr. Seán O'Grady	885	1937-07-21	1938-06-30
+1	21	7	1937	30	6	1938	Secretary	Defence	Seán O'Grady	Mr. Seán O'Grady	885	1937-07-21	1938-06-30
+2	30	6	1938	9	2	1943	Secretary	Lands	Seán O'Grady	Mr. Seán O'Grady	885	1938-06-30	1943-02-09
+2	30	6	1938	26	6	1943	Secretary	Defence	Seán O'Grady	Mr. Seán O'Grady	885	1938-06-30	1943-06-26
+3	2	7	1943	7	6	1944	Secretary	Industry and Commerce	Seán O'Grady	Mr. Seán O'Grady	885	1943-07-02	1944-06-07
+4	9	6	1944	31	12	1946	Secretary	Industry and Commerce	Seán O'Grady	Mr. Seán O'Grady	885	1944-06-09	1946-12-31
+4	1	1	1947	18	2	1948	Secretary	Finance	Seán O'Grady	Mr. Seán O'Grady	885	1947-01-01	1948-02-18
+18	28	10	1982	14	12	1982	Minister of State	Social Welfare	Dr. Rory O'Hanlon	Dr. Rory O'Hanlon	888	1982-10-28	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Health	Dr. Rory O'Hanlon	Dr. Rory O'Hanlon	888	1987-03-10	1989-07-12
+21	12	7	1989	14	11	1991	Minister	Health	Dr. Rory O'Hanlon	Dr. Rory O'Hanlon	888	1989-07-12	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Environment	Dr. Rory O'Hanlon	Dr. Rory O'Hanlon	888	1991-11-14	1992-02-11
+7	2	6	1954	20	3	1957	Minister	Health	Thomas Francis (Jnr.) O'Higgins	Mr. Thomas Francis (Jnr.) O'Higgins	895	1954-06-02	1957-03-20
+5	18	2	1948	7	3	1951	Minister	Defence	Thomas Francis (Snr.) O'Higgins	Mr. Thomas Francis (Snr.) O'Higgins	896	1948-02-18	1951-03-07
+5	7	3	1951	13	6	1951	Minister	Industry and Commerce	Thomas Francis (Snr.) O'Higgins	Mr. Thomas Francis (Snr.) O'Higgins	896	1951-03-07	1951-06-13
+26	29	9	2004	14	6	2007	Minister of State	Environment, Heritage and Local Government	Batt O'Keeffe	Mr. Batt O'Keeffe	899	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Environment, Heritage and Local Government	Batt O'Keeffe	Mr. Batt O'Keeffe	899	2007-06-14	2008-05-07
+28	7	5	2008	20	1	2011	Minister	Education and Science	Batt O'Keeffe	Mr. Batt O'Keeffe	899	2008-05-07	2011-01-20
+28	23	3	2010	20	1	2011	Minister	Enterprise, Trade and Employment	Batt O'Keeffe	Mr. Batt O'Keeffe	899	2010-03-23	2011-01-20
+17	30	6	1981	9	3	1982	Secretary	Foreign Affairs	Jim O'Keeffe	Mr. Jim O'Keeffe	901	1981-06-30	1982-03-09
+19	16	12	1982	13	2	1986	Minister of State	Foreign Affairs	Jim O'Keeffe	Mr. Jim O'Keeffe	901	1982-12-16	1986-02-13
+19	13	2	1986	10	3	1987	Minister of State	Public Service	Jim O'Keeffe	Mr. Jim O'Keeffe	901	1986-02-13	1987-03-10
+19	1	5	1986	10	3	1987	Minister of State	Finance	Jim O'Keeffe	Mr. Jim O'Keeffe	901	1986-05-01	1987-03-10
+25	8	7	1997	6	6	2002	Minister of State	Agriculture, Food and Forestry	Edward O'Keeffe	Mr. Edward O'Keeffe	902	1997-07-08	2002-06-06
+1	21	7	1937	30	6	1938	Tánaiste	Tánaiste	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1937-07-21	1938-06-30
+1	21	7	1937	30	6	1938	Minister	Local Government and Public Health	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1937-07-21	1938-06-30
+2	30	6	1938	2	7	1943	Tánaiste	Tánaiste	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1938-06-30	1943-07-02
+2	30	6	1938	8	9	1939	Minister	Local Government and Public Health	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1938-06-30	1939-09-08
+2	16	9	1939	2	7	1943	Minister	Finance	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1939-09-16	1943-07-02
+2	8	9	1939	27	9	1939	Minister	Education	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1939-09-08	1939-09-27
+3	2	7	1943	9	6	1944	Tánaiste	Tánaiste	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1943-07-02	1944-06-09
+3	2	7	1943	9	6	1944	Minister	Finance	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1943-07-02	1944-06-09
+4	9	6	1944	14	6	1945	Tánaiste	Tánaiste	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1944-06-09	1945-06-14
+4	9	6	1944	14	6	1945	Minister	Finance	Seán T. O'Kelly	Mr. Seán T. O'Kelly	905	1944-06-09	1945-06-14
+13	3	1	1973	14	3	1973	Minister	Transport and Power	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1973-01-03	1973-03-14
+13	18	12	1972	3	1	1973	Minister	Minister without Portfolio	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1972-12-18	1973-01-03
+13	9	5	1970	3	1	1973	Secretary	Education	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1970-05-09	1973-01-03
+15	5	7	1977	11	12	1979	Minister	Foreign Affairs	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1977-07-05	1979-12-11
+16	12	12	1979	16	12	1980	Minister	Finance	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1979-12-12	1980-12-16
+16	12	12	1979	21	1	1980	Minister	Economic Planning and Development	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1979-12-12	1980-01-21
+16	21	1	1980	22	1	1980	Minister	Energy	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1980-01-21	1980-01-22
+16	12	12	1979	24	3	1980	Minister	Public Service	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1979-12-12	1980-03-24
+20	10	3	1987	12	7	1989	Minister	Agriculture	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1987-03-10	1989-07-12
+21	12	7	1989	14	11	1991	Minister	Agriculture and Food	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1989-07-12	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Labour	Michael O'Kennedy	Mr. Michael O'Kennedy	906	1991-11-14	1992-02-11
+15	1	1	1978	11	12	1979	Secretary	Environment	John (Kerry) O'Leary	Mr. John (Kerry) O'Leary	908	1978-01-01	1979-12-11
+14	14	3	1973	5	7	1977	Minister	Labour	Michael O'Leary	Mr. Michael O'Leary	910	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Tánaiste	Tánaiste	Michael O'Leary	Mr. Michael O'Leary	910	1981-06-30	1982-03-09
+17	30	6	1981	9	3	1982	Minister	Energy	Michael O'Leary	Mr. Michael O'Leary	910	1981-06-30	1982-03-09
+13	7	5	1970	14	3	1973	Minister	Justice	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1970-05-07	1973-03-14
+13	2	7	1969	7	5	1970	Secretary	Taoiseach	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1969-07-02	1970-05-07
+13	2	7	1969	7	5	1970	Secretary	Defence	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1969-07-02	1970-05-07
+15	5	7	1977	11	12	1979	Minister	Industry and Commerce	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1977-07-05	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Industry, Commerce and Energy	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1979-12-12	1981-06-30
+16	23	1	1980	30	6	1981	Minister	Industry, Commerce and Tourism	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1980-01-23	1981-06-30
+18	9	3	1982	6	10	1982	Minister	Trade, Commerce and Tourism	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1982-03-09	1982-10-06
+21	12	7	1989	11	2	1992	Minister	Industry and Commerce	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1989-07-12	1992-02-11
+22	11	2	1992	4	11	1992	Minister	Industry and Commerce	Desmond J. O'Malley	Mr. Desmond J. O'Malley	918	1992-02-11	1992-11-04
+10	11	10	1961	21	4	1965	Secretary	Finance	Donogh O'Malley	Mr. Donogh O'Malley	919	1961-10-11	1965-04-21
+11	21	4	1965	13	7	1966	Minister	Health	Donogh O'Malley	Mr. Donogh O'Malley	919	1965-04-21	1966-07-13
+11	21	4	1965	13	7	1966	Minister	Education	Donogh O'Malley	Mr. Donogh O'Malley	919	1965-04-21	1966-07-13
+12	10	11	1966	10	3	1968	Minister	Education	Donogh O'Malley	Mr. Donogh O'Malley	919	1966-11-10	1968-03-10
+8	4	12	1957	23	6	1959	Minister	Posts and Telegraphs	John Ormonde	Mr. John Ormonde	943	1957-12-04	1959-06-23
+20	10	3	1987	12	7	1989	Minister	Education	Mary O'Rourke	Ms. Mary O'Rourke	946	1987-03-10	1989-07-12
+21	12	7	1989	14	11	1991	Minister	Education	Mary O'Rourke	Ms. Mary O'Rourke	946	1989-07-12	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Health	Mary O'Rourke	Ms. Mary O'Rourke	946	1991-11-14	1992-02-11
+22	13	2	1992	12	1	1993	Minister of State	Industry and Commerce	Mary O'Rourke	Ms. Mary O'Rourke	946	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Enterprise and Employment	Mary O'Rourke	Ms. Mary O'Rourke	946	1993-01-14	1994-12-15
+25	26	6	1997	6	6	2002	Minister	Transport, Energy and Communications	Mary O'Rourke	Ms. Mary O'Rourke	946	1997-06-26	2002-06-06
+23	14	1	1993	17	11	1994	Minister of State	Agriculture, Food and Forestry	Brian O'Shea	Mr. Brian O'Shea	953	1993-01-14	1994-11-17
+24	20	12	1994	26	6	1997	Minister of State	Health	Brian O'Shea	Mr. Brian O'Shea	953	1994-12-20	1997-06-26
+7	2	6	1954	20	3	1957	Secretary	Taoiseach	Denis J. O'Sullivan	Mr. Denis J. O'Sullivan	955	1954-06-02	1957-03-20
+7	2	6	1954	20	3	1957	Secretary	Defence	Denis J. O'Sullivan	Mr. Denis J. O'Sullivan	955	1954-06-02	1957-03-20
+23	14	1	1993	5	8	1994	Minister of State	Marine	Gerry O'Sullivan	Mr. Gerry O'Sullivan	957	1993-01-14	1994-08-05
+19	13	2	1986	10	3	1987	Minister of State	Environment	Toddy O'Sullivan	Mr. Toddy O'Sullivan	963	1986-02-13	1987-03-10
+24	20	12	1994	26	6	1997	Minister of State	Tourism and Trade	Toddy O'Sullivan	Mr. Toddy O'Sullivan	963	1994-12-20	1997-06-26
+17	30	6	1981	9	3	1982	Minister	Gaeltacht	Paddy O'Toole	Mr. Paddy O'Toole	966	1981-06-30	1982-03-09
+19	14	12	1982	14	2	1986	Minister	Fisheries and Forestry	Paddy O'Toole	Mr. Paddy O'Toole	966	1982-12-14	1986-02-14
+19	14	12	1982	14	2	1986	Minister	Gaeltacht	Paddy O'Toole	Mr. Paddy O'Toole	966	1982-12-14	1986-02-14
+19	14	2	1986	10	3	1987	Minister	Gaeltacht	Paddy O'Toole	Mr. Paddy O'Toole	966	1986-02-14	1987-03-10
+19	14	2	1986	10	3	1987	Minister	Defence	Paddy O'Toole	Mr. Paddy O'Toole	966	1986-02-14	1987-03-10
+19	20	1	1987	10	3	1987	Minister	Tourism, Fisheries and Forestry	Paddy O'Toole	Mr. Paddy O'Toole	966	1987-01-20	1987-03-10
+24	15	12	1994	26	6	1997	Minister	Justice	Nora Owen	Mrs. Nora Owen	967	1994-12-15	1997-06-26
+19	14	12	1982	10	3	1987	Minister of State	Social Welfare	Séamus Pattison	Mr. Séamus Pattison	970	1982-12-14	1987-03-10
+19	14	2	1986	20	1	1987	Minister of State	Social Welfare	Séamus Pattison	Mr. Séamus Pattison	970	1986-02-14	1987-01-20
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Jobs, Enterprise and Innovation	John Perry	Mr. John Perry	974	2011-03-09	NULL
+16	12	12	1979	30	6	1981	Minister	Fisheries and Forestry	Patrick Power	Mr. Patrick Power	979	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Defence	Patrick Power	Mr. Patrick Power	979	1982-03-09	1982-12-14
+26	29	9	2004	14	6	2007	Minister of State	Health and Children	Seán Power	Mr. Seán Power	980	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Justice, Equality and Law Reform	Seán Power	Mr. Seán Power	980	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Communications, Energy and Natural Resources	Seán Power	Mr. Seán Power	980	2008-05-13	2009-04-21
+19	13	12	1983	20	1	1987	Minister	Labour	Ruairí Quinn	Mr. Ruairí Quinn	985	1983-12-13	1987-01-20
+19	14	2	1986	20	1	1987	Minister	Labour and Public Service	Ruairí Quinn	Mr. Ruairí Quinn	985	1986-02-14	1987-01-20
+19	14	12	1982	13	12	1983	Minister of State	Environment	Ruairí Quinn	Mr. Ruairí Quinn	985	1982-12-14	1983-12-13
+23	12	1	1993	17	11	1994	Minister	Industry and Commerce	Ruairí Quinn	Mr. Ruairí Quinn	985	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Minister	Finance	Ruairí Quinn	Mr. Ruairí Quinn	985	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Education and Skills	Ruairí Quinn	Mr. Ruairí Quinn	985	2011-03-09	NULL
+24	15	12	1994	26	6	1997	Minister of State	Government	Pat Rabbitte	Mr. Pat Rabbitte	986	1994-12-15	1997-06-26
+24	15	12	1994	26	6	1997	Minister of State	Enterprise and Employment	Pat Rabbitte	Mr. Pat Rabbitte	986	1994-12-15	1997-06-26
+29	9	3	2011	NULL	NULL	NULL	Minister	Communications, Energy and Natural Resources	Pat Rabbitte	Mr. Pat Rabbitte	986	2011-03-09	NULL
+16	12	12	1979	30	6	1981	Minister	Posts and Telegraphs	Albert Reynolds	Mr. Albert Reynolds	991	1979-12-12	1981-06-30
+16	25	1	1980	30	6	1981	Minister	Transport	Albert Reynolds	Mr. Albert Reynolds	991	1980-01-25	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Industry and Energy	Albert Reynolds	Mr. Albert Reynolds	991	1982-03-09	1982-12-14
+18	7	10	1982	27	10	1982	Minister	Trade, Commerce and Tourism	Albert Reynolds	Mr. Albert Reynolds	991	1982-10-07	1982-10-27
+20	10	3	1987	24	11	1988	Minister	Industry and Commerce	Albert Reynolds	Mr. Albert Reynolds	991	1987-03-10	1988-11-24
+20	24	11	1988	12	7	1989	Minister	Finance	Albert Reynolds	Mr. Albert Reynolds	991	1988-11-24	1989-07-12
+21	12	7	1989	7	11	1991	Minister	Finance	Albert Reynolds	Mr. Albert Reynolds	991	1989-07-12	1991-11-07
+22	11	2	1992	12	1	1993	Taoiseach	Taoiseach	Albert Reynolds	Mr. Albert Reynolds	991	1992-02-11	1993-01-12
+22	4	11	1992	12	1	1993	Minister	Energy	Albert Reynolds	Mr. Albert Reynolds	991	1992-11-04	1993-01-12
+23	12	1	1993	15	12	1994	Taoiseach	Taoiseach	Albert Reynolds	Mr. Albert Reynolds	991	1993-01-12	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Foreign Affairs	Albert Reynolds	Mr. Albert Reynolds	991	1994-11-18	1994-12-15
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Transport, Tourism and Sport	Michael Ring	Mr. Michael Ring	1000	2011-03-09	NULL
+26	29	9	2004	14	6	2007	Minister	Environment, Heritage and Local Government	Dick Roche	Mr. Dick Roche	1003	2004-09-29	2007-06-14
+26	6	6	2002	29	9	2004	Minister of State	Taoiseach	Dick Roche	Mr. Dick Roche	1003	2002-06-06	2004-09-29
+26	6	6	2002	29	9	2004	Minister of State	Foreign Affairs	Dick Roche	Mr. Dick Roche	1003	2002-06-06	2004-09-29
+27	14	6	2007	7	5	2008	Minister of State	Taoiseach	Dick Roche	Mr. Dick Roche	1003	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Foreign Affairs	Dick Roche	Mr. Dick Roche	1003	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Minister of State	Taoiseach	Dick Roche	Mr. Dick Roche	1003	2008-05-07	2011-03-09
+28	7	5	2008	9	3	2011	Minister of State	Foreign Affairs	Dick Roche	Mr. Dick Roche	1003	2008-05-07	2011-03-09
+1	21	7	1937	30	6	1938	Minister	Justice	Patrick J. Ruttledge	Mr. Patrick J. Ruttledge	1012	1937-07-21	1938-06-30
+2	30	6	1938	8	9	1939	Minister	Justice	Patrick J. Ruttledge	Mr. Patrick J. Ruttledge	1012	1938-06-30	1939-09-08
+2	8	9	1939	14	8	1941	Minister	Local Government and Public Health	Patrick J. Ruttledge	Mr. Patrick J. Ruttledge	1012	1939-09-08	1941-08-14
+25	1	2	2000	6	6	2002	Minister of State	Tourism, Sport and Recreation	Eoin Ryan	Mr. Eoin Ryan	1013	2000-02-01	2002-06-06
+1	21	7	1937	30	6	1938	Minister	Agriculture	Dr. James Ryan	Dr. James Ryan	1014	1937-07-21	1938-06-30
+2	30	6	1938	2	7	1943	Minister	Agriculture	Dr. James Ryan	Dr. James Ryan	1014	1938-06-30	1943-07-02
+3	2	7	1943	9	6	1944	Minister	Agriculture	Dr. James Ryan	Dr. James Ryan	1014	1943-07-02	1944-06-09
+4	9	6	1944	21	1	1947	Minister	Agriculture	Dr. James Ryan	Dr. James Ryan	1014	1944-06-09	1947-01-21
+4	21	1	1947	18	2	1947	Minister	Health	Dr. James Ryan	Dr. James Ryan	1014	1947-01-21	1947-02-18
+4	21	1	1947	18	2	1947	Minister	Social Welfare	Dr. James Ryan	Dr. James Ryan	1014	1947-01-21	1947-02-18
+6	13	6	1951	2	6	1954	Minister	Health	Dr. James Ryan	Dr. James Ryan	1014	1951-06-13	1954-06-02
+6	13	6	1951	2	6	1954	Minister	Social Welfare	Dr. James Ryan	Dr. James Ryan	1014	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	Finance	Dr. James Ryan	Dr. James Ryan	1014	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Minister	Finance	Dr. James Ryan	Dr. James Ryan	1014	1959-06-23	1961-10-11
+10	11	10	1961	21	4	1965	Minister	Finance	Dr. James Ryan	Dr. James Ryan	1014	1961-10-11	1965-04-21
+14	14	3	1973	5	7	1977	Minister	Finance	Richie Ryan	Mr. Richie Ryan	1020	1973-03-14	1977-07-05
+14	1	11	1973	5	7	1977	Minister	Public Service	Richie Ryan	Mr. Richie Ryan	1020	1973-11-01	1977-07-05
+27	14	6	2007	7	5	2008	Minister of State	Agriculture and Food	Trevor Sargent	Mr. Trevor Sargent	1022	2007-06-14	2008-05-07
+28	7	5	2008	23	2	2010	Minister of State	Agriculture, Fisheries and Food	Trevor Sargent	Mr. Trevor Sargent	1022	2008-05-07	2010-02-23
+29	9	3	2011	NULL	NULL	NULL	Minister	Justice and Equality	Alan Shatter	Mr. Alan Shatter	1028	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister	Defence	Alan Shatter	Mr. Alan Shatter	1028	2011-03-09	NULL
+26	29	9	2004	14	6	2007	Minister of State	Agriculture and Food	Brendan Smith	Mr. Brendan Smith	1044	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Health and Children	Brendan Smith	Mr. Brendan Smith	1044	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Education and Science	Brendan Smith	Mr. Brendan Smith	1044	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Justice, Equality and Law Reform	Brendan Smith	Mr. Brendan Smith	1044	2007-06-14	2008-05-07
+28	7	5	2008	9	3	2011	Minister	Agriculture, Fisheries and Food	Brendan Smith	Mr. Brendan Smith	1044	2008-05-07	2011-03-09
+28	20	1	2011	9	3	2011	Minister	Justice and Law Reform	Brendan Smith	Mr. Brendan Smith	1044	2011-01-20	2011-03-09
+16	13	12	1979	30	6	1981	Minister of State	Agriculture	Michael Smith	Mr. Michael Smith	1045	1979-12-13	1981-06-30
+20	24	11	1988	12	7	1989	Minister	Energy	Michael Smith	Mr. Michael Smith	1045	1988-11-24	1989-07-12
+20	10	3	1987	31	3	1987	Minister of State	Tourism, Fisheries and Forestry	Michael Smith	Mr. Michael Smith	1045	1987-03-10	1987-03-31
+20	31	3	1987	24	11	1988	Minister of State	Energy	Michael Smith	Mr. Michael Smith	1045	1987-03-31	1988-11-24
+21	19	7	1989	15	11	1991	Minister of State	Industry and Commerce	Michael Smith	Mr. Michael Smith	1045	1989-07-19	1991-11-15
+22	11	2	1992	12	1	1993	Minister	Environment	Michael Smith	Mr. Michael Smith	1045	1992-02-11	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Environment	Michael Smith	Mr. Michael Smith	1045	1993-01-12	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Education	Michael Smith	Mr. Michael Smith	1045	1994-11-18	1994-12-15
+25	8	10	1997	6	6	2002	Minister	Defence	Michael Smith	Mr. Michael Smith	1045	1997-10-08	2002-06-06
+25	1	7	1997	8	10	1997	Minister of State	Education	Michael Smith	Mr. Michael Smith	1045	1997-07-01	1997-10-08
+25	1	7	1997	8	10	1997	Minister of State	Enterprise, Trade and Employment	Michael Smith	Mr. Michael Smith	1045	1997-07-01	1997-10-08
+26	6	6	2002	29	9	2004	Minister	Defence	Michael Smith	Mr. Michael Smith	1045	2002-06-06	2004-09-29
+2	27	9	1939	26	6	1943	Secretary	Taoiseach	Patrick Smith	Mr. Patrick Smith	1046	1939-09-27	1943-06-26
+2	27	9	1939	26	6	1943	Secretary	External Affairs	Patrick Smith	Mr. Patrick Smith	1046	1939-09-27	1943-06-26
+3	2	7	1943	7	6	1944	Secretary	Finance	Patrick Smith	Mr. Patrick Smith	1046	1943-07-02	1944-06-07
+4	22	1	1947	18	2	1948	Minister	Agriculture	Patrick Smith	Mr. Patrick Smith	1046	1947-01-22	1948-02-18
+4	9	6	1944	31	12	1946	Secretary	Finance	Patrick Smith	Mr. Patrick Smith	1046	1944-06-09	1946-12-31
+4	1	1	1947	21	1	1947	Secretary	Agriculture	Patrick Smith	Mr. Patrick Smith	1046	1947-01-01	1947-01-21
+6	13	6	1951	2	6	1954	Minister	Local Government	Patrick Smith	Mr. Patrick Smith	1046	1951-06-13	1954-06-02
+8	20	3	1957	27	11	1957	Minister	Local Government	Patrick Smith	Mr. Patrick Smith	1046	1957-03-20	1957-11-27
+8	20	3	1957	27	11	1957	Minister	Social Welfare	Patrick Smith	Mr. Patrick Smith	1046	1957-03-20	1957-11-27
+8	20	3	1957	27	11	1957	Minister	Agriculture	Patrick Smith	Mr. Patrick Smith	1046	1957-03-20	1957-11-27
+9	23	6	1959	11	10	1961	Minister	Agriculture	Patrick Smith	Mr. Patrick Smith	1046	1959-06-23	1961-10-11
+10	11	10	1961	8	10	1964	Minister	Agriculture	Patrick Smith	Mr. Patrick Smith	1046	1961-10-11	1964-10-08
+7	16	3	1956	20	3	1957	Secretary	Local Government	Daniel Spring	Mr. Daniel Spring	1047	1956-03-16	1957-03-20
+17	30	6	1981	9	3	1982	Secretary	Justice	Dick Spring	Mr. Dick Spring	1048	1981-06-30	1982-03-09
+19	14	12	1982	20	1	1987	Tánaiste	Tánaiste	Dick Spring	Mr. Dick Spring	1048	1982-12-14	1987-01-20
+19	14	12	1982	13	12	1983	Minister	Environment	Dick Spring	Mr. Dick Spring	1048	1982-12-14	1983-12-13
+23	12	1	1993	17	11	1994	Tánaiste	Tánaiste	Dick Spring	Mr. Dick Spring	1048	1993-01-12	1994-11-17
+23	12	1	1993	17	11	1994	Minister	Foreign Affairs	Dick Spring	Mr. Dick Spring	1048	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Tánaiste	Tánaiste	Dick Spring	Mr. Dick Spring	1048	1994-12-15	1997-06-26
+24	15	12	1994	26	6	1997	Minister	Foreign Affairs	Dick Spring	Mr. Dick Spring	1048	1994-12-15	1997-06-26
+23	14	1	1993	17	11	1994	Minister of State	Environment	Emmet Stagg	Mr. Emmet Stagg	1051	1993-01-14	1994-11-17
+24	20	12	1994	26	6	1997	Minister of State	Transport, Energy and Communications	Emmet Stagg	Mr. Emmet Stagg	1051	1994-12-20	1997-06-26
+7	2	6	1954	20	3	1957	Minister	Finance	Gerard Sweetman	Mr. Gerard Sweetman	1059	1954-06-02	1957-03-20
+23	12	1	1993	17	11	1994	Minister	Labour	Mervyn Taylor	Mr. Mervyn Taylor	1063	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Minister	Equality and Law Reform	Mervyn Taylor	Mr. Mervyn Taylor	1063	1994-12-15	1997-06-26
+1	21	7	1937	30	6	1938	Minister	Posts and Telegraphs	Oscar Traynor	Mr. Oscar Traynor	1075	1937-07-21	1938-06-30
+2	30	6	1938	8	9	1939	Minister	Posts and Telegraphs	Oscar Traynor	Mr. Oscar Traynor	1075	1938-06-30	1939-09-08
+2	8	9	1939	2	7	1943	Minister	Defence	Oscar Traynor	Mr. Oscar Traynor	1075	1939-09-08	1943-07-02
+3	2	7	1943	9	6	1944	Minister	Defence	Oscar Traynor	Mr. Oscar Traynor	1075	1943-07-02	1944-06-09
+4	9	6	1944	18	2	1948	Minister	Defence	Oscar Traynor	Mr. Oscar Traynor	1075	1944-06-09	1948-02-18
+6	13	6	1951	2	6	1954	Minister	Defence	Oscar Traynor	Mr. Oscar Traynor	1075	1951-06-13	1954-06-02
+8	20	3	1957	23	6	1959	Minister	Justice	Oscar Traynor	Mr. Oscar Traynor	1075	1957-03-20	1959-06-23
+9	23	6	1959	11	10	1961	Minister	Justice	Oscar Traynor	Mr. Oscar Traynor	1075	1959-06-23	1961-10-11
+20	12	3	1987	12	7	1989	Minister of State	Finance	Noel Treacy	Mr. Noel Treacy	1076	1987-03-12	1989-07-12
+20	30	6	1988	12	7	1989	Minister of State	Taoiseach	Noel Treacy	Mr. Noel Treacy	1076	1988-06-30	1989-07-12
+21	19	7	1989	6	2	1991	Minister of State	Health	Noel Treacy	Mr. Noel Treacy	1076	1989-07-19	1991-02-06
+21	6	2	1991	15	11	1991	Minister of State	Justice	Noel Treacy	Mr. Noel Treacy	1076	1991-02-06	1991-11-15
+22	8	9	1992	12	1	1993	Minister of State	Taoiseach	Noel Treacy	Mr. Noel Treacy	1076	1992-09-08	1993-01-12
+22	13	2	1992	12	1	1993	Minister of State	Finance	Noel Treacy	Mr. Noel Treacy	1076	1992-02-13	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Taoiseach	Noel Treacy	Mr. Noel Treacy	1076	1993-01-14	1994-12-15
+23	14	1	1993	15	12	1994	Minister of State	Finance	Noel Treacy	Mr. Noel Treacy	1076	1993-01-14	1994-12-15
+23	14	1	1993	15	12	1994	Minister of State	Transport, Energy and Communications	Noel Treacy	Mr. Noel Treacy	1076	1993-01-14	1994-12-15
+25	9	10	1997	6	6	2002	Minister of State	Education and Science	Noel Treacy	Mr. Noel Treacy	1076	1997-10-09	2002-06-06
+25	9	10	1997	6	6	2002	Minister of State	Enterprise, Trade and Employment	Noel Treacy	Mr. Noel Treacy	1076	1997-10-09	2002-06-06
+26	19	6	2002	29	9	2004	Minister of State	Agriculture and Food	Noel Treacy	Mr. Noel Treacy	1076	2002-06-19	2004-09-29
+26	29	9	2004	14	6	2007	Minister of State	Taoiseach	Noel Treacy	Mr. Noel Treacy	1076	2004-09-29	2007-06-14
+26	29	9	2004	14	6	2007	Minister of State	Foreign Affairs	Noel Treacy	Mr. Noel Treacy	1076	2004-09-29	2007-06-14
+14	14	3	1973	5	7	1977	Minister	Local Government	James Tully	Mr. James Tully	1079	1973-03-14	1977-07-05
+17	30	6	1981	9	3	1982	Minister	Defence	James Tully	Mr. James Tully	1079	1981-06-30	1982-03-09
+22	13	2	1992	12	1	1993	Minister of State	Environment	Dan Wallace	Mr. Dan Wallace	1093	1992-02-13	1993-01-12
+25	8	7	1997	6	6	2002	Minister of State	Environment and Local Government	Dan Wallace	Mr. Dan Wallace	1093	1997-07-08	2002-06-06
+25	8	7	1997	6	6	2002	Minister of State	Justice, Equality and Law Reform	Mary Wallace	Ms. Mary Wallace	1094	1997-07-08	2002-06-06
+26	14	2	2006	14	6	2007	Minister of State	Agriculture and Food	Mary Wallace	Ms. Mary Wallace	1094	2006-02-14	2007-06-14
+27	14	6	2007	7	5	2008	Minister of State	Agriculture and Food	Mary Wallace	Ms. Mary Wallace	1094	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Health and Children	Mary Wallace	Ms. Mary Wallace	1094	2008-05-13	2009-04-21
+20	10	3	1987	12	7	1989	Minister of State	Agriculture and Food	Joe Walsh	Mr. Joe Walsh	1097	1987-03-10	1989-07-12
+21	19	7	1989	11	2	1992	Minister of State	Agriculture and Food	Joe Walsh	Mr. Joe Walsh	1097	1989-07-19	1992-02-11
+22	11	2	1992	12	1	1993	Minister	Agriculture and Food	Joe Walsh	Mr. Joe Walsh	1097	1992-02-11	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Agriculture and Food	Joe Walsh	Mr. Joe Walsh	1097	1993-01-12	1994-12-15
+25	26	6	1997	6	6	2002	Minister	Agriculture, Food and Forestry	Joe Walsh	Mr. Joe Walsh	1097	1997-06-26	2002-06-06
+26	6	6	2002	29	9	2004	Minister	Agriculture, Food and Rural Development	Joe Walsh	Mr. Joe Walsh	1097	2002-06-06	2004-09-29
+6	13	6	1951	2	6	1954	Minister	Agriculture	Thomas Walsh	Mr. Thomas Walsh	1101	1951-06-13	1954-06-02
+1	21	7	1937	30	6	1938	Secretary	Local Government and Public Health	Dr. Francis Constantine (Dr.) Ward	Dr. Francis Constantine (Dr.) Ward	1102	1937-07-21	1938-06-30
+2	30	6	1938	26	6	1943	Secretary	Local Government and Public Health	Dr. Francis Constantine (Dr.) Ward	Dr. Francis Constantine (Dr.) Ward	1102	1938-06-30	1943-06-26
+3	2	7	1943	7	6	1944	Secretary	Local Government and Public Health	Dr. Francis Constantine (Dr.) Ward	Dr. Francis Constantine (Dr.) Ward	1102	1943-07-02	1944-06-07
+4	9	6	1944	13	7	1946	Secretary	Local Government and Public Health	Dr. Francis Constantine (Dr.) Ward	Dr. Francis Constantine (Dr.) Ward	1102	1944-06-09	1946-07-13
+15	5	7	1977	11	12	1979	Minister	Education	John P. Wilson	Mr. John P. Wilson	1109	1977-07-05	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Education	John P. Wilson	Mr. John P. Wilson	1109	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Transport	John P. Wilson	Mr. John P. Wilson	1109	1982-03-09	1982-12-14
+18	9	3	1982	14	12	1982	Minister	Posts and Telegraphs	John P. Wilson	Mr. John P. Wilson	1109	1982-03-09	1982-12-14
+20	10	3	1987	31	3	1987	Minister	Communications	John P. Wilson	Mr. John P. Wilson	1109	1987-03-10	1987-03-31
+20	31	3	1987	12	7	1989	Minister	Tourism and Transport	John P. Wilson	Mr. John P. Wilson	1109	1987-03-31	1989-07-12
+21	9	11	1991	14	11	1991	Minister	Environment	John P. Wilson	Mr. John P. Wilson	1109	1991-11-09	1991-11-14
+21	13	11	1990	11	2	1992	Tánaiste	Tánaiste	John P. Wilson	Mr. John P. Wilson	1109	1990-11-13	1992-02-11
+21	12	7	1989	11	2	1992	Minister	Marine	John P. Wilson	Mr. John P. Wilson	1109	1989-07-12	1992-02-11
+22	11	2	1992	12	1	1993	Tánaiste	Tánaiste	John P. Wilson	Mr. John P. Wilson	1109	1992-02-11	1993-01-12
+22	11	2	1992	12	1	1993	Minister	Defence	John P. Wilson	Mr. John P. Wilson	1109	1992-02-11	1993-01-12
+22	11	2	1992	12	1	1993	Minister	Gaeltacht	John P. Wilson	Mr. John P. Wilson	1109	1992-02-11	1993-01-12
+15	1	1	1979	11	12	1979	Secretary	Taoiseach	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1979-01-01	1979-12-11
+15	1	1	1979	11	12	1979	Secretary	Defence	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1979-01-01	1979-12-11
+16	12	12	1979	30	6	1981	Minister	Health	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1979-12-12	1981-06-30
+16	12	12	1979	30	6	1981	Minister	Social Welfare	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1979-12-12	1981-06-30
+18	9	3	1982	14	12	1982	Minister	Health	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1982-03-09	1982-12-14
+18	9	3	1982	14	12	1982	Minister	Social Welfare	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1982-03-09	1982-12-14
+20	10	3	1987	12	7	1989	Minister	Social Welfare	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1987-03-10	1989-07-12
+21	12	7	1989	14	11	1991	Minister	Social Welfare	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1989-07-12	1991-11-14
+21	14	11	1991	11	2	1992	Minister	Agriculture and Food	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1991-11-14	1992-02-11
+22	11	2	1992	12	1	1993	Minister	Marine	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1992-02-11	1993-01-12
+23	12	1	1993	15	12	1994	Minister	Social Welfare	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1993-01-12	1994-12-15
+23	18	11	1994	15	12	1994	Minister	Health	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1994-11-18	1994-12-15
+25	26	6	1997	27	1	2000	Minister	Marine	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	1997-06-26	2000-01-27
+25	27	1	2000	6	6	2002	Minister	Education and Science	Dr. Michael J. Woods	Dr. Michael J. Woods	1113	2000-01-27	2002-06-06
+15	5	7	1977	1	1	1978	Secretary	Finance	Pearse Wyse	Mr. Pearse Wyse	1116	1977-07-05	1978-01-01
+15	1	1	1978	11	12	1979	Secretary	Finance	Pearse Wyse	Mr. Pearse Wyse	1116	1978-01-01	1979-12-11
+24	15	12	1994	26	6	1997	Minister	Agriculture, Food and Forestry	Ivan Yates	Mr. Ivan Yates	1117	1994-12-15	1997-06-26
+20	10	3	1987	12	7	1989	Minister of State	Industry and Commerce	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1987-03-10	1989-07-12
+21	12	7	1989	6	2	1991	Minister	Tourism and Transport	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1989-07-12	1991-02-06
+21	6	2	1991	11	2	1992	Minister	Tourism, Transport and Communications	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1991-02-06	1992-02-11
+22	11	2	1992	12	1	1993	Minister	Education	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1992-02-11	1993-01-12
+23	14	1	1993	15	12	1994	Minister of State	Enterprise and Employment	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1993-01-14	1994-12-15
+25	26	6	1997	6	6	2002	Minister of State	Taoiseach	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1997-06-26	2002-06-06
+25	26	6	1997	6	6	2002	Minister of State	Defence	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	1997-06-26	2002-06-06
+26	6	6	2002	14	6	2007	Minister	Public Enterprise	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	2002-06-06	2007-06-14
+26	29	9	2004	14	6	2007	Minister	Social and Family Affairs	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	2004-09-29	2007-06-14
+27	14	6	2007	7	5	2008	Minister	Arts, Sport and Tourism	Seamus Brennan	Mr. Seamus Brennan (Deceased)	1158	2007-06-14	2008-05-07
+16	13	12	1979	30	6	1981	Minister of State	Posts and Telegraphs	Mark (Junior) Killilea	Mr. Mark (Junior) Killilea	1432	1979-12-13	1981-06-30
+14	16	12	1976	5	7	1977	Secretary	Education and Public Service	Patrick Joseph Reynolds	Mr. Patrick Joseph Reynolds	1649	1976-12-16	1977-07-05
+13	3	1	1973	14	3	1973	Secretary	Education	James Tunney	Mr. James Tunney	1698	1973-01-03	1973-03-14
+15	5	7	1977	1	1	1978	Secretary	Education	James Tunney	Mr. James Tunney	1698	1977-07-05	1978-01-01
+15	1	1	1978	11	12	1979	Secretary	Education	James Tunney	Mr. James Tunney	1698	1978-01-01	1979-12-11
+16	13	12	1979	30	6	1981	Minister of State	Education	James Tunney	Mr. James Tunney	1698	1979-12-13	1981-06-30
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Environment, Community and Local Government	Jan O'Sullivan	Ms. Jan O'Sullivan	1754	2011-03-09	NULL
+28	13	5	2008	9	3	2011	Minister of State	Community, Rural and Gaeltacht Affairs	John Curran	Mr. John Curran	1777	2008-05-13	2011-03-09
+28	23	5	2010	9	3	2011	Minister of State	Taoiseach	John Curran	Mr. John Curran	1777	2010-05-23	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Defence	John Curran	Mr. John Curran	1777	2008-05-13	2011-03-09
+27	14	6	2007	7	5	2008	Minister of State	Health and Children	Jimmy Devins	Mr. Jimmy Devins	1780	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Education and Science	Jimmy Devins	Mr. Jimmy Devins	1780	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Enterprise, Trade and Employment	Jimmy Devins	Mr. Jimmy Devins	1780	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Justice, Equality and Law Reform	Jimmy Devins	Mr. Jimmy Devins	1780	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Enterprise, Trade and Employment	Jimmy Devins	Mr. Jimmy Devins	1780	2008-05-13	2009-04-21
+28	13	5	2008	21	4	2009	Minister of State	Education and Science	Jimmy Devins	Mr. Jimmy Devins	1780	2008-05-13	2009-04-21
+28	13	5	2008	9	3	2011	Minister of State	Environment, Heritage and Local Government	Michael Finneran	Mr. Michael Finneran	1796	2008-05-13	2011-03-09
+27	14	6	2007	7	5	2008	Minister of State	Health and Children	Máire Hoctor	Ms. Máire Hoctor	1804	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Social and Family Affairs	Máire Hoctor	Ms. Máire Hoctor	1804	2007-06-14	2008-05-07
+27	14	6	2007	7	5	2008	Minister of State	Environment, Heritage and Local Government	Máire Hoctor	Ms. Máire Hoctor	1804	2007-06-14	2008-05-07
+28	13	5	2008	21	4	2009	Minister of State	Health and Children	Máire Hoctor	Ms. Máire Hoctor	1804	2008-05-13	2009-04-21
+28	13	5	2008	21	4	2009	Minister of State	Social and Family Affairs	Máire Hoctor	Ms. Máire Hoctor	1804	2008-05-13	2009-04-21
+28	13	5	2008	21	4	2009	Minister of State	Environment, Heritage and Local Government	Máire Hoctor	Ms. Máire Hoctor	1804	2008-05-13	2009-04-21
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Taoiseach	Paul Kehoe	Mr. Paul Kehoe	1805	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Defence	Paul Kehoe	Mr. Paul Kehoe	1805	2011-03-09	NULL
+28	7	5	2008	9	3	2011	Minister of State	Health and Children	Barry Andrews	Mr. Barry Andrews	1811	2008-05-07	2011-03-09
+28	7	5	2008	9	3	2011	Minister of State	Education and Science	Barry Andrews	Mr. Barry Andrews	1811	2008-05-07	2011-03-09
+28	7	5	2008	9	3	2011	Minister of State	Justice, Equality and Law Reform	Barry Andrews	Mr. Barry Andrews	1811	2008-05-07	2011-03-09
+28	23	3	2010	23	1	2011	Minister of State	Agriculture, Fisheries and Food	Ciaran Cuffe	Mr. Ciaran Cuffe	1814	2010-03-23	2011-01-23
+28	23	3	2010	23	1	2011	Minister of State	Environment, Heritage and Local Government	Ciaran Cuffe	Mr. Ciaran Cuffe	1814	2010-03-23	2011-01-23
+16	13	12	1979	30	6	1981	Minister of State	Finance	Thomas McEllistrim	Mr. Thomas McEllistrim	1821	1979-12-13	1981-06-30
+18	23	3	1982	14	12	1982	Minister of State	Fisheries and Forestry	Thomas McEllistrim	Mr. Thomas McEllistrim	1821	1982-03-23	1982-12-14
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Communications, Energy and Natural Resources	Fergus O'Dowd	Mr. Fergus O'Dowd	1833	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Environment, Community and Local Government	Fergus O'Dowd	Mr. Fergus O'Dowd	1833	2011-03-09	NULL
+26	19	6	2002	14	6	2007	Minister of State	Health and Children	Tim O'Malley	Mr. Tim O'Malley	1835	2002-06-19	2007-06-14
+26	19	6	2002	14	6	2007	Minister of State	Finance	Tom Parlon	Mr. Tom Parlon	1837	2002-06-19	2007-06-14
+28	13	5	2008	9	3	2011	Minister of State	Foreign Affairs	Peter Power	Mr. Peter Power	1838	2008-05-13	2011-03-09
+23	12	1	1993	17	11	1994	Minister	Education	Niamh Bhreathnach	Mrs. Niamh Bhreathnach	1867	1993-01-12	1994-11-17
+24	15	12	1994	26	6	1997	Minister	Education	Niamh Bhreathnach	Mrs. Niamh Bhreathnach	1867	1994-12-15	1997-06-26
+28	13	5	2008	9	3	2011	Minister of State	Finance	Dr. Martin Mansergh	Dr. Martin Mansergh	2002	2008-05-13	2011-03-09
+28	13	5	2008	9	3	2011	Minister of State	Arts, Sport and Tourism	Dr. Martin Mansergh	Dr. Martin Mansergh	2002	2008-05-13	2011-03-09
+27	14	6	2007	7	5	2008	Minister	Communications, Marine and Natural Resources	Eamon Ryan	Mr. Eamon Ryan	2028	2007-06-14	2008-05-07
+28	7	5	2008	23	1	2011	Minister	Communications, Energy and Natural Resources	Eamon Ryan	Mr. Eamon Ryan	2028	2008-05-07	2011-01-23
+28	22	4	2009	9	3	2011	Minister of State	Health and Children	Aíne Brady	Ms. Aíne Brady	2156	2009-04-22	2011-03-09
+28	22	4	2009	9	3	2011	Minister of State	Environment, Heritage and Local Government	Aíne Brady	Ms. Aíne Brady	2156	2009-04-22	2011-03-09
+28	22	4	2009	9	3	2011	Minister of State	Social Protection	Aíne Brady	Ms. Aíne Brady	2156	2009-04-22	2011-03-09
+28	23	3	2010	23	1	2011	Minister of State	Justice and Law Reform	Mary Alexandra White	Ms. Mary Alexandra White	2157	2010-03-23	2011-01-23
+28	23	3	2010	23	1	2011	Minister of State	Community, Equality and Gaeltacht Affairs	Mary Alexandra White	Ms. Mary Alexandra White	2157	2010-03-23	2011-01-23
+28	23	3	2010	23	1	2011	Minister of State	Education and Skills	Mary Alexandra White	Ms. Mary Alexandra White	2157	2010-03-23	2011-01-23
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Jobs, Enterprise and Innovation	Sean Sherlock	Mr. Sean Sherlock	2163	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Education and Skills	Sean Sherlock	Mr. Sean Sherlock	2163	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister	Health	Dr. James Reilly	Dr. James Reilly	2180	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Taoiseach	Lucinda Creighton	Ms. Lucinda Creighton	2190	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Foreign Affairs and Trade	Lucinda Creighton	Ms. Lucinda Creighton	2190	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister	Transport, Tourism and Sport	Dr. Leo Varadkar	Dr. Leo Varadkar	2192	2011-03-09	NULL
+28	23	3	2010	9	3	2011	Minister of State	Agriculture, Fisheries and Food	Sean Connick	Mr. Sean Connick	2199	2010-03-23	2011-03-09
+28	22	4	2009	9	3	2011	Minister of State	Taoiseach	Dara Calleary	Mr. Dara Calleary	2201	2009-04-22	2011-03-09
+28	22	4	2009	9	3	2011	Minister of State	Finance	Dara Calleary	Mr. Dara Calleary	2201	2009-04-22	2011-03-09
+28	22	4	2009	9	3	2011	Minister of State	Enterprise, Trade and Employment	Dara Calleary	Mr. Dara Calleary	2201	2009-04-22	2011-03-09
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Transport, Tourism and Sport	Alan Kelly	Mr. Alan Kelly	2218	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Health	Alex White	Mr. Alex White	2219	2011-03-09	NULL
+29	9	3	2011	NULL	NULL	NULL	Minister of State	Education and Skills	Ciaran Cannon	Mr. Ciaran Cannon	2253	2011-03-09	NULL

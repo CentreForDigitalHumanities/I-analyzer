@@ -6,7 +6,7 @@ const defaultValueType = 'alpha';
     selector: 'ia-search-sorting',
     templateUrl: './search-sorting.component.html',
     styleUrls: ['./search-sorting.component.scss'],
-    host: { 'class': 'field has-addons' }
+    host: { class: 'field has-addons' }
 })
 export class SearchSortingComponent {
     @Input()

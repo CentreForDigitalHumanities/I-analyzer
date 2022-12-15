@@ -91,11 +91,11 @@ def metadata_attribute_transform_func(attribute):
 
     return lambda values: get_attribute(*values)
 
-def person_attribute_extractor(attribute):
+def person_attribute_extractor(attribute, id_attribute = 'who'):
     """Extractor that finds the speaker ID and returns one of the person's
     attributes defined in extract_person_data()"""
     return Combined(
-        XML(attribute='who'),
+        XML(attribute=id_attribute),
         Metadata('persons'),
         transform = metadata_attribute_transform_func(attribute),
     )
