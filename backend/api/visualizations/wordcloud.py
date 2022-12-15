@@ -1,7 +1,7 @@
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from addcorpus.load_corpus import load_corpus
-from corpora.parliament.utils.es_settings import get_nltk_stopwords
+from addcorpus.es_settings import get_nltk_stopwords
 from es import download as download
 
 def make_wordcloud_data(documents, field, corpus):

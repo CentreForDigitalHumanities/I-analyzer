@@ -9,7 +9,7 @@ from addcorpus.corpus import Corpus, Field
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
-from corpora.parliament.utils.es_settings import parliament_es_settings
+from addcorpus.es_settings import es_settings
 
 class Parliament(Corpus):
     '''
@@ -40,7 +40,7 @@ class Parliament(Corpus):
 
     @property
     def es_settings(self):
-        return parliament_es_settings(self.language)
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
 
     # overwrite below in child class if you need to extract the (converted) transcription
