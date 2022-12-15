@@ -109,15 +109,15 @@ def alignment_loss_adjacent_timeframes(coordinates_1, terms_1, coordinates_2, te
 
     common_terms = list(set.intersection(set(terms_1), set(terms_2)))
 
-    filter_coordinates = lambda coordinates, terms_to_index : np.array([
-        coordinates[terms_to_index[term], :]
-        for term in common_terms
-    ])
+    if len(common_terms):
+        filter_coordinates = lambda coordinates, terms_to_index : np.array([
+            coordinates[terms_to_index[term], :]
+            for term in common_terms
+        ])
 
-    filtered_coordinates_1 = filter_coordinates(coordinates_1, terms_to_index_1)
-    filtered_coordinates_2 = filter_coordinates(coordinates_2, terms_to_index_2)
+        filtered_coordinates_1 = filter_coordinates(coordinates_1, terms_to_index_1)
+        filtered_coordinates_2 = filter_coordinates(coordinates_2, terms_to_index_2)
 
-    if filtered_coordinates_1.size:
         loss = mean_squared_error(filtered_coordinates_1, filtered_coordinates_2)
     else:
         loss = 0
