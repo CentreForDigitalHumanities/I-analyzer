@@ -28,7 +28,7 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
 
     /** specify aggregator object based on visualised field;
      * used in document requests.
-    */
+     */
     getAggregator() {
         let size = 0;
         if (!this.visualizedField.searchFilter) {
@@ -37,11 +37,11 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
 
         const defaultData = this.visualizedField.searchFilter.defaultData;
         if (defaultData.filterType === 'MultipleChoiceFilter') {
-            size = (<MultipleChoiceFilterData>defaultData).optionCount;
+            size = (defaultData as MultipleChoiceFilterData).optionCount;
         } else if (defaultData.filterType === 'RangeFilter') {
-            size = (<RangeFilterData>defaultData).max - (<RangeFilterData>defaultData).min;
+            size = (defaultData as RangeFilterData).max - (defaultData as RangeFilterData).min;
         }
-        return {name: this.visualizedField.name, size: size};
+        return {name: this.visualizedField.name, size};
     }
 
     requestSeriesDocCounts(queryModel: QueryModel) {
@@ -157,18 +157,48 @@ export class HistogramComponent extends BarchartDirective<HistogramDataPoint> im
 
         if (this.rawData.length > 1) {  // if there are several queries, fulltable is disabled
             this.tableHeaders = [
-                { key: 'key', label: label, isSecondaryFactor: true, },
+                { key: 'key', label, isSecondaryFactor: true, },
                 { key: 'queryText', label: 'Query', isMainFactor: true, },
-                { key: valueKey, label: rightColumnName, format: this.formatValue(this.normalizer),  formatDownload: this.formatDownloadValue  }
+                {
+                    key: valueKey,
+                    label: rightColumnName,
+                    format: this.formatValue(this.normalizer),
+                    formatDownload: this.formatDownloadValue
+                }
             ];
         } else {
             this.tableHeaders = [
-                { key: 'key', label: label },
-                { key: 'doc_count', label: 'Document Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'doc_count' !== valueKey },
-                { key: 'relative_doc_count', label: 'Document Frequency (%)', format: this.formatValue('percent'), formatDownload: this.formatDownloadValue, isOptional: 'relative_doc_count' !== valueKey },
-                { key: 'match_count', label: 'Token Frequency', format: this.formatValue('raw'), formatDownload: this.formatDownloadValue, isOptional: 'match_count' !== valueKey },
-                { key: 'matches_by_doc_count', label: 'Relative Frequency (documents)', format: this.formatValue('documents'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_doc_count' !== valueKey },
-                { key: 'matches_by_token_count', label: 'Relative Frequency (terms)', format: this.formatValue('terms'), formatDownload: this.formatDownloadValue, isOptional: 'matches_by_token_count' !== valueKey }
+                { key: 'key', label },
+                {
+                    key: 'doc_count',
+                    label: 'Document Frequency',
+                    format: this.formatValue('raw'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'doc_count' !== valueKey },
+                {
+                    key: 'relative_doc_count',
+                    label: 'Document Frequency (%)',
+                    format: this.formatValue('percent'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'relative_doc_count' !== valueKey },
+                {
+                    key: 'match_count',
+                    label: 'Token Frequency',
+                    format: this.formatValue('raw'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'match_count' !== valueKey },
+                {
+                    key: 'matches_by_doc_count',
+                    label: 'Relative Frequency (documents)',
+                    format: this.formatValue('documents'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'matches_by_doc_count' !== valueKey },
+                {
+                    key: 'matches_by_token_count',
+                    label: 'Relative Frequency (terms)',
+                    format: this.formatValue('terms'),
+                    formatDownload: this.formatDownloadValue,
+                    isOptional: 'matches_by_token_count' !== valueKey }
             ];
         }
     }

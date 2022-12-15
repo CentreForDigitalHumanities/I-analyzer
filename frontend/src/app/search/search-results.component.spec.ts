@@ -21,17 +21,17 @@ describe('Search Results Component', () => {
         component.results = {
             fields,
             documents: [createDocument({
-                'a': '1',
-                'b': '2',
-                'c': 'Hide-and-seek!'
+                a: '1',
+                b: '2',
+                c: 'Hide-and-seek!'
             }, '1', 1,
             {
-                'c': ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
+                c: ['Where is <span>Wally?</span>', 'I cannot find <span>Wally</span> anywhere!']
             }),
             createDocument({
-                'a': '3',
-                'b': '4',
-                'c': 'Wally is here'
+                a: '3',
+                b: '4',
+                c: 'Wally is here'
             }, '2', 0.5)],
             total: {
                 value: 2,

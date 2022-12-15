@@ -30,8 +30,8 @@ describe('HighlightService', () => {
     });
 
     it('Accepts multiple', () => {
-        let separators = ['', '+', '|'];
-        for (let separator of separators) {
+        const separators = ['', '+', '|'];
+        for (const separator of separators) {
             expectHighlights(
                 'Sometimes it is the people no one can imagine anything of who do the things no one can imagine.',
                 `imagine ${separator} anything`,
@@ -65,7 +65,7 @@ describe('HighlightService', () => {
         expectHighlights(42, '', []);
         expectHighlights(123456, '23', []);
         expectHighlights(123, '123', [[0, '123']]);
-    })
+    });
 
     it('Should accept wildcards', () => {
         expectHighlights(
@@ -91,17 +91,17 @@ describe('HighlightService', () => {
     });
 
     it('Should limit the length of hits using snippets', () => {
-        let text = generateSequence(0, 10000)
-        let remainingLength = (maxSnippetsLength - 4) * 0.5;
-        let leftLength = Math.ceil(remainingLength);
-        let rightLength = Math.floor(remainingLength);
-        let sequenceSnippetsLength = Math.ceil(leftLength / 5);
+        const text = generateSequence(0, 10000);
+        const remainingLength = (maxSnippetsLength - 4) * 0.5;
+        const leftLength = Math.ceil(remainingLength);
+        const rightLength = Math.floor(remainingLength);
+        const sequenceSnippetsLength = Math.ceil(leftLength / 5);
 
-        let highlights = highlightService.highlight(text, '5000');
-        let snippets = highlightService.snippets(highlights);
+        const highlights = highlightService.highlight(text, '5000');
+        const snippets = highlightService.snippets(highlights);
 
-        let result = getHighlightedString(snippets);
-        let expected = getHighlightedString([
+        const result = getHighlightedString(snippets);
+        const expected = getHighlightedString([
             {
                 substring: omissionString + generateSequence(5000 - sequenceSnippetsLength, 5000).slice(-leftLength + 1) + ' ',
                 isHit: false
@@ -119,8 +119,8 @@ describe('HighlightService', () => {
     });
 
     it('Should pass short snippets', () => {
-        let highlights = highlightService.highlight('hello world!', '');
-        let snippets = highlightService.snippets(highlights);
+        const highlights = highlightService.highlight('hello world!', '');
+        const snippets = highlightService.snippets(highlights);
         expect(snippets).toEqual([{
             isHit: false,
             substring: 'hello world!'
@@ -138,43 +138,42 @@ Here were the warp and woof of the world, a world that was later to expand into 
             [250, 'Cecilia']]);
     });
 
-    let expectHighlights = (value: string | number, query: string, expectedHighlightRanges: [number, string][]) => {
-        let text = `${value}`;
-        let highlights = highlightService.highlight(
+    const expectHighlights = (value: string | number, query: string, expectedHighlightRanges: [number, string][]) => {
+        const text = `${value}`;
+        const highlights = highlightService.highlight(
             value,
             query);
-        let expectedHighlights = getExpectedHighlights(new UnicodeString(text), expectedHighlightRanges);
+        const expectedHighlights = getExpectedHighlights(new UnicodeString(text), expectedHighlightRanges);
         expect(getHighlightedString(highlights)).toEqual(getHighlightedString(expectedHighlights));
-    }
+    };
 
     /**
      * Generates a sequence of numbers padded to 4 characters separated by spaces.
+     *
      * @param start The starting number, inclusive
      * @param end The last number exclusive
      */
-    let generateSequence = (start: number, end: number) => {
-        return Array.from((function* () {
+    const generateSequence = (start: number, end: number) => Array.from((function* () {
             for (let i = start; i < end; i++) {
-                yield ("0000" + i).slice(-4);
+                yield ('0000' + i).slice(-4);
             }
         })()).join(' ');
-    }
 
-    let getExpectedHighlights = (text: UnicodeString, expectedHighlightRanges: [number, string][]) => {
+    const getExpectedHighlights = (text: UnicodeString, expectedHighlightRanges: [number, string][]) => {
         if (!expectedHighlightRanges.length) {
             return [{ substring: text.toString(), isHit: false }];
         }
 
-        let expectedHighlights: TextPart[] = [];
+        const expectedHighlights: TextPart[] = [];
         let lastIndex = 0;
 
-        for (let range of expectedHighlightRanges) {
-            let expectedHitPosition = range[0];
+        for (const range of expectedHighlightRanges) {
+            const expectedHitPosition = range[0];
             if (expectedHitPosition > lastIndex) {
                 expectedHighlights.push({ substring: text.substring(lastIndex, expectedHitPosition).toString(), isHit: false });
             }
 
-            let expectedHitText = new UnicodeString(range[1]);
+            const expectedHitText = new UnicodeString(range[1]);
             expectedHighlights.push({ substring: text.substr(expectedHitPosition, expectedHitText.length).toString(), isHit: true });
             lastIndex = expectedHitPosition + expectedHitText.length;
         }
@@ -184,9 +183,9 @@ Here were the warp and woof of the world, a world that was later to expand into 
         }
 
         return expectedHighlights;
-    }
+    };
 
-    let getHighlightedString = (parts: Iterable<TextPart>) =>
+    const getHighlightedString = (parts: Iterable<TextPart>) =>
         Array.from(parts).map(part => part.isHit ? `*${part.substring}*` : part.substring).join('');
 });
 

@@ -37,21 +37,21 @@ export class ManualNavigationComponent implements OnInit {
     }
 
     private *filter(pages: ManualPageMetaData[], filter: string): Iterable<ManualPageMetaData> {
-        if (filter.trim().length == 0) {
+        if (filter.trim().length === 0) {
             filter = '*';
         }
 
         // make all terms a wildcard search
-        let parts = filter.split(' ').filter(part => part.length).map(part => part.slice(-1) != '*' ? `*${part}*` : part);
+        const parts = filter.split(' ').filter(part => part.length).map(part => part.slice(-1) !== '*' ? `*${part}*` : part);
         this.highlightText = filter = parts.join(' ');
 
         // this is a massively over-engineered filter, but as we have this function already anyway: why not?
         // and at least it will be consistent with the highlights which also uses this expression
-        let expressions = parts.map(part => this.highlightService.getQueryExpression(part));
+        const expressions = parts.map(part => this.highlightService.getQueryExpression(part));
 
-        for (let page of pages) {
+        for (const page of pages) {
             let isMatch = true;
-            for (let expression of expressions) {
+            for (const expression of expressions) {
                 expression.lastIndex = 0;
                 if (!expression.test(page.title)) {
                     isMatch = false;

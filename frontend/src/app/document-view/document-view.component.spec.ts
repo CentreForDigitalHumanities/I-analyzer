@@ -35,7 +35,7 @@ describe('DocumentViewComponent', () => {
         component.document = {
             id: 'test',
             relevance: 0.5,
-            fieldValues: { 'test': 'Hello world!' }
+            fieldValues: { test: 'Hello world!' }
         };
         fixture.detectChanges();
     });
@@ -47,9 +47,9 @@ describe('DocumentViewComponent', () => {
     it('should render fields', async () => {
         await fixture.whenStable();
 
-        let debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
+        const debug = fixture.debugElement.queryAll(By.css('[data-test-field-value]'));
         expect(debug.length).toEqual(1); // number of fields
-        let element = debug[0].nativeElement;
+        const element = debug[0].nativeElement;
         expect(element.textContent).toBe('Hello world!');
     });
 });

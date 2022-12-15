@@ -34,7 +34,9 @@ export class TermComparisonEditorComponent implements OnChanges {
 
 
     get disableConfirm(): boolean {
-        if (!this.queries || !this.queries.length) { return false; }
+        if (!this.queries || !this.queries.length) {
+ return false;
+}
         return this.queries.length >= this.termLimit;
     }
 }

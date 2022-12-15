@@ -11,10 +11,10 @@ export class HighlightSelectorComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  
+
   @Input()
   public highlight: number;
-  
+
   @Output()
   public onChange = new EventEmitter<number>();
 

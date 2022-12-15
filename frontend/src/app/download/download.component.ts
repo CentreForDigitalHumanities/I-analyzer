@@ -22,8 +22,8 @@ export class DownloadComponent implements OnChanges {
     public availableCsvFields: CorpusField[];
 
     public isDownloading: boolean;
-    public isModalActive: boolean = false;
-    public isModalActiveError: boolean = false;
+    public isModalActive = false;
+    public isModalActiveError = false;
 
     public pendingDownload: PendingDownload;
 
@@ -116,7 +116,9 @@ export class DownloadComponent implements OnChanges {
     private getCsvFields(): CorpusField[] {
         if (this.selectedCsvFields === undefined) {
             return this.corpus.fields.filter(field => field.csvCore);
-        } else { return this.selectedCsvFields; }
+        } else {
+ return this.selectedCsvFields;
+}
     }
 
 

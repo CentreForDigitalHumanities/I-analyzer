@@ -10,7 +10,7 @@ import { DialogService, UserService } from '../services/index';
 export class PrivacyComponent implements OnInit {
     public title: string | undefined;
     public manualHtml: SafeHtml | undefined;
-    constructor(private dialogService: DialogService) { 
+    constructor(private dialogService: DialogService) {
     //fix for redirecting users who are not logged in, if false, the user is redirected to the login page
         UserService.loginActivated = true;
     }
