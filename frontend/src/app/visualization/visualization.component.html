@@ -18,10 +18,10 @@
     <div class="column">
         <label class="field" *ngIf="fieldDropdown">
             <label class="label">
-                <span *ngIf="visualizationType == 'resultscount' || visualizationType == 'termfrequency'">
+                <span *ngIf="visualizationType === 'resultscount' || visualizationType === 'termfrequency'">
                     Compare frequency by:
                 </span>
-                <span *ngIf="visualizationType == 'wordcloud' || visualizationType == 'ngram'">
+                <span *ngIf="visualizationType === 'wordcloud' || visualizationType === 'ngram'">
                     Count frequencies in:
                 </span>
             </label>

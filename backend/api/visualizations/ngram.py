@@ -15,7 +15,7 @@ def get_ngrams(es_query, corpus, field,
     """Given a query and a corpus, get the words that occurred most frequently around the query term"""
 
     bins = get_time_bins(es_query, corpus)
-    time_labels = ['{}-{}'.format(start_year, end_year) for start_year, end_year in bins]
+    time_labels = [format_time_label(start_year, end_year) for start_year, end_year in bins]
 
     positions_dict = {
         'any': list(range(ngram_size)),
@@ -39,6 +39,12 @@ def get_ngrams(es_query, corpus, field,
 
     return { 'words': ngrams, 'time_points' : time_labels }
 
+
+def format_time_label(start_year, end_year):
+    if start_year == end_year:
+        return str(start_year)
+    else:
+        return '{}-{}'.format(start_year, end_year)
 
 def get_total_time_interval(es_query, corpus):
     """
@@ -69,18 +75,24 @@ def get_time_bins(es_query, corpus):
     min_year, max_year = min_date.year, max_date.year
     time_range = max_year - min_year
 
-    if time_range <= 20:
+    if time_range < 1:
+        year_step = None
+    elif time_range <= 20:
         year_step = 1
     elif time_range <= 100:
         year_step = 5
     else:
         year_step = 10
 
-    bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
+    if year_step:
+        bins = [(start, min(max_year, start + year_step - 1)) for start in range(min_year, max_year, year_step)]
+        bins_max = bins[-1][1]
 
-    bins_max = bins[-1][1]
-    if bins_max < max_year:
-        bins.append((bins_max + 1, max_year))
+        if bins_max < max_year:
+            bins.append((bins_max + 1, max_year))
+
+    else:
+        bins = [(min_year, max_year)]
 
     return bins
 

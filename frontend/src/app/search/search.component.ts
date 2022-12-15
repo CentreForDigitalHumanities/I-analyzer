@@ -4,7 +4,8 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField,
+    QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 
@@ -136,6 +137,7 @@ export class SearchComponent extends ParamDirective {
 
     /**
      * Event triggered from search-results.component
+     *
      * @param input
      */
     public onSearched(input: ResultOverview) {
@@ -162,9 +164,13 @@ export class SearchComponent extends ParamDirective {
     }
 
     private getQueryFields(): string[] | null {
-        if (!this.selectedSearchFields) { return null; }
+        if (!this.selectedSearchFields) {
+ return null;
+}
 
-        if (!this.selectedSearchFields.length) { return null; }
+        if (!this.selectedSearchFields.length) {
+ return null;
+}
         const fieldNames = this.selectedSearchFields.map(field => field.name);
         return fieldNames;
     }
@@ -243,7 +249,9 @@ export class SearchComponent extends ParamDirective {
                 const param = this.searchService.getParamForFieldName(field.name);
                 if (params.has(param)) {
                     let filterSettings = params.get(param).split(',');
-                    if (filterSettings[0] === '') { filterSettings = []; }
+                    if (filterSettings[0] === '') {
+ filterSettings = [];
+}
                     const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
                     const data = searchFilterDataFromParam(filterType, filterSettings, field);
                     settings[field.name] = data;
@@ -311,7 +319,9 @@ export class SearchComponent extends ParamDirective {
     private setHighlightFromParams(params: ParamMap) {
         if (params.has('highlight')) {
             this.highlight = Number(params.get('highlight'));
-        } else { this.highlight = undefined; }
+        } else {
+ this.highlight = undefined;
+}
     }
 
     public setActiveFilters(activeFilters: SearchFilter<SearchFilterData>[]) {

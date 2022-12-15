@@ -54,7 +54,9 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         const route = {};
         if (this.currentNormalizer !== 'raw' || 'terms') {
             route['normalize'] = this.currentNormalizer;
-        } else { route['normalize'] = null; }
+        } else {
+ route['normalize'] = null;
+}
 
         this.setParams(route);
     }
@@ -87,14 +89,14 @@ export class BarchartOptionsComponent extends ParamDirective implements OnChange
         if (this.queries.length === 1 && this.queries[0] === this.queryText) {
             this.showEdit = false;
         }
-        this.setParams({'visualizeTerm': this.queries});
+        this.setParams({visualizeTerm: this.queries});
         this.queriesChanged.emit(this.queries);
     }
 
     signalClearQueries() {
         this.queries = [this.queryText];
         this.showEdit = false;
-        this.setParams({'visualizeTerm': null});
+        this.setParams({visualizeTerm: null});
         this.clearQueries.emit();
     }
 

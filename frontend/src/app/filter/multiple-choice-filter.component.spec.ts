@@ -15,10 +15,10 @@ describe('MultipleChoiceFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MultipleChoiceFilterComponent);
     component = fixture.componentInstance;
-    component.optionsAndCounts = [{'key': 'Andy', 'doc_count': 2}, {'key': 'Lou', 'doc_count': 3}];
+    component.optionsAndCounts = [{key: 'Andy', doc_count: 2}, {key: 'Lou', doc_count: 3}];
     component.data = {
         options: ['Andy', 'Lou']
-    }
+    };
     fixture.detectChanges();
   });
 

@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent implements OnInit {
-    logos: {url: string, path: string, alt: string}[] = environment.logos;
+    logos: {url: string; path: string; alt: string}[] = environment.logos;
 
     constructor() { }
 

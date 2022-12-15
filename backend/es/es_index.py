@@ -14,7 +14,7 @@ from elasticsearch.exceptions import RequestError
 from flask import current_app
 
 from ianalyzer.factories.elasticsearch import elasticsearch
-from .es_alias import get_new_version_number
+from .es_alias import alias, get_new_version_number
 
 import logging
 logger = logging.getLogger('indexing')
@@ -109,18 +109,25 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
 
 
-def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, prod):
+def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, add, clear, prod, rollover):
     logger.info('Started indexing `{}` from {} to {}...'.format(
         corpus_definition.es_index,
         start.strftime('%Y-%m-%d'),
         end.strftime('%Y-%m-%d')
     ))
 
+    if rollover and not prod:
+        logger.info('rollover flag is set but prod flag not set -- no effect')
+
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
-    # import pdb; pdb.set_trace()
+
+    if mappings_only:
+        logger.info('Created index `{}` with mappings only.'.format(corpus_definition.es_index))
+        return
+
     populate(client, corpus_name, corpus_definition, start=start, end=end)
 
     logger.info('Finished indexing `{}`.'.format(corpus_definition.es_index))
@@ -132,3 +139,8 @@ def perform_indexing(corpus_name, corpus_definition, start, end, add, clear, pro
             settings={'number_of_replicas': 1},
             index=corpus_definition.es_index
         )
+        if rollover:
+            logger.info('Adjusting alias for index  `{}`'.format(
+                corpus_definition.es_index))
+            alias(corpus_name, corpus_definition) # not deleting old index, so we can roll back
+

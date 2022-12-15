@@ -30,11 +30,11 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     downloadType(type: DownloadType): string {
         const displayNames = {
-            'search_results': 'Search results',
-            'date_term_frequency': 'Term frequency',
-            'aggregate_term_frequency': 'Term frequency'
+            search_results: 'Search results',
+            date_term_frequency: 'Term frequency',
+            aggregate_term_frequency: 'Term frequency'
             // timeline/histogram distinction is relevant for backend but not for the user
-        }
+        };
         return displayNames[type];
     }
 
@@ -65,8 +65,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
         const fields = fieldNames.map(fieldName =>
             corpus.fields.find(field => field.name === fieldName).displayName
-        )
-        return _.join(fields, ', ')
+        );
+        return _.join(fields, ', ');
     }
 
     downloadFile(download: Download, options: DownloadOptions) {

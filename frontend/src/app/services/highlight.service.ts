@@ -13,12 +13,12 @@ const maxSnippetsCount = 7;
  * The maximum character length of all the text snippets combined.
  */
 export const maxSnippetsLength = 140;
-export const omissionString = '…'
+export const omissionString = '…';
 
-export type TextPart = {
-    substring: string,
-    isHit: boolean
-};
+export interface TextPart {
+    substring: string;
+    isHit: boolean;
+}
 
 /**
  * Service for client-side highlighting of the text hits using a search query.
@@ -30,14 +30,15 @@ export class HighlightService {
 
     /**
      * Returns the full text in parts and show which parts matched (part of) the query.
+     *
      * @param value The field value to search for hits.
      * @param query The simple query to use to search the text for hits.
      * @returns The full string subdivided in consecutive parts. Combining all the substrings
      * will result in the input string. Each part is marked with whether it matches the input query.
      */
     public * highlight(value: string | number, query: string = ''): IterableIterator<TextPart> {
-        let text = `${value}`;
-        if (query == null || query == '') {
+        const text = `${value}`;
+        if (query == null || query === '') {
             yield { substring: text, isHit: false };
             return;
         }
@@ -47,11 +48,11 @@ export class HighlightService {
         }
 
         let result: RegExpExecArray;
-        let parsedText: TextPart[] = [];
+        const parsedText: TextPart[] = [];
         let lastIndex = 0;
 
         for (let i = 0; (result = expression.exec(text)) !== null && i < maxHits; i++) {
-            let patternIndex = result.index + result[1].length;
+            const patternIndex = result.index + result[1].length;
             if (lastIndex < patternIndex) {
                 yield { substring: text.substring(lastIndex, patternIndex), isHit: false };
             }
@@ -70,33 +71,33 @@ export class HighlightService {
      * Gets short snippets from the text part to give the user a short overview of the text content.
      */
     public snippets(parts: IterableIterator<TextPart>): TextPart[] {
-        let snippets: TextPart[] = [];
+        const snippets: TextPart[] = [];
         for (let i = 0, next = parts.next(); !next.done && i < maxSnippetsCount; i++ , next = parts.next()) {
             snippets.push(next.value);
         }
 
-        let lengths = this.getSnippetLengths(snippets.map(snippet => snippet.substring.length), maxSnippetsLength);
+        const lengths = this.getSnippetLengths(snippets.map(snippet => snippet.substring.length), maxSnippetsLength);
 
         snippets.forEach((part, index) => {
             part.substring = this.cropSnippetText(part.substring,
                 lengths[index],
-                index == snippets.length - 1 ? 'left' : (index == 0 ? 'right' : 'middle'));
+                index === snippets.length - 1 ? 'left' : (index === 0 ? 'right' : 'middle'));
         });
 
         return snippets;
     }
 
     private getSnippetLengths(actualLengths: number[], maxTotalLength: number, croppedSnippets = actualLengths.length): number[] {
-        let targetLengths: number[] = [];
+        const targetLengths: number[] = [];
         let remainingCharacters = maxTotalLength;
-        let maxLength = Math.max(1, Math.floor(maxTotalLength / croppedSnippets));
+        const maxLength = Math.max(1, Math.floor(maxTotalLength / croppedSnippets));
 
         let remainingSnippets = 0;
 
         let i = 0;
         for (; i < actualLengths.length && remainingCharacters > 0; i++) {
-            let actualLength = actualLengths[i];
-            let targetLength = Math.min(actualLength, maxLength);
+            const actualLength = actualLengths[i];
+            const targetLength = Math.min(actualLength, maxLength);
 
             remainingCharacters -= targetLength;
             targetLengths[i] = targetLength;
@@ -112,7 +113,7 @@ export class HighlightService {
 
         if (remainingCharacters && remainingSnippets) {
             // if a snippet is shorter than the maximum snippet length, allow the remaining snippets to become longer
-            let additionalLengths = this.getSnippetLengths(
+            const additionalLengths = this.getSnippetLengths(
                 actualLengths.map((length, index) => length - targetLengths[index]),
                 remainingCharacters,
                 remainingSnippets);
@@ -141,13 +142,14 @@ export class HighlightService {
 
     /**
      * Convert the query to a regular expression matching any hit in a string.
+     *
      * @param query
      */
     public getQueryExpression(query: string): RegExp {
         let quoted: RegExpExecArray;
         let lastIndex = 0;
 
-        let patterns: string[] = []
+        const patterns: string[] = [];
 
         for (let i = 0; (quoted = HighlightService.quotedRegex.exec(query)) !== null && i < maxHits; i++) {
             if (lastIndex < quoted.index) {
@@ -166,6 +168,7 @@ export class HighlightService {
 
     /**
      * Get the word patterns match in a query.
+     *
      * @param query
      */
     private getQueryWords(query: string): string[] {

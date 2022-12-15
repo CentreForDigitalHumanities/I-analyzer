@@ -13,7 +13,7 @@ export class JoyplotComponent implements OnChanges {
     @Input() data: NgramResults;
     @Input() formatValue: (x: number) => string;
     @Input() palette: string[];
-    @Input() quantity = 'frequency'
+    @Input() quantity = 'frequency';
     @Input() comparedByQuantity = 'date';
 
     maxDataPoint: number;
@@ -28,6 +28,11 @@ export class JoyplotComponent implements OnChanges {
     chart: Chart;
 
     constructor() { }
+
+    get multipleTimeIntervals(): boolean {
+        return this.timeLabels && this.timeLabels.length > 1;
+    }
+
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.data) {
@@ -58,22 +63,7 @@ export class JoyplotComponent implements OnChanges {
         this.timeLabels = result.time_points;
         this.terms = result.words.map(item => item.label);
 
-        const datasets: any[] = _.reverse( // reverse drawing order so datasets are drawn OVER the one above them
-            result.words.map((item, index) => {
-                const points = this.getDataPoints(item.data, index);
-                return {
-                    type: 'line',
-                    xAxisID: 'x',
-                    label: item.label,
-                    data: points,
-                    borderColor: selectColor(this.palette, index),
-                    fill: {
-                        target: {value: index},
-                        above: this.getFillColor.bind(this),
-                    },
-                };
-            })
-        );
+        const datasets = this.multipleTimeIntervals ? this.timeDataSets(result) : [];
 
         const totals = result.words.map(item => _.sum(item.data));
         const totalsData = totals.map((value, index) => ({
@@ -81,7 +71,7 @@ export class JoyplotComponent implements OnChanges {
             y: index,
             ngram: this.terms[index],
         }));
-        const colors = totals.map((value, index) => selectColor(this.palette, index))
+        const colors = totals.map((value, index) => selectColor(this.palette, index));
 
         const totalsDataset = {
             type: 'bar',
@@ -99,6 +89,27 @@ export class JoyplotComponent implements OnChanges {
             labels: this.timeLabels,
             datasets,
         };
+    }
+
+    timeDataSets(result: NgramResults): any[] {
+        return _.reverse( // reverse drawing order so datasets are drawn OVER the one above them
+        result.words.map((item, index) => {
+            const points = this.getDataPoints(item.data, index);
+            return {
+                type: 'line',
+                xAxisID: 'x',
+                label: item.label,
+                data: points,
+                borderColor: selectColor(this.palette, index),
+                fill: {
+                    target: {value: index},
+                    above: this.getFillColor.bind(this),
+                },
+            };
+        })
+    );
+
+
     }
 
     getDataPoints(data: number[], ngramIndex: number) {
@@ -138,7 +149,7 @@ export class JoyplotComponent implements OnChanges {
         const totals = totalsData.map((item: any) => item.x);
         const maxTotal = _.max(totals);
 
-        const numberOfRows = data.datasets.length - 1;
+        const numberOfRows = this.terms.length;
         const xLabel = `${this.quantity} by ${this.comparedByQuantity}`;
 
         return {
@@ -167,13 +178,14 @@ export class JoyplotComponent implements OnChanges {
                 },
                 x: {
                     type: 'category',
+                    display: this.timeLabels.length > 1,
                     title: {
                         text: xLabel,
                         display: true,
                     },
                     position: 'top',
                     stack: '1',
-                    stackWeight: 8.5,
+                    stackWeight: this.multipleTimeIntervals ? 8.5 : 0.01, // chartJS does not like stackWeight 0
                 },
                 y: {
                     reverse: true,
@@ -182,9 +194,7 @@ export class JoyplotComponent implements OnChanges {
                     },
                     ticks: {
                         stepSize: 1,
-                        callback: (val, index) => {
-                            return this.terms[val];
-                        }
+                        callback: (val, index) => this.terms[val]
                     }
                 },
             },
@@ -255,4 +265,5 @@ export class JoyplotComponent implements OnChanges {
             this.chart.update();
         }
     }
+
 }

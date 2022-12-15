@@ -28,8 +28,8 @@
 
 <p *ngIf="noImages">No scan available for this document.</p>
 <div *ngIf="imagePaths" [ngClass]="{'is-loading':imagePaths==undefined}">
-    <ia-scan-image *ngIf="mediaType!='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
-    <ia-scan-pdf *ngIf="mediaType=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
+    <ia-scan-image *ngIf="mediaType!=='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-image>
+    <ia-scan-pdf *ngIf="mediaType==='application/pdf'" [imagePaths]="imagePaths" [zoomFactor]="zoomFactor" [showPage]="showPage"></ia-scan-pdf>
 </div>
 
 <p-confirmDialog #cd appendTo="body">

@@ -9,7 +9,7 @@ export class WordmodelsServiceMock {
     }
 
     public abortTasks() {
-        return {'success': true};
+        return {success: true};
     }
 
     public get(path: string): Promise<any> {

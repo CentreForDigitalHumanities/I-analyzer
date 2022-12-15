@@ -29,16 +29,7 @@ class DutchAnnualReports(XMLCorpus):
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
     allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
-    filename = op.join(corpus_dir('dutchannualreports'),
-        current_app.config['WM_PATH'],
-        current_app.config['WM_BINNED_FN'])
-    word_models_present = op.isfile(
-        op.join(
-            corpus_dir('dutchannualreports'),
-            current_app.config['WM_PATH'],
-            current_app.config['WM_BINNED_FN']
-        )
-    )
+    word_model_path = current_app.config['DUTCHANNUALREPORTS_WM']
 
     mimetype = 'application/pdf'
 
