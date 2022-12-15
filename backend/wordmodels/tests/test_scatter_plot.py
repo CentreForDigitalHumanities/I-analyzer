@@ -47,20 +47,30 @@ def test_2d_context_over_time_result(test_app, mock_corpus):
     assert find_term('alice', all_data[1])
 
 def test_term_not_in_all_intervals(test_app, mock_corpus):
-    all_data = get_2d_contexts_over_time(['alice'], mock_corpus, NUMBER_SIMILAR)
+    '''
+    Test that we get valid results if the search term
+    is not in the model for each time interval.
+    '''
 
+    term = 'alice'
+    all_data = get_2d_contexts_over_time([term], mock_corpus, NUMBER_SIMILAR)
 
-    # check that interval 1 includes keyword + neighbouring words, but 0 and 2 do not
-    keyword_in_model = [all_data[1]]
-    keyword_not_in_model = [all_data[0], all_data[2]]
+    # specify in which intervals we expect the term
+    term_in_intervals = [False, True, False]
 
-    for interval in keyword_in_model:
-        assert find_term('alice', interval)
-        assert len(interval['data']) == NUMBER_SIMILAR + 1
+    for interval in range(3):
+        term_in_interval = term_in_intervals[interval]
 
-    for interval in keyword_not_in_model:
-        assert not find_term('alice', interval)
-        assert len(interval['data']) == 0
+        if term_in_interval:
+            # if the term is in the vocab, return valid results
+            data = all_data[interval]
+            assert find_term(term, data)
+            assert len(data['data']) == NUMBER_SIMILAR + 1
+
+        else:
+            # if the term is not in the vocab, return empty results
+            data = all_data[interval]
+            assert data['data'] == []
 
 def test_2d_contexts_over_time_format(test_app, mock_corpus):
     term = 'she'
