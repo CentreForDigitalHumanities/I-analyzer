@@ -1,0 +1,256 @@
+<akomaNtoso xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13" xsi:schemaLocation="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13 ./akomantoso30.xsd">
+  <debate name="Official Report">
+    <meta>
+      <identification source="#debates">
+        <FRBRWork>
+          <FRBRthis value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/main"/>
+          <FRBRuri value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate"/>
+          <FRBRdate date="2014-12-09" name="#generation"/>
+          <FRBRauthor as="#author" href="/ie/oireachtas/committee/dail/31/select_committee_on_agriculture_food_and_the_marine"/>
+          <FRBRcountry value="ie"/>
+          <FRBRname value="debate"/>
+        </FRBRWork>
+        <FRBRExpression>
+          <FRBRthis value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@/main"/>
+          <FRBRuri value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@"/>
+          <FRBRdate date="2014-12-09" name="#reported"/>
+          <FRBRauthor as="#editor" href="#debates"/>
+          <FRBRlanguage language="eng"/>
+        </FRBRExpression>
+        <FRBRManifestation>
+          <FRBRthis value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@/main.xml"/>
+          <FRBRuri value="/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@.akn"/>
+          <FRBRdate date="2015-09-02" name="#publication"/>
+          <FRBRauthor as="#editor" href="#debates"/>
+        </FRBRManifestation>
+      </identification>
+      <references source="#debates">
+        <TLCPerson eId="AndrewDoyle" href="/ie/oireachtas/member/id/Andrew-Doyle.D.2007-06-14" showAs="Andrew Doyle"/>
+        <TLCPerson eId="EamonOCuiv" href="/ie/oireachtas/member/id/Éamon-Ó-Cuív.S.1989-10-01" showAs="Éamon Ó Cuív"/>
+        <TLCPerson eId="MartinFerrisSF" href="/ie/oireachtas/member/id/Martin-Ferris.D.2002-06-06" showAs="Martin Ferris"/>
+        <TLCPerson eId="SimonCoveney" href="/ie/oireachtas/member/id/Simon-Coveney.D.1998-10-23" showAs="Simon Coveney"/>
+        <TLCPerson eId="WilliamPenrose" href="/ie/oireachtas/member/id/Willie-Penrose.D.1992-12-14" showAs="Willie Penrose"/>
+        <TLCRole href="role/chair" showAs="Chair" eId="Chair"/>
+        <TLCRole eId="Minister_for_Agriculture,_Food_and_the_Marine" href="/ie/oireachtas/role/minister/agriculture__food__marine" showAs="Minister for Agriculture, Food and the Marine"/>
+        <TLCRole href="role/vice_chairman" showAs="Vice Chairman" eId="Vice_Chairman"/>
+        <TLCRole href="role/author" showAs="author" eId="author"/>
+        <TLCRole href="role/editor" showAs="editor" eId="editor"/>
+      </references>
+    </meta>
+    <preface>
+      <block name="title_ga">
+        <docTitle>DÍOSPÓIREACHTAÍ PARLAIMINTE</docTitle>
+      </block>
+      <block name="title_en">
+        <docTitle>PARLIAMENTARY DEBATES</docTitle>
+      </block>
+      <block name="proponent_ga">
+        <docProponent>TITHE an OIREACHTAS</docProponent>
+      </block>
+      <block name="proponent_en">
+        <docProponent>HOUSES OF THE OIREACHTAS</docProponent>
+      </block>
+      <block name="committee_ga">
+        <docCommittee>ROGHCHOISTE UM THALMAÍOCHT, BIA AGUS MUIR</docCommittee>
+      </block>
+      <block name="committee_en">
+        <docCommittee>Select Committee on Agriculture, Food and the Marine</docCommittee>
+      </block>
+      <block name="status_ga">
+        <docStatus>TUAIRISC OIFIGIÚIL</docStatus>
+      </block>
+      <block name="status_en">
+        <docStatus>(OFFICIAL REPORT)</docStatus>
+      </block>
+      <block name="date_ga">
+        <docDate date="2014-12-09">Dé Máirt, 09 Nollaig 2014</docDate>
+      </block>
+      <block name="date_en">
+        <docDate date="2014-12-09">Tuesday, 09 December 2014</docDate>
+      </block>
+      <block refersTo="#unrevised" name="version_en">
+        <docStatus/>
+      </block>
+      <block refersTo="#unrevised" name="version_ga">
+        <docStatus/>
+      </block>
+    </preface>
+    <debateBody>
+      <debateSection name="prelude" eId="dbsect_1">
+        <summary class="Center" eId="sum_1">The Select Committee met at 05:30 p.m.</summary>
+        <rollCall>
+          <summary class="Center" eId="sum_2">MEMBERS  PRESENT:</summary>
+          <table>
+            <tr>
+              <td>
+                <p eId="para_1">
+                  <person refersTo="#SimonCoveney">Deputy Simon Coveney (Minister for Agriculture, Food and the Marine)</person>
+                </p>
+              </td>
+              <td>
+                <p eId="para_2">
+                  <person refersTo="#EamonOCuiv">Deputy Éamon Ó Cuív</person>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p eId="para_3">
+                  <person refersTo="#PatrickDeering">Deputy Pat Deering</person>
+                </p>
+              </td>
+              <td>
+                <p eId="para_4">
+                  <person refersTo="#WilliamPenrose">Deputy Willie Penrose</person>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p eId="para_5">
+                  <person refersTo="#MartinFerrisSF">Deputy Martin Ferris</person>
+                </p>
+              </td>
+              <td>
+                <p eId="para_6">
+                  <person refersTo="#ThomasPringle">Deputy Thomas Pringle.</person>
+                </p>
+              </td>
+            </tr>
+          </table>
+          <summary eId="sum_3">
+            <person as="#Chair" refersTo="#AndrewDoyle">DEPUTY ANDREW DOYLE  IN THE CHAIR.</person>
+          </summary>
+        </rollCall>
+        <summary eId="sum_4">
+          <i> The select committee met in private session until 6.15 p.m.</i>
+        </summary>
+      </debateSection>
+      <debateSection name="debate" eId="dbsect_2">
+        <heading>Estimates for Public Services 2014<recordedTime time="2014-12-09T18:10:00+00:00"/></heading>
+      </debateSection>
+      <debateSection name="debate" eId="dbsect_3">
+        <heading>Vote 30 - Agriculture, Food and the Marine (Supplementary)<recordedTime time="2014-12-09T18:10:00+00:00"/></heading>
+        <speech by="#AndrewDoyle" eId="spk_1">
+          <from> Chairman<recordedTime time="2014-12-09T19:10:00+00:00"/></from>
+          <p eId="para_7">As we have a quorum, we will commence in public session.  All mobile phones should be switched off because they cause interference.  I have apologies from Deputies Michael McNamara and Martin Heydon.  This meeting has been convened to consider a Supplementary Estimate on Vote 30 - Agriculture, Food and the Marine, which was referred by the Dáil to the committee on 3 December with an instruction to report back to the Dáil not later than 11 December.</p>
+          <p eId="para_8">  I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them for the briefing material provided, which has been circulated to the members of the committee.  I invite the Minister to make his opening statement.</p>
+        </speech>
+        <speech by="#SimonCoveney" as="#Minister_for_Agriculture,_Food_and_the_Marine" eId="spk_2">
+          <from>Minister for Agriculture, Food and the Marine (Deputy Simon Coveney)<recordedTime time="2014-12-09T19:10:00+00:00"/></from>
+          <p eId="para_9">I do not want to hold up the committee as this is primarily a technical adjustment, which I will now explain.  Obviously, if members have any questions, we are here to answer them.</p>
+          <p eId="para_10">  I am grateful for the opportunity to present this request for a Supplementary Estimate for 2014 to increase the Department of Agriculture, Food and the Marine’s permitted net expenditure to deal with a shortfall in appropriations-in-aid.  This Supplementary Estimate is not required to cover an increase in gross spending.  It is more technical in nature as it is required to avoid an excess of net expenditure – that is, gross expenditure minus appropriations-in-aid, which, effectively, is money we get back from Europe.  In essence, the Department needs to increase its permitted net expenditure to deal with a delay in receiving some €180 million of its expected receipts.  Accordingly, the net expenditure that had been originally set at €958 million must be increased to €1.135 billion.</p>
+          <p eId="para_11">  The Department's budgeted total appropriations-in-aid for 2014 is €245 million.  It is now forecast that some €66 million will be received in appropriations-in-aid, which would represent a shortfall of some €178 million in current receipts.  The overwhelming factor in this overall shortfall is the absence of anticipated receipts of €180 million from the EU in respect of the co-financing of expenditure under the 2014-20 European Agriculture Fund for Rural Development, EAFRD.  It is important to make the point that this €180 million in receipts which are not drawn down in 2014 are protected and will be drawn down in 2015 following approval of Ireland’s partnership agreement and rural development programme, RDP.  Hence, the issue is one of timing rather than the amount to be recouped.</p>
+          <p eId="para_12">  The Department of Agriculture, Food and the Marine appropriations-in-aid projections for 2014 were €245 million, split roughly 80-20 between funds from the EU and income generated nationally.  The non-EU part is comprised of fees for services provided and other purchases from the Department, including inspection fees at meat plants and meat export points, certain vaccine sales, farmer contributions towards disease eradication and so on.</p>
+          <p eId="para_13">  On the EU side, we get substantial refunds of around €14 million from the EU for our work on disease eradication – TB and TSE - and modest receipts for the European Fisheries Fund.  However, the vast bulk of receipts in respect of 2014, amounting to €180 million, were to come from the European Agriculture Fund for Rural Development on foot of co-funded investment in rural development schemes.  The EU co-funds schemes and programmes in arrears based on the submission by member states of appropriate claims following payment of funds to beneficiaries.  Some €180 million was the Department's forecast for EU co-funding contribution to 2014 expenditure on disadvantaged area payments, REPS, the agri-environment options scheme, AEOS, and an initial advance of 1.5% of the total RDP programme fund for 2014-20.</p>
+          <p eId="para_14"> The Department was confident of receiving payment because, as part of the CAP reform process, the Commission and the legislators in Council and Parliament had put in place a specific regulation dealing with the period between the two RDP periods to explicitly provide for the eligibility of payments in respect of old programme schemes such as REPS, AEOS and DAS to be drawn from the new programme budget. While this allowed co-funding of schemes operated in the transitional period between programmes, it did not provide explicitly for the physical payment of that EU contribution to the member states in the year in question. That payment depends on the Commission approval of a member states partnership agreement which was approved in mid-November and its new rural development programme, which is not yet agreed.</p>
+          <p eId="para_15"> Our estimates for 2014 were established before the completion of the programming regulations on 17 December 2013. When framing the Estimates, it was not possible to accurately predict when Ireland’s rural development programme would be approved. Despite ongoing intensive discussions, this is not yet the case. As the final date for making a claim in order to recoup funding in 2014 was 10 November last, EU funds cannot now be drawn down this year.</p>
+          <p eId="para_16"> Considerable effort has been put into drawing up our rural development programme. Following needs assessments and the extensive multi-consultative process required by the regulations, Ireland submitted its draft programme on 3 July 2014, well ahead of the end-July deadline for submission. The Commission replied with its comments on 20 October, somewhat outside the three month period for reply, and Ireland has already submitted its comprehensive response to those comments and is now engaging bilaterally with the Commission to progress to the next stage of the approval process. For its own part, the Commission is engaging with 118 other managing authorities each of which is as anxious as Ireland to conclude negotiations and implement all aspects of its new rural development programme. To date, no other member state’s rural development programme has yet been approved. </p>
+          <p eId="para_17"><b>
+						</b>As I said at the outset, the EAFRD receipts not claimed or received in 2014 will be received in 2015. Accordingly the issue is concerned with timing of the receipts rather than quantity of such receipts from the EU in the multi-annual programme. Our 2015 appropriations-in-aid include estimated receipts amounting to €459.71 million, of which €394.3 million is in respect of EAFRD receipts. This amount includes the unclaimed 2014 amount of €180 million. The Department anticipates some minor current savings in elements of its administrative budget and its expenditure programmes and proposes to use €1 million of these savings to offset partly the shortfall in appropriations-in-aid. It is proposed that any other current savings which may arise in 2014 would be used to provide for expenditures which, if postponed, would have to take place in 2015. </p>
+          <p eId="para_18"> The amount being sought from the Dáil is €177 million, since the €180 million receipts shortfall is offset slightly by higher than expected appropriations-in-aid in some other headings and €1 million in expenditure savings. This Supplementary Estimate for €177 million is essential for my Department to deal with the shortfall in the appropriations-in-aid for 2014 and I strongly recommend it to the committee for support.</p>
+          <p eId="para_19"> I am happy to respond to any questions members may have. In simple terms, we were due to get this money from the European Commission, but it was subject to approval of the rural development programme. This has not been done in time for the budgets to be signed off so we must now factor in a higher figure than expected, with a view to getting the money back next year when the appropriations-in-aid come through once the rural development programme is finalised, hopefully in the not too distant future.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_3">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_20">It seems the Minister has indicated that he has already figured he will not get this money into the Estimates published on budget day on 14 October.  Is that correct?</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_4" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_21">No, the Estimates on 14 October were about expenditure next year.  We have a shortfall this year and as a result we need to increase the Estimate.  We will then have to factor this in for next year as it is money that will come through next year into the Exchequer.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_5">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_22">What I am saying is, was the fact that -----</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_6" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_23">It is already in next year's Estimate.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_7">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_24">Is it already in the Estimate published on the day of the budget?</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_8" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_25">Yes it is.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_9">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_26">That explains, therefore, the big increase in the appropriations-in-aid for next year to €394 million.  Is that right?</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_10" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_27">Correct.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_11">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_28">The second issue, but we will probably debate it next week, concerns when it is likely the rural development programme will be agreed.</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_12" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_29">I am happy to come in and discuss that next week if that is on the schedule.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_13">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_30">We have parliamentary questions next week and the Minister may be sure a question will be submitted on the issue.</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_14" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_31">Yes, the Department is down for parliamentary questions next week.</p>
+        </speech>
+        <speech by="#AndrewDoyle" eId="spk_15">
+          <from> Chairman<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_32">The committee is to be briefed on the issues in January.</p>
+        </speech>
+        <speech by="#EamonOCuiv" eId="spk_16">
+          <from>Deputy Éamon Ó Cuív<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_33">Are parliamentary questions to the Department down for Wednesday or Thursday?</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_17" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_34">I think it is Thursday, because I will be attending the Fisheries Council meetings until Wednesday.</p>
+        </speech>
+        <speech by="#MartinFerrisSF" eId="spk_18">
+          <from>Deputy Martin Ferris<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_35">I have no problem with the submission.  The Minister has explained this well.</p>
+        </speech>
+        <speech by="#WilliamPenrose" eId="spk_19">
+          <from>Deputy Willie Penrose<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_36">I have no questions.  The Minister explained it comprehensively and clearly.  This is just an accounting or technical issue.</p>
+        </speech>
+        <speech by="#AndrewDoyle" eId="spk_20">
+          <from> Chairman<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_37">That concludes the consideration of the Supplementary Estimate for Vote 30 - Agriculture, Food and the Marine for the year ended 31 December 2014 and in accordance with Standing Order 87, a message to that effect will be sent to the Acting Clerk of the Dáil.</p>
+          <p eId="para_38">  Before we conclude, this will be the last meeting before Christmas that the Minister will attend.  With the approval of the committee, I would like to convey our gratitude to his Secretary General, Mr. Tom Moran, who will retire at the end of the year and will not appear before the committee again.  We thank him for his contribution to the agriculture sector and his co-operation with this committee.  Mr. Philip Carroll is also retiring at the end of the year and I would like to acknowledge his contribution to the agriculture sector down the years.  He has been one of the most accomplished and experienced public officials I have ever come across.</p>
+          <p eId="para_39">  It would be remiss of this committee not to acknowledge the contributions of both gentlemen over the years, in times of crisis and in difficult negotiations.  It is a matter of public record that Mr. Moran never took his eye off the ball during the critical CAP negotiations, despite the fact he was undergoing medical procedures at the time.  It would be remiss of the committee not to record that.  I propose we send a note of appreciation to both gentlemen.  Is that agreed?  Agreed.</p>
+        </speech>
+        <speech by="#SimonCoveney" eId="spk_21" as="#Minister_for_Agriculture,_Food_and_the_Marine">
+          <from>Deputy Simon Coveney<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_40">I appreciate the Chair's comments and thank him for making them.</p>
+        </speech>
+        <speech by="#AndrewDoyle" eId="spk_22">
+          <from> Chairman<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_41">I mean what I said sincerely and I am sure the committee agrees.</p>
+        </speech>
+        <speech by="#WilliamPenrose" eId="spk_23">
+          <from>Deputy Willie Penrose<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_42">I agree.  They provided a wealth of experience in the Department and will leave a big void to fill.</p>
+        </speech>
+        <speech by="#AndrewDoyle" eId="spk_24">
+          <from> Chairman<recordedTime time="2014-12-09T18:20:00+00:00"/></from>
+          <p eId="para_43">Agreed, but I hope we have plenty of talent coming through. I wish all the officials a happy Christmas and a happy new year.</p>
+        </speech>
+      </debateSection>
+      <debateSection name="debate" eId="dbsect_4">
+        <heading>Message to Dáil<recordedTime time="2014-12-09T18:20:00+00:00"/></heading>
+        <speech by="#AndrewDoyle" eId="spk_25">
+          <from> Chairman<recordedTime time="2014-12-09T19:20:00+00:00"/></from>
+          <p eId="para_44">In accordance with Standing Order 87, the following message will be sent to the Dáil:</p>
+          <p class="indent_1" eId="para_45">The Select Committee on Agriculture, Food and the Marine has completed its consideration of the following Supplementary Estimate for public services for the year ending 31 December 2014: Vote 30 - Department of Agriculture, Food and the Marine.</p>
+        </speech>
+        <summary eId="sum_5"> The select committee adjourned at 6.30 p.m. <i>sine die.</i></summary>
+      </debateSection>
+    </debateBody>
+  </debate>
+</akomaNtoso>

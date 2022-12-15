@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<open-rechtspraak>
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ecli="https://e-justice.europa.eu/ecli" xmlns:tr="http://tuchtrecht.overheid.nl/" xmlns:eu="http://publications.europa.eu/celex/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:bwb="bwb-dl" xmlns:cvdr="http://decentrale.regelgeving.overheid.nl/cvdr/" xmlns:psi="http://psi.rechtspraak.nl/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdf:Description>
+      <dcterms:identifier>ECLI:NL:PHR:2016:1475</dcterms:identifier>
+      <dcterms:format>text/xml</dcterms:format>
+      <dcterms:accessRights>public</dcterms:accessRights>
+      <dcterms:modified>2017-02-08T00:00:23</dcterms:modified>
+      <dcterms:issued rdfs:label="Publicatiedatum">2017-02-07</dcterms:issued>
+      <dcterms:publisher resourceIdentifier="http://rechtspraak.nl/">Raad voor de Rechtspraak</dcterms:publisher>
+      <dcterms:language>nl</dcterms:language>
+      <dcterms:creator rdfs:label="Instantie" resourceIdentifier="http://standaarden.overheid.nl/owms/terms/Parket_bij_de_Hoge_Raad" scheme="overheid.RechterlijkeMacht">Parket bij de Hoge Raad</dcterms:creator>
+      <dcterms:date rdfs:label="Datum genomen">2016-12-20</dcterms:date>
+      <psi:zaaknummer rdfs:label="Zaaknr">16/03212</psi:zaaknummer>
+      <dcterms:type rdf:language="nl" resourceIdentifier="http://psi.rechtspraak.nl/conclusie">Conclusie</dcterms:type>
+      <dcterms:coverage>NL</dcterms:coverage>
+      <dcterms:subject rdfs:label="Rechtsgebied" resourceIdentifier="http://psi.rechtspraak.nl/rechtsgebied#strafrecht">Strafrecht</dcterms:subject>
+      <dcterms:relation rdfs:label="Formele relatie" ecli:resourceIdentifier="ECLI:NL:HR:2017:179" psi:type="http://psi.rechtspraak.nl/conclusie" psi:aanleg="http://psi.rechtspraak.nl/latereAanleg" psi:gevolg="http://psi.rechtspraak.nl/gevolg#gevolgd">Arrest Hoge Raad: ECLI:NL:HR:2017:179, Gevolgd</dcterms:relation>
+      <dcterms:hasVersion rdfs:label="Vindplaatsen" resourceIdentifier="http://psi.rechtspraak.nl/vindplaats">
+        <rdf:list>
+          <rdf:li>Rechtspraak.nl</rdf:li>
+        </rdf:list>
+      </dcterms:hasVersion>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://deeplink.rechtspraak.nl/uitspraak?id=ECLI:NL:PHR:2016:1475">
+      <dcterms:identifier>http://deeplink.rechtspraak.nl/uitspraak?id=ECLI:NL:PHR:2016:1475</dcterms:identifier>
+      <dcterms:format>text/html</dcterms:format>
+      <dcterms:accessRights>public</dcterms:accessRights>
+      <dcterms:modified>2017-02-07T14:25:43</dcterms:modified>
+      <dcterms:issued rdfs:label="Publicatiedatum">2017-02-07</dcterms:issued>
+      <dcterms:publisher resourceIdentifier="http://rechtspraak.nl/">Raad voor de Rechtspraak</dcterms:publisher>
+      <dcterms:language>nl</dcterms:language>
+      <dcterms:title rdf:language="nl">ECLI:NL:PHR:2016:1475 Parket bij de Hoge Raad , 20-12-2016 / 16/03212</dcterms:title>
+      <dcterms:abstract resourceIdentifier="../../rs:inhoudsindicatie" />
+    </rdf:Description>
+  </rdf:RDF>
+  <inhoudsindicatie id="ECLI:NL:PHR:2016:1475:INH" lang="nl" xml:space="preserve" xmlns="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <para>Herziening, geuridentificatieproef, aanvraag ongegrond. HR herhaalt relevante overwegingen uit ECLI:NL:HR:2008:BC8789 m.b.t. een onregelmatig uitgevoerde geuridentificatieproef door de geurhondendienst Noord- en Oost-Gelderland in de periode van september 1997 tot en met maart 2006 en oordeelt dat m.b.t. geuridentificatieproeven in de onderhavige zaak in gelijke zin dient te worden geoordeeld. I.c. is echter geen sprake van een gegeven a.b.i. art. 457.1.c Sv; geen ernstig vermoeden dat de rechtbank de aanvrager zou hebben vrijgesproken.</para>
+    </inhoudsindicatie>
+  <conclusie id="ECLI:NL:PHR:2016:1475:DOC" lang="nl" xml:space="preserve" xmlns="http://www.rechtspraak.nl/schema/rechtspraak-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <informaltable>
+    <tgroup cols="2">
+      <colspec colname="colA" />
+      <colspec colname="colB" />
+      <tbody>
+        <row>
+          <entry>
+            <para>Nr. 16/03212 HS</para>
+            <para>Zitting: 20 december 2016</para>
+            <para />
+          </entry>
+          <entry>
+            <para>
+              <emphasis role="underline">Mr. P.C. Vegter</emphasis>
+            </para>
+            <para>Conclusie inzake:</para>
+            <para>
+              <emphasis role="underline">
+                [aanvrager] </emphasis>
+            </para>
+          </entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+  <para />
+  <orderedlist numeration="arabic">
+    <listitem>
+      <para>De aanvrager is bij onherroepelijk vonnis van de rechtbank Zutphen van 19 oktober 2005 wegens 1. en 2. telkens “diefstal”, 3. “diefstal, waarbij de schuldige zich de toegang tot de plaats van het misdrijf heeft verschaft en het weg te nemen goed onder zijn bereik heeft gebracht door middel van braak, verbreking of inklimming”, 6. “diefstal, waarbij de schuldige zich de toegang tot de plaats van het misdrijf heeft verschaft en het weg te nemen goed onder zijn bereik heeft gebracht door middel van braak, verbreking of inklimming” en 7. “poging tot diefstal, waarbij de schuldige zich de toegang tot de plaats van het misdrijf heeft verschaft of het weg te nemen goed onder zijn bereik heeft gebracht door middel van braak, verbreking of inklimming” veroordeeld tot een gevangenisstraf voor de duur van tien maanden met aftrek als bedoeld in artikel 27 Sr, met de bijkomende beslissingen als weergegeven in dat vonnis.</para>
+      <para />
+    </listitem>
+    <listitem>
+      <para>Namens de aanvrager heeft mr. J.J.J. van Rijsbergen, advocaat te Breda, een aanvraag tot herziening ingediend.</para>
+      <para />
+    </listitem>
+    <listitem>
+      <para>De aanvraag steunt op de omstandigheid dat sprake is van een gegeven als bedoeld in art. 457, eerste lid onder c, Sv. Daartoe wordt aangevoerd dat de rechtbank de aanvrager zou hebben vrijgesproken, indien zij bekend zou zijn geweest met de omstandigheid dat de in deze zaak uitgevoerde geuridentificatieproeven in strijd met het daarvoor geldende protocol zijn verricht. De aanvrager zou een brief van het openbaar ministerie hebben gekregen waarin werd aangegeven dat de in deze zaak verrichte geurproeven mogelijk niet geheel volgens de regels zijn uitgevoerd en waarin werd gewezen op de mogelijkheid om een herzieningsverzoek in te dienen bij de Hoge Raad. Deze brief is echter kwijtgeraakt.</para>
+      <para />
+    </listitem>
+    <listitem>
+      <para>De Hoge Raad heeft eerder geoordeeld dat in de gevallen waarin in de periode van september 1997 tot en met maart 2006 een geuridentificatieproef door de geurhondendienst Noord- en Oost-Gelderland in de desbetreffende strafzaak is uitgevoerd, dit onderzoek - behoudens concrete aanwijzingen van het tegendeel - moet worden geacht te hebben plaatsgevonden in strijd met het voorschrift dat de hondengeleider de volgorde van de geurdragers niet kent, hetgeen met zich brengt dat ervan moet worden uitgegaan dat het resultaat van die geuridentificatieproef in die gevallen niet als voldoende betrouwbaar kan gelden en dat aldus moet worden aangenomen dat het resultaat van de geuridentificatieproef niet zou zijn gebruikt voor het bewijs indien de rechter met de opgetreden onregelmatigheid bekend was geweest.<footnote-ref linkend="_a6068aed-af00-40b4-bd91-e6ca81760a42" /></para>
+      <para />
+    </listitem>
+  </orderedlist>
+  <para>5. Als grondslag voor een herziening kan krachtens het eerste lid, aanhef en onder c van art. 457 Sv slechts dienen een door bescheiden gestaafd gegeven dat bij het onderzoek op de terechtzitting aan de rechter niet bekend was en dat het ernstige vermoeden wekt dat indien dit gegeven bekend zou zijn geweest het onderzoek van de zaak zou hebben geleid tot, voor zover hier van belang, tot een vrijspraak van de gewezen verdachte. </para>
+  <para />
+  <para>6. Uit de hiervoor bedoelde rechtspraak volgt dat wanneer het resultaat van een onregelmatige geurproef voor het bewijs van het tenlastegelegde feit is gebezigd, dat een ernstig vermoeden als hiervoor bedoeld kan opleveren. Daarvan is echter slechts sprake als niet aannemelijk is dat de rechter zonder dat resultaat op grond van het (andere) beschikbare bewijsmateriaal tot een bewezenverklaring zou zijn gekomen.</para>
+  <para />
+  <para>7. Ten laste van de aanvrager is bewezenverklaard dat:</para>
+  <para>“1. hij op 15 mei 2005 te Emst met het oogmerk van wederrechtelijke toe-eigening heeft weggenomen een herenfiets, merk Gazelle, toebehorende aan [betrokkene 1];</para>
+  <para />
+  <parablock>
+    <para>2. hij in de nacht van 14 op 15 mei 2005 in de gemeente Heerde met het oogmerk van wederrechtelijke toe-eigening heeft weggenomen een herenfiets, merk Batavus, toebehorende aan [betrokkene 2];</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>3. hij in de periode van 12 mei 2005 tot en met 13 mei 2005 in de gemeente Hattem, met het oogmerk van wederrechtelijke toe-eigening in/uit een kerkgebouw, gelegen aan de Markt, heeft weggenomen geld en een antieke Statenbijbel (met prenten/kaarten) toebehorende aan de Nederlands Hervormde Kerk, waarbij verdachte zich de toegang tot de plaats des misdrijfs heeft verschaft en de weg te nemen goederen onder zijn bereik heeft gebracht door middel van braak, verbreking en/of inklimming;</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>6. hij in de periode van 4 mei 2005 tot en met 5 mei 2005 te Beerzerveld, met het oogmerk van wederrechtelijke toe-eigening in/uit een kerkgebouw, gelegen aan de Westerweg, heeft weggenomen muntgeld toebehorende aan de Nederlands Hervormde Kerk, waarbij verdachte zich de toegang tot plaats des misdrijfs heeft verschaft en het weg te nemen goed onder zijn bereik heeft gebracht door middel van braak, verbreking en/of inklimming.</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>7. hij in periode van 4 mei 2005 tot en met 5 mei 2005 te Bergentheim, ter uitvoering van het door verdachte voorgenomen misdrijf om met het oogmerk van wederrechtelijke toe-eigening in/uit een kerkgebouw, gelegen aan de Kanaalweg Oost, weg te nemen geld en/of goederen, toebehorende aan de Nederlands Hervormde Kerk, en zich daarbij de toegang tot voornoemd gebouw te verschaffen en die/dat weg te nemen geld en/of goederen onder zijn bereik te brengen door middel van braak, verbreking en/of inklimming, met behulp van een dakpan een ruit van dat gebouw heeft ingegooid, terwijl de uitvoering van dat voorgenomen misdrijf niet is voltooid;</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>8. hij in de periode van 4 mei 2005 tot en met 5 mei 2005 te Sibculo, met het oogmerk van wederrechtelijke toe-eigening in/uit een kerkgebouw, gelegen aan de Kloosterdijk, heeft weggenomen drie collectebussen, toebehorende aan een ander dan aan verdachte, waarbij verdachte zich de toegang tot de plaats des misdrijfs heeft verschaft door middel van braak”.</para>
+  </parablock>
+  <para />
+  <para>8. De Rechtbank heeft volstaan met een vonnis waarin de bewijsmiddelen niet zijn opgenomen. Dat is niet ongebruikelijk, aangezien de aanvrager kennelijk geen reden heeft gezien van het vonnis hoger beroep in te stellen.<footnote-ref linkend="_e3f19e9c-a553-4e16-8df7-a89ad7f2abe3" /> Het vonnis waarvan herziening wordt gevraagd bevat wel de navolgende bewijsoverweging:</para>
+  <para>“De raadsman heeft ter zitting de betrouwbaarheid van de door de speurhonden uitgevoerde sorteerproeven in twijfel getrokken. Hij heeft zich daarbij beroepen op een uitspraak van deze rechtbank contra verdachte d.d. 24 juni 2003 (06.060491-02), waarin wordt overwogen dat de sorteerproef tot op heden als een valide instrument voor het leveren van bewijs kan worden beschouwd, maar dat het desalniettemin voorkomt dat een hond een persoon ten onrechte als verdachte aanwijst.</para>
+  <para />
+  <parablock>
+    <para>De rechtbank constateert dat in de onderliggende strafzaak sprake is van sorteerproeven door verschillende honden waarvan de uitkomsten, op één na, de betrokkenheid van verdachte aangeven. Dit gegeven in onderlinge samenhang bezien met andersoortig bewijs, dwingt redelijkerwijs tot de conclusie dat verdachte de feiten - behoudens de onder 4 en 5 ten laste gelegde feiten - heeft begaan, waarbij de rechtbank mede heeft betrokken:</para>
+    <para>-	het relaas van een van de verbalisanten die verdachte twee maal korte tijd na elkaar heeft getroffen met verschillende fietsen en die heeft geconstateerd dat verdachte uit dichtbegroeide bosjes een van de straat niet zichtbare tas tevoorschijn haalde, met daarin een beitel die bij een inbraak gebruikt is, zoals blijkt uit de uitkomst van een verfspooronderzoek;</para>
+    <para>-	de op twee verschillende locaties aangetroffen schoensporen die met het schoeisel van verdachte corresponderen;</para>
+    <para>-	de bij verdachte in vorenbedoelde tas aangetroffen lijst waarop, plaatsen en/of adressen van kerkgebouwen stonden vermeld waar reeds was ingebroken;</para>
+    <para>-	de bij verdachte aangetroffen treinkaartjes met een vertrekplaats of bestemming die overeenkomt met de directe omgeving van een aantal plaatsen waar de misdrijven zijn gepleegd;</para>
+    <para>-	de opeenvolgende pleegdata en pleegplaatsen en de soortgelijke modus operandi;</para>
+    <para>en waarvan zij een grote graad van toevalligheid niet aannemelijk acht”.</para>
+  </parablock>
+  <para />
+  <para>9. Uit de aangehaalde overweging van de rechtbank wordt duidelijk dat zij inderdaad, zoals in de aanvraag tot uitgangspunt wordt genomen, de in deze zaak verrichte geurproeven in de bewijsvoering heeft betrokken. De processen-verbaal die zijn opgemaakt van het uitvoeren van deze geurproeven bevinden zich in het dossier.<footnote-ref linkend="_e8d9ae5c-d3f5-41e2-a8ed-cce6fc5a2c6f" /> Het gaat hier echter niet om door  geurhondendienst Noord- en Oost-Gelderland uitgevoerde onderzoeken, maar om onderzoeken van de interregionale speurhondendienst geuridentificatie van de regiopolitie ressort Arnhem. Nu deze onderzoeken evenwel zijn uitgevoerd in 2005 (mede) door ambtenaren verbonden aan de eerstgenoemde geurhondendienst, moet worden aangenomen dat ook de in deze zaak verrichte geurproeven mogelijk niet volgens de regels hebben plaatsgevonden.<footnote-ref linkend="_e57f99c3-86de-4b3c-9d78-69e119d48ae2" /> Uit de processen-verbaal blijkt voorts niet van concrete aanwijzingen dat die regels wel in acht zijn genomen.<footnote-ref linkend="_62cfb2b5-fdef-4550-b61b-185820281cf6" /> Aangenomen mag dan ook worden dat de rechtbank wanneer zij van de hiervoor bedoelde rechtspraak op de hoogte was geweest, de resultaten van de geurproeven niet voor het bewijs had gebezigd. </para>
+  <parablock>
+    <para />
+    <para>10. Ik betwijfel echter of, zoals in de aanvraag wordt gesteld, de rechtbank aan de resultaten van de proeven bij de bewezenverklaring doorslaggevende betekenis heeft toegekend. De hiervoor aangehaalde overweging houdt in dat de rechtbank de resultaten in samenhang met de overige voor het bewijs gebezigde bewijsmiddelen heeft bezien. Tot de conclusie dat de rechtbank zonder die resultaten tot een vrijspraak was gekomen, dwingt de overweging niet. Die conclusie is bovendien niet gerechtvaardigd wanneer het dossier wordt beschouwd. Daarin bevindt zich ander bewijsmateriaal op grond waarvan de rechtbank met voldoende mate van aannemelijkheid kan hebben afgeleid dat de aanvrager de hem onder 1, 2, 3, 6, 7 en 8 tenlastegelegde feiten heeft gepleegd. Van een ernstig vermoeden als hiervoor bedoeld is dan ook geen sprake.</para>
+    <para />
+    <para>11. Bij de gedingstukken bevindt zich een politieproces-verbaal met bijlagen van de politie Noord- en Oost-Gelderland, team recherche, unit Epe, met nummer PL0615/05-204825 gesloten op 27 juni 2005. In dit proces-verbaal wordt een elftal “incidenten” beschreven en is het grootste deel van het in dit dossier voorhanden zijnde bewijsmateriaal opgenomen en gerangschikt per incident. Een gedeelte van deze incidenten correspondeert met de in de uitspraak waarvan herziening wordt gevraagd bewezenverklaarde feiten (incident 1 met feit 1; incident 2 met feit 2; incident 3 met feit 3; incident 8 met feit 6, incident 9 met feit 7 en incident 10 met feit 8).</para>
+    <para />
+    <para>12. Dat geen sprake is van een redelijk vermoeden dat de rechtbank tot vrijspraak was gekomen als de resultaten van de geurproeven buiten beschouwing worden gelaten, wordt het meest duidelijk ten aanzien van de onder 1 en 2 bewezenverklaarde fietsendiefstallen. Uit het dossier blijkt immers niet dat in dit verband geurproeven hebben plaatsgevonden. Ik ga op deze feiten dan ook niet verder in.</para>
+    <para />
+    <para>13. Ten aanzien van de onder 6 bewezenverklaarde kerkinbraak, heeft wel een geurproef plaatsgevonden aan de hand van op de plaats delict veiliggestelde geurmonsters. Een match met de aanvrager heeft de geurproef echter niet opgeleverd.<footnote-ref linkend="_df02f829-e16b-4ba2-90e1-248b6ce1d97a" /> De resultaten van een geurproef hebben hier dus niet een directe rol gespeeld bij een bewezenverklaring. Uit het dossier kan worden afgeleid dat de aanvrager aan dit feit kan worden gelinkt door een schoenspoor dat op de plaats delict werd veiliggesteld en een match opleverde met de schoen van de aanvrager.<footnote-ref linkend="_87020c72-a517-4e88-ab75-378feeb0b25b" /> Voorts blijkt uit de hiervoor aangehaalde overweging dat de rechtbank op grond van een vorm van schakelbewijs heeft vastgesteld dat sprake was van een modus operandi: bij de feiten 3, 6, 7 en 8 gaat het ook om kerkinbraken, die in een periode van enkele dagen (bij de feiten 6, 7 en 8 gaat het zelfs om in dezelfde nacht gepleegde) op relatief korte afstand van elkaar hebben plaatsgevonden. Bij al die inbraken sneuvelde een raam of ruit. Bij het beantwoorden van de vraag of ten aanzien van feit 6 sprake is van een ernstig vermoeden als hiervoor bedoeld, kunnen de geurproeven die hebben plaatsgevonden bij het onderzoek naar de feiten 3, 7 en 8 indirect een rol spelen. Met name gelet op hetgeen hierna ten aanzien van de feiten 3 en 7 wordt opgemerkt, meen ik evenwel dat de redenering betreffende het schakelbewijs stand kan houden ook wanneer de resultaten van de geurproeven buiten beschouwing worden gelaten en van een dergelijk ernstig vermoeden dus geen sprake is.</para>
+  </parablock>
+  <para />
+  <para>14. In het onderzoek naar feit 3 heeft een geurproef plaatsgevonden, die een match met de aanvrager heeft opgeleverd.<footnote-ref linkend="_641df83c-6f6c-414f-9b6b-cc17a2455119" /> Het gaat hier niet om onderzoek naar geurmonsters die zijn genomen op de plaats delict, maar om een geurovereenkomst tussen de aanvrager en voorwerpen (een schroevendraaier, een beitel en een afbreekmesje) die zijn aangetroffen in een zwarte tas die de aanvrager op het moment van zijn aanhouding bij zich had. De aanvrager heeft bij zijn aanhouding geroepen dat de tas niet van hem was.<footnote-ref linkend="_2e68a968-9924-4c0c-9470-78d5a6588f8d" /> Het geuronderzoek heeft kennelijk plaatsgevonden om dat verweer te ontkrachten. Het oordeel van de rechtbank dat de zwarte tas (wel) van de aanvrager was, steunt naast de resultaten van het geuronderzoek ook op de vaststelling dat de aanvrager van het bestaan van de tas en de vindplaats ervan op de hoogte moet zijn geweest. De aanhoudende verbalisanten hebben gezien dat de verdachte de tas doelgericht uit de bosjes haalde, terwijl die bosjes zodanig dichtbegroeid waren dat van buitenaf niet was waar te nemen dat zich daarin een tas zou bevinden. De resultaten van het geuronderzoek hebben hier dus niet een doorslaggevende rol gespeeld. Het oordeel dat de aanvrager de onder 3 bewezenverklaarde kerkinbraak moet hebben gepleegd heeft de rechtbank voorts niet alleen gebaseerd op het in de zwarte tas aangetroffen inbrekersgereedschap en de daarin aangetroffen lijst waarop (ook) (adressen van) kerken stonden vermeld waar kort daarvoor inbraken plaatsvonden<footnote-ref linkend="_c6e78db2-931e-4cb2-9bff-673c21d31093" /> en waarop ook Hattem stond, maar ook op het bij de kerk in Hattem aangetroffen schoenspoor dat een match opleverde met de schoen van de aanvrager.<footnote-ref linkend="_baf71721-d55a-4927-8c79-88bbbbcc1d50" /> Van een redelijk vermoeden dat de rechtbank de aanvrager zou hebben vrijgesproken van dit feit, wanneer het de resultaten van de geurproef buiten beschouwing had gelaten, is geen sprake.</para>
+  <para />
+  <para>15. Ook ten aanzien van feit 7 heeft een geurproef plaatsgevonden, die een match opleverde met de aanvrager. Het gaat hier om een geurovereenkomst tussen de aanvrager en geurmonsters die zijn genomen van een op de plaats delict aangetroffen dakpan. Feit 7 betreft een poging tot inbraak in een kerk in Bergentheim door het inslaan van een ruit, vermoedelijk met een dakpan.<footnote-ref linkend="_eff5572a-ef7a-43cf-8401-4cdeec5d6d56" /> Wanneer het resultaat van deze geurproef wordt weggedacht, steunt het oordeel van de rechtbank dat de aanvrager dit feit moet hebben gepleegd op een match tussen een bij de kerk in Bergentheim aangetroffen schoenspoor met de schoen van de aanvrager<footnote-ref linkend="_f54ddf6c-cf5a-4ea6-bb15-884ef01830c0" />, alsook op de door de rechtbank vastgestelde modus operandi. Het gaat om een (poging tot) kerkinbraak gepleegd in dezelfde nacht en op korte afstand van de onder 6 bewezenverklaarde inbraak enkele dagen voordat de onder 3 bewezenverklaarde inbraak plaatsvond.</para>
+  <parablock>
+    <para />
+    <para>16. Bij feit 8 tot slot gaat het om een inbraak in Sibculo, in dezelfde nacht en in dezelfde regio als de feiten 6 en 7. Wanneer de uitslag van de ten aanzien van dit feit uitgevoerde geurproef wordt weggedacht, steunt deze veroordeling geheel op de door de rechtbank vastgestelde modus operandi. Blijkens haar overweging zag de rechtbank steun voor deze bewezenverklaring in de uit de eerder genoemde lijst blijkende interesse van de verdachte in kerken en kerkinbraken.</para>
+    <para />
+    <para>17. Ook zonder de resultaten van de onregelmatige geurproeven zou de rechtbank met voldoende mate van aannemelijkheid uit het andere beschikbare bewijsmateriaal hebben afgeleid dat de aanvrager de onder 1, 2, 3, 6, 7 en 8 tenlastegelegde feiten heeft gepleegd. Van het ernstige vermoeden dat de rechtbank de aanvrager zou hebben vrijgesproken is dus geen sprake.</para>
+    <para />
+    <para>18. De conclusie strekt ertoe dat de aanvraag ongegrond wordt verklaard en wordt afgewezen.</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>De Procureur-Generaal</para>
+    <para>bij de Hoge Raad der Nederlanden</para>
+  </parablock>
+  <para />
+  <parablock>
+    <para>AG</para>
+  </parablock>
+  <para />
+  <footnote id="_a6068aed-af00-40b4-bd91-e6ca81760a42" label="1">
+    <para> HR 22 april 2008, ECLI:NL:HR:2008:BC8789, NJ 2008/591. Sindsdien is een groot aantal herzieningszaken behandeld waarin (mogelijk) niet correct uitgevoerde geurproeven een rol speelden. Zie meest recent HR 11 oktober 2016, ECLI:NL:HR:2016:2292.</para>
+  </footnote>
+  <footnote id="_e3f19e9c-a553-4e16-8df7-a89ad7f2abe3" label="2">
+    <para> In het dossier bevinden zich een Akte afstand rechtsmiddel van 24 oktober 2005, waarin een door de aanvrager daartoe gemachtigde namens de verdachte afstand doet van de bevoegdheid tot het instellen van een rechtsmiddel, en een afschrift van de door de verdachte getekende machtiging. </para>
+  </footnote>
+  <footnote id="_e8d9ae5c-d3f5-41e2-a8ed-cce6fc5a2c6f" label="3">
+    <para> Deze zijn gevoegd als bijlage bij het hierna te noemen politieproces-verbaal van 27 juni 2005; verwezen wordt naar de doorgenummerde pagina’s van dat politieproces-verbaal. Het gaat om een proces-verbaal van 19 mei 2005 opgesteld door J. Smid, J.G. Schaafsma en K. Dedden, p. 77 (feit 3), een proces-verbaal van 6 juni 2005 door J. Smid en J.G. Schaafsma, p. 219 (feit 7) en een proces-verbaal van 6 juni 2005 door J. Smid en J.G. Schaafsma, p. 230 (feit 8).  </para>
+  </footnote>
+  <footnote id="_e57f99c3-86de-4b3c-9d78-69e119d48ae2" label="4">
+    <para> Zie daarover ook HR 11 oktober 2016, ECLI:NL:HR:2016:2292, onder 4.</para>
+  </footnote>
+  <footnote id="_62cfb2b5-fdef-4550-b61b-185820281cf6" label="5">
+    <para> Aan de vermelding in die processen-verbaal dat de proeven hebben plaatsgevonden conform de daarvoor geldende protocollen, komt in dit verband geen betekenis toe. Zie daarover de conclusie van ambtgenoot Hofstee voor HR 8 juli 2014, ECLI:NL:HR:2014:1694 (ECLI:NL:PHR:2014:724), onder 14.</para>
+  </footnote>
+  <footnote id="_df02f829-e16b-4ba2-90e1-248b6ce1d97a" label="6">
+    <para> Proces-verbaal van 6 juni 2006 opgemaakt door S. Brugman en J.G. Schaafsma (bijlage bij genoemd politieproces-verbaal, doorgenummerde pagina 208).</para>
+  </footnote>
+  <footnote id="_87020c72-a517-4e88-ab75-378feeb0b25b" label="7">
+    <para> Proces-verbaal vergelijkend schoensporenonderzoek 28 juni 2005.</para>
+  </footnote>
+  <footnote id="_641df83c-6f6c-414f-9b6b-cc17a2455119" label="8">
+    <para> Proces-verbaal  van 19 mei 2005 opgesteld door J. Smid, J.G. Schaafsma en K. Dedden (bijlage bij genoemd politieproces-verbaal, doorgenummerde pagina 77).</para>
+  </footnote>
+  <footnote id="_2e68a968-9924-4c0c-9470-78d5a6588f8d" label="9">
+    <para> Politieproces-verbaal, doorgenummerde pagina 72.</para>
+  </footnote>
+  <footnote id="_c6e78db2-931e-4cb2-9bff-673c21d31093" label="10">
+    <para> Op de lijst (p. 81-82) staan ook “Aalten”, “Oosterkerk” en “Zonnebrink 61 Winterswijk”. Op 10-11 mei 2005 (p. 133-157) respectievelijk 10-11 maart 2005 (p. 166-201) vonden in die kerken inbraken plaats. Die inbraken hebben niet tot een veroordeling van de aanvrager geleid. Uit de in tas aangetroffen lijst kan in ieder geval worden afgeleid dat de aanvrager in mei 2005 een bovenmatige interesse in kerkgebouwen en kerkinbraken had. </para>
+  </footnote>
+  <footnote id="_baf71721-d55a-4927-8c79-88bbbbcc1d50" label="11">
+    <para> Doorgenummerde dossierpagina 86.</para>
+  </footnote>
+  <footnote id="_eff5572a-ef7a-43cf-8401-4cdeec5d6d56" label="12">
+    <para> Doorgenummerde dossierpagina 214.</para>
+  </footnote>
+  <footnote id="_f54ddf6c-cf5a-4ea6-bb15-884ef01830c0" label="13">
+    <para> Proces-verbaal historie veiliggestelde sporen van 15 juni 2005 opgemaakt door P.G.J.M. Martijn.</para>
+  </footnote>
+</conclusie>
+</open-rechtspraak>

@@ -476,6 +476,104 @@ OSLO LOBO MEDIA AS 2005""",
         ],
         'n_documents': 22,
     },
+    {
+        'name': 'parliament-ireland',
+        'end': datetime(1999, 12, 31),
+        'docs': [
+            {
+                'country': 'Ireland',
+                'id': '1',
+                'date': '1919-01-21',
+                'speaker': 'Count George Noble, Count Plunkett',
+                'speaker_id': '977',
+                'speaker_constituency': 'Roscommon North',
+                'party': 'Sinn Féin',
+                'party_id': '22',
+                'speech': 'Molaimse don Dáil Cathal Brugha, an Teachta ó Dhéisibh Phortláirge do bheith mar Cheann Comhairle againn indiu.',
+                'topic': '1. CEANN COMHAIRLE I gCOIR AN LAE.',
+                'chamber': 'Dáil',
+                'sequence': 1,
+                'source_archive': '1919-2013',
+                'url': None,
+                'ministerial_role': None,
+                'role': None,
+                'debate_type': None,
+                'committee': None,
+            },
+        ],
+        'n_documents': 5,
+    },
+    {
+        'name': 'parliament-ireland',
+        'start': datetime(2000, 1, 1),
+        'end': datetime(2013, 12, 31),
+        'docs': [
+            {
+                'country': 'Ireland',
+                'id': '3088872',
+                'date': '2000-01-26',
+                'speaker': 'Mr. Ruairí Quinn',
+                'speaker_id': '985',
+                'speaker_constituency': 'Dublin South-East',
+                'party': 'The Labour Party',
+                'party_id': '14',
+                'speech': 'asked the Taoiseach if he will make a statement on his visit to South Africa and Lesotho.',
+                'topic': 'Ceisteanna &ndash Questions. - Official Engagements.',
+                'chamber': 'Dáil',
+                'sequence': 3088872,
+                'source_archive': '1919-2013',
+                'url': None,
+                'ministerial_role': None,
+                'role': None,
+                'debate_type': None,
+                'committee': None,
+            },
+        ] +
+        [ {} ] * 13 + # skip ahead to the first speech from a minister
+        [
+            {
+                'id': '3088886',
+                'speaker_id': '5',
+                'speaker': 'Mr. Bertie Ahern',
+                'ministerial_role': 'Taoiseach, Minister for Foreign Affairs',
+            }
+        ]
+        ,
+        'n_documents': 15,
+    },
+    {
+        'name': 'parliament-ireland',
+        'start': datetime(2014, 1, 1),
+        'docs': [
+            {
+                'country': 'Ireland',
+                'sequence': 1,
+                'speaker_id': '#AndrewDoyle',
+                'date': '2014-12-09',
+                'topic': 'Vote 30 - Agriculture, Food and the Marine (Supplementary)',
+                'speaker': 'Andrew Doyle',
+                'chamber': 'Dáil',
+                'url': 'https://data.oireachtas.ie/akn/ie/debateRecord/select_committee_on_agriculture_food_and_the_marine/2014-12-09/debate/mul@/main.xml',
+                'source_archive': '2014-2020',
+                'party': None,
+                'party_id': None,
+                'speaker_constituency': None,
+                'role': 'Chair',
+                'ministerial_role': None,
+                'debate_type': 'committee',
+                'committee': 'Select Committee on Agriculture, Food and the Marine',
+                'id': 'debateRecord#select_committee_on_agriculture_food_and_the_marine#2014-12-09#debate#main#spk_1',
+                'speech': '''As we have a quorum, we will commence in public session.  All mobile phones should be switched off because they cause interference.  I have apologies from Deputies Michael McNamara and Martin Heydon.  This meeting has been convened to consider a Supplementary Estimate on Vote 30 - Agriculture, Food and the Marine, which was referred by the Dáil to the committee on 3 December with an instruction to report back to the Dáil not later than 11 December.
+I welcome the Minister, Deputy Simon Coveney, and his officials.  I thank them for the briefing material provided, which has been circulated to the members of the committee.  I invite the Minister to make his opening statement.'''
+            }, {
+                'speaker_id': '#SimonCoveney',
+                'speaker': 'Simon Coveney',
+                'role': None,
+                'ministerial_role': 'Minister for Agriculture, Food and the Marine',
+            }
+        ],
+        'n_documents': 25,
+    }
 ]
 
 def corpus_test_name(corpus_spec):
