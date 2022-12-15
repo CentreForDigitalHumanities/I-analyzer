@@ -126,12 +126,12 @@ export class WordmodelsService extends Resource {
             }));
     }
 
-    get2dContextOverTime(queryTerms: string[], corpusName: string, neighbours: number): Promise<TaskResult> {
+    get2dContextOverTime(queryTerms: string[], corpusName: string, numberOfNeighbours: number): Promise<TaskResult> {
         return this.context2dRequest(
             {
                 query_terms: queryTerms,
                 corpus: corpusName,
-                neighbours,
+                neighbours: numberOfNeighbours,
             },
         );
     }
