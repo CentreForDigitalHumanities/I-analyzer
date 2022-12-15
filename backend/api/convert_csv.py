@@ -60,11 +60,15 @@ def format_wide_format_column_name(column):
 
     quantity, query = column
     if quantity.startswith('Total'):
+        # columns with totals (total docs, total words) are not dependent on the query
+        # and should not include the query in the column name
         return quantity
     else:
         return '{} ({})'.format(quantity, query)
 
 def set_long_wide_format(df, format):
+    # check if wide format conversion is needed
+    # i.e. specified format is wide, and the resutls include multiple queries (i.e. there is a query column)
     if format == 'wide' and df.columns[0] == 'Query':
         query_column = df.columns[0]
         field_column = df.columns[1] # the field values are being compared on
