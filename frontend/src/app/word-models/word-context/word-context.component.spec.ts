@@ -28,51 +28,51 @@ describe('WordContextComponent', () => {
         const dataset = {
             data: [
                 {
-                    'label': 'schenkt',
-                    'x': 1,
-                    'y': -0.53
+                    label: 'schenkt',
+                    x: 1,
+                    y: -0.53
                 }, {
-                    'label': 'vooruitgaat',
-                    'x': 1,
-                    'y': -0.47
+                    label: 'vooruitgaat',
+                    x: 1,
+                    y: -0.47
                 },
                 {
-                    'label': 'aloude',
-                    'x': -0.93,
-                    'y': 0.26
+                    label: 'aloude',
+                    x: -0.93,
+                    y: 0.26
                 },
                 {
-                    'label': 'band',
-                    'x': -0.80,
-                    'y': 1.00
+                    label: 'band',
+                    x: -0.80,
+                    y: 1.00
                 },
             ],
-            'time': '1814-1849'
+            time: '1814-1849'
         };
 
         const newData = {
             data: [
                 {
-                    'label': 'twee',
-                    'x': -0.5,
-                    'y': 0.33
+                    label: 'twee',
+                    x: -0.5,
+                    y: 0.33
                 }, {
-                    'label': 'vooruitgaat',
-                    'x': 0.75,
-                    'y': -0.2
+                    label: 'vooruitgaat',
+                    x: 0.75,
+                    y: -0.2
                 },
                 {
-                    'label': 'schenkt',
-                    'x': 0.93,
-                    'y': -0.26
+                    label: 'schenkt',
+                    x: 0.93,
+                    y: -0.26
                 },
                 {
-                    'label': 'band',
-                    'x': -0.50,
-                    'y': 1.00
+                    label: 'band',
+                    x: -0.50,
+                    y: 1.00
                 },
             ],
-            'time': '1814-1849'
+            time: '1814-1849'
         };
 
         component.updateDataset(dataset, newData);
