@@ -113,5 +113,6 @@ export interface Download {
 }
 
 export interface DownloadOptions {
+    format?: 'long'|'wide';
     encoding: 'utf-8'|'utf-16';
 };
