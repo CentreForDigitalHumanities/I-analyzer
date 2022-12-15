@@ -37,7 +37,8 @@ def main_content_mapping(token_counts = True, stopword_analysis = False, stemmin
 
 def text_mapping():
     '''
-    Mapping for text fields that are not the main content. Allows full text search but no special analysis options.
+    Mapping for text fields that are not the main content. Performs tokenisation and lowercasing for full-text
+    search, but does not support other analysis options.
     '''
 
     return {
