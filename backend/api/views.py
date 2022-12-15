@@ -281,12 +281,13 @@ def api_user_downloads():
 @api.route('/csv/<id>', methods=['get'])
 def api_csv(id):
     encoding = request.args.get('encoding', 'utf-8')
+    format = request.args.get('format', None)
 
     record = models.Download.query.get(id)
     directory, filename = os.path.split(record.filename)
     download_type = record.download_type
 
-    filename = convert_csv.convert_csv(directory, filename, download_type, encoding)
+    filename = convert_csv.convert_csv(directory, filename, download_type, encoding, format)
 
     return send_from_directory(directory, filename)
 

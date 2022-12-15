@@ -123,6 +123,7 @@ numpy==1.22.0
     # via
     #   -r requirements.in
     #   gensim
+    #   pandas
     #   scikit-learn
     #   scipy
 openpyxl==3.0.10
@@ -131,6 +132,8 @@ packaging==21.3
     # via
     #   pytest
     #   redis
+pandas==1.5.2
+    # via -r requirements.in
 pluggy==1.0.0
     # via pytest
 prometheus-client==0.15.0
@@ -145,12 +148,15 @@ pypdf2==2.4.2
     # via -r requirements.in
 pytest==7.1.2
     # via -r requirements.in
+python-dateutil==2.8.2
+    # via pandas
 python3-saml==1.14.0
     # via -r requirements.in
 pytz==2022.1
     # via
     #   celery
     #   flower
+    #   pandas
 redis==4.3.4
     # via -r requirements.in
 regex==2022.6.2
@@ -171,6 +177,7 @@ six==1.16.0
     # via
     #   click-repl
     #   isodate
+    #   python-dateutil
 smart-open==6.2.0
     # via gensim
 soupsieve==2.3.2.post1
