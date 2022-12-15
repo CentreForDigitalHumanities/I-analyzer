@@ -67,14 +67,6 @@ export type ContextResults = {
     data: { label: string, x: number, y: number }[],
 }[];
 
-export type ContextFeedback = {
-    succes: false,
-    message: string
-} | {
-    succes: true,
-    data: ContextResults,
-};
-
 export type NgramResults = {
     words: {
         label: string,
