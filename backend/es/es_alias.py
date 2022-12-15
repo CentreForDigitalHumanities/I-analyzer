@@ -46,7 +46,7 @@ def alias(corpus_name, corpus_definition, clean=False):
     logger.info('Done updating aliases')
 
 
-def get_new_version_number(client, alias, current_index = None):
+def get_new_version_number(client, alias, current_index=None):
     '''
     Get version number for a new versioned index (e.g. `indexname-1`).
     Will be 1 if an index with name `alias` exists,
@@ -71,16 +71,14 @@ def get_new_version_number(client, alias, current_index = None):
 
 def extract_version(index_name, current_index):
     '''
-    Helper function to extract version number from an index name.
-    Format of the index_name should be `index_name-<version>`, eg `indexname-5`.
-    Returns None if no version number is found in `index_name`.
+    Helper function to extract version number from an index name, given an alias.
+    Format of the index_name should be `index_name-<version>`, e.g., `index_name-5,
+    while `index_name-something-else-5` will not be detected as a version.
+    Returns None if no version number is found.
     '''
-
-    if re.match('{}-[\d]+$'.format(current_index), index_name):
-        match = re.search(r'[\d]+$', index_name)
-        if match:
-            return int(match.group(0))
-
+    match = re.match('{}-([0-9]+)$'.format(current_index), index_name)
+    if match:
+        return int(match.group(1))
 
 def get_highest_version_number(indices, current_index=None):
     '''
