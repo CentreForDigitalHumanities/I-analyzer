@@ -8,12 +8,9 @@ import { ImageInfo } from '../image-view/image-view.component';
 import { AccessibleCorpus, AggregateResult, RelatedWordsResults, NgramResults, UserRole, Query, QueryModel, Corpus, FoundDocument, TaskResult, DateResult, WordcloudParameters, DateTermFrequencyParameters, AggregateTermFrequencyParameters, TermFrequencyResult, Download, ResultsDownloadParameters, LimitedResultsDownloadParameters, DownloadOptions } from '../models/index';
 import { timer } from 'rxjs';
 import {
-    catchError,
-    concatMap,
     filter,
     switchMap,
     take,
-    tap,
 } from 'rxjs/operators';
 
 // workaround for https://github.com/angular/angular-cli/issues/2034

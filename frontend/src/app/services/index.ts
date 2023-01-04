@@ -4,6 +4,7 @@ export * from './corpus.service';
 export * from './dialog.service';
 export * from './download.service';
 export * from './elastic-search.service';
+export * from './filter-management.service';
 export * from './highlight.service';
 export * from './log.service';
 export * from './notification.service';

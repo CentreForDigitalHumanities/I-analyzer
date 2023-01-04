@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { commonTestBed } from '../common-test-bed';
+import { mockCorpus } from '../../mock-data/corpus';
 
 import { SearchComponent } from './search.component';
 

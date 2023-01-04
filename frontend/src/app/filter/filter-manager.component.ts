@@ -1,17 +1,22 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter, SearchFilterData, CorpusField } from '../models/index';
+import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter,
+    SearchFilterData, searchFilterDataToParam, CorpusField } from '../models/index';
 import { SearchService } from '../services';
+import { ParamDirective } from '../param/param-directive';
+import { FilterManagementService } from '../services/filter-management.service';
+
 
 @Component({
     selector: 'ia-filter-manager',
     templateUrl: './filter-manager.component.html',
     styleUrls: ['./filter-manager.component.scss']
 })
-export class FilterManagerComponent implements OnInit, OnChanges {
+export class FilterManagerComponent extends ParamDirective implements OnChanges {
     @Input() public corpus: Corpus;
     @Input() private queryModel: QueryModel;
 
@@ -30,25 +35,41 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public multipleChoiceData: Object = {};
 
-    constructor(private searchService: SearchService) {
-     }
+    constructor(
+        private filterManagerService: FilterManagementService,
+        private searchService: SearchService,
+        route: ActivatedRoute,
+        router: Router) {
+            super(route, router);
+    }
 
-    ngOnInit() {
+    initialize() {
+        this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['corpus']) {
-            this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
-            this.setAdHocFilters();
-            this.activeFilters = [];
-            if (changes['corpus'].previousValue !== undefined ) {
-                this.searchFilters.forEach( filter => filter.currentData = filter.defaultData);
-            }
+            this.initialize();
         } else if (changes.queryModel) {
             this.setAdHocFilters();
         }
         this.aggregateSearchForMultipleChoiceFilters();
         this.inputChanged.next();
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.activeFilters = this.filterManagerService.setFiltersFromParams(
+            this.searchFilters, params, this.corpus
+        );
+    }
+
+    teardown() {
+        let params = {}
+        this.searchFilters.forEach(filter => {
+            const paramName = this.searchService.getParamForFieldName(filter.fieldName)
+            params[paramName] = null
+        })
+        this.setParams(params);
     }
 
     /**
@@ -138,8 +159,14 @@ export class FilterManagerComponent implements OnInit, OnChanges {
 
     public filtersChanged() {
         this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
+        let params = {};
+        this.searchFilters.forEach(filter => {
+            const paramName = this.searchService.getParamForFieldName(filter.fieldName);
+            const value = filter.useAsFilter? searchFilterDataToParam(filter) : null;
+            params[paramName] = value;
+        });
+        this.setParams(params);
         this.setAdHocFilters();
-        this.filtersChangedEmitter.emit(this.activeFilters);
     }
 
     toggleFilter(filter: SearchFilter<SearchFilterData>) {

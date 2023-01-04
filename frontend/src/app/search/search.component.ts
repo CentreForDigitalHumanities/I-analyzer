@@ -1,18 +1,16 @@
-
 import {Subscription } from 'rxjs';
 import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
+import { FilterManagementService } from '../services/filter-management.service';
 
 const HIGHLIGHT = 200;
 
-interface SearchFilterSettings {
-    [fieldName: string]: SearchFilterData;
-}
+
 
 @Component({
     selector: 'ia-search',
@@ -40,7 +38,8 @@ export class SearchComponent extends ParamDirective {
     /**
      * Hide the filters by default, unless an existing search is opened containing filters.
      */
-    public showFilters: boolean | undefined;
+    // public showFilters: boolean | undefined;
+    public showFilters = true;
     public user: User;
     protected corpusSubscription: Subscription;
 
@@ -74,7 +73,10 @@ export class SearchComponent extends ParamDirective {
 
     public showVisualization: boolean;
 
+    private currentParams: ParamMap;
+
     constructor(private corpusService: CorpusService,
+        private filterManagerService: FilterManagementService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,
@@ -86,10 +88,9 @@ export class SearchComponent extends ParamDirective {
     async initialize(): Promise<void> {
         this.tabIndex = 0;
         this.user = await this.userService.getCurrentUser();
-        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus)
-            .subscribe((corpus) => {
-                this.setCorpus(corpus);
-            });
+        this.corpusSubscription = this.corpusService.currentCorpus.filter( corpus => !!corpus).subscribe((corpus) => {
+            this.setCorpus(corpus);
+        });
     }
 
     teardown() {
@@ -100,7 +101,8 @@ export class SearchComponent extends ParamDirective {
     setStateFromParams(params: ParamMap) {
         this.queryText = params.get('query');
         this.setSearchFieldsFromParams(params);
-        this.setFiltersFromParams(this.searchFilters, params);
+        this.activeFilters = this.filterManagerService.setFiltersFromParams(
+            this.searchFilters, params, this.corpus);
         this.setSortFromParams(this.corpus?.fields, params);
         this.setHighlightFromParams(params);
         const queryModel = this.createQueryModel();
@@ -109,6 +111,7 @@ export class SearchComponent extends ParamDirective {
         }
         this.tabIndex = params.has('visualize') ? 1 : 0;
         this.showVisualization = params.has('visualize') ? true : false;
+        this.currentParams = params;
     }
 
     @HostListener('window:scroll', [])
@@ -190,7 +193,6 @@ export class SearchComponent extends ParamDirective {
             this.searchFilters = corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
             this.activeFilters = [];
             this.defaultSortField = corpus.fields.find(field => field.primarySort);
-            this.setParams({});
         }
     }
 
@@ -227,61 +229,6 @@ export class SearchComponent extends ParamDirective {
         stemmedField.multiFields = null;
 
         return [field, stemmedField];
-    }
-
-    /**
-     * Set the filter data from the query parameters and return whether any filters were actually set.
-     */
-    private setFiltersFromParams(searchFilters: SearchFilter<SearchFilterData>[], params: ParamMap) {
-        const filterSettings = this.filterSettingsFromParams(params);
-        this.applyFilterSettings(searchFilters, filterSettings);
-    }
-
-    private filterSettingsFromParams(params: ParamMap): SearchFilterSettings {
-        const settings = {};
-        if (this.corpus) {
-            this.corpus.fields.forEach(field => {
-                const param = this.searchService.getParamForFieldName(field.name);
-                if (params.has(param)) {
-                    let filterSettings = params.get(param).split(',');
-                    if (filterSettings[0] === '') { filterSettings = []; }
-                    const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
-                    const data = searchFilterDataFromParam(filterType, filterSettings, field);
-                    settings[field.name] = data;
-                }
-            });
-        }
-
-        return settings;
-    }
-
-    private applyFilterSettings(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
-        this.setAdHocFilters(searchFilters, filterSettings);
-
-        searchFilters.forEach(f => {
-            if (_.has(filterSettings, f.fieldName)) {
-                if (this.showFilters === undefined) {
-                    this.showFilters = true;
-                }
-                const data = filterSettings[f.fieldName];
-                f.currentData = data;
-                f.useAsFilter = true;
-            } else {
-                f.useAsFilter = false;
-            }
-        });
-        this.activeFilters = searchFilters.filter( f => f.useAsFilter );
-    }
-
-    private setAdHocFilters(searchFilters: SearchFilter<SearchFilterData>[], filterSettings: SearchFilterSettings) {
-        if (this.corpus) {
-            this.corpus.fields.forEach(field => {
-                if (_.has(filterSettings, field.name) && !searchFilters.find(filter => filter.fieldName ===  field.name)) {
-                    const adHocFilter = adHocFilterFromField(field);
-                    searchFilters.push(adHocFilter);
-                }
-            });
-        }
     }
 
     private setSearchFieldsFromParams(params: ParamMap) {
@@ -344,7 +291,7 @@ export class SearchComponent extends ParamDirective {
             field => searchFilterDataFromField(field, [contextValues[field.name]])
         );
 
-        this.applyFilterSettings(this.searchFilters, filterSettings);
+        this.activeFilters = this.filterManagerService.applyFilterSettings(this.searchFilters, filterSettings, this.corpus);
 
         this.search();
     }

@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { BooleanFilterData, Corpus, CorpusField, SearchFilter } from '../app/models';
 
 const mockFilterData: BooleanFilterData = {
@@ -42,3 +43,16 @@ export const mockCorpus: Corpus = {
     word_models_present: false,
     fields: [mockField]
 };
+
+export class CorpusServiceMock {
+    private currentCorpusSubject = new BehaviorSubject<Corpus>(mockCorpus);
+    public currentCorpus = this.currentCorpusSubject.asObservable();
+
+    public get(refresh=false): Promise<Corpus[]> {
+        return Promise.resolve([mockCorpus]);
+    }
+
+    public set(corpusName: 'test1'): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+}
