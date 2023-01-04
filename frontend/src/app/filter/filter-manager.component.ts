@@ -66,8 +66,12 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     teardown() {
         let params = {}
         this.searchFilters.forEach(filter => {
-            const paramName = this.searchService.getParamForFieldName(filter.fieldName)
-            params[paramName] = null
+            const paramName = this.searchService.getParamForFieldName(filter.fieldName);
+            params[paramName] = null;
+        })
+        this.adHocFilterFields.forEach(field => {
+            const paramName = this.searchService.getParamForFieldName(field.name);
+            params[paramName] = null;
         })
         this.setParams(params);
     }
@@ -159,14 +163,19 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
 
     public filtersChanged() {
         this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
+        this.setAdHocFilters();
         let params = {};
         this.searchFilters.forEach(filter => {
             const paramName = this.searchService.getParamForFieldName(filter.fieldName);
             const value = filter.useAsFilter? searchFilterDataToParam(filter) : null;
             params[paramName] = value;
         });
+        this.adHocFilterFields.forEach(field => {
+            const paramName = this.searchService.getParamForFieldName(field.name);
+            const value = field.searchFilter.useAsFilter? searchFilterDataToParam(field.searchFilter) : null;
+            params[paramName] = value;
+        })
         this.setParams(params);
-        this.setAdHocFilters();
     }
 
     toggleFilter(filter: SearchFilter<SearchFilterData>) {

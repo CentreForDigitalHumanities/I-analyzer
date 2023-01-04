@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { commonTestBed } from '../common-test-bed';
 
 import { FilterManagerComponent } from './filter-manager.component';
-import { mockCorpus } from '../../mock-data/corpus';
+import { mockCorpus, mockCorpus2 } from '../../mock-data/corpus';
 
 describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
@@ -22,5 +22,15 @@ describe('FilterManagerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.searchFilters.length).toEqual(1);
+  });
+
+  it('resets filters when corpus changes', () => {
+    component.corpus = mockCorpus2;
+    component.initialize();
+    expect(component.searchFilters.length).toEqual(0);
+    component.corpus = mockCorpus;
+    component.initialize();
+    expect(component.searchFilters.length).toEqual(1);
   });
 });
