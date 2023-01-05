@@ -1,12 +1,18 @@
+from datetime import datetime
+
 from addcorpus.corpus import Field
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
-from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE, BASIC_KEYWORD_MAPPING, BASIC_TEXT_MAPPING
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, BASIC_TEXT_MAPPING
 
 # For every field `foo` in the Parliament corpora, this file should have a function `foo()`
 # which creates a default instance of the field. It does not include an extractor, since that
 # depends on the corpus.
 
 # Corpora that include a `foo` field should initialise it with `foo()` and then modify attributes as needed.
+
+MIN_DATE = datetime(year=1800, month=1, day=1)
+MAX_DATE = datetime(year=2022, month=12, day=31)
+
 
 def book_id():
     """Unique ID of the book in which the speech was recorded"""

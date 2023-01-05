@@ -18,7 +18,9 @@ from addcorpus import filters
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus.load_corpus import corpus_dir
 
-# Source files ################################################################
+from corpora.constants import document_context
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from corpora.utils.es_settings import get_language_specific_es_settings
 
 
 class DutchNewspapersPublic(XMLCorpus):
@@ -28,7 +30,8 @@ class DutchNewspapersPublic(XMLCorpus):
     max_date = datetime(year=1876, month=12, day=31)
     data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
     es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
+    language = 'dutch'
+    es_settings = get_language_specific_es_settings(language)
     image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
 
     tag_toplevel = 'text'
@@ -110,12 +113,12 @@ class DutchNewspapersPublic(XMLCorpus):
         'onbekend': 'unknown',
     }
 
-    document_context = {
-        'context_fields': ['newspaper_title', 'issue_number'],
-        'sort_field': None,
-        'sort_direction': None,
-        'context_display_name': 'issue'
-    }
+    document_context = document_context(
+        ['newspaper_title', 'issue_number'],
+        None,
+        None,
+        'issue'
+    )
 
 
     @property
@@ -124,6 +127,7 @@ class DutchNewspapersPublic(XMLCorpus):
             name="url",
             display_name="Delpher URL",
             description="Link to record on Delpher",
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=XML(tag='identifier',
                                   toplevel=True,
                                   recursive=True,
@@ -246,6 +250,7 @@ class DutchNewspapersPublic(XMLCorpus):
             name='publisher',
             display_name='Publisher',
             description='Publisher',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             search_field_core=True,
             extractor=Metadata('publisher')
         ),
@@ -303,6 +308,7 @@ class DutchNewspapersPublic(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=MULTIFIELD_MAPPING,
             results_overview=True,
             search_field_core=True,
             extractor=XML(tag='p', multiple=True,

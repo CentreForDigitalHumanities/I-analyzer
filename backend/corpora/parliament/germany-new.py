@@ -7,7 +7,7 @@ from flask import current_app
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
 
 

@@ -1,4 +1,4 @@
-import corpora.parliament.utils.es_settings as es_settings
+import corpora.utils.es_settings as es_settings
 from addcorpus.load_corpus import load_corpus
 import pytest
 import os

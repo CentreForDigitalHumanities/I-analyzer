@@ -3,7 +3,7 @@ from glob import glob
 import logging
 import re
 from flask import current_app
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.constants import document_context
 
 from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
@@ -11,7 +11,6 @@ from addcorpus.corpus import CSVCorpus
 from addcorpus.filters import MultipleChoiceFilter
 import corpora.parliament.utils.field_defaults as field_defaults
 from corpora.parliament.uk import format_house
-from corpora.parliament.utils.es_settings import parliament_es_settings
 
 class ParliamentCanada(Parliament, CSVCorpus):
     title = 'People & Parliament (Canada)'

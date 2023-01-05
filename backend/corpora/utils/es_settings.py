@@ -41,7 +41,7 @@ def get_nltk_stopwords(language):
     else:
         raise NotImplementedError('language {} has no nltk stopwords list'.format(language))
 
-def parliament_es_settings(language):
+def get_language_specific_es_settings(language):
     stopwords = get_nltk_stopwords(language)
 
     settings = SETTINGS

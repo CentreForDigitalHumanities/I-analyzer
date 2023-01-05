@@ -16,8 +16,9 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 
-
-# Source files ################################################################
+from corpora.utils.constants import document_context
+from corpora.utils.es_settings import get_language_specific_es_seetings
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 
 
 class Ecco(XMLCorpus):
@@ -31,7 +32,8 @@ class Ecco(XMLCorpus):
     es_doctype = current_app.config['ECCO_ES_DOCTYPE']
     image = current_app.config['ECCO_IMAGE']
     scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
-    es_settings = None
+    language = 'english'
+    es_settings = get_language_specific_es_settings(language)
 
     tag_toplevel = 'pageContent'
     tag_entry = 'page'
@@ -141,6 +143,7 @@ class Ecco(XMLCorpus):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
+                es_mapping=MULTIFIELD_MAPPING,
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
@@ -180,6 +183,7 @@ class Ecco(XMLCorpus):
             Field(
                 name='page',
                 display_name='Page number',
+                es_mapping={'type': 'integer'}
                 description='Number of the page on which match was found',
                 extractor=XML(attribute='id', transform=lambda x: int(int(x)/10))
             ),
@@ -187,20 +191,22 @@ class Ecco(XMLCorpus):
                 name='pub_place',
                 display_name='Publication place',
                 description='Where the book was published',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('publicationPlaceComposed')
             ),
             Field(
                 name='collation',
                 display_name='Collation',
                 description='Information about the volume',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('collation')
             ),
             Field(
                 name='category',
                 display_name='Category',
                 description='Which category this book belongs to',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('category'),
-                es_mapping={'type': 'keyword'},
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages in these categories.',
                     option_count=7
@@ -211,12 +217,14 @@ class Ecco(XMLCorpus):
                 name='imprint',
                 display_name='Printer',
                 description='Information of the printer and publisher of the book',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('imprintFull')
             ),
             Field(
                 name='library',
                 display_name='Source library',
                 description='The source library of the book',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('sourceLibrary')
             ),
             Field(
@@ -229,6 +237,7 @@ class Ecco(XMLCorpus):
                 name='volume',
                 display_name='Volume',
                 description='The book volume',
+                es_mapping=BASIC_KEYWORD_MAPPING,
                 extractor=Metadata('Volume')
             ),
             Field(
@@ -238,13 +247,12 @@ class Ecco(XMLCorpus):
             )
         ]
 
-    document_context = {
-        'context_fields': ['title', 'volume',],
-        'sort_field': 'page',
-        'sort_direction': 'asc',
-        'context_display_name': 'volume'
-    }
-
+    document_context = document_context(
+        ['title', 'volume',],
+        'page',
+        'asc',
+        'volume'
+    )
 
     def request_media(self, document):
         image_path = document['fieldValues']['image_path']

@@ -11,7 +11,7 @@ from addcorpus.corpus import Corpus, CSVCorpus, XMLCorpus
 from addcorpus.extract import Constant, CSV, XML, Metadata, Combined, Backup
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 import corpora.parliament.utils.parlamint as parlamint
 
 

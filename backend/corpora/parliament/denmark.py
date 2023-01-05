@@ -7,7 +7,7 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 
 def get_date_from_year(value, limit='earliest'):
     if value and value.isnumeric():

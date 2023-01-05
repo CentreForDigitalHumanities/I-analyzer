@@ -7,10 +7,10 @@ import os
 
 from addcorpus.extract import Combined, Constant, Metadata, CSV
 from addcorpus.corpus import CSVCorpus
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.constants import document_context
 from corpora.parliament.parliament import Parliament
 import corpora.parliament.utils.field_defaults as field_defaults
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 
 def remove_file_extension(filename):
     name, ext = os.path.splitext(filename)

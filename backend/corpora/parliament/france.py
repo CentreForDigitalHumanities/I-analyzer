@@ -8,9 +8,8 @@ from corpora.parliament.parliament import Parliament
 from addcorpus.extract import Constant, Combined, CSV
 from addcorpus.corpus import CSVCorpus
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.formatting import underscore_to_space
-from corpora.parliament.utils.es_settings import parliament_es_settings
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.formatting import underscore_to_space
+from corpora.utils.constants import document_context
 
 class ParliamentFrance(Parliament, CSVCorpus):
     title = "People & Parliament (France 1881-2022)"

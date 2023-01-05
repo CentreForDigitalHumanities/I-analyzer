@@ -4,9 +4,9 @@ from glob import glob
 from addcorpus.corpus import XMLCorpus
 from addcorpus.extract import XML, Combined, Constant, Metadata
 from corpora.parliament.parliament import Parliament
-import corpora.parliament.utils.formatting as formatting
+import corpora.utils.formatting as formatting
 import corpora.parliament.utils.field_defaults as field_defaults
-from corpora.parliament.utils.constants import document_context
+from corpora.utils.constants import document_context
 import re
 from bs4 import BeautifulSoup
 from corpora.parliament.utils.parlamint import extract_all_party_data, extract_people_data, extract_role_data, party_attribute_extractor, person_attribute_extractor, clean_value
