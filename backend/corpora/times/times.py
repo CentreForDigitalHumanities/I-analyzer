@@ -466,11 +466,18 @@ class Times(XMLCorpus):
         ),
     ]
 
+    document_context = {
+        'context_fields': ['issue'],
+        'sort_field': 'page',
+        'sort_direction': 'asc',
+        'context_display_name': 'issue'
+    }
+
     def request_media(self, document):
         field_values = document['fieldValues']
         if 'image_path' in field_values:
             image_urls = [url_for(
-                'api.api_get_media', 
+                'api.api_get_media',
                 corpus=self.es_index,
                 image_path=field_values['image_path'],
                 _external=True
