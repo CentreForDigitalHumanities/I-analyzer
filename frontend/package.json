@@ -11,7 +11,10 @@
     "test": "ng test  --source-map=false",
     "test:once": "ng test --source-map=false --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "stop": "lsof -t -i tcp:4200 | xargs kill -9 || echo \"not running\"",
+    "test-once": "ng test --watch=false",
+    "watch": "ng build --prod --watch"
   },
   "private": true,
   "dependencies": {
