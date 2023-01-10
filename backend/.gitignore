@@ -1,19 +1,33 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-ianalyzer/config.py
-indexing*
-*.pyc
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
 .cache
-*.egg-info
-*.egg
+coverage.xml
+*.cover
+.pytest_cache/
+
+# Django
 *.log
-!.log/
-build/
-dist/
-lib/
-instance/
-set
-corpora/*/wm/*
-!corpora/*/wm/documentation.md
-api/csv_files/*.csv
-corpora/guardianobserver/processed.txt
-dump.rdb
+local_settings.py
+db.sqlite3
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
