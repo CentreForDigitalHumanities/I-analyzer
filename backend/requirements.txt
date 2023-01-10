@@ -4,8 +4,6 @@
 #
 #    pip-compile
 #
---no-binary psycopg2
-
 asgiref==3.6.0
     # via django
 attrs==22.2.0
