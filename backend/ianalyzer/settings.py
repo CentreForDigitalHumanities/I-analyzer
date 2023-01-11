@@ -132,3 +132,6 @@ PROXY_FRONTEND = None
 
 # Authentication
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# Application config
+DEFAULT_DOWNLOAD_LIMIT = 10000
