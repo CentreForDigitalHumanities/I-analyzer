@@ -23,8 +23,6 @@ from rest_framework import routers
 from .index import index
 from .proxy_frontend import proxy_frontend
 
-from example.views import hooray as ExampleView # DELETEME, see below
-
 api_router = routers.DefaultRouter()  # register viewsets with this router
 
 
@@ -34,7 +32,6 @@ else:
     spa_url = re_path(r'', index)
 
 urlpatterns = [
-    path('api/example/', ExampleView), # this is just an example, please delete and utilize router above.
     path('admin', RedirectView.as_view(url='/admin/', permanent=True)),
     path('api', RedirectView.as_view(url='/api/', permanent=True)),
     path('api-auth', RedirectView.as_view(url='/api-auth/', permanent=True)),
