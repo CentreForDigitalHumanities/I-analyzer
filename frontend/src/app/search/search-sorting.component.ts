@@ -1,5 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { CorpusField, SortEvent } from '../models';
+import { ParamDirective } from '../param/param-directive';
+import { ParamService } from '../services';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -8,20 +11,14 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { 'class': 'field has-addons' }
 })
-export class SearchSortingComponent {
-    @Input()
-    public ascending = true;
-
+export class SearchSortingComponent extends ParamDirective {
     @Input()
     public set fields(fields: CorpusField[]) {
         this.sortableFields = fields.filter(field => field.sortable);
     }
 
-    @Input()
-    public sortField: CorpusField | undefined;
-
-    @Output()
-    public onChange = new EventEmitter<SortEvent>();
+    public ascending = true;
+    public sortField: CorpusField | string;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
@@ -29,6 +26,28 @@ export class SearchSortingComponent {
 
     public get sortType(): SortType {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
+    }
+
+    constructor(
+        route: ActivatedRoute,
+        router: Router,
+        private paramService: ParamService
+    ) {
+        super(route, router);
+    }
+
+    initialize() {
+
+    }
+
+    teardown() {
+        this.setParams({ sort: null });
+    }
+
+    setStateFromParams(params: ParamMap) {
+        const sortData = this.paramService.setSortFromParams(this.sortableFields, params);
+        this.sortField = sortData.field;
+        this.ascending = sortData.ascending;
     }
 
     public toggleSortType() {
@@ -52,7 +71,9 @@ export class SearchSortingComponent {
     }
 
     private emitChange() {
-        this.onChange.next({ ascending: !!this.ascending, field: this.sortField });
+        const setting = this.sortField === 'default' ? null : `${this.sortField},${this.ascending ? 'asc': 'desc'}`;
+        const params =  { sort: setting };
+        this.setParams(params);
     }
 }
 

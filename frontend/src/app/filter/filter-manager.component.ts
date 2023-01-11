@@ -8,7 +8,7 @@ import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilt
     SearchFilterData, searchFilterDataToParam, CorpusField } from '../models/index';
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
-import { FilterManagementService } from '../services/filter-management.service';
+import { ParamService } from '../services/param.service';
 
 
 @Component({
@@ -36,7 +36,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     public multipleChoiceData: Object = {};
 
     constructor(
-        private filterManagerService: FilterManagementService,
+        private filterManagerService: ParamService,
         private searchService: SearchService,
         route: ActivatedRoute,
         router: Router) {

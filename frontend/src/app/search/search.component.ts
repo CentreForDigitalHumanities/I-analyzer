@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { Corpus, CorpusField, ResultOverview, SearchFilter, SearchFilterData, adHocFilterFromField, QueryModel, User, SortEvent, searchFilterDataFromField } from '../models/index';
 import { CorpusService, DialogService, SearchService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
-import { FilterManagementService } from '../services/filter-management.service';
+import { ParamService } from '../services/param.service';
 
 const HIGHLIGHT = 200;
 
@@ -76,7 +76,7 @@ export class SearchComponent extends ParamDirective {
     private currentParams: ParamMap;
 
     constructor(private corpusService: CorpusService,
-        private filterManagerService: FilterManagementService,
+        private filterManagerService: ParamService,
         private searchService: SearchService,
         private userService: UserService,
         private dialogService: DialogService,

@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { Corpus, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, } from '../models';
+import { Corpus, SearchFilter, SearchFilterData, searchFilterDataFromParam, adHocFilterFromField, CorpusField, } from '../models';
 import { SearchService } from './search.service';
 
 interface SearchFilterSettings {
@@ -11,7 +11,7 @@ interface SearchFilterSettings {
 }
 
 @Injectable()
-export class FilterManagementService {
+export class ParamService {
 
     constructor(private searchService: SearchService) { }
 
@@ -64,6 +64,26 @@ export class FilterManagementService {
                 searchFilters.push(adHocFilter);
             }
         });
+    }
+
+    setSortFromParams(corpusFields: CorpusField[], params: ParamMap): {field: CorpusField | string, ascending: boolean} {
+        let sortField: CorpusField | string;
+        let sortAscending: boolean;
+        if (params.has('sort')) {
+            const [sortParam, ascParam] = params.get('sort').split(',');
+            sortField = corpusFields.find(field => field.name === sortParam);
+            sortAscending = ascParam === 'asc';
+        } else {
+            if (params.get('query')) {
+                sortField = undefined;
+            } else {
+                sortField = 'default';
+            }
+        }
+        return {
+            field: sortField,
+            ascending: sortAscending
+        };
     }
 
 }
