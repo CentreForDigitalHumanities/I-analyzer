@@ -18,7 +18,7 @@ from addcorpus import filters
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus.load_corpus import corpus_dir
 
-from corpora.constants import document_context
+from corpora.utils.constants import document_context
 from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 from corpora.utils.es_settings import get_language_specific_es_settings
 
