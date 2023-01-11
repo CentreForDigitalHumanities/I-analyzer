@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'revproxy',
-    'example'
+    'example',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = []
 PROXY_FRONTEND = None
+
+# Authentication
+AUTH_USER_MODEL = 'users.CustomUser'
