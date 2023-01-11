@@ -409,9 +409,14 @@ class XMLCorpus(Corpus):
             spoon = None
             if field.extractor.secondary_tag:
                 # find a specific subtree in the xml tree identified by matching a secondary tag
-                spoon = bowl.find(
-                    field.extractor.secondary_tag['tag'],
-                    string=metadata[field.extractor.secondary_tag['match']]).parent
+                try:
+                    spoon = bowl.find(
+                        field.extractor.secondary_tag['tag'],
+                        string=metadata[field.extractor.secondary_tag['match']]).parent
+                except:
+                    logging.debug('tag {} not found in metadata'.format(
+                        field.extractor.secondary_tag
+                    ))
             if not spoon:
                 spoon = field.extractor.external_file['xml_tag_entry']
             if bowl:
