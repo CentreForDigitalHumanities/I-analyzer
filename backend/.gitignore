@@ -31,3 +31,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+legacy_sql_data_dump/
