@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group
 from users.models import CustomUser
 from django.db import connection
 from addcorpus.models import Corpus
+from api.models import Query, Download
+import json
 
 def adapt_password_encoding(flask_encoded):
     '''Adapt encoded password hash from flask to django format'''
@@ -23,6 +25,10 @@ flask_table_columns = {
     'role': ['id', 'name', 'description'],
     'corpus': ['id', 'name', 'description'],
     'corpora_roles': ['role_id', 'corpus_id'],
+    'query': [
+        'id', 'query', 'started', 'completed', 'aborted', 'userID', 'transferred',
+        'corpus_name', 'total_results',
+    ]
 }
 
 def extract_row_data(values, table):
@@ -85,17 +91,38 @@ def save_flask_corpus_role(row):
     group = Group.objects.get(id = row['role_id'])
     corpus.groups.add(group)
 
+def null_to_none(value):
+    '''return None if the value is `'\\N'`, i.e. null'''
+    return value if value != '\\N' else None
+
+def save_flask_query(row):
+    query = Query(
+        id = row['id'],
+        query_json = json.loads(row['query']),
+        corpus = Corpus.objects.get(name = row['corpus_name']),
+        user = CustomUser.objects.get(id = row['userID']),
+        completed = null_to_none(row['completed']),
+        aborted = null_to_none(row['aborted']),
+        transferred = null_to_none(row['transferred']),
+        total_results = null_to_none(row['total_results'])
+    )
+    query.save()
+
+    # started is set automatically overridden on first save, so set it now
+    query.started = row['started']
+    query.save()
+
 def import_and_save_table(directory, flask_table_name, save_function):
     for row in import_table_data(directory, flask_table_name):
         save_function(row)
-
 
 def import_and_save_all_data(directory):
     tables = [
         ('role', save_flask_group),
         ('user', save_flask_user),
         ('corpus', save_flask_corpus),
-        ('corpora_roles', save_flask_corpus_role)
+        ('corpora_roles', save_flask_corpus_role),
+        ('query', save_flask_query)
     ]
 
     for flask_table_name, save_function in tables:

@@ -5,6 +5,8 @@ from users.models import CustomUser
 from addcorpus.models import Corpus
 from api.models import Query, Download
 from ianalyzer.flask_data_transfer import *
+import pytest
+from datetime import datetime, timezone
 
 _here = os.path.abspath(os.path.dirname(__file__))
 flask_test_data_dir = os.path.join(_here, 'flask_test_data')
@@ -79,8 +81,24 @@ def test_save_corpora(db):
     assert corpus.description == 'Speeches from the Dáil Éireann and Seanad Éireann'
     assert list(corpus.groups.all()) == list(Group.objects.all())
 
+@pytest.mark.filterwarnings(
+    'ignore:DateTimeField .* received a naive datetime (.*) while time zone support is active'
+)
 def test_save_queries(db):
     import_and_save_all_data(flask_test_data_dir)
 
     queries = Query.objects.all()
     assert len(queries) == 10
+
+    query = Query.objects.get(id = '507')
+
+    assert query.query_json == {"queryText": "", "filters": [], "sortBy": "date", "sortAscending": False}
+
+    # only test dates to avoid timezone issues
+    assert query.started.date() == datetime(year=2022, month=12, day=7, hour=14, minute=18, second=6).date()
+    assert query.completed == None
+    assert query.total_results == 7915
+    assert query.aborted == False
+    assert query.transferred == 0
+    assert query.user == CustomUser.objects.get(username = 'admin')
+    assert query.corpus == Corpus.objects.get(name = 'parliament-ireland')
