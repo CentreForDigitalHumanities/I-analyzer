@@ -66,10 +66,11 @@ def save_flask_user(row):
     user.save()
 
     # now set the password hash
+    password_hash = adapt_password_encoding(row['password'])
     with connection.cursor() as cursor:
         cursor.execute(
             'UPDATE users_customuser SET password = %s WHERE id = %s',
-            [row['password'], row['id']]
+            [password_hash, row['id']]
         )
 
 
