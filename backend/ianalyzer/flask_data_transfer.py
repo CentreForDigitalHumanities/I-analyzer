@@ -16,22 +16,22 @@ def adapt_password_encoding(flask_encoded):
     rest = '$'.join([iteration, salt, hashed])
     return f'{alg}_{hash_alg}${rest}'
 
-legacy_table_columns = {
+flask_table_columns = {
     'user': [
         'id', 'username', 'password', 'email', 'active', 'authenticated',
-        'download_limit', 'role_id', 'saml'
+        'download_limit', 'role_id', 'saml',
     ],
     'role': ['id', 'name', 'description'],
 }
 
 def extract_row_data(values, table):
-    columns = legacy_table_columns[table]
+    columns = flask_table_columns[table]
     return { col: value for col, value in zip(columns, values) }
 
 def import_table_data(directory, table):
     '''
     Import a data file. `directory` is the directory of the
-    legacy data dump, `table` is the name of the table, which
+    flask data dump, `table` is the name of the table, which
     should also be the file. E.g. table `user` is imported from `user.txt`.
     Returns an empty list if the file does not exist.
     '''
@@ -45,14 +45,14 @@ def import_table_data(directory, table):
         data = [extract_row_data(row, table) for row in reader]
     return data
 
-def save_legacy_group(row):
-    'Save a Group based on a datarow from the legacy SQL data'
+def save_flask_group(row):
+    'Save a Group based on a datarow from the flask SQL data'
 
     group = Group(id = row['id'], name = row['name'])
     group.save()
 
-def save_legacy_user(row):
-    'Save a User based on a datarow from the legacy SQL data'
+def save_flask_user(row):
+    'Save a User based on a datarow from the flask SQL data'
 
     user = CustomUser(
         id = row['id'],
@@ -75,15 +75,18 @@ def save_legacy_user(row):
 
 def import_and_save_groups(directory):
     '''
-    Import role data from legacy file and save as Groups.
+    Import role data from flask file and save as Groups.
     '''
 
     data = import_table_data(directory, 'role')
     for row in data:
-        save_legacy_group(row)
+        save_flask_group(row)
 
 def import_and_save_users(directory):
     data = import_table_data(directory, 'user')
     for row in data:
-        save_legacy_user(row)
+        save_flask_user(row)
 
+def import_and_save_all_data(directory):
+    import_and_save_groups(directory)
+    import_and_save_users(directory)
