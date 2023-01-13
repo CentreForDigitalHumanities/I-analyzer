@@ -3,6 +3,7 @@ import django.contrib.auth.hashers as hashers
 from django.contrib.auth.models import Group
 from users.models import CustomUser
 from addcorpus.models import Corpus
+from api.models import Query, Download
 from ianalyzer.flask_data_transfer import *
 
 _here = os.path.abspath(os.path.dirname(__file__))
@@ -78,3 +79,8 @@ def test_save_corpora(db):
     assert corpus.description == 'Speeches from the Dáil Éireann and Seanad Éireann'
     assert list(corpus.groups.all()) == list(Group.objects.all())
 
+def test_save_queries(db):
+    import_and_save_all_data(flask_test_data_dir)
+
+    queries = Query.objects.all()
+    assert len(queries) == 10
