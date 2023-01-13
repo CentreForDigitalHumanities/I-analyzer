@@ -63,6 +63,4 @@ def test_save_legacy_user(db):
     user = users[0]
     assert user.username == 'admin'
     assert user.email == 'admin@ianalyzer.nl'
-    print(user.groups)
-    print(Group.objects.filter(name='admin'))
-    # assert user.groups == Group.objects.filter(name='admin')
+    assert list(user.groups.all()) == [Group.objects.get(name='admin')]

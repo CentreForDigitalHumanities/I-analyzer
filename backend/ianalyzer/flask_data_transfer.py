@@ -5,8 +5,6 @@ from django.contrib.auth.models import Group
 from users.models import CustomUser
 from django.db import connection
 
-_here = os.path.abspath(os.path.dirname(__file__))
-
 def adapt_password_encoding(flask_encoded):
     '''Adapt encoded password hash from flask to django format'''
     description, salt, hashed = flask_encoded.split('$', 3)
@@ -62,7 +60,10 @@ def save_flask_user(row):
         download_limit = row['download_limit'],
         saml = row['saml'],
     )
-    user.groups.add(row['role_id'])
+    user.save()
+
+    group = Group.objects.get(id = row['role_id'])
+    user.groups.add(group)
     user.save()
 
     # now set the password hash
