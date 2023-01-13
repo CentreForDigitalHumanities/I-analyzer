@@ -81,6 +81,10 @@ def test_save_corpora(db):
     assert corpus.description == 'Speeches from the Dáil Éireann and Seanad Éireann'
     assert list(corpus.groups.all()) == list(Group.objects.all())
 
+def dates_match(datetime1, datetime2):
+    '''To avoid timezone issues, just check the dates to compare to datetime objects'''
+    return datetime1.date() == datetime2.date()
+
 @pytest.mark.filterwarnings(
     'ignore:DateTimeField .* received a naive datetime (.*) while time zone support is active'
 )
@@ -94,8 +98,8 @@ def test_save_queries(db):
 
     assert query.query_json == {"queryText": "", "filters": [], "sortBy": "date", "sortAscending": False}
 
-    # only test dates to avoid timezone issues
-    assert query.started.date() == datetime(year=2022, month=12, day=7, hour=14, minute=18, second=6).date()
+    assert dates_match(query.started,
+        datetime(year=2022, month=12, day=7, hour=14, minute=18, second=6))
     assert query.completed == None
     assert query.total_results == 7915
     assert query.aborted == False
@@ -111,3 +115,22 @@ def test_save_downloads(db):
 
     downloads = Download.objects.all()
     assert len(downloads) == 10
+
+    download = Download.objects.get(id = '49')
+    assert dates_match(download.started,
+        datetime(year=2022, month=11, day=21, hour=10, minute=59, second=26))
+    assert dates_match(download.completed,
+        datetime(year=2022, month=11, day=21, hour=10, minute=59, second=27))
+    assert download.corpus == Corpus.objects.get(name='parliament-uk')
+    assert download.user == CustomUser.objects.get(id='1')
+    assert download.parameters == {
+        "corpus": "parliament-uk",
+        "es_query": {
+            "query": {"bool": {"must": {"match_all": {}}, "filter": []}},
+            "sort": [{"date": "desc"}]},
+            "fields": ["date", "speech", "id", "sequence", "speaker"],
+        "route": "/search/parliament-uk"
+    }
+
+    _, filename = os.path.split(download.filename)
+    assert filename == 'parliament-uk.csv'

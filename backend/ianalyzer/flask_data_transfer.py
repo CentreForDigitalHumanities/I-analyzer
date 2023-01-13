@@ -7,6 +7,7 @@ from django.db import connection
 from addcorpus.models import Corpus
 from api.models import Query, Download
 import json
+from django.conf import settings
 
 def adapt_password_encoding(flask_encoded):
     '''Adapt encoded password hash from flask to django format'''
@@ -28,6 +29,10 @@ flask_table_columns = {
     'query': [
         'id', 'query', 'started', 'completed', 'aborted', 'userID', 'transferred',
         'corpus_name', 'total_results',
+    ],
+    'download': [
+        'id', 'started', 'completed', 'download_type', 'corpus_name', 'user_id', 'parameters',
+        'filename'
     ]
 }
 
@@ -108,9 +113,26 @@ def save_flask_query(row):
     )
     query.save()
 
-    # started is set automatically overridden on first save, so set it now
+    # started would be overridden on first save, so set it now
     query.started = row['started']
     query.save()
+
+def save_flask_download(row):
+    download = Download(
+        id = row['id'],
+        completed = null_to_none(row['completed']),
+        download_type = row['download_type'],
+        corpus = Corpus.objects.get(name = row['corpus_name']),
+        user = CustomUser.objects.get(id = row['user_id']),
+        parameters = json.loads(row['parameters']),
+        filename = os.path.relpath(row['filename'], settings.CSV_FILES_PATH),
+    )
+    download.save()
+
+    # started would be overridden on first save, so set it now
+    download.started = row['started']
+    download.save()
+
 
 def import_and_save_table(directory, flask_table_name, save_function):
     for row in import_table_data(directory, flask_table_name):
@@ -122,7 +144,8 @@ def import_and_save_all_data(directory):
         ('user', save_flask_user),
         ('corpus', save_flask_corpus),
         ('corpora_roles', save_flask_corpus_role),
-        ('query', save_flask_query)
+        ('query', save_flask_query),
+        ('download', save_flask_download)
     ]
 
     for flask_table_name, save_function in tables:
