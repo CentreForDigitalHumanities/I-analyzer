@@ -17,7 +17,7 @@ from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, stri
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 
 from corpora.utils.constants import document_context
-from corpora.utils.es_settings import get_language_specific_es_seetings
+from corpora.utils.es_settings import get_language_specific_es_settings
 from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 
 
