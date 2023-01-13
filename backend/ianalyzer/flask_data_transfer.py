@@ -89,15 +89,6 @@ def import_and_save_table(directory, flask_table_name, save_function):
     for row in import_table_data(directory, flask_table_name):
         save_function(row)
 
-def import_and_save_groups(directory):
-    import_and_save_table(directory, 'role', save_flask_group)
-
-def import_and_save_users(directory):
-    import_and_save_table(directory, 'user', save_flask_user)
-
-def import_and_save_corpora(directory):
-    import_and_save_table(directory, 'corpus', save_flask_corpus)
-    import_and_save_table(directory, 'corpora_roles', save_flask_corpus_role)
 
 def import_and_save_all_data(directory):
     tables = [
