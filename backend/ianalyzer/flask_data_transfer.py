@@ -67,7 +67,6 @@ def save_flask_user(row):
 
     group = Group.objects.get(id = row['role_id'])
     user.groups.add(group)
-    user.save()
 
     # now set the password hash
     password_hash = adapt_password_encoding(row['password'])
@@ -81,27 +80,32 @@ def save_flask_corpus(row):
     corpus = Corpus(**row)
     corpus.save()
 
-def import_and_save_groups(directory):
-    '''
-    Import role data from flask file and save as Groups.
-    '''
+def save_flask_corpus_role(row):
+    corpus = Corpus.objects.get(id = row['corpus_id'])
+    group = Group.objects.get(id = row['role_id'])
+    corpus.groups.add(group)
 
-    data = import_table_data(directory, 'role')
-    for row in data:
-        save_flask_group(row)
+def import_and_save_table(directory, flask_table_name, save_function):
+    for row in import_table_data(directory, flask_table_name):
+        save_function(row)
+
+def import_and_save_groups(directory):
+    import_and_save_table(directory, 'role', save_flask_group)
 
 def import_and_save_users(directory):
-    data = import_table_data(directory, 'user')
-    for row in data:
-        save_flask_user(row)
+    import_and_save_table(directory, 'user', save_flask_user)
 
 def import_and_save_corpora(directory):
-    corpus_data = import_table_data(directory, 'corpus')
-    corpora_role_data = import_table_data(directory, 'corpora_roles')
-
-    for row in corpus_data:
-        save_flask_corpus(row)
+    import_and_save_table(directory, 'corpus', save_flask_corpus)
+    import_and_save_table(directory, 'corpora_roles', save_flask_corpus_role)
 
 def import_and_save_all_data(directory):
-    import_and_save_groups(directory)
-    import_and_save_users(directory)
+    tables = [
+        ('role', save_flask_group),
+        ('user', save_flask_user),
+        ('corpus', save_flask_corpus),
+        ('corpora_roles', save_flask_corpus_role)
+    ]
+
+    for flask_table_name, save_function in tables:
+        import_and_save_table(directory, flask_table_name, save_function)

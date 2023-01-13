@@ -67,6 +67,7 @@ def test_save_legacy_user(db):
     assert list(user.groups.all()) == [Group.objects.get(name='admin')]
 
 def test_save_corpora(db):
+    import_and_save_groups(legacy_test_data_dir)
     import_and_save_corpora(legacy_test_data_dir)
 
     corpora = Corpus.objects.all()
@@ -75,3 +76,4 @@ def test_save_corpora(db):
     corpus = Corpus.objects.get(id = '13')
     assert corpus.name == 'parliament-ireland'
     assert corpus.description == 'Speeches from the Dáil Éireann and Seanad Éireann'
+    assert list(corpus.groups.all()) == list(Group.objects.all())
