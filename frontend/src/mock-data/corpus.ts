@@ -6,7 +6,7 @@ const mockFilterData: BooleanFilterData = {
     filterType: 'BooleanFilter',
 };
 
-const mockFilter: SearchFilter<BooleanFilterData> = {
+export const mockFilter: SearchFilter<BooleanFilterData> = {
     fieldName: 'great_field',
     description: 'Use this filter to decide whether or not this field is great',
     currentData: mockFilterData,
@@ -14,7 +14,7 @@ const mockFilter: SearchFilter<BooleanFilterData> = {
     useAsFilter: true,
 };
 
-const mockField: CorpusField = {
+export const mockField: CorpusField = {
     name: 'great_field',
     description: 'A really wonderful field',
     displayName: 'Greatest field',
@@ -27,7 +27,8 @@ const mockField: CorpusField = {
     downloadable: false,
     searchFilter: mockFilter
 };
-const mockField2: CorpusField = {
+
+export const mockField2: CorpusField = {
     name: 'speech',
     description: 'A content field',
     displayName: 'Speechiness',

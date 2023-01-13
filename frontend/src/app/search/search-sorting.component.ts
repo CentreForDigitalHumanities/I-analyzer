@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { CorpusField, SortEvent } from '../models';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { CorpusField } from '../models';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services';
 
@@ -17,8 +17,13 @@ export class SearchSortingComponent extends ParamDirective {
         this.sortableFields = fields.filter(field => field.sortable);
     }
 
+    private sortData: {
+        field: CorpusField
+        ascending: boolean
+    }
     public ascending = true;
-    public sortField: CorpusField | string;
+    public primarySort: CorpusField;
+    public sortField: CorpusField;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
@@ -37,7 +42,8 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     initialize() {
-
+        this.primarySort = this.sortableFields.find(field => field.primarySort);
+        this.sortField = this.primarySort;
     }
 
     teardown() {
@@ -45,9 +51,9 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     setStateFromParams(params: ParamMap) {
-        const sortData = this.paramService.setSortFromParams(this.sortableFields, params);
-        this.sortField = sortData.field;
-        this.ascending = sortData.ascending;
+        this.sortData = this.paramService.setSortFromParams(params, this.sortableFields);
+        this.sortField = this.sortData.field;
+        this.ascending = this.sortData.ascending;
     }
 
     public toggleSortType() {
@@ -71,9 +77,9 @@ export class SearchSortingComponent extends ParamDirective {
     }
 
     private emitChange() {
-        const setting = this.sortField === 'default' ? null : `${this.sortField},${this.ascending ? 'asc': 'desc'}`;
-        const params =  { sort: setting };
-        this.setParams(params);
+        const sortField = this.sortData ? this.sortData.field : this.primarySort;
+        const setting = this.paramService.makeSortParams(sortField, this.ascending? 'asc': 'desc');
+        this.setParams(setting);
     }
 }
 

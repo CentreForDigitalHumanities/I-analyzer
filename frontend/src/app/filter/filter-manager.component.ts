@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
-import { AggregateData, Corpus, MultipleChoiceFilterData, QueryModel, SearchFilter,
-    SearchFilterData, searchFilterDataToParam, CorpusField } from '../models/index';
+import { AggregateData, Corpus, MultipleChoiceFilterData, SearchFilter,
+    SearchFilterData, CorpusField } from '../models/index';
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
@@ -18,17 +18,12 @@ import { ParamService } from '../services/param.service';
 })
 export class FilterManagerComponent extends ParamDirective implements OnChanges {
     @Input() public corpus: Corpus;
-    @Input() private queryModel: QueryModel;
-
-    @Output('filtersChanged')
-    public filtersChangedEmitter = new EventEmitter<SearchFilter<SearchFilterData> []>();
 
     inputChanged = new Subject<void>();
 
+    public corpusFields: CorpusField[];
     public searchFilters: SearchFilter<SearchFilterData> [] = [];
     public activeFilters: SearchFilter<SearchFilterData> [] = [];
-
-    public adHocFilterFields: CorpusField[] = [];
 
     public showFilters: boolean;
     public grayOutFilters: boolean;
@@ -36,7 +31,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     public multipleChoiceData: Object = {};
 
     constructor(
-        private filterManagerService: ParamService,
+        private paramService: ParamService,
         private searchService: SearchService,
         route: ActivatedRoute,
         router: Router) {
@@ -44,58 +39,53 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     initialize() {
-        this.searchFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.searchFilter);
+        this.corpusFields = _.cloneDeep(this.corpus.fields);
+        this.searchFilters = this.corpusFields.filter(field => field.searchFilter).map(field => field.searchFilter);
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['corpus']) {
             this.initialize();
-        } else if (changes.queryModel) {
-            this.setAdHocFilters();
         }
-        this.aggregateSearchForMultipleChoiceFilters();
+
         this.inputChanged.next();
     }
 
     setStateFromParams(params: ParamMap) {
-        this.activeFilters = this.filterManagerService.setFiltersFromParams(
-            this.searchFilters, params, this.corpus
+        this.corpusFields = _.cloneDeep(this.corpus.fields);
+        this.activeFilters = this.paramService.setFiltersFromParams(
+            params, this.corpusFields
         );
+        this.aggregateSearchForMultipleChoiceFilters(params);
+
+        // check if any active filter is not in the list of searchFilters
+        // in that case, it is a contextFilter
+        this.activeFilters.forEach( af => {
+            const filterFields = this.searchFilters.map(sf => sf.fieldName)
+            if (!filterFields.find(f => f === af.fieldName)) {
+                let contextField = this.corpusFields.find(field => field.name = af.fieldName);
+                af = this.contextFilterFromField(contextField);
+            }
+        })
+    }
+
+    private contextFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
+        return {
+            fieldName: field.name,
+            description: `Search only within this ${field.displayName}`,
+            useAsFilter: true,
+            adHoc: true,
+            currentData: undefined,
+        };
     }
 
     teardown() {
         let params = {}
-        this.searchFilters.forEach(filter => {
-            const paramName = this.searchService.getParamForFieldName(filter.fieldName);
+        this.activeFilters.forEach(filter => {
+            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
             params[paramName] = null;
-        })
-        this.adHocFilterFields.forEach(field => {
-            const paramName = this.searchService.getParamForFieldName(field.name);
-            params[paramName] = null;
-        })
+        });
         this.setParams(params);
-    }
-
-    /**
-     * make ad hoc filters for any filters in the query model
-     * that are not normally listed in the interface
-     */
-    private setAdHocFilters() {
-        if (this.queryModel.filters && this.corpus) {
-            const fieldsWithFilters = this.corpus.fields.filter(field => field.searchFilter).map(field => field.name);
-            const adHoc = this.queryModel.filters.filter(f => !fieldsWithFilters.includes(f.fieldName));
-            adHoc.forEach(filter => {
-                if (!this.searchFilters.find(f => f.fieldName === filter.fieldName)) {
-                    this.searchFilters.push(filter);
-                }
-            });
-
-            this.adHocFilterFields = adHoc.map(filter => {
-                const corpusField = _.cloneDeep(this.corpus.fields.find(field => field.name === filter.fieldName));
-                corpusField.searchFilter = filter;
-                return corpusField;
-            });
-        }
     }
 
     /**
@@ -105,10 +95,10 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
      * fieldName1: [{key: option1, doc_count: 42}, {key: option2, doc_count: 3}],
      * fieldName2: [etc]
      */
-    private aggregateSearchForMultipleChoiceFilters() {
+    private aggregateSearchForMultipleChoiceFilters(params) {
         const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
 
-        const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter));
+        const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter, params));
         Promise.all(aggregateResultPromises).then(results => {
             results.forEach( r =>
                 this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
@@ -118,7 +108,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         });
     }
 
-    async getMultipleChoiceFilterOptions(filter: SearchFilter<SearchFilterData>): Promise<AggregateData> {
+    async getMultipleChoiceFilterOptions(filter: SearchFilter<SearchFilterData>, params: ParamMap): Promise<AggregateData> {
         let filters = _.cloneDeep(this.searchFilters.filter(f => f.useAsFilter === true));
         // get the filter's choices, based on all other filters' choices, but not this filter's choices
         if (filters.length > 0) {
@@ -129,7 +119,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         } else { filters = null; }
         const defaultData = filter.defaultData as MultipleChoiceFilterData;
         const aggregator = {name: filter.fieldName, size: defaultData.optionCount};
-        const queryModel = this.searchService.createQueryModel(this.queryModel.queryText, this.queryModel.fields, filters);
+        const queryModel = this.paramService.queryModelFromParams(params, this.corpus.fields);
         return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
@@ -143,18 +133,17 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
      * @param filterData
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {
-        const index = this.searchFilters.findIndex(f => f.fieldName === filter.fieldName);
-        this.searchFilters[index] = filter;
+        this.corpusFields.find(f => f.name === filter.fieldName).searchFilter = filter;
         this.filtersChanged();
     }
 
     public toggleActiveFilters() {
-        this.searchFilters.forEach(filter => filter.useAsFilter = false);
+        this.activeFilters.forEach(filter => filter.useAsFilter = false);
         this.filtersChanged();
     }
 
     public resetAllFilters() {
-        this.searchFilters.forEach(filter => {
+        this.activeFilters.forEach(filter => {
             filter.currentData = filter.defaultData;
             filter.reset = true;
         });
@@ -162,32 +151,39 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     public filtersChanged() {
-        this.activeFilters = this.searchFilters.filter(filter => filter.useAsFilter);
-        this.setAdHocFilters();
+        const newFilters = this.corpusFields.filter(field => field.searchFilter?.useAsFilter).map(f => f.searchFilter);
         let params = {};
-        this.searchFilters.forEach(filter => {
-            const paramName = this.searchService.getParamForFieldName(filter.fieldName);
-            const value = filter.useAsFilter? searchFilterDataToParam(filter) : null;
+        newFilters.forEach(filter => {
+            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+            const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
             params[paramName] = value;
         });
-        this.adHocFilterFields.forEach(field => {
-            const paramName = this.searchService.getParamForFieldName(field.name);
-            const value = field.searchFilter.useAsFilter? searchFilterDataToParam(field.searchFilter) : null;
-            params[paramName] = value;
+        this.activeFilters.forEach(filter => {
+            // set any params for previously active filters to null
+            if (!newFilters.map(f => f.fieldName).find(name => name === filter.fieldName)) {
+                const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+                params[paramName] = null;
+                if (filter.adHoc) {
+                    // also set sort null in case of an adHoc filter
+                    params['sort'] = null;
+                }
+            }
+
         })
+        this.activeFilters = newFilters;
         this.setParams(params);
     }
 
     toggleFilter(filter: SearchFilter<SearchFilterData>) {
         filter.useAsFilter = !filter.useAsFilter;
-        this.filtersChanged();
+        this.updateFilterData(filter);
     }
 
     resetFilter(filter: SearchFilter<SearchFilterData>) {
         filter.useAsFilter = false;
         filter.currentData = filter.defaultData;
         filter.reset = true;
-        this.filtersChanged();
+        this.updateFilterData(filter);
     }
 
 }

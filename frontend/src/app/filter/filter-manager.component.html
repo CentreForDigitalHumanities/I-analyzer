@@ -9,15 +9,15 @@
                 iaBalloonPosition="down-left">
                 <i class="fa fa-trash"></i>
             </span>
-            <span *ngIf="activeFilters.length > 0" class="button icon filter-icon is-inverted is-round"
+            <span *ngIf="searchFilters.length > 0" class="button icon filter-icon is-inverted is-round"
                 [ngClass]="{'is-primary is-medium': searchFilters.length > 0}" (click)="toggleActiveFilters()"
-                iaBalloon="{{(searchFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
+                iaBalloon="{{(activeFilters.length > 0) ? ('Disable active filters') : ('Enable deactivated filters')}}"
                 iaBalloonPosition="down-left">
                 <i class="fa fa-filter"></i>
             </span>
         </p>
     </div>
-    <ng-container *ngFor="let field of corpus.fields.concat(adHocFilterFields)">
+    <ng-container *ngFor="let field of corpusFields">
         <div class="box filter-container" *ngIf="field.searchFilter" [ngClass]="{'on': field.searchFilter.useAsFilter}">
             <div class="field has-addons">
                 <div class="control is-expanded" iaBalloon="{{ field.searchFilter.description }}"
