@@ -2,6 +2,7 @@ import os
 import django.contrib.auth.hashers as hashers
 from django.contrib.auth.models import Group
 from users.models import CustomUser
+from addcorpus.models import Corpus
 from ianalyzer.flask_data_transfer import *
 
 _here = os.path.abspath(os.path.dirname(__file__))
@@ -64,3 +65,13 @@ def test_save_legacy_user(db):
     assert user.username == 'admin'
     assert user.email == 'admin@ianalyzer.nl'
     assert list(user.groups.all()) == [Group.objects.get(name='admin')]
+
+def test_save_corpora(db):
+    import_and_save_corpora(legacy_test_data_dir)
+
+    corpora = Corpus.objects.all()
+    assert len(corpora) == 13
+
+    corpus = Corpus.objects.get(id = '13')
+    assert corpus.name == 'parliament-ireland'
+    assert corpus.description == 'Speeches from the Dáil Éireann and Seanad Éireann'

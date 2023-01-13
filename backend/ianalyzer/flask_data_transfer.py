@@ -4,6 +4,7 @@ import base64
 from django.contrib.auth.models import Group
 from users.models import CustomUser
 from django.db import connection
+from addcorpus.models import Corpus
 
 def adapt_password_encoding(flask_encoded):
     '''Adapt encoded password hash from flask to django format'''
@@ -20,6 +21,8 @@ flask_table_columns = {
         'download_limit', 'role_id', 'saml',
     ],
     'role': ['id', 'name', 'description'],
+    'corpus': ['id', 'name', 'description'],
+    'corpora_roles': ['role_id', 'corpus_id'],
 }
 
 def extract_row_data(values, table):
@@ -74,6 +77,9 @@ def save_flask_user(row):
             [password_hash, row['id']]
         )
 
+def save_flask_corpus(row):
+    corpus = Corpus(**row)
+    corpus.save()
 
 def import_and_save_groups(directory):
     '''
@@ -88,6 +94,13 @@ def import_and_save_users(directory):
     data = import_table_data(directory, 'user')
     for row in data:
         save_flask_user(row)
+
+def import_and_save_corpora(directory):
+    corpus_data = import_table_data(directory, 'corpus')
+    corpora_role_data = import_table_data(directory, 'corpora_roles')
+
+    for row in corpus_data:
+        save_flask_corpus(row)
 
 def import_and_save_all_data(directory):
     import_and_save_groups(directory)
