@@ -134,3 +134,12 @@ def test_save_downloads(db):
 
     _, filename = os.path.split(download.filename)
     assert filename == 'parliament-uk.csv'
+
+def test_no_data_to_import(db):
+    '''Assert that a missing directory or missing files will raise a warning
+    but not crash'''
+    with pytest.warns(Warning, match='skipping database migration'):
+        import_and_save_all_data('./nonexistent-directory')
+
+    with pytest.warns(Warning, match='skipping table migration'):
+        import_table_data(flask_test_data_dir, 'nonexistent_table.txt')

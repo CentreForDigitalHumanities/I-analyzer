@@ -8,6 +8,7 @@ from addcorpus.models import Corpus
 from api.models import Query, Download
 import json
 from django.conf import settings
+import warnings
 
 def adapt_password_encoding(flask_encoded):
     '''Adapt encoded password hash from flask to django format'''
@@ -50,6 +51,9 @@ def import_table_data(directory, table):
 
     filepath = os.path.join(directory, f'{table}.txt')
     if not os.path.exists(filepath):
+        warnings.warn(
+            f'Missing file {table}.txt to import data: skipping table migration',
+            Warning)
         return []
 
     with open(filepath) as userfile:
@@ -139,6 +143,13 @@ def import_and_save_table(directory, flask_table_name, save_function):
         save_function(row)
 
 def import_and_save_all_data(directory):
+    if not os.path.isdir(directory):
+        warnings.warn(
+            f'Directory {directory} to import Flask data does not exist: skipping database migration',
+            Warning
+        )
+        pass
+
     tables = [
         ('role', save_flask_group),
         ('user', save_flask_user),
