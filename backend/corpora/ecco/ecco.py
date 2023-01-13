@@ -183,7 +183,7 @@ class Ecco(XMLCorpus):
             Field(
                 name='page',
                 display_name='Page number',
-                es_mapping={'type': 'integer'}
+                es_mapping={'type': 'integer'},
                 description='Number of the page on which match was found',
                 extractor=XML(attribute='id', transform=lambda x: int(int(x)/10))
             ),
