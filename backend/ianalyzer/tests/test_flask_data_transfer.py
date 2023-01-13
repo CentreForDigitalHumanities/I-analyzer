@@ -102,3 +102,12 @@ def test_save_queries(db):
     assert query.transferred == 0
     assert query.user == CustomUser.objects.get(username = 'admin')
     assert query.corpus == Corpus.objects.get(name = 'parliament-ireland')
+
+@pytest.mark.filterwarnings(
+    'ignore:DateTimeField .* received a naive datetime (.*) while time zone support is active'
+)
+def test_save_downloads(db):
+    import_and_save_all_data(flask_test_data_dir)
+
+    downloads = Download.objects.all()
+    assert len(downloads) == 10
