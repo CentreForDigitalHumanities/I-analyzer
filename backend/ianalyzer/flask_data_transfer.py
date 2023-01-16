@@ -92,6 +92,11 @@ def save_flask_user(row, Group = Group, CustomUser = CustomUser, **kwargs):
     group = Group.objects.get(id = row['role_id'])
     user.groups.add(group)
 
+    if group.name == 'admin':
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+
     # now set the password hash
     password_hash = adapt_password_encoding(row['password'])
     with connection.cursor() as cursor:
