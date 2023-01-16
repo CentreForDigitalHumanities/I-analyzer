@@ -180,6 +180,8 @@ def import_and_save_all_data(directory, Group = Group, CustomUser = CustomUser,
     ]
 
     for flask_table_name, save_function in tables:
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore', RuntimeWarning)
-                import_and_save_table(directory, flask_table_name, save_function, **models)
+        with warnings.catch_warnings():
+            # ignore runtime warnings about time zones
+            # (the imported does not include timezone info and django warns about that)
+            warnings.simplefilter('ignore', RuntimeWarning)
+            import_and_save_table(directory, flask_table_name, save_function, **models)
