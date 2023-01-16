@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 _here = os.path.abspath(os.path.dirname(__file__))
 flask_test_data_dir = os.path.join(_here, 'flask_test_data')
 
+
 def test_legacy_data_import():
     user_data = import_table_data(flask_test_data_dir, 'user')
 

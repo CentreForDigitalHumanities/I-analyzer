@@ -43,4 +43,4 @@ select * from user into outfile '/var/lib/mysql-files/user.txt';
 
 ## Move exported data
 
-You exported data are in `/var/lib/mysql-files/`, which is inconvenient and requires sudo privileges to access. By default, the settings specifies the expected location of these files as `{repository}/backend/flask_sql_data_dump`. Move the contents of `/var/lib/mysql-files/` into that folder.
+You exported data are in `/var/lib/mysql-files/`, which is inconvenient and requires sudo privileges to access. By default, the settings specifies the expected location of these files as `{repository}/backend/flask_sql_data`. Move the contents of `/var/lib/mysql-files/` into that folder.

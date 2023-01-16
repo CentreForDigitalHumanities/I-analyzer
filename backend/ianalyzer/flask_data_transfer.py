@@ -61,13 +61,22 @@ def import_table_data(directory, table):
         data = [extract_row_data(row, table) for row in reader]
     return data
 
-def save_flask_group(row):
-    'Save a Group based on a datarow from the flask SQL data'
+def save_flask_group(row, Group = Group, **kwargs):
+    '''
+    Save a Group based on a datarow from the flask SQL data
+
+    The `Group` argument specifies the relevant model, in this case `Group`.
+    Relevant during migrations - for unit testing this can be left blank,
+    so it is imported directly from users.models.
+
+    Other models can be included for compatiblity with other functions,
+    they don't do anything.
+    '''
 
     group = Group(id = row['id'], name = row['name'])
     group.save()
 
-def save_flask_user(row):
+def save_flask_user(row, Group = Group, CustomUser = CustomUser, **kwargs):
     'Save a User based on a datarow from the flask SQL data'
 
     user = CustomUser(
@@ -91,11 +100,11 @@ def save_flask_user(row):
             [password_hash, row['id']]
         )
 
-def save_flask_corpus(row):
+def save_flask_corpus(row, Corpus = Corpus, **kwargs):
     corpus = Corpus(**row)
     corpus.save()
 
-def save_flask_corpus_role(row):
+def save_flask_corpus_role(row, Corpus = Corpus, Group = Group, **kwargs):
     corpus = Corpus.objects.get(id = row['corpus_id'])
     group = Group.objects.get(id = row['role_id'])
     corpus.groups.add(group)
@@ -104,7 +113,7 @@ def null_to_none(value):
     '''return None if the value is `'\\N'`, i.e. null'''
     return value if value != '\\N' else None
 
-def save_flask_query(row):
+def save_flask_query(row, Query = Query, Corpus = Corpus, CustomUser = CustomUser, **kwargs):
     query = Query(
         id = row['id'],
         query_json = json.loads(row['query']),
@@ -121,7 +130,7 @@ def save_flask_query(row):
     query.started = row['started']
     query.save()
 
-def save_flask_download(row):
+def save_flask_download(row, Download = Download, Corpus = Corpus, CustomUser = CustomUser, **kwargs):
     download = Download(
         id = row['id'],
         completed = null_to_none(row['completed']),
@@ -138,17 +147,23 @@ def save_flask_download(row):
     download.save()
 
 
-def import_and_save_table(directory, flask_table_name, save_function):
+def import_and_save_table(directory, flask_table_name, save_function, **kwargs):
     for row in import_table_data(directory, flask_table_name):
-        save_function(row)
+        save_function(row, **kwargs)
 
-def import_and_save_all_data(directory):
+def import_and_save_all_data(directory, Group = Group, CustomUser = CustomUser,
+    Corpus = Corpus, Query = Query, Download = Download):
+
     if not os.path.isdir(directory):
         warnings.warn(
             f'Directory {directory} to import Flask data does not exist: skipping database migration',
             Warning
         )
         pass
+
+    models = {
+        'Group': Group, 'CustomUser': CustomUser, 'Corpus': Corpus, 'Query': Query, 'Download': Download
+    }
 
     tables = [
         ('role', save_flask_group),
@@ -160,4 +175,6 @@ def import_and_save_all_data(directory):
     ]
 
     for flask_table_name, save_function in tables:
-        import_and_save_table(directory, flask_table_name, save_function)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', RuntimeWarning)
+                import_and_save_table(directory, flask_table_name, save_function, **models)
