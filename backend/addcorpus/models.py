@@ -9,7 +9,7 @@ class Corpus(models.Model):
     groups = models.ManyToManyField(Group, related_name='corpora', blank=True)
 
     class Meta:
-        verbose_name_plural = 'Corpora'
+        verbose_name_plural = 'corpora'
 
     def __str__(self):
         return self.name
