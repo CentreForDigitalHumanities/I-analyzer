@@ -145,3 +145,24 @@ MAX_LENGTH_FILENAME = 254
 _here = os.path.abspath(os.path.dirname(__file__))
 _backend_path = os.path.join(_here, '..')
 CSV_FILES_PATH = os.path.join(_backend_path, 'api/csv_files')
+
+# Specify elasticsearch servers
+SERVERS = {
+    # Default ElasticSearch server
+    'default': {
+        'host': 'localhost',
+        'port': 9200,
+        'username': '',
+        'password': '',
+        'chunk_size': 900,  # Maximum number of documents sent during ES bulk operation
+        'max_chunk_bytes': 1*1024*1024,  # Maximum size of ES chunk during bulk operation
+        'bulk_timeout': '60s',  # Timeout of ES bulk operation
+        'overview_query_size': 20,  # Number of results to appear in the overview query
+        'scroll_timeout': '3m',  # Time before scroll results time out
+        'scroll_page_size': 5000  # Number of results per scroll page
+    }
+}
+
+CORPUS_SERVER_NAMES = {}
+
+CORPORA = {}

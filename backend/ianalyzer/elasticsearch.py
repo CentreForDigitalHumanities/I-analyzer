@@ -1,14 +1,13 @@
 from elasticsearch import Elasticsearch
 
-from ianalyzer import config_fallback as config
-from flask import current_app
+from django.conf import settings
 
 def elasticsearch(corpus_name):
     '''
     Create ElasticSearch instance with default configuration.
     '''
-    server_name = current_app.config.get('CORPUS_SERVER_NAMES').get(corpus_name, 'default')
-    server_config = current_app.config.get('SERVERS')[server_name]
+    server_name = settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')
+    server_config = settings.SERVERS.get(server_name)
 
     node = {'host': server_config['host'],
             'port': int(server_config['port']),
