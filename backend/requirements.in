@@ -6,3 +6,4 @@ psycopg2
 pytest
 pytest-django
 pytest-xdist
+elasticsearch
