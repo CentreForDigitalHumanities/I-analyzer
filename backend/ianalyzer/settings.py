@@ -145,7 +145,3 @@ MAX_LENGTH_FILENAME = 254
 _here = os.path.abspath(os.path.dirname(__file__))
 _backend_path = os.path.join(_here, '..')
 CSV_FILES_PATH = os.path.join(_backend_path, 'api/csv_files')
-
-# Location of backup data from Flask
-# Added to postgreSQL during migrations
-FLASK_SQL_DATA_DIR = os.path.join(_backend_path, 'flask_sql_data')

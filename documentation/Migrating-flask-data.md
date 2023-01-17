@@ -6,8 +6,8 @@ The SQL database contains the user data, so migration is essential for productio
 
 This update constitutes a switch from Flask to Django, as well as a switch from mySQL to postgreSQL. Migration consists of three steps:
 - Create .txt files of the old database from mySQL.
-- Move your database backup to the expected location
-- Run Django migrations to import data in postgreSQL.
+- Move your database backup to the desired location
+- Import data into the postgreSQL database using the django shell.
 
 ## Exporting data from mysql
 
@@ -43,12 +43,20 @@ select * from user into outfile '/var/lib/mysql-files/user.txt';
 
 ## Move exported data
 
-You exported data are in `/var/lib/mysql-files/`, which is inconvenient and requires sudo privileges to access. By default, the settings specifies the expected location of these files as `{repository}/backend/flask_sql_data`. Move the contents of `/var/lib/mysql-files/` into that folder.
+You exported data are in `/var/lib/mysql-files/`, which is inconvenient and requires sudo privileges to access, so you should move the files to a more convenient folder.
 
-## Run migrations
+## Import data in django
 
-Data will be imported during migrations. Some notes:
+Activate your python environment and run `yarn django shell`. Then run:
 
-- If the folder in `settings.FLASK_SQL_DATA_DIR` does not exist or does not contain relevant files, the migration will not import anything. (This happens for unit tests.)
-- The data migration also copies object IDs from the mySQL database. This is fine if you run the migrations immediately after setting up your environment, but will cause errors if you have already added objects to your postgreSQL database.
+```python
+from ianalyzer.flask_data_transfer import import_and_save_all_data
+directory = 'path/to/your/data'
+import_and_save_all_data(directory)
+```
+
+Some notes:
+
+- If `directory` does not exist or does not contain relevant files, the script will not import anything.
+- The script expects to run on an **empty** database, as it will also copy object IDs.
 - If your mySQL database had a role named 'admin', its users will be made superusers with access to the admin interface.
