@@ -8,11 +8,10 @@ def test_key_error(db, settings):
     '''
 
     settings.CORPORA = {}
-    settings.CORPUS_DEFINITIONS = {}
 
     with pytest.raises(KeyError) as e:
-        load_corpus.load_all_corpora()
-        settings.CORPUS_DEFINITIONS['times']
+        corpora = load_corpus.load_all_corpora()
+        corpora['times']
 
 def test_import_error(db, settings):
     ''' Verify that exceptions is correctly raised
@@ -20,7 +19,6 @@ def test_import_error(db, settings):
     '''
 
     settings.CORPORA = {'times': '/somewhere/times/times.py'}
-    settings.CORPUS_DEFINITIONS = {}
 
     with pytest.raises(FileNotFoundError) as e:
         load_corpus.load_corpus('times')
@@ -44,7 +42,8 @@ def test_import_from_anywhere(db, settings, tmpdir, admin_group):
     path_testfile = str(testdir)+'/times.py'
 
     settings.CORPORA = {'times': path_testfile}
-    settings.CORPUS_DEFINITIONS = {}
 
-    load_corpus.load_all_corpora()
-    assert 'times' in settings.CORPUS_DEFINITIONS
+    corpus_definitions = load_corpus.load_all_corpora()
+    assert 'times' in corpus_definitions
+    corpus = corpus_definitions['times']
+    assert corpus.title == 'Times'
