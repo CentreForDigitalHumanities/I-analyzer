@@ -1,21 +1,20 @@
 from os import mkdir, rmdir
 from os.path import abspath
 from shutil import copy
-from flask import current_app
 
 import pytest
 
 from addcorpus import load_corpus
-
+from django.conf import settings
 
 def test_key_error(session, monkeypatch):
     ''' Verify that exception is correctly raised
     - in case the config.CORPORA variable is empty
     '''
     with pytest.raises(KeyError) as e:
-        monkeypatch.setitem(current_app.config, 'CORPORA', {})
+        monkeypatch.setitem(settings, 'CORPORA', {})
         load_corpus.load_all_corpora()
-        current_app.config['CORPUS_DEFINITIONS']['times']
+        settings.CORPUS_DEFINITIONS['times']
 
 
 def test_import_error(test_app, monkeypatch):
@@ -36,6 +35,6 @@ def test_import_from_anywhere(session, db, test_app, admin_role, monkeypatch, tm
     testdir = tmpdir.mkdir('/testdir')
     copy(str(abspath('corpora/times/times.py')), str(testdir))
     path_testfile = str(testdir)+'/times.py'
-    monkeypatch.setitem(current_app.config, 'CORPORA', {'times': path_testfile})
+    monkeypatch.setitem(settings, 'CORPORA', {'times': path_testfile})
     load_corpus.load_all_corpora()
-    assert 'times' in current_app.config['CORPUS_DEFINITIONS']
+    assert 'times' in settings.CORPUS_DEFINITIONS

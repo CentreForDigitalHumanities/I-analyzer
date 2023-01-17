@@ -1,5 +1,6 @@
-from ianalyzer import models
-from flask import current_app
+from addcorpus.models import Corpus
+from django.contrib.auth.models import Group
+from django.conf import settings
 import re
 from os.path import abspath, dirname, isfile
 from importlib import util
@@ -7,17 +8,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def corpus_path(corpus_name):
+    return abspath(settings.CORPORA.get(corpus_name))
+
 def corpus_dir(corpus_name):
     """Gets the absolute path to the corpus definition directory
 
     Arguments:
-        corpus_name {str} -- Name of the corpus
+        corpus_name {str} -- Key of the corpus in CORPORA object in settings
     """
-    return abspath(dirname(current_app.config['CORPORA'][corpus_name]))
+    return dirname(corpus_path(corpus_name))
 
 
 def load_corpus(corpus_name):
-    filepath = abspath(current_app.config['CORPORA'][corpus_name])
+    filepath = corpus_path(corpus_name)
 
     try:
         corpus_spec = util.spec_from_file_location(
@@ -44,7 +48,7 @@ def load_corpus(corpus_name):
 
 
 def load_all_corpora():
-    for corpus_name in current_app.config['CORPORA'].keys():
+    for corpus_name in settings.CORPORA.keys():
         try:
             corpus = load_corpus(corpus_name)
         except Exception as e:
@@ -53,17 +57,18 @@ def load_all_corpora():
             corpus = None
 
         if corpus:
-            current_app.config['CORPUS_DEFINITIONS'][corpus_name] = corpus
-            corpus_db = models.Corpus.query.filter_by(name=corpus_name).first()
+            # TODO: This will not work, find a different solution
+            settings.CORPUS_DEFINITIONS[corpus_name] = corpus
+            corpus_db = Corpus.objects.filter(name=corpus_name).first()
             if not corpus_db:
                 # add corpus to database if it's not already in
-                corpus_db = models.Corpus(
+                corpus_db = Corpus(
                     name=corpus_name,
-                    description=current_app.config['CORPUS_DEFINITIONS'][corpus_name].description
+                    description=settings.CORPUS_DEFINITIONS[corpus_name].description
                 )
-                models.db.session.add(corpus_db)
+                corpus_db.save()
                 # add it to admin role, too
-                admin = models.Role.query.filter_by(name='admin').first()
+                admin = Group.objects.get(name='admin')
                 if admin:
-                    admin.corpora.append(corpus_db)
-                    models.db.session.commit()
+                    corpus_db.groups.add(admin)
+                    corpus_db.save()
