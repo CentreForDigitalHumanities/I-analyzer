@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'addcorpus',
     'api',
     'es',
+    'corpora',
 ]
 
 MIDDLEWARE = [
