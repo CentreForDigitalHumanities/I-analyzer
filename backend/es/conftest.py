@@ -95,80 +95,80 @@ def es_alias_client(test_app):
     for index in indices.keys():
         client.indices.delete(index=index)
 
-class CustomTestClient(FlaskClient):
-    def times_login(self):
-        return self.login('times', TIMES_USER_PASSWORD)
+# class CustomTestClient(FlaskClient):
+#     def times_login(self):
+#         return self.login('times', TIMES_USER_PASSWORD)
 
-    def login(self, user_name, password):
-        return self.post('/api/login', data=json.dumps({
-            'username': user_name,
-            'password': password,
-        }), content_type='application/json')
-
-
-@pytest.fixture()
-def client(test_app):
-    test_app.test_client_class = CustomTestClient
-    with test_app.test_client() as client:
-        yield client
+#     def login(self, user_name, password):
+#         return self.post('/api/login', data=json.dumps({
+#             'username': user_name,
+#             'password': password,
+#         }), content_type='application/json')
 
 
-@pytest.fixture(scope='session')
-def db(test_app):
-    """Session-wide test database."""
-    _db.app = test_app
-    _db.create_all()
-    yield _db
-
-    # performed after running tests
-    _db.drop_all()
+# @pytest.fixture()
+# def client(test_app):
+#     test_app.test_client_class = CustomTestClient
+#     with test_app.test_client() as client:
+#         yield client
 
 
-@pytest.fixture(scope='function')
-def session(db, request):
-    """Creates a new database session for a test."""
-    connection = db.engine.connect()
-    transaction = connection.begin()
+# @pytest.fixture(scope='session')
+# def db(test_app):
+#     """Session-wide test database."""
+#     _db.app = test_app
+#     _db.create_all()
+#     yield _db
 
-    options = dict(bind=connection, binds={})
-    session = db.create_scoped_session(options=options)
-
-    db.session = session
-    yield session
-
-    # performed after running tests
-    session.remove()
-    transaction.rollback()
-    connection.close()
+#     # performed after running tests
+#     _db.drop_all()
 
 
-@pytest.fixture
-def times_user(session):
-    """ Ensure a user exists who has access to the Times corpus. """
-    user = User('times', generate_password_hash(TIMES_USER_PASSWORD))
-    role = Role(name='times_access')
-    corpus = Corpus(name='times')
-    role.corpora.append(corpus)
-    user.role = role
-    session.add(user)
-    session.add(corpus)
-    session.add(role)
-    session.commit()
-    return user
+# @pytest.fixture(scope='function')
+# def session(db, request):
+#     """Creates a new database session for a test."""
+#     connection = db.engine.connect()
+#     transaction = connection.begin()
+
+#     options = dict(bind=connection, binds={})
+#     session = db.create_scoped_session(options=options)
+
+#     db.session = session
+#     yield session
+
+#     # performed after running tests
+#     session.remove()
+#     transaction.rollback()
+#     connection.close()
 
 
-@pytest.fixture
-def admin_role(session):
-    """ Ensure that there is an admin role present (needed for load_corpus methods) """
-    role = Role(name='admin')
-    session.add(role)
-    session.commit()
-    return role
+# @pytest.fixture
+# def times_user(session):
+#     """ Ensure a user exists who has access to the Times corpus. """
+#     user = User('times', generate_password_hash(TIMES_USER_PASSWORD))
+#     role = Role(name='times_access')
+#     corpus = Corpus(name='times')
+#     role.corpora.append(corpus)
+#     user.role = role
+#     session.add(user)
+#     session.add(corpus)
+#     session.add(role)
+#     session.commit()
+#     return user
 
 
-@pytest.fixture
-def requests():
-    """ Allow mocking network requests using the `responses` package. """
-    with responses.RequestsMock(assert_all_requests_are_fired=False) as mock:
-        mock.Response = responses.Response
-        yield mock
+# @pytest.fixture
+# def admin_role(session):
+#     """ Ensure that there is an admin role present (needed for load_corpus methods) """
+#     role = Role(name='admin')
+#     session.add(role)
+#     session.commit()
+#     return role
+
+
+# @pytest.fixture
+# def requests():
+#     """ Allow mocking network requests using the `responses` package. """
+#     with responses.RequestsMock(assert_all_requests_are_fired=False) as mock:
+#         mock.Response = responses.Response
+#         yield mock
