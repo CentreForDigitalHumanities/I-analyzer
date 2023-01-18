@@ -7,7 +7,21 @@ import pytest
 from addcorpus import load_corpus
 
 
-def test_times_source(test_app):
+@pytest.fixture()
+def times_test_settings(settings):
+    settings.CORPORA = {
+        'times': 'corpora/times/times.py'
+    }
+    settings.TIMES_DATA = 'addcorpus/tests'
+    settings.TIMES_ES_INDEX = 'times'
+    settings.TIMES_ES_DOCTYPE = 'article'
+    settings.TIMES_IMAGE = 'times.jpg'
+    settings.TIMES_SCAN_IMAGE_TYPE = 'image/png'
+    settings.TIMES_DESCRIPTION_PAGE = 'times.md'
+
+
+
+def test_times_source(times_test_settings):
     '''
     Verify that times source files are read correctly.
     '''

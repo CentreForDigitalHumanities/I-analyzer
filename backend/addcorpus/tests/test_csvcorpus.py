@@ -25,7 +25,7 @@ class ExampleCSVCorpus(CSVCorpus):
             yield full_path, {
                     'filename': filename
                 }
-    
+
     fields = [
         Field(
             name = 'character',
@@ -58,7 +58,7 @@ target_documents = [
         'lines': [
             "My hour is almost come,",
             "When I to sulph’rous and tormenting flames",
-            "Must render up myself."           
+            "Must render up myself."
         ]
     },
     {

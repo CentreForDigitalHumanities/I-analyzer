@@ -11,9 +11,9 @@ from datetime import datetime
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
-from flask import current_app
+from django.conf import settings
 
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 from .es_alias import alias, get_new_version_number
 
 import logging
@@ -94,8 +94,8 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
         } for doc in docs
     )
 
-    corpus_server = current_app.config['SERVERS'][
-        current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
+    corpus_server = settings.SERVERS[
+        settings.CORPUS_SERVER_NAMES.get(corpus_name, 'default')]
     # Do bulk operation
     for result in es_helpers.bulk(
         client,

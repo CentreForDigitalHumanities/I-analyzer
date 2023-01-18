@@ -12,7 +12,7 @@ import os
 import os.path
 from datetime import datetime, timedelta
 
-from flask import current_app, url_for
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
@@ -27,12 +27,12 @@ class Times(XMLCorpus):
     description = "Newspaper archive, 1785-2010"
     min_date = datetime(year=1785, month=1, day=1)
     max_date = datetime(year=2010, month=12, day=31)
-    data_directory = current_app.config['TIMES_DATA']
-    es_index = current_app.config['TIMES_ES_INDEX']
-    es_doctype = current_app.config['TIMES_ES_DOCTYPE']
-    image = current_app.config['TIMES_IMAGE']
-    scan_image_type = current_app.config['TIMES_SCAN_IMAGE_TYPE']
-    description_page = current_app.config['TIMES_DESCRIPTION_PAGE']
+    data_directory = settings.TIMES_DATA
+    es_index = settings.TIMES_ES_INDEX
+    es_doctype = settings.TIMES_ES_DOCTYPE
+    image = settings.TIMES_IMAGE
+    scan_image_type = settings.TIMES_SCAN_IMAGE_TYPE
+    description_page = settings.TIMES_DESCRIPTION_PAGE
 
     tag_toplevel = 'issue'
     tag_entry = 'article'
@@ -466,14 +466,15 @@ class Times(XMLCorpus):
         ),
     ]
 
-    def request_media(self, document):
-        field_values = document['fieldValues']
-        if 'image_path' in field_values:
-            image_urls = [url_for(
-                'api.api_get_media', 
-                corpus=self.es_index,
-                image_path=field_values['image_path'],
-                _external=True
-            )]
-        else: image_urls = []
-        return {'media': image_urls }
+    # TODO: enable media
+    # def request_media(self, document):
+    #     field_values = document['fieldValues']
+    #     if 'image_path' in field_values:
+    #         image_urls = [url_for(
+    #             'api.api_get_media',
+    #             corpus=self.es_index,
+    #             image_path=field_values['image_path'],
+    #             _external=True
+    #         )]
+    #     else: image_urls = []
+    #     return {'media': image_urls }
