@@ -27,7 +27,7 @@ def corpus_definition(times_test_settings):
 
 
 @pytest.fixture(scope='module')
-def es_forward_client(test_app):
+def es_forward_client(times_test_settings):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
@@ -52,7 +52,7 @@ def es_forward_client(test_app):
     client.indices.delete(index='ianalyzer-test-times')
 
 @pytest.fixture
-def es_index_client(test_app):
+def es_index_client(times_test_settings):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
@@ -71,7 +71,7 @@ def es_index_client(test_app):
         client.indices.delete(index=index)
 
 @pytest.fixture()
-def es_alias_client(test_app):
+def es_alias_client(times_test_settings):
     """
     Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
