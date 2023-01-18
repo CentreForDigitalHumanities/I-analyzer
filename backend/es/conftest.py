@@ -1,69 +1,30 @@
 import pytest
-import responses
 from time import sleep
-import sys
-
-from werkzeug.security import generate_password_hash
-
-from flask import json
-from flask.testing import FlaskClient
-from flask_login import login_user
-
-from ianalyzer.factories.app import flask_app
-from ianalyzer.factories.elasticsearch import elasticsearch
-from ianalyzer.models import db as _db, Corpus, User, Role
-import ianalyzer.config_fallback as config
-
-from es import es_index
 
 from addcorpus.load_corpus import load_corpus
+from ianalyzer.elasticsearch import elasticsearch
+from es import es_index
 
-TIMES_USER_PASSWORD = '12345'
-
-
-class UnittestConfig:
-    SECRET_KEY = 'poiuytrewqlkjhgfdsamnbvcxz'
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'  # in-memory
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DEBUG = True
-    TESTING = True
-    CORPORA = {
+@pytest.fixture()
+def times_test_settings(settings):
+    settings.CORPORA = {
         'times': 'corpora/times/times.py'
     }
-    SERVERS = {
-        'default': config.SERVERS['default']
-    }
-    CORPUS_SERVER_NAMES = {
-        'times': 'default'
-    }
-    CORPUS_DEFINITIONS = {}
-    TIMES_DATA = 'addcorpus/tests'
-    TIMES_ES_INDEX = 'ianalyzer-test-times'
-    TIMES_ES_DOCTYPE = 'article'
-    TIMES_IMAGE = 'times.jpg'
-    TIMES_SCAN_IMAGE_TYPE = 'image/png'
-    TIMES_DESCRIPTION_PAGE = 'times.md'
 
-    SAML_FOLDER = "saml"
-    SAML_SOLISID_KEY = "uuShortID"
-    SAML_MAIL_KEY = "mail"
+    settings.TIMES_DATA = 'addcorpus/tests'
+    settings.TIMES_ES_INDEX = 'ianalyzer-test-times'
+    settings.TIMES_ES_DOCTYPE = 'article'
+    settings.TIMES_IMAGE = 'times.jpg'
+    settings.TIMES_SCAN_IMAGE_TYPE = 'image/png'
+    settings.TIMES_DESCRIPTION_PAGE = 'times.md'
 
 CORPUS_NAME = 'times'
 
-
-@pytest.fixture(scope='session')
-def test_app(request):
-    """ Provide an instance of the application with Flask's test_client. """
-    app = flask_app(UnittestConfig)
-    app.testing = True
-
-    with app.app_context():
-        yield app
-
 @pytest.fixture
-def corpus_definition(test_app):
+def corpus_definition(times_test_settings):
     corpus = load_corpus(CORPUS_NAME)
     yield corpus
+
 
 @pytest.fixture(scope='module')
 def es_forward_client(test_app):
@@ -133,7 +94,6 @@ def es_alias_client(test_app):
     indices = client.indices.get(index='ianalyzer-test*')
     for index in indices.keys():
         client.indices.delete(index=index)
-
 
 class CustomTestClient(FlaskClient):
     def times_login(self):
