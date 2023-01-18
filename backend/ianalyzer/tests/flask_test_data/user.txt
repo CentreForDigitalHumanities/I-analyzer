@@ -1,0 +1,1 @@
+1	admin	pbkdf2:sha256:260000$6JBo1KqFZMW5cHI5$fa7e05e4f102968a133f5b4e086f9777bf8d73fa070929e8425951ff590dfcce	admin@ianalyzer.nl	1	1	10000	2	0

@@ -1,0 +1,1 @@
+from ianalyzer.settings import *
