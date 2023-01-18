@@ -54,19 +54,14 @@ def _save_corpus_in_database(corpus_name, corpus_definition):
     - `corpus_name`: key of the corpus in settings.CORPORA
     - `corpus_definition`: a corpus object, output of `load_corpus`
     '''
-    corpus_db = Corpus.objects.filter(name=corpus_name).first()
-    if not corpus_db:
-        # add corpus to database if it's not already in
-        corpus_db = Corpus(
-            name=corpus_name,
-            description=corpus_definition.description
-        )
-        corpus_db.save()
-        # add it to admin role, too
-        admin_groups = Group.objects.filter(name='admin')
-        for admin in admin_groups:
-            corpus_db.groups.add(admin)
-            corpus_db.save()
+    corpus_db, _ = Corpus.objects.get_or_create(name=corpus_name)
+    corpus_db.description = corpus_definition.description
+
+    # add it to admin role, too
+    admin = Group.objects.filter(name='admin').first()
+    if admin:
+        corpus_db.groups.add(admin)
+    corpus_db.save()
 
 def _try_loading_corpus(corpus_name):
     try:
