@@ -8,3 +8,5 @@ pytest-django
 pytest-xdist
 elasticsearch
 nltk
+beautifulsoup4
+lxml<4.9.2
