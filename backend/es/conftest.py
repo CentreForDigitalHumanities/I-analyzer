@@ -95,6 +95,8 @@ def es_alias_client(times_test_settings):
     for index in indices.keys():
         client.indices.delete(index=index)
 
+# TODO: convert these to pytest fixtures
+
 # class CustomTestClient(FlaskClient):
 #     def times_login(self):
 #         return self.login('times', TIMES_USER_PASSWORD)
