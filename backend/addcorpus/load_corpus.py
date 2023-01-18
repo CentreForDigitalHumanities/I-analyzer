@@ -68,7 +68,7 @@ def _try_loading_corpus(corpus_name):
         return load_corpus(corpus_name)
     except Exception as e:
         message = 'Could not load corpus {}: {}'.format(corpus_name, e)
-        logger.log(level = 40, msg = message)
+        logger.error(message)
 
 
 def load_all_corpora():
