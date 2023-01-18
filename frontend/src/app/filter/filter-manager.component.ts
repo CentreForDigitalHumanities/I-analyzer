@@ -52,7 +52,6 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     setStateFromParams(params: ParamMap) {
-        this.corpusFields = _.cloneDeep(this.corpus.fields);
         this.activeFilters = this.paramService.setFiltersFromParams(
             params, this.corpusFields
         );
@@ -128,6 +127,18 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         });
     }
 
+    toggleFilter(filter: SearchFilter<SearchFilterData>) {
+        filter.useAsFilter = !filter.useAsFilter;
+        this.updateFilterData(filter);
+    }
+
+    resetFilter(filter: SearchFilter<SearchFilterData>) {
+        filter.useAsFilter = false;
+        filter.currentData = filter.defaultData;
+        filter.reset = true;
+        this.updateFilterData(filter);
+    }
+
     /**
      * Event triggered from filter components
      * @param filterData
@@ -138,7 +149,15 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
     }
 
     public toggleActiveFilters() {
-        this.activeFilters.forEach(filter => filter.useAsFilter = false);
+        if (this.activeFilters.length) {
+            this.activeFilters.forEach(filter => filter.useAsFilter = false);
+        } else {
+            // if we don't have active filters, set all filters to active which don't use default data
+            let filtersWithSettings = this.corpusFields.filter(
+                field => field.searchFilter && field.searchFilter.currentData != field.searchFilter.defaultData
+            ).map( field => field.searchFilter );
+            filtersWithSettings.forEach( field => field.useAsFilter = true);
+        }
         this.filtersChanged();
     }
 
@@ -150,14 +169,9 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         this.toggleActiveFilters();
     }
 
-    public filtersChanged() {
+    public filtersChanged(): Object {
         const newFilters = this.corpusFields.filter(field => field.searchFilter?.useAsFilter).map(f => f.searchFilter);
         let params = {};
-        newFilters.forEach(filter => {
-            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
-            const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
-            params[paramName] = value;
-        });
         this.activeFilters.forEach(filter => {
             // set any params for previously active filters to null
             if (!newFilters.map(f => f.fieldName).find(name => name === filter.fieldName)) {
@@ -168,22 +182,14 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
                     params['sort'] = null;
                 }
             }
-
-        })
-        this.activeFilters = newFilters;
+        });
+        newFilters.forEach(filter => {
+            const paramName = this.paramService.getParamForFieldName(filter.fieldName);
+            const value = filter.useAsFilter? this.paramService.searchFilterDataToParam(filter) : null;
+            params[paramName] = value;
+        });
         this.setParams(params);
-    }
-
-    toggleFilter(filter: SearchFilter<SearchFilterData>) {
-        filter.useAsFilter = !filter.useAsFilter;
-        this.updateFilterData(filter);
-    }
-
-    resetFilter(filter: SearchFilter<SearchFilterData>) {
-        filter.useAsFilter = false;
-        filter.currentData = filter.defaultData;
-        filter.reset = true;
-        this.updateFilterData(filter);
+        return params;
     }
 
 }

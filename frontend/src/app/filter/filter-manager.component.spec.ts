@@ -5,7 +5,6 @@ import { commonTestBed } from '../common-test-bed';
 import { FilterManagerComponent } from './filter-manager.component';
 import { mockCorpus, mockCorpus2, mockFilter } from '../../mock-data/corpus';
 import { convertToParamMap } from '@angular/router';
-import { active } from 'd3';
 
 describe('FilterManagerComponent', () => {
   let component: FilterManagerComponent;
@@ -43,13 +42,9 @@ describe('FilterManagerComponent', () => {
     expect(component.activeFilters.length).toEqual(1);
   });
 
-  it('toggles filters on and off', () => {
-    const compiled = fixture.nativeElement;
-    expect(component.activeFilters.length).toEqual(1);
-    // let activeFilters = compiled.querySelectorAll('.filter-container on')
-    // expect(activeFilters.length).toEqual(1);
-    // component.toggleFilter(mockFilter);
-    // activeFilters = compiled.querySelectorAll('.filter-container on')
-    // expect(activeFilters.length).toEqual(0);
+  it('toggles filters on and off', async() => {
+    component.corpusFields.find( field => field.name === 'great_field').searchFilter.useAsFilter = true;
+    const params = component.filtersChanged();
+    expect(Object.keys(params)).toContain('great_field');
   });
 });

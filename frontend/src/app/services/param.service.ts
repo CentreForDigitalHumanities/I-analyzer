@@ -113,17 +113,17 @@ export class ParamService {
     }
 
     applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
-        let currentFilters = corpusFields.filter(f => f.searchFilter)
+        let currentFilters = corpusFields.filter(f => f.searchFilter).map( f => f.searchFilter);
         currentFilters.forEach(f => {
-            if (_.has(filterSettings, f.name)) {
-                const data = filterSettings[f.name];
-                f.searchFilter.currentData = data;
-                f.searchFilter.useAsFilter = true;
+            if (_.has(filterSettings, f.fieldName)) {
+                const data = filterSettings[f.fieldName];
+                f.currentData = data;
+                f.useAsFilter = true;
             } else {
-                f.searchFilter.useAsFilter = false;
+                f.useAsFilter = false;
             }
         });
-        return currentFilters.filter( f => f.searchFilter.useAsFilter ).map( f => f.searchFilter);
+        return currentFilters.filter( f => f.useAsFilter );
     }
 
     setSortFromParams(params: ParamMap, corpusFields: CorpusField[]): {field: CorpusField, ascending: boolean} {
