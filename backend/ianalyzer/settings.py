@@ -171,3 +171,5 @@ SERVERS = {
 CORPUS_SERVER_NAMES = {}
 
 CORPORA = {}
+
+from ianalyzer.settings_local import *

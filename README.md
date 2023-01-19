@@ -68,7 +68,7 @@ http.cors.allow-origin: "*"
 ```
 yarn postinstall
 ```
-4. Create the file `backend/ianalyzer/config.py` (see `backend/ianalyzer/default-config.py`). `ianalyzer/config.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. See instructions of adding corpora below. Note that `config.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them).
+4. Create the file `backend/ianalyzer/settings_local.py`.`ianalyzer/settings_local.py` is included in .gitignore and thus not cloned to your machine. The variable `CORPORA` specifies which corpora are available, and the path of the corpus module. See instructions of adding corpora below. Note that `settings_local.py` should include the `CSRF_` settings for the front- and backend to communicate (in particular, PUTs and POSTs and the like shall not work without them).
 5. Go to `/backend`. See instructions below for Python package installation and dependency management.
 6. Set up your configuration file. `default_config.py` contains some reasonable defaults. If you are working with the csv download functionality, be sure to update the csv path to the absolute path to backend/api/csv_files.
 7. Create a MySQL database through logging into MySQL through the shell. Create a user that has all permissions. You need to set up in config.py the database user and password (SQLALCHEMY_DATABASE_URI='mysql://username:password@localhost:3306/databasename').
