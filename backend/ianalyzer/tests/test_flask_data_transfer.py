@@ -3,7 +3,8 @@ import django.contrib.auth.hashers as hashers
 from django.contrib.auth.models import Group
 from users.models import CustomUser
 from addcorpus.models import Corpus
-from api.models import Query, Download
+from api.models import Query
+from download.models import Download
 from ianalyzer.flask_data_transfer import *
 import pytest
 from datetime import datetime, timezone

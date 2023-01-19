@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'api',
     'es',
     'corpora',
+    'visualization',
+    'download',
 ]
 
 MIDDLEWARE = [
