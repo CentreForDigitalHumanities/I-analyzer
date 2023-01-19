@@ -26,6 +26,7 @@ from .proxy_frontend import proxy_frontend
 from addcorpus import urls as corpus_urls
 from visualization import urls as visualization_urls
 from download import urls as download_urls
+from wordmodels import urls as wordmodels_urls
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 
@@ -44,6 +45,7 @@ urlpatterns = [
     path('api/corpus/', include(corpus_urls)),
     path('api/visualization/', include(visualization_urls)),
     path('api/download/', include(download_urls)),
+    path('api/wordmodels', include(wordmodels_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',
