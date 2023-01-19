@@ -121,6 +121,12 @@ def perform_indexing(corpus_name, corpus_definition, start, end, mappings_only, 
 
     # Create and populate the ES index
     client = elasticsearch(corpus_name)
+    logger.info(
+        vars(client).get('_max_retries'))
+
+    logger.info(
+        vars(client).get('_retry_on_timeout')
+    )
     create(client, corpus_definition, add, clear, prod)
     client.cluster.health(wait_for_status='yellow')
 
