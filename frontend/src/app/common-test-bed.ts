@@ -28,39 +28,41 @@ export function commonTestBed() {
         provider in [ApiService, CorpusService, DialogService, ElasticSearchService, SearchService, UserService]));
     filteredProviders.push(
         {
-            provide: ApiService, useValue: new ApiServiceMock({
-                ['corpus']: MockCorpusResponse
+            provide: ApiService,
+            useValue: new ApiServiceMock({
+                ["corpus"]: MockCorpusResponse,
             }),
         },
         {
-            provide: CorpusService
+            provide: CorpusService,
         },
         {
-            provide: APP_INITIALIZER,
-            useFactory: csrfProviderFactory,
-            deps: [Injector, ApiService, CookieService],
-            multi: true
+            provide: DialogService,
+            useClass: DialogServiceMock,
         },
         {
-            provide: DialogService, useClass: DialogServiceMock
+            provide: ElasticSearchService,
+            useValue: new ElasticSearchServiceMock(),
         },
         {
-            provide: ElasticSearchService, useValue: new ElasticSearchServiceMock()
+            provide: ElementRef,
+            useClass: MockElementRef,
         },
         {
-            provide: ElementRef, useClass: MockElementRef
+            provide: SearchService,
+            useValue: new SearchServiceMock(),
         },
         {
-            provide: SearchService, useValue: new SearchServiceMock()
+            provide: UserService,
+            useValue: new UserServiceMock(),
         },
         {
-            provide: UserService, useValue: new UserServiceMock()
+            provide: WordmodelsService,
+            useValue: new WordmodelsServiceMock(),
         },
         {
-            provide: WordmodelsService, useValue: new WordmodelsServiceMock()
-        },
-        {
-            provide: VisualizationService, useValue: new visualizationServiceMock(),
+            provide: VisualizationService,
+            useValue: new visualizationServiceMock(),
         }
     );
 
@@ -70,18 +72,6 @@ export function commonTestBed() {
             imports: filteredImports,
             providers: filteredProviders
         })
-    };
-}
-
-export function csrfProviderFactory(inject: Injector, provider: ApiService, cookieService: CookieService): Function {
-    return () => {
-        if (!cookieService.check('csrf_token')) {
-            provider.ensureCsrf().then(result => {
-                if (!result || !result.success) {
-                    throw new Error('CSRF token could not be collected.');
-                }
-            });
-        }
     };
 }
 

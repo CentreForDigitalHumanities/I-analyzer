@@ -231,14 +231,18 @@ export const imports: any[] = [
     FontAwesomeModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
-        cookieName: 'csrf_token',
-        headerName: 'X-XSRF-Token'
+        cookieName: 'csrftoken',
+        headerName: 'X-CSRFToken',
     }),
     MenuModule,
     MultiSelectModule,
     PdfViewerModule,
     ResourceModule.forRoot({
-        handler: { provide: ResourceHandler, useFactory: (resourceHandlerFactory), deps: [HttpClient] }
+        handler: {
+            provide: ResourceHandler,
+            useFactory: resourceHandlerFactory,
+            deps: [HttpClient],
+        },
     }),
     RadioButtonModule,
     RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' }),
@@ -267,12 +271,6 @@ export const providers: any[] = [
     TitleCasePipe,
     CookieService,
     WordmodelsService,
-    {
-        provide: APP_INITIALIZER,
-        useFactory: initApp,
-        deps: [ApiService],
-        multi: true
-    },
 ];
 
 @NgModule({
@@ -281,13 +279,9 @@ export const providers: any[] = [
     providers,
     bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
 
 // AoT requires an exported function for factories
 export function resourceHandlerFactory(http: HttpClient) {
     return new ResourceHandlerHttpClient(http);
-}
-
-export function initApp(api: ApiService): Function {
-    return (): Promise<any> => api.ensureCsrf();
 }
