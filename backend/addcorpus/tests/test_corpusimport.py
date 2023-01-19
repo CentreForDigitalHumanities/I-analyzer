@@ -37,9 +37,10 @@ class Times():
     fields = []
 '''
 
-def test_import_from_anywhere(db, settings, tmpdir, admin_group):
-    ''' Verify that the corpus definition
-    can live anywhere in the file system
+@pytest.fixture()
+def temp_times_definition(tmpdir, settings, admin_group):
+    '''Provide a temporary definition files for the
+    times corpus
     '''
     testdir = tmpdir.mkdir('/testdir')
 
@@ -49,7 +50,15 @@ def test_import_from_anywhere(db, settings, tmpdir, admin_group):
 
     settings.CORPORA = {'times': path_testfile}
 
+def test_import_from_anywhere(db, temp_times_definition):
+    ''' Verify that the corpus definition
+    can live anywhere in the file system
+    '''
     corpus_definitions = load_corpus.load_all_corpora()
     assert 'times' in corpus_definitions
     corpus = corpus_definitions['times']
     assert corpus.title == 'Times'
+
+def test_corpus_dir_is_absolute(db, temp_times_definition):
+    corpus_dir = load_corpus.corpus_dir('times')
+    assert os.path.isabs(corpus_dir)

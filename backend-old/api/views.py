@@ -155,26 +155,6 @@ def api_reset_password():
     models.db.session.commit()
     return jsonify({'success': True, 'username': username})
 
-
-@api.route('/corpusimage/<corpus>/<image_name>', methods=['GET'])
-@login_required
-def api_corpus_image(corpus, image_name):
-    '''
-    Return the image for a corpus.
-    '''
-    return send_from_directory(join(
-        corpus_dir(corpus),
-        current_app.config['IMAGE_PATH']), '{}'.format(image_name))
-
-@api.route('/corpusdescription/<corpus>/<description_name>', methods=['GET'])
-@login_required
-def api_corpus_description(corpus, description_name):
-    '''
-    Return comprehensive information on the corpus.
-    '''
-    return send_from_directory(corpus_dir(corpus), 'description/{}'.format(description_name))
-
-
 @api.route('/corpusdocument/<corpus>/<document_name>', methods=['GET'])
 @login_required
 def api_corpus_document(corpus, document_name):
