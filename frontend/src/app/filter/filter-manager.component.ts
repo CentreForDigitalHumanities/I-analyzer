@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import * as _ from 'lodash';
@@ -43,11 +43,8 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         this.searchFilters = this.corpusFields.filter(field => field.searchFilter).map(field => field.searchFilter);
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['corpus']) {
-            this.initialize();
-        }
-
+    ngOnChanges() {
+        this.initialize();
         this.inputChanged.next();
     }
 
@@ -103,7 +100,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
                 this.multipleChoiceData[Object.keys(r)[0]] = Object.values(r)[0]
             );
             // if multipleChoiceData is empty, gray out all filters
-            if (multipleChoiceFilters.length != 0) {this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;}
+            if (multipleChoiceFilters && multipleChoiceFilters.length != 0) {this.grayOutFilters = this.multipleChoiceData[multipleChoiceFilters[0].fieldName].length === 0;}
         });
     }
 
@@ -118,7 +115,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         } else { filters = null; }
         const defaultData = filter.defaultData as MultipleChoiceFilterData;
         const aggregator = {name: filter.fieldName, size: defaultData.optionCount};
-        const queryModel = this.paramService.queryModelFromParams(params, this.corpus.fields);
+        const queryModel = this.paramService.queryModelFromParams(params, this.corpusFields);
         return this.searchService.aggregateSearch(this.corpus, queryModel, [aggregator]).then(results => {
             return results.aggregations;
         }, error => {
