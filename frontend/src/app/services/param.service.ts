@@ -22,9 +22,11 @@ export class ParamService {
     public queryModelFromParams(params:ParamMap, corpusFields: CorpusField[]) {
         const query = params.get('query')
         const highlight = Number(params.get('highlight'));
-        const sortSettings = this.setSortFromParams(params, corpusFields);
-        const activeFilters = this.setFiltersFromParams(params, corpusFields);
-        const queryFields = this.setSearchFieldsFromParams(params, corpusFields);
+        // copy fields so
+        const fields = _.cloneDeep(corpusFields);
+        const sortSettings = this.setSortFromParams(params, fields);
+        const activeFilters = this.setFiltersFromParams(params, fields);
+        const queryFields = this.setSearchFieldsFromParams(params, fields);
         return this.searchService.createQueryModel(
             query, queryFields, activeFilters, sortSettings.field, sortSettings.ascending, highlight);
     }
