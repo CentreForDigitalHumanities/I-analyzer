@@ -58,7 +58,7 @@ export class SearchSortingComponent extends ParamDirective {
 
     public toggleSortType() {
         this.ascending = !this.ascending;
-        this.emitChange();
+        this.updateSort();
     }
 
     public toggleShowFields() {
@@ -73,12 +73,11 @@ export class SearchSortingComponent extends ParamDirective {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
         this.sortField = field;
-        this.emitChange();
+        this.updateSort();
     }
 
-    private emitChange() {
-        const sortField = this.sortData ? this.sortData.field : this.primarySort;
-        const setting = this.paramService.makeSortParams(sortField, this.ascending? 'asc': 'desc');
+    private updateSort() {
+        const setting = this.paramService.makeSortParams(this.sortField, this.ascending? 'asc': 'desc');
         this.setParams(setting);
     }
 }

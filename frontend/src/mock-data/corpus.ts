@@ -42,6 +42,20 @@ export const mockField2: CorpusField = {
     searchFilter: null
 }
 
+export const mockField3: CorpusField = {
+    name: 'ordering',
+    description: 'A field which can be sorted on',
+    displayName: 'Sort me',
+    displayType: 'integer',
+    mappingType: 'keyword',
+    hidden: false,
+    sortable: true,
+    primarySort: false,
+    searchable: false,
+    downloadable: true,
+    searchFilter: null
+}
+
 export const mockCorpus: Corpus = {
     name: 'test1',
     serverName: 'default',

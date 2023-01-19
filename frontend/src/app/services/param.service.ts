@@ -133,8 +133,14 @@ export class ParamService {
         let sortAscending = true;
         if (params.has('sort')) {
             const [sortParam, ascParam] = params.get('sort').split(',');
-            sortField = corpusFields.find(field => field.name === sortParam);
             sortAscending = ascParam === 'asc';
+            if ( sortParam === 'relevance' ) {
+                return {
+                    field: undefined,
+                    ascending: sortAscending
+                }
+            }
+            sortField = corpusFields.find(field => field.name === sortParam);
         } else {
             sortField = corpusFields.find(field => field.primarySort);
         }
@@ -145,8 +151,8 @@ export class ParamService {
     }
 
     makeSortParams(sortField: CorpusField, direction: string): {sort: string} {
-        const field = sortField.primarySort? null: sortField.name;
-        return {sort:`${field},${direction}`};
+        const fieldName = sortField !== undefined ? sortField.name : 'relevance'
+        return {sort:`${fieldName},${direction}`};
     }
 
     setSearchFieldsFromParams(params: ParamMap, corpusFields: CorpusField[]): string[] | null {
