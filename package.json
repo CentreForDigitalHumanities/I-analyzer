@@ -3,7 +3,7 @@
     "version": "2.4.3",
     "license": "MIT",
     "scripts": {
-        "postinstall": "yarn install-back && yarn install-frontend",
+        "postinstall": "yarn install-back && yarn install-front",
         "install-back": "yarn back -- pip install -r requirements.txt",
         "install-front": "cd frontend && yarn install",
         "test-once": "cd frontend && yarn test --watch=false",
