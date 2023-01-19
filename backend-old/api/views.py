@@ -419,47 +419,7 @@ def api_search_history():
     })
 
 
-@api.route('/wordcloud', methods=['POST'])
-@login_required
-def api_wordcloud():
-    ''' get the results for a small batch of results right away '''
-    if not request.json:
-        abort(400)
-    if request.json['size']>1000:
-        abort(400)
-    else:
-        word_counts = tasks.get_wordcloud_data.delay(request.json)
-        if not word_counts:
-            return jsonify({'success': False, 'message': 'Could not generate word cloud data.'})
-        else:
-            return jsonify({'success': True, 'data': word_counts.get()})
 
-
-@api.route('/wordcloud_tasks', methods=['POST'])
-@login_required
-def api_wordcloud_tasks():
-    ''' schedule a celery task and return the task id '''
-    if not request.json:
-        abort(400)
-    else:
-        word_counts = tasks.get_wordcloud_data.delay(request.json)
-        if not word_counts:
-            return jsonify({'success': False, 'message': 'Could not set up word cloud generation.'})
-        else:
-            return jsonify({'success': True, 'task_ids': [word_counts.id, word_counts.parent.id]})
-
-@api.route('/ngram_tasks', methods=['POST'])
-@login_required
-def api_ngram_tasks():
-    ''' schedule a celery task and return the task id '''
-    if not request.json:
-        abort(400)
-    else:
-        ngram_counts_task = tasks.get_ngram_data.delay(request.json)
-        if not ngram_counts_task:
-            return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
-        else:
-            return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
 
 @api.route('/task_status', methods=['POST'])
 @login_required
@@ -542,49 +502,6 @@ def api_request_media():
         data['success'] = True
         return jsonify(data)
 
-@api.route('aggregate_term_frequency', methods=['POST'])
-@login_required
-def api_aggregate_term_frequency():
-    if not request.json:
-        abort(400)
-
-    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
-        if not key in request.json:
-            abort(400)
-
-    for bin in request.json['bins']:
-        for key in ['field_value', 'size']:
-            if not key in bin:
-                abort(400)
-
-    group = tasks.histogram_term_frequency_tasks(request.json).apply_async()
-    subtasks = group.children
-    if not tasks:
-        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
-    else:
-        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
-
-@api.route('date_term_frequency', methods=['POST'])
-@login_required
-def api_date_term_frequency():
-    if not request.json:
-        abort(400)
-
-    for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
-        if not key in request.json:
-            abort(400)
-
-    for bin in request.json['bins']:
-        for key in ['start_date', 'end_date', 'size']:
-            if not key in bin:
-                abort(400)
-
-    group = tasks.timeline_term_frequency_tasks(request.json).apply_async()
-    subtasks = group.children
-    if not tasks:
-        return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
-    else:
-        return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
 
 @api.route('request_full_data', methods=['POST'])
 @login_required

@@ -24,6 +24,7 @@ from .index import index
 from .proxy_frontend import proxy_frontend
 
 from addcorpus import urls as corpus_urls
+from visualization import urls as visualization_urls
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 
@@ -40,6 +41,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
     path('api/corpus/', include(corpus_urls)),
+    path('api/visualization/', include(visualization_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',
