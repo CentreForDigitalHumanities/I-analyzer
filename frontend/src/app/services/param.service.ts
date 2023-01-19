@@ -85,12 +85,12 @@ export class ParamService {
         return params;
     }
 
-    searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string | string[] {
+    searchFilterDataToParam(filter: SearchFilter<SearchFilterData>): string {
         switch (filter.currentData.filterType) {
             case "BooleanFilter":
                 return `${filter.currentData.checked}`;
             case "MultipleChoiceFilter":
-                return filter.currentData.selected as string[];
+                return filter.currentData.selected.join(',')
             case "RangeFilter":
                 return `${filter.currentData.min}:${filter.currentData.max}`;
             case "DateFilter":
