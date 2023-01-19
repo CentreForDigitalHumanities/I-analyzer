@@ -1,7 +1,8 @@
 Django>=4.0.1,<5
 djangorestframework
 django-livereload-server
-django-revproxy>=0.10.0
+# django-revproxy, see https://github.com/UUDigitalHumanitieslab/cookiecutter-webapp-deluxe/issues/35
+git+https://github.com/jazzband/django-revproxy.git@1defbb2dad5c0632391d54bcd3dbdaeabf46266a
 psycopg2
 pytest
 pytest-django
