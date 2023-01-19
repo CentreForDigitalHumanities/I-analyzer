@@ -103,8 +103,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     }
 
     public toggleField() {
-        this.setParams({ fields: null });
-        if (! this.selectedFields ) {
+        if ( !this.selectedFields.length ) {
             this.setParams({ fields: null })
         }
         else {
