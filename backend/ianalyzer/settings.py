@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corpora',
     'visualization',
     'download',
+    'wordmodels',
 ]
 
 MIDDLEWARE = [
