@@ -37,7 +37,7 @@ export type DateFilterData = {
 
 export type SearchFilterType = SearchFilterData["filterType"];
 
-export function searchFilterDataFromParam(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
+export function searchFilterDataFromSettings(filterType: SearchFilterType|undefined, value: string[], field: CorpusField): SearchFilterData {
     switch (filterType) {
         case "BooleanFilter":
             return { filterType, checked: value[0] === 'true' };

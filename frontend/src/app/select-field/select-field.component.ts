@@ -45,7 +45,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
     }
 
     setStateFromParams(params: ParamMap) {
-        const queryFields = this.paramService.setSearchFieldsFromParams(params, this.availableFields);
+        const queryFields = this.paramService.setSearchFieldsFromParams(params);
         if (!queryFields) {
             this.selectedFields = [];
         } else {

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { ParamDirective } from '../param/param-directive';
@@ -27,12 +27,13 @@ export class HighlightSelectorComponent extends ParamDirective {
     }
 
     setStateFromParams(params: ParamMap) {
-        this.highlight = Number(params.get('highlight'));
+        this.highlight = this.paramService.setHighlightFromParams(params);
     }
 
 
     updateHighlightSize(event) {
-      this.setParams({ highlight: event.target.value });
+        const highlightSize = event.target.value;
+        this.setParams({ highlight: highlightSize !== "0" ? highlightSize : null });
     }
 
 }

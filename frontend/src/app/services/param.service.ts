@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { SearchFilter, SearchFilterData, searchFilterDataFromParam, CorpusField, QueryModel, } from '../models';
+import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings } from '../models';
 import { SearchService } from './search.service';
 
 interface SearchFilterSettings {
@@ -15,18 +15,21 @@ export class ParamService {
 
     constructor(private searchService: SearchService) { }
 
+    /***
+     * Utility function to convert field name to string
+     */
     public getParamForFieldName(fieldName: string) {
         return `${fieldName}`;
     }
 
     public queryModelFromParams(params:ParamMap, corpusFields: CorpusField[]) {
-        const query = params.get('query')
-        const highlight = Number(params.get('highlight'));
-        // copy fields so
+        // copy fields so the state in components is isolated
         const fields = _.cloneDeep(corpusFields);
-        const sortSettings = this.setSortFromParams(params, fields);
         const activeFilters = this.setFiltersFromParams(params, fields);
-        const queryFields = this.setSearchFieldsFromParams(params, fields);
+        const highlight = this.setHighlightFromParams(params);
+        const query = this.setQueryFromParams(params);
+        const queryFields = this.setSearchFieldsFromParams(params);
+        const sortSettings = this.setSortFromParams(params, fields);
         return this.searchService.createQueryModel(
             query, queryFields, activeFilters, sortSettings.field, sortSettings.ascending, highlight);
     }
@@ -63,6 +66,8 @@ export class ParamService {
         return route;
     }
 
+    //------- set filters from params  ----//
+
     /**
      * Set the filter data from the query parameters and return whether any filters were actually set.
      */
@@ -73,6 +78,38 @@ export class ParamService {
         }
         return this.applyFilterSettings(filterSettings, corpusFields);
     }
+
+    filterSettingsFromParams(params: ParamMap, corpusFields: CorpusField[]): SearchFilterSettings {
+        const settings = {};
+        corpusFields.forEach(field => {
+            const param = this.getParamForFieldName(field.name);
+            if (params.has(param)) {
+                let filterSettings = params.get(param).split(',');
+                if (filterSettings[0] === '') { filterSettings = []; }
+                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
+                const data = searchFilterDataFromSettings(filterType, filterSettings, field);
+                settings[field.name] = data;
+            }
+        });
+
+        return settings;
+    }
+
+    applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
+        let currentFilters = corpusFields.filter(f => f.searchFilter).map( f => f.searchFilter);
+        currentFilters.forEach(f => {
+            if (_.has(filterSettings, f.fieldName)) {
+                const data = filterSettings[f.fieldName];
+                f.currentData = data;
+                f.useAsFilter = true;
+            } else {
+                f.useAsFilter = false;
+            }
+        });
+        return currentFilters.filter( f => f.useAsFilter );
+    }
+
+    // --- set params from filters --- //
 
     makeFilterParams(fields: CorpusField[]) {
         let params = {};
@@ -98,35 +135,7 @@ export class ParamService {
         }
     }
 
-    filterSettingsFromParams(params: ParamMap, corpusFields: CorpusField[]): SearchFilterSettings {
-        const settings = {};
-        corpusFields.forEach(field => {
-            const param = this.getParamForFieldName(field.name);
-            if (params.has(param)) {
-                let filterSettings = params.get(param).split(',');
-                if (filterSettings[0] === '') { filterSettings = []; }
-                const filterType = field.searchFilter ? field.searchFilter.currentData.filterType : undefined;
-                const data = searchFilterDataFromParam(filterType, filterSettings, field);
-                settings[field.name] = data;
-            }
-        });
-
-        return settings;
-    }
-
-    applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
-        let currentFilters = corpusFields.filter(f => f.searchFilter).map( f => f.searchFilter);
-        currentFilters.forEach(f => {
-            if (_.has(filterSettings, f.fieldName)) {
-                const data = filterSettings[f.fieldName];
-                f.currentData = data;
-                f.useAsFilter = true;
-            } else {
-                f.useAsFilter = false;
-            }
-        });
-        return currentFilters.filter( f => f.useAsFilter );
-    }
+    // --- sort params --- //
 
     setSortFromParams(params: ParamMap, corpusFields: CorpusField[]): {field: CorpusField, ascending: boolean} {
         let sortField: CorpusField;
@@ -155,11 +164,21 @@ export class ParamService {
         return {sort:`${fieldName},${direction}`};
     }
 
-    setSearchFieldsFromParams(params: ParamMap, corpusFields: CorpusField[]): string[] | null {
+    // --- set query fields, highlight and query text from params --- //
+
+    setSearchFieldsFromParams(params: ParamMap): string[] | null {
         if (params.has('fields')) {
             const selectedSearchFields = params.get('fields').split(',');
             return selectedSearchFields;
         }
+    }
+
+    setHighlightFromParams(params: ParamMap): number {
+        return Number(params.get('highlight'));
+    }
+
+    setQueryFromParams(params: ParamMap): string {
+        return params.get('query');
     }
 
 }
