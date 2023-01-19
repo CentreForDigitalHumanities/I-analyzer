@@ -49,8 +49,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
         if (!queryFields) {
             this.selectedFields = [];
         } else {
-            this.selectedFields = queryFields.map(
-                fieldName => this.availableFields.find(field => field.name === fieldName));
+            this.selectedFields = this.availableFields.filter( field => queryFields.find(name => field.name === name) );
         }
     }
 
@@ -104,7 +103,7 @@ export class SelectFieldComponent extends ParamDirective implements OnChanges {
 
     public toggleField() {
         if ( !this.selectedFields.length ) {
-            this.setParams({ fields: null })
+            this.setParams({ fields: null });
         }
         else {
             this.uiSelected = this.selectedFields.map(field => field.name);

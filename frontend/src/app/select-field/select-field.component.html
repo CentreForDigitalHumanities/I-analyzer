@@ -1,4 +1,4 @@
-<p-multiSelect styleClass="button" defaultLabel=" 'All fields' " [options]="optionFields" [(ngModel)]="selectedFields" optionLabel="displayName" [displaySelectedLabel]="uiSelected" (focusout)="toggleField()" [ngModelOptions]="{standalone: true}" dropdownIcon="fa fa-cog">
+<p-multiSelect styleClass="button" defaultLabel=" 'All fields' " [options]="optionFields" [(ngModel)]="selectedFields" optionLabel="displayName" [displaySelectedLabel]="uiSelected" (onChange)="toggleField()" [ngModelOptions]="{standalone: true}" dropdownIcon="fa fa-cog">
     <p-footer *ngIf="optionFields">
         <a class="button is-primary" (click)="toggleAllFields()">{{allVisible? 'Show default fields' : 'Show all fields'}}</a>
     </p-footer>
