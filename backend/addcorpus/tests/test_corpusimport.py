@@ -1,6 +1,7 @@
 import os
 import pytest
 from addcorpus import load_corpus
+from addcorpus.models import Corpus
 
 def test_key_error(db, settings):
     ''' Verify that exception is correctly raised
@@ -23,6 +24,11 @@ def test_import_error(db, settings):
     with pytest.raises(FileNotFoundError) as e:
         load_corpus.load_corpus('times')
 
+    # corpus should not be included when
+    # loading all corpora
+    corpora = load_corpus.load_all_corpora()
+    assert 'times' not in corpora
+    assert not Corpus.objects.filter(name='times')
 
 mock_corpus_definition = '''
 class Times():

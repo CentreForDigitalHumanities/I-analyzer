@@ -156,20 +156,6 @@ def api_reset_password():
     return jsonify({'success': True, 'username': username})
 
 
-@api.route('/corpus', methods=['GET'])
-@login_required
-def api_corpus_list():
-    load_all_corpora()
-    response = jsonify(dict(
-        (key, dict(
-            server_name=current_app.config['CORPUS_SERVER_NAMES'][key],
-            **current_app.config['CORPUS_DEFINITIONS'][key].serialize()
-        )) for key in
-        current_app.config['CORPUS_DEFINITIONS'].keys()
-    ))
-    return response
-
-
 @api.route('/corpusimage/<corpus>/<image_name>', methods=['GET'])
 @login_required
 def api_corpus_image(corpus, image_name):

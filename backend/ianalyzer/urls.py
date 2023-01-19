@@ -23,6 +23,8 @@ from rest_framework import routers
 from .index import index
 from .proxy_frontend import proxy_frontend
 
+from addcorpus import urls as corpus_urls
+
 api_router = routers.DefaultRouter()  # register viewsets with this router
 
 
@@ -37,6 +39,7 @@ urlpatterns = [
     path('api-auth', RedirectView.as_view(url='/api-auth/', permanent=True)),
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
+    path('api/corpus/', include(corpus_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',

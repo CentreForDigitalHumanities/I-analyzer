@@ -75,9 +75,16 @@ def load_all_corpora():
     '''
     Return a dict with corpus names and corpus definition objects.
     '''
-    corpus_definitions = {
+    corpus_definitions_unfiltered = {
         corpus_name: _try_loading_corpus(corpus_name)
         for corpus_name in settings.CORPORA.keys()
+    }
+
+    # filter any corpora without a valid definition
+    corpus_definitions = {
+        name: definition
+        for name, definition in corpus_definitions_unfiltered.items()
+        if definition
     }
 
     for corpus_name, corpus_definition in corpus_definitions.items():
