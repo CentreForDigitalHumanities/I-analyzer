@@ -25,9 +25,9 @@ export class RangeFilterComponent extends BaseFilterComponent<RangeFilterData> i
         return [this.data.min, this.data.max];
     }
 
-    getFilterData(): SearchFilter<RangeFilterData> {   
+    getFilterData(): SearchFilter<RangeFilterData> {
         this.filter.currentData = {
-            filterType: "RangeFilter",
+            filterType: 'RangeFilter',
             min: this.data[0],
             max: this.data[1]
         };

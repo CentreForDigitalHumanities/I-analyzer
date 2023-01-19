@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
-
 import { ApiService } from './api.service';
 import { ElasticSearchService } from './elastic-search.service';
 import { LogService } from './log.service';
@@ -34,6 +32,7 @@ export class SearchService {
 
     /**
      * Construct a dictionary representing an ES query.
+     *
      * @param queryString Read as the `simple_query_string` DSL of standard ElasticSearch.
      * @param fields Optional list of fields to restrict the queryString to.
      * @param filters A list of dictionaries representing the ES DSL.
@@ -43,10 +42,10 @@ export class SearchService {
         sortField: CorpusField = null, sortAscending = false, highlight: number = null
     ): QueryModel {
         const model: QueryModel = {
-            queryText: queryText,
-            filters: filters,
+            queryText,
+            filters,
             sortBy: sortField ? sortField.name : undefined,
-            sortAscending: sortAscending
+            sortAscending
         };
         if (fields) {
             model.fields = fields;
@@ -58,7 +57,9 @@ export class SearchService {
     }
 
     public async search(queryModel: QueryModel, corpus: Corpus): Promise<SearchResults> {
-        this.logService.info(`Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`);
+        this.logService.info(
+            `Requested flat results for query: ${queryModel.queryText}, with filters: ${JSON.stringify(queryModel.filters)}`
+        );
         const user = await this.userService.getCurrentUser();
         const query = new Query(queryModel, corpus.name, user.id);
         const results = await this.elasticSearchService.search(corpus, queryModel);

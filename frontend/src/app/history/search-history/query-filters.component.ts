@@ -11,13 +11,13 @@ import { QueryModel } from '../../models/index'
 export class QueryFiltersComponent implements OnInit {
     @Input() public queryModel: QueryModel;
     public formattedFilters: {
-        name: string,
-        formattedData: string | string[] }[];
+        name: string;
+        formattedData: string | string[]; }[];
 
     constructor(private paramService: ParamService) { }
 
     ngOnInit() {
-        if (typeof this.queryModel=="string") {
+        if (typeof this.queryModel=='string') {
             this.queryModel = JSON.parse(this.queryModel);
         }
 

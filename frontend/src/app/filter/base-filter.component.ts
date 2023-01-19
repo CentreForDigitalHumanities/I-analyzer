@@ -26,7 +26,7 @@ export abstract class BaseFilterComponent<T extends SearchFilterData> {
      */
     public data: any; // holds the user data
 
-    public useAsFilter: boolean = false;
+    public useAsFilter = false;
 
     constructor() {
     }

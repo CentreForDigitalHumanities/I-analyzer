@@ -8,7 +8,6 @@ from ianalyzer.factories.elasticsearch import elasticsearch
 from copy import deepcopy
 import api.query as query
 import api.termvectors as termvectors
-from corpora.parliament.utils.es_settings import get_nltk_stopwords
 from es import download as download
 
 def parse_datestring(datestring):

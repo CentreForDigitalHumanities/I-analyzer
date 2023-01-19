@@ -90,6 +90,7 @@ export class SearchComponent extends ParamDirective {
 
     /**
      * Event triggered from search-results.component
+     *
      * @param input
      */
     public onSearched(input: ResultOverview) {

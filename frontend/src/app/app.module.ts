@@ -290,7 +290,5 @@ export function resourceHandlerFactory(http: HttpClient) {
 }
 
 export function initApp(api: ApiService): Function {
-    return (): Promise<any> => {
-        return api.ensureCsrf();
-    };
+    return (): Promise<any> => api.ensureCsrf();
 }

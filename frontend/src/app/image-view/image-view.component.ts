@@ -78,11 +78,10 @@ export class ImageViewComponent implements OnChanges {
     }
 
     download() {
-        let url = this.imagePaths[this.showPage];
+        const url = this.imagePaths[this.showPage];
         if (this.imageInfo) {
             this.confirmDownload(url);
-        }
-        else {
+        } else {
             window.location.href = url;
         }
     }

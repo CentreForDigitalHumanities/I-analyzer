@@ -112,7 +112,9 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
             if (index >= 0) {
                 filters.splice(index, 1);
             }
-        } else { filters = null; }
+        } else {
+ filters = null;
+}
         const defaultData = filter.defaultData as MultipleChoiceFilterData;
         const aggregator = {name: filter.fieldName, size: defaultData.optionCount};
         const queryModel = this.paramService.queryModelFromParams(params, this.corpusFields);
@@ -138,6 +140,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
 
     /**
      * Event triggered from filter components
+     *
      * @param filterData
      */
     public updateFilterData(filter: SearchFilter<SearchFilterData>) {

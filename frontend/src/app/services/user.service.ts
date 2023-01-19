@@ -20,7 +20,7 @@ export class UserService implements OnDestroy {
     // - If the user logs on or off, the value is directly updated.
     // - If an API call returns that the session has expired, the value is also updated (because logoff() will be called).
     private sessionCheckPromise: Promise<boolean> = Promise.resolve<boolean>(false);
- 
+
 
     /**
      * Get the current user
@@ -35,9 +35,9 @@ export class UserService implements OnDestroy {
             return this.deserializedCurrentUser;
         }
 
-        let value = localStorage.getItem(localStorageKey);
+        const value = localStorage.getItem(localStorageKey);
         if (value) {
-            let parsed = JSON.parse(value);
+            const parsed = JSON.parse(value);
             return new User(parsed['id'], parsed['name'], parsed['role'], parsed['downloadLimit'], parsed['isSolisLogin']);
         } else {
             return false;
@@ -47,7 +47,7 @@ export class UserService implements OnDestroy {
     private set currentUser(value: User | false) {
         this.deserializedCurrentUser = value;
         if (!value) {
-            localStorage.removeItem(localStorageKey)
+            localStorage.removeItem(localStorageKey);
         } else {
             localStorage.setItem(localStorageKey, JSON.stringify(value));
         }
@@ -77,7 +77,7 @@ export class UserService implements OnDestroy {
             }
             throw 'Not logged on';
         }
-        let currentUser = await this.getCurrentUserOrFallback();
+        const currentUser = await this.getCurrentUserOrFallback();
         if (currentUser) {
             return currentUser;
         }
@@ -86,8 +86,8 @@ export class UserService implements OnDestroy {
     }
 
     public login(username: string, password: string = null): Promise<User | false> {
-        let loginPromise = this.apiService.login({ username, password }).then(result => {
-            if (result.success) {                
+        const loginPromise = this.apiService.login({ username, password }).then(result => {
+            if (result.success) {
                 return this.processLoginSucces(result);
             }
 
@@ -105,7 +105,7 @@ export class UserService implements OnDestroy {
      */
     public async solisLogin(): Promise<User | false> {
         await this.sessionCheckPromise;
-        let loginPromise = this.apiService.solisLogin().then(result => {
+        const loginPromise = this.apiService.solisLogin().then(result => {
             if (result.success) {
                 return this.processLoginSucces(result, true);
             }
@@ -120,6 +120,7 @@ export class UserService implements OnDestroy {
 
     /**
      * Create user and assign it to this.currentUser
+     *
      * @param result The result from the API call
      */
     private processLoginSucces(result, isSolisLogin: boolean = false): User {
@@ -138,24 +139,24 @@ export class UserService implements OnDestroy {
      * Registration of new user.
      */
     public register(username: string, email: string, password: string):
-        Promise<{ success: boolean, is_valid_username: boolean, is_valid_email: boolean }> {
-        return this.apiService.register({ username, email, password })
+        Promise<{ success: boolean; is_valid_username: boolean; is_valid_email: boolean }> {
+        return this.apiService.register({ username, email, password });
     }
 
     public async logout(notifyServer: boolean = true, redirectToLogout: boolean = true): Promise<User | undefined> {
         let isSolisLogin = false;
-        
-        if (this.currentUser) { 
-            isSolisLogin = this.currentUser.isSolisLogin; 
+
+        if (this.currentUser) {
+            isSolisLogin = this.currentUser.isSolisLogin;
         }
-        
+
         this.currentUser = false;
         this.sessionCheckPromise = Promise.resolve(false);
 
         if (isSolisLogin) {
-            window.location.href = 'api/init_solislogout'
+            window.location.href = 'api/init_solislogout';
         } else {
-            if (notifyServer) {                
+            if (notifyServer) {
                 await this.apiService.logout();
             }
 

@@ -30,25 +30,32 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
 
     downloadType(type: DownloadType): string {
         const displayNames = {
-            'search_results': 'Search results',
-            'date_term_frequency': 'Term frequency',
-            'aggregate_term_frequency': 'Term frequency'
+            search_results: 'Search results',
+            date_term_frequency: 'Term frequency',
+            aggregate_term_frequency: 'Term frequency'
             // timeline/histogram distinction is relevant for backend but not for the user
-        }
+        };
         return displayNames[type];
     }
 
     queryText(download: Download): string {
-        const queryModel = this.getQueryModel(download);
-        return queryModel.queryText;
+        const queryModels = this.getAllQueryModels(download);
+        const queryTexts = queryModels.map(model => model.queryText);
+        return _.join(queryTexts, ', ');
     }
 
-    getQueryModel(download: Download): QueryModel {
+    getAllQueryModels(download: Download): QueryModel[] {
         const parameters: DownloadParameters = JSON.parse(download.parameters);
-        const esQuery =  'es_query' in parameters ?
-            parameters.es_query : parameters[0].es_query;
-        const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
-        return this.elasticSearchService.esQueryToQueryModel(esQuery, corpus);
+        const esQueries =  'es_query' in parameters ?
+            [parameters.es_query] : parameters.map(p => p.es_query);
+        const corpus = this.corpora.find(c => c.name === download.corpus);
+        return esQueries.map(esQuery => this.elasticSearchService.esQueryToQueryModel(esQuery, corpus));
+    }
+
+
+    getQueryModel(download: Download): QueryModel {
+        const queryModels = this.getAllQueryModels(download);
+        return queryModels[0];
     }
 
     getFields(download: Download): string {
@@ -58,8 +65,8 @@ export class DownloadHistoryComponent extends HistoryDirective implements OnInit
         const corpus = this.corpora.find(corpus => corpus.name == download.corpus);
         const fields = fieldNames.map(fieldName =>
             corpus.fields.find(field => field.name === fieldName).displayName
-        )
-        return _.join(fields, ', ')
+        );
+        return _.join(fields, ', ');
     }
 
     downloadFile(download: Download, options: DownloadOptions) {

@@ -85,4 +85,6 @@ export function csrfProviderFactory(inject: Injector, provider: ApiService, cook
     };
 }
 
-export class MockElementRef { nativeElement = {}; }
+export class MockElementRef {
+ nativeElement = {};
+}

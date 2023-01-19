@@ -20,6 +20,7 @@ export class CorpusService {
 
     /**
      * Sets a corpus and returns a boolean indicating whether the corpus exists and is accessible.
+     *
      * @param corpusName Name of the corpus
      */
     public set(corpusName: string): Promise<boolean> {
@@ -135,10 +136,10 @@ export class CorpusService {
                 break;
         }
         return {
-            fieldName: fieldName,
+            fieldName,
             description: filter.description,
             useAsFilter: false,
-            defaultData: defaultData,
+            defaultData,
             currentData: defaultData
         };
     }
@@ -155,8 +156,8 @@ export class CorpusService {
         return moment(date).format().slice(0, 10);
     }
 
-    private parseDocumentContext (
-        data: {context_fields: string[]|null, sort_field: string|null, context_display_name: string|null, sort_direction: 'string'|null},
+    private parseDocumentContext(
+        data: {context_fields: string[]|null; sort_field: string|null; context_display_name: string|null; sort_direction: 'string'|null},
         allFields: CorpusField[]
     ): DocumentContext {
         if (!data || !data.context_fields) {
