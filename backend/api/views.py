@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from api.serializers import QuerySerializer
 
 class QueryViewset(viewsets.ModelViewSet):
@@ -11,51 +13,57 @@ class QueryViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.queries.all()
 
-    #TODO: set create/update actions
-    # if not request.json:
-    #     abort(400)
+class TaskStatusView(APIView):
+    '''
+    Get the status of an array of backend tasks (working/done/failed),
+    and the results if they are complete
+    '''
 
-    # query_json = request.json['query']
-    # if 'filters' in query_json:
-    #     query_model = json.loads(query_json)
-    #     for search_filter in query_model['filters']:
-    #         # no need to save defaults in database
-    #         if 'defaultData' in search_filter:
-    #             del search_filter['defaultData']
-    #         if 'options' in search_filter['currentData']:
-    #             # options can be lengthy, just save user settings
-    #             del search_filter['currentData']['options']
-    #     query_json = json.dumps(query_model)
-    # corpus_name = request.json['corpus_name']
+    def post(self, request, *args, **kwargs):
+        # this a POST request because a list of requested IDs can make
+        # the url too long
 
-    # if 'id' in request.json:
-    #     query = models.Query.query.filter_by(id=request.json['id']).first()
-    # else:
-    #     query = models.Query(
-    #         query=query_json, corpus_name=corpus_name, user=current_user)
+        return Response({
+            'success': False,
+            'message': 'Could not get data'
+        })
 
-    # query.total_results = request.json['total_results']['value']
-    # date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-    # query.started = datetime.now() if ('markStarted' in request.json and request.json['markStarted'] == True) \
-    #     else (datetime.strptime(request.json['started'], date_format) if 'started' in request.json else None)
-    # query.completed = datetime.now() if ('markCompleted' in request.json and request.json['markCompleted'] == True)  \
-    #     else (datetime.strptime(request.json['completed'], date_format) if 'completed' in request.json else None)
+        # TODO: get results from celery
+        # task_ids = request.json.get('task_ids')
+        # if not task_ids:
+        #     abort(400, 'no task id specified')
 
-    # query.aborted = request.json['aborted']
-    # query.transferred = request.json['transferred']
+        # results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
+        # if not all(results):
+        #     return jsonify({'success': False, 'message': 'Could not get data.'})
+        # else:
+        #     if all(result.state == 'SUCCESS' for result in results):
+        #         outcomes = [result.get() for result in results]
+        #         return jsonify({'success': True, 'done': True, 'results': outcomes})
+        #     elif all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
+        #         return jsonify({'success': True, 'done': False})
+        #     else:
+        #         for result in results:
+        #             logger.error(result.info)
+        #         return jsonify({'success': False, 'message': 'Task failed.'})
 
-    # models.db.session.add(query)
-    # models.db.session.commit()
+class AbortTasksView(APIView):
+    '''
+    Cancel backend tasks
+    '''
 
-    # return jsonify({
-    #     'id': query.id,
-    #     'query': query.query_json,
-    #     'corpus_name': query.corpus_name,
-    #     'started': query.started,
-    #     'completed': query.completed,
-    #     'aborted': query.aborted,
-    #     'transferred': query.transferred,
-    #     'userID': query.userID
-    # })
+    def post(self, request, *args, **kwargs):
+        return Response(None)
 
+        # TODO: cancel tasks
+        # if not request.json:
+        #     abort(400)
+        # else:
+        #     task_ids = request.json['task_ids']
+        #     try:
+        #         celery_app.control.revoke(task_ids, terminate=True)
+        #     except Exception as e:
+        #         current_app.logger.critical(e)
+        #         return jsonify({'success': False})
+        #     return jsonify({'success': True})
 
