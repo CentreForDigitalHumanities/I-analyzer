@@ -28,8 +28,10 @@ from visualization import urls as visualization_urls
 from download import urls as download_urls
 from wordmodels import urls as wordmodels_urls
 from es import urls as es_urls
+from api.views import QueryViewset
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
+api_router.register('queries', QueryViewset, basename='query')
 
 
 if settings.PROXY_FRONTEND:
