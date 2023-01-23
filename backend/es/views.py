@@ -1,35 +1,60 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from ianalyzer.elasticsearch import elasticsearch
+from es.search import get_index
+import logging
+from rest_framework.permissions import IsAuthenticated
+from addcorpus.load_corpus import load_corpus
+from rest_framework.exceptions import NotFound, PermissionDenied, APIException
+
+logger = logging.getLogger(__name__)
+
+def get_query_parameters(request):
+        'get query params from a request'
+
+        # extract each query_param with .get, otherwise they return as lists
+        return {
+            key: request.query_params.get(key)
+            for key in request.query_params
+        }
 
 class ForwardSearchView(APIView):
     '''
     Forward search request to elasticsearch
     '''
 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
-        return Response(None)
-        # TODO: forward request
+        corpus_name = kwargs.get('corpus')
 
-        # def require_access(corpus_name):
-        #     """ Abort if the current user is not authorized for corpus_name. """
-        #     if not current_user.has_access(corpus_name):
-        #         abort(401)  # Unauthorized
+        # check if the corpus exists
+        try:
+            corpus = load_corpus(corpus_name)
+        except:
+            raise NotFound('Corpus does not exist')
 
-        # require_access(corpus_name)
-        # client = elasticsearch(corpus_name)
-        # index = get_index(corpus_name)
-        # try:
-        #     results = client.search(
-        #         index=index,
-        #         body=json.loads(request.get_data()),
-        #         track_total_hits=True,
-        #         **request.args.to_dict()
-        #     )
-        # except ConnectionError as e:
-        #     logger.error(e)
-        #     abort(503)  # Service unavailable
-        # except ConnectionTimeout as e:
-        #     logger.error(e)
-        #     abort(504)  # Gateway Timeout
-        # return Response(json.dumps(results.raw))
+        # check if the user has access
+        if not request.user.has_access(corpus_name):
+            return PermissionDenied('You do not have permission to access this corpus')
+
+        client = elasticsearch(corpus_name)
+        index = get_index(corpus_name)
+
+        # combine request json with query parameters (size, scroll)
+        query = {
+            **request.data,
+            **get_query_parameters(request)
+        }
+
+        try:
+            results = client.search(
+                index=index,
+                **query,
+                track_total_hits=True,
+            )
+        except Exception as e:
+            logger.exception(e)
+            raise APIException('Search failed')
+
+        return Response(results)
