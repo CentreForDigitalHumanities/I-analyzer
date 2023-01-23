@@ -32,7 +32,7 @@ from api.views import QueryViewset
 from api import urls as api_urls
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
-api_router.register('queries', QueryViewset, basename='query')
+api_router.register('search_history', QueryViewset, basename='query')
 
 
 if settings.PROXY_FRONTEND:
