@@ -22,5 +22,9 @@
     "/wordmodels": {
         "target": "http://localhost:8000",
         "secure": false
+    },
+    "/users": {
+        "target": "http://localhost:8000",
+        "secure": false
     }
 }
