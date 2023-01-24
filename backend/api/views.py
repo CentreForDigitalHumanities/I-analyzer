@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers import QuerySerializer
 from django.http.response import HttpResponseServerError
+from ianalyzer.exceptions import NotImplemented
 
 class QueryViewset(viewsets.ModelViewSet):
     '''
@@ -54,7 +55,7 @@ class AbortTasksView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return HttpResponseServerError('not implemented')
+        raise NotImplemented
 
         # TODO: cancel tasks
         # if not request.json:

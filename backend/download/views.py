@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from ianalyzer.exceptions import NotImplemented
 
 class ResultsDownloadView(APIView):
     '''
     Download search results up to 10.000 documents
     '''
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: download view
 
@@ -62,7 +63,7 @@ class ResultsDownloadTaskView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: download schedule view
 
@@ -97,7 +98,7 @@ class FullDataDownloadTaskView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: download schedule view
 
@@ -127,7 +128,7 @@ class DownloadHistoryView(APIView):
     '''
 
     def get(self, request, *args, **kwargs,):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: download history
 
@@ -141,7 +142,8 @@ class FileDownloadView(APIView):
     '''
 
     def get(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
+
         # TODO: file download
 
         # encoding = request.args.get('encoding', 'utf-8')

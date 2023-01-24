@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from ianalyzer.exceptions import NotImplemented
 
 class RelatedWordsView(APIView):
     '''
@@ -8,7 +9,7 @@ class RelatedWordsView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: related words
         # if not request.json:
@@ -41,7 +42,7 @@ class SimilarityView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
         # TODO: similarity view
 
         # if not request.args:
@@ -69,7 +70,7 @@ class DocumentationView(APIView):
     '''
 
     def get(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: documentation view
         # if not request.args and 'corpus_name' in request.args:
@@ -88,7 +89,7 @@ class WordInModelView(APIView):
     '''
 
     def get(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO: word in model view
         # if not request.args:

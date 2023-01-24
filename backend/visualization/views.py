@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from ianalyzer.exceptions import NotImplemented
 
 class WordcloudView(APIView):
     '''
     Most frequent terms for a small batch of results
     '''
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
 
         # TODO : wordcloud view
         # if not request.json:
@@ -31,7 +32,7 @@ class WordcloudTaskView(APIView):
         # This view is not used but maintained in case
         # we re-introduce this functionality
 
-        return Response(None)
+        raise NotImplemented
         # TODO: wordcloud task view
         # if not request.json:
         #     abort(400)
@@ -48,7 +49,7 @@ class NgramView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
         # TODO: ngram view
         # if not request.json:
         #     abort(400)
@@ -66,7 +67,7 @@ class DateTermFrequencyView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
         # TODO: date term frequency task view
         # if not request.json:
         #     abort(400)
@@ -95,7 +96,7 @@ class AggregateTermFrequencyView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        return Response(None)
+        raise NotImplemented
         # TODO: aggregate term frequency task view
         # if not request.json:
         #     abort(400)
