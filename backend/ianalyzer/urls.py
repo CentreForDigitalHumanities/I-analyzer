@@ -50,7 +50,7 @@ urlpatterns = [
     path('api/corpus/', include(corpus_urls)),
     path('api/visualization/', include(visualization_urls)),
     path('api/download/', include(download_urls)),
-    path('api/wordmodels', include(wordmodels_urls)),
+    path('api/wordmodels/', include(wordmodels_urls)),
     path('api/es/', include(es_urls)),
     path('api-auth/', include(
         'rest_framework.urls',

@@ -2,11 +2,14 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ianalyzer.exceptions import NotImplemented
+from rest_framework.permissions import IsAuthenticated
 
 class RelatedWordsView(APIView):
     '''
     Get words with the highest similarity to the query term
     '''
+
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         raise NotImplemented
@@ -41,7 +44,9 @@ class SimilarityView(APIView):
     Get similarity between two query terms
     '''
 
-    def post(self, request, *args, **kwargs):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
         raise NotImplemented
         # TODO: similarity view
 
@@ -69,6 +74,8 @@ class DocumentationView(APIView):
     Get word models documentation for a corpus
     '''
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         raise NotImplemented
 
@@ -87,6 +94,8 @@ class WordInModelView(APIView):
     '''
     Check if a word has a vector in the model for a corpus
     '''
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         raise NotImplemented
