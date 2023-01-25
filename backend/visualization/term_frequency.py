@@ -1,14 +1,10 @@
-from collections import Counter
-from sklearn.feature_extraction.text import CountVectorizer
-from sqlalchemy.orm import query
 from addcorpus.load_corpus import load_corpus
 from datetime import datetime
 from es.search import get_index, total_hits, search
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 from copy import deepcopy
-import api.query as query
-import api.termvectors as termvectors
-from es import download as download
+from visualization import query, termvectors
+from es import download
 
 def parse_datestring(datestring):
     return datetime.strptime(datestring, '%Y-%m-%d')

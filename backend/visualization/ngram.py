@@ -1,12 +1,10 @@
 from collections import Counter
-from sqlalchemy.orm import query
 from addcorpus.load_corpus import load_corpus
 from datetime import datetime
 from es.search import get_index, search
-from ianalyzer.factories.elasticsearch import elasticsearch
-import api.query as query
-import api.termvectors as termvectors
-from es import download as download
+from ianalyzer.elasticsearch import elasticsearch
+from visualization import query, termvectors
+from es import download
 
 
 def get_ngrams(es_query, corpus, field,
