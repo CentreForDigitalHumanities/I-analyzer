@@ -1,4 +1,4 @@
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 import re
 from textdistance import damerau_levenshtein
 
