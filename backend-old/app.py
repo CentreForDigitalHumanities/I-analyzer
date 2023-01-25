@@ -48,25 +48,6 @@ def admin(name, pwd):
 
     return db.session.commit()
 
-
-@app.cli.command()
-@click.option(
-    '--corpus', '-c', required=True, help='Required. Sets for which corpus the alias should be updated.'
-)
-@click.option(
-    '--clean', is_flag=True, help='Optional. If specified any indices that are not the highest version will be deleted.'
-)
-def alias(corpus, clean=False):
-    '''
-    Ensure that an alias exist for the index with the highest version number (e.g. `indexname_5`).
-    The alias is removed for all other (lower / older) versions. The indices themselves are only removed
-    if you add the `--clean` flag (but be very sure if this is what you want to do!).
-    Particularly useful in the production environment, i.e. after creating an index with `--prod`.
-    '''
-    corpus_definition = load_corpus(corpus)
-    update_alias(corpus, corpus_definition, clean)
-
-
 def create_user(name, password=None):
     if User.query.filter_by(username=name).first():
         return None
