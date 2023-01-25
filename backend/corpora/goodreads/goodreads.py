@@ -9,9 +9,10 @@ from flask import current_app
 import openpyxl
 
 from addcorpus.extract import CSV, Metadata
-# SliderRangeFilter, BoxRangeFilter
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import CSVCorpus, Field
+
+from corpora.utils.es_mappings import MULTIFIELD_MAPPING
 
 logger = logging.getLogger('indexing')
 
@@ -178,7 +179,7 @@ class GoodReads(CSVCorpus):
             extractor=CSV(
                 field='text',
             ),
-            es_mapping={'type': 'text'},
+            es_mapping=MULTIFIELD_MAPPING,
             display_type='text_content',
             csv_core=True,
             results_overview=True,
@@ -210,7 +211,7 @@ class GoodReads(CSVCorpus):
                 transform=lambda x: datetime.strptime(
                     x, '%b %d, %Y').strftime('%Y-%m-%d')
             ),
-            es_mapping={'type': 'keyword'}
+            es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
         ),
         Field(
             name='author',

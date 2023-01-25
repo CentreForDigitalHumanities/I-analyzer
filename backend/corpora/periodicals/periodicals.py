@@ -19,6 +19,8 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+
 
 # Source files ################################################################
 
@@ -98,6 +100,7 @@ class Periodicals(XMLCorpus):
             name='date_pub',
             display_name='Publication Date',
             description='Publication date as full string, as found in source file',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             results_overview=True,
             extractor=extract.Metadata('date_full')
         ),
@@ -105,6 +108,7 @@ class Periodicals(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(tag=None,
                                   toplevel=False,
                                   attribute='id'),
@@ -113,6 +117,7 @@ class Periodicals(XMLCorpus):
             name='issue',
             display_name='Issue number',
             description='Source issue number.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             results_overview=False,
             extractor=extract.Metadata('issue_id'),
             csv_core=False,
@@ -137,6 +142,7 @@ class Periodicals(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=MULTIFIELD_MAPPING,
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
@@ -183,6 +189,7 @@ class Periodicals(XMLCorpus):
         ),
         Field(
             name='start_column',
+            es_mapping={'type': 'integer'},
             display_name='Starting column',
             description='Which column the article starts in.',
             extractor=extract.XML(tag='sc',
@@ -254,6 +261,7 @@ class Periodicals(XMLCorpus):
             name='page_no',
             display_name='Page number',
             description='At which page the article starts.',
+            es_mapping={'type': 'integer'},
             extractor=extract.XML(tag='pa',
                 parent_level=1,
                 external_file={

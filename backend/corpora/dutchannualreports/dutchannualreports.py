@@ -13,6 +13,8 @@ from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+
 
 class DutchAnnualReports(XMLCorpus):
     """ Alto XML corpus of Dutch annual reports. """
@@ -160,6 +162,7 @@ class DutchAnnualReports(XMLCorpus):
         Field(
             name='id',
             display_name='ID',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             description='Unique identifier of the page.',
             extractor=Combined(
                 Metadata(key='company'),
@@ -171,6 +174,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='content',
+            es_mapping=MULTIFIELD_MAPPING,
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
@@ -187,6 +191,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='file_path',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='File path',
             description='Filepath of the source file containing the document,\
             relative to the corpus data directory.',
@@ -195,6 +200,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='image_path',
+            mapping=BASIC_KEYWORD_MAPPING,
             display_name="Image path",
             description="Path of the source image corresponding to the document,\
             relative to the corpus data directory.",

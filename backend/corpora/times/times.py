@@ -18,6 +18,7 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 
 # Source files ################################################################
 
@@ -102,42 +103,20 @@ class Times(XMLCorpus):
                                            '%Y-%m-%d')
                                        )
         ),
-        # Field(indexed=False,
-        #       name='issue-id',
-        #       display_name='Issue ID',
-        #       description='Issue identifier.',
-        #       extractor=extract.XML(tag='id', toplevel=True)
-        #       ),
-        # Field(indexed=False,
-        #       name='journal',
-        #       display_name='Journal',
-        #       description='Journal name.',
-        #       extractor=extract.XML(
-        #           tag='jn', toplevel=True,
-        #           applicable=until(1985)
-        #       )
-        #       ),
         Field(
             name='source',
             display_name='Source',
             description='Library where the microfilm is sourced',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(
                 tag=['metadatainfo', 'sourceLibrary'], toplevel=True,
                 applicable=after(1985)
             )
         ),
-        # Field(indexed=False,
-        #       name='newspaperID',
-        #       display_name='Newspaper ID',
-        #       description='Publication code',
-        #       extractor=extract.XML(
-        #           tag=['metadatainfo', 'newspaperID'], toplevel=True,
-        #           applicable=after(1985)
-        #       )
-        #       ),
         Field(
             name='edition',
             display_name='Edition',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Choice(
                 extract.XML(
                     tag='ed', toplevel=True,
@@ -167,6 +146,7 @@ class Times(XMLCorpus):
             name='volume',
             display_name='Volume',
             description='Volume number.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(
                 tag='volNum', toplevel=True,
                 applicable=after(1985)
@@ -176,6 +156,7 @@ class Times(XMLCorpus):
         Field(
             name='date-pub',
             display_name='Publication Date',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             csv_core=True,
             results_overview=True,
             description='Publication date as full string, as found in source file',
@@ -200,6 +181,7 @@ class Times(XMLCorpus):
         Field(
             name='date-end',
             display_name='Ending date',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             description=(
                 'Ending date of publication. '
                 'For issues that span more than 1 day.'
@@ -209,15 +191,6 @@ class Times(XMLCorpus):
                 applicable=after(1985)
             )
         ),
-        # Field(indexed=False,
-        #       name='weekday',
-        #       display_name='Weekday',
-        #       description='Day of the week.',
-        #       extractor=extract.XML(
-        #           tag='dw', toplevel=True,
-        #           applicable=after(1985)
-        #       )
-        # ),
         Field(
             name='page-count',
             display_name='Image count',
@@ -228,21 +201,6 @@ class Times(XMLCorpus):
             ),
             sortable=True
         ),
-        # Field(indexed=False,
-        #       name='copyright',
-        #       display_name='Copyright',
-        #       description='Copyright holder and year.',
-        #       extractor=extract.Choice(
-        #           extract.XML(
-        #               tag='cp', toplevel=True,
-        #               applicable=until(1985)
-        #           ),
-        #           extract.XML(
-        #               tag='copyright', toplevel=True,
-        #               applicable=after(1985)
-        #           )
-        #       )
-        #       ),
         Field(
             name='page-type',
             display_name='Page type',
@@ -301,6 +259,7 @@ class Times(XMLCorpus):
             name='id',
             display_name='ID',
             description='Article identifier.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(tag='id')
         ),
         Field(
@@ -320,12 +279,14 @@ class Times(XMLCorpus):
                 'Starting column: a string to label the column'
                 'where article starts.'
             ),
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(tag='sc')
         ),
         Field(
             name='page',
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Choice(
                 extract.XML(tag='pa', applicable=until(1985)),
                 extract.XML(tag=['..', 'pa'], applicable=after(1985))
@@ -373,6 +334,7 @@ class Times(XMLCorpus):
             name='author',
             display_name='Author',
             description='Article author.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Choice(
                 extract.XML(
                     tag='au', multiple=True,
@@ -390,6 +352,7 @@ class Times(XMLCorpus):
             name='source-paper',
             display_name='Source paper',
             description='Credited as source.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.XML(
                 tag='altSource', multiple=True
             )
@@ -455,6 +418,7 @@ class Times(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            es_mapping=MULTIFIELD_MAPPING,
             visualizations=['wordcloud'],
             description='Raw OCR\'ed text (content).',
             results_overview=True,

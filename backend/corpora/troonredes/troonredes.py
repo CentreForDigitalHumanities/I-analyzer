@@ -19,6 +19,8 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 from addcorpus.load_corpus import corpus_dir
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
             'Wilhelmina', 'Juliana', 'Beatrix', 'Willem-Alexander']
@@ -77,6 +79,7 @@ class Troonredes(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Metadata('id')
         ),
         Field(
@@ -126,6 +129,7 @@ class Troonredes(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=MULTIFIELD_MAPPING,
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],

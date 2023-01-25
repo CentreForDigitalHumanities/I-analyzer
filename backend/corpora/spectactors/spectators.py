@@ -17,6 +17,8 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+
 
 # Source files ################################################################
 
@@ -83,6 +85,7 @@ class Spectators(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Combined(
                 extract.XML(tag='magazine', toplevel=True),
                 extract.Metadata('year'),
@@ -116,6 +119,7 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             display_name='Editors',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             description='Magazine editor(s).',
             extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
@@ -132,6 +136,7 @@ class Spectators(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
+            es_mapping=MULTIFIELD_MAPPING,
             results_overview=True,
             extractor=extract.XML(tag='text', multiple=True, flatten=True),
             search_field_core=True

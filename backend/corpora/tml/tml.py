@@ -16,6 +16,7 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import HTMLCorpus, XMLCorpus, Field, until, after, string_contains
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 
 # Source files ################################################################
 
@@ -59,6 +60,7 @@ class Tml(HTMLCorpus):
             name='id',
             display_name='ID',
             description='Article identifier.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.Metadata('id',
                                        transform=lambda x: x.lower()
                                        )
@@ -66,6 +68,7 @@ class Tml(HTMLCorpus):
         Field(
             name='author',
             display_name='author',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             results_overview=True,
             search_field_core=True,
             csv_core=True,
@@ -94,6 +97,7 @@ class Tml(HTMLCorpus):
         Field(
             name='source',
             display_name='source',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             results_overviews=True,
             csv_core=True,
             description='Source.',
@@ -112,6 +116,7 @@ class Tml(HTMLCorpus):
             name='Prepared_by',
             display_name='prepared by',
             description='Electronic version prepared by.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.HTML(tag='span', flatten=True,
                                    attribute_filter={
                                        'attribute': 'class',
@@ -140,6 +145,7 @@ class Tml(HTMLCorpus):
             name='copy statement',
             display_name='copy statement',
             description='Copy statement.',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=extract.HTML(tag='div', flatten=True,
                                    attribute_filter={
                                        'attribute': 'id',

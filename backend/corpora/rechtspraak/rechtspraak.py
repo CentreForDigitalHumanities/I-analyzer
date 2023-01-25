@@ -10,6 +10,7 @@ from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
 from flask import current_app
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
 
 logger = logging.getLogger('indexing')
 
@@ -133,6 +134,7 @@ class Rechtspraak(XMLCorpus):
             name='id',
             display_name='ID',
             description='',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=rdf_description_extractor('dcterms:identifier'),
             csv_core=True,
         ),
@@ -158,6 +160,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='year',
             display_name='Year',
+            es_mapping={'type': 'integer'},
             extractor=extract.Metadata('year'),
             search_filter=filters.RangeFilter(min_date.year, max_date.year)
         ),
@@ -213,6 +216,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='zaaknr',
             display_name='Case Number',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=rdf_description_extractor('psi:zaaknummer')
         ),
         Field(
@@ -243,6 +247,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='spatial',
             display_name='Location',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=rdf_description_extractor('dcterms:spatial')
         ),
         Field(
@@ -274,6 +279,7 @@ class Rechtspraak(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
+            es_mapping=MULTIFIELD_MAPPING,
             extractor=extract.Backup(
                 extract.XML('uitspraak', flatten=True),
                 extract.XML('conclusie', flatten=True),
@@ -284,6 +290,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='url',
             display_name='URL',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
         )

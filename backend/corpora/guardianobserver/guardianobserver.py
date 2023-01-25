@@ -22,6 +22,8 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 from addcorpus.image_processing import sizeof_fmt
 
+from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+
 PROCESSED = "corpora/guardianobserver/processed.txt"
 
 # Source files ################################################################
@@ -37,7 +39,6 @@ class GuardianObserver(XMLCorpus):
     es_doctype = current_app.config['GO_ES_DOCTYPE']
     image = current_app.config['GO_IMAGE']
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
-    #description_page = current_app.config['GO_DESCRIPTION_PAGE']
 
     tag_toplevel = 'Record'
 
@@ -83,6 +84,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='date-pub',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='Publication Date',
             csv_core=True,
             results_overview=True,
@@ -93,18 +95,21 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='id',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='RecordID', toplevel=True)
         ),
         Field(
             name='pub_id',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='Publication ID',
             description='Publication identifier',
             extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.XML(tag='StartPage', toplevel=True)
@@ -119,23 +124,25 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='source-paper',
+            es_mapping=BASIC_KEYWORD_MAPPING,
             display_name='Source paper',
             description='Credited as source.',
             extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
-            # need to reindex with es_mapping={'type': 'keyword'} first, otherwise cannot filter
-            # search_filter=filters.MultipleChoiceFilter(
-            #     description='Accept only articles from these source papers.',
-            #     option_count=5
-            # ),
+            search_filter=filters.MultipleChoiceFilter(
+                description='Accept only articles from these source papers.',
+                option_count=5
+            ),
         ),
         Field(
             name='place',
+            mapping=BASIC_KEYWORD_MAPPING,
             display_name='Place',
             description='Place in which the article was published',
             extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
         ),
         Field(
             name='author',
+            mapping=BASIC_KEYWORD_MAPPING,
             display_name='Author',
             description='Article author',
             extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
@@ -155,6 +162,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='content',
+            es_mapping=MULTIFIELD_MAPPING,
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
