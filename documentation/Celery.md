@@ -18,7 +18,7 @@ See the repository readme for installation instructions. For development, it is 
 
 Celery uses [redis](https://www.redis.io/) as a backend for task data. Start Redis by running `redis-server` in a terminal.
 
-If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your `/backend/ianalyzer/config.py` as
+If you wish to run Redis from a non-default hostname and/or port, or pick which database to use, specify this in your `/backend/ianalyzer/settings_local.py` as
 
 ```python
 CELERY_BROKER_URL='redis://{host}:{port}/{db_number}'
@@ -34,7 +34,7 @@ When your redis server is running, start a celery worker. Activate your python e
 Run
 
 ```bash
-celery -A ianalyzer.runcelery.celery_app worker --loglevel=info
+celery -A ianalyzer.celery_app worker
 ```
 
 ### Flower
@@ -42,7 +42,7 @@ celery -A ianalyzer.runcelery.celery_app worker --loglevel=info
 You can use [flower](https://flower.readthedocs.io/) to monitor your tasks and workers. To run flower, open a new terminal, activate your python environment, navigate to the backend and run
 
 ```bash
-celery -A ianalyzer.runcelery.celery_app flower
+celery -A ianalyzer.celery_app flower
 ```
 
 Then open `localhost:5555` in your browser to see the flower interface.

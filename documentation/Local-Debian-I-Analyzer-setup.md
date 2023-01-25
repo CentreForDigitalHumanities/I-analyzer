@@ -40,7 +40,7 @@ As root:
 
 ## Basics
 
-`apt-get install wget curl git ssh nano vim unzip gnupg apt-transport-https lsb-release python3 python3-pip libmysqlclient-dev libxml2-dev libxmlsec1-dev libxmlsec1-openssl pkg-config`
+`apt-get install wget curl git ssh nano vim unzip gnupg apt-transport-https lsb-release python3 python3-pip libxml2-dev libxmlsec1-dev libxmlsec1-openssl pkg-config`
 
 ## NodeJS and NPM
 
@@ -55,22 +55,9 @@ As root:
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
     apt-get update && apt-get install yarn
 
-## MySQL
+## PostgreSQL
 
-See https://dev.mysql.com/doc/refman/5.7/en/installing.html.
-
-    wget https://repo.mysql.com//mysql-apt-config_0.8.16-1_all.deb
-    dpkg -i mysql-apt-config_0.8.16-1_all.deb # Choose MySQL version 5.7?
-    apt-get install mysql-community-server
-    mysql_secure_installation
-    systemctl status mysql
-    mysql --password
-    mysql>: CREATE USER 'admin'@'localhost' IDENTIFIED BY 'yourpassword';
-    mysql>: CREATE DATABASE ianalyzer;
-    mysql>: GRANT ALL PRIVILEGES ON ianalyzer.* TO 'admin'@'localhost';
-    mysql>: FLUSH PRIVILEGES;
-    mysql -u root -p -P 3306 -- Check that you can login over a TCP port
-
+See https://www.postgresql.org/docs/current/installation.html
 
 ## Java
 
@@ -79,7 +66,9 @@ See https://dev.mysql.com/doc/refman/5.7/en/installing.html.
 
 ## ElasticSearch
 
-https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index.html
+https://www.elastic.co/guide/en/elasticsearch/reference/8.5/index.html
+
+Instructions below are for installing elasticsearch 7: adapt them for elasticsearch 8.
 
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
     echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" > /etc/apt/sources.list.d/elastic-7.x.list
