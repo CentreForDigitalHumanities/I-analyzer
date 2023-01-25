@@ -11,7 +11,7 @@ Change user to www-data (`sudo -iu www-data`), adjust branch and deploy changes 
 ## Indexing
 Start a screen with a descriptive name (e.g., `screen -S index-superb-corpus`). Go to the server's `data` directory, and run `source env/bin/activate`. Move to backend directory: `cd source/backend`
 
-Call the flask command for indexing, e.g., `flask es -c superb-corpus -p`. The production flag indicates that we have a *versioned* index after this: `superb-corpus-1`. You can also choose to add the `--rollover` (`-r`) flag: this is equivalent with automaticaly calling `flask alias` after `flask es`. As it's advisable to double-check a new index before setting / rolling over the alias, this flag should be used with caution.
+Call the flask command for indexing, e.g., `yarn django index superb-corpus -p`. The production flag indicates that we have a *versioned* index after this: `superb-corpus-1`. You can also choose to add the `--rollover` (`-r`) flag: this is equivalent with automaticaly calling `flask alias` after `flask es`. As it's advisable to double-check a new index before setting / rolling over the alias, this flag should be used with caution.
 
 ## Additional indexing flags
 It is also possible to only add settings and mappings by providing the `--mappings-only` or `-m` flag. This is useful, for instance, before a `REINDEX` via Kibana from one Elasticsearch cluster to another (which is often faster than reindexing from source).
@@ -33,7 +33,7 @@ CORPORA = {
 }
 ```
 
-Then, `flask es -c corpus1 -p` will write to `overarching-corpus-1`. After this, you have to set the alias on Kibana (`PUT corpus1/_alias/overarching-corpus`). A consecutive `flask es -c corpus2 -p` will then write to `overarching-corpus-2`. The second indexing call will fail if you don't set the alias first. Also don't forget to set the alias for the second corpus (`PUT corpus2/_alias/overarching-corpus`).
+Then, `yarn django index corpus1 -p` will write to `overarching-corpus-1`. After this, you have to set the alias on Kibana (`PUT corpus1/_alias/overarching-corpus`). A consecutive `yarn django index corpus2 -p` will then write to `overarching-corpus-2`. The second indexing call will fail if you don't set the alias first. Also don't forget to set the alias for the second corpus (`PUT corpus2/_alias/overarching-corpus`).
 
 After this, you can search both corpora via `overarching-corpus`. Note that you still need to decide which corpus definition controls what is visible to the user in the frontend. If the corpus definitions are very different on the `fields` level, it probably makes more sense to display two different corpus definitions to the user.
 
