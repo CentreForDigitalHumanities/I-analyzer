@@ -1,5 +1,3 @@
-from flask import current_app
-
 from addcorpus.load_corpus import load_corpus
 from wordmodels.similarity import find_n_most_similar, term_similarity
 from wordmodels.utils import load_word_models
