@@ -48,7 +48,7 @@ deprecated==1.2.13
     # via redis
 elastic-transport==8.1.2
     # via elasticsearch
-elasticsearch==8.0.0
+elasticsearch==8.4.3
     # via -r requirements.in
 et-xmlfile==1.1.0
     # via openpyxl
