@@ -6,8 +6,6 @@ Script to index the data into ElasticSearch.
 
 import sys
 
-from datetime import datetime
-
 import elasticsearch.helpers as es_helpers
 from elasticsearch.exceptions import RequestError
 
@@ -96,16 +94,11 @@ def populate(client, corpus_name, corpus_definition, start=None, end=None):
 
     corpus_server = current_app.config['SERVERS'][
         current_app.config['CORPUS_SERVER_NAMES'][corpus_name]]
-    # Do bulk operation
-    for result in es_helpers.bulk(
-        client,
-        actions,
-        chunk_size=corpus_server['chunk_size'],
-        max_chunk_bytes=corpus_server['max_chunk_bytes'],
-        timeout=corpus_server['bulk_timeout'],
-        stats_only=True,  # We want to know how many documents were added
-    ):
-        logger.info('Indexed documents ({}).'.format(result))
+
+    for success, info in es_helpers.streaming_bulk(client, actions, chunk_size=corpus_server['chunk_size'], max_chunk_bytes=corpus_server['max_chunk_bytes']):
+        if not success:
+            logger.error(f"FAILED INDEX: {info}")
+
 
 
 
