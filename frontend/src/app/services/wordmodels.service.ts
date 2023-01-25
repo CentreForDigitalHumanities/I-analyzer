@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { IResourceAction, IResourceMethod, Resource, ResourceAction, ResourceHandler, ResourceParams,
     ResourceRequestMethod } from '@ngx-resource/core';
@@ -61,7 +62,7 @@ export class WordmodelsService extends Resource {
 
     $getUrl(actionOptions: IResourceAction): string | Promise<string> {
         const urlPromise = super.$getUrl(actionOptions);
-        this.wordModelsUrl = environment.wordModelsUrl;
+        this.wordModelsUrl = environment.apiUrl + 'wordmodels/';
         return Promise.all([this.wordModelsUrl, urlPromise]).then(([wordModelsUrl, url]) => `${wordModelsUrl}${url}`);
     }
 
