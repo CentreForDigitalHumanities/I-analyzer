@@ -29,8 +29,9 @@ SETTINGS = {
 }
 
 def get_nltk_stopwords(language):
-    nltk.download('stopwords', NLTK_DATA_PATH)
     stopwords_dir = os.path.join(NLTK_DATA_PATH, 'corpora', 'stopwords')
+    if not os.path.exists(stopwords_dir):
+        nltk.download('stopwords', NLTK_DATA_PATH)
     languages = os.listdir(stopwords_dir)
 
     if language in languages:
