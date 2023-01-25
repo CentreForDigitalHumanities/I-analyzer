@@ -10,5 +10,10 @@ class CustomUser(AbstractUser):
         default=settings.DEFAULT_DOWNLOAD_LIMIT)
 
     def has_access(self, corpus_name):
-        group_has_access = lambda group: any(corpus.name == corpus_name for corpus in group.corpora.all())
-        return any(group_has_access(group) for group in self.groups.all())
+        # superusers automatically have access to all corpora
+        if self.is_superuser:
+            return True
+
+        # check if any corpus added to the user's group(s) match the corpus name
+        return any(corpus for group in self.groups.all() for corpus in group.corpora.filter(name=corpus_name))
+
