@@ -17,7 +17,6 @@ updated_docs = 0
 
 def add_images(corpus_definition, page_size):
     index = corpus_definition.es_index
-    doc_type = corpus_definition.es_doctype
     corpus_dir = os.path.join(
         corpus_definition.data_directory, 'TDA_GDA', 'TDA_GDA_1785-2009')
     size = page_size

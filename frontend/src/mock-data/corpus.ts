@@ -31,7 +31,6 @@ export const mockCorpus: Corpus = {
     name: 'test1',
     serverName: 'default',
     index: 'test1',
-    doctype: 'article',
     title: 'Test corpus',
     description: 'This corpus is for mocking',
     minDate: new Date(),

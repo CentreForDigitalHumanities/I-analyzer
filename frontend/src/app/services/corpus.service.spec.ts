@@ -43,7 +43,6 @@ describe('CorpusService', () => {
             test1: {
                 title: 'Test 1',
                 description: 'Test description 1.',
-                es_doctype: 'article',
                 es_index: 'test1',
                 overview_fields: [],
                 fields: [],
@@ -56,7 +55,6 @@ describe('CorpusService', () => {
             test2: {
                 title: 'Test 2',
                 description: 'Test description 2.',
-                es_doctype: 'article',
                 es_index: 'test2',
                 overview_fields: [],
                 fields: [],
@@ -77,7 +75,6 @@ describe('CorpusService', () => {
                 server_name: 'default',
                 title: 'Times',
                 description: 'This is a description.',
-                es_doctype: 'article',
                 es_index: 'times',
                 fields: [{
                     description: 'Banking concern to which the report belongs.',
