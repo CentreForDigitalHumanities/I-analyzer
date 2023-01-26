@@ -10,7 +10,8 @@ from addcorpus import extract, filters
 from addcorpus.corpus import Field, XMLCorpus
 from flask import current_app
 
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -36,9 +37,13 @@ class Rechtspraak(XMLCorpus):
     max_date = datetime(year=2022, month=12, day=6)
     data_directory = current_app.config['RECHTSPRAAK_DATA']
     es_index = current_app.config['RECHTSPRAAK_ES_INDEX']
-    es_doctype = current_app.config['RECHTSPRAAK_ES_DOCTYPE']
+    language = 'dutch'
     image = current_app.config['RECHTSPRAAK_IMAGE']
     toplevel_zip_file = 'OpenDataUitspraken.zip'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'open-rechtspraak'
 
@@ -134,7 +139,7 @@ class Rechtspraak(XMLCorpus):
             name='id',
             display_name='ID',
             description='',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:identifier'),
             csv_core=True,
         ),
@@ -216,7 +221,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='zaaknr',
             display_name='Case Number',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('psi:zaaknummer')
         ),
         Field(
@@ -247,7 +252,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='spatial',
             display_name='Location',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor('dcterms:spatial')
         ),
         Field(
@@ -279,7 +284,7 @@ class Rechtspraak(XMLCorpus):
             name='content',
             display_name='Content',
             display_type='text_content',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             extractor=extract.Backup(
                 extract.XML('uitspraak', flatten=True),
                 extract.XML('conclusie', flatten=True),
@@ -290,7 +295,7 @@ class Rechtspraak(XMLCorpus):
         Field(
             name='url',
             display_name='URL',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=rdf_description_extractor(
                 'dcterms:identifier', section='html')
         )

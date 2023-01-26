@@ -13,7 +13,8 @@ from addcorpus.corpus import XMLCorpus, Field
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 from addcorpus.load_corpus import corpus_dir
 
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
 class DutchAnnualReports(XMLCorpus):
@@ -26,12 +27,15 @@ class DutchAnnualReports(XMLCorpus):
     max_date = datetime(year=2008, month=12, day=31)
     data_directory = current_app.config['DUTCHANNUALREPORTS_DATA']
     es_index = current_app.config['DUTCHANNUALREPORTS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHANNUALREPORTS_ES_DOCTYPE']
     image = current_app.config['DUTCHANNUALREPORTS_IMAGE']
     scan_image_type = current_app.config['DUTCHANNUALREPORTS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['DUTCHANNUALREPORTS_DESCRIPTION_PAGE']
     allow_image_download = current_app.config['DUTCHANNUALREPORTS_ALLOW_IMAGE_DOWNLOAD']
     word_model_path = current_app.config['DUTCHANNUALREPORTS_WM']
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     mimetype = 'application/pdf'
 
@@ -162,7 +166,7 @@ class DutchAnnualReports(XMLCorpus):
         Field(
             name='id',
             display_name='ID',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             description='Unique identifier of the page.',
             extractor=Combined(
                 Metadata(key='company'),
@@ -174,7 +178,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='content',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
@@ -191,7 +195,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='file_path',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='File path',
             description='Filepath of the source file containing the document,\
             relative to the corpus data directory.',
@@ -200,7 +204,7 @@ class DutchAnnualReports(XMLCorpus):
         ),
         Field(
             name='image_path',
-            mapping=BASIC_KEYWORD_MAPPING,
+            mapping=keyword_mapping(),
             display_name="Image path",
             description="Path of the source image corresponding to the document,\
             relative to the corpus data directory.",

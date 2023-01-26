@@ -8,7 +8,7 @@ import * as _ from 'lodash';
     selector: 'ia-dropdown',
     templateUrl: './dropdown.component.html',
     styleUrls: ['./dropdown.component.scss'],
-    host: { 'class': 'control' }
+    host: { class: 'control' }
 })
 export class DropdownComponent<T> implements OnDestroy {
     @Input()

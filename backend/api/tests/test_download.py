@@ -361,3 +361,44 @@ def test_conversion_with_highlights(csv_directory, result_csv_with_highlights):
     converted_path = os.path.join(csv_directory, converted)
 
     assert_content_matches(result_csv_with_highlights, 'utf-8', converted_path, target_encoding)
+
+wide_format_expected_data = [
+    {
+        'date': '1800',
+        'Term frequency (test)': '3',
+        'Relative term frequency (by # documents) (test)': '1.5',
+        'Total documents': '2',
+        'Relative term frequency (by # words) (test)': '0.3',
+        'Total word count': '10',
+        'Term frequency (test2)': '1',
+        'Relative term frequency (by # documents) (test2)': '0.5',
+        'Relative term frequency (by # words) (test2)': '0.1',
+    }, {
+        'date': '1801',
+        'Term frequency (test)': '5',
+        'Relative term frequency (by # documents) (test)': '1.25',
+        'Total documents': '4',
+        'Relative term frequency (by # words) (test)': '0.25',
+        'Total word count': '20',
+        'Term frequency (test2)': '3',
+        'Relative term frequency (by # documents) (test2)': '0.75',
+        'Relative term frequency (by # words) (test2)': '0.15',
+    }
+]
+
+
+
+
+def test_wide_format(csv_directory, term_frequency_file):
+    converted = convert_csv.convert_csv(csv_directory, term_frequency_file, 'date_term_frequency', format='wide')
+    converted_path = os.path.join(csv_directory, converted)
+
+    with open(converted_path, 'r') as f:
+        reader = csv.DictReader(f)
+        assert set(reader.fieldnames) == set(wide_format_expected_data[0].keys())
+
+        for expected_row in wide_format_expected_data:
+            row = next(reader)
+
+            for column in expected_row:
+                assert expected_row[column] == row[column]

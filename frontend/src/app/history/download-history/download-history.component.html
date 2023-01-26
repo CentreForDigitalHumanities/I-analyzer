@@ -41,7 +41,7 @@
                 <td>{{getFields(download)}}</td>
                 <td>{{download.status}}</td>
                 <td>
-                    <a *ngIf="download.status == 'done'" role="button" tabindex="0" (click)="itemToDownload = download"
+                    <a *ngIf="download.status === 'done'" role="button" tabindex="0" (click)="itemToDownload = download"
                         (keydown.enter)="itemToDownload = download">
                         <span class="icon">
                             <fa-icon [icon]="faDownload"></fa-icon>

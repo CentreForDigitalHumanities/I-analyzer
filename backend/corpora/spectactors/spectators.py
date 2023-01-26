@@ -17,7 +17,8 @@ from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
 # Source files ################################################################
@@ -30,7 +31,11 @@ class Spectators(XMLCorpus):
     max_date = datetime()
     data_directory = current_app.config['SPECTATORS_DATA']
     es_index = current_app.config['SPECTATORS_ES_INDEX']
-    es_doctype = current_app.config['SPECTATORS_ES_DOCTYPE']
+    language = 'english'
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'article'
     tag_entry = 'content'
@@ -85,7 +90,7 @@ class Spectators(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=extract.Combined(
                 extract.XML(tag='magazine', toplevel=True),
                 extract.Metadata('year'),
@@ -119,7 +124,7 @@ class Spectators(XMLCorpus):
         Field(
             name='editors',
             display_name='Editors',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             description='Magazine editor(s).',
             extractor=extract.XML(tag='editor', toplevel=True, multiple=True)
         ),
@@ -136,7 +141,7 @@ class Spectators(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             extractor=extract.XML(tag='text', multiple=True, flatten=True),
             search_field_core=True

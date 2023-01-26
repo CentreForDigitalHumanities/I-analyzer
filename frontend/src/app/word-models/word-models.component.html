@@ -21,7 +21,7 @@
     <div class="container is-readable">
         <ia-query-feedback *ngIf="activeQuery || queryFeedback" [query]="activeQuery" [queryFeedback]="queryFeedback" (selectedSuggestion)="queryText = $event; submitQuery()"></ia-query-feedback>
 
-        <ng-container *ngIf="activeQuery && queryFeedback && queryFeedback.status == 'success'">
+        <ng-container *ngIf="activeQuery && queryFeedback && queryFeedback.status === 'success'">
             <div class="tabs is-boxed">
                 <ul>
                     <li *ngFor="let tab of tabNames" [ngClass]="{'is-active': tabIndex.value==tab}">
@@ -51,14 +51,14 @@
                 </div>
 
                 <div class="block" [ngClass]="{'is-loading':isLoading}">
-                    <ia-related-words *ngIf="tabIndex.value=='relatedwords'"
+                    <ia-related-words *ngIf="tabIndex.value==='relatedwords'"
                         [corpus]="corpus" [queryText]="activeQuery"
                         [asTable]="asTable" [palette]="palette"
                         (isLoading)="onIsLoading($event)"
                         (error)="setErrorMessage($event)">
                     </ia-related-words>
 
-                    <ia-word-similarity *ngIf="tabIndex.value=='wordsimilarity'"
+                    <ia-word-similarity *ngIf="tabIndex.value==='wordsimilarity'"
                         [corpus]="corpus" [queryText]="activeQuery"
                         [asTable]="asTable" [palette]="palette"
                         (isLoading)="onIsLoading($event)"

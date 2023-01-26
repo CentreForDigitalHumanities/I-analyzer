@@ -2,7 +2,8 @@ from datetime import datetime
 
 from addcorpus.corpus import Field
 from addcorpus.filters import DateFilter, MultipleChoiceFilter, RangeFilter
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, BASIC_TEXT_MAPPING
+from corpora.parliament.utils.constants import MIN_DATE, MAX_DATE
+from addcorpus.es_mappings import keyword_mapping, text_mapping, date_mapping, main_content_mapping
 
 # For every field `foo` in the Parliament corpora, this file should have a function `foo()`
 # which creates a default instance of the field. It does not include an extractor, since that
@@ -20,7 +21,7 @@ def book_id():
         name='book_id',
         display_name='Book ID',
         description='Unique identifier of the book in which the speech was recorded',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def book_label():
@@ -29,7 +30,7 @@ def book_label():
         name='book_label',
         display_name='Book label',
         description='Label of the book in which the speech was recorded',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
     )
 
 def chamber():
@@ -38,7 +39,7 @@ def chamber():
         name='chamber',
         display_name='Chamber',
         description='Chamber in which the debate took place',
-        es_mapping={'type': 'keyword'},
+        es_mapping=keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search only in debates from the selected chamber(s)',
             option_count=2
@@ -52,7 +53,7 @@ def committee():
         name = 'committee',
         display_name = 'Committee',
         description = 'Committee that held the debate',
-        es_mapping = BASIC_KEYWORD_MAPPING,
+        es_mapping = keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search only in debates from the selected chamber(s)',
         ),
@@ -65,7 +66,7 @@ def country():
         name='country',
         display_name='Country',
         description='Country in which the debate took place',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def date():
@@ -74,7 +75,7 @@ def date():
         name='date',
         display_name='Date',
         description='The date on which the debate took place.',
-        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        es_mapping=date_mapping(),
         results_overview=True,
         search_filter=DateFilter(
             MIN_DATE,
@@ -102,7 +103,7 @@ def date_earliest():
         name='date_earliest',
         display_name='Earliest date',
         description='The date on which the debate took place.',
-        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        es_mapping=date_mapping(),
         results_overview=True,
         search_filter=DateFilter(
             MIN_DATE,
@@ -119,7 +120,7 @@ def date_latest():
         name='date_latest',
         display_name='Latest date',
         description='The date on which the debate took place.',
-        es_mapping={'type': 'date', 'format': 'yyyy-MM-dd'},
+        es_mapping=date_mapping(),
         results_overview=True,
         search_filter=DateFilter(
             MIN_DATE,
@@ -134,7 +135,7 @@ def era(include_aggregations = True):
     if include_aggregations:
         return Field(
             name='era',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='Era',
             description='The parliamentary era in which the speech or debate was held',
             visualizations=['resultscount', 'termfrequency'],
@@ -157,7 +158,7 @@ def chamber():
         name='chamber',
         display_name='Chamber',
         description='Chamber in which the debate took place',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search only in debates from the selected chamber(s)',
             option_count=2
@@ -171,7 +172,7 @@ def column():
         name='column',
         display_name='Column(s)',
         description='Column(s) of the speech in the original document',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         searchable=False,
     )
 
@@ -181,7 +182,7 @@ def debate_type():
         name='debate_type',
         display_name='Debate type',
         description='Type of debate in which the speech occurred',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def debate_title():
@@ -190,7 +191,7 @@ def debate_title():
         name='debate_title',
         display_name='Debate title',
         description='Title of the debate in which the speech was held',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
         search_field_core=True,
     )
 
@@ -200,7 +201,7 @@ def debate_id():
         name='debate_id',
         display_name='Debate ID',
         description='Unique identifier of the debate in which the speech was held',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def language():
@@ -208,7 +209,7 @@ def language():
         name='language',
         display_name='Language',
         description='Language of the speech',
-        es_mapping={'type': 'keyword'},
+        es_mapping=keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search only in speeches in the selected languages',
             option_count=50
@@ -222,7 +223,7 @@ def legislature():
         name='legislature',
         display_name='Legislature',
         description='Title of individuals elected to parliament',
-        es_mapping={'type': 'keyword'},
+        es_mapping=keyword_mapping(),
         visualizations=['resultscount', 'termfrequency'],
         search_filter = MultipleChoiceFilter(
             description='Search only in debates from the selected era(s)',
@@ -236,7 +237,7 @@ def topic():
         name='topic',
         display_name='Topic',
         description='Topic of the debate in which the speech was held',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
         search_field_core=True,
     )
 
@@ -246,7 +247,7 @@ def subtopic():
         name='subtopic',
         display_name='Subtopic',
         description='Subtopic of the debate in which the speech was held',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
     )
 
 def subject():
@@ -256,7 +257,7 @@ def subject():
         name='subject',
         display_name='Subject',
         description='Subject that the speech is concerned with',
-        es_mapping={'type': 'keyword'},
+        es_mapping=keyword_mapping(),
         search_filter = MultipleChoiceFilter(
             description='Search only in speeches about the selected subjects',
             option_count=50
@@ -283,7 +284,7 @@ def source_archive():
     """
     return Field(
         name='source_archive',
-        es_mapping={'type': 'keyword'},
+        es_mapping=keyword_mapping(),
         hidden=True
     )
 
@@ -298,25 +299,7 @@ def speech():
         display_name='Speech',
         description='The transcribed speech',
         # each index has its own definition of the 'clean' and 'stemmed' analyzer, based on language
-        es_mapping = {
-            "type" : "text",
-            "fields": {
-                "clean": {
-                    "type": "text",
-                    "analyzer": "clean",
-                    "term_vector": "with_positions_offsets"
-                },
-                "stemmed": {
-                    "type": "text",
-                    "analyzer": "stemmed",
-                    "term_vector": "with_positions_offsets",
-                },
-                "length": {
-                    "type":     "token_count",
-                    "analyzer": "standard"
-                }
-            }
-        },
+        es_mapping = main_content_mapping(token_counts=True, stopword_analysis=True, stemming_analysis=True),
         results_overview=True,
         search_field_core=True,
         display_type='text_content',
@@ -330,7 +313,7 @@ def speech_id():
         name='id',
         display_name='Speech ID',
         description='Unique identifier of the speech',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         csv_core=True,
     )
 
@@ -340,16 +323,7 @@ def speaker():
         name='speaker',
         display_name='Speaker',
         description='The speaker of the transcribed speech',
-        es_mapping={
-            'type': 'keyword',
-            'fields': {
-                'text': { 'type': 'text' },
-                'length': {
-                    'type': 'token_count',
-                    'analyzer': 'standard',
-                }
-            }
-        },
+        es_mapping=keyword_mapping(enable_full_text_search=True),
         results_overview=True,
         search_field_core=True,
         visualizations=['resultscount', 'termfrequency'],
@@ -362,7 +336,7 @@ def speech_type():
         name='speech_type',
         display_name='Speech type',
         description='The type of speech',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_id():
@@ -371,7 +345,7 @@ def speaker_id():
         name='speaker_id',
         display_name='Speaker ID',
         description='Unique identifier of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_constituency():
@@ -380,7 +354,7 @@ def speaker_constituency():
         name='speaker_constituency',
         display_name='Speaker constituency',
         description='Constituency represented by the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         visualizations=['resultscount', 'termfrequency']
     )
 
@@ -390,7 +364,7 @@ def speaker_birthplace():
         name='speaker_birthplace',
         display_name='Speaker place of birth',
         description='Birthplace of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_birth_country():
@@ -399,7 +373,7 @@ def speaker_birth_country():
         name='speaker_birth_country',
         display_name='Speaker country of birth',
         description='Country in which the speaker was born',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_birth_year():
@@ -426,7 +400,7 @@ def speaker_gender():
         name='speaker_gender',
         display_name='Speaker gender',
         description='Gender of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         visualizations=['resultscount', 'termfrequency'],
     )
 
@@ -436,7 +410,7 @@ def speaker_profession():
         name='speaker_profession',
         display_name='Speaker profession',
         description='Profession of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_aristocracy():
@@ -445,7 +419,7 @@ def speaker_aristocracy():
         name='speaker_aristocracy',
         display_name='Speaker aristocracy',
         description='Aristocratic title of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def speaker_academic_title():
@@ -454,7 +428,7 @@ def speaker_academic_title():
         name='speaker_academic_title',
         display_name='Speaker academic title',
         description='Academic title of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 
@@ -464,7 +438,7 @@ def parliamentary_role():
         name='role',
         display_name='Parliamentary role',
         description='Role of the speaker in parliament',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Search for speeches by speakers with the selected roles',
         ),
@@ -477,7 +451,7 @@ def ministerial_role():
         name='ministerial_role',
         display_name='Ministerial role',
         description='Ministerial role of the speaker',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         search_filter=MultipleChoiceFilter(
             description='Search for speeches by speakers with the selected ministerial roles',
         ),
@@ -490,7 +464,7 @@ def role_long():
         name='role_long',
         display_name='Role (long)',
         description='Expanded description of role of the speaker in the debate',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
     )
 
 def party():
@@ -499,7 +473,7 @@ def party():
         name='party',
         display_name='Party',
         description='Political party that the speaker belongs to',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         search_filter= MultipleChoiceFilter(
             description='Search in speeches from the selected parties',
             option_count=50
@@ -513,7 +487,7 @@ def party_id():
         name='party_id',
         display_name='Party ID',
         description='Unique identifier of the political party the speaker belongs to',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
     )
 
 def party_full():
@@ -522,7 +496,7 @@ def party_full():
         name='party_full',
         display_name='Party (full name)',
         description='Full name of the political party that the speaker belongs to',
-        es_mapping=BASIC_TEXT_MAPPING,
+        es_mapping=text_mapping(),
     )
 
 def party_role():
@@ -533,7 +507,7 @@ def party_role():
         name='party_role',
         display_name='Party role',
         description='Role of the speaker\'s political party in parliament at the time of speaking',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         search_filter= MultipleChoiceFilter(
             description='Search in speeches from the selected parties',
             option_count=10
@@ -547,7 +521,7 @@ def page():
         name='page',
         display_name='Page(s)',
         description='Page(s) of the speech in the original document',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         searchable=False,
     )
 
@@ -557,9 +531,24 @@ def page_source():
         name='page_source',
         display_name='Source page number',
         description='Page number in source document',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping()
     )
 
+
+def subject():
+    """subject of the speech. Unlike topics, which usually indicate the specific agenda item,
+    subjects are general (e.g. agriculture, education). Also unlike topic, this is keyword field."""
+    return Field(
+        name='subject',
+        display_name='Subject',
+        description='Subject that the speech is concerned with',
+        es_mapping=keyword_mapping(),
+        search_filter = MultipleChoiceFilter(
+            description='Search only in speeches about the selected subjects',
+            option_count=50
+        ),
+        visualizations = ['resultscount', 'termfrequency']
+    )
 
 def url():
     """url of the source file"""
@@ -567,6 +556,6 @@ def url():
         name='url',
         display_name='Source url',
         description='URL to source file of this speech',
-        es_mapping=BASIC_KEYWORD_MAPPING,
+        es_mapping=keyword_mapping(),
         searchable=False,
     )

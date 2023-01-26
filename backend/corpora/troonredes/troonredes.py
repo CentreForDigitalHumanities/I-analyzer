@@ -19,7 +19,8 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
 from addcorpus.load_corpus import corpus_dir
 
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 # Source files ################################################################
 MONARCHS = ['Willem I', 'Willem II', 'Willem III', 'Emma',
@@ -35,9 +36,13 @@ class Troonredes(XMLCorpus):
     max_date = datetime(year=2018, month=12, day=31)
     data_directory = current_app.config['TROONREDES_DATA']
     es_index = current_app.config['TROONREDES_ES_INDEX']
-    es_doctype = current_app.config['TROONREDES_ES_DOCTYPE']
+    language = 'dutch'
     image = current_app.config['TROONREDES_IMAGE']
     word_model_path = current_app.config['TROONREDES_WM']
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'doc'
     tag_entry = 'entry'
@@ -79,7 +84,7 @@ class Troonredes(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=extract.Metadata('id')
         ),
         Field(
@@ -129,7 +134,7 @@ class Troonredes(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             search_field_core=True,
             visualizations=['wordcloud', 'ngram'],

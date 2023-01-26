@@ -24,4 +24,6 @@ describe('ImageViewComponent', () => {
   });
 });
 
-export class MockElementRef { nativeElement = {}; }
+export class MockElementRef {
+ nativeElement = {};
+}

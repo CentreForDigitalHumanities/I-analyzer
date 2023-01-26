@@ -19,16 +19,18 @@ export class SearchServiceMock {
         };
     }
     public async getRelatedWords() {}
-    public getParamForFieldName(fieldName: string) { return `${fieldName}`; }
+    public getParamForFieldName(fieldName: string) {
+ return `${fieldName}`;
+}
     createQueryModel(
         queryText: string = '', fields: string[] | null = null, filters: SearchFilter<SearchFilterData>[] = [],
         sortField: CorpusField = null, sortAscending = false, highlight: number = null
     ): QueryModel {
         const model: QueryModel = {
-            queryText: queryText,
-            filters: filters,
+            queryText,
+            filters,
             sortBy: sortField ? sortField.name : undefined,
-            sortAscending: sortAscending
+            sortAscending
         };
         if (fields) {
             model.fields = fields;

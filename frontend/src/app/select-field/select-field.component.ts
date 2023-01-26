@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { Corpus, CorpusField } from '../models/index';
 
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 @Component({
     selector: 'ia-select-field',
@@ -17,7 +17,7 @@ export class SelectFieldComponent implements OnChanges {
     @Input() public fieldsFromParams: CorpusField[];
     @Input() public corpus: Corpus;
     @Output() selectedFields = new EventEmitter<CorpusField[]>();
-    public allVisible: boolean = false;
+    public allVisible = false;
     public selectedQueryFields: CorpusField[];
     public optionsFields: CorpusField[];
 
@@ -28,8 +28,7 @@ export class SelectFieldComponent implements OnChanges {
             this.filterCoreFields();
             if (this.selectAll) {
                 this.selectedQueryFields = this.optionsFields;
-            }
-            else if (this.fieldsFromParams === undefined) {
+            } else if (this.fieldsFromParams === undefined) {
                 this.selectedQueryFields = [];
             }
         }
@@ -41,10 +40,9 @@ export class SelectFieldComponent implements OnChanges {
     public toggleAllFields() {
         if (this.allVisible) {
             this.filterCoreFields();
-        }
-        else {
+        } else {
             // show all options, with core options first, the rest alphabetically sorted
-            let noCoreOptions = _.without(this.availableFields, ... this.optionsFields);
+            const noCoreOptions = _.without(this.availableFields, ... this.optionsFields);
             this.optionsFields = this.optionsFields.concat(_.sortBy(noCoreOptions,['displayName']));
         }
         this.allVisible = !this.allVisible;
@@ -57,11 +55,9 @@ export class SelectFieldComponent implements OnChanges {
     private filterCoreFields() {
         if (this.filterCriterion === 'csv') {
             this.optionsFields = this.availableFields.filter(field => field.csvCore);
-        }
-        else if (this.filterCriterion === 'searchField') {
+        } else if (this.filterCriterion === 'searchField') {
             this.optionsFields = this.availableFields.filter(field => field.searchFieldCore);
-        }
-        else {
+        } else {
             this.optionsFields = this.availableFields;
         }
     }

@@ -22,7 +22,8 @@ from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
 from addcorpus.image_processing import sizeof_fmt
 
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 PROCESSED = "corpora/guardianobserver/processed.txt"
 
@@ -36,9 +37,13 @@ class GuardianObserver(XMLCorpus):
     max_date = datetime(year=2003, month=12, day=31)
     data_directory = current_app.config['GO_DATA']
     es_index = current_app.config['GO_ES_INDEX']
-    es_doctype = current_app.config['GO_ES_DOCTYPE']
+    language = 'english'
     image = current_app.config['GO_IMAGE']
     scan_image_type = current_app.config['GO_SCAN_IMAGE_TYPE']
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'Record'
 
@@ -84,7 +89,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='date-pub',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='Publication Date',
             csv_core=True,
             results_overview=True,
@@ -95,21 +100,21 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='id',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='ID',
             description='Article identifier.',
             extractor=extract.XML(tag='RecordID', toplevel=True)
         ),
         Field(
             name='pub_id',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='Publication ID',
             description='Publication identifier',
             extractor=extract.XML(tag='PublicationID', toplevel=True, recursive=True)
         ),
         Field(
             name='page',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             display_name='Page',
             description='Start page label, from source (1, 2, 17A, ...).',
             extractor=extract.XML(tag='StartPage', toplevel=True)
@@ -124,7 +129,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='source-paper',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(True),
             display_name='Source paper',
             description='Credited as source.',
             extractor=extract.XML(tag='Title', toplevel=True, recursive=True),
@@ -135,14 +140,14 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='place',
-            mapping=BASIC_KEYWORD_MAPPING,
+            mapping=keyword_mapping(True),
             display_name='Place',
             description='Place in which the article was published',
             extractor=extract.XML(tag='Qualifier', toplevel=True, recursive=True)
         ),
         Field(
             name='author',
-            mapping=BASIC_KEYWORD_MAPPING,
+            mapping=keyword_mapping(True),
             display_name='Author',
             description='Article author',
             extractor=extract.XML(tag='PersonName', toplevel=True, recursive=True)
@@ -162,7 +167,7 @@ class GuardianObserver(XMLCorpus):
         ),
         Field(
             name='content',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             display_name='Content',
             display_type='text_content',
             visualizations=['wordcloud'],
@@ -218,7 +223,7 @@ class GuardianObserver(XMLCorpus):
                             "image_path": image_path
                         }
                     }
-                    update_document(self.es_index, self.es_doctype, document, update_body)
+                    update_document(self.es_index, document, update_body)
                     # define subdirectory in the zip archive
                     filename = join(correct_file.split('/')[0], target_filename)
                     break

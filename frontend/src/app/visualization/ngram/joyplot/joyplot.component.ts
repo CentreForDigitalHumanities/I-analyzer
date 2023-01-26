@@ -13,7 +13,7 @@ export class JoyplotComponent implements OnChanges {
     @Input() data: NgramResults;
     @Input() formatValue: (x: number) => string;
     @Input() palette: string[];
-    @Input() quantity = 'frequency'
+    @Input() quantity = 'frequency';
     @Input() comparedByQuantity = 'date';
 
     maxDataPoint: number;

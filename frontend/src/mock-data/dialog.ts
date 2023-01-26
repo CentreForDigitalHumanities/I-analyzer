@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
+import { Injectable } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 
 import { DialogPageEvent } from '../app/services/dialog.service';
@@ -28,15 +28,16 @@ export class DialogServiceMock {
 
     /**
      * Requests that a manual page should be shown to the user.
+     *
      * @param identifier Name of the page
      */
     public async showPage(identifier: string) {
         // TODO: in a multilingual application this would need to be modified
-        let path = `assets/manual/en-GB/${identifier}.md`;
+        const path = `assets/manual/en-GB/${identifier}.md`;
         this.behavior.next({
             status: 'loading'
         });
-        let html = await Promise.resolve('<p>Hello world!</p>');
+        const html = await Promise.resolve('<p>Hello world!</p>');
         this.behavior.next({
             html: this.domSanitizer.bypassSecurityTrustHtml(html),
             identifier: 'example',

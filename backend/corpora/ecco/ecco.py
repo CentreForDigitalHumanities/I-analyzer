@@ -17,8 +17,8 @@ from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, stri
 from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
 
 from corpora.utils.constants import document_context
-from corpora.utils.es_settings import get_language_specific_es_settings
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_settings import es_settings
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 
 class Ecco(XMLCorpus):
@@ -29,11 +29,13 @@ class Ecco(XMLCorpus):
 
     data_directory = current_app.config['ECCO_DATA']
     es_index = current_app.config['ECCO_ES_INDEX']
-    es_doctype = current_app.config['ECCO_ES_DOCTYPE']
     image = current_app.config['ECCO_IMAGE']
     scan_image_type = current_app.config['ECCO_SCAN_IMAGE_TYPE']
     language = 'english'
-    es_settings = get_language_specific_es_settings(language)
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'pageContent'
     tag_entry = 'page'
@@ -143,7 +145,7 @@ class Ecco(XMLCorpus):
                 name='content',
                 display_name='Content',
                 display_type='text_content',
-                es_mapping=MULTIFIELD_MAPPING,
+                es_mapping=main_content_mapping(True, True, True),
                 description='Text content.',
                 results_overview=True,
                 search_field_core=True,
@@ -191,21 +193,21 @@ class Ecco(XMLCorpus):
                 name='pub_place',
                 display_name='Publication place',
                 description='Where the book was published',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('publicationPlaceComposed')
             ),
             Field(
                 name='collation',
                 display_name='Collation',
                 description='Information about the volume',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('collation')
             ),
             Field(
                 name='category',
                 display_name='Category',
                 description='Which category this book belongs to',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('category'),
                 search_filter=filters.MultipleChoiceFilter(
                     description='Accept only book pages in these categories.',
@@ -217,14 +219,14 @@ class Ecco(XMLCorpus):
                 name='imprint',
                 display_name='Printer',
                 description='Information of the printer and publisher of the book',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('imprintFull')
             ),
             Field(
                 name='library',
                 display_name='Source library',
                 description='The source library of the book',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(True),
                 extractor=Metadata('sourceLibrary')
             ),
             Field(
@@ -237,7 +239,7 @@ class Ecco(XMLCorpus):
                 name='volume',
                 display_name='Volume',
                 description='The book volume',
-                es_mapping=BASIC_KEYWORD_MAPPING,
+                es_mapping=keyword_mapping(),
                 extractor=Metadata('Volume')
             ),
             Field(

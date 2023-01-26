@@ -10,14 +10,14 @@ export class ImageNavigationComponent implements OnChanges {
     @Input() public initialPage: number;
 
     @Output('pageIndexChange')
-    public pageIndexChangeEmitter = new EventEmitter<number>()
-    
+    public pageIndexChangeEmitter = new EventEmitter<number>();
+
     public page: number;
     public firstPage: number;
     public lastPage: number;
 
     // the maximum number of buttons to display for navigation
-    private maxButtons: number = 8;
+    private maxButtons = 8;
     // array used for generating navigation buttons
     public buttonArray: number[];
 
@@ -33,7 +33,7 @@ export class ImageNavigationComponent implements OnChanges {
     prevPage() {
         this.page = this.page - 1 > this.firstPage - 1 ? this.page - 1 : this.lastPage;
         this.calculateButtonArray();
-        this.pageIndexChangeEmitter.emit(this.page);   
+        this.pageIndexChangeEmitter.emit(this.page);
     }
 
     nextPage() {
@@ -49,25 +49,24 @@ export class ImageNavigationComponent implements OnChanges {
     }
 
     /**
-    * calculate the array of page numbers used for the navigation buttons
-    */
+     * calculate the array of page numbers used for the navigation buttons
+     */
     calculateButtonArray() {
         if (this.pageIndices.length < this.maxButtons) {
             this.buttonArray = this.pageIndices;
-        }
-        else {
-            let curPageIndex = this.pageIndices.indexOf(this.page);
+        } else {
+            const curPageIndex = this.pageIndices.indexOf(this.page);
             switch (curPageIndex) {
                 case 0:
                     this.buttonArray = this.pageIndices.slice(curPageIndex, curPageIndex+this.maxButtons);
-                    break
+                    break;
                 case this.pageIndices.length:
                     this.buttonArray = this.pageIndices.slice(curPageIndex-this.maxButtons, curPageIndex);
-                    break
+                    break;
                 default:
                     this.buttonArray = this.pageIndices.slice(curPageIndex-this.maxButtons/2, curPageIndex+this.maxButtons/2);
-                    break
-            }    
+                    break;
+            }
         }
     }
 

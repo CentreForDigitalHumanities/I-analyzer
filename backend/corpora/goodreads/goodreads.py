@@ -12,7 +12,8 @@ from addcorpus.extract import CSV, Metadata
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter
 from addcorpus.corpus import CSVCorpus, Field
 
-from corpora.utils.es_mappings import MULTIFIELD_MAPPING
+from addcorpus.es_mappings import main_content_mapping
+from addcorpus.es_settings import es_settings
 
 logger = logging.getLogger('indexing')
 
@@ -179,7 +180,7 @@ class GoodReads(CSVCorpus):
             extractor=CSV(
                 field='text',
             ),
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(),
             display_type='text_content',
             csv_core=True,
             results_overview=True,

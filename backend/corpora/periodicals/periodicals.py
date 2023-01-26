@@ -18,8 +18,8 @@ from flask import current_app, url_for
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains
-
-from corpora.utils.es_mappings import BASIC_KEYWORD_MAPPING, MULTIFIELD_MAPPING
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
+from addcorpus.es_settings import es_settings
 
 
 # Source files ################################################################
@@ -32,10 +32,14 @@ class Periodicals(XMLCorpus):
     max_date = datetime(1900,1,1)
     data_directory = current_app.config['PERIODICALS_DATA']
     es_index = current_app.config['PERIODICALS_ES_INDEX']
-    es_doctype = current_app.config['PERIODICALS_ES_DOCTYPE']
+    language = 'english'
     image = current_app.config['PERIODICALS_IMAGE']
     scan_image_type = current_app.config['PERIODICALS_SCAN_IMAGE_TYPE']
     description_page = current_app.config['PERIODICALS_DESCRIPTION_PAGE']
+
+    @property
+    def es_settings(self):
+        return es_settings(self.language, stopword_analyzer=True, stemming_analyzer=True)
 
     tag_toplevel = 'articles'
     tag_entry = 'artInfo'
@@ -100,7 +104,7 @@ class Periodicals(XMLCorpus):
             name='date_pub',
             display_name='Publication Date',
             description='Publication date as full string, as found in source file',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             results_overview=True,
             extractor=extract.Metadata('date_full')
         ),
@@ -108,7 +112,7 @@ class Periodicals(XMLCorpus):
             name='id',
             display_name='ID',
             description='Unique identifier of the entry.',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             extractor=extract.XML(tag=None,
                                   toplevel=False,
                                   attribute='id'),
@@ -117,7 +121,7 @@ class Periodicals(XMLCorpus):
             name='issue',
             display_name='Issue number',
             description='Source issue number.',
-            es_mapping=BASIC_KEYWORD_MAPPING,
+            es_mapping=keyword_mapping(),
             results_overview=False,
             extractor=extract.Metadata('issue_id'),
             csv_core=False,
@@ -142,7 +146,7 @@ class Periodicals(XMLCorpus):
             display_name='Content',
             display_type='text_content',
             description='Text content.',
-            es_mapping=MULTIFIELD_MAPPING,
+            es_mapping=main_content_mapping(True, True, True),
             results_overview=True,
             extractor=extract.XML(tag='ocrText', flatten=True),
             search_field_core=True,
