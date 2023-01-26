@@ -9,6 +9,9 @@ from visualization.term_frequency import parse_datestring
 
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
+    if not os.path.isdir(settings.CSV_FILES_PATH):
+        os.mkdir(settings.CSV_FILES_PATH)
+
     filepath = os.path.join(settings.CSV_FILES_PATH, filename)
 
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
