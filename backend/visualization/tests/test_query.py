@@ -1,5 +1,5 @@
 from datetime import datetime
-import api.query as query
+import visualization.query as query
 from es.search import search, hits
 
 def test_date_manipulation(basic_query):
@@ -36,13 +36,13 @@ def test_date_manipulation(basic_query):
     assert query_min_date == min_date
     assert query_max_date == max_date
 
-def test_search(test_app, test_es_client, indexed_mock_corpus, basic_query):
+def test_search(mock_corpus, test_es_client, select_small_mock_corpus, index_mock_corpus, basic_query):
     """
     Test some search requests based on queries manipulated in the query module
     """
     query_no_text = query.remove_query(basic_query)
     result = search(
-        corpus = indexed_mock_corpus,
+        corpus = mock_corpus,
         query_model=query_no_text,
         client=test_es_client
     )
@@ -54,7 +54,7 @@ def test_search(test_app, test_es_client, indexed_mock_corpus, basic_query):
     query_no_text = query.add_filter(query_no_text, date_filter)
 
     result = search(
-        corpus = indexed_mock_corpus,
+        corpus = mock_corpus,
         query_model = query_no_text,
         client = test_es_client,
     )
