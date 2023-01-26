@@ -66,3 +66,12 @@ class MockCorpus(CSVCorpus):
     )
 
     fields = [date, title_field, content, genre]
+
+SPECS = {
+    'min_date': MockCorpus.min_date,
+    'max_date': MockCorpus.max_date,
+    'total_docs': 3,
+    'total_words': 67,
+    'has_token_counts': True,
+    'fields':  ['date', 'title', 'genre', 'content'],
+}

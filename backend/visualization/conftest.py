@@ -5,6 +5,7 @@ from ianalyzer.elasticsearch import elasticsearch
 from es import es_index as index
 from addcorpus.load_corpus import load_corpus
 from time import sleep
+from visualization.tests.mock_corpora.mock_corpus import SPECS as MOCK_CORPUS_SPECS
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,6 +18,13 @@ def mock_corpus_settings(settings):
 @pytest.fixture()
 def mock_corpus(mock_corpus_settings):
     return 'mock-corpus'
+
+@pytest.fixture()
+def mock_corpus_specs(mock_corpus):
+    specs = {
+        'mock-corpus': MOCK_CORPUS_SPECS
+    }
+    return specs[mock_corpus]
 
 @pytest.fixture()
 def test_es_client(mock_corpus):
