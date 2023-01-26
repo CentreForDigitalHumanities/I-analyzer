@@ -254,7 +254,6 @@ describe('CorpusService', () => {
                 'times',
                 'Times',
                 'This is a description.',
-                'article',
                 'times',
                 allFields,
                 new Date(1785, 0, 1, 0, 0),
