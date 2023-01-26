@@ -15,8 +15,7 @@ def elasticsearch(corpus_name):
             'scheme': 'http'
     }
     kwargs = {
-        'request_timeout': 30, 
-        'max_retries': 15, 
+        'max_retries': 15,
         'retry_on_timeout': True,
         'timeout': 30
     }
