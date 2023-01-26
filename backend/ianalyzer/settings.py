@@ -149,7 +149,7 @@ MAX_LENGTH_FILENAME = 254
 # Download location
 _here = os.path.abspath(os.path.dirname(__file__))
 _backend_path = os.path.join(_here, '..')
-CSV_FILES_PATH = os.path.join(_backend_path, 'api/csv_files')
+CSV_FILES_PATH = os.path.join(_backend_path, 'download/csv_files')
 
 # Specify elasticsearch servers
 SERVERS = {

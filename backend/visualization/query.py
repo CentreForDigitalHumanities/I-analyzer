@@ -130,3 +130,9 @@ def remove_query(query):
     new_query = deepcopy(query)
     new_query['query']['bool'].pop('must') #remove search term filter
     return new_query
+
+MATCH_ALL = {
+    "query": {
+        "match_all": {}
+    }
+}

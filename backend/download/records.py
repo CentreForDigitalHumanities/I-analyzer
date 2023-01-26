@@ -13,19 +13,19 @@ def store_download_started(download_type, corpus_name, parameters, user_id):
     return download.id
 
 def store_download_completed(id, filename):
-    download = Download.objects.get(id)
+    download = Download.objects.get(id=id)
     download.filename = filename
     download.completed = datetime.now()
     download.save()
 
 def store_download_failed(id):
-    download = Download.objects.get(id)
+    download = Download.objects.get(id=id)
     download.filename = None
     download.completed = datetime.now()
     download.save()
 
 def get_result_filename(id):
-    download = Download.objects.get(id)
+    download = Download.objects.get(id=id)
     if download.is_done:
         _, name = os.path.split(download.filename)
         return name

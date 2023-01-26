@@ -3,7 +3,7 @@ import pytest
 import os
 from ianalyzer.elasticsearch import elasticsearch
 from es import es_index as index
-from addcorpus.load_corpus import load_corpus
+from addcorpus.load_corpus import load_corpus, load_all_corpora
 from time import sleep
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
@@ -90,9 +90,12 @@ def index_mock_corpus(mock_corpus, test_es_client):
     yield mock_corpus
     clear_test_corpus(test_es_client, mock_corpus)
 
+@pytest.fixture()
+def mock_corpora_in_db(db, mock_corpus_settings):
+    load_all_corpora()
 
 @pytest.fixture()
-def corpus_user(db, mock_corpus):
+def corpus_user(db, mock_corpus, mock_corpora_in_db):
     '''Make a user with access to the mock corpus'''
 
     username = 'mock-user'

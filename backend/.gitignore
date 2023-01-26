@@ -36,3 +36,6 @@ flask_sql_data/
 
 # Local settings file
 ianalyzer/settings_local.py
+
+# csv downloads
+download/csv_files/
