@@ -4,8 +4,8 @@ from ianalyzer.elasticsearch import elasticsearch
 from es.search import get_index
 import logging
 from rest_framework.permissions import IsAuthenticated
-from addcorpus.load_corpus import load_corpus
-from rest_framework.exceptions import NotFound, PermissionDenied, APIException
+from rest_framework.exceptions import APIException
+from addcorpus.permissions import CorpusAccessPermission
 
 logger = logging.getLogger(__name__)
 
@@ -23,21 +23,10 @@ class ForwardSearchView(APIView):
     Forward search request to elasticsearch
     '''
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def post(self, request, *args, **kwargs):
         corpus_name = kwargs.get('corpus')
-
-        # check if the corpus exists
-        try:
-            corpus = load_corpus(corpus_name)
-        except:
-            raise NotFound('Corpus does not exist')
-
-        # check if the user has access
-        if not request.user.has_access(corpus_name):
-            return PermissionDenied('You do not have permission to access this corpus')
-
         client = elasticsearch(corpus_name)
         index = get_index(corpus_name)
 
