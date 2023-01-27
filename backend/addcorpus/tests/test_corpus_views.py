@@ -9,3 +9,8 @@ def test_no_corpora(db, settings):
 
     assert status.is_success(response.status_code)
     assert response.data == []
+
+def test_corpus_documentation_view(client, mock_corpus, mock_corpus_user):
+    client.force_login(mock_corpus_user)
+    response = client.get(f'/api/corpus/documentation/{mock_corpus}/mock-csv-corpus.md')
+    assert response.status_code == 200
