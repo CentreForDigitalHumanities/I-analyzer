@@ -70,7 +70,7 @@ class NgramView(APIView):
                 raise ValidationError(detail=f'missing key {key} in request data')
 
         try:
-            ngram_counts_task = tasks.get_ngram_data.delay(request.json)
+            ngram_counts_task = tasks.get_ngram_data.delay(request.data)
             return Response({
                 'task_ids': [ngram_counts_task.id]
             })
@@ -84,27 +84,25 @@ class DateTermFrequencyView(APIView):
     compared by a date field
     '''
 
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
-        # TODO: date term frequency task view
-        # if not request.json:
-        #     abort(400)
+        for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+            if not key in request.data:
+                raise ValidationError(detail=f'missing key {key} in request data')
 
-        # for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
-        #     if not key in request.json:
-        #         abort(400)
+        for bin in request.data['bins']:
+            for key in ['start_date', 'end_date', 'size']:
+                if not key in bin:
+                    raise ValidationError(detail=f'key {key} is not present for all bins in request data')
 
-        # for bin in request.json['bins']:
-        #     for key in ['start_date', 'end_date', 'size']:
-        #         if not key in bin:
-        #             abort(400)
-
-        # group = tasks.timeline_term_frequency_tasks(request.json).apply_async()
-        # subtasks = group.children
-        # if not tasks:
-        #     return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
-        # else:
-        #     return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
+        try:
+            group = tasks.timeline_term_frequency_tasks(request.data).apply_async()
+            subtasks = group.children
+            return Response({'task_ids': [task.id for task in subtasks]})
+        except Exception as e:
+            logger.error(e)
+            raise APIException('Could not set up term frequency generation.')
 
 
 class AggregateTermFrequencyView(APIView):
@@ -114,26 +112,22 @@ class AggregateTermFrequencyView(APIView):
     '''
 
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
-        # TODO: aggregate term frequency task view
-        # if not request.json:
-        #     abort(400)
+        for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
+            if not key in request.data:
+                raise ValidationError(detail=f'missing key {key} in request data')
 
-        # for key in ['es_query', 'corpus_name', 'field_name', 'bins']:
-        #     if not key in request.json:
-        #         abort(400)
+        for bin in request.data['bins']:
+            for key in ['field_value', 'size']:
+                if not key in bin:
+                    raise ValidationError(detail=f'key {key} is not present for all bins in request data')
 
-        # for bin in request.json['bins']:
-        #     for key in ['field_value', 'size']:
-        #         if not key in bin:
-        #             abort(400)
-
-        # group = tasks.histogram_term_frequency_tasks(request.json).apply_async()
-        # subtasks = group.children
-        # if not tasks:
-        #     return jsonify({'success': False, 'message': 'Could not set up term frequency generation.'})
-        # else:
-        #     return jsonify({'success': True, 'task_ids': [task.id for task in subtasks]})
+        try:
+            group = tasks.histogram_term_frequency_tasks(request.data).apply_async()
+            subtasks = group.children
+            return Response({'task_ids': [task.id for task in subtasks]})
+        except Exception as e:
+            logger.error(e)
+            raise APIException('Could not set up term frequency generation.')
 
 from visualization.tasks import add
 class AddView(APIView):
