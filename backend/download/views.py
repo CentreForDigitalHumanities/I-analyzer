@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from ianalyzer.exceptions import NotImplemented
+from rest_framework.viewsets import ModelViewSet
+from download.serializers import DownloadSerializer
 
 class ResultsDownloadView(APIView):
     '''
@@ -122,18 +124,15 @@ class FullDataDownloadTaskView(APIView):
 
 
 
-class DownloadHistoryView(APIView):
+class DownloadHistoryViewset(ModelViewSet):
     '''
     Retrieve list of all the user's downloads
     '''
 
-    def get(self, request, *args, **kwargs,):
-        raise NotImplemented
+    serializer_class = DownloadSerializer
 
-        # TODO: download history
-
-        # result = [d.serialize() for d in current_user.downloads]
-        # return jsonify(result)
+    def get_queryset(self):
+        return self.request.user.downloads.all()
 
 
 class FileDownloadView(APIView):
