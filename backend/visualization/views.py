@@ -21,7 +21,7 @@ class WordcloudView(APIView):
     def post(self, request, *args, **kwargs):
         for key in ['corpus', 'es_query', 'field', 'size']:
             if key not in request.data:
-                raise ValidationError(detail=f'missing key {key} in request')
+                raise ValidationError(detail=f'missing key {key} in request data')
 
         wordcloud_limit = settings.WORDCLOUD_LIMIT
         if request.data['size'] > wordcloud_limit:
@@ -57,17 +57,26 @@ class NgramView(APIView):
     Schedule a task to retrieve ngrams containing the search term
     '''
 
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
-        # TODO: ngram view
-        # if not request.json:
-        #     abort(400)
-        # else:
-        #     ngram_counts_task = tasks.get_ngram_data.delay(request.json)
-        #     if not ngram_counts_task:
-        #         return jsonify({'success': False, 'message': 'Could not set up ngram generation.'})
-        #     else:
-        #         return jsonify({'success': True, 'task_ids': [ngram_counts_task.id ]})
+        expected_fields = [
+            'es_query', 'corpus_name', 'field', 'ngram_size', 'term_position',
+            'freq_compensation', 'subfield', 'max_size_per_interval',
+            'number_of_ngrams', 'date_field'
+        ]
+        for key in expected_fields:
+            if key not in request.data:
+                raise ValidationError(detail=f'missing key {key} in request data')
+
+        try:
+            ngram_counts_task = tasks.get_ngram_data.delay(request.json)
+            return Response({
+                'task_ids': [ngram_counts_task.id]
+            })
+        except Exception as e:
+            logger.error(e)
+            raise APIException(detail='Could not set up ngram generation.')
 
 class DateTermFrequencyView(APIView):
     '''
