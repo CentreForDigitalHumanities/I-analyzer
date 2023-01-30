@@ -101,7 +101,7 @@ def corpus_user(db, mock_corpus, mock_corpora_in_db):
 
     username = 'mock-user'
     password = 'secret'
-    user = CustomUser.objects.create(username=username, password=password)
+    user = CustomUser.objects.create(username=username, password=password, is_superuser=True)
     return user
 
 @pytest.fixture()

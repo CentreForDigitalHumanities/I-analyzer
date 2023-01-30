@@ -1,4 +1,23 @@
+from visualization.query import MATCH_ALL
 import pytest
+from rest_framework import status
+
+@pytest.fixture()
+def wordcloud_body(mock_corpus):
+    return {
+        'corpus': mock_corpus,
+        'field': 'content',
+        'es_query': MATCH_ALL,
+        'size': 1000,
+    }
+
+def test_wordcloud_view(authenticated_client, mock_corpus, index_mock_corpus, wordcloud_body):
+    response = authenticated_client.post(
+        '/api/visualization/wordcloud',
+        wordcloud_body,
+        content_type='application/json'
+    )
+    assert status.is_success(response.status_code)
 
 @pytest.fixture
 def date_term_frequency_body(basic_query):
