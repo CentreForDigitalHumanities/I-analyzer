@@ -92,8 +92,8 @@ def test_query_components():
         assert sorted(components) == sorted(case['components']) # ignore order
 
 
-def test_query_analysis(test_es_client, indexed_mock_corpus, small_mock_corpus):
-    corpus = load_corpus(indexed_mock_corpus)
+def test_query_analysis(test_es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
+    corpus = load_corpus(mock_corpus)
     es_index = corpus.es_index
 
     for case in QUERY_ANALYSIS_CASES:
@@ -102,8 +102,8 @@ def test_query_analysis(test_es_client, indexed_mock_corpus, small_mock_corpus):
 
 
 @pytest.fixture
-def termvectors_result(test_es_client, indexed_mock_corpus, small_mock_corpus):
-    corpus = load_corpus(indexed_mock_corpus)
+def termvectors_result(test_es_client, mock_corpus, index_mock_corpus, select_small_mock_corpus):
+    corpus = load_corpus(mock_corpus)
     es_index = corpus.es_index
 
     frankenstein_query = {
@@ -113,7 +113,7 @@ def termvectors_result(test_es_client, indexed_mock_corpus, small_mock_corpus):
             }
         }
     }
-    result = search.search(indexed_mock_corpus, frankenstein_query, test_es_client)
+    result = search.search(mock_corpus, frankenstein_query, test_es_client)
     hit = search.hits(result)[0]
     id = hit['_id']
 
