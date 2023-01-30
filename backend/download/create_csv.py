@@ -7,6 +7,13 @@ from django.conf import settings
 
 from visualization.term_frequency import parse_datestring
 
+SEARCH_RESULTS_DIALECT = {
+    'delimiter': ';',
+    'quotechar': '"',
+    'quoting': csv.QUOTE_NONNUMERIC,
+    'skipinitialspace': True,
+}
+
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
     if not os.path.isdir(settings.CSV_FILES_PATH):
@@ -53,8 +60,7 @@ def search_results_csv(results, fields, query):
 
     filename = create_filename(query)
     field_set.discard('context')
-    csv.register_dialect('resultsDialect', delimiter=';', quotechar='"',
-        quoting=csv.QUOTE_NONNUMERIC, skipinitialspace=True)
+    csv.register_dialect('resultsDialect', **SEARCH_RESULTS_DIALECT)
     fieldnames = sorted(field_set)
     filepath = write_file(filename, fieldnames, entries, dialect = 'resultsDialect')
     return filepath
