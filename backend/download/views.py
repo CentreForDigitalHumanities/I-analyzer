@@ -4,6 +4,11 @@ from rest_framework.response import Response
 from ianalyzer.exceptions import NotImplemented
 from rest_framework.viewsets import ModelViewSet
 from download.serializers import DownloadSerializer
+from download.models import Download
+from django.http.response import FileResponse
+from django.conf import settings
+from download import convert_csv
+import os
 
 class ResultsDownloadView(APIView):
     '''
@@ -141,17 +146,15 @@ class FileDownloadView(APIView):
     '''
 
     def get(self, request, *args, **kwargs):
-        raise NotImplemented
+        id = kwargs.get('id')
+        encoding = request.query_params.get('encoding', 'utf-8')
+        format = request.query_params.get('format', None)
 
-        # TODO: file download
+        record = Download.objects.get(id=id)
+        directory = settings.CSV_FILES_PATH
 
-        # encoding = request.args.get('encoding', 'utf-8')
-        # format = request.args.get('format', None)
+        converted_filename = convert_csv.convert_csv(
+            directory, record.filename, record.download_type, encoding, format)
+        path = os.path.join(directory, converted_filename)
 
-        # record = models.Download.query.get(id)
-        # directory, filename = os.path.split(record.filename)
-        # download_type = record.download_type
-
-        # filename = convert_csv.convert_csv(directory, filename, download_type, encoding, format)
-
-        # return send_from_directory(directory, filename)
+        return FileResponse(open(path, 'rb'), filename=record.filename, as_attachment=True)

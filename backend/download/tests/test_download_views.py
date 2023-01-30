@@ -130,9 +130,16 @@ def test_download_history_view(authenticated_client, finished_download, mock_cor
     assert download['corpus'] == mock_corpus
     assert download['status'] == 'done'
 
-@pytest.mark.xfail(reason='view not implemented')
 def test_csv_download_view(authenticated_client, finished_download):
     response = authenticated_client.get(
         f'/api/download/csv/{finished_download}'
     )
     assert status.is_success(response.status_code)
+
+    # read file content of response
+    content_bytes = io.BytesIO(response.getvalue()).read()
+    content_string = bytes.decode(content_bytes, 'utf-8')
+    reader = csv.DictReader(io.StringIO(content_string), delimiter=';')
+    assert reader.fieldnames == ['content', 'date', 'genre', 'query', 'title']
+    rows = [row for row in reader]
+    assert len(rows) == 1
