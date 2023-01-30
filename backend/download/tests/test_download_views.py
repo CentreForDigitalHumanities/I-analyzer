@@ -6,13 +6,12 @@ from download import create_csv
 from download.models import Download
 import io
 
-@pytest.mark.xfail(reason='view not implemented')
-def test_direct_download_view(authenticated_client, mock_corpus):
+def test_direct_download_view(authenticated_client, mock_corpus, index_mock_corpus):
     request_json = {
         "corpus": mock_corpus,
         "es_query": {"query":{"bool":{"must":{"match_all":{}},"filter":[]}}},
         "fields": ['date','content'],
-        "size": 217,
+        "size": 3,
         "route": f"/search/{mock_corpus}",
         "encoding":"utf-8"
     }
