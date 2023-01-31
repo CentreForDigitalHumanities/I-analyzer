@@ -81,29 +81,24 @@ class FullDataDownloadTaskView(APIView):
     for a visualisation.
     '''
 
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
+
     def post(self, request, *args, **kwargs):
-        raise NotImplemented
+        for key in ['visualization', 'parameters', 'corpus']:
+            if key not in request.data:
+                raise ValidationError(detail=f'Download failed: specification for {key} is missing')
 
-        # TODO: download schedule view
+        visualization_type = request.data['visualization']
+        known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
+        if visualization_type not in known_visualisations:
+            raise ValidationError(f'Download failed: unknown visualisation type "{visualization_type}"')
 
-        # if not request.json:
-        #     abort(400)
-
-        # for key in ['visualization', 'parameters', 'corpus']:
-        #     if not key in request.json:
-        #         abort(400)
-
-        # visualization_type = request.json['visualization']
-        # known_visualisations = ['date_term_frequency', 'aggregate_term_frequency']
-
-        # if visualization_type not in known_visualisations:
-        #     abort(400, 'unknown visualization type "{}"'.format(visualization_type))
-
-        # task_chain = tasks.download_full_data(request.json, current_user)
-        # task_chain.apply_async()
-
-        # return jsonify({'success': True, 'task_ids': [task_chain.id]})
-
+        try:
+            task_chain = tasks.download_full_data(request.data, request.user)
+            task_chain.apply_async()
+            return Response({'task_ids': [task_chain.id]})
+        except:
+            raise APIException('Download failed: server error')
 
 
 class DownloadHistoryViewset(ModelViewSet):
