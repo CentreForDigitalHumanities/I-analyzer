@@ -24,7 +24,7 @@ export class WordmodelsService extends Resource {
     })
     public relatedWordsRequest: ResourceMethod<
         { query_term: string; corpus_name: string; neighbours: number },
-        { success: false; message: string } | { success: true; data: RelatedWordsResults }>;
+        RelatedWordsResults>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -32,7 +32,7 @@ export class WordmodelsService extends Resource {
     })
     public relatedWordsTimeIntervalRequest: ResourceMethod<
         { query_term: string; corpus_name: string; time: string; neighbours: number },
-        { success: false; message: string } | { success: true; data: WordSimilarity[] }>;
+        WordSimilarity[]>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -40,7 +40,7 @@ export class WordmodelsService extends Resource {
     })
     public wordSimilarityRequest: ResourceMethod<
         { term_1: string; term_2: string; corpus_name: string},
-        { success: false; message: string } | { success: true; data: WordSimilarity[] }
+        WordSimilarity[]
     >;
 
     @ResourceAction({
@@ -49,7 +49,7 @@ export class WordmodelsService extends Resource {
     })
     public wordInModelRequest: ResourceMethod<
         { query_term: string; corpus_name: string },
-        { success: boolean; message: string; result: WordInModelResult }>;
+        WordInModelResult>;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
@@ -81,14 +81,7 @@ export class WordmodelsService extends Resource {
     }
 
     public async getWordSimilarity(term1: string, term2: string, corpusName: string): Promise<WordSimilarity[]> {
-        return this.wordSimilarityRequest({term_1: term1, term_2: term2, corpus_name: corpusName})
-            .then( result => new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.data);
-                } else {
-                    reject({message: result.message});
-                }
-            }));
+        return this.wordSimilarityRequest({term_1: term1, term_2: term2, corpus_name: corpusName});
     }
 
     public async getRelatedWordsTimeInterval(
@@ -96,26 +89,14 @@ export class WordmodelsService extends Resource {
     ): Promise<WordSimilarity[]> {
         return this.relatedWordsTimeIntervalRequest(
             {query_term: queryTerm, corpus_name: corpusName, time: timeInterval, neighbours}
-        ).then( result => new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result['data']);
-                } else {
-                    reject({message: result.message});
-                }
-            }));
+        );
     }
 
     wordInModel(term: string, corpusName: string): Promise<WordInModelResult> {
         return this.wordInModelRequest({
             query_term: term,
             corpus_name: corpusName,
-        }).then(result => new Promise( (resolve, reject) => {
-                if (result['success'] === true) {
-                    resolve(result.result);
-                } else {
-                    reject({message: result['message']});
-                }
-            }));
+        });
     }
 
 

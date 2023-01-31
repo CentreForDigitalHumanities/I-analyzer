@@ -360,19 +360,15 @@ export abstract class BarchartDirective
         return rawData;
     }
 
-    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<any> {
+    getTermFrequencies(series: BarchartSeries<DataPoint>, queryModel: QueryModel): Promise<BarchartSeries<DataPoint>> {
         const queryModelCopy = this.queryModelForSeries(series, queryModel);
-        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result => {
-            if (result.success === true) {
-                return this.apiService.pollTasks<TermFrequencyResult>(result.task_ids);
-            }
-        }).then(res => {
-            if (res && res.success && res.done) {
-                return this.processSeriesTermFrequency(res.results, series);
-            } else {
-                this.error.emit(res['message'] || 'could not load results');
-                return series;
-            }
+        return this.requestSeriesTermFrequency(series, queryModelCopy).then(result =>
+            this.apiService.pollTasks<TermFrequencyResult>(result.task_ids)
+        ).then(res =>
+            this.processSeriesTermFrequency(res, series)
+        ).catch(error => {
+            this.error.emit('could not load results');
+            return series;
         });
     }
 

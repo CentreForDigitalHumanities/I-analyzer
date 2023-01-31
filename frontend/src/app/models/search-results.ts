@@ -82,7 +82,10 @@ export interface QueryFeedback {
     similarTerms?: string[];
 }
 
-export type TaskResult = { success: false; message: string } | { success: true; task_ids: string[] };
+export interface TaskResult { task_ids: string[] };
+
+export type TasksOutcome<ExpectedResult> = { status: 'failed' } | { status: 'working' } |
+    { status: 'done'; done: true; results: ExpectedResult[] };
 
 export interface ResultsDownloadParameters {
     corpus: string;

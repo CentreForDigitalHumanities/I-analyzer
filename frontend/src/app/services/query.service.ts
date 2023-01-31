@@ -54,6 +54,6 @@ export class QueryService {
 
     async retrieveQueries(): Promise<Query[]> {
         const response = await this.apiRetryService.requireLogin(api => api.search_history());
-        return response.queries;
+        return response;
     }
 }

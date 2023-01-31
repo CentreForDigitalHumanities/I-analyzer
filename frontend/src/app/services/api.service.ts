@@ -29,6 +29,7 @@ import {
     Query,
     ResultsDownloadParameters,
     TaskResult,
+    TasksOutcome,
     UserResponse,
     UserRole,
     WordcloudParameters,
@@ -81,9 +82,9 @@ export class ApiService extends Resource {
     })
     public wordcloud: ResourceMethod<
         WordcloudParameters,
-        | { success: false; message: string }
-        | { success: true; data: AggregateResult[] }
+        AggregateResult[]
     >;
+
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
@@ -91,28 +92,20 @@ export class ApiService extends Resource {
     })
     public wordcloudTasks: ResourceMethod<
         WordcloudParameters,
-        | { success: false; message: string }
-        | { success: true; task_ids: string[] }
+        TaskResult
     >;
 
-    @ResourceAction({
-        method: ResourceRequestMethod.Post,
-        path: '/task_status',
-    })
-    public getTasksStatus: ResourceMethod<
-        { task_ids: string[] },
-        | { success: false; message: string }
-        | { success: true; done: false }
-        | { success: true; done: true; results: any }
-    >;
+    public getTasksStatus<ExpectedResult>(tasks: TaskResult): Promise<TasksOutcome<ExpectedResult>> {
+        return this.http.post<TasksOutcome<ExpectedResult>>('/task_status', tasks).toPromise();
+    }
 
     @ResourceAction({
         method: ResourceRequestMethod.Post,
         path: '/abort_tasks',
     })
     public abortTasks: ResourceMethod<
-        { task_ids: string[] },
-        { success: boolean }
+        TaskResult,
+        { success: true }
     >;
 
     @ResourceAction({
@@ -120,20 +113,9 @@ export class ApiService extends Resource {
         path: '/visualization/ngram_tasks',
     })
     public ngramTasks: ResourceMethod<
-        {
-            es_query: EsQuery;
-            corpus_name: string;
-            field: string;
-            ngram_size?: number;
-            term_position?: string;
-            freq_compensation?: boolean;
-            subfield?: string;
-            max_size_per_interval?: number;
-            number_of_ngrams?: number;
-            date_field: string;
-        },
-        | { success: false; message: string }
-        | { success: true; task_ids: string[] }
+        { es_query: EsQuery; corpus_name: string; field: string; ngram_size?: number; term_position?: string; freq_compensation?: boolean;
+            subfield?: string; max_size_per_interval?: number; number_of_ngrams?: number; date_field: string; },
+        TaskResult
     >;
 
     @ResourceAction({
@@ -212,18 +194,18 @@ export class ApiService extends Resource {
     })
     public download: ResourceMethod<
         LimitedResultsDownloadParameters,
-        { success: false; message: string } | any
+        any
     >;
 
     @ResourceAction({
         method: ResourceRequestMethod.Get,
         path: '/download/csv/{id}',
         responseBodyType: ResourceResponseBodyType.Blob,
-        asResourceResponse: true,
+        asResourceResponse: true
     })
     public csv: ResourceMethod<
         { id: number } | ({ id: number } & DownloadOptions),
-        { success: false; message: string } | any
+        any
     >;
 
     @ResourceAction({
@@ -232,9 +214,7 @@ export class ApiService extends Resource {
     })
     public downloadTask: ResourceMethod<
         ResultsDownloadParameters,
-        | { success: false; message: string }
-        | { success: true; task_ids: string[] }
-        | any
+        TaskResult
     >;
 
     @ResourceAction({
@@ -273,7 +253,7 @@ export class ApiService extends Resource {
         path: '/solislogin',
     })
     public solisLogin: IResourceMethod<
-        {},
+        any,
         {
             success: boolean;
             id: number;
@@ -284,14 +264,9 @@ export class ApiService extends Resource {
         }
     >;
 
-    // @ResourceAction({
-    //     method: ResourceRequestMethod.Get,
-    //     path: '/search_history/',
-    // })
-    // public search_history: ResourceMethod<void, { queries: Query[] }>;
 
     public search_history() {
-        return this.http.get<{ queries: Query[] }>('/api/corpus/').toPromise();
+        return this.http.get<Query[]>('/api/search_history/').toPromise();
     }
 
     @ResourceAction({
@@ -314,8 +289,7 @@ export class ApiService extends Resource {
     })
     public requestMedia: ResourceMethod<
         { corpus: string; document: FoundDocument },
-        | { success: false }
-        | { success: true; media: string[]; info?: ImageInfo }
+        { media: string[]; info?: ImageInfo }
     >;
 
     @ResourceAction({
@@ -348,29 +322,19 @@ export class ApiService extends Resource {
         );
     }
 
-    private tasksDone<ExpectedResult>(
-        response:
-            | { success: false; message: string }
-            | { success: true; done: false }
-            | { success: true; done: true; results: ExpectedResult[] }
-    ) {
-        return response.success === false || response.done === true;
+    private tasksDone<ExpectedResult>(response: TasksOutcome<ExpectedResult>) {
+        return response.status !== 'working';
     }
 
-    public pollTasks<ExpectedResult>(
-        ids: string[]
-    ): Promise<
-        | { success: false; message: string }
-        | { success: true; done: false }
-        | { success: true; done: true; results: ExpectedResult[] }
-    > {
-        return timer(0, 5000)
-            .pipe(
-                switchMap((_) => this.getTasksStatus({ task_ids: ids })),
-                filter(this.tasksDone),
-                take(1)
-            )
-            .toPromise();
+    public pollTasks<ExpectedResult>(ids: string[]): Promise<ExpectedResult[]> {
+        return timer(0, 5000).pipe(
+            switchMap((_) => this.getTasksStatus<ExpectedResult>({task_ids: ids})),
+            filter(this.tasksDone),
+            take(1)
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        ).toPromise().then(result => new Promise((resolve, reject) =>
+                result.status === 'done' ? resolve(result.results) : reject()
+        ));
     }
 
     public corpus() {
