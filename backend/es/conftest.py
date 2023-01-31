@@ -36,7 +36,7 @@ def corpus_definition(times_test_settings):
 @pytest.fixture()
 def es_forward_client(times_test_settings):
     """
-    Creatauthenticated_cliente and populate an index for the mock corpus in elasticsearch.
+    Create and populate an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
     client = elasticsearch(CORPUS_NAME)
@@ -62,7 +62,7 @@ def es_forward_client(times_test_settings):
 @pytest.fixture()
 def es_index_client(times_test_settings):
     """
-    Create and populate an index for the mock corpus in elasticsearch.
+    Create an index for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
     client = elasticsearch('times')
@@ -81,7 +81,7 @@ def es_index_client(times_test_settings):
 @pytest.fixture()
 def es_alias_client(times_test_settings):
     """
-    Create and populate an index for the mock corpus in elasticsearch.
+    Create multiple indices with version numbers for the mock corpus in elasticsearch.
     Returns an elastic search client for the mock corpus.
     """
     client = elasticsearch('times')

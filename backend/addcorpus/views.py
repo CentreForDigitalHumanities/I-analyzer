@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from addcorpus.load_corpus import load_all_corpora, corpus_dir
 import os
 from django.http.response import FileResponse
+from rest_framework.permissions import IsAuthenticated
+from addcorpus.permissions import CorpusAccessPermission
 
 class CorpusView(APIView):
     '''
@@ -33,6 +35,8 @@ class CorpusDocumentationView(APIView):
     '''
     Return the documentation for a corpus
     '''
+
+    permission_classes = [IsAuthenticated, CorpusAccessPermission]
 
     def get(self, request, *args, **kwargs):
         corpus = kwargs.get('corpus')
