@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers import QuerySerializer
-from django.http.response import HttpResponseServerError
+from rest_framework.permissions import IsAuthenticated
 from ianalyzer.exceptions import NotImplemented
 
 class QueryViewset(viewsets.ModelViewSet):
@@ -10,6 +10,7 @@ class QueryViewset(viewsets.ModelViewSet):
     Access search history
     '''
 
+    permission_classes = [IsAuthenticated]
     serializer_class = QuerySerializer
 
     def get_queryset(self):
