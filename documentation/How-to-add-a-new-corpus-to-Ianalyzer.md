@@ -92,7 +92,7 @@ The key of the corpus must match the name of the corpus class (but lowercase/hyp
 `settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
 ## Elasticsearch
-Once the corpus definition and associated global variables are added, the only remaining step is to make the Elasticsearch index. By running `yarn django es -c corpusname`, information is extracted and sent to Elasticsearch.
+Once the corpus definition and associated global variables are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.
 Optional flags:
 - `-s 1990-01-01` sets different start date for indexing
 - `-e 2000-12-31` sets different end data for indexing
