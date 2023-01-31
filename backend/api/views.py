@@ -66,17 +66,16 @@ class AbortTasksView(APIView):
     Cancel backend tasks
     '''
 
-    def post(self, request, *args, **kwargs):
-        raise NotImplemented
+    permission_classes = [IsAuthenticated]
 
-        # TODO: cancel tasks
-        # if not request.json:
-        #     abort(400)
-        # else:
-        #     task_ids = request.json['task_ids']
-        #     try:
-        #         celery_app.control.revoke(task_ids, terminate=True)
-        #     except Exception as e:
-        #         current_app.logger.critical(e)
-        #         return jsonify({'success': False})
-        #     return jsonify({'success': True})
+    def post(self, request, *args, **kwargs):
+        if 'task_ids' not in request.data:
+            raise ValidationError(detail='no task ids specified')
+
+        task_ids = request.data['task_ids']
+        try:
+            celery_app.control.revoke(task_ids, terminate=True)
+            return Response({'success': True})
+        except Exception as e:
+            logger.critical(e)
+            raise APIException()
