@@ -3,6 +3,9 @@ from users.models import CustomUser
 from addcorpus.models import Corpus
 from django.conf import settings
 
+def csv_directory():
+    return settings.CSV_FILES_PATH
+
 class Download(models.Model):
     started = models.DateTimeField(auto_now_add=True)
     completed = models.DateTimeField(null=True)
@@ -18,7 +21,7 @@ class Download(models.Model):
     parameters = models.JSONField(
         help_text='JSON parameters for the download request that was made to the backend'
     )
-    filename = models.FilePathField(path=settings.CSV_FILES_PATH,
+    filename = models.FilePathField(path=csv_directory,
         max_length=settings.MAX_LENGTH_FILENAME, null=True,
         help_text='Path to the assembled CSV file'
     )
