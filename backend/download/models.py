@@ -3,13 +3,15 @@ from users.models import CustomUser
 from addcorpus.models import Corpus
 from django.conf import settings
 
+MAX_LENGTH_FILENAME = 254
+
 def csv_directory():
     return settings.CSV_FILES_PATH
 
 class Download(models.Model):
     started = models.DateTimeField(auto_now_add=True)
     completed = models.DateTimeField(null=True)
-    download_type = models.CharField(max_length=settings.MAX_LENGTH_NAME,
+    download_type = models.CharField(max_length=126,
         choices=[
             ('search_results', 'Search results'),
             ('date_term_frequency', 'Term frequency (timeline)'),
@@ -22,7 +24,7 @@ class Download(models.Model):
         help_text='JSON parameters for the download request that was made to the backend'
     )
     filename = models.FilePathField(path=csv_directory,
-        max_length=settings.MAX_LENGTH_FILENAME, null=True,
+        max_length=MAX_LENGTH_FILENAME, null=True,
         help_text='Path to the assembled CSV file'
     )
 
