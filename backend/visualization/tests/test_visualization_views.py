@@ -1,5 +1,4 @@
 import pytest
-from mock_corpora.mock_corpus_specs import CORPUS_SPECS
 
 @pytest.fixture
 def date_term_frequency_body(basic_query):
@@ -48,35 +47,25 @@ def ngram_body(basic_query):
         'max_size_per_interval': 2
     }
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
-def test_ngrams(client, mock_user, test_app, test_es_client, ngram_body):
-    client.mock_user_login()
-    post_response = client.post('/api/ngram_tasks', json=ngram_body)
+# TODO: these tests need extra fixtures to access corpus definitions, elasticsearch, and a celery worker
+
+@pytest.mark.xfail(reason = 'view not implemented')
+def test_ngrams(authenticated_client, ngram_body):
+    post_response = authenticated_client.post('/api/ngram_tasks', json=ngram_body, format='json')
     assert post_response.status_code == 200
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
-def test_aggregate_term_frequency(client, mock_user, test_app, test_es_client, aggregate_term_frequency_body):
-    client.mock_user_login()
-    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
+@pytest.mark.xfail(reason = 'view not implemented')
+def test_aggregate_term_frequency(authenticated_client, aggregate_term_frequency_body):
+    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, format='json')
     assert post_response.status_code == 200
     del aggregate_term_frequency_body['es_query']
-    post_response = client.post('/api/aggregate_term_frequency', json=aggregate_term_frequency_body)
+    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, format='json')
     assert post_response.status_code == 400
 
-@pytest.mark.xfail(reason = 'cannot connect to celery worker', run=False)
-def test_date_term_frequency(client, mock_user, test_app, test_es_client, date_term_frequency_body):
-    client.mock_user_login()
-    post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
+@pytest.mark.xfail(reason = 'view not implemented')
+def test_date_term_frequency(authenticated_client, date_term_frequency_body):
+    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, format='json')
     assert post_response.status_code == 200
     del date_term_frequency_body['corpus_name']
-    post_response = client.post('/api/date_term_frequency', json=date_term_frequency_body)
+    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, format='json')
     assert post_response.status_code == 400
-
-def test_load_all_corpora(client, mock_user, test_app):
-    client.mock_user_login()
-    response = client.get('/api/corpus')
-    assert response.status_code == 200
-    json_response = response.json
-
-    assert set(json_response.keys()) == set(CORPUS_SPECS.keys())
-

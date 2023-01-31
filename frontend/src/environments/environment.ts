@@ -9,7 +9,6 @@ export const environment = {
     aboutPage: 'ianalyzer',
     apiUrl: '/api/',
     adminUrl: '/admin/',
-    wordModelsUrl: '/wordmodels/',
     logos: [
     ]
 };

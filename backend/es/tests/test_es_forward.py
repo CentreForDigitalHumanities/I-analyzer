@@ -1,13 +1,13 @@
 import pytest
 import json
+from rest_framework.test import APIClient
 
-from flask import json
+from es.search import hits
 
 FORWARD_CASES = {
     'search_unauthenticated': (
         False,
-        'POST',
-        '/es/times/_search?size=20&scroll=3m',
+        '/api/es/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -17,12 +17,11 @@ FORWARD_CASES = {
             'filter': [],
         }}},
         None,
-        401,
+        403,
     ),
     'search_bogus': (
         True,
-        'POST',
-        '/es/times/_search?size=20&scroll=3m',
+        '/api/es/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'pineapple',
@@ -34,10 +33,9 @@ FORWARD_CASES = {
         0,
         200,
     ),
-    'search_unauthorized': (
+    'search_nonexistent': (
         True,
-        'POST',
-        '/es/daily-mail/_search?size=20&scroll=3m',
+        '/api/es/daily-mail/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -47,20 +45,18 @@ FORWARD_CASES = {
             'filter': [],
         }}},
         None,
-        401,
+        404,
     ),
     'search_empty': (
         True,
-        'POST',
-        '/es/times/_search?size=20&scroll=3m',
+        '/api/es/times/_search?size=20&scroll=3m',
         {},
         3,
         200,
     ),
     'search_success': (
         True,
-        'POST',
-        '/es/times/_search?size=20&scroll=3m',
+        '/api/es/times/_search?size=20&scroll=3m',
         {'query': {'bool': {
             'must': {'simple_query_string': {
                 'query': 'banana',
@@ -78,23 +74,15 @@ FORWARD_CASES = {
 def scenario(request):
     return request.param
 
-def test_es_forwarding_views(test_app, es_forward_client, times_user, client, requests, session, scenario):
-    (authenticate, method, route, data,
+def test_es_forwarding_views(scenario, es_forward_client, client, times_user):
+    (authenticate, route, data,
      n_hits, status) = scenario
-    if isinstance(data, dict):
-        request_type = 'application/json'
-        data = json.dumps(data)
-    else:
-        request_type = None
+
     if authenticate:
-        client.times_login()
-    response = client.open(
-        route,
-        method=method,
-        data=data,
-        content_type=request_type,
-    )
+        client.force_login(times_user)
+
+    response = client.post(route, data, content_type = 'application/json')
     assert response.status_code == status
+
     if response.status_code == 200:
-        hits = json.loads(response.get_data(True))['hits']['hits']
-        assert len(hits) == n_hits
+        assert len(hits(response.data)) == n_hits

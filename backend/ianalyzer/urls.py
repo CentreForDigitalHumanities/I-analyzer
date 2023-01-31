@@ -23,7 +23,16 @@ from rest_framework import routers
 from .index import index
 from .proxy_frontend import proxy_frontend
 
+from addcorpus import urls as corpus_urls
+from visualization import urls as visualization_urls
+from download import urls as download_urls
+from wordmodels import urls as wordmodels_urls
+from es import urls as es_urls
+from api.views import QueryViewset
+from api import urls as api_urls
+
 api_router = routers.DefaultRouter()  # register viewsets with this router
+api_router.register('search_history', QueryViewset, basename='query')
 
 
 if settings.PROXY_FRONTEND:
@@ -37,6 +46,12 @@ urlpatterns = [
     path('api-auth', RedirectView.as_view(url='/api-auth/', permanent=True)),
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
+    path('api/', include(api_urls)),
+    path('api/corpus/', include(corpus_urls)),
+    path('api/visualization/', include(visualization_urls)),
+    path('api/download/', include(download_urls)),
+    path('api/wordmodels/', include(wordmodels_urls)),
+    path('api/es/', include(es_urls)),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',
