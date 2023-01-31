@@ -4,6 +4,12 @@ from rest_framework.response import Response
 from api.serializers import QuerySerializer
 from rest_framework.permissions import IsAuthenticated
 from ianalyzer.exceptions import NotImplemented
+from rest_framework.exceptions import ValidationError, APIException
+import logging
+from rest_framework.permissions import IsAuthenticated
+from celery import current_app as celery_app
+
+logger = logging.getLogger()
 
 
 class QueryViewset(viewsets.ModelViewSet):
@@ -23,33 +29,37 @@ class TaskStatusView(APIView):
     and the results if they are complete
     '''
 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         # this a POST request because a list of requested IDs can make
         # the url too long
 
-        return Response({
-            'success': False,
-            'message': 'Could not get data'
-        })
+        if 'task_ids' not in request.data:
+            raise ValidationError(detail='no task ids specified')
 
-        # TODO: get results from celery
-        # task_ids = request.json.get('task_ids')
-        # if not task_ids:
-        #     abort(400, 'no task id specified')
+        task_ids = request.data['task_ids']
 
-        # results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
-        # if not all(results):
-        #     return jsonify({'success': False, 'message': 'Could not get data.'})
-        # else:
-        #     if all(result.state == 'SUCCESS' for result in results):
-        #         outcomes = [result.get() for result in results]
-        #         return jsonify({'success': True, 'done': True, 'results': outcomes})
-        #     elif all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
-        #         return jsonify({'success': True, 'done': False})
-        #     else:
-        #         for result in results:
-        #             logger.error(result.info)
-        #         return jsonify({'success': False, 'message': 'Task failed.'})
+        results = [celery_app.AsyncResult(id=task_id) for task_id in task_ids]
+        if not all(results):
+            raise APIException(detail='Could not get task data')
+
+        # all tasks finished
+        if all(result.state == 'SUCCESS' for result in results):
+            outcomes = [result.get() for result in results]
+            return Response({
+                'status': 'done',
+                'results': outcomes
+            })
+
+        # no failed tasks, but not all finished
+        if all(result.state in ['PENDING', 'STARTED', 'SUCCESS'] for result in results):
+            return Response({'status': 'working'})
+
+        # some tasks failed
+        for result in results:
+            logger.error(result.info)
+        return Response({'status': 'failed'})
 
 class AbortTasksView(APIView):
     '''
