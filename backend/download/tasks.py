@@ -3,19 +3,22 @@ import re
 from django.conf import settings
 
 from es import download as es_download
-from download import records, create_csv
+from download import create_csv
+from download.models import Download
 
 logger = logging.getLogger(__name__)
 
 #@shared_task()
 def complete_download(filename, log_id):
-    records.store_download_completed(log_id, filename)
+    download = Download.objects.get(log_id)
+    download.complete(filename)
     return log_id
 
 #@shared_task()
 def complete_failed_download(request, exc, traceback, log_id):
     logger.error('DOWNLOAD #{} FAILED'.format(log_id)) # traceback is already logged
-    records.store_download_failed(log_id)
+    download = Download.objects.get(log_id)
+    download.complete()
 
 #@shared_task()
 def download_scroll(request_json, download_size=10000):
