@@ -68,10 +68,9 @@ See https://www.postgresql.org/docs/current/installation.html
 
 https://www.elastic.co/guide/en/elasticsearch/reference/8.5/index.html
 
-Instructions below are for installing elasticsearch 7: adapt them for elasticsearch 8.
 
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-    echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" > /etc/apt/sources.list.d/elastic-7.x.list
+    echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list
     apt-get update && apt-get install elasticsearch
     systemctl start elasticsearch
     systemctl status elasticsearch
