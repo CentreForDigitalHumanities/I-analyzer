@@ -11,3 +11,8 @@ elasticsearch
 nltk
 beautifulsoup4
 lxml
+numpy
+textdistance
+gensim
+scikit-learn
+pandas

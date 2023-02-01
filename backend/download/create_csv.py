@@ -3,13 +3,16 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import os
 
-from flask import current_app
+from django.conf import settings
 
-from api.analyze import parse_datestring
+from visualization.term_frequency import parse_datestring
 
 
 def write_file(filename, fieldnames, rows, dialect = 'excel'):
-    filepath = os.path.join(current_app.config['CSV_FILES_PATH'], filename)
+    if not os.path.isdir(settings.CSV_FILES_PATH):
+        os.mkdir(settings.CSV_FILES_PATH)
+
+    filepath = os.path.join(settings.CSV_FILES_PATH, filename)
 
     with open(filepath, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, dialect = dialect)
@@ -20,7 +23,7 @@ def write_file(filename, fieldnames, rows, dialect = 'excel'):
     return filepath
 
 def create_filename(descriptive_part, essential_suffix = '.csv'):
-    max_length = 255 - (len(essential_suffix) + len(current_app.config['CSV_FILES_PATH']))
+    max_length = 255 - (len(essential_suffix) + len(settings.CSV_FILES_PATH))
     truncated = descriptive_part[:min(max_length, len(descriptive_part))]
     return truncated + essential_suffix
 

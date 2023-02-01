@@ -39,3 +39,12 @@ class MultilingualMockCorpus(CSVCorpus):
     )
 
     fields = [content, language]
+
+SPECS = {
+    'min_date': MultilingualMockCorpus.min_date,
+    'max_date': MultilingualMockCorpus.max_date,
+    'total_docs': 2,
+    'total_words': 176,
+    'has_token_counts': False,
+    'fields': ['content', 'language']
+}

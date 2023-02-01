@@ -1,15 +1,14 @@
-from elasticsearch import Elasticsearch
-from flask import current_app
+from django.conf import settings
 
-from ianalyzer.factories.elasticsearch import elasticsearch
+from ianalyzer.elasticsearch import elasticsearch
 from es.search import get_index, search, hits, total_hits
 
 def scroll(corpus, query_model, download_size=None):
     index = get_index(corpus)
     client = elasticsearch(index)
-    server = current_app.config['CORPUS_SERVER_NAMES'][corpus]
-    scroll_timeout = current_app.config['SERVERS'][server]['scroll_timeout']
-    scroll_page_size = current_app.config['SERVERS'][server]['scroll_page_size']
+    server = settings.CORPUS_SERVER_NAMES.get(corpus, 'default')
+    scroll_timeout = settings.SERVERS[server]['scroll_timeout']
+    scroll_page_size = settings.SERVERS[server]['scroll_page_size']
     size = min(download_size, scroll_page_size) if download_size else scroll_page_size
 
     output = []

@@ -6,8 +6,13 @@ from addcorpus.load_corpus import load_all_corpora
 from addcorpus.models import Corpus
 
 @pytest.fixture()
-def admin_group(db):
-    group = Group.objects.create(name='admin')
+def mock_corpus_group(db, mock_corpus):
+    '''Create a group with access to the mock corpus'''
+    group = Group.objects.create(name='nice-users')
+    load_all_corpora()
+    corpus = Corpus.objects.get(name=mock_corpus)
+    corpus.groups.add(group)
+    corpus.save()
     return group
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -23,12 +28,8 @@ def mock_corpus(mock_corpus_settings):
     return 'mock-csv-corpus'
 
 @pytest.fixture()
-def mock_corpus_user(db, admin_group, mock_corpus):
+def mock_corpus_user(db, mock_corpus_group):
     user = CustomUser.objects.create(username='mock-user', password='secret')
-    user.groups.add(admin_group)
+    user.groups.add(mock_corpus_group)
     user.save()
-    load_all_corpora()
-    corpus = Corpus.objects.get(name=mock_corpus)
-    corpus.groups.add(admin_group)
-    corpus.save()
     return user

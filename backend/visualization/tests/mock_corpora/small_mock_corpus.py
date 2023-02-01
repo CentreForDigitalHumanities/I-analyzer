@@ -7,7 +7,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-class MockCorpus(CSVCorpus):
+class SmallMockCorpus(CSVCorpus):
     title = 'Mock Corpus'
     description = 'Corpus for testing'
     visualize = []
@@ -66,3 +66,12 @@ class MockCorpus(CSVCorpus):
     )
 
     fields = [date, title_field, content, genre]
+
+SPECS = {
+    'min_date': SmallMockCorpus.min_date,
+    'max_date': SmallMockCorpus.max_date,
+    'total_docs': 3,
+    'total_words': 67,
+    'has_token_counts': True,
+    'fields':  ['date', 'title', 'genre', 'content'],
+}
