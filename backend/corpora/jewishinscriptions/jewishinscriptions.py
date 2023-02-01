@@ -9,6 +9,7 @@ from flask import current_app
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
 from addcorpus.corpus import XMLCorpus, Field
+from addcorpus.es_mappings import keyword_mapping, main_content_mapping
 
 
 class JewishInscriptions(XMLCorpus):
@@ -60,6 +61,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'titleStmt', 'title'],
                 toplevel=False,
             ),
+            es_mapping=keyword_mapping()
         ),
         Field(
             name='year',
@@ -101,7 +103,8 @@ class JewishInscriptions(XMLCorpus):
             ),
             search_field_core=True,
             results_overview=True,
-            display_type='text_content'
+            display_type='text_content',
+            es_mapping=main_content_mapping()
         ),
         Field(
             name='incipit',
@@ -283,6 +286,7 @@ class JewishInscriptions(XMLCorpus):
             name='location',
             display_name='Storage location',
             description='Storage location of the published work.',
+            es_mapping=keyword_mapping(),
             extractor=XML(
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'location'],
                 toplevel=False,
@@ -298,6 +302,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['teiHeader', 'fileDesc', 'sourceDesc', 'msDesc', 'msIdentifier', 'publication'],
                 toplevel=False,
             ),
+            es_mapping=keyword_mapping(True)
         ),
         Field(
             name='facsimile',
@@ -307,6 +312,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['facsimile', 'photoFacsimile'],
                 toplevel=False,
             ),
+            es_mapping=keyword_mapping()
         ),
         Field(
             name='photos_leonard',
@@ -316,6 +322,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['facsimile', 'photosLeonard'],
                 toplevel=False,
             ),
+            es_mapping=keyword_mapping()
         ),
         Field(
             name='3D_image',
@@ -325,6 +332,7 @@ class JewishInscriptions(XMLCorpus):
                 tag=['facsimile', 'image3D'],
                 toplevel=False,
             ),
+            es_mapping=keyword_mapping()
         ),
         Field(
             name='commentary',
