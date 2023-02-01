@@ -338,7 +338,7 @@ export abstract class BarchartDirective
     /** Retrieve all term frequencies and store in `rawData`.
      * Term frequencies are only loaded if they were not already there.
      */
-    requestTermFrequencyData(rawData: typeof this.rawData) {
+    requestTermFrequencyData(rawData: typeof this.rawData): Promise<BarchartSeries<DataPoint>[]> {
         const dataPromises = rawData.map(series => {
             if (series.queryText  && series.data.length && series.data[0].match_count === undefined) {
                 // retrieve data if it was not already loaded
@@ -367,7 +367,8 @@ export abstract class BarchartDirective
         ).then(res =>
             this.processSeriesTermFrequency(res, series)
         ).catch(error => {
-            this.error.emit('could not load results');
+            console.log(error);
+            this.error.emit(`could not load results: ${error.message}`);
             return series;
         });
     }

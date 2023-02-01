@@ -74,9 +74,7 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
             this.significantText = result;
             this.onDataLoaded();
         })
-        .catch(error => {
-            this.error.emit(error);
-        });
+        .catch(this.emitError.bind(this));
     }
 
     loadMoreData() {
@@ -89,9 +87,13 @@ export class WordcloudComponent implements OnChanges, OnInit, OnDestroy {
                     const result = outcome[0];
                     this.significantText = result;
                     this.onDataLoaded();
-                }).catch(error => this.error.emit('could not load data'));
-            });
+                });
+            }).catch(this.emitError.bind(this));
         }
+    }
+
+    emitError(error: {message: string}) {
+        this.error.emit(error.message);
     }
 
     onDataLoaded() {
