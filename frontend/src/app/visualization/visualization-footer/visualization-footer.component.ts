@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DialogService } from '../../services';
+import { DialogService, NotificationService } from '../../services';
 import * as htmlToImage from 'html-to-image';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import { PALETTES } from './../select-color';
@@ -20,7 +20,7 @@ export class VisualizationFooterComponent implements OnInit {
 
     faQuestion = faQuestionCircle;
 
-    constructor(private dialogService: DialogService) { }
+    constructor(private dialogService: DialogService, private notificationService: NotificationService) { }
 
     ngOnInit(): void {
     }
@@ -38,7 +38,7 @@ export class VisualizationFooterComponent implements OnInit {
             anchor.download = imageFileName || 'chart.png';
             anchor.click();
           })
-          .catch(function(error) {
+          .catch((error) => {
             this.notificationService.showMessage('oops, something went wrong!', error);
           });
 
