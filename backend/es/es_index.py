@@ -47,7 +47,7 @@ def create(client, corpus_definition, add, clear, prod):
         index_settings = settings.get('index', {})
         index_settings.update({
             'number_of_replicas' : 0,
-            'number_of_shards': 6
+            'number_of_shards': 5
         })
 
     logger.info('Attempting to create index `{}`...'.format(
