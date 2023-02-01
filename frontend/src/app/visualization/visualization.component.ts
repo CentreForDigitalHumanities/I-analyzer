@@ -5,8 +5,6 @@ import * as _ from 'lodash';
 import { Corpus, QueryModel, CorpusField, barChartSetNull, ngramSetNull } from '../models/index';
 import { PALETTES } from './select-color';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { DialogService } from '../services';
-import * as htmlToImage from 'html-to-image';
 import { ParamDirective } from '../param/param-directive';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
