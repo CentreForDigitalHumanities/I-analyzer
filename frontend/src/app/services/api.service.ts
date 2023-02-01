@@ -266,7 +266,7 @@ export class ApiService extends Resource {
         path: '/request_media'
     })
     public requestMedia: ResourceMethod<
-        { corpus_index: string; document: FoundDocument },
+        { corpus: string; document: FoundDocument },
         { success: false } | { success: true; media: string[]; info?: ImageInfo }
         >;
 

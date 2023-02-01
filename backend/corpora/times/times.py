@@ -17,7 +17,7 @@ from django.conf import settings
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
-
+from addcorpus.media_url import media_url
 
 # Source files ################################################################
 
@@ -466,15 +466,13 @@ class Times(XMLCorpus):
         ),
     ]
 
-    # TODO: enable media
-    # def request_media(self, document):
-    #     field_values = document['fieldValues']
-    #     if 'image_path' in field_values:
-    #         image_urls = [url_for(
-    #             'api.api_get_media',
-    #             corpus=self.es_index,
-    #             image_path=field_values['image_path'],
-    #             _external=True
-    #         )]
-    #     else: image_urls = []
-    #     return {'media': image_urls }
+    def request_media(self, document):
+        field_values = document['fieldValues']
+        if 'image_path' in field_values:
+            image_urls = [
+                media_url('times', field_values['image_path']),
+            ]
+        else:
+            image_urls = []
+        return {'media': image_urls }
+
