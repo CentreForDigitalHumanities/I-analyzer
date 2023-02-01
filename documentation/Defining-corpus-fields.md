@@ -4,16 +4,16 @@ Each corpus has a number of fields, which are extracted from source data. Each f
 
 ## Extracting values
 
-Various classes `api/ianalyzer/extract.py`.
+Various classes `backend/addcorpus/extract.py`.
 
 - The extractors `XML`, `HTML` and `CSV` are intended to extract values from the document type of your corpus. Naturally, `XML` is only available for `XMLCorpus`, et cetera. All other extractors are available for all corpora.
-- The `Metadata` extractor is used to gather information from file paths.
+- The `Metadata` extractor is used to collect any information that you passed on during file discovery, such as information based on the file path.
 - The `Constant` extractor can be used to define a constant value.
-- The `Choice` and `Combined` extractors can be used to combine multiple extractors.
+- The `Choice` and `Combined`, and `Backup` extractors can be used to combine multiple extractors.
 
 ## Elasticsearch mapping
 
-Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html).
+Each field should specify its `es_mapping`, a dict that is passed on to elasticsearch to specify how it is indexed. See the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html). For common mappings, use the functions defined in [es_mappings.py](../backend/addcorpus/es_mappings.py)
 
 ### Multifields
 

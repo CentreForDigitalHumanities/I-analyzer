@@ -1,15 +1,15 @@
 # How to add a new corpus to I-analzyer
 
 ## Corpus definition
-Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `api/ianalyzer/corpora` directory. The corpus description imports global variables from `api/ianalyzer/config.py`. The definition file should be registered in `backend/ianalyzer/config.py` under `CORPORA`. More on the use of config below.
+Adding a new corpus starts by adding a new corpus description `corpusname.py` to the `backend/corpora` directory. The corpus description imports global variables from `backend/ianalyzer/settings.py`. The definition file should be registered in `backend/ianalyzer/settings_local.py` under `CORPORA`. More on the use of settings below.
 
-The corpus definition is a python class definition, sublcassing `Corpus` class, found in `addcorpus/common.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
+The corpus definition is a python class definition, subclassing `Corpus` class, found in `addcorpus/corpus.py`. This class contains all information particular to a corpus that needs to be known for indexing, searching, and presenting a search form.
 
 The corpus class should define the following properties:
 
 - `title`: Title to be used in the interface.
 - `description`: Short description, appears as a subtitle in the interface.
-- `data_directory`: Path to the source files. Always this from configuration. 
+- `data_directory`: Path to the source files. Always this from configuration.
 - `min_date`, `max_date`: The minimum and maximum dates for documents.
 - `es_index`: the name of the index in elasticsearch.
 - `image`: a path or url to the image used for the corpus in the interface.
@@ -17,10 +17,10 @@ The corpus class should define the following properties:
 
 The following properties are optional:
 - `es_alias`: an alias for the index in elasticsearch.
-- `es_settings`: overwrites the `settings` property of the elasticsearch index.
+- `es_settings`: overwrites the `settings` property of the elasticsearch index. Can be generated using [es_settings.py](../backend/addcorpus/es_settings.py)
 - `scan_image_type`: the filetype of scanned documents, if these are included.
 - `allow_image_download`
-- `desription_page`: URL to markdown document with a comprehensive description
+- `desription_page`: filename of markdown document with a comprehensive description, located in a subdirectory `description` of the corpus definition directory.
 - `document_context`: specifies fields that define the natural grouping of documents.
 
 The corpus class should also define a function `sources(self, start, end)` which iterates source flies (presumably within on `data_directory`). The `start` and `end` properties define a date range: if possible, only yield files within the range. Each source file should be tuple of a filename and a dict with metadata.
@@ -86,13 +86,13 @@ CORPORA = {
 }
 ```
 
-The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.  
+The key of the corpus must match the name of the corpus class (but lowercase/hyphenated), so `'times'` is the key for the `Times` class. Typically, the key also matches the `es_index` of the corpus, as well as its filename.
 
-### default_config vs. config
-`config_fallback.py` regulates that all information in `config.py` overrules information in `default_config.py`. All sensitive information (server names, user names, passwords) should be in `config.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment. 
+### settings vs. settings_local
+`settings.py` imports all information in `settings_local.py`. If a variable is defined in both, `settings_local` overrules `settings`. All sensitive information (server names, user names, passwords) should be in `settings_local.py`, as this will 1) never be committed to github, and 2) be located in the `private` folder upon deployment.
 
 ## Elasticsearch
-Once the corpus definition and associated global variables are added, the only remaining step is to make the Elasticsearch index. By running `flask es -c corpusname`, information is extracted and sent to Elasticsearch. 
+Once the corpus definition and associated global variables are added, the only remaining step is to make the Elasticsearch index. By running `yarn django index corpusname`, information is extracted and sent to Elasticsearch.
 Optional flags:
 - `-s 1990-01-01` sets different start date for indexing
 - `-e 2000-12-31` sets different end data for indexing
