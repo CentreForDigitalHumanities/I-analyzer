@@ -127,7 +127,7 @@ class MediaMetadataView(APIView):
         corpus = load_corpus(corpus_name)
         if not 'document' in request.data:
             raise ValidationError(detail='no document specified')
-        data = corpus.request_media(request.data['document'])
+        data = corpus.request_media(request.data['document'], corpus_name)
         logger.info(data)
         if 'media' not in data or len(data['media'])==0:
             raise NotFound(detail='this document has no associated media')

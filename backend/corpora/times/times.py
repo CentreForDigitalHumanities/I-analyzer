@@ -466,11 +466,11 @@ class Times(XMLCorpus):
         ),
     ]
 
-    def request_media(self, document):
+    def request_media(self, document, corpus_name):
         field_values = document['fieldValues']
         if 'image_path' in field_values:
             image_urls = [
-                media_url('times', field_values['image_path']),
+                media_url(corpus_name, field_values['image_path']),
             ]
         else:
             image_urls = []
