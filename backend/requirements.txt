@@ -86,6 +86,8 @@ psycopg2==2.9.5
     # via -r requirements.in
 pyfume==0.2.25
     # via fuzzytm
+pypdf2==3.0.1
+    # via -r requirements.in
 pytest==7.2.0
     # via
     #   -r requirements.in
@@ -137,6 +139,8 @@ tornado==6.2
     # via django-livereload-server
 tqdm==4.64.1
     # via nltk
+typing-extensions==4.4.0
+    # via pypdf2
 urllib3==1.26.13
     # via
     #   django-revproxy
