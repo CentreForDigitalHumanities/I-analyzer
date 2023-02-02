@@ -86,12 +86,13 @@ const parseMinMax = (value: string[]): [string, string] => {
     }
 };
 
-export function contextFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
+export function contextFilterFromField(field: CorpusField, value?: string): SearchFilter<SearchFilterData> {
+    const currentValue = value ? searchFilterDataFromField(field, [value]) : undefined;
     return {
         fieldName: field.name,
         description: `Search only within this ${field.displayName}`,
         useAsFilter: true,
         adHoc: true,
-        currentData: undefined,
+        currentData: currentValue
     };
 }

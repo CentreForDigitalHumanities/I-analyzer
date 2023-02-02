@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 
 import { AggregateData, Corpus, MultipleChoiceFilterData, SearchFilter,
-    SearchFilterData, CorpusField } from '../models/index';
+    SearchFilterData, CorpusField, contextFilterFromField } from '../models/index';
 import { SearchService } from '../services';
 import { ParamDirective } from '../param/param-directive';
 import { ParamService } from '../services/param.service';
@@ -54,25 +54,6 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
         );
         this.aggregateSearchForMultipleChoiceFilters(params);
 
-        // check if any active filter is not in the list of searchFilters
-        // in that case, it is a contextFilter
-        this.activeFilters.forEach( af => {
-            const filterFields = this.searchFilters.map(sf => sf.fieldName)
-            if (!filterFields.find(f => f === af.fieldName)) {
-                let contextField = this.corpusFields.find(field => field.name = af.fieldName);
-                af = this.contextFilterFromField(contextField);
-            }
-        })
-    }
-
-    private contextFilterFromField(field: CorpusField): SearchFilter<SearchFilterData> {
-        return {
-            fieldName: field.name,
-            description: `Search only within this ${field.displayName}`,
-            useAsFilter: true,
-            adHoc: true,
-            currentData: undefined,
-        };
     }
 
     teardown() {
@@ -92,7 +73,7 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
      * fieldName2: [etc]
      */
     private aggregateSearchForMultipleChoiceFilters(params) {
-        const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.defaultData.filterType === 'MultipleChoiceFilter');
+        const multipleChoiceFilters = this.searchFilters.filter(f => !f.adHoc && f.currentData.filterType === 'MultipleChoiceFilter');
 
         const aggregateResultPromises = multipleChoiceFilters.map(filter => this.getMultipleChoiceFilterOptions(filter, params));
         Promise.all(aggregateResultPromises).then(results => {
@@ -113,8 +94,8 @@ export class FilterManagerComponent extends ParamDirective implements OnChanges 
                 filters.splice(index, 1);
             }
         } else {
- filters = null;
-}
+            filters = null;
+        }
         const defaultData = filter.defaultData as MultipleChoiceFilterData;
         const aggregator = {name: filter.fieldName, size: defaultData.optionCount};
         const queryModel = this.paramService.queryModelFromParams(params, this.corpusFields);

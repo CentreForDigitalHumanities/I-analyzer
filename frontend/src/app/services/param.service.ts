@@ -3,8 +3,9 @@ import * as _ from 'lodash';
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings } from '../models';
+import { SearchFilter, SearchFilterData, CorpusField, QueryModel, searchFilterDataFromSettings, searchFilterDataFromField, contextFilterFromField } from '../models';
 import { SearchService } from './search.service';
+import { faCubesStacked } from '@fortawesome/free-solid-svg-icons';
 
 interface SearchFilterSettings {
     [fieldName: string]: SearchFilterData;
@@ -73,9 +74,6 @@ export class ParamService {
      */
     setFiltersFromParams(params: ParamMap, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
         const filterSettings = this.filterSettingsFromParams(params, corpusFields);
-        if ( !Object.keys(filterSettings).length ) {
-            return [];
-        }
         return this.applyFilterSettings(filterSettings, corpusFields);
     }
 
@@ -95,18 +93,25 @@ export class ParamService {
         return settings;
     }
 
-    applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]): SearchFilter<SearchFilterData>[] {
-        let currentFilters = corpusFields.filter(f => f.searchFilter).map( f => f.searchFilter);
-        currentFilters.forEach(f => {
-            if (_.has(filterSettings, f.fieldName)) {
-                const data = filterSettings[f.fieldName];
-                f.currentData = data;
-                f.useAsFilter = true;
+    applyFilterSettings(filterSettings: SearchFilterSettings, corpusFields: CorpusField[]) {
+        corpusFields.forEach(field => {
+            if (_.has(filterSettings, field.name)) {
+                let searchFilter = field.searchFilter || contextFilterFromField(field);
+                const data = filterSettings[field.name];
+                searchFilter.currentData = data;
+                searchFilter.useAsFilter = true;
+                field.searchFilter = searchFilter;
             } else {
-                f.useAsFilter = false;
+                if (field.searchFilter) {
+                    field.searchFilter.useAsFilter = false;
+                    if (field.searchFilter.adHoc) {
+                        field.searchFilter = null;
+                    }
+                }
             }
         });
-        return currentFilters.filter( f => f.useAsFilter );
+
+        return corpusFields.filter( field => field.searchFilter && field.searchFilter.useAsFilter ).map( field => field.searchFilter );
     }
 
     // --- set params from filters --- //

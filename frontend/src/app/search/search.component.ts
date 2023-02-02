@@ -3,7 +3,7 @@ import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import * as _ from 'lodash';
 
-import { Corpus, CorpusField, ResultOverview, QueryModel, User } from '../models/index';
+import { Corpus, CorpusField, ResultOverview, QueryModel, User, contextFilterFromField } from '../models/index';
 import { CorpusService, DialogService, ParamService, UserService } from '../services/index';
 import { ParamDirective } from '../param/param-directive';
 
@@ -131,15 +131,19 @@ export class SearchComponent extends ParamDirective {
         }
     }
 
-    public goToContext(contextValues: any[]) {
+    public goToContext(contextValues: Object) {
         const contextSpec = this.corpus.documentContext;
 
         this.queryText = undefined;
 
-        const contextFilters = contextSpec.contextFields
+        let contextFields = contextSpec.contextFields
             .filter(field => ! this.filterFields.find(f => f.name === field.name))
 
-        const filterParams = this.paramService.makeFilterParams(contextFilters);
+        contextFields.forEach(field => {
+            field.searchFilter = contextFilterFromField(field, contextValues[field.name])
+        })
+
+        const filterParams = this.paramService.makeFilterParams(contextFields);
         const sortParams = this.paramService.makeSortParams(
             contextSpec.sortField,
             contextSpec.sortDirection
