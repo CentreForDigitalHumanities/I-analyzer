@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CorpusField, SortEvent } from '../models';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { CorpusField } from '../models';
+import { ParamDirective } from '../param/param-directive';
+import { ParamService } from '../services';
 
 const defaultValueType = 'alpha';
 @Component({
@@ -8,20 +11,19 @@ const defaultValueType = 'alpha';
     styleUrls: ['./search-sorting.component.scss'],
     host: { class: 'field has-addons' }
 })
-export class SearchSortingComponent {
-    @Input()
-    public ascending = true;
-
+export class SearchSortingComponent extends ParamDirective {
     @Input()
     public set fields(fields: CorpusField[]) {
         this.sortableFields = fields.filter(field => field.sortable);
     }
 
-    @Input()
-    public sortField: CorpusField | undefined;
-
-    @Output()
-    public onChange = new EventEmitter<SortEvent>();
+    private sortData: {
+        field: CorpusField
+        ascending: boolean
+    }
+    public ascending = true;
+    public primarySort: CorpusField;
+    public sortField: CorpusField;
 
     public valueType: 'alpha' | 'numeric' = defaultValueType;
     public sortableFields: CorpusField[];
@@ -31,9 +33,32 @@ export class SearchSortingComponent {
         return `${this.valueType}${this.ascending ? 'Asc' : 'Desc'}` as SortType;
     }
 
+    constructor(
+        route: ActivatedRoute,
+        router: Router,
+        private paramService: ParamService
+    ) {
+        super(route, router);
+    }
+
+    initialize() {
+        this.primarySort = this.sortableFields.find(field => field.primarySort);
+        this.sortField = this.primarySort;
+    }
+
+    teardown() {
+        this.setParams({ sort: null });
+    }
+
+    setStateFromParams(params: ParamMap) {
+        this.sortData = this.paramService.setSortFromParams(params, this.sortableFields);
+        this.sortField = this.sortData.field;
+        this.ascending = this.sortData.ascending;
+    }
+
     public toggleSortType() {
         this.ascending = !this.ascending;
-        this.emitChange();
+        this.updateSort();
     }
 
     public toggleShowFields() {
@@ -48,11 +73,12 @@ export class SearchSortingComponent {
             this.valueType = ['integer', 'date', 'boolean'].indexOf(field.displayType) >= 0 ? 'numeric' : 'alpha';
         }
         this.sortField = field;
-        this.emitChange();
+        this.updateSort();
     }
 
-    private emitChange() {
-        this.onChange.next({ ascending: !!this.ascending, field: this.sortField });
+    private updateSort() {
+        const setting = this.paramService.makeSortParams(this.sortField, this.ascending? 'asc': 'desc');
+        this.setParams(setting);
     }
 }
 

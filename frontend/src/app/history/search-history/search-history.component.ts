@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
 import { User, Query, Corpus } from '../../models/index';
-import { CorpusService, SearchService, QueryService } from '../../services/index';
+import { CorpusService, QueryService, ParamService } from '../../services/index';
 import { HistoryDirective } from '../history.directive';
 
 @Component({
@@ -16,7 +16,7 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
     public queries: Query[];
     public displayCorpora = false;
     constructor(
-        private searchService: SearchService,
+        private paramService: ParamService,
         corpusService: CorpusService,
         private queryService: QueryService,
         private router: Router
@@ -36,7 +36,7 @@ export class SearchHistoryComponent extends HistoryDirective implements OnInit {
 
     returnToSavedQuery(query) {
         const queryModel = JSON.parse(query.query);
-        const route = this.searchService.queryModelToRoute(queryModel);
+        const route = this.paramService.queryModelToRoute(queryModel);
         this.router.navigate(['/search', query.corpusName, route]);
         if (window) {
             window.scrollTo(0, 0);
