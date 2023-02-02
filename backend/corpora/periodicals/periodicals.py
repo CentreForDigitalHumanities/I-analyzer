@@ -193,7 +193,7 @@ class Periodicals(XMLCorpus):
         ),
         Field(
             name='start_column',
-            es_mapping={'type': 'integer'},
+            es_mapping={'type': 'keyword'},
             display_name='Starting column',
             description='Which column the article starts in.',
             extractor=extract.XML(tag='sc',
