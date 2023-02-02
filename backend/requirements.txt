@@ -21,7 +21,9 @@ beautifulsoup4==4.11.1
 billiard==3.6.4.0
     # via celery
 celery==5.2.7
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   pytest-celery
 certifi==2022.12.7
     # via
     #   elastic-transport
@@ -114,6 +116,8 @@ pytest==7.2.0
     #   -r requirements.in
     #   pytest-django
     #   pytest-xdist
+pytest-celery==0.0.0
+    # via -r requirements.in
 pytest-django==4.5.2
     # via -r requirements.in
 pytest-xdist==3.1.0
