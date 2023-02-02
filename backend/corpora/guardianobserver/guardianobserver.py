@@ -20,8 +20,8 @@ from es.es_update import update_document
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
-from addcorpus.image_processing import sizeof_fmt
-from addcorpus.media_url import media_url
+from media.image_processing import sizeof_fmt
+from media.media_url import media_url
 
 PROCESSED = "corpora/guardianobserver/processed.txt"
 

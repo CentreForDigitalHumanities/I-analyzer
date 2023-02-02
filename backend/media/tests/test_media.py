@@ -1,7 +1,5 @@
 from rest_framework import status
 
-from addcorpus.load_corpus import load_corpus
-
 example_document = {
     'fieldValues': {
         'character': 'HAMLET',
@@ -9,7 +7,7 @@ example_document = {
     }
 }
 
-expected_url = f'/api/get_media?corpus=mock-csv-corpus&image_path=images%2Fhamlet.png'
+expected_url = f'/api/get_media?corpus=media-mock-corpus&image_path=images%2Fhamlet.png'
 
 def test_media_views(client, mock_corpus, mock_corpus_user):
     client.force_login(mock_corpus_user)

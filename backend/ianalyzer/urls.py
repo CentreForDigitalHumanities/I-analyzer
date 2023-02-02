@@ -30,6 +30,7 @@ from wordmodels import urls as wordmodels_urls
 from es import urls as es_urls
 from api.views import QueryViewset
 from api import urls as api_urls
+from media import urls as media_urls
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 api_router.register('search_history', QueryViewset, basename='query')
@@ -47,6 +48,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
     path('api/', include(api_urls)),
+    path('api/', include(media_urls)),
     path('api/corpus/', include(corpus_urls)),
     path('api/visualization/', include(visualization_urls)),
     path('api/download/', include(download_urls)),

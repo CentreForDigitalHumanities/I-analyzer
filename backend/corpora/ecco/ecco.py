@@ -14,8 +14,8 @@ from django.conf import settings
 from addcorpus.extract import Combined, Metadata, XML
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
-from addcorpus.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
-from addcorpus.media_url import media_url
+from media.image_processing import get_pdf_info, retrieve_pdf, pdf_pages, build_partial_pdf
+from media.media_url import media_url
 
 # Source files ################################################################
 

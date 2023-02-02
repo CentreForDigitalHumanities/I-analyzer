@@ -17,7 +17,7 @@ from django.conf import settings
 from addcorpus import extract
 from addcorpus import filters
 from addcorpus.corpus import XMLCorpus, Field, until, after, string_contains, consolidate_start_end_years
-from addcorpus.media_url import media_url
+from media.media_url import media_url
 
 # Source files ################################################################
 
