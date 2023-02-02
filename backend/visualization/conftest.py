@@ -7,6 +7,7 @@ from addcorpus.load_corpus import load_corpus, load_all_corpora
 from time import sleep
 from visualization.tests.mock_corpora.small_mock_corpus import SPECS as SMALL_MOCK_CORPUS_SPECS
 from visualization.tests.mock_corpora.large_mock_corpus import SPECS as LARGE_MOCK_CORPUS_SPECS
+import Redis
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -124,3 +125,15 @@ def basic_query():
             }
         }
     }
+
+@pytest.fixture
+def redis_connection(settings):
+    '''check if we can connect to redis, skip otherwise'''
+    r = Redis.from_url(settings.CELERY_BACKEND)
+
+    try:
+        r.set('test_key', 'test_value')
+    except:
+        pytest.skip()
+
+    return True
