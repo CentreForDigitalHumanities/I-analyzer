@@ -1,11 +1,9 @@
-from curses import meta
 from datetime import datetime
 from glob import glob
 import logging
-from attr import attr
 from bs4 import BeautifulSoup
 from os.path import join
-from flask import current_app
+from django.conf import settings
 
 import bs4
 from addcorpus.corpus import XMLCorpus
@@ -127,16 +125,12 @@ class ParliamentNetherlands(Parliament, XMLCorpus):
     description = "Speeches from the Eerste Kamer and Tweede Kamer"
     min_date = datetime(year=1815, month=1, day=1)
     max_date = datetime(year=2020, month=12, day=31)
-    data_directory = current_app.config['PP_NL_DATA']
-    word_model_path = current_app.config['PP_NL_WM']
+    data_directory = settings.PP_NL_DATA
+    data_directory_recent = settings.PP_NL_RECENT_DATA
+    word_model_path = settings.PP_NL_WM
 
-    if 'PP_NL_RECENT_DATA' in current_app.config:
-        data_directory_recent = current_app.config['PP_NL_RECENT_DATA']
-    else:
-        data_directory_recent = None
-
-    es_index = current_app.config['PP_NL_INDEX']
-    image = current_app.config['PP_NL_IMAGE']
+    es_index = settings.PP_NL_INDEX
+    image = settings.PP_NL_IMAGE
     description_page = 'netherlands.md'
     tag_toplevel = lambda _, metadata: 'root' if is_old(metadata) else 'TEI'
     tag_entry = lambda _, metadata: 'speech' if is_old(metadata) else 'u'

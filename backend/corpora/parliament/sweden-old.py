@@ -8,7 +8,7 @@ import corpora.parliament.utils.field_defaults as field_defaults
 import corpora.parliament.utils.constants as constants
 import corpora.parliament.utils.formatting as formatting
 
-from flask import current_app
+from django.conf import settings
 
 def format_era(era):
     eras = {
@@ -35,8 +35,8 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
     description = 'Speeches from the Riksdag'
     min_date = datetime(year=1809, month=1, day=1)
     max_date = datetime(year=1919, month=12, day=31)
-    data_directory = current_app.config['PP_SWEDEN_OLD_DATA']
-    es_index = current_app.config['PP_SWEDEN_OLD_INDEX']
+    data_directory = settings.PP_SWEDEN_OLD_DATA
+    es_index = settings.PP_SWEDEN_OLD_INDEX
 
 
     document_context = constants.document_context(
@@ -50,7 +50,7 @@ class ParliamentSwedenOld(Parliament, CSVCorpus):
 
     language = 'swedish'
     description_page = 'sweden-old.md'
-    image = current_app.config['PP_SWEDEN_OLD_IMAGE']
+    image = settings.PP_SWEDEN_OLD_IMAGE
 
     book_id = field_defaults.book_id()
     book_id.extractor = CSV(field = 'book_id')
