@@ -1,4 +1,4 @@
-from flask import current_app
+from django.conf import settings
 from datetime import datetime
 
 from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
@@ -6,8 +6,8 @@ from corpora.dutchnewspapers.dutchnewspapers_public import DutchNewspapersPublic
 class DutchNewsPapersAll(DutchNewspapersPublic):
     title = "Dutch Newspapers (Delpher)"
     description = "Collection of all Dutch newspapers by the KB"
-    data_directory = current_app.config['DUTCHNEWSPAPERS_ALL_DATA']
-    es_index = current_app.config['DUTCHNEWSPAPERS_ALL_ES_INDEX']
+    data_directory = settings.DUTCHNEWSPAPERS_ALL_DATA
+    es_index = settings.DUTCHNEWSPAPERS_ALL_ES_INDEX
     max_date = datetime(year=1995, month=12, day=31)
 
     def update_body(self, doc=None):
@@ -19,7 +19,7 @@ class DutchNewsPapersAll(DutchNewspapersPublic):
                 "url" : url
             }
         }
-    
+
     def update_query(self, min_date, max_date):
         return {
             "query" : {

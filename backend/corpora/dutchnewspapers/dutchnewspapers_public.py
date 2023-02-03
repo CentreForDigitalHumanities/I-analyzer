@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from os.path import join, isfile, split, splitext
 import os
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus.corpus import XMLCorpus, Field, consolidate_start_end_years, string_contains
 from addcorpus import filters
@@ -26,10 +26,10 @@ class DutchNewspapersPublic(XMLCorpus):
     description = "Publicly available collection of Dutch newspapers by the KB"
     min_date = datetime(year=1600, month=1, day=1)
     max_date = datetime(year=1876, month=12, day=31)
-    data_directory = current_app.config['DUTCHNEWSPAPERS_DATA']
-    es_index = current_app.config['DUTCHNEWSPAPERS_ES_INDEX']
-    es_doctype = current_app.config['DUTCHNEWSPAPERS_ES_DOCTYPE']
-    image = current_app.config['DUTCHNEWSPAPERS_IMAGE']
+    data_directory = settings.DUTCHNEWSPAPERS_DATA
+    es_index = settings.DUTCHNEWSPAPERS_ES_INDEX
+    es_doctype = settings.DUTCHNEWSPAPERS_ES_DOCTYPE
+    image = settings.DUTCHNEWSPAPERS_IMAGE
 
     tag_toplevel = 'text'
     tag_entry = 'p'
@@ -95,7 +95,7 @@ class DutchNewspapersPublic(XMLCorpus):
                         yield full_path, meta_dict
 
     titlefile = join(corpus_dir('dutchnewspapers-public'),
-     current_app.config['DUTCHNEWSPAPERS_TITLES_FILE'])
+     settings.DUTCHNEWSPAPERS_TITLES_FILE)
     with open(titlefile, encoding='utf-8') as f:
         papers = f.readlines()
     paper_count = len(papers)
