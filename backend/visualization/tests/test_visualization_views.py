@@ -20,10 +20,10 @@ def test_wordcloud_view(authenticated_client, mock_corpus, index_mock_corpus, wo
     assert status.is_success(response.status_code)
 
 @pytest.fixture
-def date_term_frequency_body(basic_query):
+def date_term_frequency_body(basic_query, mock_corpus, select_small_mock_corpus):
     return {
         'es_query': basic_query,
-        'corpus_name': 'mock-corpus',
+        'corpus_name': mock_corpus,
         'field_name': 'date',
         'bins': [
             {
@@ -41,10 +41,10 @@ def date_term_frequency_body(basic_query):
     }
 
 @pytest.fixture
-def aggregate_term_frequency_body(basic_query):
+def aggregate_term_frequency_body(basic_query, mock_corpus, select_small_mock_corpus):
     return {
         'es_query': basic_query,
-        'corpus_name': 'mock-corpus',
+        'corpus_name': mock_corpus,
         'field_name': 'genre',
         'bins': [
             { 'field_value': 'Romance', 'size': 10 },
@@ -54,10 +54,10 @@ def aggregate_term_frequency_body(basic_query):
     }
 
 @pytest.fixture
-def ngram_body(basic_query):
+def ngram_body(basic_query, mock_corpus, select_small_mock_corpus):
     return {
         'es_query': basic_query,
-        'corpus_name': 'mock-corpus',
+        'corpus_name': mock_corpus,
         'field_name': 'content',
         'ngram_size': 2,
         'term_position': [0, 1],
@@ -66,25 +66,24 @@ def ngram_body(basic_query):
         'max_size_per_interval': 2
     }
 
-# TODO: these tests need extra fixtures to access corpus definitions, elasticsearch, and a celery worker
 
-@pytest.mark.xfail(reason = 'view not implemented')
-def test_ngrams(authenticated_client, ngram_body):
-    post_response = authenticated_client.post('/api/ngram_tasks', json=ngram_body, format='json')
+@pytest.mark.xfail(reason='task not implemented')
+def test_ngrams(authenticated_client, ngram_body, index_mock_corpus, celery_worker):
+    post_response = authenticated_client.post('/api/ngram_tasks', ngram_body, content_type='application/json')
     assert post_response.status_code == 200
 
-@pytest.mark.xfail(reason = 'view not implemented')
-def test_aggregate_term_frequency(authenticated_client, aggregate_term_frequency_body):
-    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, format='json')
+@pytest.mark.xfail(reason='task not implemented')
+def test_aggregate_term_frequency(authenticated_client, aggregate_term_frequency_body, index_mock_corpus, celery_worker):
+    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, content_type='application/json')
     assert post_response.status_code == 200
     del aggregate_term_frequency_body['es_query']
-    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, format='json')
+    post_response = authenticated_client.post('/api/aggregate_term_frequency', aggregate_term_frequency_body, content_type='application/json')
     assert post_response.status_code == 400
 
-@pytest.mark.xfail(reason = 'view not implemented')
-def test_date_term_frequency(authenticated_client, date_term_frequency_body):
-    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, format='json')
+@pytest.mark.xfail(reason='task not implemented')
+def test_date_term_frequency(authenticated_client, date_term_frequency_body, index_mock_corpus, celery_worker):
+    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, content_type='application/json')
     assert post_response.status_code == 200
     del date_term_frequency_body['corpus_name']
-    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, format='json')
+    post_response = authenticated_client.post('/api/date_term_frequency', date_term_frequency_body, content_type='application/json')
     assert post_response.status_code == 400
