@@ -4,7 +4,7 @@ import os.path as op
 import logging
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus.extract import XML, Metadata, Combined
 from addcorpus.filters import MultipleChoiceFilter, RangeFilter #SliderRangeFilter, BoxRangeFilter
@@ -19,10 +19,10 @@ class JewishInscriptions(XMLCorpus):
     description = "A collection of inscriptions on Jewish burial sites"
     min_date = datetime(year=769, month=1, day=1)
     max_date = datetime(year=849, month=12, day=31)
-    data_directory = current_app.config['JEWISH_INSCRIPTIONS_DATA']
-    es_index = current_app.config['JEWISH_INSCRIPTIONS_ES_INDEX']
-    es_doctype = current_app.config['JEWISH_INSCRIPTIONS_ES_DOCTYPE']
-    image = current_app.config['JEWISH_INSCRIPTIONS_IMAGE']
+    data_directory = settings.JEWISH_INSCRIPTIONS_DATA
+    es_index = settings.JEWISH_INSCRIPTIONS_ES_INDEX
+    es_doctype = settings.JEWISH_INSCRIPTIONS_ES_DOCTYPE
+    image = settings.JEWISH_INSCRIPTIONS_IMAGE
     visualize = []
 
     # Data overrides from .common.XMLCorpus
