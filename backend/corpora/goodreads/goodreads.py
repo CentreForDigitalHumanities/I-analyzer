@@ -5,7 +5,7 @@ import glob
 import logging
 from datetime import datetime
 
-from flask import current_app
+from django.conf import settings
 import openpyxl
 
 from addcorpus.extract import CSV, Metadata
@@ -26,10 +26,10 @@ class GoodReads(CSVCorpus):
 
     min_date=datetime(2007, 1, 1)
     max_date=datetime(2022, 12, 31)
-    data_directory = current_app.config['GOODREADS_DATA']
-    es_index = current_app.config['GOODREADS_ES_INDEX']
-    image = current_app.config['GOODREADS_IMAGE']
-    description_page = current_app.config['GOODREADS_DESCRIPTION_PAGE']
+    data_directory = settings.GOODREADS_DATA
+    es_index = settings.GOODREADS_ES_INDEX
+    image = settings.GOODREADS_IMAGE
+    description_page = settings.GOODREADS_DESCRIPTION_PAGE
     visualize = []
 
     # New data members
