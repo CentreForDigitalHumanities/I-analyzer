@@ -4,6 +4,7 @@ import os
 import csv
 from download import create_csv
 from download.models import Download
+from addcorpus.models import Corpus
 import io
 
 def test_direct_download_view(authenticated_client, mock_corpus, index_mock_corpus):
@@ -99,7 +100,8 @@ def test_empty_download_history_view(authenticated_client):
 @pytest.fixture()
 def finished_download(corpus_user, csv_directory, mock_corpus, select_small_mock_corpus):
     filepath = os.path.join(csv_directory, mock_corpus + '.csv')
-    download = Download.objects.create(download_type='search_results', corpus=mock_corpus, parameters={}, user=corpus_user)
+    corpus = Corpus.objects.get(name=mock_corpus)
+    download = Download.objects.create(download_type='search_results', corpus=corpus, parameters={}, user=corpus_user)
 
     with open(filepath, 'w') as outfile:
         writer = csv.DictWriter(outfile,
@@ -116,7 +118,7 @@ def finished_download(corpus_user, csv_directory, mock_corpus, select_small_mock
 
     _, filename = os.path.split(filepath)
     download.complete(filename)
-    return id
+    return download.id
 
 def test_download_history_view(authenticated_client, finished_download, mock_corpus):
     response = authenticated_client.get(
