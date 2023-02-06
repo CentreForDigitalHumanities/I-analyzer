@@ -3,7 +3,7 @@ from rest_framework import status
 example_document = {
     'fieldValues': {
         'character': 'HAMLET',
-        'lines': 'Whither wilt thou lead me? Speak, I’ll go no further.',
+        'lines': 'Whither wilt thou lead me? Speak, I\'ll go no further.',
     }
 }
 
