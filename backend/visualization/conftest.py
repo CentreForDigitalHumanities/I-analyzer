@@ -90,7 +90,7 @@ def index_mock_corpus(mock_corpus, test_es_client):
     clear_test_corpus(test_es_client, mock_corpus)
 
 @pytest.fixture()
-def corpus_user(db, mock_corpus):
+def corpus_user(transactional_db, mock_corpus): # use transactional_db instead of db for async task support
     '''Make a user with access to the mock corpus'''
 
     username = 'mock-user'
