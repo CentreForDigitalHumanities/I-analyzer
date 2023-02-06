@@ -7,7 +7,7 @@ from django.http.response import FileResponse
 from django.conf import settings
 from download import convert_csv, tasks
 import os
-from rest_framework.exceptions import ValidationError, APIException
+from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
 from es import download as es_download
 from rest_framework.permissions import IsAuthenticated
 from addcorpus.permissions import CorpusAccessPermission, corpus_name_from_request
@@ -105,6 +105,7 @@ class DownloadHistoryViewset(ModelViewSet):
     '''
 
     serializer_class = DownloadSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return self.request.user.downloads.all()
@@ -115,14 +116,18 @@ class FileDownloadView(APIView):
     Retrieve a CSV file saved in your download history
     '''
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         id = kwargs.get('id')
         encoding = request.query_params.get('encoding', 'utf-8')
         format = request.query_params.get('format', None)
 
         record = Download.objects.get(id=id)
-        directory = settings.CSV_FILES_PATH
+        if not record.user == request.user:
+            raise PermissionDenied(detail='User has no access to this download')
 
+        directory = settings.CSV_FILES_PATH
         converted_filename = convert_csv.convert_csv(
             directory, record.filename, record.download_type, encoding, format)
         path = os.path.join(directory, converted_filename)
