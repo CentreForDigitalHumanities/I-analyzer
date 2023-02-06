@@ -7,13 +7,22 @@ from django.http.response import FileResponse
 from django.conf import settings
 from download import convert_csv, tasks
 import os
-from rest_framework.exceptions import ValidationError, APIException, PermissionDenied
+from rest_framework.exceptions import ValidationError, APIException, PermissionDenied, NotFound
 from es import download as es_download
 from rest_framework.permissions import IsAuthenticated
 from addcorpus.permissions import CorpusAccessPermission, corpus_name_from_request
 import logging
 
 logger = logging.getLogger()
+
+def send_csv_file(directory, filename, download_type, encoding, format=None):
+    '''
+    Perform final formatting and send a CSV file as a FileResponse
+    '''
+    converted_filename = convert_csv.convert_csv(
+        directory, filename, download_type, encoding, format)
+    path = os.path.join(directory, converted_filename)
+    return FileResponse(open(path, 'rb'), filename=filename, as_attachment=True)
 
 class ResultsDownloadView(APIView):
     '''
@@ -38,13 +47,10 @@ class ResultsDownloadView(APIView):
             search_results = es_download.normal_search(corpus, request.data['es_query'], request.data['size'])
             csv_path = tasks.make_csv(search_results, request.data)
             directory, filename = os.path.split(csv_path)
-            converted_filename = convert_csv.convert_csv(directory, filename, 'search_results', request.data['encoding'])
-            csv_file = os.path.join(directory, converted_filename)
+            return send_csv_file(directory, filename, 'search_results', request.data['encoding'])
         except Exception as e:
             logger.error(e)
             raise APIException(detail = 'Download failed: could not generate csv file')
-
-        return FileResponse(open(csv_file, 'rb'), filename=filename, as_attachment=True)
 
 
 class ResultsDownloadTaskView(APIView):
@@ -128,8 +134,8 @@ class FileDownloadView(APIView):
             raise PermissionDenied(detail='User has no access to this download')
 
         directory = settings.CSV_FILES_PATH
-        converted_filename = convert_csv.convert_csv(
-            directory, record.filename, record.download_type, encoding, format)
-        path = os.path.join(directory, converted_filename)
 
-        return FileResponse(open(path, 'rb'), filename=record.filename, as_attachment=True)
+        if not os.path.isfile(os.path.join(directory, record.filename)):
+            raise NotFound(detail='File does not exist')
+
+        return send_csv_file(directory, record.filename, record.download_type, encoding, format)
