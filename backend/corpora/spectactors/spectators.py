@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import re
 from pprint import pprint
 
-from flask import current_app
+from django.conf import settings
 
 from addcorpus import extract
 from addcorpus import filters
@@ -26,9 +26,9 @@ class Spectators(XMLCorpus):
     description = "A collection of Spectator newspapers"
     min_date = datetime()
     max_date = datetime()
-    data_directory = current_app.config['SPECTATORS_DATA']
-    es_index = current_app.config['SPECTATORS_ES_INDEX']
-    es_doctype = current_app.config['SPECTATORS_ES_DOCTYPE']
+    data_directory = settings.SPECTATORS_DATA
+    es_index = settings.SPECTATORS_ES_INDEX
+    es_doctype = settings.SPECTATORS_ES_DOCTYPE
 
     tag_toplevel = 'article'
     tag_entry = 'content'
